@@ -52,7 +52,7 @@ Write a program in a language of your choice that reads one character at a time 
 Using the [FSM Simulator](http://ivanzuzak.info/noam/webapps/fsm_simulator/), construct some new finite state machines, which you can save and include with your submission.  For each finite state machine, assume a language L consisting of `String`s over `S*` given the alphabet `S = {0, 1}`.
 
 1. All strings in which the character 0 always appears in pairs.  For example: `100111001` but not `1010010`.  The regular expression is: `(1*(00)*1*)*`.
-2. All strings in which the count of the character 1 is a multiple of 3.  For example: `1001001` but not `100100`.  The regular expression is `(0*10*10*1)*`.
+2. All strings in which the count of the character 1 is a multiple of 3.  For example: `1001001` but not `100100`.  The regular expression is `(0*10*10*1)*0*`.
 
 ## Part 4: Limitations of Finite Automata
 In your readme, describe why it is not possible to define a finite automata to balance parenthesis?  Hint: it has to do with the fact that the FSM can't store additional state, as we saw in Part 2!  This is the same reason why you cannot represent this language with a regular expression.
