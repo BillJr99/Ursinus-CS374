@@ -428,11 +428,6 @@ schedule:
     date: "2"
     title: "Libraries"
     link: "./Activities/Libraries"
-    deliverables:
-      - dtitle: "Programming Assignment: Libraries Handed Out"
-        dlink: "./Assignments/Libraries"
-        points: 100
-        rubricpath: "_pages/Assignments/asmt-libraries.md"
     readings:
       - rtitle: "PLAI Ch. 10"
         rlink: false
@@ -451,10 +446,6 @@ schedule:
     title: "Tokens and Scanning"
     link: "./Activities/TokensScanning"
     deliverables:
-      - dtitle: "Programming Assignment: Libraries Due"
-        dlink: "./Assignments/Libraries"
-        points: 100
-        rubricpath: "_pages/Assignments/asmt-libraries.md"
       - dtitle: "Lab: Scanning Handed Out"
         dlink: "./Labs/Scanner"
         points: 100
@@ -469,6 +460,11 @@ schedule:
   - week: "11"
     date: "1"
     title: "Parsing and Interpreting: the LL(1) Parser"
+    deliverables:
+      - dtitle: "Programming Assignment: Libraries Handed Out"
+        dlink: "./Assignments/Libraries"
+        points: 100
+        rubricpath: "_pages/Assignments/asmt-libraries.md"    
   - week: "11"
     date: "2"
     title: "Parsing and Interpreting"
@@ -494,6 +490,10 @@ schedule:
         dlink: "./Assignments/Participation/SelfAssessment"
         points: 10
         submission_types: "written"
+      - dtitle: "Programming Assignment: Libraries Due"
+        dlink: "./Assignments/Libraries"
+        points: 100
+        rubricpath: "_pages/Assignments/asmt-libraries.md"      
   - week: "13"
     date: "0"
     title: "Parsing and Interpreting"
