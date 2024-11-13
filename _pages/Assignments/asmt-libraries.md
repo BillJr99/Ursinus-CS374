@@ -43,14 +43,16 @@ Follow [this tutorial](https://ncona.com/2019/03/building-and-using-a-library-in
 You may choose any library functionality you would like, and references are OK as long as they are cited in your source.  Be creative - what are some functions that you might find useful to have someday (or might find useful to share with someone else)?
 
 ## Part 2: Dynamic Library Loading \[[^2]\]
-Create a function called `malloc` that accepts an `int size` and returns a `void *`, just like `malloc` does.  In that function, create a pointer `static void*(*mymalloc)(int n)` that you will assign to a call to `dlsym(RTLD_NEXT, "malloc")`.  Call `mymalloc(size)` within this function, and store the result in a `void *` variable that your function will return.  Also increment a global variable that you'll store statically within your module.  This call will look like this:
+Create a function called `malloc` that accepts an `int size` and returns a `void *`, just like `malloc` does.  In that function, create a pointer `static void*(*realmalloc)(int n)` that you will assign to a call to `dlsym(RTLD_NEXT, "malloc")`.  Call `realmalloc(size)` within this function, and store the result in a `void *` variable that your function will return.  Also increment a global variable that you'll store statically within your module.  This call will look like this:
 
 ```c
 #include <dlfcn.h>
 #include <stddef.h>
 
 void* malloc(size_t size) {
-    void*(*mymalloc)(size_t) = (void* (*)(size_t)) dlsym(RTLD_NEXT, "malloc");
+    void*(*realmalloc)(size_t) = (void* (*)(size_t)) dlsym(RTLD_NEXT, "malloc");
+    void* result = realmalloc(size);
+    return result;
 }
 ```
 
