@@ -72,6 +72,8 @@ int main(void) {
 }
 ```
 
+**Note: you may see a value other than 0, because `printf` also calls `malloc` and may not call `free`.  You can just experiment with some calls to `malloc` and `free` for yourself and observe the counter increase and decrease!**
+
 ### Building
 
 If you are using replit, you can click the three dots next to the `Files` list, and choose `Show Hidden Files`.  This will allow you to edit the makefile and enter the compile flags to build these files automatically.  Here is that makefile:
