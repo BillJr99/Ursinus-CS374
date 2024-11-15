@@ -48,6 +48,8 @@ Create a function called `malloc` that accepts an `int size` and returns a `void
 ```c
 #include <dlfcn.h>
 #include <stddef.h>
+#define _GNU_SOURCE
+#define RTLD_NEXT ((void *) -1)
 
 void* malloc(size_t size) {
     void*(*realmalloc)(size_t) = (void* (*)(size_t)) dlsym(RTLD_NEXT, "malloc");
