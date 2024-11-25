@@ -46,8 +46,7 @@ The purpose of this labs is to implement a recursive descent parser for a simple
 Consider our recursive descent parser for the following grammar:
 
 ```
-expr: term addsub expr
-    | term
+expr: term (addsub term)*
 term: factor muldiv term
     | factor
 factor: num
@@ -163,21 +162,23 @@ int term(void) {
 int expr() {
     printf("In expr\n");
     
-    // get the mandatory first term
+    // Start with the first term
     int value = term();
     token = peek();
 
-    // now handle the optional second expr
-    if(token == '+') {
-        pop(); // +
-        value += expr();        
-    } else if(token == '-') {
-        pop(); // -
-        value -= expr();
-    } // these are optional in the grammar, so no error if this is not found
-    
+    // Handle all '+' and '-' operators iteratively
+    while (token == '+' || token == '-') {
+        if (token == '+') {
+            pop(); // Consume '+'
+            value += term(); // Evaluate the next term and add
+        } else if (token == '-') {
+            pop(); // Consume '-'
+            value -= term(); // Evaluate the next term and subtract
+        }
+        token = peek();
+    }
+
     printf("Expression value: %d\n", value);
-    
     return value;
 }
 
