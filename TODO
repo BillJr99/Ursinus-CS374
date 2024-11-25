@@ -3,3 +3,9 @@ Make assignment rubrics more specific about each component and quality sought
 Exercises
 Separate early modules
 Incorporate examples into notes
+Build up parser grammar discussion to more explicitly build up a grammar and implement it, including improvements like left factoring and order of operations with chained +/- operations (a while loop of terms (addsub term)* instead of addsub term addsub expr).
+Build up abstract syntax tree idea more directly
+Build up variable storage in lecture before the assignment
+Remove unnecessary items
+Link to Flock of Functions: https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript (source: https://github.com/glebec/lambda-talk?tab=readme-ov-file)
+Use Lambda Py in lecture: https://finsberg.github.io/pycombinator/docs/lambda-talk.html
