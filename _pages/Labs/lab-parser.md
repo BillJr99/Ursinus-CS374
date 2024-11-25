@@ -279,9 +279,9 @@ line: T_NEWLINE
 expr: term addsub                   { $$ = $1 + $2; }
 
 addsub:
-      { $$ = 0; }
-    | T_PLUS term addsub            { $$ = $2 + $3; }
-    | T_MINUS term addsub           { $$ = -$2 + $3; }
+	                                    { $$ = 0; } // the NULL case
+	    | T_PLUS term addsub            { $$ = $2 + $3; }
+	    | T_MINUS term addsub           { $$ = -$2 + $3; }
 
 term: factor T_MULTIPLY term        { $$ = $1 * $3; }
     | factor T_DIVIDE term          { $$ = $1 / $3; }
