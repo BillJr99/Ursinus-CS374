@@ -51,6 +51,8 @@ Create a function called `malloc` that accepts an `int size` and returns a `void
 #define _GNU_SOURCE
 #define RTLD_NEXT ((void *) -1)
 
+int counter = 0;
+
 void* malloc(size_t size) {
     void*(*realmalloc)(size_t) = (void* (*)(size_t)) dlsym(RTLD_NEXT, "malloc");
     void* result = realmalloc(size);
@@ -63,6 +65,8 @@ Next, do the same for `free`, which is a `void` function that accepts a `void *`
 And, to test, you can write a `main()` function that calls `malloc` and `free`, and compile and run it as usual.  Here is an example:
 
 ```c
+extern int counter;
+
 int main(void) {
     int* x = (int*) malloc(sizeof(int)); 
     *x = 5;
@@ -101,7 +105,7 @@ Otherwise, you can compile the dynamic library and user client program with the 
 
 ```
 gcc -Wall -DRUNTIME -shared -fpic -o libs.so libs.c -ldl
-gcc main.c -ldl
+gcc main.c libs.c -ldl
 ```
 
 ### Extra Credit (10%): Tracking the Number of Bytes Allocated and Freed
