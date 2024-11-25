@@ -9,3 +9,4 @@ Build up variable storage in lecture before the assignment
 Remove unnecessary items
 Link to Flock of Functions: https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript (source: https://github.com/glebec/lambda-talk?tab=readme-ov-file)
 Use Lambda Py in lecture: https://finsberg.github.io/pycombinator/docs/lambda-talk.html
+Incorporate scheme interpreter
