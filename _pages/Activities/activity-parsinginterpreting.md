@@ -194,3 +194,37 @@ tags:
   
 ---
 
+Consider the expression `6+6-4+3`.  This should result in `11`, but our parser incorrectly returns `5`.  Why is this?  Consider this alteration to our grammar:
+
+```
+expr: term (addsub term)* 
+```
+
+And consider the reuslting change to our implementation:
+
+```c
+int expr() {
+    printf("In expr\n");
+    
+    // Start with the first term
+    int value = term();
+    token = peek();
+
+    // Handle all '+' and '-' operators iteratively
+    while (token == '+' || token == '-') {
+        if (token == '+') {
+            pop(); // Consume '+'
+            value += term(); // Evaluate the next term and add
+        } else if (token == '-') {
+            pop(); // Consume '-'
+            value -= term(); // Evaluate the next term and subtract
+        }
+        token = peek();
+    }
+
+    printf("Expression value: %d\n", value);
+    return value;
+}
+```
+
+What about this revision addresses the issue in our original grammar?
