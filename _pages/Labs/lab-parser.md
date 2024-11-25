@@ -259,13 +259,13 @@ void yyerror(const char* s);
 %}
 
 %union {
-	int ival;
+    int ival;
 }
 
 %token<ival> T_INT
 %token T_PLUS T_MINUS T_MULTIPLY T_DIVIDE T_LEFT T_RIGHT T_NEWLINE
 
-%type<ival> expr term factor
+%type<ival> expr term factor addsub
 %start calc
 
 %%
@@ -274,18 +274,21 @@ calc:
     | calc line                     
 
 line: T_NEWLINE  
-    | expr T_NEWLINE                { printf("%d\n", $1); } // no return value needed, no type 
+    | expr T_NEWLINE                { printf("%d\n", $1); } 
 
-expr: term T_PLUS expr              { $$ = $1 + $3; }
-    | term T_MINUS expr             { $$ = $1 - $3; }
-    | term                          { $$ = $1; }
- 
+expr: term addsub                   { $$ = $1 + $2; }
+
+addsub:
+      { $$ = 0; }
+    | T_PLUS term addsub            { $$ = $2 + $3; }
+    | T_MINUS term addsub           { $$ = -$2 + $3; }
+
 term: factor T_MULTIPLY term        { $$ = $1 * $3; }
     | factor T_DIVIDE term          { $$ = $1 / $3; }
     | factor                        { $$ = $1; }
     
-factor: T_INT                       { $$ = $1; }            // just resolve the value!
-      | T_LEFT expr T_RIGHT         { $$ = $2; }            // expr will resolve to a value!
+factor: T_INT                       { $$ = $1; }
+      | T_LEFT expr T_RIGHT         { $$ = $2; }
       
 %%
 
@@ -298,8 +301,8 @@ int main() {
 }
 
 void yyerror(const char* s) {
-	fprintf(stderr, "Parse error: %s\n", s);
-	exit(1);
+    fprintf(stderr, "Parse error: %s\n", s);
+    exit(1);
 }
 ```
 
