@@ -36,7 +36,7 @@ info:
         <script type="syntaxhighlighter" class="brush: cpp"><![CDATA[
          /*
           expr: term expr2
-          expr2: addsub expr | null
+          expr2: (addsub term)*
           term: factor term2
           term2: muldiv term | null
           factor: num
