@@ -49,7 +49,7 @@ Create a function called `malloc` that accepts an `int size` and returns a `void
 #include <dlfcn.h>
 #include <stddef.h>
 #define _GNU_SOURCE
-#define RTLD_NEXT ((void *) -1)
+#define RTLD_NEXT ((void *) -1) // Comment this out on replit
 
 int counter = 0;
 
@@ -65,6 +65,9 @@ Next, do the same for `free`, which is a `void` function that accepts a `void *`
 And, to test, you can write a `main()` function that calls `malloc` and `free`, and compile and run it as usual.  Here is an example:
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+
 extern int counter;
 
 int main(void) {
