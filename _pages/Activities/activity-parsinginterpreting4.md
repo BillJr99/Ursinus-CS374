@@ -16,8 +16,8 @@ info:
         Begin with a grammar definition:
         <script type="syntaxhighlighter" class="brush: cpp"><![CDATA[
          /* 
-            S -> Xyx
-            X -> xX | y
+            S -> Xyx (Production 1)
+            X -> xX | y (Productions 2 and 3)
          */
         ]]></script>   
         <br>
@@ -25,9 +25,9 @@ info:
         <br>
         <script type="syntaxhighlighter" class="brush: cpp"><![CDATA[
          /* 
-            S' -> S (Production 1)
-            S -> Xyx (Production 2)
-            X -> xX | y (Productions 3 and 4)
+            S' -> S (Production 0, or the accepting state acc)
+            S -> Xyx (Production 1)
+            X -> xX | y (Productions 2 and 3)
          */
         ]]></script>
         <br>
