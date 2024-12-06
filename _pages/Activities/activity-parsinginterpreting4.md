@@ -25,9 +25,9 @@ info:
         <br>
         <script type="syntaxhighlighter" class="brush: cpp"><![CDATA[
          /* 
-            S' -> S
-            S -> Xyx
-            X -> xX | y
+            S' -> S (Production 1)
+            S -> Xyx (Production 2)
+            X -> xX | y (Productions 3 and 4)
          */
         ]]></script>
         <br>
@@ -61,7 +61,7 @@ info:
 
         Fill in what state you go to if you read that terminal or nonterminal from that state.  For example, state 0 goes to 1 on S, and it goes to 2 on X, per the rules at the top.  Go to state 3 on x, and state 4 on y, and we call these shifts because the dot is still to the left of the end of the production, indicating a shift, as opposed to a reduce after the dot reaches the end of the production.  The augmented state (state 1) accepts on end of string.
 
-        The remaining states (4, 6, 7) have dots on the right.  These are our reduce states.  States 4 and 6 produce X via productions 3 and 2 respectively, while state 7 produces S (production 1).  State 4 is <code>X -> y.</code>, State 6 is <code>X -> xX.</code>, and State 7 is <code>S -> Xyx.</code>.  We reduce these state rows to their corresponding production.  X was initiated by state 2, due to its X. in the production, so we reduce on all inputs to r2 in state 4 and state 6.  State 1 contains S. via <code>S' -> S.</code>, so this is an r1 from state 7.
+        The remaining states (4, 6, 7) have dots on the right.  These are our reduce states.  States 4 and 6 produce X via productions 3 and 2 respectively (in the grammar above), while state 7 produces S (production 1).  State 4 is <code>X -> y.</code>, State 6 is <code>X -> xX.</code>, and State 7 is <code>S -> Xyx.</code>.  We reduce these state rows to their corresponding production.  X was initiated by state 2, due to its X. in the production, so we reduce on all inputs to r2 in state 4 and state 6.  State 1 contains S. via <code>S' -> S.</code>, so this is an r1 from state 7.
         <br>
         <style type="text/css">
         .tg  {border-collapse:collapse;border-spacing:0;}
