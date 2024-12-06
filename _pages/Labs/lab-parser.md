@@ -328,7 +328,7 @@ First, modify this scanner and parser to support floating point values instead o
 
 Now, we will modify the grammar to support variable assignments.  To do this, we will support new grammar productions that allow storing an expression into a variable defined by an identifier that you can retrieve like a numeric value.  We will also add a type to our types `union` whose type is a `char*` (the name of the identifier variable).  Create a new token called `T_ID` (the name is arbitrary!) whose lexeme is one or more alphabetical characters, and a new token called `T_ASSIGN` that is the lexeme `:=`.  You'll have two new productions: a new `line` of the form `T_ID T_ASSIGN expr line`, and a new `factor` production that resolves to `T_ID`.  The type of the `T_ID` token will be text, so you can set the token type of whichever `union` element you associated with the `char*`.  
 
-In your scanner, you will add a new regular expression for an ID as follows, which returns the `T_ID` type, and copies the name of the variable into yylval.
+In your scanner, you will add a new regular expression for an ID as follows, which returns the `T_ID` type, and copies the name of the variable into `yylval`.
 
 ```c
 [a-zA-Z]+               {yylval.text = malloc(strlen(yytext)+1); strncpy(yylval.text, yytext, strlen(yytext)+1); return T_ID;}
