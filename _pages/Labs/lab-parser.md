@@ -334,7 +334,7 @@ In your scanner, you will add a new regular expression for an ID as follows, whi
 [a-zA-Z]+               {yylval.text = malloc(strlen(yytext)+1); strncpy(yylval.text, yytext, strlen(yytext)+1); return T_ID;}
 ```
 
-Correspondingly, add a token into your parser as follows, right where you first defiend the T_INT token.  We'll define this one as text, assuming your union contains a `char* text` in addition to your numeric value.
+Correspondingly, add a token into your parser as follows, right where you first defiend the `T_INT` token.  We'll define this one as text, assuming your union contains a `char* text` in addition to your numeric value.
 
 ```c
 %token<text> T_ID
