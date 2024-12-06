@@ -306,6 +306,24 @@ void yyerror(const char* s) {
 }
 ```
 
+### Makefile
+
+```
+all: main
+
+calc.tab.c calc.tab.h: calc.y
+        bison -t -v -d calc.y
+
+lex.yy.c: calc.l 
+        flex calc.l
+
+main: lex.yy.c calc.tab.c calc.tab.h
+        gcc -g -o main calc.tab.c lex.yy.c
+
+clean:
+        rm main calc.tab.c lex.yy.c calc.tab.h calc.output
+```
+
 First, modify this scanner and parser to support floating point values instead of integer values.  You will modify your numeric token type to include an optional decimal point, and use the `atof` function to convert it to a floating point value.  You will also modify your types union in the parser to be a `float` type instead of an `int`.  Run your calculator with some test inputs to verify that it is working.  Don't forget to change your calls to `printf` to print `%f` instead of `%d`!
 
 Now, we will modify the grammar to support variable assignments.  To do this, we will support new grammar productions that allow storing an expression into a variable defined by an identifier that you can retrieve like a numeric value.  We will also add a type to our types `union` whose type is a `char*` (the name of the identifier variable).  Create a new token called `T_ID` (the name is arbitrary!) whose lexeme is one or more alphabetical characters, and a new token called `T_ASSIGN` that is the lexeme `:=`.  You'll have two new productions: a new `line` of the form `T_ID T_ASSIGN expr line`, and a new `factor` production that resolves to `T_ID`.  The type of the `T_ID` token will be text, so you can set the token type of whichever `union` element you associated with the `char*`.  
