@@ -95,7 +95,7 @@ SRCS = $(shell find . -name '.ccls-cache' -type d -prune -o -type f -name '*.c' 
 HEADERS = $(shell find . -name '.ccls-cache' -type d -prune -o -type f -name '*.h' -print)
 
 main: $(SRCS) $(HEADERS)
-	$(CC) $(CFLAGS) "$@.c" -o "$@"
+	$(CC) $(CFLAGS) "$@.c" libs.c -o "$@"
 
 libs.so: $(SRCS) $(HEADERS)
 	$(CC) $(CFLAGS) $(basename $@).c -shared -fpic -o "$@"
