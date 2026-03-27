@@ -178,7 +178,7 @@ info:
         - "Augment the grammar and generate an LR(0) parse table for the grammar <code>S -> XX; X -> xXy; X -> x; X -> y</code>"
         - "Notice that each state of the machine can have duplicate transitions.  The state machine of an LR parser allows states to represent multiple possible parser rules.  Why is this acceptable in an LR parser but required a revision to the grammar of an LL(1) parser, even though both can be represented with Deterministic Finite Automata?  Specifically, why must we revise the underlying LL(1) grammar even though we could simply convert the Nondeterministic Finite Automaton into a Deterministic Finite Automaton by combining states via the transitive closure, as we do with an LR parser and grammar?  (As a hint - it has something to do with the 1 in LL(1)!)"
     - model: |
-        <a href="https://en.wikipedia.org/wiki/LR_parser#Bottom-up_parse_steps_for_example_A*2_+_1"><img alt="Wikipedia" src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5f/Shift-Reduce_Parse_Steps_for_A%2A2%2B1.svg/512px-Shift-Reduce_Parse_Steps_for_A%2A2%2B1.svg.png"></a>
+        <a href="https://en.wikipedia.org/wiki/LR_parser#Bottom-up_parse_steps_for_example_A*2_+_1"><img alt="Wikipedia" src="https://upload.wikimedia.org/wikipedia/en/5/5f/Shift-Reduce_Parse_Steps_for_A%2A2%2B1.svg"></a>
         <br>
         <!-- From https://en.wikipedia.org/wiki/LR_parser -->
         <style type="text/css">

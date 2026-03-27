@@ -10,7 +10,7 @@ info:
     - To describe a grammar in terms of tokens in BNF form
   models:
     - model: |
-        <a title="J. Finkelstein, CC BY-SA 3.0 &lt;https://creativecommons.org/licenses/by-sa/3.0&gt;, via Wikimedia Commons" href="https://en.wikipedia.org/wiki/Chomsky_hierarchy#The_hierarchy"><img width="512" alt="Chomsky-hierarchy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Chomsky-hierarchy.svg/512px-Chomsky-hierarchy.svg.png"></a>
+        <a title="J. Finkelstein, CC BY-SA 3.0 &lt;https://creativecommons.org/licenses/by-sa/3.0&gt;, via Wikimedia Commons" href="https://en.wikipedia.org/wiki/Chomsky_hierarchy#The_hierarchy"><img width="512" alt="Chomsky-hierarchy" src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Chomsky-hierarchy.svg"></a>
         <br>
         <!-- From Wikipedia https://en.wikipedia.org/wiki/Chomsky_hierarchy 
              and https://www.cs.ru.nl/~herman/onderwijs/2016TnA/lecture7.pdf -->

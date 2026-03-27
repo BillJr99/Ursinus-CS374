@@ -11,12 +11,12 @@ info:
     - To compose primitive data types from bits
   models:
     - model: |
-        <a title="Verpies, Public domain, via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File:BMPfileFormat.png"><img width="256" alt="BMPfileFormat" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/BMPfileFormat.png/256px-BMPfileFormat.png"></a>
+        <a title="Verpies, Public domain, via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File:BMPfileFormat.png"><img width="256" alt="BMPfileFormat" src="https://upload.wikimedia.org/wikipedia/commons/c/c4/BMPfileFormat.png"></a>
       title: "The Bitmap (BMP) File Format"
       questions:
         - "What types of primitives do you see in the BMP file format?"
     - model: |
-        <a title="Vectorization:  Stannered, CC BY-SA 3.0 &lt;http://creativecommons.org/licenses/by-sa/3.0/&gt;, via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File:Float_example.svg"><img width="512" alt="Float example" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Float_example.svg/512px-Float_example.svg.png"></a>
+        <a title="Vectorization:  Stannered, CC BY-SA 3.0 &lt;http://creativecommons.org/licenses/by-sa/3.0/&gt;, via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File:Float_example.svg"><img width="512" alt="Float example" src="https://upload.wikimedia.org/wikipedia/commons/d/d2/Float_example.svg"></a>
       title: "The IEEE754 Floating Point Standard"
       questions:
         - "What primitive data types do you see in this format?"
