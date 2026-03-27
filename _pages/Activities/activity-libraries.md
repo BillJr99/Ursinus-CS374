@@ -5,6 +5,9 @@ title: "CS374: Programming Language Principles - Static and Dynamic Linked Libra
 
 
 info: 
+  additional_reading:
+    - title: "Dynamic System Library Example"
+      link: "https://repl.it/@BillJr99/DynamicMallocLibrary"
   goals: 
     - To describe the linker process
     - To differentiate between static and dynamic libraries, particularly with respect to their advantages and disadvantages
@@ -14,9 +17,7 @@ info:
       title: Libraries
       questions:
         - "Where is the code for each static library stored for execution?  What are the advantages and disadvantages of this choice?"
-        - "Where is the code for each dynamic linked library stored for execution?  What are the advantages and disadvantages of this choice?"
-      embed: |
-        <iframe height="400px" width="100%" src="https://repl.it/@BillJr99/DynamicMallocLibrary?lite=true" scrolling="no" frameborder="no" allowtransparency="true" allowfullscreen="true" sandbox="allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts allow-modals"></iframe>      
+        - "Where is the code for each dynamic linked library stored for execution?  What are the advantages and disadvantages of this choice?"   
         
 tags:
   - libraries

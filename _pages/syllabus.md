@@ -57,10 +57,10 @@ info:
     <div style="width: 100%; display: table; border-collapse:separate; border-spacing:5px;">
     <div style="width: 100%; display: table-row;">
         <div style="display: table-cell; padding:5px; width:33%;">
-            <a title="SBCL team, urxvt team, Public domain, via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File:SBCL_screenshot.png"><img width="100%" style="display:block;" alt="SBCL screenshot" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/SBCL_screenshot.png/512px-SBCL_screenshot.png"></a>
+            <a title="SBCL team, urxvt team, Public domain, via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File:SBCL_screenshot.png"><img width="100%" style="display:block;" alt="SBCL screenshot" src="https://upload.wikimedia.org/wikipedia/commons/c/c3/SBCL_screenshot.png"></a>
         </div>
         <div style="display: table-cell; padding:5px; width:33%;">
-            <a title="Dcoetzee, CC0, via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File:Abstract_syntax_tree_for_Euclidean_algorithm.svg"><img width="100%" style="display:block;" alt="Abstract syntax tree for Euclidean algorithm" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Abstract_syntax_tree_for_Euclidean_algorithm.svg/512px-Abstract_syntax_tree_for_Euclidean_algorithm.svg.png"></a>        
+            <a title="Dcoetzee, CC0, via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File:Abstract_syntax_tree_for_Euclidean_algorithm.svg"><img width="100%" style="display:block;" alt="Abstract syntax tree for Euclidean algorithm" src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Abstract_syntax_tree_for_Euclidean_algorithm.svg"></a>        
         </div>
         <div style="display: table-cell; padding:5px; width:33%;">
             <a title="DevinCook at English Wikipedia, Public domain, via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File:Parser_Flow%D5%B8.gif"><img width="50%" style="display:block;" alt="Parser Flow" src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Parser_Flow%D5%B8.gif"></a>
