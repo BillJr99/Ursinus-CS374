@@ -3,61 +3,73 @@ layout: assignment
 permalink: /Assignments/Warmup
 title: "CS374: Principles of Programming Languages - Warmup"
 
-
 info:
   coursenum: CS374
-  officehourspoll: "https://www.when2meet.com/?26146827-6VkZv"
-  class_notebook: "https://ursinuscollege365-my.sharepoint.com/personal/wmongan_ursinus_edu/Documents/Class%20Notebooks/CS374%20Fall%202024"
-  class_notebook_name: "OneNote"
-  chatname: "Microsoft Teams"
-  submission: "We will complete this assignment using Teams, so there is no need to write up any documentation (as we will in future programming assignments) nor is it necessary to submit anything to Canvas.  It is fine to just follow the directions in each part and send me messages as appropriate!"
-  points: 10
-  
+  points: 25
+  goals:
+    - To verify a working Python development environment for the semester's build
+    - To reflect on your language background as a baseline for the course
+    - To form and charter your semester team
+  rubric:
+    - weight: 40
+      description: Environment Setup and Verification
+      preemerging: Little or no evidence that the environment was attempted
+      beginning: Some components verified, but the transcript is missing or incomplete
+      progressing: Python environment verified with a transcript, with a minor omission such as missing version information
+      proficient: Python 3.10 or later verified with a complete transcript including version information, a successful run of the provided starter script, and a working text editor or IDE identified
+    - weight: 40
+      description: Language Autobiography
+      preemerging: The autobiography is missing or does not address the prompts
+      beginning: The autobiography addresses some prompts superficially
+      progressing: The autobiography addresses all prompts with specific examples, with limited connection to course themes
+      proficient: The autobiography addresses all prompts with specific examples and articulates a thoughtful question about language design the student hopes the course will answer
+    - weight: 20
+      description: Team Charter and Submission
+      preemerging: An incomplete submission is provided
+      beginning: The submission is provided but the team charter is missing or does not address role rotation
+      progressing: The submission is complete with a charter addressing roles and communication, with a minor omission
+      proficient: The submission is complete, including a team charter covering role rotation, communication norms, and disagreement resolution
+  readings:
+    - rtitle: "Welcome Activity"
+      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-welcomepl.md"
+    - rtitle: "Thain, Chapter 1"
+
 tags:
-  - introduction
-  
+  - intro
+  - languages
+
 ---
 
-The purpose of this assignment is to get us set up for the course, both by getting to know each other better, and by setting up the software environment.
+The purpose of this warmup is to confirm your tools before the build begins, to capture your current relationship with programming languages, and to launch your team.
 
-## Personal Survey (5 Pts)
+## Part 1: Environment Verification
 
-I gave a couple of fun facts about myself in the class, but I want to get to know you all better. So please submit answers to the following questions as a private message to me on {{ page.info.chatname }}.
+This course builds a language implementation in Python, incrementally, across six assignments. Verify your environment:
 
-1.  Your Name, Your Nickname (if applicable) / Preferred Pronouns
-2.  What is your reason for taking the course? (Blunt honesty is perfectly fine here, if applicable)
-3.  What are you majoring in / interested in majoring in?
-4.  What do you think you might want to do after Ursinus?
-5.  Have you had any experience with computer science / programming? 
-6.  What are you most excited about in this course?
-7.  What are you the most worried about in this course?
-8.  A fun fact about yourself
-9.  Anything else you think I should know?
-10.  Please attach **a headshot** picture to your message. I will use this to help get to know your name, but we will also use this in class to arrange groups.
-11. Please post a short introduction and a hello to the class on the Canvas Introductions discussion forum.  There is also a Water Cooler discussion group that you can use for social discussions as well!
-12.  Finally, we will be sharing work with each other through electronic means.  To protect your privacy, you are welcome to use a pseudonym on your work in lieu of your name.  Let me know if you'd like to use a pseudonym on your assignments, and what name you'll use.
+1. Confirm Python 3.10 or later: `python3 --version` (3.10 is required for structural pattern matching, which we use late in the term).
+2. Run the provided starter script (course site) which exercises `re`, `json`, and a class definition, and prints a confirmation banner.
+3. Identify your editor or IDE and confirm you can run and debug a Python file in it.
 
-## Web Poll for Office Hours
+Capture a transcript (copy-paste or screenshots) of all steps, including your operating system. **If any step fails, document the error verbatim, your hypothesis, and what you tried**; a well-documented failure with a follow-up plan earns full credit for that step.
 
-You will not be graded on this, but I want to setup my office hours so that everyone can make at least one of them. Please [click here]({{ page.info.officehourspoll }}) and select every block in which you can attend at least 30 minutes in your schedule. You may use a pseudonym or post anonymously if you wish.
+## Part 2: Language Autobiography
 
-## Class Notebook
+In approximately one page:
 
-We will use an electronic shared notebook throughout the class.  You'll be able to take notes there, see the whiteboard notes that I create, and respond to some reflective journal prompts throughout the course.  We'll use [{{page.info.class_notebook_name}}]({{ page.info.class_notebook }}), which you can access through this link.
+1. List every programming language and formal notation you have used (count regex, SQL, spreadsheets, HTML), with one sentence each on what it was good at.
+2. Describe one moment a language fought you: something you wanted to express that the language made hard.
+3. Describe one feature of any language that felt elegant the first time you understood it.
+4. Pose one question about how languages work that you hope this course answers.
 
-## Syllabus (5pts)
+## Part 3: Team Charter
 
-Please take a moment to familiarize yourself with [the course syllabus]({{ site.baseurl }}). Then, **please send me an additional message on {{ page.info.chatname }} with the answers to the following questions**
+With your assigned team, draft a one-page charter covering: how you will rotate the POGIL roles (and later the project roles), how you will communicate outside class, your norms for preparation, and how you will resolve technical and interpersonal disagreements. All members sign (typed names suffice).
 
-1.  True/False: If you choose to work with a buddy, you are allowed to look at your buddy's code and show them your code during labs
-2.  True/False: If you choose to work with a buddy, you are allowed to look at your buddy's code and show them your code for regular assignments.
-3.  True/False: You may look at a classmate's code during a regular assignment.
-4.  True/False: Although I can work with my buddy on labs, we cannot email or copy each other's code directly, and our submissions should be substantially unique.
-5.  True/False: I can request an incomplete if I am failing the class in order to submit assignments from earlier in the semester.
-6.  Where is the help room located?
-7.  When and where are my office hours?
-8.  What is the link to sign up for one-on-one tutoring with the Institute for Student Success?
-9.  What is the grade reduction per day for late work?
-10.  How many slack days do you have to use throughout the semester for extensions?
-<!--11.  What happens if you show up after the lecture has already started?-->
-<!--12.  Extra credit (+2) Send me a selfie of yourself inside of the help room.-->
+## Deliverables
+
+Submit a single PDF or markdown file containing your transcript, autobiography, and team charter (one charter per team is fine; submit it with each member's individual work).
+
+Please also answer the following questions in your submission:
+
+- If collaboration with a buddy was permitted, did you work with a buddy on this assignment? If so, who? If not, do you certify that this submission represents your own original work? Please identify any and all portions of your submission that were not originally written by you.
+- Approximately how many hours it took you to finish this assignment (I will not judge you for this at all...I am simply using it to gauge if the assignments are too easy or hard)?
