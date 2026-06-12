@@ -13,7 +13,7 @@ info:
   ical: files/CS374.ics
   course_prerequisites: "CS174 with a grade of C- or higher."
   course_start_date: "2026/08/24"
-  course_end_date: "2026/12/07"
+  course_end_date: "2026/12/08"
   course_description: "Syntax, processors, representations and styles of programming languages. Study and comparison of several modern programming languages. Prerequisite: A grade of C- or higher in CS-174. Offered in the fall of even years. Three hours per week. Four semester hours."
   questions: |
     This semester, we build toward a single shared accomplishment: by December, your team will have designed and implemented a programming language of your own. Along the way, we will collectively consider questions like:
@@ -44,7 +44,7 @@ info:
       endtime: "11:15 AM"
       place: "Pfahler 007"
   midtermexam: 
-    - mdate: "N/A"
+    - mdate: "TBD"
       mstarttime: "N/A"
       mendtime: "N/A"
       mroom: "N/A"       
@@ -72,6 +72,39 @@ info:
     </div>
     </div>
     
+university:
+  semester: "Fall"
+  academicyear: "2026-27"
+  fall:
+  - kname: "Add Deadline"
+    kdate: "2026/09/02"
+    kdisplay: true
+  - kname: "Mid Semester Grades Posted"
+    kdate: "2026/10/09"
+    kdisplay: false
+  - kname: "Drop with a W Deadline"
+    kdate: "2026/11/17"
+    kdisplay: true
+  - kname: "Reading Day"
+    kdate: "2026/12/09"
+    kdisplay: true
+  - kname: "Finals Week Begins"
+    kdate: "2026/12/10"
+    kdisplay: false
+  - kname: "Finals Week Ends"
+    kdate: "2026/12/16"
+    kdisplay: false
+  spring: []
+  fallholidays:
+  - date: "2026/09/07"
+  - date: "2026/10/08"
+  - date: "2026/10/12"
+  - date: "2026/10/13"
+  - date: "2026/11/25"
+  - date: "2026/11/26"
+  - date: "2026/11/27"
+  springholidays: []
+
 instructors:
 - name: William Mongan
   title: Professor
@@ -354,7 +387,11 @@ schedule:
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-sprintstudio.md"
 - week: "15"
   date: "1"
-  title: "Demo Day: Team Language Presentations"
+  title: "Sprint Studio: Sprint 3 and Release Hardening"
+  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-sprintstudio.md"
+- week: "16"
+  date: "0"
+  title: "Demo Day: Team Language Presentations (Class Switch Day: follows a Thursday schedule)"
   deliverables:
   - dtitle: "Team Language Project Due"
     dlink: "Projects/TeamLanguage"
