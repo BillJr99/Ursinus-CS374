@@ -14,29 +14,29 @@ info:
     - To document the language semantics exhaustively with a SEMANTICS.md file
   rubric:
     - weight: 25
-      description: AST Node Dataclasses
+      description: "AST Node Dataclasses (Goal 1: define a complete set of AST node dataclasses covering every language construct)"
       preemerging: Fewer than half the required node types are defined, or the dataclass structure does not match the parser's output
       beginning: All required node types exist but several are missing fields, have incorrect types, or lack documented field meanings
       progressing: All required node types are defined with correct fields and a useful __repr__, but source-position information is missing from most nodes
-      proficient: All required node types are defined as dataclasses with every field documented, source-position (line/col) stored for nodes where it aids error reporting, a complete visitor dispatch table or isinstance chain is present, and the node hierarchy is consistent with the parser's output
+      proficient: All required node types are defined as dataclasses with every field documented and source-position (line/col) stored where it aids error reporting — demonstrating Goal 1 by providing a complete, parser-consistent node hierarchy with a visitor dispatch table or isinstance chain ready for the evaluator
     - weight: 35
-      description: Tree-Walking Evaluator
+      description: "Tree-Walking Evaluator (Goals 2–3: implement a tree-walking evaluator with strong dynamic typing and an Environment class for nested scopes)"
       preemerging: The evaluator fails to run or fails most provided programs due to major structural errors such as missing cases or infinite loops
       beginning: The evaluator runs but fails on several programs — e.g., nested scopes leak, type errors are not raised, or short-circuit logic evaluates both branches always
       progressing: The evaluator passes the provided programs but fails on hidden edge cases — e.g., a scope is not discarded after a block, or division by zero crashes Python instead of raising a language error
-      proficient: A correct evaluator passes all provided and hidden programs; nested scopes behave per documented semantics; type errors name both operand types; short-circuit logic is verified by a non-evaluation test; division by zero, undefined variables, and undefined operations are all raised as language-level errors with stage and position
+      proficient: A correct evaluator passes all provided and hidden programs — nested scopes behave per documented semantics, type errors name both operand types, short-circuit logic is verified by a non-evaluation test, and all runtime errors are raised at the language level with stage and position — demonstrating that Goals 2 and 3 are met
     - weight: 20
-      description: REPL and File Runner
+      description: "REPL and File Runner (Goal 4: build a REPL and file-runner with stage-identified error messages)"
       preemerging: Neither the REPL nor the file runner exists, or both crash on the first error
       beginning: One of the two exists but dies on any error, or the REPL does not maintain state between inputs
       progressing: Both exist and survive most errors, but one error class (e.g., type errors) still crashes the REPL, or the file runner does not identify the stage in its error messages
-      proficient: Both the REPL and file runner work; the REPL maintains a persistent environment across inputs and survives all error classes (lexical, syntax, name, type, zero-division) with a clear recover-and-continue behavior; the file runner identifies the stage and position in every error message; a transcript demonstrates each error class and recovery
+      proficient: Both the REPL and file runner work — the REPL maintains a persistent environment across inputs and recovers from all error classes, the file runner identifies stage and position in every error message, and a transcript demonstrates each error class and recovery — demonstrating Goal 4 end-to-end
     - weight: 20
-      description: Error Messages with Stage Identification
+      description: "Error Messages with Stage Identification and SEMANTICS.md (Goal 5: document language semantics exhaustively with one triggering example per error class)"
       preemerging: Errors are unhandled Python exceptions with no stage identification
       beginning: Errors are caught but the stage (lexical vs. syntax vs. runtime) is not identified, or the position is absent
       progressing: Most error classes are caught with stage and position, but one class (e.g., type errors) is missing position or stage identification
-      proficient: Every error class — LexError, ParseError, NameError, TypeError, ZeroDivisionError — is caught at the appropriate stage, reported with a message of the form "Stage error at line L, col C: <description>", and SEMANTICS.md includes one example program that triggers each error class with the expected message shown
+      proficient: Every error class — LexError, ParseError, NameError, TypeError, ZeroDivisionError — is caught at the appropriate stage and reported with a message of the form "Stage error at line L, col C: description"; SEMANTICS.md includes one example program that triggers each error class with the expected message shown — demonstrating Goal 5 by providing a complete semantics reference
   readings:
     - rtitle: "Tree-Walking Interpretation Activity"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-interpretation.md"
