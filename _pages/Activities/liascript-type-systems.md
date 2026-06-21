@@ -51,6 +51,7 @@ print(add(1, 2))        # 3 — fine
 print(add("a", "b"))    # "ab" — also fine! + is overloaded
 print(add(1, "hello"))  # TypeError at runtime: unsupported operand types
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ```
 -- Static typing (Haskell): this fails at COMPILE time, before any execution
@@ -88,6 +89,7 @@ except TypeError as e:
 # The bug was already in the code when we ran line 1.
 # A static type checker would have flagged it before line 1 ran.
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions — *Solo*
 
@@ -112,6 +114,7 @@ f = lambda a: a  # for every type T, T -> T (polymorphic)
 g = lambda a: a + 1  # int -> int (because + 1 constrains a to int)
 h = lambda a: len(a) # for sequences: list/str/... -> int
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ```haskell
 -- Haskell's compiler deduces ALL of these without a single annotation:
@@ -240,6 +243,7 @@ try:
 except TypeError as e:
     print("Occurs check failure:", e)
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -249,20 +253,72 @@ except TypeError as e:
 
 ```python
 # Simplified Algorithm W for our Mini language AST
+# AST node classes defined inline (no external imports needed)
 
-from dataclasses import dataclass
-from typing import Dict, Tuple
+class Num:
+    def __init__(self, val): self.val = val
+class BoolLit:
+    def __init__(self, val): self.val = val
+class Var:
+    def __init__(self, name): self.name = name
+class Fun:
+    def __init__(self, param, body): self.param = param; self.body = body
+class App:
+    def __init__(self, func, arg): self.func = func; self.arg = arg
+class Let:
+    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body
+
+# Type classes (re-stated here for self-contained execution)
+class TypeVar:
+    def __init__(self, name): self.name = name
+    def __repr__(self): return self.name
+class TypeConst:
+    def __init__(self, name): self.name = name
+    def __repr__(self): return self.name
+class FuncType:
+    def __init__(self, inp, out): self.inp = inp; self.out = out
+    def __repr__(self): return f"({self.inp} -> {self.out})"
+
+Int  = TypeConst("Int")
+BoolT = TypeConst("Bool")
+
+def occurs(var, typ):
+    if isinstance(typ, TypeVar):   return typ.name == var.name
+    if isinstance(typ, TypeConst): return False
+    if isinstance(typ, FuncType):  return occurs(var, typ.inp) or occurs(var, typ.out)
+    return False
+
+def apply_subst(subst, typ):
+    if isinstance(typ, TypeVar):
+        return apply_subst(subst, subst[typ.name]) if typ.name in subst else typ
+    if isinstance(typ, TypeConst): return typ
+    if isinstance(typ, FuncType):
+        return FuncType(apply_subst(subst, typ.inp), apply_subst(subst, typ.out))
+    return typ
+
+def unify(t1, t2, subst=None):
+    if subst is None: subst = {}
+    t1 = apply_subst(subst, t1); t2 = apply_subst(subst, t2)
+    if isinstance(t1, TypeConst) and isinstance(t2, TypeConst):
+        if t1.name == t2.name: return subst
+        raise TypeError(f"Cannot unify {t1} with {t2}")
+    if isinstance(t1, TypeVar):
+        if isinstance(t2, TypeVar) and t1.name == t2.name: return subst
+        if occurs(t1, t2): raise TypeError(f"Occurs check: {t1} in {t2}")
+        subst[t1.name] = t2; return subst
+    if isinstance(t2, TypeVar): return unify(t2, t1, subst)
+    if isinstance(t1, FuncType) and isinstance(t2, FuncType):
+        subst = unify(t1.inp, t2.inp, subst)
+        return unify(apply_subst(subst, t1.out), apply_subst(subst, t2.out), subst)
+    raise TypeError(f"Cannot unify {t1} with {t2}")
 
 class TypeScheme:
     def __init__(self, bound_vars, typ):
-        self.bound_vars = bound_vars  # list of TypeVar names
+        self.bound_vars = bound_vars
         self.typ = typ
-
     def instantiate(self, fresh_var):
-        """Replace bound vars with fresh type variables."""
         subst = {v: fresh_var(v) for v in self.bound_vars}
         return apply_subst(subst, self.typ)
-
     def __repr__(self):
         if self.bound_vars:
             return f"∀{','.join(self.bound_vars)}.{self.typ}"
@@ -273,31 +329,24 @@ def fresh():
     counter[0] += 1
     return TypeVar(f"t{counter[0]}")
 
-def generalize(env_vars, typ):
-    """Create a type scheme by universally quantifying free variables not in env."""
-    free_in_type = free_type_vars(typ)
-    free_in_env  = set().union(*(free_type_vars(t) for t in env_vars))
-    quantified   = free_in_type - free_in_env
-    return TypeScheme(list(quantified), typ)
-
 def free_type_vars(typ):
     if isinstance(typ, TypeVar):   return {typ.name}
     if isinstance(typ, TypeConst): return set()
     if isinstance(typ, FuncType):  return free_type_vars(typ.inp) | free_type_vars(typ.out)
     return set()
 
-# W for simple expressions
-def infer(node, env):
-    """
-    Returns (substitution, type) for node given type environment env.
-    env maps variable names to TypeScheme.
-    """
-    from ast_nodes import Num, Bool, Var, BinOp, Fun, App, Let
+def generalize(env_vars, typ):
+    free_in_type = free_type_vars(typ)
+    free_in_env  = set().union(*(free_type_vars(t) for t in env_vars))
+    quantified   = free_in_type - free_in_env
+    return TypeScheme(list(quantified), typ)
 
+def infer(node, env):
+    """Returns (substitution, type) for node given type environment env."""
     if isinstance(node, Num):
         return {}, Int
-    if isinstance(node, Bool):
-        return {}, Bool
+    if isinstance(node, BoolLit):
+        return {}, BoolT
     if isinstance(node, Var):
         if node.name not in env:
             raise TypeError(f"[typecheck] Unbound variable: {node.name}")
@@ -309,23 +358,33 @@ def infer(node, env):
         return s, FuncType(apply_subst(s, param_type), body_type)
     if isinstance(node, App):
         s1, func_type = infer(node.func, env)
-        s2, arg_type  = infer(node.arg,  {k: TypeScheme(v.bound_vars, apply_subst(s1, v.typ))
-                                           for k, v in env.items()})
+        s2, arg_type  = infer(node.arg, {k: TypeScheme(v.bound_vars, apply_subst(s1, v.typ))
+                                          for k, v in env.items()})
         result_type = fresh()
         s3 = unify(apply_subst(s2, func_type), FuncType(arg_type, result_type))
         combined = {**s1, **s2, **s3}
         return combined, apply_subst(combined, result_type)
     if isinstance(node, Let):
         s1, val_type = infer(node.value, env)
-        scheme       = generalize(set(apply_subst(s1, v.typ) for v in env.values()), val_type)
+        scheme       = generalize({apply_subst(s1, v.typ) for v in env.values()}, val_type)
         new_env      = {**{k: TypeScheme(v.bound_vars, apply_subst(s1, v.typ)) for k, v in env.items()},
                         node.name: scheme}
         s2, body_type = infer(node.body, new_env)
         return {**s1, **s2}, body_type
     raise TypeError(f"[typecheck] Unknown node: {type(node).__name__}")
 
-print("Algorithm W defined.")
+# Demo: infer the type of (fun x -> x + 1) applied to a number literal
+# fun x -> x + 1  encoded as: Fun("x", App(App(Var("+"), Var("x")), Num(1)))
+# We simplify: just infer Fun("x", Num(1)) to show the machinery works
+env = {}
+s, t = infer(Fun("x", Num(1)), env)
+print(f"fun x -> 1  :  {t}")   # (t1 -> Int)
+
+s2, t2 = infer(Let("id", Fun("x", Var("x")), App(Var("id"), Num(42))), env)
+print(f"let id = fun x -> x in id 42  :  {t2}")  # Int
+print("Algorithm W defined and demonstrated.")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -368,6 +427,7 @@ except TypeError as e:
 # they allow non-terminating programs to type-check.
 print("Type error examples shown.")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 

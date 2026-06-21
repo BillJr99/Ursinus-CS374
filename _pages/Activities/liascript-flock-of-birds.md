@@ -29,6 +29,7 @@ In the lambda calculus module we built computation from three syntactic forms: v
 # No libraries required.
 print("Ready to meet the flock.")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -98,6 +99,7 @@ print(I(42))          # 42
 print(I("hello"))     # hello
 print(I(I)(42))       # 42  -- identity of identity is still identity
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -110,6 +112,7 @@ $$
 The Kestrel takes two arguments and returns the first, discarding the second. In lambda calculus it is $\lambda a.\ \lambda b.\ a$ — the encoding of **true** in Church booleans! In Haskell it is `const`. In Python:
 
 ```python
+I = lambda a: a
 K = lambda a: lambda b: a
 
 print(K("first")("second"))   # first
@@ -121,6 +124,7 @@ false = lambda a: lambda b: b   # we'll derive this from KI below
 KI    = K(I)                    # KI a b = K I a b = I b = b -- this IS Church false!
 print(KI("ignored")("returned"))  # returned -- K(I) behaves as false / second-selector
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -133,6 +137,7 @@ $$
 The Bluebird composes two functions: apply $g$ first, then $f$. In lambda calculus it is $\lambda f.\ \lambda g.\ \lambda x.\ f\ (g\ x)$. In Haskell it is `(.)`. It is one of the most-used birds in practice because function composition is the primary method of building programs in functional style.
 
 ```python
+K = lambda a: lambda b: a
 B = lambda f: lambda g: lambda x: f(g(x))
 
 double  = lambda x: x * 2
@@ -149,6 +154,7 @@ S = lambda a: lambda b: lambda c: a(c)(b(c))
 B_from_SK = S(K(S))(K)
 print(B_from_SK(add_one)(double)(5))  # 11 -- same as B(add_one)(double)(5)
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -161,6 +167,9 @@ $$
 The Cardinal flips the argument order of a two-argument function. In lambda calculus it is $\lambda f.\ \lambda a.\ \lambda b.\ f\ b\ a$. In Haskell it is `flip`.
 
 ```python
+K = lambda a: lambda b: a
+S = lambda f: lambda g: lambda x: f(x)(g(x))
+B = lambda f: lambda g: lambda x: f(g(x))
 C = lambda f: lambda a: lambda b: f(b)(a)
 
 subtract = lambda x: lambda y: x - y   # curried subtraction
@@ -171,6 +180,7 @@ print(subtract_from_10(3))              # 10 - 3 = 7 (without flip: 3 - 10 = -7)
 C_from_SK = S(B(B)(S))(K(K))
 print(C_from_SK(subtract)(10)(3))   # 7
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -183,6 +193,7 @@ $$
 The Starling is the heart of the calculus. It passes $x$ to both $f$ and $g$, then applies the result of $f(x)$ to the result of $g(x)$. This is the combinator version of *sharing an argument*: both branches see $x$, so duplication is built in. **S and K together are Turing complete**: any computable function can be expressed using only these two birds.
 
 ```python
+K = lambda a: lambda b: a
 S = lambda f: lambda g: lambda x: f(x)(g(x))
 
 # S K K = I
@@ -196,6 +207,7 @@ succ = S(add)(K(1))   # succ x = add x (K 1 x) = add x 1 = x + 1
 print(succ(5))   # 6
 print(succ(10))  # 11
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -210,6 +222,8 @@ The Mockingbird applies its argument to itself. In lambda calculus it is $\lambd
 ```python
 # We can't actually call M(M) -- infinite loop! 
 # But M applied to other combinators is safe:
+I = lambda a: a
+K = lambda a: lambda b: a
 M = lambda a: a(a)
 
 print(M(I)(42))      # I(I)(42) = I(42) = 42
@@ -222,6 +236,7 @@ double = lambda x: x * 2
 # This shows M is "dangerous" -- it only makes sense with combinators that expect functions
 print("M is the self-application bird")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -248,6 +263,7 @@ is_zero = W(lambda x: lambda y: x == 0 and y == 0)
 print(W(eq)(5))    # eq 5 5 = True
 print(W(eq)(5))    # True -- a number always equals itself
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -285,6 +301,7 @@ double  = lambda x: x * 2
 print(B_from_SK(add_one)(double)(5))   # 11: same as add_one(double(5))
 print(B_from_SK(str)(double)(5))       # "10": str(double(5))
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -322,6 +339,7 @@ fib_step = lambda self: lambda n: n if n <= 1 else self(n-1) + self(n-2)
 fib = Z(fib_step)
 print([fib(n) for n in range(10)])   # [0,1,1,2,3,5,8,13,21,34]
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -371,6 +389,7 @@ print(to_int(once))   # 1
 print(to_int(twice))  # 2
 print(to_int(succ(twice)))  # 3
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -379,6 +398,10 @@ print(to_int(succ(twice)))  # 3
 **Point-free** (or "tacit") programming uses only combinators and function composition — no named variables, no lambdas. It is the ultimate expression of the combinatory-logic philosophy, and it is the standard style in Haskell. Here is the connection:
 
 ```python
+from functools import reduce
+B = lambda f: lambda g: lambda x: f(g(x))
+W = lambda f: lambda x: f(x)(x)
+
 # Point-full (with explicit variable x):
 def square_then_add_one_v1(x):
     return x * x + 1
@@ -391,13 +414,13 @@ square_then_add_one = B(add_one)(square)  # compose: add_one . square
 print(square_then_add_one(5))   # 26
 print(square_then_add_one(3))   # 10
 
-# A pipeline of birds:
-from functools import reduce
-pipeline = lambda *fns: reduce(B, fns) if len(fns) > 1 else fns[0]
+# A pipeline of birds: reduce with curried B using explicit application
+pipeline = lambda *fns: reduce(lambda a, b: B(a)(b), fns) if len(fns) > 1 else fns[0]
 
-process = pipeline(str.strip, str.lower, lambda s: s.replace(" ", "_"))
+process = pipeline(lambda s: s.replace(" ", "_"), str.lower, str.strip)
 print(process("  Hello World  "))   # hello_world
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
