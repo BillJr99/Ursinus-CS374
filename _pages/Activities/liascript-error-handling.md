@@ -673,6 +673,9 @@ for target in [30, 99]:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out! — Go-style (value, ok) tuples require constant discipline**
+> The `find_tuple` pattern — returning `(result, ok)` and expecting callers to check the `ok` flag — has the same fundamental flaw as C return codes: nothing prevents a caller from writing `idx, _ = find_tuple(data, 99)` and then using `idx` as if it were valid. In a large Go codebase the `if err != nil { return ..., err }` check must appear at *every* call site, and a single omission silently propagates a bad value. The `Result` type wins precisely because the bad value is structurally impossible to use without first unwrapping it.
+
 > **Critical Thinking Questions 16–18**
 
 **CTQ 16.** Fill in this comparison table for your group:

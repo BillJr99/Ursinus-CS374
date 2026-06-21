@@ -266,6 +266,8 @@ Extend the MapReduce pipeline from Section 2 to use `Pool.map` for the map phase
 
 # Part III: Haskell — Parallelism as a Library
 
+> **Intuition.** In Python you have to *ask* for parallelism by explicitly calling `Pool.map`. In Haskell, purity is enforced by the type system, so the runtime can hand out parallelism as hints (`par`) rather than commands — and because no function can secretly share state, those hints are always safe to act on (or ignore). Think of it as the difference between a kitchen where every chef must loudly announce "I need the cutting board" (Python's explicit locking) versus a kitchen where cutting boards are personal property by law, so no announcement is ever needed (Haskell's type-enforced purity).
+
 ## 5. Sparks and Strategies in Haskell
 
 Haskell's purity guarantee enables the runtime to parallelize evaluation **automatically and safely**. The `Control.Parallel` module provides two primitives:
@@ -302,6 +304,8 @@ fib n = let a = fib (n-1)
 **The key concept:** `par x y` evaluates `x` as a *spark* (a hint to the runtime that `x` can be evaluated on another core) while returning `y` immediately. It is not a command ("evaluate this now on a thread") but a *hint* that is safe because `x` being pure means its evaluation cannot affect `y`. The runtime optimizes spark scheduling.
 
 ---
+
+> **Watch out! — Sparks are hints, not guarantees.** Haskell's `par x y` does not force `x` to execute on another core right now. It registers `x` as a *spark* — a work item the runtime *may* steal onto another core when one is idle. If no core is free, the spark is simply ignored and `x` is computed lazily when needed. This means adding `par` everywhere will not necessarily speed things up; you need to spark work items that are large enough to justify the overhead of the spark bookkeeping (~microseconds). Profile before adding sparks.
 
 ## 6. Erlang and the Actor Model
 
@@ -340,6 +344,8 @@ The pattern — spawn one lightweight process per element, collect results via m
 ---
 
 # Part IV: Exercises — Building the Parallel Pipeline
+
+> **Intuition before you code.** Before writing any parallel code, always ask: "Is my worker function pure?" If yes, parallelism is safe and the only question is whether the overhead of spawning processes is worth it for your input size. If no, you need to redesign — either make the function pure (return results rather than mutating state) or accept that you need explicit synchronization. The exercises below are designed so each worker function is pure; identify that property explicitly for each one before you start coding.
 
 ## 7. Exercises
 

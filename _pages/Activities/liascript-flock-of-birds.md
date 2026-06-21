@@ -223,6 +223,8 @@ print(C_from_SK(subtract)(10)(3))   # 7
 
 ## 6. The Starling — **S** (the Power Bird)
 
+The Starling is the "fork and merge" brick — the one that makes the calculus powerful enough to compute anything. Given $x$, it routes $x$ down two separate paths simultaneously: one path feeds $x$ into $f$, producing a function; the other path feeds $x$ into $g$, producing an argument; then the results are merged by application. This is the combinator encoding of *sharing*: the same input reaches two different parts of a computation. Without this sharing capability, the calculus could only compute linear functions.
+
 $$
 \mathbf{S}\ f\ g\ x = f\ x\ (g\ x)
 $$
@@ -250,6 +252,8 @@ print(succ(10))  # 11
 
 ## 7. The Mockingbird — **M** (Self-Application)
 
+The Mockingbird is the "danger" brick — handle with care. It takes whatever you hand it and makes it eat itself. Applied to a safe function, this produces interesting behavior (self-duplication, mirroring). Applied to itself, it produces $\Omega$: the combinator equivalent of an infinite loop. The Mockingbird is the combinatory seed from which fixed-point combinators and recursion grow; it demonstrates that non-termination is an intrinsic feature of any sufficiently expressive system.
+
 $$
 \mathbf{M}\ a = a\ a
 $$
@@ -275,9 +279,15 @@ print("M is the self-application bird")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out! — Do not evaluate M(M)**
+>
+> `M(M)` in Python will immediately raise a `RecursionError` (or spin forever). The Mockingbird is safe only when its argument is a function that can meaningfully accept a function as input. Before running any expression involving M, ask: "does this argument expect a callable?" If not, do not apply M.
+
 ---
 
 ## 8. The Warbler — **W** (Duplicate)
+
+The Warbler is the "copy and double-feed" brick. It takes a two-argument function and collapses its two inputs into one: whatever you hand it, it hands to $f$ twice. This is subtly different from the Mockingbird: M makes $x$ eat *itself*, while W feeds $x$ to an *external* two-argument function $f$. The Warbler is how you derive "diagonal" operations — squaring, equality-with-self, duplication — without ever naming the argument twice.
 
 $$
 \mathbf{W}\ f\ x = f\ x\ x
@@ -307,6 +317,8 @@ print(W(eq)(5))    # True -- a number always equals itself
 # Part II: Derivation and the Completeness of SKI
 
 ## 9. Everything from S, K, I
+
+You have now met seven birds. Here is the remarkable fact: you do not need seven. You need *two*. S and K alone — two LEGO bricks — can simulate every other bird, every lambda term, every computable function. This is Schönfinkel's 1924 theorem, the combinatory-logic counterpart of the Church-Turing thesis. The bracket abstraction algorithm in Section 1 is the constructive proof: it tells you mechanically how to turn any lambda term into an SKI expression. The derivations below make this concrete.
 
 The true power of combinatory logic is that S and K suffice for *any* lambda term. The bracket abstraction algorithm (Section 1) converts any lambda term to an equivalent SKI expression. Let us derive B, C, and W from SKI to see this concretely.
 
@@ -340,6 +352,10 @@ print(B_from_SK(str)(double)(5))       # "10": str(double(5))
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out! — SKI expressions grow quickly**
+>
+> The naive bracket abstraction algorithm can produce expressions that are exponentially larger than the original lambda term — a two-variable lambda can become dozens of S, K, and I tokens. This is why real compilers (e.g., Turner 1979) use optimized combinators like B and C to keep the output manageable. When you do bracket abstraction by hand in the exercises, count your tokens; if the result seems enormous, double-check your steps.
+
 ---
 
 [[MC]]
@@ -352,6 +368,8 @@ Which reduction sequence correctly shows that $\mathbf{K}\ \mathbf{I}\ a\ b \Rig
 ---
 
 ## 10. The Y Combinator in SK
+
+This section pulls together everything: if S and K are computationally complete, and if recursion is a computable operation, then S and K can express recursion — without any `def`, without any name, without any environment. The Y combinator written in pure SK is startling precisely because it looks like nothing else you have seen: a wall of S, K, and I with no variables anywhere. Yet it satisfies $Y\ g = g\ (Y\ g)$ for any $g$. The derivation in the Y combinator module explains *why* this works; here the goal is to see that it is expressible at all.
 
 Recall from the lambda calculus module that the Y combinator satisfies $Y\ g = g\ (Y\ g)$. In strict (applicative-order) languages we use the Z combinator instead. In pure SK combinatory logic:
 
@@ -383,6 +401,8 @@ print([fib(n) for n in range(10)])   # [0,1,1,2,3,5,8,13,21,34]
 # Part III: The Flock in Practice
 
 ## 11. Gabriel Lebec's Birds in JavaScript — and in Python
+
+The birds stop being an abstract curiosity the moment you recognize them in code you already write. Every time you call `map(lambda x: x + 1, lst)` you are using I. Every time you write `key=lambda _: 0` you are using K. Every time you write `sorted(lst, key=lambda x: -x)` you are using a partial application of C. Gabriel Lebec's talk makes this explicit for JavaScript; this section makes it explicit for Python. The punchline: **combinators are not exotic theory — they are the names for the patterns you reach for every day without knowing it**.
 
 Gabriel Lebec's 2016 talk "*A Flock of Functions*" demonstrates that every standard higher-order function in JavaScript is a bird in disguise. The key insight is that **you already use combinators every day** — you just call them `const`, `id`, `flip`, `compose`, and `curry`. Here is the full correspondence, in Python:
 
@@ -431,6 +451,8 @@ print(to_int(succ(twice)))  # 3
 ---
 
 ## 12. Point-Free Style: Programming Without Variables
+
+Point-free programming is what happens when you take the combinator philosophy all the way to the surface of your code. Instead of writing `lambda x: f(g(x))` — which names $x$ even though $x$ appears in only one place — you write `B(f)(g)`, which says "compose f and g" without ever mentioning what they are applied to. This is not just an aesthetic preference: in Haskell it is the dominant style, because it emphasizes what transformations are being composed rather than what data they act on. The LEGO metaphor completes here: point-free code is a blueprint describing how bricks connect, not a sequence of operations on a specific piece.
 
 **Point-free** (or "tacit") programming uses only combinators and function composition — no named variables, no lambdas. It is the ultimate expression of the combinatory-logic philosophy, and it is the standard style in Haskell. Here is the connection:
 

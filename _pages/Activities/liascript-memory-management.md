@@ -106,6 +106,8 @@ print(f"Python default recursion limit: {sys.getrecursionlimit()}")
 
 ## Model 2: Heap Allocation and Object Identity
 
+**Intuition.** If the stack is a stack of cafeteria trays, the heap is the hotel storage room — a large, unstructured space where items can be placed at any time, can stay as long as needed, and can be shared by multiple guests pointing to the same locker. The key difference: the storage room does not clean itself up automatically when a guest leaves. Something (or someone) must decide when each item is no longer needed and reclaim the space. In Python, every object you create — a list, a dict, a function, even a small integer that falls outside the cache range — lives in this storage room. A variable name is just a label that points to a locker; assigning one variable to another creates a second label pointing to the *same* locker, not a copy of the contents.
+
 The **heap** is the region of memory where objects with dynamic lifetime are allocated. Unlike the stack (which is automatically managed by function calls/returns), heap objects live until explicitly freed or collected by a garbage collector.
 
 In Python, every object — integers, strings, lists, class instances — lives on the heap. Variables are references (pointers) to heap objects.
@@ -165,6 +167,8 @@ print(f"257 is 257: {c is d}")   # False — outside cache range
 
 ## Model 3: Reference Counting — How CPython Frees Memory
 
+**Intuition.** Reference counting is like a hotel room that has a small counter on the door showing how many guests currently have a key. When a new guest gets a key, the counter goes up. When a guest returns their key, the counter goes down. When the counter hits zero, the room is immediately available for the next guest — no housekeeping manager needs to make rounds; the room cleans itself the moment it becomes empty. This is CPython's primary strategy: every Python object carries a hidden integer counting how many variables (and internal structures) point to it. The beauty is speed and predictability — cleanup is instant and local. The flaw: if two guests each have each other's room number written on a note inside their rooms, both room counters stay at 1 even after both guests have left, so the rooms are never freed.
+
 CPython's primary memory management strategy is **reference counting**: every heap object carries a counter of how many references point to it. When the counter reaches zero, the object is immediately freed.
 
 ```python
@@ -222,6 +226,8 @@ print(f"After gc.collect(): {gc.get_count()}")
 
 **Key insight:** Reference counting is fast (immediate deallocation, no GC pauses for non-cyclic objects) but **cannot handle cycles**: if object A holds a reference to B and B holds a reference to A, both counts stay above zero even when neither is reachable from the program.
 
+> **Watch out!** Students often think `del x` destroys the object. It does not. `del x` removes the variable name `x` from the current scope, which *decrements* the reference count by one. The object is only destroyed when that count reaches **zero**. If another variable or data structure still points to the same object, `del x` has no visible effect on the object itself.
+
 > **Critical Thinking Questions 7–9**
 
 **CTQ 7.** When `del alias` is executed, what exactly happens to the reference count? Is the object freed at that point? Why or why not?
@@ -241,6 +247,8 @@ print(f"After gc.collect(): {gc.get_count()}")
 # Part IV: Mark-and-Sweep and Generational Collection
 
 ## Model 4: Mark-and-Sweep Garbage Collection
+
+**Intuition.** Mark-and-sweep is like a hotel manager who, every so often, walks through the entire building with a clipboard. Starting from the front desk (the program's roots — global variables and stack variables), the manager follows every key and every "room 203 can access room 411" note, marking each room that is reachable. After the full walk, any room not marked is abandoned — nobody can get to it, so it is safe to clean out and reassign. The mark phase is the walk; the sweep phase is the cleaning crew following behind. This approach handles cycles cleanly (the E→F→E loop in the example below is never reached from the front desk, so both rooms are collected), but it requires pausing the entire hotel while the manager walks — every live object must be visited every collection cycle.
 
 When reference counting fails (cycles), a **tracing garbage collector** is needed. The classic algorithm is **mark-and-sweep**:
 
@@ -320,6 +328,8 @@ print(f"Surviving objects: {sorted(heap.keys())}")
 ---
 
 ## Model 5: Python's Generational GC and the `gc` Module
+
+**Intuition.** The generational trick is based on a simple observation about hotel guests: most people who check in for one night are gone the next morning, but guests who have been there for a week are probably there for a while longer. It is wasteful to inspect long-stay guests every morning. Instead, the hotel divides rooms into three wings: the "new arrivals" wing (generation 0), checked every morning; the "short stay" wing (generation 1), checked weekly; and the "long stay" wing (generation 2), checked monthly. An object that survives a collection in generation 0 is moved to generation 1, and so on. Because most objects die young (a temporary list created during one expression evaluation is gone within milliseconds), the frequent gen-0 sweeps catch most garbage with very little work, and the expensive full-heap sweep is needed only rarely.
 
 Python uses **two complementary strategies**:
 
@@ -419,6 +429,8 @@ print(f"after del a:          {sys.getrefcount(lst) - 1}")
 
 ## Model 6: Interpreter Memory on the Host Heap
 
+**Intuition.** Your interpreter is a Python program that *simulates* another program. That means every "variable" in the language you are interpreting becomes a Python object on Python's own heap. Every time your interpreter evaluates a function call, it creates a new `Environment` Python object. Every closure your language creates is a Python object holding a reference to an `Environment`. You are not just dealing with Python's memory model — you are building a second memory model *inside* Python's memory model. The chains of `Environment` objects are your interpreter's call stack, living entirely on Python's heap. A poorly designed interpreter can exhaust heap memory with deeply recursive programs even before Python's recursion limit is hit, because each frame in the *interpreted* language corresponds to a heap-allocated `Environment` object, not a Python stack frame.
+
 Your interpreter is written in Python. Every data structure you create — `Environment` objects, `Closure` objects, AST nodes — is a Python heap allocation. Python's own garbage collector manages them. This section explores what that means for interpreter memory behavior.
 
 ```python
@@ -481,6 +493,8 @@ The critical insight: your interpreter creates a new `Environment` Python object
 - A deeply recursive program builds a long chain of `Environment` objects on Python's heap.
 - A closure defined inside a deeply nested scope keeps that entire chain alive.
 - If you store closures in long-lived data structures (e.g., a list of callbacks), all the environments those closures captured live as long as the list does.
+
+> **Watch out!** A closure does not capture a *copy* of the environment — it captures a *reference* to the live `Environment` object. This means if the same environment object is mutated after the closure is created (for example, by a `set!` or assignment operation in the interpreted language), the closure sees the new value. This is intentional in languages like Python and Scheme, but surprises students who expect closures to "freeze" their environment at creation time.
 
 > **Critical Thinking Questions 16–18**
 

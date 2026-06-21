@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # The Lambda Calculus, Part 1: Syntax and Reduction
 
+The lambda calculus is a minimal formal system invented by Alonzo Church in the 1930s — it has only functions, application, and variables, yet it can compute anything a Turing machine can. Understanding lambda calculus is like learning to count using just a single mark on a page: it strips away all complexity to reveal the pure essence of computation. In this first part, you will learn to read, write, and reduce lambda expressions by hand — the foundational skill for everything that follows.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:

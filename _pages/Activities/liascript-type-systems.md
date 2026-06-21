@@ -16,6 +16,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Type Systems: From Annotations to Inference
 
+> **Opening Hook:** A type checker is like a proofreader who catches grammatical errors before the article is published. The proofreader does not verify that your argument is logically sound or that your facts are accurate — but it *does* systematically catch every subject-verb disagreement, every dangling modifier, every mismatched quote. A type system does the same thing for code: it does not prove your program is *correct*, but it proves, automatically and exhaustively, that it is free of an entire class of structural errors — before the program runs once.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -25,6 +27,20 @@ By the end of this activity, you will be able to:
 - Trace the Hindley-Milner type inference process by assigning type variables, generating constraints, and applying unification
 - Evaluate the trade-offs between type annotation burden and error-message clarity in languages with type inference
 - Implement basic type-checking logic in Python that rejects ill-typed expressions before evaluation
+
+---
+
+> **Before You Begin**
+>
+> This module assumes you are comfortable with:
+> - Writing and calling Python functions, including higher-order functions (functions that take functions as arguments)
+> - The concept of a variable's *type* (e.g., `int`, `str`, `bool`) and what a `TypeError` means
+> - Basic lambda calculus notation: `λx. body` means "a function that takes `x` and returns `body`"
+> - What an AST (Abstract Syntax Tree) is — the tree structure your parser builds to represent a program
+>
+> You do **not** need prior experience with Haskell or formal type theory. All formal notation is introduced step by step.
+
+---
 
 *"A type system is a tractable syntactic method for proving the absence of certain program behaviors by classifying phrases according to the kinds of values they compute."* — Benjamin Pierce, *Types and Programming Languages*
 
@@ -45,6 +61,8 @@ Work in your POGIL team. Solo sections are for individual reflection first; grou
 ---
 
 # Part I: Static vs. Dynamic Typing
+
+> **Intuition:** Imagine two worlds. In one world, before your program runs, a compiler reads every line and asks: "Can I *prove* this expression produces a value of the right type?" If not, it refuses to compile. In the other world, the program starts running and only complains when it actually hits the bad operation — possibly after minutes of correct execution. That is the essential difference between static and dynamic typing. Neither is strictly "better" — they make different tradeoffs that suit different programming contexts.
 
 ## 1. The Core Tradeoff
 
@@ -73,6 +91,8 @@ print(add(1, "hello"))  # TypeError at runtime: unsupported operand types
 ```
 
 ---
+
+> **Watch out!** A common misconception: "Python doesn't have types." Python has types on every *value* — `type(42)` returns `<class 'int'>`. What Python *lacks* is compile-time checking of those types. The values know their types; the compiler just doesn't verify consistency before running.
 
 ### Model 1: Type Error Timing
 
@@ -111,6 +131,8 @@ except TypeError as e:
 
 ## 2. Type Inference: Types Without Annotations
 
+> **Intuition:** Type inference is how a compiler does the annotation work *for you*. When you write `x = 3 + 4` in Haskell, the compiler reasons: `3` has type `Int`, `4` has type `Int`, `+` takes two `Int`s and returns an `Int`, therefore `x` must have type `Int`. No annotation needed — the compiler solved the equation. Full Hindley-Milner inference extends this to functions, polymorphism, and entire programs.
+
 **Type inference** is the ability to deduce a type from context without the programmer writing it. Every language has some: even Java infers the type of a local variable with `var x = 3` (Java 10+). Full inference — where the programmer writes almost no type annotations — is the achievement of Hindley-Milner.
 
 ```python
@@ -140,6 +162,8 @@ compose f g x = f (g x)  -- compose :: (b -> c) -> (a -> b) -> a -> c
 
 # Part II: The Hindley-Milner Algorithm
 
+> **Intuition:** Hindley-Milner is an algorithm for solving a system of type equations — the same way you solve simultaneous linear equations in algebra. Each expression in the program generates a constraint ("the argument of this function must have the same type as its parameter"), and the algorithm finds the most general assignment of types to variables that satisfies all the constraints simultaneously. The remarkable result (proved by Milner, 1978) is that if a solution exists, the algorithm always finds the *most general* one.
+
 ## 3. Types as Terms
 
 In Hindley-Milner, **types** are first-class objects, just like lambda terms:
@@ -154,6 +178,8 @@ $$
 - $\mathbf{List}[\tau]$, $\mathbf{Maybe}[\tau]$ are **parameterized types**
 
 A **type scheme** (or polytype) $\forall \alpha.\ \tau$ means "for all types $\alpha$, this has type $\tau$." The identity function `id :: forall a. a -> a` says: whatever type you hand me, I return the same type.
+
+> **Watch out!** The notation $\forall \alpha.\ \tau$ (read "for all alpha, tau") does *not* mean the function works on infinitely many types by magic. It means the *same code*, without modification, is safe to use with any type that fits the shape. The type variable $\alpha$ is a placeholder, not a runtime parameter.
 
 ## 4. Unification: Solving Type Equations
 
@@ -257,7 +283,11 @@ except TypeError as e:
 
 ---
 
+> **Watch out!** Unification can fail in two ways: a *structural mismatch* (trying to unify `Int` with `Bool`) and an *occurs check failure* (trying to make a type variable equal to a type that contains it, like `α = α → α`). The occurs check is not just a technicality — without it, the type system would accept programs that loop forever at the type level, producing infinite types the compiler could never print or reason about.
+
 ## 5. Algorithm W: Inferring Types for Lambda Expressions
+
+> **Intuition:** Algorithm W walks the AST of a program top-down, assigning fresh type variables to unknowns and generating unification constraints as it goes. Think of it as two passes in one: a forward pass that names every unknown ("this parameter gets type `t1`; this function result gets type `t2`"), then a constraint-solving pass that determines what each name must be. The Python implementation below makes this concrete — follow the `infer` function case by case and you will see exactly where each constraint comes from.
 
 **Algorithm W** (Damas and Milner, 1982) takes an expression and an environment mapping variables to type schemes, and returns the most general type for the expression along with the substitution needed.
 
@@ -409,6 +439,8 @@ The type of `map` in Haskell is `(a -> b) -> [a] -> [b]`. The type variable `a` 
 ---
 
 ## 6. Type Errors as Proof Failures
+
+> **Intuition:** A type error is not "the compiler being picky." It is the compiler saying: "I tried to find a consistent assignment of types to all expressions in your program, and the constraints you generated are *contradictory* — no assignment can satisfy them all." The error message is a proof that the program cannot be correct as written under the type discipline. This is why type errors can feel confusing: the reported location is where the *contradiction surfaced*, not necessarily where the *mistake was made*.
 
 When the type checker rejects a program, it is not arbitrarily strict — it has found a proof that the program **cannot be correct** under the type discipline. The error message is a witness to the inconsistency.
 

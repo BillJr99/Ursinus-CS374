@@ -184,6 +184,8 @@ The **descriptor protocol** is how methods work: `Point.distance` is a function 
 
 ## Model 3: Inheritance and the MRO
 
+**Intuition.** Inheritance lets a subclass *reuse* a superclass's methods without copying them. Single inheritance is simple: when Python can't find a method on `Dog`, it checks `Animal`, then `object`. Multiple inheritance is where things get tricky: if both `B` and `C` define the same method and `D` inherits from both, which one wins? Python's answer is the **C3 linearization algorithm**, which produces a single ordered list — the MRO — that determines the search order. The key guarantee: a class always appears in the MRO *before* any of its parents, and the left-to-right order you specify in the class definition is respected wherever possible.
+
 **Single inheritance** is straightforward: `Dog` extends `Animal`, so `Dog.__mro__` is `[Dog, Animal, object]`.
 
 **Multiple inheritance** creates ambiguity. Python uses the **C3 linearization** algorithm to produce a consistent Method Resolution Order (MRO).
@@ -213,6 +215,8 @@ d.hello()   # B.hello — first in MRO with hello defined
 ### The Diamond Problem
 
 Without C3 linearization, `D.hello()` could go to either `B.hello` or `C.hello`. Python's rule: left-to-right depth-first, but each class appears only *after* all its subclasses — this is the C3 constraint.
+
+> **Watch out!** `super()` does **not** mean "call my parent class." It means "call the *next class in the MRO*." In a multiple-inheritance hierarchy, that next class may be a sibling class, not a parent. If any class in the chain calls `super()` but one of its MRO-siblings does not, the chain breaks and some classes are skipped entirely. The cooperative multiple-inheritance pattern only works when *every* class in the hierarchy uses `super()` consistently.
 
 ### `super()` Follows the MRO
 
@@ -256,6 +260,8 @@ D().greet()   # D → B → C → A  (each super() follows MRO)
 ---
 
 ## Model 4: Virtual Dispatch and Vtables
+
+**Intuition.** When you write `s.area()` and `s` might be a `Circle` or a `Square`, how does the runtime know which `area` method to call? In statically compiled languages like C++, the compiler can't always know the runtime type at the call site — so instead of hardcoding a function address, it creates a **vtable** (virtual dispatch table): a small array of function pointers, one per virtual method, stored per *class*. Each object carries a hidden pointer to its class's vtable. Calling a virtual method means: load the vtable pointer, index into it, call the function at that slot. Python achieves the same effect through dictionary lookup — more flexible, but with more overhead.
 
 In C++, when a class has `virtual` methods, the compiler creates a **vtable** — a table of function pointers — one per class.
 
@@ -356,6 +362,8 @@ print(Circle(5).perimeter())
 
 ## Model 5: Protocols, Duck Typing, and Interfaces
 
+**Intuition.** Once you have objects, you face a new design question: how do you write code that works with *any* object that has a certain set of methods, without knowing the exact type in advance? This is the **interface problem**. Python answers it three different ways, each representing a different philosophy. Duck typing says "just try it — if it quacks, it's a duck." ABCs say "declare your intent explicitly by inheriting from a contract class." Protocols say "describe the required *shape* structurally — if an object has the right methods, it satisfies the contract, even if it never heard of this protocol." Each approach shifts the burden of checking (runtime vs. static analysis) and the coupling between the contract and its implementers.
+
 Python offers three ways to define an interface contract:
 
 | Approach | Mechanism | Checked when |
@@ -423,6 +431,8 @@ u.log("created")
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### `__slots__` for Memory Optimization
+
+> **Watch out!** `__slots__` and inheritance interact in a subtle way. If a *parent* class does not define `__slots__`, it still has a `__dict__`, and subclasses will inherit it — meaning the memory savings you wanted are lost. For `__slots__` to eliminate `__dict__` across the whole hierarchy, *every* class in the inheritance chain must declare `__slots__`. Additionally, defining `__slots__` prevents you from adding arbitrary attributes at runtime, which can break mixins or third-party code that expects a `__dict__`.
 
 By default, every object has a `__dict__`, which is a Python dict — flexible but memory-heavy. `__slots__` replaces `__dict__` with fixed C-level attributes:
 

@@ -11,6 +11,8 @@ link:     https://cdn.jsdelivr.net/chartist.min.css
 
 # Foreign Function Interfaces: Crossing Language Boundaries
 
+> **Imagine the United Nations General Assembly.** Each delegate speaks their own language and follows their own parliamentary customs. A simultaneous interpreter sits in a booth, listening to one language and speaking another in real time — handling not just words but idioms, formal registers, and cultural conventions that do not map one-to-one. A Foreign Function Interface is exactly that interpreter: it sits between two language runtimes, negotiating the differences in data layout, calling conventions, memory ownership, and error handling so that a function written in C can be invoked transparently from Python, Haskell, or your own mini language. Without this translator, each language would be an island; with it, every language inherits the vast ecosystem of C libraries built over 50 years.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -26,9 +28,22 @@ By the end of this activity, you will be able to:
 
 **POGIL Roles:** Driver · Recorder · Reporter · Manager
 
+> **Before You Begin**
+>
+> This activity assumes you are comfortable with:
+>
+> - Python functions, classes, and the `import` statement
+> - Basic C vocabulary: functions, pointers, structs, `sizeof`, `malloc`/`free` (conceptual understanding is enough — you will not write C code)
+> - The concept of a *shared library* (`.so` on Linux, `.dylib` on macOS, `.dll` on Windows) — a compiled binary that can be loaded at runtime
+> - Python's `dataclass` decorator and `isinstance` checks (used in Model 5)
+>
+> You do **not** need to have written C code before. When C snippets appear (e.g., `int (*compar)(const void*, const void*)`), they are read-only reference points — the Python code does all the actual work. If a C type looks unfamiliar, focus on what `ctypes` does with it rather than the C syntax itself.
+
 ---
 
 ## Preface: Why Every Language Needs to Call C
+
+*Intuition:* Every high-level language you have ever used — Python, JavaScript, Ruby, Java — eventually bottoms out in native code. When Python opens a file, it calls a C function in the operating system. When it computes a sine, it calls a C math library. When it sends a network packet, it calls a C socket API. The FFI is the seam between the comfortable, safe, garbage-collected world of your high-level language and the raw, pointer-filled world of the operating system and hardware. Understanding that seam makes you a better programmer regardless of which side you spend most of your time on.
 
 No programming language is an island. The operating system, graphics drivers, cryptography libraries, database engines, and compression algorithms are all written in C (or C++, which uses C's ABI for its C-compatible subset). To be useful, a language must be able to call into this world.
 

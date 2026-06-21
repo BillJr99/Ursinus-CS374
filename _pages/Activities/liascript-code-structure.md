@@ -67,6 +67,10 @@ Roles may rotate between activities. Everyone should contribute to the critical 
 
 ## Model 1: Expressions vs Statements
 
+*Intuition:* Imagine a vending machine. You put in money (input), press a button (operation), and get a snack (value) — the whole interaction *produces something*. That is an expression. Now imagine a light switch: you flip it (action) and a side effect occurs (light changes), but the switch itself does not hand you a value. That is a statement. Most languages mix both, but functional languages lean heavily toward the vending-machine model — nearly everything hands back a value.
+
+> **Watch out!** Python's `if` is a *statement* by default, so you cannot write `x = if cond: 5 else 10` directly. Python provides the *ternary expression* `5 if cond else 10` as a separate syntax for cases where you need an expression. These are two distinct constructs in Python, but they are unified into one `if`-expression in Haskell and Scheme. Do not mix them up when answering the critical thinking questions.
+
 In programming language theory, a key distinction is between **expressions** and **statements**.
 
 - An **expression** is a syntactic form that *evaluates to a value*. For example, `3 + 4` evaluates to `7`.
@@ -115,6 +119,10 @@ print(f"iif result: {result}")
 ---
 
 ## Model 2: Let Expressions and Local Binding
+
+*Intuition:* Think of a math proof that says "Let x = 5. Then x + 3 = 8." The word "let" introduces a local name that is only meaningful for the lines that follow — once the proof moves on, `x` is gone. Functional `let` works exactly the same way: it binds a name to a value for the duration of one sub-expression (the *body*), and nowhere else. This is fundamentally different from Python assignment, which drops the name into the surrounding function's scope and leaves it there.
+
+> **Watch out!** The Python simulation uses a `lambda` as the `body` argument. This works, but it hides an important subtlety: the lambda's *parameters* act as the bound variables, not as normal function arguments. When you see `let({"x": 5}, lambda x: x + 1)`, read it as "in the scope where x = 5, evaluate x + 1" — not as "call a function with argument 5."
 
 In functional languages like Scheme and Haskell, `let` is an **expression** that introduces local variable bindings. For example, in Scheme:
 
@@ -174,6 +182,8 @@ print(f"doubled values > 8: {result3}")
 
 ## Model 3: Sequencing and Begin
 
+*Intuition:* A recipe says "first preheat the oven, then mix the batter, then bake." The *order* matters, even if each step has no meaningful return value on its own. In a pure expression language, "doing things in order" requires an explicit construct because expressions do not inherently sequence — they just produce values. Scheme's `begin` is that explicit sequencing construct: it evaluates expressions one after another and hands back whatever the last one produces.
+
 In purely functional languages, there are no statements and no side effects — every construct is an expression. But even functional languages need to do things in *order*, particularly when dealing with I/O or mutable state.
 
 The `begin` form in Scheme sequences expressions and returns the value of the *last* one:
@@ -232,6 +242,10 @@ print(f"Squares: {squares}")
 ---
 
 ## Model 4: Building an Expression Evaluator
+
+*Intuition:* An evaluator is a program that reads a tree of expression nodes and collapses it into a single value — the way a calculator reduces `(3 + 4) * 2` to `14` step by step. The key ingredient is the *environment*: a dictionary mapping variable names to their current values. When you encounter a `Var` node, you look its name up in the environment. When you encounter a `LetExpr`, you extend the environment with a new binding for the duration of the body. The environment grows as you go *in* to nested expressions and shrinks (is discarded) as you come *out*.
+
+> **Watch out!** In `eval_expr`, the `If` node evaluates its condition and then evaluates **only one branch** — the chosen one. This is different from how `BinOp` works: `BinOp` evaluates *both* sub-expressions before applying the operator. Keep this asymmetry in mind for the critical thinking questions about strict vs. lazy evaluation.
 
 PLAI Ch. 7 focuses on building an interpreter for a language with conditionals and let bindings. In this model, we implement a small evaluator for an expression language that includes arithmetic, booleans, conditionals (`If`), and local bindings (`LetExpr`).
 
@@ -338,6 +352,8 @@ print(f"let y=x*2 in if y>10 then y else 0 where x=7: {eval_expr(program2, env)}
 ---
 
 ## Model 5: Short-Circuit Evaluation and Lazy Conditionals
+
+*Intuition:* Imagine a security guard who checks two ID requirements: "Must be over 18 AND must have a valid badge." If the visitor is clearly 10 years old, the guard does not bother asking for the badge — the first condition already determines the outcome. Python's `and`/`or` operators work the same way: they stop evaluating as soon as the result is certain. This is called *short-circuit* (or *lazy*) evaluation, and it is not just a performance trick — it is what makes patterns like `x is not None and x.value > 0` safe, because the right side is only reached when `x` is guaranteed non-None.
 
 We saw in Model 4 that the `If` node only evaluates one branch. Python's `and` and `or` operators exhibit similar behavior: they use **short-circuit evaluation** (also called *lazy* or *non-strict* evaluation).
 

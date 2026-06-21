@@ -11,6 +11,8 @@ link:     https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.
 
 # Compiler Optimizations: Making Programs Faster
 
+Think of a compiler optimizer as an editor who rewrites a paragraph to say the same thing in fewer words — the meaning is perfectly preserved, but the form is tightened. A compiler does the same thing to your program: it replaces slow, verbose machine instructions with fast, compact ones while guaranteeing that every possible input still produces the same output. Today you will build five such "editors" — constant folding, dead-code elimination, CSE, inlining, and tail-call optimization — each implemented as a tree rewrite over the AST you have been building all semester.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -19,6 +21,17 @@ By the end of this activity, you will be able to:
 - Implement common subexpression elimination (CSE) by identifying redundant computations in an expression and rewriting the AST to share them
 - Implement function inlining as an AST substitution pass, and explain when inlining improves and when it hurts performance
 - Recognize tail calls in recursive functions, apply the tail-call optimization transformation, and explain why it enables constant-stack recursion
+
+> **Before You Begin — Prerequisites**
+>
+> You should be comfortable with the following before starting this activity:
+>
+> - **AST representation**: you know how to represent a program as a tree of dataclass nodes (`Num`, `BinOp`, `Let`, `If`, etc.) and how to walk that tree recursively.
+> - **Pattern matching** (`match`/`case`): Python 3.10+ structural pattern matching — used throughout every optimizer below.
+> - **Pure vs. side-effectful functions**: you can distinguish between an expression that always produces the same value and one that prints, raises, or mutates state.
+> - **Variable scope and substitution**: you understand what "free variable" and "bound variable" mean, and how substituting one expression for another can go wrong (variable capture).
+>
+> If any of these feel shaky, re-read the functional programming and lambda calculus notes before proceeding — the safety proofs in this activity rely on all four.
 
 > **"The first 90% of the code accounts for the first 90% of the development time. The remaining 10% of the code accounts for the other 90% of the development time."** — Tom Cargill
 >
@@ -36,6 +49,8 @@ Work in groups of 3–4. Rotate roles every 20 minutes.
 ---
 
 ## Model 1 — What Makes an Optimization Valid?
+
+**Intuition.** Before you can speed anything up, you need a safety rule: *when is a transformation allowed?* The answer is deceptively simple — a transformation is valid if and only if every valid input still produces the same observable output. "Observable" is the key word: printing to the screen is observable; computing an unused intermediate value is not. This section builds the mental checklist that every later optimizer will depend on.
 
 An optimization is **valid** if it *preserves program semantics* — the optimized program produces the same observable results as the original for all valid inputs.
 
@@ -79,9 +94,13 @@ print("x =", x, "  y =", y)
 
 > **CTQ 1.3** Name three operations that are NEVER safe to optimize away, even if their result is unused. (Think: division, function calls, I/O.)
 
+> **Watch out!** It is tempting to think "if the result is unused, we can delete it." This is only safe for *pure* expressions. `f() + 0` cannot become `0` if `f` prints, writes to a file, raises an exception, or mutates global state — even though the arithmetic result is discarded. Always ask: "What happens if I remove this entirely?" before applying any optimization.
+
 ---
 
 ## Model 2 — Constant Folding and Propagation
+
+**Intuition.** Suppose your program contains `let x = 3 in x + 2`. A human reader sees immediately that `x + 2` must equal `5` — there is no need to wait until run time to add those two numbers. Constant folding does this mechanically: whenever both operands of an arithmetic node are already `Num` literals, replace the whole `BinOp` with the computed `Num`. Constant propagation extends this: once we know `x = 3`, we can substitute `3` for every occurrence of `x` before folding, enabling further reductions downstream. Together the two passes can collapse an entire chain of `let` bindings into a single number.
 
 **Constant folding**: evaluate constant sub-expressions at compile time.
 **Constant propagation**: substitute known constant values for variables.
@@ -204,6 +223,8 @@ for t in tests:
 ---
 
 ## Model 3 — Common Subexpression Elimination (CSE)
+
+**Intuition.** Imagine writing `(x + 1) * (x + 1)` on paper. You would not reach for your calculator twice — you would compute `x + 1` once, write down the answer, then square it. CSE does exactly that: it scans the expression tree for sub-trees that appear more than once (with no intervening mutation), names the shared sub-computation with a fresh `let` binding, and replaces every duplicate occurrence with that name. The original two additions collapse into one, halving the work. The trick is identifying "same expression" in a way that is both correct and efficient — that is what `expr_key` does below.
 
 If the same expression appears twice and has no side effects in between, compute it once and reuse the result.
 

@@ -14,6 +14,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-CS374-Fall2026@gh-pages/ass
 
 # Lazy Evaluation and Infinite Structures
 
+> **Imagine a just-in-time (JIT) factory.** A traditional factory builds parts in bulk, warehousing thousands of units before a single order arrives — it must predict demand in advance and guess wrong at its peril. A JIT factory builds a part only when a confirmed order arrives: no speculation, no waste, no inventory of parts that are never used. Lazy evaluation is JIT manufacturing for computation: an expression is only evaluated when its value is actually needed, and the result is cached so the "manufacturing run" never repeats. This module shows you how to build that factory from scratch in Python — and why languages like Haskell run it automatically for every expression.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -23,6 +25,20 @@ By the end of this activity, you will be able to:
 - Build a **lazy stream** (cons-cell with a thunk for the tail) and use it to represent and traverse infinite sequences such as the natural numbers or all primes
 - Implement the Sieve of Eratosthenes as a lazy stream and use it to generate the first N primes without pre-specifying an upper bound
 - Identify Python generators and iterators as built-in lazy evaluation mechanisms, and relate them to the thunk/stream model developed in this activity
+
+---
+
+## Before You Begin
+
+Review these concepts before starting. Each one appears directly in the code models below.
+
+- **Zero-argument functions and closures:** you should be able to write `lambda: expr` and explain that the expression inside is not evaluated until the lambda is called. You should also understand that a lambda "closes over" variables from the surrounding scope.
+- **Python classes and properties:** Models 3 and 4 use a class with a `@property` decorator. You should know that `obj.tail` calls the getter method, not direct attribute access.
+- **Recursion:** several models define recursive functions and data structures. Be comfortable tracing two or three levels of recursion by hand before you start.
+- **Python generators:** you have seen `yield` before (or will see it in the Reflection). Understanding that `yield` pauses execution and resumes on the next call is helpful background, though not required.
+- **The call stack vs. the heap:** thunks store deferred computation on the heap (inside a closure object); forcing a thunk places a new frame on the call stack. Keeping these separate helps you reason about memoization.
+
+---
 
 Most programs you have written evaluate every expression the moment they encounter it. Add two numbers? The addition happens immediately. Build a list? Every element is computed before the list is returned. This strategy — called **eager evaluation** or **strict evaluation** — is the default in Python, Java, C, and most mainstream languages. It is easy to reason about: expressions have values, values are computed in order, and nothing is deferred.
 
@@ -43,6 +59,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 # Part I: The Problem Laziness Solves
 
 ## Model 1 — The Problem: Computing Without Knowing the End
+
+> **Intuition.** The JIT factory analogy lands here in its most concrete form. An eager approach to "give me the first five primes" is like ordering a full warehouse run before you know how many units will sell. You must pick a limit, the limit may be wrong, and if it is too small you get a silently incorrect answer. A lazy approach is the confirmed-order model: produce the next prime only when asked, stop when the consumer says stop. The code below shows the eager version breaking; the rest of this activity builds the lazy factory from scratch.
 
 The simplest statement of the problem: eager computation forces you to materialize the full sequence before you can work with it. If you want the first five primes, you need to supply a limit before you know where to stop. If the limit is too small, you miss answers; if it is too large, you waste work.
 
@@ -77,6 +95,8 @@ print("  - Never compute beyond what we asked for")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out! — Silent truncation is a real bug.** Notice that `primes_up_to(3)[:5]` does not raise an error — it silently returns a two-element list when you asked for five. Python slices never complain about over-indexing. In production code this kind of silent under-delivery causes downstream bugs that are hard to trace. Lazy evaluation makes this class of bug impossible: the consumer drives production, so you always get exactly as many elements as you ask for, or an explicit exhaustion signal.
+
 This tension appears everywhere in computing: network packets arrive in a stream you cannot bound ahead of time; log files grow without a fixed length; a game's state space is conceptually infinite. The eager model forces an artificial ceiling onto every such problem. A lazy model lets you describe an infinite process and consume only as much as you need.
 
 **Critical Thinking Questions (CTQs)**
@@ -92,6 +112,8 @@ This tension appears everywhere in computing: network packets arrive in a stream
 # Part II: Thunks — The Primitive Mechanism
 
 ## Model 2 — Thunks: Wrapping Computation in a Function
+
+> **Intuition.** A thunk is a purchase order, not a product. When the JIT factory receives `lambda: sum(range(10**6))`, it receives a description of work to be done — a slip of paper, not a finished part. The slip sits in a drawer until someone calls it (`force(thunk)`), at which point the factory floor runs the computation and hands back the result. Nothing is manufactured until the order is confirmed. The `lazy_if` example below shows the payoff: the "else" branch is a purchase order that gets shredded before anyone reads it, so the expensive (or error-raising) work inside never happens.
 
 The simplest way to defer computation: wrap it in a zero-argument function. In Haskell, the runtime does this automatically for every expression. In Python, we do it explicitly. A **thunk** is a zero-argument callable that, when called (**forced**), evaluates to the deferred value. The name comes from ALGOL compiler folklore — it described the "thunk" sound of a value landing on the stack after being computed.
 

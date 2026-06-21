@@ -14,6 +14,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Libraries and Modules in Programming Languages
 
+Library design is a form of language design. When you reach for `pathlib`, `requests`, or `pandas`, you are not just calling functions — you are working inside a *mini-language* purpose-built for a domain. A well-designed library API should feel like the language was extended exactly for your problem: the vocabulary fits, the operations compose naturally, and you rarely have to fight the underlying language to express your intent. A poorly designed library feels like assembling flat-pack furniture in a language you barely speak — technically possible, but exhausting. This activity examines the machinery underneath library design: how Python's module system isolates names, loads code on demand, and lets library authors control what they expose to the outside world.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -23,6 +25,16 @@ By the end of this activity, you will be able to:
 - Implement a minimal module system in Python — loading, caching, and exposing a controlled public API — from first principles
 - Compare explicit exports (`__all__`, `__init__.py`) with fully open namespaces and evaluate the encapsulation tradeoffs
 - Analyze circular import scenarios and explain why they arise and how module caching either resolves or deepens them
+
+> **Before You Begin**
+>
+> This activity assumes you are comfortable with:
+>
+> - **Python functions and scope** — you should know what a local variable is and have a rough sense that Python looks up names in some order (local before global).
+> - **Basic `import` usage** — you have written `import math` or `from os import path` before, even if you have never thought about *why* it works.
+> - **Dictionaries** — module namespaces, `sys.modules`, and the mini-interpreter in Part III are all built on Python dicts.
+>
+> You do *not* need prior knowledge of how interpreters work — Part III builds that understanding from scratch.
 
 Every non-trivial program is an assembly of parts: code you wrote, code your colleagues wrote, and code the language ecosystem provides. The mechanisms that let these parts coexist — without stomping on each other's names, without loading code you don't need, and without requiring every collaborator to agree on internal naming — are collectively called the **module system**. Today you dissect Python's module system from the outside in, and then build a miniature one from scratch.
 
@@ -39,6 +51,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 # Part I: The Module System from the Outside
 
 ## Model 1: Python's Module System
+
+**Intuition.** Imagine you and a colleague each define a variable called `result` at the top of your respective files. Without modules, these names would collide. A module is Python's answer: each `.py` file gets its own *namespace* — a private dictionary of names — so your `result` and your colleague's `result` never interfere. When you `import math`, Python evaluates `math.py` once, stores the resulting namespace object in a cache called `sys.modules`, and hands you a reference to it. Every subsequent `import math` anywhere in the program returns the *same cached object* — `math.py` is never evaluated twice. That single fact explains a surprising amount of Python's runtime behavior.
 
 A Python module is just a `.py` file whose top-level bindings become the module's **namespace**. `import` evaluates that file (once) and caches the resulting namespace object. The cache — `sys.modules` — prevents re-execution on repeated imports and is the source of truth for "is this module loaded?"
 

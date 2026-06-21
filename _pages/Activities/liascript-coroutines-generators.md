@@ -57,6 +57,8 @@ All four problems share a structure: a computation needs to **pause at an arbitr
 
 ## Model 1: Generators as Lazy Sequences
 
+**Intuition:** Think of the difference between a photographer who prints every photo in the roll immediately versus one who prints each photo only when you ask for the next one. The first approach — printing everything up front — is **eager evaluation**: fast to start iterating but expensive in memory. The second — printing on demand — is **lazy evaluation**: the camera (generator) remembers exactly which frame it was on and produces the next one only when asked. `yield` is the instruction that says "print this one, then pause and wait."
+
 A Python **generator function** uses `yield` instead of (or in addition to) `return`. Calling it returns a **generator object** — an object that remembers where the function paused.
 
 ```python
@@ -129,6 +131,8 @@ except StopIteration:
 
 **Key insight:** A generator function's stack frame is **frozen** at every `yield`. The local variables, loop counter, and instruction pointer are all preserved. `next()` thaws the frame and continues from the yield point.
 
+> **Watch out!** Calling a generator function does **not** execute any of its body. `gen = squares_lazy()` returns a generator object instantly — the line `i = 0` has not run yet. The body only starts executing on the *first* `next(gen)` call. This surprises many beginners who expect `gen = squares_lazy()` to behave like a normal function call.
+
 > **Critical Thinking Questions 1–3**
 
 **CTQ 1.** An infinite list `first_n_squares_eager(1_000_000)` allocates a list of 1 million integers in RAM before returning. A generator `squares_lazy()` uses ~200 bytes regardless of how many values you pull. What architectural difference explains this?
@@ -146,6 +150,8 @@ except StopIteration:
 ---
 
 ## Model 2: `yield` as a Two-Way Channel (`send` and `throw`)
+
+**Intuition:** So far a generator has been a one-way conveyor belt — values flow out to the caller via `yield`. Model 2 upgrades the belt to a **two-lane road**: the generator can also *receive* a value from the caller at the same `yield` point. Think of it as a walkie-talkie conversation where you press the button to transmit a value, hear a reply, and the other party is waiting for your next message before they continue. `.send(v)` is you pressing the button and speaking; `value = yield result` is the generator speaking *and* listening at the same time.
 
 Generators are not just output pipelines — they can **receive** values via `.send()`. This makes them true **coroutines** (two-way communication channels).
 
@@ -167,6 +173,8 @@ print("=== Bidirectional coroutine with send() ===")
 coro = running_average()
 result = next(coro)       # must prime the coroutine (run to first yield)
 print(f"  initial yield: {result}")   # None (no avg yet)
+# Watch out! Calling coro.send(10) before next(coro) raises TypeError.
+# The coroutine must reach its first yield before it can receive a sent value.
 
 for v in [10, 20, 30, 40, 50]:
     result = coro.send(v)
@@ -228,6 +236,8 @@ for v in gen_b():
 ---
 
 ## Model 3: How `yield` Captures a Continuation
+
+**Intuition:** Recall from the CPS activity that a continuation is "everything that happens next after this point." When a generator hits `yield`, it takes a snapshot of its entire execution state — local variables, loop counters, the instruction pointer — and stores it on the heap as a frozen frame. This is a *delimited* continuation: it captures only up to the next `yield` or the function's return, not the entire rest of the program. The state machine analogy makes this concrete: if you had to implement `yield` yourself without language support, you would number each yield point and use a big `if/elif` to jump back to the right place. Python's bytecode compiler does exactly that automatically.
 
 `yield` is a **delimited continuation** — it captures the rest of the computation up to the nearest coroutine boundary. This connects generators to the CPS transformation you have already seen.
 
@@ -325,6 +335,8 @@ print("  Generator-as-CPS result:", make_generator_cps())
 
 ## Model 4: `async`/`await` — Generators Over I/O
 
+**Intuition:** Imagine a chef managing multiple orders at a restaurant. A synchronous chef starts one dish, cooks it entirely, plates it, then starts the next — customers wait in sequence. An asynchronous chef starts a dish, puts it in the oven (the I/O), then immediately starts prepping the next dish while the oven does its work. When the oven timer fires (the I/O completes), the chef resumes that dish. `await` is the chef's oven-start moment: "I'm handing this off; resume me when it's done." The **event loop** is the kitchen manager who tracks which oven is done and tells the right chef to continue. Crucially, this is all on one thread — no parallelism, just clever scheduling.
+
 Python's `async def` / `await` syntax is syntactic sugar built on generators. An `async` function is a **coroutine** that yields control when waiting for I/O, and an event loop resumes it when the awaited operation completes.
 
 ```python
@@ -390,6 +402,8 @@ old_event_loop(old_style_coroutine)
 
 > **Critical Thinking Questions 10–12**
 
+> **Watch out!** `async`/`await` is **not** parallelism. Both tasks in `main_concurrent` run on a single OS thread. `asyncio.gather` interleaves them only because each `await asyncio.sleep(...)` voluntarily yields the thread back to the event loop. If one coroutine does CPU-heavy work without any `await`, it **blocks the entire event loop** and no other coroutine can run. For true CPU parallelism you need `multiprocessing` or a thread pool.
+
 **CTQ 10.** In `main_concurrent`, both `fetch_data` calls appear to run simultaneously, yet Python has a Global Interpreter Lock (GIL). Explain how concurrency is achieved without true parallelism. What kind of waiting does `asyncio.sleep` simulate?
 
 [[___ your answer here ___]]
@@ -405,6 +419,8 @@ old_event_loop(old_style_coroutine)
 ---
 
 ## Model 5: Implementing a Generator in a Mini Interpreter
+
+**Intuition:** When you add generator support to your own interpreter, you face the same design choice Python's implementers faced: where do you store the frozen execution state between `yield` calls? The cleanest trick is to use the *host language's* own generator mechanism as the storage. Since our interpreter is written in Python, we write the core evaluation loop as a Python generator — every time we encounter a `yield` node in the mini language, we `yield` from Python. Python's own frame-freezing machinery then carries our interpreter's state for free. This technique — using the host language's feature to implement the same feature in the guest language — is called **reflective implementation** or **metacircular interpretation**.
 
 Adding generator support to an interpreter requires preserving the function's execution state across multiple calls. The cleanest approach uses Python's own generators as the implementation mechanism.
 

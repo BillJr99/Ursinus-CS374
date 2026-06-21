@@ -175,6 +175,8 @@ Reducing $(\lambda x.\, \lambda y.\, x)\ y$ requires care. Which result is corre
 
 ## 3. Evaluation Strategies and Confluence
 
+> **Intuition**: When an expression contains more than one possible substitution step, you have a choice of which to perform first. Think of simplifying the arithmetic expression `(2 + 3) * (1 + 4)`: you could add the left pair first, the right pair first, or multiply first (if you knew the partial results). The two main strategies — normal order (outermost first, like lazy evaluation) and applicative order (innermost first, like Python) — can differ in whether they terminate, but the Church-Rosser theorem guarantees that if both reach a final answer, the answers are identical. The order of reduction matters for termination but not for the result if it terminates.
+
 **When a term contains several redexes, a strategy chooses which to reduce first, and the choice has consequences.** **Normal-order** reduction always reduces the leftmost, outermost redex, deferring argument evaluation; **applicative-order** reduces arguments first, as C, Java, Python, and JavaScript do. The strategies can differ in termination. Let $\Omega = (\lambda x.\, x\ x)(\lambda x.\, x\ x)$, the canonical infinite loop, which reduces only to itself, and consider
 
 $$
@@ -200,6 +202,8 @@ Compare transcripts: confirm that you reached the same normal form, and record w
 # Part II: Building a Language from Nothing
 
 ## 4. Church Encodings: Booleans and Numerals
+
+> **Intuition**: The lambda calculus has no built-in numbers or booleans — only functions. Church's insight was that a datum *is* the operation you perform on it. A boolean's only job is to pick one of two alternatives, so let it *be* a chooser function. A natural number's only job is to apply something n times, so let it *be* a "repeat n times" function. Once you accept this, `true` and `false` and `0` and `1` are not magic — they are just particular functions, and you can derive them yourself from scratch with no memorization.
 
 **Data can be encoded as the functions that consume it.** A boolean's only job is to choose between two alternatives, so let the boolean **be** the chooser:
 
@@ -259,6 +263,8 @@ print("if true a b  ->", iff(true)("a")("b"))      # expect a
 
 ## 5. Recursion Without Names: The Y Combinator
 
+> **Intuition**: In Python you write `def factorial(n): return 1 if n == 0 else n * factorial(n-1)` — the function refers to itself by name. But in pure lambda calculus there are no names, only anonymous functions. The trick is to write a function that *receives itself as an argument*, and then find a combinator (the Y combinator) that automatically feeds a function to itself. This is not a hack — it is a precise mathematical construction, and understanding it unlocks why functional languages can do recursion without special built-in machinery.
+
 **The calculus has no recursion because definitions have no names to call.** A factorial cannot refer to "factorial." The escape is to write a function that receives **itself** as an argument, then to find a term that performs that self-feeding automatically. The **Y combinator**,
 
 $$
@@ -266,6 +272,8 @@ Y = \lambda f.\, (\lambda x.\, f\ (x\ x))\ (\lambda x.\, f\ (x\ x))
 $$
 
 satisfies the fixed-point equation $Y\ g \;=\; g\ (Y\ g)$ for every $g$, which a two-line $\beta$-reduction confirms and which is precisely the unfolding a recursive call performs. In an applicative-order language the unfolding runs away, so strict languages use the eta-delayed variant $Z = \lambda f. (\lambda x. f (\lambda v. x\, x\, v))(\lambda x. f (\lambda v. x\, x\, v))$; the code cell below uses $Z$ so that Python can execute it.
+
+> **Watch out! — The Y combinator diverges under applicative order.** If you try to run the pure Y combinator in Python, it will loop forever, because Python evaluates arguments before passing them (applicative order). The Z combinator wraps the self-application in an extra `lambda v: ...`, which delays the recursive unfolding until the base case is actually checked. This is the same reason Haskell can handle infinite data structures while Python cannot: lazy (normal-order) evaluation delays computation until a value is demanded.
 
 ---
 
@@ -318,6 +326,8 @@ Exercises 1 through 3 are individual; exercises 4 and 5 are partner exercises, a
 # Part IV: Runnable Models
 
 ## Model 6: Beta Reduction Stepper
+
+> **Intuition**: This model makes the abstract substitution rule concrete. Rather than tracking steps on paper, you will watch the reducer print each intermediate term. Pay attention to: (1) which subexpression is chosen as the redex at each step, (2) when and why alpha-renaming fires, and (3) how the `fresh` function selects a name that will not cause capture. Read each printed line as one application of the $\beta$-reduction rule.
 
 Instead of reducing on paper, this model implements a step-by-step beta reducer that shows each intermediate term. Terms are represented as Python objects (a small data structure), and the stepper prints one reduction at a time until a normal form is reached or a step limit is hit.
 
@@ -430,6 +440,8 @@ reduce(App(twice, identity))
 
 ## Model 7: Church Numerals
 
+> **Intuition**: Before running this code, try to predict what `church_to_int(two)` will return by tracing `two(lambda k: k+1)(0)` by hand. `two` is `lambda f: lambda x: f(f(x))`, so `two(lambda k: k+1)(0)` applies "add one" twice to zero: `0 → 1 → 2`. This trace is not just a check — it *is* the definition of what the numeral `two` means. Every Church numeral is a "loop counter" in disguise.
+
 Church numerals exist in the lambda calculus as pure functions, but Python's `lambda` executes them directly, letting us verify arithmetic identities like `add(two)(three) == five` by checking `church_to_int` on both sides.
 
 ```python
@@ -487,6 +499,8 @@ for num, name in [(zero,"zero"),(one,"one"),(two,"two")]:
 ---
 
 ## Model 8: Alpha Equivalence
+
+> **Intuition**: `λx.x` and `λy.y` are both the identity function — the name of the parameter does not matter, only its *role* (return whatever argument you receive). De Bruijn indices make this precise by replacing each bound variable with a number representing how many lambdas you have to step out to reach its binder. If two terms produce identical de Bruijn representations, they are alpha-equivalent. Notice that *free* variables must keep their original names, because two expressions that mention different free variables are genuinely different in meaning, not just notational variants.
 
 Two lambda terms are **alpha-equivalent** if they differ only in the names of their bound variables. `λx.x` and `λy.y` are the same function; only the label changed. This model implements a canonical renaming (de Bruijn–style index assignment) so that alpha-equivalent terms produce identical canonical forms, then uses that to check equivalence.
 

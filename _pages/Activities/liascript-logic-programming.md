@@ -14,6 +14,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Logic Programming and Prolog
 
+> Think of logic programming like hiring a detective. You hand the detective a stack of witness statements (facts) and a set of inference rules ("if A saw B, and B was at the scene, then A was near the scene"). You don't tell the detective *how* to investigate — you just ask "who could have done it?" and the detective searches through all combinations of the facts and rules to find every answer that fits. Logic programming works the same way: you declare what is true, and the runtime finds all the conclusions that follow.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -23,6 +25,17 @@ By the end of this activity, you will be able to:
 - Implement unification over terms with variables and explain how it underpins both Prolog resolution and Hindley-Milner type inference
 - Simulate backtracking search in Python, identifying choice points and the order in which solutions are generated
 - Build a mini-Prolog interpreter that supports facts, rules, conjunctive goals, and variable bindings
+
+> **Before You Begin**
+>
+> This activity builds on prior material. You should be comfortable with:
+>
+> - **Recursive Python functions** — the engine is recursive; tracing calls is essential.
+> - **Python dictionaries** — substitutions (variable bindings) are stored as `dict` objects.
+> - **Generators and `yield`** — the backtracking solver uses `yield` and `yield from` to produce multiple solutions lazily.
+> - **The paradigms survey** — recall the distinction between imperative ("how to compute") and declarative ("what is true") styles introduced in the paradigms module.
+>
+> If you are shaky on generators, take two minutes now to review: a generator function uses `yield` instead of `return`, and the caller gets one value at a time without the function finishing. The solver uses this to pause after each solution and resume when the caller asks for the next one.
 
 The fourth paradigm from the paradigms module has a surprising claim: to compute, simply *declare what is true* and ask questions. The runtime searches for proofs. Prolog, the archetype of logic programming, powers natural language processing, constraint solving, and type inference engines — Hindley-Milner uses the same unification algorithm at its heart. Today we build that engine from scratch. The arc: **facts and queries → unification → resolution → backtracking → a complete mini-Prolog interpreter**.
 
@@ -53,6 +66,8 @@ This paradigm has a striking dual use: the **same unification algorithm** that p
 ---
 
 ## Model 1: Facts as a Database — Simulating Prolog Queries in Python
+
+**Intuition.** Before diving in, picture a spreadsheet with one table called "parent" and two columns: "who" and "their child." Each row is a fact. A Prolog query is like asking a pivot-table question: "give me all rows where the first column is `tom`." What makes Prolog different from a spreadsheet is that you can also define *derived* rows — rules that compute new relationships from existing ones — and the engine figures out the iteration automatically.
 
 Prolog's knowledge base is like a relational database whose tables are predicates. We can simulate it in Python using lists of tuples and list comprehensions. The correspondences are:
 
@@ -196,6 +211,8 @@ The **Robinson unification algorithm** (1965) is the foundation:
 5. Otherwise: fail.
 
 ---
+
+> **Watch out!** Unification is NOT assignment. When you write `X = 5` in Python, you change a variable's value. When Prolog *unifies* `X` with `5`, it adds a binding to a substitution dictionary — and that binding can never be *changed*, only extended or discarded (on backtracking). A variable that is already bound cannot be rebound to a different value; that would cause unification to fail. Keep this immutability in mind as you read the `unify` function below.
 
 ## Model 2: Robinson Unification in Python
 
@@ -393,6 +410,10 @@ $$ \text{New goal: } \mathtt{parent(tom, Z)} $$
 $$ \Rightarrow \text{succeeds with } Z \mapsto \text{bob},\ Z \mapsto \text{liz},\ \ldots $$
 
 ---
+
+**Intuition.** Imagine proving a goal as navigating a maze. At each junction (choice point), you pick a passage (a matching clause). If you reach a dead end (a goal that no clause can satisfy), you back up to the last junction and try a different passage. Python's `yield from` makes this natural: each call to `solve` is a generator that produces solutions one at a time, and backtracking happens automatically when the caller asks for the next solution and the current branch has nothing more to offer.
+
+> **Watch out!** Variable renaming (`fresh_vars`) is not optional. Each time a rule is *used*, all its variables must be replaced with fresh copies — otherwise two uses of the same rule would share the same `Var` objects in the substitution, causing bindings from one call to corrupt another. Think of it like allocating a fresh stack frame for each function call.
 
 ## Model 3: A Backtracking Proof Engine
 
@@ -593,6 +614,8 @@ When run backwards, the engine searches for unifications that satisfy these equa
 The **miniKanren** library (Byrd et al.) embeds the same idea into Scheme (and its descendants into Python). Rather than a standalone interpreter, you get logic programming as a *library*: `run`, `fresh`, `==`, `conde` are functions. The core is the same: unification + search.
 
 ---
+
+**Intuition.** A Python function `concat(xs, ys)` is one-directional: you give it `xs` and `ys`, it gives back the joined list. Prolog's `append/3` is more like an *equation*: `append(X, Y, Z)` says "X joined with Y equals Z." Because it is stated as a logical equation rather than an algorithm, the engine can solve it in any direction — find Z given X and Y, or find all (X, Y) pairs that make Z, or find Y given X and Z. This bidirectionality is a direct consequence of using unification rather than directed computation.
 
 ## Model 4: Bidirectional List Predicates
 
@@ -800,6 +823,8 @@ We now have all the pieces: terms, unification, clause representation, variable 
 The `reify` function applies the final substitution to a query variable to get its answer. If a variable is still unbound, it prints as itself — meaning the query is satisfied for *any* value of that variable.
 
 ---
+
+**Intuition.** You now have all the ingredients: a term language (Var/Atom/Compound), a unifier, variable renaming, and the solver loop. Assembling them into a `DB` class with `fact`/`rule` methods and a `query` helper gives you a complete, self-contained Prolog engine. As you read Model 5, focus on the *interface*, not the internals — the internals are exactly what you built piecemeal in Models 2 and 3. The new thing is the clean `query(db, goal, *vars)` API that hides the generator machinery.
 
 ## Model 5: Full Mini-Prolog Interpreter
 
