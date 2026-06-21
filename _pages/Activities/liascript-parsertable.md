@@ -85,6 +85,469 @@ Your project must choose its parsing technology; most teams hand-write recursive
 
 ---
 
+# Part III: Runnable Models
+
+## Model 3: FIRST and FOLLOW Sets
+
+**FIRST(A)** is the set of terminals that can begin any string derived from A. **FOLLOW(A)** is the set of terminals (and `$`) that can appear immediately after A in some sentential form. Together they power LL(1) table construction: the parse table entry for nonterminal A on lookahead token t is the production to use when t ∈ FIRST(RHS) — or when ε is derivable from RHS and t ∈ FOLLOW(A).
+
+```python
+# Compute FIRST and FOLLOW sets for a context-free grammar.
+# Grammar is represented as a dict: NT -> list of productions (lists of symbols).
+# Use '' (empty string) to represent epsilon.
+
+EPSILON = ''
+EOF     = '$'
+
+def compute_first(grammar):
+    """
+    Compute FIRST(X) for every symbol X in the grammar.
+    FIRST(terminal) = {terminal}
+    FIRST(NT)       = union over all productions of FIRST of each RHS
+    """
+    first = {}
+    # Initialize: terminals map to themselves, NTs start empty
+    all_symbols = set(grammar.keys())
+    for nt in grammar:
+        first[nt] = set()
+
+    changed = True
+    while changed:
+        changed = False
+        for nt, productions in grammar.items():
+            for prod in productions:
+                if prod == [EPSILON]:
+                    if EPSILON not in first[nt]:
+                        first[nt].add(EPSILON)
+                        changed = True
+                    continue
+                for sym in prod:
+                    if sym not in all_symbols:
+                        # sym is a terminal
+                        if sym not in first[nt]:
+                            first[nt].add(sym)
+                            changed = True
+                        break   # terminals don't derive epsilon
+                    else:
+                        # sym is a nonterminal: add FIRST(sym) - {epsilon}
+                        new = first[sym] - {EPSILON}
+                        if not new.issubset(first[nt]):
+                            first[nt] |= new
+                            changed = True
+                        if EPSILON not in first[sym]:
+                            break   # can't skip past sym
+                else:
+                    # All symbols can derive epsilon
+                    if EPSILON not in first[nt]:
+                        first[nt].add(EPSILON)
+                        changed = True
+    return first
+
+def first_of_string(symbols, first_sets, grammar_nts):
+    """Compute FIRST of a sequence of symbols."""
+    result = set()
+    for sym in symbols:
+        if sym == EPSILON:
+            result.add(EPSILON)
+            break
+        if sym not in grammar_nts:
+            result.add(sym)   # terminal
+            break
+        result |= (first_sets[sym] - {EPSILON})
+        if EPSILON not in first_sets[sym]:
+            break
+    else:
+        result.add(EPSILON)
+    return result
+
+def compute_follow(grammar, first):
+    """Compute FOLLOW(A) for each nonterminal A."""
+    nts = set(grammar.keys())
+    start = next(iter(grammar))   # first NT is the start symbol
+    follow = {nt: set() for nt in nts}
+    follow[start].add(EOF)
+
+    changed = True
+    while changed:
+        changed = False
+        for nt, productions in grammar.items():
+            for prod in productions:
+                if prod == [EPSILON]:
+                    continue
+                for i, sym in enumerate(prod):
+                    if sym not in nts:
+                        continue   # only track NTs
+                    beta = prod[i+1:]
+                    first_beta = first_of_string(beta, first, nts) if beta else {EPSILON}
+                    # Add FIRST(beta) - {epsilon} to FOLLOW(sym)
+                    new_terms = first_beta - {EPSILON}
+                    if not new_terms.issubset(follow[sym]):
+                        follow[sym] |= new_terms
+                        changed = True
+                    # If epsilon in FIRST(beta), add FOLLOW(nt) to FOLLOW(sym)
+                    if EPSILON in first_beta:
+                        if not follow[nt].issubset(follow[sym]):
+                            follow[sym] |= follow[nt]
+                            changed = True
+    return follow
+
+# Grammar: E -> E + T | T,  T -> T * F | F,  F -> ( E ) | num
+# (Left-recursive — fine for LR; LL(1) needs a rewritten version)
+# LL(1)-compatible version:
+#   E  -> T E'
+#   E' -> + T E' | epsilon
+#   T  -> F T'
+#   T' -> * F T' | epsilon
+#   F  -> ( E ) | num
+
+grammar = {
+    'E':  [['T', "E'"]],
+    "E'": [['+', 'T', "E'"], [EPSILON]],
+    'T':  [['F', "T'"]],
+    "T'": [['*', 'F', "T'"], [EPSILON]],
+    'F':  [['(', 'E', ')'], ['num']],
+}
+
+first  = compute_first(grammar)
+follow = compute_follow(grammar, first)
+
+print("FIRST sets:")
+for nt in grammar:
+    symbols = sorted(x if x else 'ε' for x in first[nt])
+    print(f"  FIRST({nt:<4}) = {{ {', '.join(symbols)} }}")
+
+print()
+print("FOLLOW sets:")
+for nt in grammar:
+    symbols = sorted(follow[nt])
+    print(f"  FOLLOW({nt:<4}) = {{ {', '.join(symbols)} }}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+8. `FIRST(E')` contains `+` and `ε`. Explain *why* `ε` is in `FIRST(E')` by tracing the grammar rule for `E'`. Then explain what a parser does when it sees a lookahead not in `FIRST(E')` — does it error immediately, or consult `FOLLOW`?
+9. `FOLLOW(E')` should equal `FOLLOW(E)`. Verify this from the printed output and justify it from the grammar rule `E -> T E'`: when does the parser need to know what follows `E'`?
+10. The original left-recursive grammar (`E -> E + T | T`) cannot be used directly for LL(1) parsing. Explain why, in terms of what the parser would have to do on the first token when predicting `E`.
+11. Add a new production `E' -> - T E'` (subtraction) to the grammar dict and re-run. Predict before running: which FIRST set changes, which FOLLOW sets change, and whether an LL(1) conflict arises.
+
+---
+
+## Model 4: LL(1) Parse Table Construction and Table-Driven Parser
+
+With FIRST and FOLLOW sets in hand, the LL(1) parse table is mechanical: for each production `A -> α`, add it to table[A][t] for every `t ∈ FIRST(α) - {ε}`, and for every `t ∈ FOLLOW(A)` if `ε ∈ FIRST(α)`. A conflict (two entries in one cell) means the grammar is not LL(1).
+
+```python
+# Build the LL(1) parse table and run a table-driven LL(1) parser.
+
+EPSILON = ''
+EOF     = '$'
+
+# Reuse the grammar and set-computation functions from the previous cell.
+def compute_first(grammar):
+    first = {nt: set() for nt in grammar}
+    nts = set(grammar.keys())
+    changed = True
+    while changed:
+        changed = False
+        for nt, productions in grammar.items():
+            for prod in productions:
+                if prod == [EPSILON]:
+                    if EPSILON not in first[nt]:
+                        first[nt].add(EPSILON); changed = True
+                    continue
+                for sym in prod:
+                    if sym not in nts:
+                        if sym not in first[nt]:
+                            first[nt].add(sym); changed = True
+                        break
+                    else:
+                        new = first[sym] - {EPSILON}
+                        if not new.issubset(first[nt]):
+                            first[nt] |= new; changed = True
+                        if EPSILON not in first[sym]:
+                            break
+                else:
+                    if EPSILON not in first[nt]:
+                        first[nt].add(EPSILON); changed = True
+    return first
+
+def first_of_string(symbols, first_sets, nts):
+    result = set()
+    for sym in symbols:
+        if sym == EPSILON:
+            result.add(EPSILON); break
+        if sym not in nts:
+            result.add(sym); break
+        result |= (first_sets[sym] - {EPSILON})
+        if EPSILON not in first_sets[sym]:
+            break
+    else:
+        result.add(EPSILON)
+    return result
+
+def compute_follow(grammar, first):
+    nts = set(grammar.keys())
+    start = next(iter(grammar))
+    follow = {nt: set() for nt in nts}
+    follow[start].add(EOF)
+    changed = True
+    while changed:
+        changed = False
+        for nt, productions in grammar.items():
+            for prod in productions:
+                if prod == [EPSILON]: continue
+                for i, sym in enumerate(prod):
+                    if sym not in nts: continue
+                    beta = prod[i+1:]
+                    fb = first_of_string(beta, first, nts) if beta else {EPSILON}
+                    new = fb - {EPSILON}
+                    if not new.issubset(follow[sym]):
+                        follow[sym] |= new; changed = True
+                    if EPSILON in fb:
+                        if not follow[nt].issubset(follow[sym]):
+                            follow[sym] |= follow[nt]; changed = True
+    return follow
+
+def build_ll1_table(grammar, first, follow):
+    """
+    Build the LL(1) parse table.
+    Returns (table, conflicts) where table[NT][terminal] = production (list),
+    and conflicts is a list of (NT, terminal) cells with multiple entries.
+    """
+    nts = set(grammar.keys())
+    table = {nt: {} for nt in nts}
+    conflicts = []
+
+    for nt, productions in grammar.items():
+        for prod in productions:
+            if prod == [EPSILON]:
+                first_alpha = {EPSILON}
+            else:
+                first_alpha = first_of_string(prod, first, nts)
+
+            for t in first_alpha - {EPSILON}:
+                if t in table[nt]:
+                    conflicts.append((nt, t, table[nt][t], prod))
+                table[nt][t] = prod
+
+            if EPSILON in first_alpha:
+                for t in follow[nt]:
+                    if t in table[nt]:
+                        conflicts.append((nt, t, table[nt][t], [EPSILON]))
+                    table[nt][t] = [EPSILON]
+    return table, conflicts
+
+def ll1_parse(tokens, grammar, table, start='E'):
+    """
+    Table-driven LL(1) parser.
+    tokens: list of terminal strings, ending with '$'.
+    Returns a trace of (stack, input, action) triples.
+    """
+    nts = set(grammar.keys())
+    stack = [EOF, start]
+    pos = 0
+    trace = []
+
+    while stack:
+        top = stack[-1]
+        current = tokens[pos] if pos < len(tokens) else EOF
+        stack_str = ' '.join(reversed(stack))
+        input_str = ' '.join(tokens[pos:])
+
+        if top == EOF and current == EOF:
+            trace.append((stack_str, input_str, 'ACCEPT'))
+            return trace, True
+        elif top == current:
+            trace.append((stack_str, input_str, f'match {current!r}'))
+            stack.pop()
+            pos += 1
+        elif top in nts:
+            if current in table[top]:
+                production = table[top][current]
+                prod_str = ' '.join(production) if production != [EPSILON] else 'ε'
+                trace.append((stack_str, input_str, f'{top} → {prod_str}'))
+                stack.pop()
+                if production != [EPSILON]:
+                    for sym in reversed(production):
+                        stack.append(sym)
+            else:
+                trace.append((stack_str, input_str, f'ERROR: no entry for {top} on {current!r}'))
+                return trace, False
+        else:
+            trace.append((stack_str, input_str, f'ERROR: expected {top!r}, got {current!r}'))
+            return trace, False
+
+    return trace, False
+
+grammar = {
+    'E':  [['T', "E'"]],
+    "E'": [['+', 'T', "E'"], [EPSILON]],
+    'T':  [['F', "T'"]],
+    "T'": [['*', 'F', "T'"], [EPSILON]],
+    'F':  [['(', 'E', ')'], ['num']],
+}
+
+first  = compute_first(grammar)
+follow = compute_follow(grammar, first)
+table, conflicts = build_ll1_table(grammar, first, follow)
+
+print("LL(1) Parse Table (non-empty cells):")
+for nt in grammar:
+    for term, prod in sorted(table[nt].items()):
+        prod_str = ' '.join(prod) if prod != [EPSILON] else 'ε'
+        print(f"  table[{nt}][{term!r}] = {prod_str}")
+
+if conflicts:
+    print("\nCONFLICTS (grammar is NOT LL(1)):")
+    for c in conflicts:
+        print(f"  {c}")
+else:
+    print("\nNo conflicts — grammar is LL(1).")
+
+# Run the parser on 'num + num * num $'
+tokens_input = ['num', '+', 'num', '*', 'num', '$']
+print(f"\nParsing: {' '.join(tokens_input[:-1])}")
+print(f"{'Stack':<35} {'Input':<25} Action")
+print("-" * 75)
+trace, accepted = ll1_parse(tokens_input, grammar, table)
+for stack, inp, action in trace:
+    print(f"{stack:<35} {inp:<25} {action}")
+print(f"\nResult: {'ACCEPTED' if accepted else 'REJECTED'}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+12. The table cell `table['E'']['num']` is empty (no entry). Look at the FOLLOW set of `E'` and explain: what action should the parser take when the stack top is `E'` and the lookahead is something in `FOLLOW(E')` but not `FIRST(E')`?
+13. Trace the parse of `num + num * num` by hand using the printed table before running — predict the first five rows of the trace. After running, compare with your prediction and identify any step you got wrong.
+14. An LL(1) grammar has *at most one* entry per table cell. If you added the production `E' -> - T E'` to the grammar, which cell would now have two entries, and what conflict type would that be?
+15. The table-driven parser and a recursive-descent parser for the same LL(1) grammar compute *identical* derivations. The table version uses an explicit stack while descent uses the call stack. Identify one practical engineering advantage of each approach.
+
+---
+
+## Model 5: Shift-Reduce Conflicts Explained
+
+A **shift-reduce conflict** occurs when the LR parser, in some configuration (stack + lookahead), can either (a) shift the lookahead token onto the stack, or (b) reduce the stack top using a completed production. The canonical example is the **dangling else**, but conflicts arise whenever a grammar is ambiguous or requires more than the available lookahead.
+
+```python
+# Illustrate shift-reduce and reduce-reduce conflicts by simulating
+# a simplified LR(0) conflict detector on small grammars.
+
+def find_lr0_conflicts(grammar_str):
+    """
+    Very simplified LR(0) conflict detector.
+    grammar_str: list of productions as strings like "E -> E + T"
+    We look for grammars where the same RHS suffix appears in both
+    a 'can reduce' and a 'can shift' context.
+    
+    This is a pedagogical simulator, not a full LR table builder.
+    It demonstrates the CONCEPT of conflicts, not full LR(0) construction.
+    """
+    productions = []
+    for line in grammar_str:
+        lhs, rhs_str = line.split(' -> ')
+        for rhs in rhs_str.split(' | '):
+            productions.append((lhs.strip(), rhs.strip().split()))
+
+    print("Productions:")
+    for i, (lhs, rhs) in enumerate(productions):
+        print(f"  [{i}] {lhs} -> {' '.join(rhs)}")
+    print()
+    return productions
+
+# Dangling else grammar (ambiguous)
+print("=== Dangling Else Grammar (ambiguous) ===")
+dangling_else = [
+    "S -> if E then S",
+    "S -> if E then S else S",
+    "S -> other",
+    "E -> cond",
+]
+prods = find_lr0_conflicts(dangling_else)
+
+print("Configuration demonstrating the conflict:")
+print("  Stack: ... if E then S")
+print("  Input: else ...")
+print()
+print("  Option 1: REDUCE using [S -> if E then S]")
+print("            => The 'else' will attach to an outer 'if' (if one exists)")
+print()
+print("  Option 2: SHIFT 'else'")
+print("            => The 'else' will attach to the INNER 'if' (nearest-if rule)")
+print()
+print("  Convention: shift wins (YACC/Bison default) = nearest 'if' binding.")
+print("  This is the RIGHT behavior for most languages but requires a CHOICE,")
+print("  meaning the grammar is AMBIGUOUS.")
+print()
+
+# Reduce-reduce conflict grammar
+print("=== Reduce-Reduce Conflict Grammar ===")
+rr_grammar = [
+    "S -> A c",
+    "S -> B c",
+    "A -> a b",
+    "B -> a b",
+]
+find_lr0_conflicts(rr_grammar)
+
+print("Configuration demonstrating the conflict:")
+print("  Stack: ... a b")
+print("  Input: c ...")
+print()
+print("  Option 1: REDUCE using [A -> a b]")
+print("  Option 2: REDUCE using [B -> a b]")
+print()
+print("  The parser cannot distinguish A from B using only 'a b' on the stack!")
+print("  This grammar is ambiguous; A and B are indistinguishable.")
+print("  Fix: merge A and B into a single nonterminal, or change their RHS.")
+print()
+
+# Demonstrate precedence as conflict resolution
+print("=== Precedence as Conflict Resolution ===")
+print("""
+Grammar:  E -> E + E | E * E | num   (ambiguous)
+
+Config 1:  Stack: E + E   Input: + ...
+  Conflict: reduce [E -> E + E]  OR  shift '+'
+  Resolution via precedence: both '+' have equal precedence, LEFT assoc
+  => REDUCE (left associativity: 1+2+3 = (1+2)+3)
+
+Config 2:  Stack: E + E   Input: * ...
+  Conflict: reduce [E -> E + E]  OR  shift '*'
+  Resolution via precedence: '*' has higher precedence than '+'
+  => SHIFT (let '*' bind more tightly: 1+2*3 = 1+(2*3))
+
+Declared precedence rules in yacc/bison translate directly into
+conflict-resolution entries in the parse table, replacing ambiguity
+with a documented, predictable choice.
+""")
+
+print("=== Summary of Conflict Types ===")
+conflicts = [
+    ("Shift-Reduce", "Can extend OR close the current phrase",
+     "Dangling else, operator precedence",
+     "Declare precedence/associativity, or restructure grammar"),
+    ("Reduce-Reduce", "Two completed productions match the stack top",
+     "Indistinguishable nonterminals, over-general grammar",
+     "Merge nonterminals, add distinguishing tokens, use LR(1)"),
+]
+print(f"{'Type':<18} {'Cause':<40} {'Example':<30} Fix")
+print("-" * 120)
+for ctype, cause, example, fix in conflicts:
+    print(f"{ctype:<18} {cause:<40} {example:<30} {fix}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+16. In the dangling-else conflict, both shift and reduce produce *syntactically valid* parse trees. They differ only in *meaning*. Write the two ASTs for `if a then if b then s1 else s2` corresponding to each choice, and state which one matches Python's behavior.
+17. The reduce-reduce conflict arises because `A -> a b` and `B -> a b` have *identical* right-hand sides. Explain why an LR(1) parser (which uses one token of lookahead *after* a reduction, not just before) still cannot resolve this conflict without grammar changes.
+18. Declared precedence (yacc's `%left`, `%right`, `%nonassoc`) resolves shift-reduce conflicts by turning the ambiguous grammar into a deterministic one *without* restructuring it. Describe the trade-off: what is gained (writability of the grammar spec) and what is lost (clarity of the formal grammar)?
+19. Your CS374 recursive-descent parser handles precedence via *grammar structure* (the E/T/F ladder). An LR parser can handle it via *declarations*. Which approach would be easier to modify if your language added a new operator with a precedence between `+` and `*`? Justify by describing the required changes in each approach.
+
+---
+
 ## 3. Exercises
 
 1. *Full trace.* Produce the complete shift-reduce table for `( 2 + 3 ) * 4`, marking the row where each reduction's subtree completes. Compare the final tree with the AST your descent parser builds for the same input: they must match.

@@ -100,6 +100,292 @@ In Scheme, the expression `(+ 1 2)` and the quoted form `'(+ 1 2)` differ in tha
 
 `'(+ 1 2)` is a list whose first element is the symbol `+`: **the program is a data structure the language itself manipulates**, and `(eval '(+ 1 2))` runs it. This property, **homoiconicity**, is why Lisp dialects have **macros**: functions that receive *code as lists*, transform it, and hand the result back to the evaluator, which is your `for`-loop desugaring exercise, except performed by user programs rather than by the language implementer. The AST you carefully constructed in Python with classes is, in Scheme, just... the list you typed.
 
+---
+
+# Part III: Runnable Models
+
+## Model 3: Tail Recursion — Scheme vs Python
+
+**Tail recursion** occurs when a recursive call is the *last* operation in a function — no pending work remains after the call returns. Scheme (and Racket) *guarantee* tail-call optimization (TCO): a tail-recursive function consumes O(1) stack space. Python does **not** perform TCO; deep tail calls still overflow the call stack.
+
+The cell below demonstrates both a naive (non-tail) factorial and a tail-recursive accumulator version in Python, counting stack frames to make the difference concrete.
+
+```python
+import sys
+
+def fact_naive(n):
+    """Non-tail-recursive: the multiplication happens AFTER the recursive call returns."""
+    if n == 0:
+        return 1
+    return n * fact_naive(n - 1)   # pending multiply on the stack
+
+def fact_tail(n, acc=1):
+    """Tail-recursive: accumulator carries the work; nothing left to do on return."""
+    if n == 0:
+        return acc
+    return fact_tail(n - 1, acc * n)  # last action IS the call
+
+# Show call-depth difference using a frame counter
+def count_frames_naive(n, depth=0):
+    if n == 0:
+        return depth
+    return count_frames_naive(n - 1, depth + 1)
+
+def count_frames_tail(n, depth=0):
+    if n == 0:
+        return depth
+    return count_frames_tail(n - 1, depth + 1)
+
+print("fact_naive(10)  =", fact_naive(10))
+print("fact_tail(10)   =", fact_tail(10))
+print()
+print("Python default recursion limit:", sys.getrecursionlimit())
+print()
+
+# Show that both reach the same depth — Python cannot collapse either
+print("Frames used by naive  fact(20):", count_frames_naive(20))
+print("Frames used by tail   fact(20):", count_frames_tail(20))
+print()
+
+# In Scheme, the tail version would keep a FIXED stack depth.
+# In Python we can simulate TCO with a trampoline:
+def trampoline(f, *args):
+    """Run a 'thunk-returning' function without growing the stack."""
+    result = f(*args)
+    while callable(result):
+        result = result()
+    return result
+
+def fact_trampoline(n, acc=1):
+    if n == 0:
+        return acc
+    return lambda: fact_trampoline(n - 1, acc * n)
+
+print("Trampoline fact(10):", trampoline(fact_trampoline, 10))
+print("Trampoline fact(100):", trampoline(fact_trampoline, 100))
+print()
+print("Key insight: Scheme tail calls are as cheap as loops.")
+print("Python tail calls still grow the stack unless you add a trampoline manually.")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+8. In `fact_naive`, where is the pending multiplication "stored" between the recursive call and its return? What data structure holds it, and what happens to that structure in a Scheme tail call?
+9. The trampoline converts recursive calls into *returned values* (thunks). Explain in one sentence why that prevents stack growth, and identify the analogous mechanism Scheme's runtime uses.
+10. If you rewrote `sum` from Part II as a tail-recursive `sum-tail` with an accumulator, in what order would the additions be performed compared with the naive version? Does the final answer change?
+11. Python's recursion limit defaults to 1000. Name one algorithm from your CS coursework where hitting this limit would be a real practical concern, and describe how you would restructure it.
+
+---
+
+## Model 4: let, let*, and letrec
+
+Scheme's **local binding forms** give names to intermediate values. They differ in *when* bindings become visible:
+
+- `let` — all right-hand sides are evaluated in the **outer** environment; bindings are parallel and independent.
+- `let*` — bindings are sequential; each RHS sees **all previous** bindings in the same `let*`.
+- `letrec` — all names are in scope for **all** right-hand sides (required for mutually recursive local functions).
+
+The Python simulation below models each form's scoping rule explicitly so you can observe the difference.
+
+```python
+# Simulate Scheme's let / let* / letrec scoping rules in Python
+
+def demo_let():
+    """
+    Scheme:
+      (let ((x 1)
+            (y 2))
+        (+ x y))
+    All bindings use the OUTER scope.  Neither x nor y sees the other.
+    """
+    outer_x = 10
+    # In a real 'let', both RHS are evaluated with outer_x = 10
+    x = outer_x + 1   # x = 11
+    y = outer_x + 2   # y = 12  (not x + 2, because let is parallel)
+    result = x + y
+    print(f"let:   x={x}, y={y}, x+y={result}")
+    print("       Note: y used outer_x (10), NOT the new x (11)")
+
+def demo_let_star():
+    """
+    Scheme:
+      (let* ((x 1)
+             (y (+ x 1)))   ; y CAN see x
+        (+ x y))
+    Sequential: each binding sees the previous ones.
+    """
+    x = 1
+    y = x + 1   # y = 2; uses the JUST-BOUND x
+    result = x + y
+    print(f"let*:  x={x}, y={y}, x+y={result}")
+    print("       Note: y used the new x (1), giving y=2")
+
+def demo_letrec():
+    """
+    Scheme:
+      (letrec ((even? (lambda (n) (if (= n 0) #t (odd?  (- n 1)))))
+               (odd?  (lambda (n) (if (= n 0) #f (even? (- n 1))))))
+        (even? 4))
+    Both names are in scope for BOTH RHS — needed for mutual recursion.
+    """
+    # Python nested functions already implement letrec-like mutual visibility
+    def even_q(n):
+        if n == 0:
+            return True
+        return odd_q(n - 1)
+
+    def odd_q(n):
+        if n == 0:
+            return False
+        return even_q(n - 1)
+
+    print(f"letrec: even?(4) = {even_q(4)}")
+    print(f"letrec: odd?(7)  = {odd_q(7)}")
+    print("        Note: even? and odd? reference each other — impossible with let or let*")
+
+demo_let()
+print()
+demo_let_star()
+print()
+demo_letrec()
+print()
+
+# Bonus: show that let's parallel evaluation matters
+print("--- Parallel swap (let) vs sequential (let*) ---")
+a, b = 3, 7
+# let swap: new_a = old_b, new_b = old_a  (evaluated simultaneously from outer scope)
+new_a_let = b    # uses original b
+new_b_let = a    # uses original a
+print(f"let  swap: a={new_a_let}, b={new_b_let}  (correct parallel swap)")
+
+# let* swap: sequential, so new_a is visible when new_b is evaluated
+new_a_star = b           # new_a = 7
+new_b_star = new_a_star  # new_b sees new_a (7), not original a (3)
+print(f"let* swap: a={new_a_star}, b={new_b_star}  (WRONG — new_a leaked into new_b)")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+12. In the "parallel swap" demonstration, `let` gives the correct result but `let*` does not. Explain this in terms of evaluation order and what each binding's right-hand side is permitted to see.
+13. Why does `letrec` require all names to be in scope *before* any right-hand side is evaluated? Construct a two-function mutual-recursion example where omitting `letrec` (using `let*` instead) would fail.
+14. Python's `def` inside a function body corresponds most closely to which Scheme binding form? Justify your answer by pointing to the scoping rule each uses.
+15. A Scheme `let` can always be rewritten as a `lambda` application: `(let ((x 5)) body)` becomes `((lambda (x) body) 5)`. Write out this transformation for the parallel-swap example. What does this equivalence reveal about `let` as syntactic sugar?
+
+---
+
+## Model 5: Quasiquoting and List Operations
+
+**Quasiquoting** (`\`` backtick) is a templating mechanism: the entire form is treated as data (like `'`), *except* that subexpressions preceded by `,` (unquote) or `,@` (unquote-splicing) are evaluated. This is the foundation of Scheme macros and a powerful list-construction tool.
+
+```python
+# We cannot run Racket here, so we simulate quasiquoting semantics in Python
+# to make the evaluation rules concrete.
+
+def quasiquote(template, env):
+    """
+    Recursively process a nested list 'template'.
+    - Strings that start with ',' are unquoted: look up the rest in env.
+    - Lists that start with ',@' are spliced in.
+    - Everything else is kept as-is (quoted).
+    """
+    if isinstance(template, list):
+        result = []
+        for item in template:
+            if isinstance(item, list) and len(item) == 2 and item[0] == ',@':
+                # Unquote-splicing: evaluate and extend
+                val = env.get(item[1], [])
+                if isinstance(val, list):
+                    result.extend(val)
+                else:
+                    result.append(val)
+            elif isinstance(item, str) and item.startswith(','):
+                # Unquote: evaluate the name
+                name = item[1:]
+                result.append(env.get(name, item))
+            elif isinstance(item, list):
+                result.append(quasiquote(item, env))
+            else:
+                result.append(item)
+        return result
+    elif isinstance(template, str) and template.startswith(','):
+        return env.get(template[1:], template)
+    else:
+        return template
+
+# Example 1: basic unquote
+env1 = {'x': 42, 'name': 'Alice'}
+tmpl1 = ['define', ',name', ',x']
+print("Template:", tmpl1)
+print("Result:  ", quasiquote(tmpl1, env1))
+# Equivalent Scheme: `(define ,name ,x)  with name='Alice' x=42
+# => (define Alice 42)
+print()
+
+# Example 2: unquote-splicing to build a function call
+env2 = {'fname': 'my-func', 'args': [1, 2, 3]}
+tmpl2 = [',fname', [',@', 'args']]
+print("Template:", tmpl2)
+print("Result:  ", quasiquote(tmpl2, env2))
+# Equivalent Scheme: `(,fname ,@args)  => (my-func 1 2 3)
+print()
+
+# Example 3: building a list of squares using quasiquote + list operations
+nums = [1, 2, 3, 4, 5]
+
+# car / cdr / cons equivalents
+def car(lst): return lst[0]
+def cdr(lst): return lst[1:]
+def cons(x, lst): return [x] + lst
+def null_p(lst): return lst == []
+
+def my_map(f, lst):
+    if null_p(lst):
+        return []
+    return cons(f(car(lst)), my_map(f, cdr(lst)))
+
+def my_filter(pred, lst):
+    if null_p(lst):
+        return []
+    if pred(car(lst)):
+        return cons(car(lst), my_filter(pred, cdr(lst)))
+    return my_filter(pred, cdr(lst))
+
+def my_reduce(f, init, lst):
+    if null_p(lst):
+        return init
+    return my_reduce(f, f(init, car(lst)), cdr(lst))
+
+squares = my_map(lambda x: x * x, nums)
+evens   = my_filter(lambda x: x % 2 == 0, nums)
+total   = my_reduce(lambda a, b: a + b, 0, nums)
+
+print("Original list:", nums)
+print("Squares      :", squares)
+print("Evens        :", evens)
+print("Sum          :", total)
+print()
+
+# Demonstrate that (map f (filter pred lst)) composes cleanly
+sum_of_even_squares = my_reduce(
+    lambda a, b: a + b, 0,
+    my_map(lambda x: x * x, my_filter(lambda x: x % 2 == 0, nums))
+)
+print("Sum of squares of even numbers:", sum_of_even_squares)
+print("Expected: 4 + 16 = 20")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+16. In Scheme, `` `(define ,name ,x) `` is syntactic sugar for a call to the `quasiquote` special form. Explain the difference between `,name` (unquote) and `,@name` (unquote-splicing) in terms of what the resulting list structure looks like.
+17. Macros in Scheme use quasiquoting to construct code. If you wanted to write a `my-when` macro that desugars `(my-when test body)` into `(if test body (void))`, write out the quasiquoted template the macro body would return.
+18. The `my_map / my_filter / my_reduce` pipeline in the cell composes without intermediate variable names. Compare this style with a Python `for`-loop equivalent and describe one advantage and one disadvantage of each.
+19. Unquote-splicing (`,@`) inserts a list's *elements* rather than the list itself. Write a Scheme expression (or Python simulation) that uses `,@` to combine two argument lists into a single function call, and explain what would go wrong if you used `,` (plain unquote) instead.
+
+---
+
 ## 4. Exercises
 
 1. *Warmups.* Define and test: `(double x)`, `(average a b)`, `(my-length lst)` recursively, and `(count-if pred lst)`.
