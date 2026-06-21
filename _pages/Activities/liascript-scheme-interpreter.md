@@ -14,6 +14,8 @@ link:     https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.
 
 # The Metacircular Evaluator: Scheme in Python
 
+An interpreter written in the very language it interprets sounds like a paradox, but it is actually one of the most clarifying ideas in computer science — it proves that the language's evaluation rules are self-consistent and complete. Think of it like a dictionary that defines every word using other words in the same dictionary: the circularity is a feature, not a bug, because it shows the system is closed. Building this evaluator in Python forces every semantic choice to become explicit code, revealing the machinery that your own course interpreter already contains.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -22,6 +24,13 @@ By the end of this activity, you will be able to:
 - Implement lexical scoping using a linked chain of environment frames that correctly handles closures
 - Build a trampoline-based tail-call optimizer that runs deeply recursive Scheme programs without stack overflow
 - Explain the relationship between the metacircular evaluator and the course's Mini-language interpreter, identifying where the two designs converge and diverge
+
+> **Before You Begin:** This activity assumes you can:
+> - Write and trace through a recursive Python function that processes nested lists
+> - Explain what a Python dictionary is and how you would use one to map variable names to values
+> - Describe what a closure is: a function paired with the environment in which it was created
+>
+> If any of these feel shaky, review them first.
 
 > **"To understand the evaluator is to understand computation."** — SICP
 
@@ -51,6 +60,10 @@ Work in your POGIL team of four with the following roles. Rotate roles each clas
 # Part I: S-Expressions — Code as Data
 
 ## Model 1: S-Expressions
+
+In most languages, source code is text and data is something else entirely. Scheme collapses this distinction: a program is a list, and lists are data. This means a Scheme program can construct and run another Scheme program using the same `car`, `cdr`, and `cons` operations it uses on ordinary lists. Before you can build the evaluator, you need to be comfortable reading nested Python lists as Scheme programs — the translation table in this model is your Rosetta Stone.
+
+> **Watch out!** In our representation, Scheme symbols (like variable names `x`, `y`, operator names `+`) and Scheme strings (like `"hello"`) are both Python `str` values. The evaluator distinguishes them by context: a string that starts with `"` is a literal; anything else is a symbol to look up. This is a shortcut that would not work in a production system, but it simplifies the parser significantly.
 
 Scheme's defining design choice: **program text and data share the same representation.** Every Scheme expression is an *s-expression* (symbolic expression): either an **atom** (number, boolean, string, or symbol) or a **pair** `(head . tail)`, where tail is usually another pair, recursively, giving a list. The surface syntax `(op arg1 arg2 ...)` is just a printed list.
 
@@ -166,6 +179,8 @@ for src in examples:
 
 ## Model 2: The Environment as a Linked Chain of Frames
 
+Scoping rules determine which variable binding wins when the same name exists in multiple contexts. Lexical scoping — the rule Scheme and Python both use — answers "which binding?" by looking at where the code was written, not where it was called. The linked chain of frames implements this: each frame holds the bindings introduced at one scope level, and the `outer` pointer to the enclosing scope forms the lookup chain. This structure is the heart of closures.
+
 An **environment** in our interpreter is a dictionary that may have a pointer to an **outer** (enclosing) environment. Variable lookup walks the chain until the name is found or the outermost frame is exhausted.
 
 ```python
@@ -250,6 +265,10 @@ Draw the frames that exist when `(+ x y)` is being evaluated. Label every `outer
 # Part III: The Evaluator Core
 
 ## Model 3: `scheme_eval` — Dispatch on Form
+
+The entire evaluator fits in one function because every Scheme expression falls into one of three categories: a self-evaluating atom (numbers, booleans), a symbol to look up, or a list. Lists are further divided into special forms (keywords like `if`, `define`, `lambda` that have their own evaluation rules) and procedure calls. This dispatch-on-shape pattern is the same pattern you used in your course interpreter — seeing it made explicit here should feel familiar.
+
+> **Watch out!** In Scheme, only `#f` (the boolean false) is falsy. Everything else — including `0`, the empty list, and the empty string — is truthy. The line `branch = x[2] if test is not False else ...` implements this rule. Students frequently miss this and write `if not test`, which would treat `0` as false and produce wrong results for numeric conditions.
 
 The evaluator is a single function that **dispatches** on the type and shape of the expression. Atoms evaluate to themselves or to their binding. Lists beginning with a keyword are **special forms** handled directly. Any other list is a **procedure call**.
 
@@ -487,6 +506,8 @@ Does this work in our evaluator? Trace through why `fact` is visible inside its 
 
 ## Model 4: `make_global_env` — The Built-In World
 
+Every language has a layer of operations that the interpreter cannot define in terms of itself — the bedrock primitives. In Scheme these are things like `+`, `cons`, `car`, and `display`. In our interpreter they are Python lambdas sitting in the global environment frame. Everything else the user writes builds on top of this layer, which is why getting the primitive set right matters: it is the entire foundation.
+
 The global environment pre-loads all the primitive operations. In real Scheme these are implemented in a low-level language for speed; in our interpreter they are just Python lambdas.
 
 ```python
@@ -697,6 +718,10 @@ print("(list 1 2 3 4) as Python:", scheme_list_to_python(lst))
 # Part V: Tail Call Optimization
 
 ## Model 5: The Stack Overflow Problem and the Trampoline
+
+A properly tail-recursive Scheme program should run in constant stack space — that is the Scheme specification's guarantee. But our Python evaluator grows a Python stack frame for every recursive `scheme_eval` call, even when the Scheme call is in tail position. The trampoline fixes this without changing Python's runtime: instead of recursing, tail calls return a "do this next" object (a `Thunk`), and a top-level loop bounces on those thunks until a real value appears. It converts recursion into iteration by making "what to do next" explicit.
+
+> **Watch out!** The TCO evaluator uses a `while True` loop with `continue` for self-tail-calls. This is only an optimization for calls where the current function calls itself. Calls to a *different* procedure still need to update `x` and `env` and `continue` the loop, which is what the `Procedure call` branch does. Missing the `continue` after updating `env` and `x` would send execution to the bottom of the loop body instead of restarting from the top.
 
 Python has a default recursion limit of about 1000 frames. A naive Scheme-in-Python evaluator will hit this limit when evaluating deeply recursive Scheme programs — even if the Scheme program is *tail recursive* and should need no stack at all.
 

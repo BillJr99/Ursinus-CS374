@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Sprint Studio and Gallery Walk
 
+Building a programming language in a semester requires the same discipline that shipping any complex software requires: knowing exactly where you stand, not where you feel like you stand. Sprint studio days replace "mostly working" with numbers, and the gallery walk replaces private uncertainty with structured peer review. The combination is how teams find their blind spots before Demo Day rather than during it.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -24,6 +26,13 @@ By the end of this activity, you will be able to:
 - Apply the gallery walk protocol to give and receive structured peer feedback on a language implementation in progress
 - Triage feedback into actionable backlog items prioritized by risk and impact on the final release
 - Evaluate your language implementation against a release checklist and identify the highest-risk unfinished pieces
+
+> **Before You Begin:** This activity assumes you can:
+> - Describe your team's current sprint goal in one sentence with at least one specific deliverable
+> - List three AST node types your interpreter currently handles and one it does not yet handle
+> - Read and run a Python script that prints structured output to the terminal
+>
+> If any of these feel shaky, check in with your team before the stand-up.
 
 Studio days are structured work time for the team language project: a stand-up, focused build time, and, on designated days, the formal **gallery walk** peer review that feeds your final sprint. This page is the protocol for every studio day; the gallery walk sections apply on the scheduled walk day. The arc: **stand-up $\rightarrow$ build $\rightarrow$ gallery walk $\rightarrow$ triage $\rightarrow$ release checklist**.
 
@@ -42,6 +51,8 @@ Each team answers, in two minutes at the board, exactly four questions: What run
 ---
 
 ## Model 1: Sprint Velocity — Measuring What "Done" Looks Like
+
+Velocity is the sprint's heartbeat reading: a falling trend is your early warning system, and a flat trend three sprints before the deadline is a crisis that has not been named yet. This model simulates three sprints with concrete numbers so you can see what a healthy trajectory looks like versus a warning trajectory — and practice interpreting the dashboard before your own numbers are in it.
 
 A sprint velocity is a *count*, not a feeling. The Evaluator tracks two numbers: **stories completed** (AST nodes with passing tests) and **tests passing**. The cell below simulates a three-sprint project and visualizes the velocity trend, because a slowing velocity three sprints before Demo Day is early warning, not bad luck.
 
@@ -125,6 +136,8 @@ print("  Rule: test_pct < 80% triggers a test-debt sprint before new features.")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** The projection formula assumes your last sprint's velocity holds constant. Real project velocity rarely stays constant — it often drops in the final sprint due to integration work and debugging. If you are already at 80% velocity, the projection is optimistic. Use the projection as a floor, not a ceiling.
+
 ### Critical Thinking Questions
 
 1. The dashboard reports "known failures." Why is it *better* to list them than to omit them? Connect to the gallery walk protocol's requirement that every host show at least one failure.
@@ -140,6 +153,8 @@ Builders build the sprint increment; the Evaluator extends the test suite *ahead
 ---
 
 ## Model 2: The Red-Green Discipline — Writing Tests Before Code
+
+A failing test is not a sign of failure — it is a specification. Before a feature exists, the only honest representation of "we plan to build this" is a test that currently fails. This model makes that discipline concrete by treating the set of failing tests as the literal sprint backlog, so the sprint goal is visible and measurable at every moment.
 
 The Evaluator's job is to write **failing tests** before the Builder writes the code they test. A failing test is a specification: it states precisely what the code must do before the code exists. The cell below demonstrates the discipline by running a test suite against a deliberately incomplete interpreter, showing which tests fail (red), which pass (green), and what the gap is.
 
@@ -248,6 +263,10 @@ Hosts demonstrate honestly: at least one **known failure case** must be shown at
 ---
 
 ## Model 3: Feedback Triage — Turning Gallery Walk Cards into Backlog
+
+Raw gallery walk feedback is like unprocessed ore — valuable but unusable until refined. Triage converts cards into decisions: this gets fixed before Demo Day, this gets disclosed honestly, this goes on the future-work list. The discipline is the middle bucket: admitting known limitations publicly is mature engineering, not weakness.
+
+> **Watch out!** "Disclose" does not mean "hide." It means you have a rehearsed, honest one-sentence description of the limitation ready for Demo Day. A question-and-answer session where a known bug surfaces without preparation is much worse than a proactive "our interpreter does not yet handle nested function calls, and here is why that is hard."
 
 The Scribe collects all gallery walk cards and triages them live. The cell below simulates triage: take each card, classify it into a bucket, and produce an actionable backlog sorted by priority.
 

@@ -16,6 +16,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # From Interpreter to Compiler: Code Generation and Transpilation
 
+Your tree-walking interpreter already does the hard work — it understands the meaning of every AST node. A compiler does the same traversal but instead of computing a value, it writes down instructions for someone else to execute later. The difference is not intelligence but timing: an interpreter acts now, a compiler acts once so that execution can happen many times fast. This activity builds three backends on top of the same AST your interpreter already handles, making that timing difference concrete.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -24,6 +26,13 @@ By the end of this activity, you will be able to:
 - Implement a Visitor-pattern AST traversal that emits syntactically correct Python and JavaScript from a Mini-language AST, including correct operator precedence in the output
 - Design and implement a stack-machine instruction set for a simple expression language, write a compiler that emits those instructions from an AST, and trace instruction-by-instruction execution through a virtual machine
 - Run an end-to-end equivalence test confirming that the interpreter, both transpilers, and the stack machine produce identical output for the same Mini-language program
+
+> **Before You Begin:** This activity assumes you can:
+> - Explain what an abstract syntax tree (AST) is and describe the node types your course interpreter already handles
+> - Write a Python class with methods that dispatch based on the type of an argument
+> - Describe what a call stack is and what it means for a value to be "on top of the stack"
+>
+> If any of these feel shaky, review them first.
 
 *"The difference between an interpreter and a compiler is not how smart they are about the language — it is when they do their work."*
 
@@ -64,6 +73,8 @@ print("AST nodes loaded.")
 # Part I: The Visitor Pattern
 
 ## 1. Why We Need the Visitor
+
+Imagine you need to add a type-checker, an optimizer, and a pretty-printer to your interpreter — all traversing the same AST. Without the Visitor pattern, you end up with three copies of the same `if isinstance(...)` dispatch logic, and every new AST node type means updating all three copies. The Visitor pattern solves this by making the traversal a single place and making each "what to do at each node" a separate, swappable object.
 
 Your tree-walking interpreter is a set of `if isinstance(node, ...)` branches inside a single `evaluate` function. This works, but as soon as you want to **also** compile, and **also** type-check, and **also** transpile the same AST, you face a choice:
 
@@ -141,11 +152,17 @@ print("Interpreter result:", interp.visit(ast))   # 7
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** `getattr(self, method_name, self.generic_visit)` dispatches to a method named `visit_ClassName`. This means the method name is determined by the Python class name of the AST node, not by any tag you set. If you rename `BinOp` to `BinaryOperation`, the dispatch will break silently — `generic_visit` will be called instead, likely raising a confusing error. Always keep AST class names stable once you build visitors over them.
+
 ---
 
 # Part II: Transpiler to Python
 
 ## 2. The Python Transpiler
+
+A transpiler is just a visitor that accumulates strings instead of values. Every `visit_*` method returns a fragment of source code, and the fragments compose exactly the way the original AST composes. This is why well-structured ASTs produce clean, readable transpiled output — the structure of the AST maps directly to the structure of the emitted code.
+
+A transpiler is a visitor that **returns strings** instead of values.
 
 A transpiler is a visitor that **returns strings** instead of values. Each `visit_*` method returns a Python expression string. The result of visiting the root is a complete Python expression (or program).
 
@@ -225,6 +242,10 @@ print("Evaluated: ", result)   # should be 7
 ---
 
 ## 3. The JavaScript Transpiler
+
+The JavaScript transpiler demonstrates the key insight: the AST structure is language-neutral, but target-language quirks (like JavaScript's ternary operator `?:` for `if` expressions, or the need for `Math.trunc` for integer division) must be encoded per-target. Each new target language is a new visitor — no changes to the AST or the frontend.
+
+> **Watch out!** JavaScript's `/` operator always returns a floating-point result, unlike Python's `//` (integer division). Our `Let` node uses `(lambda x: body)(value)` in Python but `((x) => body)(value)` in JavaScript. These look similar but behave differently for closures in edge cases — always test transpiler output with the target language's actual runtime.
 
 The same AST, same visitor structure, different target language:
 
@@ -391,6 +412,8 @@ A transpiler differs from an interpreter in which fundamental way?
 # Part III: Stack Machine / Bytecode Compiler
 
 ## 5. Compiling to a Virtual Stack Machine
+
+A stack machine is like a desk calculator with an explicit memory stack: you push operands, apply an operation that consumes the top values and pushes a result, and at the end the answer sits alone on the top of the stack. Compiling to this model is much simpler than compiling to a real CPU because you never need to manage registers — the stack is both source and destination for every operation.
 
 Real compilers (Python, Java, Lua) compile to a **bytecode** for a virtual stack machine. The stack machine has a simple instruction set:
 

@@ -16,6 +16,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # LL and LR Parsing: Tables, Conflicts, and How Yacc Works
 
+Your recursive descent parser is already an LL parser — you just haven't seen the table yet. Every function is a row, every `if` on the lookahead token is a column lookup, and every time you call a sub-function you are pushing a frame onto the implicit parse stack. This activity makes that hidden machinery explicit, then flips the whole picture upside-down to show how LR parsers — the kind yacc and bison generate — read the same tokens from the opposite direction and handle grammars that would tie recursive descent in knots.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -25,6 +27,13 @@ By the end of this activity, you will be able to:
 - Construct the LR(0) item sets and SLR(1) parsing table for a small grammar and execute a simulated bottom-up parse
 - Explain what yacc/bison does internally when given a `.y` grammar file, connecting LR item construction to the generated parse table
 - Compare LL(1) and SLR(1)/LALR(1) parsing power, identifying grammars that one technique accepts and the other rejects
+
+> **Before You Begin:** This activity assumes you can:
+> - Write a simple recursive descent parser for an arithmetic expression grammar
+> - Explain what a context-free grammar production rule means (e.g., `E -> T E'`)
+> - Trace through a small Python dictionary-based algorithm and predict its output
+>
+> If any of these feel shaky, review them first.
 
 *"The LL(1) condition is exactly the condition under which you can parse without backtracking: always knowing what to do from one token."*
 
@@ -53,6 +62,8 @@ This grammar generates arithmetic expressions with addition and multiplication, 
 # Part I: LL(1) Parsing
 
 ## 1. FIRST Sets
+
+Think of FIRST sets as answering the question: "If I am about to expand nonterminal $A$, what token could possibly appear at the front of whatever $A$ generates?" It is the set of valid lookaheads that make each production viable. The algorithm is a fixed-point iteration — keep adding tokens until nothing changes — and the tricky case is nullable symbols ($\epsilon$-producing nonterminals) which let the following symbol "bleed through."
 
 $\mathrm{FIRST}(\alpha)$ is the set of terminal symbols that can begin a string derived from $\alpha$. If $\alpha \Rightarrow^* \epsilon$, then $\epsilon \in \mathrm{FIRST}(\alpha)$.
 
@@ -121,9 +132,13 @@ for sym in ['E', "E'", 'T', "T'", 'F']:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** FIRST is computed for **grammar symbols** (nonterminals and terminals), not for input tokens. `FIRST('id')` is always `{'id'}` — terminals have trivial FIRST sets. The interesting work is for nonterminals, especially nullable ones. Students often compute FIRST for just one production and forget to take the union across all productions for the same nonterminal.
+
 ---
 
 ## 2. FOLLOW Sets
+
+FOLLOW sets answer the question: "After fully expanding $A$, what token could legitimately come next?" They are needed specifically for $\epsilon$-productions: if $A$ can disappear, the parser needs to know when it is safe to apply that $\epsilon$-production (the lookahead must be something in FOLLOW($A$)). The algorithm propagates FOLLOW backwards through the grammar — a dependency that makes it trickier than FIRST.
 
 $\mathrm{FOLLOW}(A)$ is the set of terminals that can appear immediately after $A$ in some sentential form. It always includes **$\$** for the start symbol.
 
@@ -215,6 +230,10 @@ for sym in ['E', "E'", 'T', "T'", 'F']:
 ---
 
 ## 3. LL(1) Parsing Table Construction
+
+The table fuses FIRST and FOLLOW into a single lookup structure: row = nonterminal being expanded, column = lookahead token, cell = which production to use. A grammar is LL(1) if and only if every cell has at most one entry. Two productions landing in the same cell mean the one-token lookahead is ambiguous — the parser cannot decide without more information.
+
+> **Watch out!** A grammar can be unambiguous and still fail to be LL(1) — left recursion and shared FIRST sets both cause LL(1) conflicts in perfectly unambiguous grammars. Do not conflate "not LL(1)" with "ambiguous."
 
 The **LL(1) parsing table** $M[A, a]$ specifies: when parsing nonterminal $A$ with lookahead token $a$, which production should we use?
 
@@ -349,6 +368,8 @@ print("\nConflicts:", conflicts if conflicts else "None — grammar is LL(1)!")
 ---
 
 ## 4. LL(1) Table-Driven Parsing
+
+Once the table exists, parsing is a deterministic stack machine — no backtracking, no recursion, just push, pop, and table lookup. This model lets you see explicitly what your recursive descent parser was doing implicitly: the call stack becomes a literal stack of grammar symbols, and each function-call/return maps to a push/pop pair.
 
 With the table in hand, the parser is a simple stack machine:
 
@@ -519,6 +540,8 @@ A grammar has a production $A \to \alpha \mid \beta$ where $\mathrm{FIRST}(\alph
 
 ## 5. The LR Idea: Bottom-Up with a Stack
 
+LR parsing feels backward at first: instead of predicting what to expand next (LL's "top-down" view), LR parsers collect tokens on a stack and wait until they have seen a complete right-hand side — then they collapse it back to the left-hand side (a "reduction"). Think of it like assembling a sentence by collecting words until you can label a phrase, then treating the labeled phrase as a single unit for the next level up.
+
 **LR parsers** work bottom-up: they shift tokens onto a stack and **reduce** (replace a handle matching a production's RHS with its LHS) when they have seen enough. The "L" means left-to-right scan; "R" means rightmost derivation in reverse; "k" is the lookahead.
 
 The key data structures are:
@@ -529,6 +552,8 @@ The key data structures are:
 The tables encode a **push-down automaton** built from the grammar.
 
 ## 6. LR(0) Items and the Canonical Collection
+
+An LR(0) item is a production with a bookmark (the dot) that says "I have seen this much of the right-hand side so far." The set of all possible bookmarked states the parser could be in, connected by transitions, forms a finite automaton — the "canonical collection." Understanding this automaton is the key to understanding what shift-reduce conflicts mean and why some grammars are hard to parse.
 
 An **LR(0) item** is a production with a dot marking how much has been recognized:
 
@@ -594,6 +619,8 @@ while to_process:
                 states.append(g)
                 to_process.append(g)
             transitions[(s_id, sym)] = state_map[g]
+
+> **Watch out!** The closure operation adds items for every production of each nonterminal that appears after a dot — including transitively. A single starting item can generate a large closure. Students often compute closure for only the directly referenced nonterminal and miss the transitive additions.
 
 print(f"LR(0) automaton: {len(states)} states")
 for sid, items in enumerate(states):

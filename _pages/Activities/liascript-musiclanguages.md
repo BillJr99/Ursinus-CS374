@@ -16,6 +16,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Languages for Live Coding Music: Strudel and TidalCycles
 
+Music is time made audible, and writing a language for music means designing a language whose fundamental data type is time itself. TidalCycles and Strudel make that design choice explicit: a pattern is literally a function that takes a time interval and returns the events scheduled within it. Studying these languages is studying DSL design at its most honest — every syntax decision is traceable to a constraint from live performance, and every semantic choice flows from the mathematics of cyclic time.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -25,6 +27,13 @@ By the end of this activity, you will be able to:
 - Define the denotational model of a pattern as a function from time to values and trace how combinators compose patterns algebraically
 - Analyze the mini-notation grammar of Strudel/TidalCycles and explain how parsing it requires a separate external language within the host language
 - Evaluate how DSL design choices generalize beyond music to configuration languages, query builders, and infrastructure description languages
+
+> **Before You Begin:** This activity assumes you can:
+> - Explain what a domain-specific language (DSL) is and give one example distinct from TidalCycles
+> - Read and write Python functions that return other functions (closures)
+> - Describe what a recursive descent parser does at a high level
+>
+> If any of these feel shaky, review them first.
 
 This module introduces **domain-specific languages (DSLs)** through two living, performing specimens: **TidalCycles**, a pattern language embedded in Haskell, and **Strudel**, its JavaScript-hosted sibling that runs in any browser. We move from **the live coding problem domain $\rightarrow$ embedded versus external DSL design $\rightarrow$ a formal model of patterns as functions of time $\rightarrow$ combinators and their algebraic laws $\rightarrow$ hands-on performance**, and in doing so we assemble the conceptual vocabulary, syntax versus semantics, host language leverage, denotation, and equational reasoning, that the rest of this unit will exercise when we build a parser for these languages ourselves.
 
@@ -53,6 +62,8 @@ console.log("Environment ready.");
 # Part I: The Problem Domain and Two Language Designs
 
 ## 1. Live Coding as a Language Design Problem
+
+Before studying the technical architecture, read the performance constraints as a requirements document. A live coding environment is like a cockpit instrument panel being redesigned mid-flight: every design choice must either support the pilot while flying or not require them to land. Keep these constraints in mind as you encounter each language feature — each one is answering a specific requirement from this list.
 
 **Live coding is the practice of writing and rewriting a running program as a public performance.** A performer projects their editor, the audience watches the code change, and the music changes with it. This domain imposes unusual and instructive requirements on a programming language, and reading those requirements as a language designer would is our first exercise in this module. The program must be **concise**, because every keystroke happens on stage; it must be **modifiable while running**, because stopping the program stops the music; it must be **declarative about time**, because the performer thinks in cycles and beats rather than in callbacks and timestamps; and its errors must be **recoverable**, because a syntax error during a performance should not produce silence.
 
@@ -114,6 +125,10 @@ Query the same pattern on $[1, 2)$ and you receive the same shape shifted by one
 ---
 
 ## Model 1: Pattern-as-Function in Python
+
+The central insight is that a pattern is not a list — it is a function. This means patterns are naturally infinite (you can query any future cycle), composable (functions compose), and pure (transforming a pattern produces a new pattern without mutating the old one). This model translates that mathematical abstraction directly into Python using closures. Notice that `pure`, `seq`, `fast`, and the others all return functions, not data.
+
+> **Watch out!** `pure("bd")` returns a function, not a string. You must call the returned function with a time span — e.g., `pure("bd")(0, 1)` — to get actual events. Forgetting the second call and printing the function object itself is a very common first mistake.
 
 The cell below implements the core pattern model in Python: `pure`, `seq`, `fast`, `slow`, `rev`, and `stack` (polyrhythm). This is not audio — it is the mathematical substrate under the audio. Every event is a `(value, begin, end)` tuple; every function that returns a pattern returns a *function* from `(begin, end)` to a list of events.
 
@@ -272,6 +287,10 @@ In `every 4 (fast 2) $ sound "bd sn"`, the Haskell type checker accepts `fast 2`
 
 ## Model 2: Algebraic Laws — Testing Equational Reasoning
 
+Algebraic laws let you reason about programs without running them — you can replace one expression with an equivalent one just as you would in algebra. But laws need to be tested too, because implementations can be buggy even if the intended semantics are correct. This model treats the laws as runnable tests and deliberately checks a law that fails, because understanding why something is not a law is as illuminating as knowing why something is.
+
+> **Watch out!** Floating-point comparison will silently fail for these tests. All arithmetic here uses Python's `Fraction` type for exact rational arithmetic. If you adapt this code and use `float` instead of `Fraction`, `events_equal` may return `False` for a correct implementation due to rounding.
+
 The algebraic laws are not decoration; they are executable contracts. The cell below verifies three laws by running both sides on the same input and comparing event streams.
 
 ```python
@@ -406,6 +425,8 @@ After item 3, jointly test one algebraic law from this section empirically: pick
 ---
 
 ## Model 3: Mini-Notation Grammar — The External Language Inside
+
+The string `"bd sn [hh hh]"` is opaque to JavaScript and Haskell alike — their parsers see it as just a string. Inside that string lives a second language with its own lexer, grammar rules, and semantics. This is the external-DSL-within-an-embedded-DSL architecture that makes Tidal and Strudel a hybrid. This model implements that inner parser from scratch, giving you the full picture from character stream to event list.
 
 The mini-notation (`"bd sn [hh hh]"`) is an external DSL embedded in a string. It deserves a grammar of its own, because it *is* a language: tokens, grammar rules, and semantics. The cell below implements a mini-notation lexer and recursive descent parser that produces the same event structure as the formal model.
 
