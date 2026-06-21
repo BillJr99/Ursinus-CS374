@@ -262,6 +262,10 @@ In a tree-walking interpreter, executing the program's `while` loop one million 
 
 ---
 
+**Model 3 preview:** Where expressions *return* values, statements *change the world* — they update the environment, produce output, or repeat a block. This model introduces `execute`, a sibling function to `evaluate` that handles the statement layer. The single most important design rule here is that `execute` must always pass the *same* `env` dictionary through every recursive call so that assignments made inside a loop body are visible after the loop ends.
+
+> **Watch out!** A common mistake is for `execute` to return `None` (implicitly) for every branch, and then have a caller accidentally use that `None` as if it were a language value — for example, printing the result of `execute(Print(...), env)` instead of the result already printed inside `execute`. Statements produce *effects*, not values; callers of `execute` should never inspect its return value.
+
 ## Model 3: Complete Statement Executor
 
 ```python
@@ -349,6 +353,10 @@ print(f"env after: {env}")     # n=0, total=15
 10. Add a `truthy(0.0)` call and a `truthy(None)` call to the test. What do they return? How does your `truthy` definition match Python's? Where do they differ?
 
 ---
+
+**Model 4 preview:** The REPL (Read-Eval-Print Loop) is what makes your language *feel* like a language. It chains the entire pipeline — tokenize, parse, evaluate — inside a loop that persists a single `env` across lines, so earlier assignments are visible in later ones. This model uses a simulated REPL (a list of inputs instead of real keyboard input) so it can run non-interactively here, but the architecture is identical to what you would wire up with Python's `input()`.
+
+> **Watch out!** Because the REPL's `env` dictionary persists across lines, a variable assigned on line 1 is still live on line 100. This means the *order* in which the user types lines matters, and re-running the REPL from scratch will start with an empty environment. Students sometimes expect the REPL to behave like a script (isolated, top-to-bottom) rather than a stateful session. They are different execution models, and it is worth being explicit in your language documentation about which one your REPL provides.
 
 ## Model 4: The REPL — Your Language Goes Interactive
 

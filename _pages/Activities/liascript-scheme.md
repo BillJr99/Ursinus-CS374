@@ -87,6 +87,8 @@ This model makes the connection between Scheme's syntax and the Abstract Syntax 
 
 Scheme has no `while`; iteration is recursion, usually on lists, which are built from `cons` cells and dissected with `car` (first element) and `cdr` (the rest):
 
+> **Watch out!** `car` and `cdr` are Scheme's names for what most languages call `head` and `tail` (or `first` and `rest`). The names are historical accidents from 1950s IBM hardware register names. When you see `(car lst)` think "give me the first element"; when you see `(cdr lst)` think "give me everything except the first element." Calling `car` or `cdr` on an empty list `'()` is a runtime error — always check `(null? lst)` first in your base case.
+
 ```scheme
 (define (sum lst)
   (if (null? lst)
@@ -115,6 +117,8 @@ Model 2 is where recursion becomes your only loop. Every pattern you know from P
 
 5. Trace `(sum '(1 2 3))` by hand, writing every call and return. Where does the addition for `1` actually happen: on the way down or the way back up?
 6. Write `(my-filter pred lst)` following the `my-map` template; predict its output on `(my-filter odd? '(1 2 3 4 5))` and verify. Which line differs structurally from `my-map`?
+> **Watch out!** Forgetting the quote `'` before a list literal is the single most common Scheme beginner error. Writing `(1 2 3)` tells Scheme: "call the function named `1` with arguments `2` and `3`." Since `1` is not a function, you get an error like `application: not a procedure`. Always write `'(1 2 3)` when you mean a list of data, not a function call.
+
 7. The quote in `'(1 2 3)` says "data, do not evaluate." Predict the difference between `(1 2 3)` and `'(1 2 3)` at the prompt; verify; explain the error message in terms of the One Syntax Rule.
 
 [[MC]]
@@ -133,6 +137,10 @@ In Scheme, the expression `(+ 1 2)` and the quoted form `'(+ 1 2)` differ in tha
 ---
 
 # Part III: Runnable Models
+
+Model 3 explores one of the most practically important differences between Scheme and Python: what happens when recursion goes very deep. Scheme guarantees that a tail-recursive function uses no more stack space than a simple loop, so algorithms that are naturally recursive — like traversing a million-element list — are not just elegant but efficient. Python offers no such guarantee, which is why Python programmers reach for `for`-loops even when recursion would be cleaner.
+
+> **Watch out!** `define` in Scheme is not assignment in the imperative sense. Writing `(define x 5)` does not create a mutable variable you update later — it introduces a name binding in the current environment. In functional Scheme style, you do not reassign `x`; instead, you pass updated values forward as function arguments (hence the accumulator pattern in tail recursion). If you find yourself wanting to write `(set! x (+ x 1))` inside a loop, stop and think about how to express the same idea with a recursive accumulator parameter.
 
 ## Model 3: Tail Recursion — Scheme vs Python
 
@@ -207,6 +215,8 @@ print("Python tail calls still grow the stack unless you add a trampoline manual
 11. Python's recursion limit defaults to 1000. Name one algorithm from your CS coursework where hitting this limit would be a real practical concern, and describe how you would restructure it.
 
 ---
+
+Model 4 zooms in on a subtle but important question: when you write several name bindings together, can each one see the others? The three forms `let`, `let*`, and `letrec` give three different answers to that question. Understanding the difference matters both for reading Scheme code correctly and for appreciating why Python's `def` and assignment behave the way they do.
 
 ## Model 4: let, let*, and letrec
 
@@ -304,6 +314,8 @@ print(f"let* swap: a={new_a_star}, b={new_b_star}  (WRONG — new_a leaked into 
 15. A Scheme `let` can always be rewritten as a `lambda` application: `(let ((x 5)) body)` becomes `((lambda (x) body) 5)`. Write out this transformation for the parallel-swap example. What does this equivalence reveal about `let` as syntactic sugar?
 
 ---
+
+Model 5 brings together everything: now that you know how Scheme evaluates expressions and how lists are constructed, you can use Scheme's quasiquoting mechanism to build lists that are *programs*, then hand them to `eval`. This is homoiconicity made concrete and operational. The Python simulation in the runnable cell re-implements the same ideas so you can experiment without a Racket installation.
 
 ## Model 5: Quasiquoting and List Operations
 

@@ -129,6 +129,10 @@ print(f"f6() twice: {f6():.4f}, {f6():.4f}")   # random
 
 # Part II: The Big Three Combinators
 
+The next two models focus on the three combinators that replace nearly every explicit loop you have ever written. Before we look at any code, notice that each combinator corresponds to a question you already ask about data: "what does each element look like after a change?", "which elements do I want to keep?", "what single summary value do these elements produce?" You have been answering these questions with `for` loops; now you will answer them with a single function call.
+
+> **Watch out!** Python's `map` and `filter` do not prevent you from passing in an impure function — one that prints, mutates globals, or reads from a file. The combinators themselves are pure, but they will faithfully execute whatever function you hand them. Always make sure the lambda or function you pass in has no side effects, or you lose the guarantees that make functional style valuable.
+
 ## 2. Map, Filter, Reduce
 
 $$\text{map}(f, [x_1, \dots, x_n]) = [f(x_1), \dots, f(x_n)]$$
@@ -179,6 +183,10 @@ print(f"max score: {max_score}")
 
 ---
 
+Python gives you two roads to the same destination: the `map`/`filter` combinators you just saw, and *list comprehensions*, which borrow syntax from mathematical set-builder notation. Model 2 puts them side by side so you can see that they produce identical results while looking quite different. Understanding both is practical — you will encounter both in real Python codebases — and comparing them deepens your intuition for what "transforming a collection" really means.
+
+> **Watch out!** Immutability does not mean "constant." In Python, writing `x = 5` creates a variable that you could reassign tomorrow. True immutability in functional programming means that once a data structure is built you never modify it — instead you build a new one. Python's `tuple` is immutable; a `list` is not. When you call `pure_double` above, `original` stays unchanged not because Python enforces it, but because the function was *written* to build a new list. Nothing stops you from writing an impure version — discipline and code review do.
+
 ## Model 2: Comprehensions vs. Combinators
 
 Python offers *list comprehensions* as an alternative syntax for map+filter:
@@ -210,6 +218,8 @@ print(f"generator sum: {sum(gen)}")
 ---
 
 # Part III: Higher-Order Functions
+
+You have already passed functions as arguments — every time you called `map(lambda x: x*2, data)` you handed a function to another function. Part III asks: what if a function could also *return* a new function? Think of it like a factory: instead of building one widget, the factory builds a machine that builds widgets. `make_adder(5)` is that factory — call it once and you get back a custom addition function, ready to use anywhere.
 
 ## 3. Functions That Make Functions
 
@@ -255,6 +265,8 @@ print(f"add5 twice applied to 0: {add5_twice(0)}")   # 10
     [( )] Runs in logarithmic time
 
 ---
+
+If higher-order functions are factories, then currying and partial application are factory *customizations*. Imagine a general `power(base, exp)` function. Partial application lets you say "I always want `exp=2` — give me a `square` function." Currying takes this further: it restructures any multi-argument function so you can supply arguments one at a time, producing a chain of single-argument functions. This style shows up everywhere in functional languages like Haskell, and understanding it will make the lambda calculus we study later feel natural.
 
 ## 4. Partial Application and Currying
 
@@ -310,6 +322,10 @@ print(f"process({data}) = {process(data)}")   # sum of elements > 0 after subtra
 
 # Part IV: Recursion Without Loops
 
+In Python you have used `for` loops to walk through lists. But a `for` loop requires mutable state: a counter variable that changes on every iteration. Pure functional programming avoids mutable state entirely, so loops are off the table. The replacement is recursion: a function that solves a big problem by calling itself on a smaller piece of that problem. Model 5 shows you that `map`, `filter`, and `reduce` — which you already know — can themselves be written as recursive functions, making their structure visible and precise.
+
+> **Watch out!** When students first encounter "no loops allowed," a common instinct is to reach for a `while True` loop with a counter. That is still a loop! Pure functional recursion means the function calls itself with a *smaller* argument — there is no loop variable, no `i += 1`, and no mutation of any list. If you find yourself writing an assignment statement inside a recursive function, pause and reconsider.
+
 ## 5. Thinking Recursively
 
 In pure functional style, **there are no loops** — only recursion. Every loop corresponds to a recursive function:
@@ -362,6 +378,49 @@ print(f"rsum({nums}) = {rsum(nums)}")
 > **CTQ 5.3** Python has a default recursion limit of 1000. Haskell compiles tail-recursive functions to loops. What is a "tail call," and why can't Python's `rsum` be optimized this way?
 
 ---
+
+Model 6 pushes recursion in two new directions: *mutual* recursion (two functions that call each other) and *structural* recursion (recursing along the shape of nested data, not a numeric counter). You will also see a fully functional merge sort — no mutation anywhere. Before diving in, study the worked example below that shows how to translate an imperative loop into a functional composition step by step.
+
+**Worked Example: Imperative → Functional**
+
+Suppose you have this imperative code that sums the squares of all even numbers in a list:
+
+```python
+# Imperative version — 5 statements, 2 mutation points
+result = 0
+for x in nums:
+    if x % 2 == 0:
+        result += x ** 2
+```
+
+Here is how to transform it step by step into a functional composition:
+
+**Step 1 — Identify the three loop concerns separately:**
+- *Filter*: keep only even numbers → `x % 2 == 0`
+- *Transform*: square each kept number → `x ** 2`
+- *Aggregate*: sum the results → `+`
+
+**Step 2 — Write each concern as a lambda:**
+```python
+is_even  = lambda x: x % 2 == 0
+square   = lambda x: x ** 2
+add      = lambda a, b: a + b
+```
+
+**Step 3 — Assemble with `filter`, `map`, `reduce`:**
+```python
+from functools import reduce
+result = reduce(add, map(square, filter(is_even, nums)), 0)
+```
+
+**Step 4 — Inline the lambdas for a one-liner (optional):**
+```python
+result = reduce(lambda a, b: a + b,
+                map(lambda x: x**2,
+                    filter(lambda x: x % 2 == 0, nums)), 0)
+```
+
+The result is identical to the loop. The difference: the functional version has **no mutation** (`result` is never reassigned), **no loop variable**, and each concern is a named, testable piece.
 
 ## 6. Mutual Recursion and Structural Recursion
 

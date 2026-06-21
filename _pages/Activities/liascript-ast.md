@@ -341,6 +341,8 @@ print(f"Deep expr depth:      {depth(deep)}")
 
 ## 2. The One-Line Upgrade
 
+*What problem does this solve?* Your earlier parser returned nested tuples like `('+', left, right)`. Tuples work, but they are fragile: you have to remember that index 0 is the operator, index 1 is the left child, and so on. A dataclass gives every field a *name*, making the tree self-documenting and letting Python's structural pattern matching work cleanly. The upgrade is literally one line per production: replace a tuple literal with a node constructor. Nothing else in the parser changes.
+
 Your expression parser changes almost nothing: every place it built a tuple now constructs a node. `('+', left, right)` becomes `BinOp('+', left, right)`. The fold-left associativity logic, the tier structure, the lookahead: untouched.
 
 ```python  liascript
@@ -440,6 +442,8 @@ pretty(tree)
 
 ## Model 3: Tree Transformations — Your First Optimizer
 
+*What problem does this solve?* A language implementer does not just read the AST — they sometimes want to *rewrite* it into a simpler or faster equivalent before evaluation. Constant folding is the canonical first optimization: if both children of a `BinOp` are `Num` nodes, there is no reason to wait until runtime to compute the result. This model introduces the pattern of a tree *transformation*: a function that takes a node and returns a (possibly different) node, recursing on children. The same pattern underlies dead-code elimination, inlining, and virtually every compiler optimization you will study.
+
 Trees can be *transformed* as well as traversed. The simplest transformation is **constant folding**: evaluating constant sub-expressions at compile time.
 
 ```python  liascript
@@ -519,6 +523,8 @@ for t in tests:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** Constant folding is only safe for *pure* sub-expressions — ones with no side effects. It is tempting to fold `f() + 0` to `f()` because "adding zero does nothing," but that reasoning only applies when `f()` has no side effects. If `f()` prints to the screen or modifies a global, folding away the `+ 0` is correct *for the arithmetic* but changes the program's observable behavior in other ways. When in doubt, only fold sub-trees made entirely of `Num`, `Bool`, and `Str` nodes with no `Call` or `Var` nodes anywhere inside.
+
 > **CTQ 4.1** Constant folding is safe for pure expressions. Why is it *unsafe* to fold `f() + 0` to `f()` if `f` has side effects?
 
 > **CTQ 4.2** The folding rule `x * 0 → 0` is an algebraic simplification. Why does this rule require checking `l.value == 0` rather than checking `isinstance(l, Num) and l.value == 0`? (They're the same — but why does the type check matter for correctness?)
@@ -550,6 +556,8 @@ After upgrading the parser to emit AST nodes, the team's old torture tests still
 # Part III: The `unparse` Round-Trip
 
 ## 3. Back to Source
+
+*What problem does this solve?* Going from source text to an AST is the job of the parser. But can you go the other way — from an AST back to valid source text? This is called *unparsing* (or pretty-printing), and it is crucial for testing: if you parse a string, unparse the tree, and re-parse the result, you should get an identical tree. This round-trip property is one of the most powerful automated checks you can write for a language implementation. It also raises a subtle challenge: the AST discards parentheses, so the unparsing pass must *re-insert* them only where operator precedence requires it — no more, no less.
 
 ```python  liascript
 from dataclasses import dataclass

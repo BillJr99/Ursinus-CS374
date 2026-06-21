@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Operational Semantics: Specifying Languages with Inference Rules
 
+When you write an interpreter, you are making decisions about what programs *mean* — but those decisions live buried in Python code, not in a form anyone else can easily check or reason about. Operational semantics is like a referee's rulebook for a programming language: it specifies exactly what each syntactic construct *does*, step by step, so there is no ambiguity about the language's behavior independent of any particular implementation. By the end of this activity you will be able to read and write these rules and see exactly how they map onto the evaluator you have already built.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -26,6 +28,13 @@ By the end of this activity, you will be able to:
 - Analyze the connection between operational semantics rules and the corresponding cases in an interpreter's `eval` function
 
 Your interpreter is an implementation of a language — but implementations can have bugs. A **formal semantics** is a mathematical specification of the language that is separate from any implementation: you check your interpreter against the semantics, not the other way around. Today we study **operational semantics**, the dominant style in programming language theory, which defines meaning by specifying computation as a set of formal **inference rules** over program configurations. The arc: **configurations → big-step semantics → small-step semantics → connecting to your evaluator → where semantics and type systems meet**.
+
+> **Before You Begin:** This activity assumes you can:
+> - Read and trace through a recursive tree-walking interpreter (your Mini evaluator from earlier assignments)
+> - Understand environments as mappings from variable names to values, and explain what variable lookup and extension mean
+> - Recognize the structure of a lambda expression and explain how closures capture their defining environment
+> - Write simple mathematical proofs by cases (e.g., case analysis on which constructor an expression uses)
+> If any of these feel shaky, review them first.
 
 ---
 
@@ -49,9 +58,26 @@ Read it: "if all premises hold, then the conclusion holds." An **axiom** is a ru
 
 **Notation for expression evaluation:** $\langle e, \sigma \rangle \Downarrow v$ means "expression $e$ in environment $\sigma$ evaluates to value $v$." (Some texts write $\sigma \vdash e \Rightarrow v$.) The environment $\sigma$ is a partial function from variable names to values.
 
+**Notation quick-reference — formal symbol to plain English:**
+
+| Notation | Meaning |
+|----------|---------|
+| `Γ ⊢ e : τ` | "In type environment Γ, expression e has type τ" |
+| `⟨e, σ⟩ ⇓ v` | "Expression e, evaluated in environment σ, produces final value v" (big-step) |
+| `⟨e, σ⟩ → ⟨e', σ'⟩` | "Expression e reduces to e' in one step, updating the environment" (small-step) |
+| `→*` | Zero or more small-step reduction steps |
+| `[x ↦ v]e` | "Substitute v for every free occurrence of x in expression e" |
+| `σ[x ↦ v]` | "The environment σ extended so that x now maps to v" |
+| `λx. e` | "A function with parameter x and body e" |
+| Horizontal bar | "If everything above the bar holds, then the thing below the bar holds" |
+
+> **Watch out!** The notation $\Gamma \vdash e : \tau$ (type judgment, Part IV) looks very similar to $\langle e, \sigma \rangle \Downarrow v$ (value judgment, Parts II–III), but they are different kinds of relations. $\Gamma$ maps names to *types*; $\sigma$ maps names to *values*. One is used by the type checker; the other by the evaluator. Do not mix them up when building derivation trees.
+
 ---
 
 # Part II: Big-Step (Natural) Semantics
+
+**Intuition:** In this section we write down the exact rules your tree-walking interpreter already follows — just in mathematical notation instead of Python. Each rule corresponds to one `if`-branch in your `eval` function: the premises are the recursive calls, and the conclusion is what the whole expression evaluates to. As you read each rule, mentally map it onto the matching Python code you wrote.
 
 ## 2. Big-Step Rules for Mini
 

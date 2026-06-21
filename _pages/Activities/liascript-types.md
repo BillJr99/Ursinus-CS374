@@ -193,7 +193,11 @@ A language that deduces `n: int` from `let n = 5` without requiring the programm
 - (x) Type inference
 - ( ) Duck typing
 
+> **Watch out!** Duck typing (Python's "if it walks like a duck and quacks like a duck, treat it as a duck") is *still* a form of typing — it is a dynamic, structural approach where compatibility is checked by whether an object supports the required operations, not by its declared class. Saying a language "has no types" because it uses duck typing is incorrect. Duck typing is a deliberate design choice that trades the early-error benefits of nominal or structural static checks for maximum flexibility.
+
 ---
+
+**Intuition for Model 3:** Type inference is the party trick where the compiler figures out every variable's type from context alone — you write `let a = 2` and the checker deduces `a: int` without you saying so. Mechanically, it is just a tree walk: visit each node, compute what type it must produce, and propagate that information upward. When two branches disagree on type (e.g., adding an `int` to a `str`), the checker reports an error *at that node* — which may feel far from the actual mistake if the mistake was made pages earlier.
 
 ## Model 3: Type Inference by Hand
 
@@ -276,6 +280,32 @@ except TypeError as e:
     print(f"Type error: {e}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Worked Example: Tracing Type Inference Step by Step
+
+Consider the small program: `let a = 2; let b = a + 3; let c = b < 10; in c`
+
+The `infer` function walks this AST top-down, building a **type environment** (a mapping from variable names to their inferred types) as it goes:
+
+| Step | Node visited | Type environment before | Result type deduced |
+|------|-------------|------------------------|---------------------|
+| 1 | `let a = ("int",)` | `{}` (empty) | literal `("int",)` → `TInt` |
+| 2 | Extend env with `a: TInt`; recurse into body | `{a: TInt}` | — |
+| 3 | `let b = ("add", ("var","a"), ("int",))` | `{a: TInt}` | look up `a` → `TInt`; literal → `TInt`; `TInt + TInt` → `TInt` |
+| 4 | Extend env with `b: TInt`; recurse into body | `{a: TInt, b: TInt}` | — |
+| 5 | `let c = ("lt", ("var","b"), ("int",))` | `{a: TInt, b: TInt}` | look up `b` → `TInt`; literal → `TInt`; same type → `TBool` |
+| 6 | Extend env with `c: TBool`; body is `("var","c")` | `{a: TInt, b: TInt, c: TBool}` | look up `c` → `TBool` |
+| **Final** | whole program | — | **`TBool`** |
+
+Now trace the *error* program: `let a = 2; a + "hello"`
+
+| Step | Node visited | Type environment | Result |
+|------|-------------|-----------------|--------|
+| 1 | `let a = ("int",)` | `{}` | `TInt` |
+| 2 | Extend env; recurse into body `("add", ("var","a"), ("str",))` | `{a: TInt}` | — |
+| 3 | left: look up `a` → `TInt`; right: `("str",)` → `TStr` | `{a: TInt}` | `TInt + TStr` → **TypeError**: `cannot add int and str` |
+
+Notice that the error is reported at the `add` node (step 3), but the root cause is the choice made at step 1. This distance between the error location and the root cause is a recurring challenge in type inference systems — and why good inference error messages are hard to write.
 
 ### Critical Thinking Questions
 

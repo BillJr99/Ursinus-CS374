@@ -11,6 +11,8 @@ link:     https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.
 
 # Algebraic Data Types and Pattern Matching
 
+Pattern matching is like a smart `switch` statement that simultaneously tests the *shape* of a value AND extracts pieces from it in one step — think of a postal sorter that reads the address off the envelope while physically routing the package, never handling the contents without first knowing what kind of parcel it is. This matters because most bugs in large programs come from handling the wrong kind of data at the wrong time; pattern matching plus algebraic data types forces you to confront every possible case at the point where you write the code, not six months later in a production crash. By the end of this activity you will write code that simply cannot reach an unhandled state.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -26,6 +28,12 @@ By the end of this activity, you will be able to:
 
 ## Directions and Roles
 
+> **Before You Begin:** This activity assumes you can:
+> - Write basic Python classes and use `isinstance()` to branch on type
+> - Understand what a `None` return value means and why forgetting to check it causes `AttributeError`/`TypeError` crashes
+> - Read simple recursive functions (a function that calls itself on a smaller input)
+> If any of these feel shaky, review them first.
+
 Work in groups of 3–4. Rotate roles every 20 minutes.
 
 - **Facilitator**: Keeps discussion on track; ensures everyone contributes.
@@ -34,6 +42,8 @@ Work in groups of 3–4. Rotate roles every 20 minutes.
 - **Reflector**: Monitors group process; writes the reflection at the end.
 
 ---
+
+Before diving into the solution, Model 1 shows the *exact pain point* that algebraic data types cure: a function that sometimes returns a real value and sometimes returns `None`, with no way for the type system to remind callers to handle both possibilities. Run the code and watch it crash — that crash is the motivating problem for everything that follows.
 
 ## Model 1 — The Problem with Booleans and Null
 
@@ -55,6 +65,8 @@ print(u["age"])   # 💥 TypeError: 'NoneType' object is not subscriptable
 
 The problem: `None` *looks like* a real value. The type system doesn't force you to handle the failure case.
 
+> **Watch out!** Python's `None` is assignable to *any* variable, so a dict value, a returned object, and a missing result all share the same type at runtime. This is by design in Python, but it means `u["age"]` compiles (or runs until that line) with no warning — the crash only happens when execution reaches the bad line, often deep in a call stack far from where `None` was returned.
+
 **Critical Thinking Questions (CTQs)**
 
 > **CTQ 1.1** What happens if you call `find_user("alice", users)["age"]`? What if you call `find_user("charlie", users)["age"]`?
@@ -64,6 +76,8 @@ The problem: `None` *looks like* a real value. The type system doesn't force you
 > **CTQ 1.3** List two other common uses of `None` / `null` in Python or Java as a sentinel value. For each one, describe a bug that this pattern has caused in real software.
 
 ---
+
+Model 2 introduces the core tool: a **sum type** (tagged union). Instead of returning `None`, we return a value whose *type tag* tells the caller whether an answer exists. The `match` statement then forces explicit handling of each tag, turning a potential runtime crash into a visible structural check at the call site.
 
 ## Model 2 — Sum Types: Tagging Variants
 
@@ -115,6 +129,8 @@ for s in shapes:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** Python's `match` statement does **not** warn you when your cases are non-exhaustive. If you add a new variant (say `Square`) but forget a matching `case Square(...)` arm, Python silently falls through all arms and `area()` returns `None` — no error, no warning. Haskell and Rust treat a non-exhaustive match as a compile-time error. In Python, you must add `case _ : raise NotImplementedError(f"Unknown shape: {shape}")` as the final arm to catch this yourself.
+
 **CTQs**
 
 > **CTQ 2.1** What happens if you add a new variant `Square(side: float)` to `Shape` but forget to update `area()`? Try it! What does Python do? What would a language like Haskell or Rust do?
@@ -124,6 +140,8 @@ for s in shapes:
 > **CTQ 2.3** Rewrite `area()` using `if/elif/isinstance()` instead of `match`. Which version is clearer? Which is safer?
 
 ---
+
+Model 3 shows how to apply sum types to the exact failure-handling problem from Model 1. An `Option` type has exactly two variants — `Some(value)` when something is there, and `Nothing` when it isn't — so a caller who holds an `Option` is *structurally reminded* to handle both cases before accessing any value inside.
 
 ## Model 3 — The Option Type: Making Failure Explicit
 
@@ -192,6 +210,8 @@ print(f"Charlie's age: {get_or_default(age2, 'unknown')}")
 
 ---
 
+Model 4 flips to the other half of algebraic data types: **product types**, which bundle *all* their fields together (like a struct). What makes this interesting is that pattern matching can reach *inside* nested product types in one `case` arm — you can simultaneously check the outer shape and destructure inner fields, including guarding on computed conditions.
+
 ## Model 4 — Product Types: Bundling Data
 
 A **product type** bundles *all* of several fields — it's the familiar "struct" or "record". The set of values is the *product* of the component sets (i.e., every combination exists).
@@ -223,6 +243,8 @@ def describe(line: Line) -> str:
             return f"Vertical line at x={x1}"
         case Line(start=Point(x=x1, y=y1), end=Point(x=x2, y=y2)) if y1 == y2:
             return f"Horizontal line at y={y1}"
+        # Note: guard clauses (the `if` after a case) are evaluated left-to-right,
+        # and only after the structural pattern succeeds.
         case _:
             return f"Diagonal line, length={length(line):.2f}"
 
