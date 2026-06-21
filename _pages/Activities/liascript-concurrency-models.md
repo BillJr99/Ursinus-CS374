@@ -401,6 +401,8 @@ except Exception as e:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** STM's retry mechanism means the transaction body can execute *multiple times* before committing. Any code inside a transaction that has an irreversible side effect — printing output, writing to a file, sending a network packet — will happen multiple times if the transaction retries. This is why Haskell's type system uses `STM a` (a type that cannot perform IO) to make it *impossible* to write effectful code inside a transaction. In the Python simulation above, there is nothing stopping you from adding a `print` inside `txn` — but doing so would produce misleading output on retries.
+
 ---
 
 ## Model 3: Transactions and Composability
@@ -467,6 +469,8 @@ A function call $f(v)$ in the λ-calculus encodes as: send $v$ on channel $f$, w
 # Part VI: Comparison and Design Implications
 
 ## 6. Choosing a Concurrency Primitive
+
+**Intuition.** All three models share one conviction: shared mutable state is the root cause of concurrency bugs, and the language should make it either impossible or self-correcting. They differ in *how*: actors prevent sharing through encapsulation (no other actor can touch your state); channels prevent sharing by forcing data to move through a single conduit at a time; STM allows sharing but detects conflicts automatically. Your choice of model shapes how you decompose a problem — actors encourage thinking in terms of independent services, channels encourage thinking in terms of data pipelines, and STM encourages thinking in terms of consistent invariants. The table below captures the key tradeoffs.
 
 | | Actors | Channels (CSP) | STM |
 |---|---|---|---|

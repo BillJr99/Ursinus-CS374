@@ -118,7 +118,11 @@ Rust achieves memory safety without a garbage collector primarily by:
 
 # Part II: Runnable Models
 
+> **Watch out!** Python's `match` is **not** a switch statement. A switch matches on a single value (like an integer or string). Python's `match` matches on *structure*: it can simultaneously check the type of an object, destructure it into named components, and bind those components to variables — all in one pattern. If you find yourself writing `match x: case 1: ... case 2: ...` you are using only a small fraction of what `match` can do.
+
 ## Model 2: Pattern Matching (Python 3.10+ match/case)
+
+> **Intuition:** Before `match`, writing a tree-walking evaluator in Python meant chains of `if isinstance(node, Num):` checks, followed by manual attribute accesses (`node.value`), all nested inside each other. With `match`, you write `case Num(value=n):` and in one line you have checked the type, extracted the field, and bound it to a local variable. The code mirrors the structure of the data it processes — which is exactly what you want when the data *is* a tree.
 
 Python's `match` statement (PEP 634) goes far beyond a simple switch: it matches on *structure*, destructures into bindings, supports guards, and handles class patterns. The cell below walks through each capability with your CS374 AST as the running example.
 
@@ -215,7 +219,11 @@ for val in [-3, 0, 4, 7]:
 
 ---
 
+> **Watch out!** Python's `match` does **not** enforce exhaustiveness at compile time. If no arm matches, Python silently returns `None` — it does not raise an error. In Rust, OCaml, and Haskell, a non-exhaustive `match` is a *compile error* or at least a warning. This means that in Python, if you add a new AST node type and forget to add a case for it, your evaluator will silently return `None` and the bug may not surface until much later. The `case _: raise ...` wildcard arm is your manual safety net.
+
 ## Model 3: Dataclasses and __post_init__
+
+> **Intuition:** A `@dataclass` is Python's shortcut for a class whose job is primarily to hold data. Instead of writing `__init__`, `__repr__`, and `__eq__` by hand — all of which are boilerplate that mirrors the field list you already wrote as annotations — `@dataclass` generates them for you. The `__post_init__` hook is the place to add any validation logic that goes beyond "assign these fields": it runs after the generated `__init__`, so you can check invariants and raise errors before the object escapes into the rest of the program.
 
 Python's `@dataclass` decorator (PEP 557) auto-generates `__init__`, `__repr__`, and `__eq__` from field annotations. The `__post_init__` hook runs *after* the generated `__init__`, allowing validation and derived fields — a lightweight version of the invariant-checking constructors common in strongly typed languages.
 
@@ -317,7 +325,11 @@ print("ensuring no Token or ASTNode can exist in an invalid state.")
 
 ---
 
+> **Watch out!** `@dataclass(frozen=True)` makes an instance *immutable after construction*, but it is not the same as a deeply immutable object. If a frozen dataclass has a field that holds a mutable list, the list's contents can still change — `frozen` prevents reassignment of the field itself (`obj.field = new_value` will raise `FrozenInstanceError`), but does not prevent mutation of the object the field points to (`obj.field.append(x)` still works). For true immutability, all fields must themselves be immutable.
+
 ## Model 4: Type Annotations, Generators, and Context Managers
+
+> **Intuition:** This model covers three Python features that look unrelated but share a common theme: each one lets you express a program's *intent* more precisely without changing its runtime behavior. Type annotations document the expected shapes of data. Generators let you describe a lazy sequence without materializing it. Context managers let you express "this block needs setup and guaranteed teardown" as a first-class construct rather than a try/finally pattern you must remember to write. All three are about making the code's intent visible and verifiable — to other programmers, to type checkers, and to the runtime.
 
 Python's type system, generators, and context managers are three orthogonal features that each address a distinct design concern: **static documentation**, **lazy computation**, and **resource safety**. The cell explores all three in the context of a token stream — a structure your compiler pipeline uses.
 

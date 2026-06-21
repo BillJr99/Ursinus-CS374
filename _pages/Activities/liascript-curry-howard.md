@@ -311,6 +311,8 @@ print("Empty type: no constructor exists (test passed if no crash above)")
 
 ## 5. Types That Depend on Values
 
+**Intuition.** Everything so far has kept types and values in separate worlds: types exist at compile time, values at run time. Dependent types erase that wall. A type like `Vec 3 Int` — "a list of exactly three integers" — mentions the *value* `3` inside the type itself. A function that returns a `Vec n Bool` for any `n` is simultaneously a program and a proof of the logical statement "for every natural number n, there exists a boolean list of length n." The type checker verifying your code is a theorem prover checking your proof. This is why Coq, Lean, and Agda are simultaneously proof assistants and programming languages — they are the same thing.
+
 Standard type systems separate types (compile-time) from values (run-time). **Dependent types** erase that boundary: types can *depend on* values, and propositions about specific values become types. This is the basis of proof assistants like Coq, Lean, and Agda.
 
 Examples:
@@ -394,6 +396,10 @@ In a dependently-typed language, `Vec 3 Int` and `Vec 4 Int` are **different typ
 # Part V: The Curry-Howard Table Completed
 
 ## 6. Synthesis
+
+**Intuition.** You have now seen every row of the Curry-Howard table in action. The pattern is always the same: a logical rule for *introducing* a proposition corresponds to a constructor or function that *builds* a value of the corresponding type; a logical rule for *eliminating* a proposition corresponds to pattern matching or function application that *uses* that value. The table below is your complete reference.
+
+> **Watch out!** The Curry-Howard correspondence is exact for *intuitionistic* (constructive) logic, not classical logic. Classical logic includes the law of excluded middle (`P ∨ ¬P`) and double-negation elimination (`¬¬P → P`). These correspond to continuations and control operators — not ordinary functions. If you find yourself trying to write a function of type `Either P (P -> Never)` in pure functional code and getting stuck, that is not a bug — it reflects a genuine distinction between constructive and classical mathematics.
 
 Return to the table from Part I. By now you should be able to fill in the programming column for every logic row:
 

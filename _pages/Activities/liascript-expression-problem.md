@@ -120,6 +120,8 @@ This is the **OOP extensibility asymmetry**: new types are cheap; new operations
 
 ## Model 2 — Functional Style: Easy to Add Operations, Hard to Add Types
 
+Flip the restaurant analogy: functional programming is like a spreadsheet where each column (operation) is a formula that covers all rows — adding a new formula is trivial, but adding a new row (type) forces you to update every formula. The `match` expression in this model is that spreadsheet formula, and you will feel the pain of extending it when a new shape arrives.
+
 The functional approach represents each shape as a plain data value and writes operations as standalone functions using pattern matching. This flips the asymmetry exactly: adding a new operation is trivial, but adding a new type requires touching every function.
 
 Python 3.10 introduced structural pattern matching (`match`/`case`), which enables an approximation of the algebraic data type style found in Haskell, Rust, and OCaml.
@@ -163,6 +165,8 @@ for s in shapes:
 
 Adding `to_svg` required writing exactly one new function. Compare that to Model 1, where adding `to_svg` would have required modifying three existing classes. But now try adding a `Triangle` type. You must update `area`, `perimeter`, and `to_svg` — and every other operation that has ever been written over shapes. In a library with 20 operations, all three cases must be added everywhere.
 
+> **Watch out!** Python's `match`/`case` does not exhaustiveness-check at compile time. If you forget a case for a new type, Python silently returns `None` rather than raising an error at the point where the match was incomplete. Haskell and Rust would catch this at compile time — a significant safety difference.
+
 This is the **functional extensibility asymmetry**: new operations are cheap; new types are expensive.
 
 **Critical Thinking Questions**
@@ -183,6 +187,8 @@ This is the **functional extensibility asymmetry**: new operations are cheap; ne
 ---
 
 ## Model 3 — The Visitor Pattern: OOP's Attempt to Add Operations
+
+Think of the Visitor as a hotel concierge: instead of each guest (shape) knowing how to fulfill every request, guests simply tell the concierge "I am a Circle" and the concierge looks up the right handler. Adding a new service (operation) means training a new concierge — no guest needs to change. But adding a new type of guest still requires updating the concierge's training manual (the abstract `ShapeVisitor` interface).
 
 The Gang of Four **Visitor pattern** is OOP's classical workaround for the hard-to-add-operations problem. The idea: separate the operation from the data by encoding each operation as a "Visitor" object. Each shape accepts a visitor and dispatches to the appropriate method. New operations become new Visitor classes — no modification of existing shape classes required.
 
@@ -228,6 +234,8 @@ for s in shapes:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** The Visitor pattern requires every shape class to have an `accept` method baked in from the start. This is a design-time commitment — you cannot retrofit the Visitor pattern onto a library of shapes that were written without `accept`. That up-front coupling is the hidden cost of the pattern.
+
 Adding `SVGVisitor` required no changes to `Circle`, `Rectangle`, `Shape`, or `AreaVisitor`. That is progress — we have solved the "hard to add operations" problem from Model 1. But the cost is visible: `ShapeVisitor` acts as a registry of all known types. Adding a new type (`Triangle`) requires: (1) adding `visit_triangle` to `ShapeVisitor`, (2) implementing it in every existing visitor, and (3) adding `accept` to `Triangle`. The Visitor pattern solves one dimension at the cost of making the other dimension even more entangled.
 
 **Critical Thinking Questions**
@@ -249,6 +257,8 @@ Adding `SVGVisitor` required no changes to `Circle`, `Rectangle`, `Shape`, or `A
 ---
 
 ## Model 4 — The Open/Closed Solution: Extension Objects and Typeclasses
+
+`singledispatch` works like a lookup table indexed by type: when you call `area(some_shape)`, Python looks up the runtime type in the dispatch table and calls the registered function. You can add new rows to this table from anywhere — a different file, a different package — without touching the table's original definition. This is the same mechanism Haskell uses with `instance` declarations and Rust uses with `impl Trait for Type`.
 
 The holy grail is a mechanism where you can add both new types and new operations without modifying existing code. Python's `functools.singledispatch` provides this. It lets you register implementations of a function for specific types — after the fact, from anywhere. This is structurally equivalent to **Haskell typeclasses** and **Rust trait implementations**.
 
@@ -302,6 +312,8 @@ for s in shapes:
     print(f"area={area(s):.2f}, svg={to_svg(s)}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+> **Watch out!** `singledispatch` dispatches on the type of the **first argument only**. If you have a function that needs to branch on the types of two arguments simultaneously, `singledispatch` will not help directly — you need a different mechanism (such as multimethods or manual dispatch tables). This is why the Visitor pattern uses double dispatch explicitly.
 
 Notice what did NOT happen: adding `Triangle` did not require opening any existing file. Adding `to_svg` did not require touching any shape class. Each registration is a new, independent declaration. This is the same mechanism Haskell uses with `instance` declarations and Rust uses with `impl Trait for Type` — both allow any module to provide an implementation of any trait for any type.
 
