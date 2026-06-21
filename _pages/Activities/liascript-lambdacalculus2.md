@@ -1,4 +1,3 @@
-# The Lambda Calculus, Part 2: Church Encodings and Combinators
 <!--
 author:   William Mongan
 language: en
@@ -14,6 +13,21 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 -->
 
 # The Lambda Calculus, Part 2: Church Encodings and Combinators
+
+> **Before You Begin**
+>
+> This activity builds directly on **Lambda Calculus, Part 1**. Before starting, you should be comfortable with:
+>
+> - Writing and reading lambda expressions (e.g., `λx.λy. x`)
+> - Performing beta reduction step by step
+> - Distinguishing free variables from bound variables
+> - Applying multi-argument (curried) functions
+>
+> If any of those feel shaky, review the [Lambda Calculus, Part 1 activity](liascript-lambdacalculus1.md) before continuing.
+
+---
+
+Everything you need to compute can be expressed with just functions. Lambda calculus has no numbers, no booleans, no if-statements — yet Church showed how to encode ALL of these as pure lambda terms. This activity builds that encoding from scratch in Python.
 
 Yesterday's calculus had no numbers, no booleans, no data, and today we discover it needs none: **everything can be built from functions alone**. Following the same path as Gabriel Lebec's "A Flock of Functions" (our companion reading, in JavaScript), we build booleans, then numbers, then arithmetic, verifying each construction by hand and in Python. The arc: **named combinators $\rightarrow$ Church booleans $\rightarrow$ Church numerals $\rightarrow$ arithmetic as function surgery**.
 
@@ -52,13 +66,17 @@ You reduced **K** $A\, B \rightarrow A$ and **KI** $A\, B \rightarrow B$ yesterd
 
 ### Critical Thinking Questions
 
-1. Verify by reduction that $\textbf{C}\, \textbf{K}\, A\, B$ behaves exactly like $\textbf{KI}\, A\, B$. (The Cardinal of the Kestrel is the Kite: flipping "take the first" yields "take the second.")
-2. Write each combinator as a Python lambda (`K = lambda x: lambda y: x`, and so on) and verify question 1 by execution with strings for $A$ and $B$.
-3. Why must a combinator have no free variables to deserve a permanent name? Connect to purity from the functional module.
+> **CTQ 1.1** Verify by reduction that $\textbf{C}\, \textbf{K}\, A\, B$ behaves exactly like $\textbf{KI}\, A\, B$. (The Cardinal of the Kestrel is the Kite: flipping "take the first" yields "take the second.")
+
+> **CTQ 1.2** Write each combinator as a Python lambda (`K = lambda x: lambda y: x`, and so on) and verify question 1 by execution with strings for $A$ and $B$.
+
+> **CTQ 1.3** Why must a combinator have no free variables to deserve a permanent name? Connect to purity from the functional module.
 
 ---
 
 # Part II: Truth, Built from Selection
+
+> **Intuition before booleans:** An `if` does one job: select between two things. So we will *define* the booleans as the selectors. TRUE is a function that ignores its second argument: `lambda x: lambda y: x`. FALSE is `lambda x: lambda y: y`. If/then/else is just applying a boolean to two branches: write `b(then_branch)(else_branch)` and the boolean itself picks the right one.
 
 ## 2. Church Booleans
 
@@ -76,20 +94,101 @@ $$
 \textbf{OR} = \lambda p. \lambda q.\, p\, p\, q
 $$
 
+> **Watch out!** Church booleans are functions, not values. `TRUE(a)(b)` returns `a` — that is the entire definition. The if-then-else `IF b t f = b(t)(f)` works because TRUE selects its first argument and FALSE selects its second. There is no special conditional syntax; the boolean *is* the branch selector.
+
+> **Watch out!** Python's `lambda` returns single expressions. For multi-argument Church terms, use curried lambdas: `lambda x: lambda y: x` not `lambda x,y: x`. The curried form is what makes `TRUE(a)(b)` work — the first call returns another function that accepts `b`.
+
+**Step-by-step reduction: NOT TRUE**
+
+```
+NOT TRUE
+= (λb. b FALSE TRUE) (λx.λy. x)
+→β (λx.λy. x) FALSE TRUE
+→β (λy. FALSE) TRUE
+→β FALSE  ✓
+```
+
+**Step-by-step reduction: AND TRUE FALSE**
+
+```
+AND TRUE FALSE
+= (λp.λq. p q p) TRUE FALSE
+→β (λq. TRUE q TRUE) FALSE
+→β TRUE FALSE TRUE
+= (λx.λy. x) FALSE TRUE
+→β (λy. FALSE) TRUE
+→β FALSE  ✓
+```
+
+**Decode helper — "peek inside" a Church boolean:**
+
+```python  liascript
+TRUE  = lambda x: lambda y: x
+FALSE = lambda x: lambda y: y
+
+def church_to_bool(b):
+    return b(True)(False)
+
+print("church_to_bool(TRUE)  =", church_to_bool(TRUE))
+print("church_to_bool(FALSE) =", church_to_bool(FALSE))
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+Hand a Church boolean `True` and `False` (Python's built-ins) as its two arguments. Since TRUE selects its first argument it returns `True`; FALSE returns `False`. This is your window into the encoding.
+
+### Church Booleans — Runnable
+
+```python  liascript
+# Church booleans: TRUE selects first, FALSE selects second.
+TRUE  = lambda x: lambda y: x          # K  (Kestrel)
+FALSE = lambda x: lambda y: y          # KI (Kite)
+NOT   = lambda b: b(FALSE)(TRUE)
+AND   = lambda p: lambda q: p(q)(p)
+OR    = lambda p: lambda q: p(p)(q)
+XOR   = lambda p: lambda q: p(NOT(q))(q)
+
+# Decode helper: peek inside any Church boolean
+def church_to_bool(b):
+    return b(True)(False)
+
+show_bool = lambda b: b("TRUE")("FALSE")   # a boolean selects its own name
+
+print("=== Church Booleans ===")
+print("church_to_bool(TRUE)  =", church_to_bool(TRUE))
+print("church_to_bool(FALSE) =", church_to_bool(FALSE))
+print("NOT TRUE        =", show_bool(NOT(TRUE)))
+print("NOT FALSE       =", show_bool(NOT(FALSE)))
+print("AND TRUE FALSE  =", show_bool(AND(TRUE)(FALSE)))
+print("OR  FALSE TRUE  =", show_bool(OR(FALSE)(TRUE)))
+print("XOR TRUE  TRUE  =", show_bool(XOR(TRUE)(TRUE)))
+print("XOR TRUE  FALSE =", show_bool(XOR(TRUE)(FALSE)))
+
+# if-then-else is just application: b(then)(else)
+print("\n=== Church if-then-else ===")
+print("if TRUE  then 'yes' else 'no' =", TRUE("yes")("no"))
+print("if FALSE then 'yes' else 'no' =", FALSE("yes")("no"))
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
 ---
 
 ## Model 2: Prove the Logic
 
 ### Critical Thinking Questions
 
-4. Reduce $\textbf{NOT}\, \textbf{TRUE}$ step by step to $\textbf{FALSE}$. (Substitute, then let TRUE select.)
-5. Reduce $\textbf{AND}\, \textbf{TRUE}\, \textbf{FALSE}$ and $\textbf{AND}\, \textbf{FALSE}\, \textbf{TRUE}$. Explain *why* `p q p` works in one sentence: when is the answer just "whatever q is," and when is it "p itself"?
-6. $\textbf{AND}$ never examines $q$ when $p$ is FALSE. Which semantics from the control-flow module did you just get *for free*, and why is it free here?
-7. Notice $\textbf{NOT} = \textbf{C}$ applied cleverly... actually, verify: does $\textbf{C}\, b$ flip a Church boolean's selections? Reduce $\textbf{C}\, \textbf{TRUE}\, A\, B$ and compare with $\textbf{FALSE}\, A\, B$.
+> **CTQ 2.1** Reduce $\textbf{NOT}\, \textbf{TRUE}$ step by step to $\textbf{FALSE}$. (Substitute, then let TRUE select.) The trace above is a guide; write your own with all substitutions made explicit.
+
+> **CTQ 2.2** Reduce $\textbf{AND}\, \textbf{TRUE}\, \textbf{FALSE}$ and $\textbf{AND}\, \textbf{FALSE}\, \textbf{TRUE}$. Explain *why* `p q p` works in one sentence: when is the answer just "whatever q is," and when is it "p itself"?
+
+> **CTQ 2.3** $\textbf{AND}$ never examines $q$ when $p$ is FALSE. Which semantics from the control-flow module did you just get *for free*, and why is it free here?
+
+> **CTQ 2.4** Notice $\textbf{NOT} = \textbf{C}$ applied cleverly... actually, verify: does $\textbf{C}\, b$ flip a Church boolean's selections? Reduce $\textbf{C}\, \textbf{TRUE}\, A\, B$ and compare with $\textbf{FALSE}\, A\, B$.
 
 ---
 
 # Part III: Numbers as Repetition
+
+> **Intuition before numerals:** Zero is "apply f zero times": `lambda f: lambda x: x`. One is "apply f once": `lambda f: lambda x: f(x)`. The number N is "apply f N times to x." Addition is "apply f m+n times." Multiplication is "apply (n copies of f) m times." The number *is* the iteration count — there are no digits stored anywhere.
 
 ## 3. Church Numerals
 
@@ -112,11 +211,43 @@ $$
 
 Read PLUS aloud: "apply $f$ $n$ times to $x$, then $m$ more times." Read MULT: "$n$ copies of $f$, repeated $m$ times."
 
+> **Watch out!** Church numerals look like iteration counts, not numbers. `TWO f x = f(f(x))` applies `f` twice to `x`. The numeral does not "contain" the digit 2; it *is* the behavior of applying something twice. This is why `church_to_int` works: you hand it the successor function on machine integers and the seed 0, and count how many times successor fires.
+
+**Step-by-step reduction: SUCC ZERO reduces to ONE**
+
+```
+SUCC ZERO
+= (λn.λf.λx. f (n f x)) (λf.λx. x)
+→β λf.λx. f ((λf.λx. x) f x)
+→β λf.λx. f ((λx. x) x)
+→β λf.λx. f x
+= ONE  ✓
+```
+
+**Decode helper — "peek inside" a Church numeral:**
+
+```python  liascript
+ZERO = lambda f: lambda x: x
+SUCC = lambda n: lambda f: lambda x: f(n(f)(x))
+
+def church_to_int(n):
+    return n(lambda x: x + 1)(0)
+
+ONE = SUCC(ZERO)
+TWO = SUCC(ONE)
+print("church_to_int(ZERO) =", church_to_int(ZERO))
+print("church_to_int(ONE)  =", church_to_int(ONE))
+print("church_to_int(TWO)  =", church_to_int(TWO))
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+Hand the numeral the successor function on Python ints and the seed 0. If the numeral applies its function twice (as TWO does), you get `0 + 1 + 1 = 2`. The number of applications is exactly the Church numeral's value.
+
 ---
 
 ## Church Encodings — Runnable
 
-```python
+```python  liascript
 # Church encodings, executable. Python lambdas ARE lambda calculus terms.
 
 TRUE  = lambda x: lambda y: x          # K  (Kestrel)
@@ -128,15 +259,14 @@ XOR   = lambda p: lambda q: p(NOT(q))(q)
 
 show_bool = lambda b: b("TRUE")("FALSE")    # a boolean selects its own name
 
-print("=== Church Booleans ===")
-print("NOT TRUE        =", show_bool(NOT(TRUE)))
-print("NOT FALSE       =", show_bool(NOT(FALSE)))
-print("AND TRUE FALSE  =", show_bool(AND(TRUE)(FALSE)))
-print("OR  FALSE TRUE  =", show_bool(OR(FALSE)(TRUE)))
-print("XOR TRUE  TRUE  =", show_bool(XOR(TRUE)(TRUE)))
-print("XOR TRUE  FALSE =", show_bool(XOR(TRUE)(FALSE)))
+# Decode helpers
+def church_to_bool(b):
+    return b(True)(False)
 
-print("\n=== Church Numerals ===")
+def church_to_int(n):
+    return n(lambda x: x + 1)(0)
+
+print("=== Church Numerals ===")
 ZERO  = lambda f: lambda x: x
 SUCC  = lambda n: lambda f: lambda x: f(n(f)(x))
 PLUS  = lambda m: lambda n: lambda f: lambda x: m(f)(n(f)(x))
@@ -148,9 +278,11 @@ THREE    = PLUS(ONE)(TWO)
 SIX      = MULT(TWO)(THREE)
 EIGHT    = EXP(TWO)(THREE)   # 2^3
 
-to_int = lambda n: n(lambda k: k + 1)(0)    # decode: count repetitions
-print("ONE, TWO, 1+2, 2*3  =", to_int(ONE), to_int(TWO), to_int(THREE), to_int(SIX))
-print("2^3 =", to_int(EIGHT))
+print("church_to_int(ZERO)  =", church_to_int(ZERO))
+print("church_to_int(ONE)   =", church_to_int(ONE))
+print("church_to_int(TWO)   =", church_to_int(TWO))
+print("ONE, TWO, 1+2, 2*3  =", church_to_int(ONE), church_to_int(TWO), church_to_int(THREE), church_to_int(SIX))
+print("2^3 =", church_to_int(EIGHT))
 
 # if-then-else is just application: b(then)(else)
 print("\n=== Church if-then-else ===")
@@ -171,10 +303,13 @@ for n, val in [(ZERO, "ZERO"), (ONE, "ONE"), (TWO, "TWO")]:
 
 ### Critical Thinking Questions
 
-8. `to_int` decodes a numeral by handing it the successor function on machine integers and the seed 0. Explain why this works in one sentence that begins "A Church numeral n is...".
-9. Reduce $\textbf{SUCC}\; \textbf{1}$ by hand to confirm it is $\textbf{2}$ (expect two or three careful steps).
-10. Verify in code that $\textbf{MULT}\, \textbf{2}\, \textbf{3}$ and $\textbf{PLUS}\, \textbf{3}\, \textbf{3}$ decode equally, then explain MULT's eerie brevity: what is `n(f)`, and what does `m` do *to that*?
-11. Where is the data? A Church numeral stores no digits anywhere. Connect this to homoiconicity week's lesson, and to the claim "data is frozen behavior."
+> **CTQ 3.1** `church_to_int` decodes a numeral by handing it the successor function on machine integers and the seed 0. Explain why this works in one sentence that begins "A Church numeral n is...".
+
+> **CTQ 3.2** Reduce $\textbf{SUCC}\; \textbf{1}$ by hand to confirm it is $\textbf{2}$ (expect two or three careful steps). The trace for `SUCC ZERO` above is a model; repeat the pattern one numeral up.
+
+> **CTQ 3.3** Verify in code that $\textbf{MULT}\, \textbf{2}\, \textbf{3}$ and $\textbf{PLUS}\, \textbf{3}\, \textbf{3}$ decode equally, then explain MULT's eerie brevity: what is `n(f)`, and what does `m` do *to that*?
+
+> **CTQ 3.4** Where is the data? A Church numeral stores no digits anywhere. Connect this to homoiconicity week's lesson, and to the claim "data is frozen behavior."
 
 [[MC]]
 Under Church encoding, the expression `b(t)(e)` where b is a Church boolean implements if-then-else because:
@@ -185,17 +320,26 @@ Under Church encoding, the expression `b(t)(e)` where b is a Church boolean impl
 
 ---
 
+# Part IV: Pairs and the Predecessor
+
+> **Intuition before pairs:** A pair stores two values. The pair itself is a function that takes a "selector": `lambda sel: sel(a)(b)`. FST passes `lambda x: lambda y: x` (which is TRUE/K) to extract the first element; SND passes `lambda x: lambda y: y` (which is FALSE/KI) to extract the second. You already built the selectors when you built booleans — pairs come for free.
+
 ## Model 4: Pairs and the Predecessor
 
 **Church pairs — building linked data from functions:**
-```python
+
+```python  liascript
 # Church pairs: PAIR a b f = f a b
 # FST p = p K  (select first)
 # SND p = p KI (select second)
 
 TRUE  = lambda x: lambda y: x   # K
 FALSE = lambda x: lambda y: y   # KI
-to_int = lambda n: n(lambda k: k+1)(0)
+
+# Decode helpers
+def church_to_int(n):
+    return n(lambda k: k + 1)(0)
+
 ZERO  = lambda f: lambda x: x
 SUCC  = lambda n: lambda f: lambda x: f(n(f)(x))
 
@@ -209,7 +353,7 @@ print(f"FST (PAIR 'hello' 'world') = {FST(p)!r}")
 print(f"SND (PAIR 'hello' 'world') = {SND(p)!r}")
 
 # Numeric pairs for predecessor: PAIR n (n-1)
-# Increment a pair: (n,m) → (SUCC n, n)  i.e., shift right
+# Increment a pair: (n,m) -> (SUCC n, n)  i.e., shift right
 shift = lambda p: PAIR(SUCC(FST(p)))(FST(p))
 
 # PRED n: start from (0,0), apply shift n times, take SND
@@ -220,23 +364,25 @@ PRED = lambda n: SND(n(shift)(ZERO_PAIR))
 ONE = SUCC(ZERO); TWO = SUCC(ONE); THREE = SUCC(TWO); FOUR = SUCC(THREE)
 
 print("\n=== Predecessor ===")
-print(f"PRED(0) = {to_int(PRED(ZERO))}")   # 0 (special case)
-print(f"PRED(1) = {to_int(PRED(ONE))}")    # 0
-print(f"PRED(2) = {to_int(PRED(TWO))}")    # 1
-print(f"PRED(4) = {to_int(PRED(FOUR))}")   # 3
+print(f"PRED(0) = {church_to_int(PRED(ZERO))}")   # 0 (special case)
+print(f"PRED(1) = {church_to_int(PRED(ONE))}")    # 0
+print(f"PRED(2) = {church_to_int(PRED(TWO))}")    # 1
+print(f"PRED(4) = {church_to_int(PRED(FOUR))}")   # 3
 
 # Subtraction from predecessor:
 MINUS = lambda m: lambda n: n(PRED)(m)
-print(f"\n4 - 2 = {to_int(MINUS(FOUR)(TWO))}")   # 2
-print(f"3 - 5 = {to_int(MINUS(THREE)(FOUR))}")   # 0 (floored)
+print(f"\n4 - 2 = {church_to_int(MINUS(FOUR)(TWO))}")   # 2
+print(f"3 - 4 = {church_to_int(MINUS(THREE)(FOUR))}")   # 0 (floored)
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
-12. The pair-based predecessor works by shifting: `(0,0) → (1,0) → (2,1) → (3,2)`. After applying shift $n$ times to $(0,0)$, what is the SND? Why does `PRED(ZERO)` return ZERO rather than negative one?
-13. Subtraction `m - n` is defined as "apply PRED n times to m." What is `3 - 5` under this definition? This is called *monus* (truncated subtraction). Is this a bug or a deliberate design choice?
-14. You now have: booleans, conditionals, numerals, arithmetic, pairs. What other data structures (lists, trees) could be built from Church pairs? Sketch the encoding for a two-element list [a, b].
+> **CTQ 4.1** The pair-based predecessor works by shifting: `(0,0) → (1,0) → (2,1) → (3,2)`. After applying shift $n$ times to $(0,0)$, what is the SND? Why does `PRED(ZERO)` return ZERO rather than negative one?
+
+> **CTQ 4.2** Subtraction `m - n` is defined as "apply PRED n times to m." What is `3 - 5` under this definition? This is called *monus* (truncated subtraction). Is this a bug or a deliberate design choice?
+
+> **CTQ 4.3** You now have: booleans, conditionals, numerals, arithmetic, pairs. What other data structures (lists, trees) could be built from Church pairs? Sketch the encoding for a two-element list [a, b].
 
 ---
 
