@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Scheme: Code as Data
 
+Scheme is to programming languages what Latin is to the Romance languages — it exposes the pure, undiluted core that every other language is built from, stripped of the ornamental syntax that usually hides the machinery beneath. Studying Scheme in a PL course is not about learning yet another language; it is about seeing, perhaps for the first time, that a programming language can be so minimal that its programs and its data are literally the same thing. Once you have felt that, you will read every other language differently.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -23,6 +25,21 @@ By the end of this activity, you will be able to:
 - Trace the evaluation of recursive Scheme functions, including higher-order functions like `map` and `fold`
 - Describe how Scheme's `quote` and `eval` mechanisms enable code to be treated as data and vice versa
 - Contrast Scheme's functional style with imperative Python, identifying where recursion replaces loops and closures replace mutable state
+
+> **Before You Begin:** This activity assumes you can:
+> - Write and call Python functions, including functions that call themselves recursively (e.g., factorial, Fibonacci)
+> - Explain what a call stack is and what happens to it during nested function calls
+> - Describe what a higher-order function is (a function that takes or returns another function, like Python's `map` and `filter`)
+>
+> If any of these feel shaky, review them first.
+
+| Python | Scheme | Notes |
+|--------|--------|-------|
+| `def f(x): return x + 1` | `(define (f x) (+ x 1))` | Parentheses wrap everything — operator comes first |
+| `if x > 0: ...` | `(if (> x 0) ...)` | Condition is just another expression in parens |
+| `[1, 2, 3]` | `'(1 2 3)` | The quote `'` tells Scheme: "data, do not evaluate" |
+| `f(a, b)` | `(f a b)` | Every call looks the same; no special infix operators |
+| `lambda x: x * 2` | `(lambda (x) (* x 2))` | Anonymous functions use the same `(operator operands)` shape |
 
 Today we study a language as an *artifact*: **Scheme** (we use its Racket dialect), a tiny functional language whose syntax is so uniform that programs and data share one shape, the parenthesized list. Scheme matters to this course twice over: it is functional programming distilled to essentials, and its **s-expression** syntax makes the lexer-parser machinery you built almost disappear, a designed contrast your team should feel. The arc: **s-expressions $\rightarrow$ evaluation rules $\rightarrow$ recursion as the only loop $\rightarrow$ code as data**.
 
@@ -50,6 +67,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 **Notice what vanished.** No precedence (prefix notation needs none: the tree is explicit in the nesting), no associativity rules, no statement-versus-expression divide (everything is an expression with a value). Your ambiguity module's entire ladder grammar exists to recover, for infix notation, the tree that Scheme's syntax simply *is*. The parentheses are the AST, written by hand.
 
 ---
+
+This model makes the connection between Scheme's syntax and the Abstract Syntax Trees you have been building in Python explicit. In Python, a parser works hard to transform the flat text `2 + 3 * 4` into a tree that captures precedence; in Scheme, the programmer simply *writes* the tree directly as nested parentheses. Model 1 asks you to feel the difference by doing the translation yourself.
 
 ## Model 1: Trees Without a Parser
 
@@ -87,6 +106,8 @@ Scheme has no `while`; iteration is recursion, usually on lists, which are built
 The base-case-plus-recursive-case shape is the same one your `my_reduce` exercise used, and the same shape as `evaluate` walking an AST: *the* functional pattern.
 
 ---
+
+Model 2 is where recursion becomes your only loop. Every pattern you know from Python `for`-loops — mapping a function over a list, filtering elements, accumulating a sum — can be expressed as a short recursive function that peels one element off the front of a list, does something with it, and recurs on the rest. Watch how `car` grabs the head and `cdr` returns the tail; those two operations are the entire engine.
 
 ## Model 2: Run and Vary
 

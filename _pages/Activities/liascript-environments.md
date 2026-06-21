@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Environments: Implementing Scope
 
+Every running program needs a way to answer the question: "what value does the name `x` refer to right now?" An **environment** is that answer — a data structure that maps names to values, much like a phone book maps names to numbers. But a single phone book is not enough: when you enter a new block or function, you need a fresh page that can shadow entries from the outer book, and when you leave, that page is torn out and discarded. Nested environments form a **chain of phone books**, each one consulted first, then deferring to the one above when a name is not found locally. Understanding how to build and manipulate this chain is the foundation of every scope rule your interpreter will enforce.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -24,6 +26,13 @@ By the end of this activity, you will be able to:
 - Predict the value printed at each point in a program with shadowed variable names, explaining each step of the chain-walk lookup
 - Construct the environment chain diagram for a given program snapshot and identify the lifetime and scope of each binding
 - Integrate the `Environment` class into a tree-walking interpreter so that block statements correctly push and pop scopes
+
+> **Before You Begin:** This activity assumes you can:
+> - Explain the difference between *scope* (where a name is visible in source text) and *lifetime* (how long its storage exists at runtime)
+> - Read and write basic Python dictionaries and classes (including `__init__`, instance variables, and simple `while` loops)
+> - Describe what static (lexical) scoping means: a name resolves to the declaration in the innermost enclosing block at the point where the name appears in the source
+>
+> If any of these feel shaky, review them first.
 
 Yesterday's scope rules become today's data structure: the **environment**, a chain of dictionaries linked by parent pointers, in which lookup walks outward exactly as static scoping's "innermost enclosing declaration" demands. This two-day module builds the `Environment` class your interpreter assignment requires, and rehearses every operation on it until the picture is second nature. The arc: **why one dict fails $\rightarrow$ the chain $\rightarrow$ the four operations $\rightarrow$ blocks creating and discarding scopes**.
 
@@ -50,6 +59,8 @@ $$
 This walk *is* static scope: innermost first, outward through textual enclosure.
 
 ---
+
+**Intuition for Model 1:** Imagine you are filling out a crossword puzzle on a notepad. You write global clues at the top of the page, then tear off a sticky note for each inner section and place it on top. When you look up a clue, you check the sticky note first; if it is not there, you look at the page beneath. When you finish the section, you peel off the sticky note and discard it — the clues written on it are gone, and any clues from the page that it was covering are visible again. This model lets you trace exactly that process with a two-scope program.
 
 ## Model 1: Paper Machine
 
@@ -133,6 +144,8 @@ except Exception as e:
 
 ---
 
+**Intuition for Model 2:** Now that you have seen the chain in action, it is time to read the class itself carefully. Think of `define`, `lookup`, and `assign` as three distinct post-office operations: `define` drops a letter into the current mailbox only; `lookup` asks each mailbox in the chain until the letter is found; and `assign` hunts through the chain to update the *existing* copy of the letter rather than creating a duplicate. Confusing `define` with `assign` is the single most common environment bug — this model is where you learn to tell them apart.
+
 ## Model 2: Read the Class
 
 ### Critical Thinking Questions
@@ -144,6 +157,10 @@ except Exception as e:
 ---
 
 # Part II: The Four Operations in Practice (Day 1, continued)
+
+**Intuition for Model 3:** Think of declaring a variable (`let x = 1`) versus updating one (`x = 99`) as two different actions at a hotel front desk. `define` is like checking *in* and being assigned a new room key — it always creates a fresh entry, even if another guest with the same name is already checked in on a higher floor. `assign` is like the manager walking every floor until they find the *existing* guest named `x` and handing them a new key — it never creates a new entry, it updates wherever `x` already lives. This model runs both operations side-by-side so you can see the difference concretely.
+
+> **Watch out!** `define` and `assign` look almost identical when you call them, but they have opposite behavior when a parent scope already holds the name. Using `define` when you meant `assign` silently creates a *shadow copy* in the inner scope and leaves the outer binding unchanged — no error, just a subtly wrong answer. Always ask: am I *declaring* a new variable, or *updating* an existing one?
 
 ## Model 3: The Four Operations in Practice
 
@@ -218,6 +235,10 @@ except Exception as e:
 
 ---
 
+**Intuition for Model 3 Extended:** Imagine a delivery driver whose job is to update the package status for a customer. If the driver writes the new status on a *fresh sticky note* and puts it on top of the original record, the original record never changes — and when that sticky note is thrown away at the end of the route, the customer's status looks exactly as it did before the delivery happened. That is exactly what `define` does to a loop counter. This model shows the bug in slow motion so you can recognize it instantly in your own interpreter.
+
+> **Watch out!** When your interpreter evaluates a loop, it must thread the *same* environment through the loop condition check as through the loop body — and the loop body must use `assign` (not `define`) to update any counter declared outside the loop. If you forget this, your loop's exit condition will never become true, and you will have an infinite loop with no error message to explain why.
+
 ## Model 3 Extended: Define-when-you-meant-Assign
 
 The most common environment bug is subtle: a student forgets that loop-counter assignments need `assign`, not `define`. The code runs, but the outer counter never changes, producing an infinite loop (or silent wrong answers).
@@ -284,6 +305,10 @@ except Exception as e:
 ## 2. Blocks Push, Statements Thread
 
 The interpreter changes are small and precise: `execute(Block(stmts), env)` creates `child = Environment(parent=env)` and executes the statements against `child`; `Let` calls `define` on the *current* environment; `Assign` calls `assign`; `Var` evaluation calls `lookup`. Conditionals and loops then inherit a design decision: does an `if` body or `while` body get its own scope? (C says yes with braces; Python says no; your language must say something, in `SEMANTICS.md`.)
+
+> **Watch out!** When you wire `Environment` into a recursive tree-walking interpreter, every recursive call to `execute` or `evaluate` must receive the *correct* environment as an argument — it cannot use a global variable. It is easy to accidentally pass the *outer* environment into a block body instead of the freshly created child, or to forget to pass the current environment into an expression evaluator at all. If variables suddenly resolve to wrong values inside blocks, the first thing to check is whether the right environment is being threaded through every recursive call.
+
+**Intuition for Model 4:** Consider a assembly line where each worker station has its own clipboard. At the start of each item, the station gets a fresh clipboard for that item's local notes — but to update the shared count on the factory-floor whiteboard, the worker must walk over to the whiteboard and change it there (not on the local clipboard). When the item moves on, the clipboard is recycled and all local notes are gone. This is exactly how per-iteration scope works: each iteration owns a child environment for its local variables, while shared state like loop counters lives in the parent and must be updated with `assign`.
 
 ## Model 4: Blocks, Loops, and Per-Iteration Scope
 
@@ -368,6 +393,27 @@ except Exception as e:
 17. Python does **not** give loop bodies their own scope: a variable declared inside a `for` loop is visible after the loop ends. Design an experiment (two small programs in your own language) that would tell a user whether your language follows Python's rule or C's rule. State which rule your team chose and document it in `SEMANTICS.md`.
 
 ---
+
+**Intuition for Model 5:** When you call a function in a statically scoped language, the function's environment chain is determined by *where it was defined in the source code*, not by *who called it*. This is the chain-of-phone-books idea at full depth: a three-level nest creates three phone books stacked in order of textual enclosure, and lookup always searches from the innermost book outward. This model puts a tracer into `lookup` so you can watch every hop and verify that the counts match your mental model.
+
+> **Watch out!** A very common conceptual error is to confuse **lexical (static) scoping** with **dynamic scoping**. In lexical scoping, the environment chain follows the *source code structure* — the nesting of blocks and functions in the file. In dynamic scoping, the chain follows the *call stack* at runtime — what called what. The `Environment` class you are building implements lexical scoping: the parent pointer is set when the child environment is *created* (at block entry), not when a function is *called*. If you accidentally set parent pointers based on the call stack rather than the textual structure, your language will exhibit dynamic scoping behavior, which is almost certainly not what you want.
+
+**Step-by-step worked example for Model 5:** Before running the cell, trace through what happens at line INNER manually. Here is the environment state at the moment the four lookups execute:
+
+| Environment | Variables stored | Parent |
+|---|---|---|
+| `global` | `x = 1`, `y = 2` | none (root) |
+| `mid-block` | `y = 20`, `z = 30` | `global` |
+| `inner-block` | `z = 300`, `w = 400` | `mid-block` |
+
+Now trace each lookup step from `inner-block` outward:
+
+- **`lookup("x")`**: check `inner-block` — not there; check `mid-block` — not there; check `global` — found `x = 1`. **3 hops.**
+- **`lookup("y")`**: check `inner-block` — not there; check `mid-block` — found `y = 20`. **2 hops.** (Note: `global` has `y = 2`, but we stop at the first match.)
+- **`lookup("z")`**: check `inner-block` — found `z = 300`. **1 hop.** (Note: `mid-block` has `z = 30`, but it is shadowed.)
+- **`lookup("w")`**: check `inner-block` — found `w = 400`. **1 hop.**
+
+Total hops at INNER: **3 + 2 + 1 + 1 = 7**. The result is `1 + 20 + 300 + 400 = 721`. Verify this against the trace output when you run the cell.
 
 ## Model 5: A Three-Level Environment Chain Trace
 

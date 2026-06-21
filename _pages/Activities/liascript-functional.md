@@ -14,6 +14,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Functional Programming
 
+When you give someone driving directions, you say "turn left on Main, go two blocks, turn right." That is imperative programming — a step-by-step recipe for *how* to get somewhere. Functional programming is like giving the destination instead: you describe *what* you want the data to look like, and let the language figure out how to get there. This shift in thinking is why functional ideas now show up in every modern language — Python, JavaScript, Java, Rust — and why mastering them makes you a dramatically more expressive programmer.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -27,6 +29,13 @@ By the end of this activity, you will be able to:
 Unit 3 turns from building languages to inhabiting one paradigm deeply. We practice **functional programming** in Python — `lambda`, `map`, `filter`, `reduce` — with the discipline of **purity** and **immutability**, because the functional toolkit is both a daily professional skill (data pipelines, modern Java/JavaScript/Rust) and the bridge to Scheme and the lambda calculus ahead.
 
 Arc: **purity and why it pays → the big three combinators → higher-order thinking → currying and partial application → recursion without loops**
+
+> **Before You Begin:** This activity assumes you can:
+> - Write and call Python functions, including functions that take other functions as arguments
+> - Use Python lists and understand that lists are mutable (they can be changed in place)
+> - Recognize a `for` loop and describe what it does step by step
+>
+> If any of these feel shaky, review them first.
 
 ---
 
@@ -83,6 +92,8 @@ print(f"data after two calls to impure_double: {data}")   # [4, 8, 12] — not [
 > **CTQ 1.3** Could `pure_double` safely run on two halves of the list in parallel and merge the results? Could `impure_double`? Explain.
 
 ---
+
+Think of purity the way you think about a calculator: press `2 + 3` and you always get `5`, no matter how many times you press it and no matter what else is on your desk. Model 1 gives you six functions and asks you to decide which ones behave like that trustworthy calculator and which ones secretly remember — or change — the world around them. Use what you learned from the opening example above to guide your classification.
 
 ## Model 1: The Purity Audit
 

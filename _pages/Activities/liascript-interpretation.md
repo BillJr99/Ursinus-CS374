@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tree-Walking Interpretation
 
+You have a lexer that turns characters into tokens and a parser that turns tokens into trees. Now comes the payoff: the **evaluator** turns those trees into *values* — it is the part that actually *runs* your program. Think of it as a universal translator: given any sentence in the source language (an AST node), it produces the meaning (a Python value) directly, by asking the same question recursively of every sub-sentence. After today, no magic remains between source code and output.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -29,6 +31,16 @@ The pipeline completes its first full circuit: this two-day module builds the **
 
 ---
 
+> **Before You Begin:** This activity assumes you can:
+> - Write recursive Python functions that call themselves on sub-parts of a data structure (tree recursion)
+> - Define and instantiate Python `dataclass` types (`@dataclass`, field access with `node.field`)
+> - Read and modify a Python dictionary (`env["x"] = 5`, `env.get("x")`, `"x" in env`)
+> - Understand what a post-order tree traversal means (children processed before their parent)
+>
+> If any of these feel shaky, review them first.
+
+---
+
 ## Directions and Group Roles
 
 Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**). Consider each model and question individually first, then discuss with your group. The Recorder posts answers to the Class Activity Questions discussion board; the Presenter reports out areas of disagreement or alternative approaches. After class, respond to the reflective prompt individually in your notebook.
@@ -36,6 +48,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 ---
 
 # Part I: Evaluation Is a Fold over the Tree (Day 1)
+
+The central idea of Part I is deceptively simple: **the value of any expression is computed entirely from the values of its sub-expressions.** A number node is its own value; an addition node evaluates both children and adds the results. This recursive definition is both the formal semantics of the language and the literal shape of the code you will write.
 
 ## 1. The Recursive Definition of Meaning
 
@@ -49,6 +63,8 @@ $$
 and so on for every node class: evaluate children first (post-order, exactly as Model 2 of the AST module predicted), then combine with the node's operation. Where the pretty-printer printed, the evaluator returns; the recursion structure is identical, which is why a tree walk is the most honest possible name.
 
 ---
+
+**Model 1 preview:** This model shows the minimal but complete core of a tree-walking evaluator. It handles numbers, variables, unary negation, and the four arithmetic operators. The key insight is that every case follows the same pattern — inspect the node type, recursively evaluate any children, then combine. Notice that the environment (`env`) is passed into every call so that variable lookups always reflect current state.
 
 ## Model 1: The Evaluator — Build it from Scratch
 
@@ -120,6 +136,27 @@ print(f"-(price+1) = {evaluate(tree3, env)}")   # -6.0
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+**Step-by-step worked example — tracing `(+ 1 (* 2 3))`**
+
+Suppose the AST is `BinOp("+", Num(1), BinOp("*", Num(2), Num(3)))` and `env = {}`.
+
+```
+evaluate( BinOp("+", Num(1), BinOp("*", Num(2), Num(3))), env )
+  │ It's a BinOp("+"), so evaluate children first (post-order):
+  ├─ evaluate( Num(1), env )
+  │    It's a Num → return 1                              ← left = 1
+  └─ evaluate( BinOp("*", Num(2), Num(3)), env )
+       │ It's a BinOp("*"), evaluate children:
+       ├─ evaluate( Num(2), env ) → return 2             ← left = 2
+       └─ evaluate( Num(3), env ) → return 3             ← right = 3
+       2 * 3 = 6 → return 6                              ← right = 6
+  1 + 6 = 7 → return 7
+```
+
+**Key observations:** (1) Multiplication finishes entirely before addition sees any result. (2) The environment is threaded through every call but never consulted for `Num` nodes. (3) Operator precedence was *already encoded* in the tree structure by the parser — the evaluator never re-derives it.
+
+> **Watch out!** Students often try to evaluate the operator before the children (pre-order) by writing `result = node.op` and then recursing. That will fail: you need the children's *values* before you can apply the operator. Evaluation is always post-order for expressions.
+
 ### Critical Thinking Questions
 
 1. Trace `evaluate` on `3 + price * 2`, writing every call with its arguments and return value in order. Where in your trace does the multiplication happen relative to the addition, and which week's design decision (which module) put it there?
@@ -128,6 +165,8 @@ print(f"-(price+1) = {evaluate(tree3, env)}")   # -6.0
 4. Compare `evaluate` and a tree pretty-printer line by line. Write the general recipe: to add a new *consumer* of the AST (a type checker, an optimizer, a compiler), what do you write and what do you never touch?
 
 ---
+
+**Model 2 preview:** Model 1 was correct but silent. This model adds instrumented tracing so you can *see* the call tree printed as `evaluate` runs. It is the same recursion wearing a lab coat — each call announces itself before recursing and reports its result when it returns. Studying this output is the fastest way to build the mental model you need before writing evaluators for richer node types.
 
 ## Model 2: Tracing Evaluation Step by Step
 
@@ -192,6 +231,8 @@ print(f"\nFinal result: {result}")
 5. The trace shows post-order evaluation: both children are evaluated *before* the parent combines them. Name one language feature that would break this order (hint: short-circuit evaluation of `and`/`or`).
 6. How would you modify the tracer to also print the *depth* of recursion? What would that depth correspond to in terms of the tree's structure?
 7. If a `BinOp` node is at depth 3 in the trace, how deep is the tree at that point? Does depth in the call stack correspond exactly to depth in the AST?
+
+> **Watch out!** The global `_depth` counter works here because Python is single-threaded and evaluation is deterministic, but it is fragile: if `evaluate_traced` ever raises an exception mid-recursion, `_depth` is left in a wrong state and all future indentation will be off. In production tracing code, use a `try/finally` block to ensure `_depth -= 1` always runs.
 
 ---
 

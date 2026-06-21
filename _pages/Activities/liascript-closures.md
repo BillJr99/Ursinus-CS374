@@ -14,6 +14,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Closures and First-Class Functions
 
+Have you ever wondered how a function can "remember" a value from a context that no longer exists? Think of a closure like a letter that carries its own envelope: even after the post office (the enclosing scope) closes for the day, the letter still knows exactly where it came from. Closures are the mechanism that makes callbacks, iterators, and the entire functional-programming style of JavaScript, Python, and Scheme possible — understanding them means understanding how scope and state really work at runtime.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -28,6 +30,13 @@ Every thread of the semester knots together today: when a language with **first-
 
 Arc: **the problem closures solve → the mechanism drawn precisely → closures in your interpreter → the loop-variable trap → objects vs closures**
 
+> **Before You Begin:** This activity assumes you can:
+> - Define what an environment (scope chain) is, and trace a simple variable lookup through nested scopes
+> - Explain the difference between a value and a binding, and describe what it means for a variable to "go out of scope"
+> - Read and write basic Python functions, including functions that define and return inner functions
+>
+> If any of these feel shaky, review the Environments and Scope module before continuing.
+
 ---
 
 ## Directions and Group Roles
@@ -37,6 +46,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 ---
 
 # Part I: The Problem and the Mechanism
+
+Imagine hiring a contractor who was trained in your workshop. After the workshop closes, the contractor still knows all its tools and rules — they carry that knowledge with them wherever they go. In the same way, a function defined inside another function "remembers" the variables from its birth environment even after the enclosing function has returned. This section shows the classic `make_adder` example that demonstrates why this behavior is necessary and useful.
 
 ## 1. A Function Outlives Its Scope
 
@@ -74,6 +85,10 @@ $$\text{closure} = \langle \text{params}, \text{body}, E_{\text{def}} \rangle$$
 > **CTQ 1.3** In the lambda calculus, `(λn. λx. x + n) 5` reduces to `λx. x + 5` by *substitution* — the 5 is pasted into the body. State the relationship: closures are an *implementation strategy* for what substitution *specifies*. Why might an interpreter prefer environments over literal substitution for large function bodies?
 
 ---
+
+Think of a closure like a security camera that watches a shelf, not a photograph of what is on the shelf right now. When you look at the camera feed later, you see whatever is currently on the shelf — not what was there when the camera was installed. This model shows that closures hold a live reference to a variable binding, so changes to that variable after the closure is created are visible through the closure.
+
+> **Watch out!** A common mistake is to think a closure *copies* the value of a variable at the moment the closure is created. It does not — it captures a *reference* to the binding. If the variable changes after the closure is defined, the closure will see the new value. The `get_x` example below demonstrates this directly.
 
 ## Model 1: Closures Capture, Not Copy
 
@@ -120,6 +135,10 @@ print(inc())                 # 1 — both closures share the same count cell
 
 ---
 
+Imagine two employees: one always looks up rules in the company handbook where they were originally trained (lexical scope), and another asks whoever is currently standing next to them (dynamic scope). Python uses the first approach — a function's variable lookups are always resolved against the environment where the function was *defined*, not the environment where it is *called*. This model makes that contrast concrete.
+
+> **Watch out!** Students sometimes expect that calling a function from inside another function will let the called function "see" the caller's local variables. This would be dynamic scope, and Python does *not* work that way. The `show()` / `demo()` example below will surprise you if you carry this assumption in.
+
 ## Model 2: Lexical vs. Dynamic Scope
 
 ```python  liascript
@@ -158,6 +177,8 @@ demo_dynamic()  # prints "demo" — dynamic scope: show sees caller's x
 ---
 
 # Part II: Closures in Your Interpreter
+
+Building an interpreter that supports closures requires translating the abstract idea ("a function carries its birth environment") into concrete data structures. Think of it like building a passport system: when a function is created, you stamp its passport with the environment it was born in; when it is called later, you open a new room that is connected back to that stamped environment, not to wherever the function happens to be called from. This section shows exactly how `Environment`, `Closure`, and `eval_call` work together to implement that passport stamp.
 
 ## 2. Twenty Lines to First-Class Functions
 
@@ -223,6 +244,41 @@ def eval_call(callee_val, arg_vals, evaluate_body, env):
         return r.value
     return None
 
+# -----------------------------------------------------------------------
+# STEP-BY-STEP TRACE: what happens when we define and call make_adder(5)
+#
+# Step 1 (DEFINITION — execute_fundef called):
+#   current env = global_env  { }
+#   closure = Closure(params=["n"], body=..., env=global_env)
+#   global_env.define("make_adder", closure)
+#   Result: global_env = { make_adder -> <Closure env=global_env> }
+#
+# Step 2 (CALL make_adder(5) — eval_call called):
+#   fn       = global_env.lookup("make_adder")  -> the Closure from Step 1
+#   arg_vals = [5]
+#   local    = Environment(parent=fn.env)        # parent = global_env (lexical!)
+#   local.define("n", 5)
+#   Result: local = { n -> 5, parent -> global_env }
+#   evaluate_body runs and creates the inner 'adder' closure:
+#     inner_closure = Closure(params=["x"], body=..., env=local)  # captures local!
+#     local.define("adder", inner_closure)
+#     ReturnSignal(inner_closure) raised and caught
+#   eval_call returns inner_closure
+#
+# Step 3 (CALL add5(3), where add5 = inner_closure from Step 2):
+#   fn       = add5  (inner_closure, env=local where n=5)
+#   arg_vals = [3]
+#   call_env = Environment(parent=fn.env)   # parent = local (n=5), NOT global!
+#   call_env.define("x", 3)
+#   body evaluates x + n:
+#     call_env.lookup("x") -> 3 (found in call_env)
+#     call_env.lookup("n") -> not in call_env -> tries parent (local) -> 5
+#   return 3 + 5 = 8  ✓
+#
+# The key: Step 3 uses fn.env (local, where n=5) as parent, NOT the caller's env.
+# That single parent= choice IS lexical scope.
+# -----------------------------------------------------------------------
+
 # Demo: make_adder in this closure system
 global_env = Environment()
 
@@ -247,6 +303,8 @@ print(f"make_adder captured env has 'make_adder': {'make_adder' in ma.env._vars}
 > **CTQ 3.3** `ReturnSignal` rides an exception out of nested blocks to the call boundary. What would happen if `eval_call` caught *all* exceptions rather than only `ReturnSignal`?
 
 ---
+
+For a function to call itself recursively, it must be able to look up its own name at the moment it runs. This is not automatic — it requires the function's name to be bound in the environment *before* the function body executes. Think of it like a business that must be registered with the government before it can issue contracts referencing itself. This model shows the precise ordering: bind the name first, then use the closure, so that recursive lookup through the captured environment succeeds.
 
 ## Model 3: Closures Enable Recursion
 
@@ -298,6 +356,10 @@ print(f"fact(10) = {global_env.lookup('fact')(10)}")
 ---
 
 # Part III: The Loop-Variable Trap
+
+The loop-variable trap is one of the most famous beginner bugs in Python and JavaScript alike. Imagine handing every worker in a factory floor the *same* whiteboard marker and telling them to write down the current job number. By the time they all pick up the marker to write, the job number has moved on to the last value — they all write the same thing. This is exactly what happens when closures in a loop all capture the same variable binding instead of their own private copy.
+
+> **Watch out!** When you write `[lambda: i for i in range(3)]`, all three lambdas capture *one* variable `i` — the same loop variable. By the time any of them is called, the loop has finished and `i` is `2`. This is not a bug in Python; it is the correct behavior of reference capture. The two fixes shown (default argument and factory function) both work by creating a separate binding per iteration.
 
 ## 3. The Famous Python Bug
 
@@ -351,6 +413,10 @@ Two closures created by separate calls to `make_adder(5)` and `make_adder(3)` re
 ---
 
 # Part IV: Closures vs. Objects
+
+At first glance, objects and closures look very different — one is a class instance with named fields; the other is a function bundled with hidden environment variables. But look closer and you will find they are two sides of the same coin. Both bundle state with behavior; both control which code can reach that state. This model encodes a counter two ways, side-by-side, so you can see the structural parallel directly.
+
+> **Watch out!** Closures are not limited to functional languages. Python, JavaScript, Ruby, and even Java (via lambdas) all have closures. A common misconception is that "closures = Haskell/Scheme only." In modern JavaScript, closures are used every time you write a callback, event handler, or `useEffect` hook in React.
 
 ## 4. The Koan: Closures Are Poor Man's Objects
 

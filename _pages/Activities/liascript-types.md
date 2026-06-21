@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Type Systems
 
+Every time you write `def add(x, y)` in Python, you are making an implicit promise: callers will pass values that support `+`. A **type system** is the mechanism that turns informal promises like this into enforceable contracts — checked either before your program ever runs or the instant a broken promise is exercised at runtime. Catching a broken promise in the compiler is like catching a typo before you mail a letter; catching it at runtime is like discovering the mistake only after the recipient tries to read it. This activity will show you exactly how those two approaches differ, why the difference matters, and how to build the checking machinery into your own interpreter.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -24,6 +26,13 @@ By the end of this activity, you will be able to:
 - Compare the trade-offs between static and dynamic typing with respect to early error detection and programming flexibility
 - Explain type coercion and distinguish implicit coercion (weak typing) from explicit conversion (strong typing)
 - Apply type-system concepts to specify the typing rules for a language being implemented in an interpreter project
+
+> **Before You Begin:** This activity assumes you can:
+> - Explain what a runtime error is and describe the difference between a crash that happens at parse time versus one that happens during execution
+> - Read and write basic Python functions, including `try`/`except` blocks and `isinstance()` checks
+> - Describe at a high level what your interpreter's evaluation (`eval`) function does with a binary operation node
+>
+> If any of these feel shaky, review them first.
 
 Your interpreter happily computes `5 / 0`'s error, but what should it do with `"hello" * true`? A **type system** is a language's machinery for classifying values and rejecting senseless combinations, and the design axes (static or dynamic, strong or weak, declared or inferred) are among the most consequential your team will choose. The arc: **what types are for $\rightarrow$ the two axes $\rightarrow$ inference $\rightarrow$ adding type errors to your interpreter**.
 
@@ -49,6 +58,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 ---
 
+**Intuition for Model 1:** The two axes — static/dynamic and strong/weak — are completely independent, so a language can land in any of the four quadrants. Think of Python refusing `"5" - 1` (strong, because no silent conversion) yet only discovering that refusal when the line actually executes (dynamic). In contrast, a language like Haskell refuses that expression at compile time without you ever running the program (static and strong). This model asks you to place real behaviors on those axes before you look at any code.
+
 ## Model 1: Place the Languages
 
 | Language behavior | Static/Dynamic? | Strong/Weak? |
@@ -57,6 +68,10 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 | Raises TypeError at runtime on `"5" - 1` | ? | ? |
 | Computes `"5" - 1 == 4` without complaint | ? | ? |
 | Compiles `let n = 5; n = "hi"` to an error without any annotations | ? | ? |
+
+> **Watch out!** Static/dynamic and strong/weak are two *separate* axes — do not conflate them. "Static" refers to *when* checking happens (before vs. during execution). "Strong" refers to *whether* the language permits silent coercion between incompatible types. Python is **dynamic** (checks at runtime) AND **strong** (refuses coercion). C is **static** (compile-time) but can be **weak** in places (e.g., implicitly converting pointer types). Any combination of the four quadrants is possible.
+
+> **Watch out!** Python is *not* "untyped." Every Python value has a definite type — `type(42)` is `<class 'int'>`, `type("hi")` is `<class 'str'>`. The language simply chooses to check type compatibility at runtime rather than before execution. Calling Python "untyped" is a common and consequential misconception: it conflates the absence of *declared* types with the absence of types altogether.
 
 **Verify Python's dynamic strong typing:**
 ```python
@@ -110,6 +125,8 @@ print(categorize(200))    # fine
 ---
 
 # Part II: Types in Your Interpreter
+
+**Intuition for Model 2:** Your interpreter already evaluates binary expressions like `3.0 + 4.0`. This model shows you how to add a gatekeeper at the top of that evaluation: before you touch the operands, check whether the combination makes sense and raise a clear error if it does not. Think of it like a bouncer who checks IDs before letting values into an operation — `float + float` gets in, `float + string` does not.
 
 ## 2. A Dynamically, Strongly Typed Core
 

@@ -14,6 +14,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Abstract Syntax Trees
 
+Think of source code as a recipe written in dense prose — readable by a human, but awkward for a program to act on. The AST is the structured outline a chef actually follows: every step is a labeled node, ingredients are children, and the nesting encodes what happens before what. Every compiler, interpreter, linter, and code formatter you have ever used is really just a program that walks this tree. Understanding the AST is understanding the beating heart of language implementation.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -26,6 +28,14 @@ By the end of this activity, you will be able to:
 
 Your parser has been quietly building nested tuples; this two-day module makes the tree a first-class citizen: the **abstract syntax tree (AST)**, the central data structure of every language implementation and the hinge of your whole project. The arc: **parse trees vs. ASTs → node classes → building trees in the parser → walking trees (printing today, evaluating soon) → transforming trees (optimizing)**
 
+> **Before You Begin:** This activity assumes you can:
+> - Use Python dataclasses (`@dataclass`, typed fields, `field(...)`)
+> - Reason about recursive tree structures (a tree node holds references to other tree nodes as children)
+> - Read a simple recursive-descent parser and trace how it builds up a result from tokens
+> - Understand basic operator precedence (why `2 + 3 * 4` equals `14`, not `20`)
+>
+> If any of these feel shaky, review them first.
+
 ---
 
 ## Directions and Group Roles
@@ -37,6 +47,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 # Part I: The Tree Itself
 
 ## 1. Abstract Means On Purpose
+
+*What problem does this solve?* When a parser recognizes `(2 + 3)`, it must record every grammar rule it fired — `expr`, `additive`, `primary`, the parentheses — just to prove the string is valid. But the *evaluator* downstream does not care about parentheses or which nonterminal fired; it only cares that there is an addition of two numbers. The AST strips away that grammatical scaffolding so every later phase gets a clean, uniform data structure to walk. The fewer irrelevant details each phase has to handle, the simpler and less error-prone each phase becomes.
 
 **A parse tree records every grammar step; an AST records only meaning.** The parse tree for `(2 + 3)` contains nodes for `expr`, `addsub`, `muldiv`, `primary`, and the parentheses: the full derivation. The AST keeps only the addition and its two operands. Parentheses vanish (their *effect* — the tree shape — remains), and single-child chains collapse.
 
@@ -51,6 +63,41 @@ FunDef(name, params, body)   Call(callee, args)
 
 The set of node classes *is* your language's semantic inventory: if a construct has no node, your language cannot mean it.
 
+> **Watch out!** Students often confuse the **parse tree** with the **AST**. The parse tree is a record of the grammar derivation — it includes every intermediate nonterminal and every piece of punctuation. The AST keeps *only meaning-bearing* nodes. Parentheses disappear entirely (their effect lives in the tree shape), and long single-child chains like `expr → additive → multiplicative → primary → Num` collapse to a single `Num` node. If your AST looks like your grammar, it is probably not abstract enough.
+
+**Worked example — tracing `1 + 2 * 3` from tokens to AST:**
+
+**Step 1 — Tokens:**
+```
+NUM(1)  OP(+)  NUM(2)  OP(*)  NUM(3)
+```
+
+**Step 2 — Parse tree** (using a ladder grammar with separate `additive` and `multiplicative` levels):
+```
+expr
+└─ additive
+   ├─ multiplicative
+   │  └─ primary → NUM(1)
+   ├─ OP(+)
+   └─ additive
+      └─ multiplicative
+         ├─ primary → NUM(2)
+         ├─ OP(*)
+         └─ multiplicative
+            └─ primary → NUM(3)
+```
+The parse tree has 10+ nodes, most of them grammar scaffolding.
+
+**Step 3 — AST** (scaffolding collapsed, precedence now encoded in tree shape):
+```
+BinOp('+')
+├─ Num(1)
+└─ BinOp('*')
+   ├─ Num(2)
+   └─ Num(3)
+```
+Only 5 nodes remain. The `*` is a child of `+`, which correctly encodes that multiplication binds tighter — `2 * 3` is evaluated first. No nonterminals, no parentheses, no grammar-level noise.
+
 **Critical Thinking Questions (CTQs)**
 
 > **CTQ 1.1** For the source `(2 + 3) * 4`, sketch both the full parse tree under the ladder grammar and the AST. Count nodes in each. What fraction of the parse-tree nodes was scaffolding (existed only to enforce precedence)?
@@ -62,6 +109,8 @@ The set of node classes *is* your language's semantic inventory: if a construct 
 ---
 
 ## Model 1: Node Classes and the `pretty` Printer
+
+*What problem does this solve?* Now that we know what an AST *is*, we need a concrete way to represent one in Python. This model shows how to define each node type as a dataclass (so fields have names, not just positions), and then how to *walk* the tree recursively with `pretty`. Walking a tree — visiting every node in order — is the one pattern you will use for everything: printing, evaluating, type-checking, compiling. Understand `pretty` here and the evaluator next week is trivial.
 
 ```python  liascript
 from dataclasses import dataclass, field
@@ -175,9 +224,13 @@ pretty(tree2)
 
 > **CTQ 1.6** The recursion visits children before finishing the parent's subtree. For evaluation, must children be processed before or after the parent's operation? Which traversal order is that (pre-order, in-order, or post-order)?
 
+> **Watch out!** The `case _:` arm in `pretty` is a safety net, but in a real interpreter it is a bug waiting to happen. If you add a new node type (say, `FunDef`) but forget to add a corresponding `case FunDef(...):` arm, Python will silently fall through to `Unknown: ...` instead of raising an error. Every time you add a new AST node, immediately add a handler for it in *every* tree-walking function — `pretty`, `count_nodes`, `collect_vars`, `constant_fold`, and especially the evaluator.
+
 ---
 
 ## Model 2: Tree Statistics and Analysis
+
+*What problem does this solve?* A tree walk does not have to produce output — it can also *compute* information about a program. This model shows three read-only analyses: counting nodes (useful for complexity budgets), measuring depth (tells you how deep the evaluator's call stack can get), and collecting all variable names (a primitive form of scope analysis). These same patterns — accumulate a count, accumulate a maximum, accumulate a set — recur constantly in real compilers.
 
 ```python  liascript
 from dataclasses import dataclass, field
