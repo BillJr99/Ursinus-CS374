@@ -1059,6 +1059,10 @@ The cuts ensure that once `fib(0,0)` matches, we do not try the third clause.
 
 ---
 
+**Intuition.** Pure logic is elegant, but you eventually need numbers. Prolog handles this by adding *built-in* predicates (`is/2`, `>/2`, etc.) that step outside pure unification and invoke the host language's arithmetic. The cut (`!`) is a control escape hatch: once reached, it collapses all remaining choice points for the current goal, turning the backtracking tree into a one-way street. Used carefully, cut makes definitions like Fibonacci efficient; used carelessly, it makes programs hard to reason about.
+
+> **Watch out!** The cut (`!`) is the sharpest tool in Prolog. It permanently discards alternative proofs. In the Fibonacci example, the cuts after `fib(0,0)` and `fib(1,1)` are *correct* — they prevent redundant work. But if you add a cut in the wrong place, you can accidentally prune solutions that the caller needed. A good rule of thumb: only use cut when you are certain that no discarded alternative can produce a useful answer.
+
 ## Model 6: Arithmetic and Fibonacci in the Mini-Prolog Engine
 
 ```python  liascript

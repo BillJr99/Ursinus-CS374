@@ -27,6 +27,14 @@ By the end of this activity, you will be able to:
 - Recognize when variable capture would occur during substitution and apply alpha-renaming to avoid it
 - Translate between lambda calculus notation and equivalent Python `lambda` expressions
 
+> **Before You Begin — Prerequisites**
+>
+> This activity works best if you are comfortable with the following. If any feel shaky, review them before the session.
+>
+> - **Functions as values**: In Python you can write `f = lambda x: x + 1` and pass `f` to another function as an argument. Lambda calculus is built entirely on this idea.
+> - **Substitution**: Evaluating `(lambda x: x * x)(5)` means replacing every `x` in the body with `5`. Lambda calculus makes this the *only* rule of computation — you will apply it by hand today.
+> - **Recursive reduction**: Complex expressions simplify by applying the substitution rule repeatedly. Each application is one step; you will write out every step on the whiteboard.
+
 Lambda calculus was invented by Alonzo Church in the 1930s to answer a fundamental question: what does it mean to *compute*? Church showed that two symbols — λ (for "function") and · (for "apply") — are sufficient to compute anything that is computable. Every programming language you have ever used, including Python, is secretly a lambda calculus with extra syntax. By the end of this activity, you will have seen Python's entire evaluation model in eight lines of math.
 
 Beneath Scheme, beneath Python's `lambda`, beneath every functional language, sits a formal system from 1936 with **three forms of expression and one rule of computation**: Alonzo Church's **lambda calculus**, in which functions are the only thing that exists, and computing means substituting arguments into bodies. Today we learn to read it and to reduce expressions **by hand**, the way Church did, because by-hand reduction is the only way the system becomes real. The arc: **the three forms $\rightarrow$ free and bound variables $\rightarrow$ beta reduction by hand $\rightarrow$ alpha renaming when names collide**.
@@ -54,9 +62,19 @@ Before we dive into the formal rules, here is a translation table. Every lambda 
 
 > **Note for beginners**: In Python, `lambda x: x` is a function with no name that takes one argument `x` and returns `x`. Lambda calculus is the same idea, just written with a λ symbol and a dot instead of a colon. The table above maps every symbol one-to-one.
 
+**Core notation reference** — the three fundamental constructs of lambda calculus:
+
+| Lambda Notation | Python Equivalent | Meaning |
+|-----------------|-------------------|---------|
+| `λx.e` | `lambda x: e` | A function taking x, returning e |
+| `(f a)` | `f(a)` | Apply function f to argument a |
+| `[x → a]e` | (substitution) | Replace x with a in e |
+
 ---
 
 ## 1. Three Forms
+
+> **Intuition**: Every lambda calculus expression is built from exactly three kinds of thing: a name (`x`), a function definition (`λx.body`), or a function call (`f arg`). That is the whole language. Before reading further, convince yourself that Python's `lambda x: f(f(x))` uses all three: `x` and `f` are variables, `lambda x: ...` is an abstraction, and `f(f(x))` is two nested applications.
 
 A lambda expression is exactly one of:
 
@@ -74,6 +92,8 @@ a **variable**; an **abstraction** (a function of one parameter $x$ with body $e
 
 ## Model 1: Parse by Eye
 
+> **Intuition**: Parsing lambda expressions is a mechanical skill: apply the two conventions (left-associative application, body extends right) until every sub-expression is explicitly parenthesized. A reliable strategy is to work outside-in — find the outermost application first, then recurse into each sub-expression. When you encounter a `λ`, its body runs all the way to the right end of the current parenthesization level.
+
 ### Critical Thinking Questions
 
 1. Fully parenthesize each, then circle binders and underline free variables: (a) $\lambda x. x$; (b) $\lambda x. \lambda y. x$; (c) $(\lambda x. x\, x)(\lambda x. x\, x)$; (d) $\lambda x. x\, (\lambda y. y\, x)$.
@@ -86,6 +106,8 @@ a **variable**; an **abstraction** (a function of one parameter $x$ with body $e
 # Part II: Computation Is Substitution
 
 ## 2. Beta Reduction
+
+> **Intuition**: Beta reduction is function application: find a function `(λx.body)` applied to an argument `a`, and replace every free occurrence of `x` in `body` with `a`. That is literally it. The word "beta" just names this one rule so we can refer to it precisely. Each step erases one `λ` from the expression and performs one substitution. When no more lambdas are applied to arguments, you have reached normal form — the answer.
 
 **The one rule.** An application of an abstraction to an argument reduces by substituting:
 

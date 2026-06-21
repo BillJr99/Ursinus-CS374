@@ -11,6 +11,8 @@ link:     https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.
 
 # Macros and Metaprogramming: Code that Writes Code
 
+> Picture a pastry chef who, before turning on the oven, sits down with the recipe and rewrites every "1 cup sugar" as "200 grams sugar," every "1 stick butter" as "113 grams butter," and so on. The *transformation* happens before baking begins — the chef does not weigh things mid-recipe, they transform the recipe first. Macros work the same way: before the program runs, the macro system rewrites certain pieces of your code into different, fully expanded code. By the time execution starts, every macro call has already been replaced by ordinary code.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:

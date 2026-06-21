@@ -80,6 +80,8 @@ print(f"This file's __name__: {__name__}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** `sys.modules` is a *live, mutable* dictionary. If a module has side effects (prints output, opens a file, registers a handler) those side effects fire the *first* time the module is imported — never again on re-import, because the cache is hit. This means the order in which modules are first imported can change your program's observable behavior in ways that are hard to debug. Prefer modules with no top-level side effects; put startup logic inside `if __name__ == '__main__':` or explicit initialization functions.
+
 **Critical Thinking Questions (CTQs)**
 
 > **CTQ 1.1** What is the difference between `import math` and `from math import pi`? After each form, what names appear in the calling module's namespace?
@@ -93,6 +95,8 @@ print(f"This file's __name__: {__name__}")
 ---
 
 ## Model 2: Namespaces and Symbol Tables
+
+**Intuition.** Every name in Python — `x`, `print`, `Counter` — is resolved by searching a chain of dictionaries in a fixed order. The rule is **LEGB**: Local first, then Enclosing (for nested functions), then Global (the module's top-level dict), then Built-in (Python's built-in names like `len` and `True`). Python stops at the first dictionary that contains the name. This is not just trivia: it is the mechanism that makes closures work, that lets you shadow a built-in inside a function without breaking it globally, and that explains exactly what `globals()` and `locals()` return. Each scope is a real Python dictionary you can inspect and even mutate at runtime.
 
 Python resolves every name by searching a chain of **namespaces** from innermost to outermost. The rule is called **LEGB**: Local → Enclosing → Global → Built-in. Each scope is a dictionary, and `globals()`, `locals()`, and `vars()` expose them at runtime.
 
@@ -138,6 +142,8 @@ print(f"\nmath namespace sample: {[k for k in dir(math) if not k.startswith('_')
 
 ## Model 3: Dynamic Loading with importlib
 
+**Intuition.** A static `import` at the top of a file is like hardwiring a component into a circuit board — it is always there, whether you use it or not. Dynamic loading is like a hot-swappable module bay: you decide *at runtime* which code to load, based on configuration, user input, or the capabilities of the current system. This pattern is essential for plugin architectures (a text editor that loads language-specific formatters on demand), feature flags (loading a fast C extension if available, falling back to a pure-Python implementation), and test harnesses (replacing real modules with mocks). The key tool is `importlib.import_module(name)`, which accepts a string and returns the module object — just as if you had written `import name`.
+
 Static `import` statements are resolved at parse time (or at least before the function body runs). **Dynamic loading** resolves a module name given only as a runtime string — essential for plugin architectures, configuration-driven dispatch, and test harnesses.
 
 ```python  liascript
@@ -171,6 +177,8 @@ for name in PLUGINS:
 print(f"\nLoaded plugins: {list(loaded.keys())}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+> **Watch out!** Dynamic loading is a security surface. If the string passed to `importlib.import_module` comes from user input — a config file, a URL parameter, a command-line flag — a malicious user can cause your program to import arbitrary code. Always validate dynamic module names against an explicit allowlist (e.g., `assert name in ALLOWED_PLUGINS`) before loading. Never pass unsanitized user input directly to `import_module`.
 
 > **CTQ 3.1** What is the difference between `import math` (static) and `importlib.import_module("math")` (dynamic)? When is each approach appropriate?
 

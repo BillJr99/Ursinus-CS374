@@ -15,6 +15,10 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Concurrency Models: Actors, Channels, and Transactions
 
+> **Opening Hook — The Restaurant Kitchen Analogy**
+>
+> Concurrency is like coordinating a busy kitchen. In a chaotic kitchen, all the chefs share the same pot — one chef adds salt while another stirs, and a third tastes to decide if it needs more. The result is unpredictable: the counter is wrong, the soup is over-salted, and nobody agrees on whose fault it is. This is **shared mutable state** — the root of race conditions, data corruption, and bugs that only appear under load. Language designers have proposed three main escapes: **actors** (each chef has their own station and their own pot; dishes are passed forward as finished items), **channels** (chefs communicate by placing items on a conveyor belt — the sender pauses until the receiver picks it up), and **transactions** (any chef can modify the shared pot, but changes only "commit" if nobody else changed the same ingredient in the meantime; otherwise the step is retried). All three approaches solve the same problem — coordinating concurrent work without chaos — but each imposes different constraints on how you structure your program.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -23,6 +27,17 @@ By the end of this activity, you will be able to:
 - Implement the actor model using Python queues to pass immutable messages between independent workers, and explain how actors eliminate shared state
 - Implement channel-based communication following the CSP model, distinguishing synchronous from buffered channels and explaining rendezvous semantics
 - Compare actors, channels, and software transactional memory (STM) across the dimensions of composability, error handling, and suitability for different concurrency patterns
+
+> **Before You Begin — Prerequisite Checklist**
+>
+> Before starting this activity, confirm you can answer yes to each of the following:
+>
+> - [ ] I know what a Python `threading.Thread` is and can write a program that starts two threads.
+> - [ ] I understand that two threads running simultaneously can read and write the same variable, and I have a rough sense of why that is dangerous.
+> - [ ] I have seen the word "mutex" or "lock" before, even if I have not used one in Python.
+> - [ ] I completed (or reviewed) the Parallelism module, which established that pure functions are safe to parallelize.
+>
+> If any box is unchecked, review the Python `threading` documentation or the Parallelism activity before proceeding.
 
 The Parallelism module showed that pure functions parallelize automatically — but programs also need *concurrency*: multiple activities interleaved in time, coordinating via communication. The language designer's central choice is **what primitive does the language expose for that coordination**? Three answers dominate modern languages: **actors** (Erlang, Akka) exchange immutable messages; **channels** (Go, Occam, CSP) synchronize on named conduits; **transactions** (Haskell STM, Clojure) compose atomic blocks. All three eliminate shared mutable state — but by different means, with different tradeoffs, suitable for different programs. The arc: **the coordination problem → actors → channels/CSP → STM → the π-calculus as foundation**.
 
@@ -37,6 +52,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 # Part I: The Coordination Problem
 
 ## 1. Why Shared Memory Fails
+
+**Intuition.** A single `counter.value += 1` looks atomic, but the processor actually executes three steps: (1) read the current value into a register, (2) add one, (3) write the result back. If two threads interleave these steps — thread A reads 42, thread B reads 42, thread A writes 43, thread B writes 43 — one increment is silently lost. This is a **race condition**: the program's output depends on the unpredictable timing of thread scheduling. Race conditions are notoriously hard to reproduce (they may appear only under heavy load) and hard to debug (adding print statements changes the timing enough to make them disappear). The model below demonstrates this concretely.
 
 The Parallelism module established: pure functions are safe to parallelize. The hard part is the rest of the program — the stateful services, the shared counters, the bounded buffers. Shared mutable state under concurrency is the source of race conditions, deadlocks, and livelocks. Language designers have sought primitives that **eliminate** sharing as a root cause, rather than requiring programmers to manage it correctly with locks.
 
@@ -63,6 +80,8 @@ except Exception as e:
     import traceback; traceback.print_exc()
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+> **Watch out!** CPython's Global Interpreter Lock (GIL) actually makes many Python race conditions *less* visible than they would be in Java or C++, because the GIL prevents two threads from executing Python bytecodes simultaneously. You may not always see the deficit above. But the race is still real — the GIL is released between bytecodes, not between the three steps of read-modify-write. For CPU-bound work or when using C extensions that release the GIL, races appear in full force.
 
 ---
 

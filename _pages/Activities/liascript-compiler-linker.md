@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # The Compilation and Linking Process
 
+> **Opening hook:** Think of translating a novel from French to English, but the book is enormous so several translators each handle a separate chapter independently. Each translator (the **compiler**) converts their chapter from French to English without knowing exactly what page numbers the other chapters will land on — they leave placeholders like "see Chapter 7" wherever they cross-reference another chapter. When all the translated chapters are done, an editor (the **linker**) gathers them, resolves every placeholder to a real page number, and stitches them into one coherent book. The final book is your executable: one continuous object where every function call points to the exact address of the function it calls.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -27,6 +29,19 @@ By the end of this activity, you will be able to:
 **CS374: Principles of Programming Languages — Week 9**
 
 **References:** Compilers (Dragon Book) Ch. 2 and Ch. 8
+
+---
+
+> **Before You Begin**
+>
+> This activity assumes you are comfortable with:
+>
+> - Writing and calling Python functions; understanding what a **stack frame** is (local variables, return address)
+> - Basic familiarity with how your interpreter project parses source code into an AST and evaluates it
+> - The concept of a **dictionary** (hash map) as a data structure — symbol tables are essentially dictionaries
+> - What a **memory address** is: an integer that identifies a location in the computer's RAM
+>
+> You do *not* need prior knowledge of assembly language or operating systems. All machine-level concepts are introduced here via Python simulations.
 
 ---
 
@@ -52,6 +67,8 @@ This is a **POGIL (Process-Oriented Guided Inquiry Learning)** activity. Work in
 ---
 
 ## Model 1: The Compilation Pipeline
+
+**Intuition:** Your source code is just a string of characters — the computer has no idea what `def add(x, y): return x + y` means until something translates it into instructions a CPU can execute. That translation happens in a pipeline of stages, each with a well-defined input and output. By the time we reach the end of the pipeline, we have gone from "English-like text" to "numbered machine operations." Python exposes this pipeline through its built-in tools so you can watch each stage happen in real time. Notice that even an interpreted language like Python goes through compilation — it just compiles to *bytecode* (instructions for a software CPU) rather than native machine code.
 
 A compiler translates source code through several stages before producing executable code. In a traditional C/C++ compiler (like GCC or LLVM), those stages are:
 
@@ -109,6 +126,8 @@ exec(code)
 ---
 
 ## Model 2: Python Bytecode in Depth
+
+**Intuition:** Imagine evaluating `a * b + c` on an old-fashioned desk calculator with a single display window. You must press buttons in a specific order: recall `a`, recall `b`, press multiply (the result sits in the display), recall `c`, press add. The display is a stack with one slot — each operation pops its inputs from the display and pushes its result back. CPython's virtual machine works the same way, just with a deeper stack. Every expression in your Python program gets compiled down to a sequence of these push/pop operations (LOAD, BINARY_OP, RETURN) that any first-year CS student could execute by hand given the instruction list.
 
 CPython uses a **stack-based virtual machine** to execute bytecode. Every operation either pushes values onto a stack, pops them off, or both. Understanding the stack machine helps you understand how any expression is evaluated at the lowest level.
 

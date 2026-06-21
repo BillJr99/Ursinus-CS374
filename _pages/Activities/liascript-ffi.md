@@ -59,6 +59,10 @@ The challenge: the high-level language's runtime and the C runtime make differen
 
 ## Model 1: The C Application Binary Interface (ABI)
 
+*Intuition:* When you call a function, the CPU needs to know: where are the arguments? (In registers? On the stack? Which ones?) Who cleans up after the call? What format does the return value come back in? The ABI is the contract that answers all of these questions. Think of it as the physical handshake protocol between two programs. C's ABI has become the universal handshake because C was the first widely-portable systems language, and every other language that wanted to talk to the operating system had to agree to shake hands on C's terms.
+
+> **Watch out!** You must declare `argtypes` and `restype` on a `ctypes` function object before calling it. If you skip this step, `ctypes` will guess (usually defaulting to `c_int`) and you will get silent data corruption or crashes instead of a clean error. Always set both, even for functions whose return type is `void`.
+
 An **ABI (Application Binary Interface)** defines how functions are called at the machine level: which registers hold arguments, who cleans up the stack, how structures are laid out in memory, what calling conventions are used. C's ABI is the de facto standard because it is stable, documented, and supported by every compiler on every platform.
 
 ```python
@@ -133,6 +137,10 @@ for name, ctype, example in type_map:
 ---
 
 ## Model 2: Structs, Pointers, and Memory Layout
+
+*Intuition:* A C struct is just a named chunk of memory. The compiler decides exactly how many bytes each field occupies and at what offset from the start of the struct — and it follows strict rules about *alignment* (each field must start at an address that is a multiple of its size). When you pass a struct across an FFI boundary, the receiving side must use *exactly* the same layout, or it will read the wrong bytes. `ctypes.Structure` exists precisely to let Python declare the layout explicitly so the two sides agree.
+
+> **Watch out!** Struct padding is invisible in the source code but very real in memory. A struct with fields `uint8, uint32, uint16` (1+4+2 = 7 bytes naively) will actually occupy 8 or more bytes because the `uint32` field must be 4-byte aligned. Always use `ctypes.sizeof` to check the real size — never compute it by adding field sizes by hand.
 
 C structs have a specific memory layout (with padding). When calling C functions that take or return structs, the FFI must reproduce the exact layout.
 
@@ -217,6 +225,10 @@ print(f"  sizeof = {ctypes.sizeof(arr)} bytes ({ctypes.sizeof(ctypes.c_int)} × 
 ---
 
 ## Model 3: Callbacks — C Calling Back into Python
+
+*Intuition:* The FFI translator analogy runs in both directions. When you hire an interpreter for a UN session, sometimes the foreign delegate asks the interpreter a question — the interpreter must be able to respond, not just relay. Callbacks are the same: a C library like `qsort` does not just receive data; it calls back into your code to ask "which of these two items is larger?" The Python function you provide becomes, for the duration of the C call, a first-class participant in C's execution — it must speak C's calling convention fluently, which is what `ctypes.CFUNCTYPE` arranges.
+
+> **Watch out!** C holds a raw function pointer to your Python callback — just a memory address. Python's garbage collector does not know about this. If the Python object wrapping the callback is collected (because no Python variable refers to it anymore), the memory address becomes invalid, and the next time C calls it your program will crash or produce undefined behavior. Always store callback objects in a variable that stays alive for as long as C might invoke them.
 
 The FFI is bidirectional: not only can Python call C, but C can call Python functions (callbacks). This is used for event handlers, sort comparators, and error handlers.
 

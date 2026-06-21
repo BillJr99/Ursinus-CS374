@@ -333,9 +333,13 @@ print(f"  {pretty(optimized)}")
 
 > **CTQ 3.3** CSE requires checking if two expressions are "the same." The `expr_key` function produces a canonical string. What's wrong with this approach if expressions contain variable names that were renamed by earlier passes?
 
+> **Watch out!** CSE introduces new variable bindings (`_cse1`, `_cse2`, …). If you run CSE before constant propagation, those new variables will block the propagation pass from recognizing constants. If you run CSE after constant propagation, some sub-expressions that *looked* identical before may differ because their variables were replaced by different constants. Order matters — design your pipeline intentionally.
+
 ---
 
 ## Model 4 — Function Inlining
+
+**Intuition.** Every function call costs something: push arguments onto the stack, jump to the callee, eventually jump back, clean up. For a tiny function like `double(x) = x + x`, the bookkeeping overhead may actually exceed the cost of the addition. Inlining copies the function body to the call site, replacing the parameter with the actual argument — the call vanishes entirely. As a bonus, the inlined body is now visible to the surrounding optimizations, so constant folding or CSE may fire again on the merged code. The danger: inlining a large function (or worse, a recursive one) causes code-size explosion, so every production inliner has a size threshold.
 
 **Inlining** replaces a function call with the function body, substituting arguments for parameters. This eliminates call overhead and enables further optimizations.
 
@@ -450,6 +454,8 @@ print(f"Inlined: {pretty(inlined2)}")
 
 ## Model 5 — Tail Call Optimization (TCO)
 
+**Intuition.** Consider a recursive function where the very last thing it does before returning is call itself. At the moment that recursive call happens, the current stack frame has no remaining work to do — it will just forward whatever the callee returns. That frame is wasted space. TCO exploits this: instead of pushing a new frame, the compiler converts the call into a backward jump that reuses the existing frame, effectively turning the recursion into a loop. A tail-recursive function compiled with TCO uses *constant* stack space no matter how deep the recursion goes. Functional languages like Scheme, Haskell, and Erlang mandate TCO; Python does not implement it natively, but you can simulate it with a trampoline.
+
 A **tail call** is a function call that is the *last* action of a function. Instead of creating a new stack frame, we can *reuse* the current frame.
 
 ```python  liascript
@@ -532,6 +538,8 @@ print(f"\nfact body has tail call to 'fact': {is_tail_call(fact_body, 'fact')}")
 > **CTQ 5.2** `factorial_tco_helper` has `return factorial_tco_helper(n-1, n*acc)`. Why IS this a tail call? What does "last action" mean precisely?
 
 > **CTQ 5.3** Trampolining achieves tail call optimization without changing the language runtime — it works in Python, Java, or any language. What is the tradeoff compared to a language that natively supports TCO (like Scheme or Haskell)?
+
+> **Watch out!** Not every recursive call in a tail position belongs to a *tail-recursive* function. Mutual recursion (`f` calls `g`, which calls `f`) also creates tail calls, and TCO applies there too — but detecting it requires tracking which functions are in the current call chain. The simple `is_tail_call` detector below only checks for self-recursion. A production compiler needs to handle the mutual case, which is why Scheme's TCO guarantee covers all proper tail calls, not just self-calls.
 
 ---
 

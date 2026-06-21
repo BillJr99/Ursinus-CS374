@@ -162,6 +162,8 @@ print("lazy_if with bad branch:", good)
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out! — Closures capture variables by reference, not by value.** When you write `lambda: x + 1` inside a loop where `x` changes, the lambda does NOT capture the current value of `x` — it captures the variable `x` itself. By the time you force the thunk, `x` may have a completely different value. This is a classic Python gotcha. To freeze a value, use a default argument: `lambda x=x: x + 1`. You will encounter this issue in stream construction if you are not careful.
+
 The contrast between `eager_if` and `lazy_if` reveals something profound about function calls: in a language where arguments are evaluated before the call (**by-value** or **applicative-order** evaluation), you cannot define a true conditional as a library function. The built-in `if` statement in Python, Java, and C is wired into the language precisely because argument evaluation is eager. In a lazy language like Haskell, you *can* define `myIf` as an ordinary function, because arguments are only evaluated when forced.
 
 > **CTQ 2.1** What is the output of `force(lambda: force(lambda: force(lambda: 99)))`? How many times is `force` called? What does this tell you about the relationship between thunks and nesting?
@@ -177,6 +179,8 @@ The contrast between `eager_if` and `lazy_if` reveals something profound about f
 # Part III: Streams — Lazy Infinite Sequences
 
 ## Model 3 — Streams: Lazy Infinite Sequences
+
+> **Intuition.** A single thunk is a one-item purchase order. A stream is a standing order with a renewal clause: "deliver the first item now; attach a new purchase order for the second item; when that order is filled, attach one for the third; and so on." The factory never sees the full order book at once — only one item and the next slip at a time. Memoization is the factory's record-keeping: once an item has been manufactured (a tail forced), the result is logged so the floor never re-runs the same production run. This model builds the `Stream` class from scratch so you can see every moving part.
 
 A thunk defers a single value. A **stream** uses thunks recursively to defer an entire infinite sequence. The idea is simple: a stream is a pair of a **head** (the current value, already computed) and a **tail** (a thunk that, when forced, produces the next stream). The tail is not forced until you ask for it, so the infinite sequence is never materialized all at once.
 
@@ -252,6 +256,8 @@ Notice that `stream_map` and `stream_filter` return new streams immediately, wit
 
 ## Model 4 — The Sieve of Eratosthenes as a Stream
 
+> **Intuition.** The sieve is the killer demo of lazy streams. The eager version requires an upper bound; you must decide in advance how far to sieve. The lazy version has no ceiling — it is a pipeline of filters, each one stamped with a prime, chained end-to-end. When you ask for the next prime, the pipeline processes one more integer through every existing filter and, if it survives, stamps a new filter on the end. The pipeline grows on demand and never processes more than it must. Read the `sieve` function and find the single `lambda` that is the suspension point — everything before it runs eagerly; everything after it waits.
+
 The Sieve of Eratosthenes is one of the oldest algorithms in mathematics: to find all primes, start with the integers from 2 upward, take the first element (it must be prime), remove all its multiples, and repeat on the remainder. In an eager language, you run the sieve over a bounded array. In a lazy language, the sieve can operate over an *infinite* stream of integers — the sieve never "finishes," but you can consume as many primes as you want.
 
 The elegance of the lazy sieve is structural: `sieve(s)` is defined as "the first element of `s` (which is prime), followed by `sieve(filter out multiples of that element from the rest of s)`. This recursive definition describes an infinite process, but the thunk in the tail of each returned stream ensures that each step is deferred until the consumer asks for the next prime.
@@ -304,6 +310,8 @@ print("First 20 primes:", stream_take(primes, 20))
 print("100th prime:    ", stream_nth(primes, 99))
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+> **Watch out! — Stack depth grows with the number of primes.** Each new prime adds one `stream_filter` call frame to the chain. In CPython, the default recursion limit is 1000. If you ask for a very large prime (say, the 500th prime), the recursive calls inside `stream_filter` may hit Python's recursion limit and raise `RecursionError`. You can raise it with `sys.setrecursionlimit(5000)`, but the deeper fix is to rewrite `stream_filter` iteratively or use Python generators, which manage their own stack independently.
 
 The `lambda: sieve(...)` in the tail of each returned stream is essential: without it, `sieve` would call itself immediately, which would call `sieve` again immediately, and so on — infinite recursion before a single prime is produced. The thunk inserts a suspension point: `sieve(s.tail_after_filtering)` is only called when someone accesses `.tail`, which only happens when the next prime is needed.
 

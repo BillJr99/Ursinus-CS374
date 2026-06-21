@@ -11,6 +11,8 @@ link:     https://cdn.jsdelivr.net/chartist.min.css
 
 # Type Systems: From Weak to Strong, Static to Dynamic
 
+> **Opening Hook:** Type system features like generics are like templates in manufacturing: you write the blueprint once for `List<T>` and the factory instantiates it for steel, aluminum, or titanium without rewriting the assembly line. The `T` is not a runtime value — it is a compile-time *slot* that the type checker fills in at each use site, verifying safety separately for each instantiation. This module explores the full design space: how strictly types are checked (strong vs. weak), when they are checked (static vs. dynamic), whether compatibility is determined by name or shape (nominal vs. structural), and what survives to runtime (type erasure).
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -21,6 +23,20 @@ By the end of this activity, you will be able to:
 - Explain type erasure and describe how generic types are represented at runtime in a JVM-style language
 - Evaluate the correctness risks introduced by weak typing and implicit coercions in real-world code
 
+---
+
+> **Before You Begin**
+>
+> This module assumes you are comfortable with:
+> - Writing Python classes and calling methods on objects
+> - The idea that a variable has a *type* (e.g., `int`, `str`) and that operations can fail with `TypeError`
+> - Basic familiarity with at least one statically typed language (Java, C, TypeScript, or similar) — enough to know what a type annotation looks like
+> - The concept of a *generic* container such as Java's `ArrayList<String>` or Python's `List[int]`
+>
+> You do **not** need to know what "covariance" or "structural subtyping" mean yet — those are introduced here.
+
+---
+
 > **Prerequisites:** Basic programming in Python and one statically-typed language
 > **Goal:** Understand the 2×2 matrix of type discipline, how type coercion works, what structural vs nominal typing means, and how type erasure lets generics coexist with runtime efficiency.
 
@@ -29,6 +45,8 @@ By the end of this activity, you will be able to:
 ---
 
 ## Model 1: The 2×2 Matrix of Type Systems
+
+> **Intuition:** Think of the two axes as answering two separate questions. *When* does the language check types? (Before running = static; while running = dynamic.) *How strictly* does the language handle a mismatch? (Refuse to proceed = strong; silently convert = weak.) These questions are independent: a language can be any combination of the four quadrants. Most programmers have only experienced one or two quadrants; this model forces you to see the full space.
 
 Type systems vary along two orthogonal axes:
 
@@ -80,7 +98,11 @@ print(x + y)   # TypeError: can only concatenate str (not "int") to str
 
 ---
 
+> **Watch out!** The terms "strong" and "weak" typing are *informal* and used inconsistently in the wild. Some textbooks define "strong" to mean statically checked; others use it to mean no implicit coercions. In this course we use "strong" strictly to mean: the language does not silently convert between *kinds* of data (e.g., number to string). When you read these terms in other sources, always check what the author means.
+
 ## Model 2: Type Coercion — The JavaScript Nightmare
+
+> **Intuition:** JavaScript's coercion rules were designed to make the language beginner-friendly by "doing what you probably meant." The problem is that "what you probably meant" is defined by a complex set of precedence rules that no one can memorize — and that interact badly at scale. Python made the opposite design choice: fail loudly on any ambiguous coercion, forcing the programmer to be explicit. The code is slightly more verbose but the behavior is predictable.
 
 JavaScript is infamous for implicit coercions. These are all valid JavaScript expressions:
 
