@@ -109,6 +109,7 @@ except Exception as e:
     print(f"[ch:product] {e}")
     import traceback; traceback.print_exc()
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -126,6 +127,7 @@ class Right:
     def __init__(self, value): self.value = value
     def __repr__(self): return f"Right({self.value})"
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 The *elimination rule* for `∨` says: to prove `C` from `P ∨ Q`, prove `C` from `P` and prove `C` from `Q` separately (case analysis). In code: pattern-match on the tag.
 
@@ -173,6 +175,7 @@ except Exception as e:
     print(f"[ch:sum] {e}")
     import traceback; traceback.print_exc()
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -244,6 +247,7 @@ except Exception as e:
 
 print("Empty type: no constructor exists (test passed if no crash above)")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -320,6 +324,7 @@ except Exception as e:
     print(f"[ch:deptype] {e}")
     import traceback; traceback.print_exc()
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -409,6 +414,7 @@ except Exception as e:
     print(f"[ch:dict] {e}")
     import traceback; traceback.print_exc()
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 

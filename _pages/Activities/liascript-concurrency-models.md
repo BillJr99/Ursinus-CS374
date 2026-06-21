@@ -53,6 +53,7 @@ except Exception as e:
     print(f"[conc:race] {e}")
     import traceback; traceback.print_exc()
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -122,6 +123,7 @@ except Exception as e:
     print(f"[conc:actor] {e}")
     import traceback; traceback.print_exc()
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -185,6 +187,7 @@ except Exception as e:
     print(f"[conc:chan] {e}")
     import traceback; traceback.print_exc()
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 **Select: waiting on multiple channels.** Go's `select` statement blocks until *any* of several channels is ready — the CSP choice operator. This is how event loops and multiplexers are written without callbacks.
 
@@ -242,6 +245,7 @@ except Exception as e:
     print(f"[conc:select] {e}")
     import traceback; traceback.print_exc()
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -355,6 +359,7 @@ except Exception as e:
     print(f"[conc:stm] {e}")
     import traceback; traceback.print_exc()
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 

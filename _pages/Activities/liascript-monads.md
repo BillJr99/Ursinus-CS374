@@ -50,6 +50,7 @@ print(pipeline_manual(4, 1))    # 2.0
 print(pipeline_manual(-4, 1))   # None (sqrt of negative)
 print(pipeline_manual(4, 0))    # None (division by zero)
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 The pattern `result = f(x); if result is None: return None; ...` repeats every time. A monad *abstracts* that repetition into one operator.
 
@@ -107,6 +108,7 @@ except Exception as e:
     print(f"[monads:maybe] {e}")
     import traceback; traceback.print_exc()
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -188,6 +190,7 @@ except Exception as e:
     print(f"[monads:laws] {e}")
     import traceback; traceback.print_exc()
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -277,6 +280,7 @@ except Exception as e:
     print(f"[monads:list] {e}")
     import traceback; traceback.print_exc()
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -318,7 +322,12 @@ class IO:
 
     def execute(self):
         return self._run([])       # start with empty world log
+
+# Demonstrate: pure wraps a value without touching the world
+val, log = IO.pure(42).execute()
+print(f"value={val}, log={log}")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -365,6 +374,7 @@ except Exception as e:
     print(f"[monads:io] {e}")
     import traceback; traceback.print_exc()
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -453,6 +463,7 @@ except Exception as e:
     print(f"[monads:do] {e}")
     import traceback; traceback.print_exc()
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 

@@ -185,6 +185,7 @@ except Exception as e:
     print(f"[opsem:bigstep] {e}")
     import traceback; traceback.print_exc()
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -352,6 +353,7 @@ except Exception as e:
     print(f"[opsem:smallstep] {e}")
     import traceback; traceback.print_exc()
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -504,6 +506,7 @@ except Exception as e:
     print(f"[opsem:types] {e}")
     import traceback; traceback.print_exc()
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
