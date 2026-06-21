@@ -435,7 +435,7 @@ For each Python expression below, identify which bird (I, K, S, B, C, W, M, KI) 
 ## 14. Further Reading
 
 - Smullyan, Raymond. *To Mock a Mockingbird* (Knopf, 1985). The source of the bird names; a puzzle book that teaches combinatory logic through delightful ornithological fiction.
-- Lebec, Gabriel. "A Flock of Functions." London Functional Programmers Meetup, 2016. The direct inspiration for this module; the original JavaScript version is on YouTube and is highly recommended.
+- Lebec, Gabriel. "Lambda as JS, or A Flock of Functions: Combinators, Lambda Calculus, and Church Encodings in JavaScript." London Functional Programmers Meetup, 2016. **This is the direct inspiration for this module.** Slides: https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript — Source: https://github.com/glebec/lambda-talk — Watch the recording; every combinator in this activity appears there in JavaScript.
 - Curry, H. B. and R. Feys. *Combinatory Logic, Volume I* (North-Holland, 1958). The foundational text.
 - Hindley, J. Roger and Jonathan P. Seldin. *Lambda-Calculus and Combinators: An Introduction* (Cambridge UP, 2008). Modern, rigorous, and accessible.
 - Turner, David. "Another Algorithm for Bracket Abstraction." *Journal of Symbolic Logic* 44(2), 1979. The optimized bracket abstraction that compilers actually use, avoiding the SKI expansion explosion.

@@ -273,6 +273,7 @@ Exercises 1 through 3 are individual; exercises 4 and 5 are partner exercises, a
 ## 8. Further Reading
 
 - Pierce, Benjamin C. *Types and Programming Languages* (MIT Press, 2002). Chapter 5 is the standard modern treatment of the untyped calculus, including the substitution definition used here.
+- **Lambda Py interactive notebook** — run the calculus directly in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html — an excellent companion to the code cells in this module.
 - Church, Alonzo. "An Unsolvable Problem of Elementary Number Theory." *American Journal of Mathematics* 58 (1936). The original; read the first pages for the historical voice.
 - Barendregt, Henk. *The Lambda Calculus: Its Syntax and Semantics* (North-Holland, 1984). The encyclopedic reference, for depth beyond this course.
 - Hudak, Paul, John Hughes, Simon Peyton Jones, and Philip Wadler. "A History of Haskell: Being Lazy with Class." *HOPL III* (2007). How the calculus, lazy evaluation, and Church-Rosser shaped the language that hosts TidalCycles.
