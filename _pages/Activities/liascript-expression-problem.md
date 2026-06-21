@@ -96,6 +96,8 @@ for s in shapes:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** The constraint "without modifying existing code" is the whole point. It is easy to dismiss the problem by saying "just edit the class" — but that is exactly what the Expression Problem forbids. Imagine the class lives in a library you installed via `pip` and cannot change.
+
 Notice that `Triangle` required zero changes to `Circle` or `Rectangle`. We simply wrote a new class. But imagine you now need to generate SVG output for every shape. You would have to open up `Circle`, `Rectangle`, and `Triangle` — and every other shape that existed before you arrived — and add a `to_svg` method to each. If this code lives in a library you do not own, that is simply impossible without forking.
 
 This is the **OOP extensibility asymmetry**: new types are cheap; new operations are expensive.

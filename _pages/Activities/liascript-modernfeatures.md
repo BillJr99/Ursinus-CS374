@@ -98,6 +98,8 @@ print(describe(("+", ("num", 2), ("neg", ("num", 3)))))
 
 ## Model 1: Three Lenses, Four Features
 
+> **Intuition:** The three-lens template (problem / mechanism / cost) is a general framework for evaluating *any* language feature, not just the four covered here. When you encounter a new feature in the wild — Python's walrus operator `:=`, JavaScript's optional chaining `?.`, Kotlin's coroutines — you can immediately ask these three questions to understand it. Notice that "cost" is not always a drawback: sometimes you are deliberately spending writability to buy reliability, or spending simplicity to buy performance. The interesting question is always *whether the trade is worth it* in your target use case.
+
 ### Critical Thinking Questions
 
 1. Complete the jigsaw grid as a class: for each feature, the problem, the mechanism in one sentence, the criterion served, and the criterion taxed.

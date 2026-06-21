@@ -88,6 +88,8 @@ a **variable**; an **abstraction** (a function of one parameter $x$ with body $e
 
 **Bound and free.** In $\lambda x.\, x\, y$: the $x$ in the body is **bound** by the λ; $y$ is **free** (it refers to something outside). Binding here is your scope module's lexical scoping, in its original mathematical form: a λ is a binder, its body is the scope.
 
+> **Watch out! — Application is left-associative.** `f a b` means `(f a) b`, NOT `f (a b)`. Concretely: `f` is applied to `a` first, producing a new function, and *that* function is applied to `b`. This matters most for curried functions: `(λx.λy.x) A B` is `((λx.λy.x) A) B`, and the first application peels off one λ, giving `(λy.A) B`, which then reduces to `A`. If you mistakenly group it as `(λx.λy.x) (A B)`, you get a completely different computation.
+
 ---
 
 ## Model 1: Parse by Eye

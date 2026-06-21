@@ -405,6 +405,8 @@ except Exception as e:
 
 ## Model 3: Transactions and Composability
 
+**Intuition.** The bank transfer code above shows STM's greatest strength: composability. The `transfer` function is built from two reads and two writes, but the whole thing commits as a single atomic unit. If you tried to achieve the same thing with two locks (`alice_lock` and `bob_lock`), you would face the classic deadlock: thread 1 acquires `alice_lock` and waits for `bob_lock`, while thread 2 acquires `bob_lock` and waits for `alice_lock`. STM sidesteps this entirely because transactions do not hold locks — they just record what they read, attempt a write, and retry if the world changed.
+
 ### Critical Thinking Questions
 
 9. STM transactions can be composed: if `debit` and `credit` are each transactions, `transfer = debit AND credit` is also a transaction — and it is atomic as a unit. Why can't you compose lock-based operations this way? (What goes wrong if you write `def transfer(): debit_lock.acquire(); credit_lock.acquire(); ...`?)

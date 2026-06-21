@@ -237,6 +237,10 @@ except Exception as e:
 
 ## 4. What Cannot Be Proved
 
+**Intuition.** Not every proposition can be proved. In classical logic, `False` (written `⊥`) has no proof — it is false by definition. The type-theoretic counterpart is a type you can *name* but can never *construct a value of*. Since there is no way to call a function that returns a value of the empty type, a function whose *input* is the empty type is vacuously fine: it can never be called, so it never has to produce anything. This is the programming interpretation of "ex falso quodlibet" — from a contradiction, anything follows.
+
+> **Watch out!** Python's `Never` (from `typing`) and `NoReturn` are only checked by *static type checkers* like mypy. At runtime Python will happily let you ignore them. The code cells below simulate the empty type with a class whose constructor always raises — this makes the constraint observable at runtime, but do not confuse the simulation with a real dependent type guarantee.
+
 The logical proposition `⊥` (False, or absurdity) has no proof — it is uninhabited. Its type-theoretic counterpart is a type with no values: the **empty type** (called `Void` in Haskell, `Never` in Python, `!` in Rust).
 
 Since you can never construct a value of the empty type, **a function of type `Empty -> A` is vacuously true**: the function is never called. This matches the logical principle "from False, anything follows" (ex falso quodlibet).
