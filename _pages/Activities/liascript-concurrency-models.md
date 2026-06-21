@@ -1,0 +1,466 @@
+# Concurrency Models: Actors, Channels, and Transactions
+<!--
+author:   William Mongan
+language: en
+narrator: US English Male
+
+comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-concurrency-models.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-concurrency-models.md
+
+import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
+
+link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css/liascript-custom.css?v=2025-08-23-4
+        https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap
+
+-->
+
+# Concurrency Models: Actors, Channels, and Transactions
+
+The Parallelism module showed that pure functions parallelize automatically — but programs also need *concurrency*: multiple activities interleaved in time, coordinating via communication. The language designer's central choice is **what primitive does the language expose for that coordination**? Three answers dominate modern languages: **actors** (Erlang, Akka) exchange immutable messages; **channels** (Go, Occam, CSP) synchronize on named conduits; **transactions** (Haskell STM, Clojure) compose atomic blocks. All three eliminate shared mutable state — but by different means, with different tradeoffs, suitable for different programs. The arc: **the coordination problem → actors → channels/CSP → STM → the π-calculus as foundation**.
+
+---
+
+## Directions and Group Roles
+
+Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**). Each Part is implemented in Python, but the focus is the *model*, not the API. The Recorder posts a comparison table at the end. After class, respond to the reflective prompt individually in your notebook.
+
+---
+
+# Part I: The Coordination Problem
+
+## 1. Why Shared Memory Fails
+
+The Parallelism module established: pure functions are safe to parallelize. The hard part is the rest of the program — the stateful services, the shared counters, the bounded buffers. Shared mutable state under concurrency is the source of race conditions, deadlocks, and livelocks. Language designers have sought primitives that **eliminate** sharing as a root cause, rather than requiring programmers to manage it correctly with locks.
+
+```python
+try:
+    import threading, time
+
+    # Classic race condition: shared counter without synchronization
+    class BrokenCounter:
+        def __init__(self): self.value = 0
+        def increment(self): self.value += 1   # read-modify-write: NOT atomic
+
+    counter = BrokenCounter()
+    threads = [threading.Thread(target=lambda: [counter.increment() for _ in range(1000)])
+               for _ in range(10)]
+    for t in threads: t.start()
+    for t in threads: t.join()
+
+    print(f"Expected: 10000, Got: {counter.value}  (deficit = {10000 - counter.value})")
+    print("(Run multiple times to see non-determinism)")
+
+except Exception as e:
+    print(f"[conc:race] {e}")
+    import traceback; traceback.print_exc()
+```
+
+---
+
+# Part II: The Actor Model
+
+## 2. Actors: No Sharing, Only Messages
+
+An **actor** is a unit of computation with:
+- Its own **private state** (no other actor touches it)
+- A **mailbox** (a queue of incoming messages)
+- A **behavior** function: when a message arrives, compute new state and optionally send messages to other actors
+
+This is Erlang's model (and Akka for JVM). Because no state is shared, there are no races. The only coordination is message passing — and messages are **copied** (or immutable) so the sender retains nothing.
+
+```python
+try:
+    import threading, queue, time
+
+    class Actor(threading.Thread):
+        def __init__(self, name, behavior):
+            super().__init__(daemon=True)
+            self.name = name
+            self.mailbox = queue.Queue()
+            self.behavior = behavior
+            self._state = {}
+            self.start()
+
+        def send(self, msg):
+            self.mailbox.put(msg)
+
+        def run(self):
+            while True:
+                msg = self.mailbox.get()
+                if msg == 'STOP': break
+                self._state = self.behavior(msg, self._state) or self._state
+
+    # A counter actor: messages are ('increment',) or ('get', reply_actor)
+    def counter_behavior(msg, state):
+        count = state.get('count', 0)
+        if msg[0] == 'increment':
+            return {'count': count + 1}
+        if msg[0] == 'get':
+            msg[1].send(('value', count))   # reply to the requester
+        return state
+
+    # A "printer" actor that just prints what it receives
+    def printer_behavior(msg, state):
+        print(f"  [printer] received: {msg}")
+        return state
+
+    printer = Actor('printer', printer_behavior)
+    counter = Actor('counter', counter_behavior)
+
+    # Send 100 increment messages — no race condition possible
+    for _ in range(100):
+        counter.send(('increment',))
+
+    # Request the final count
+    time.sleep(0.05)   # let the actor process the increments
+    counter.send(('get', printer))
+    time.sleep(0.05)
+
+    counter.send('STOP')
+    printer.send('STOP')
+
+except Exception as e:
+    print(f"[conc:actor] {e}")
+    import traceback; traceback.print_exc()
+```
+
+---
+
+## Model 1: Actor Properties
+
+### Critical Thinking Questions
+
+1. In the actor model, the counter's `count` variable is never shared — it lives only inside `counter_behavior`'s `state` dictionary. Why does this eliminate the race condition that the `BrokenCounter` had? What precisely is different?
+
+2. The `get` message causes the counter to *send* a message back to the printer. This is **request-reply messaging**. How is this different from a function call that returns a value? (Hint: which is synchronous, which is asynchronous?)
+
+3. **Fault tolerance.** Erlang's "let it crash" philosophy says: if an actor dies with an error, a *supervisor* actor restarts it. How does the mailbox abstraction enable this? What would happen to unprocessed messages if the actor crashes?
+
+4. Two actors may send messages to each other simultaneously, causing a message in each mailbox. Neither blocks — they proceed. In a system with shared locks, both would instead wait for the other's lock: a **deadlock**. Explain why the actor model prevents this specific deadlock scenario structurally.
+
+---
+
+# Part III: Channels and CSP
+
+## 3. Go-Style Channels: Synchronize on Communication
+
+**Communicating Sequential Processes** (CSP, Tony Hoare 1978) and Go's channels take a different view: concurrency is about *synchronization points*. A **channel** is a typed conduit; a send blocks until a receiver is ready, and vice versa (for unbuffered channels). Coordination happens *at the moment of communication*, not via shared state.
+
+```python
+try:
+    import threading, queue, time
+
+    # Python queue as a Go-style channel (unbuffered = queue size 0)
+    def make_chan(buffered=0):
+        return queue.Queue(maxsize=buffered if buffered else 0)
+
+    def go(fn, *args):
+        t = threading.Thread(target=fn, args=args, daemon=True)
+        t.start()
+        return t
+
+    # Producer/Consumer using channels
+    def producer(ch, n):
+        for i in range(n):
+            ch.put(i)           # send to channel (blocks if full)
+            print(f"  sent {i}")
+        ch.put(None)            # sentinel
+
+    def consumer(ch, results):
+        while True:
+            item = ch.get()     # receive from channel (blocks if empty)
+            if item is None: break
+            results.append(item * item)
+            print(f"  received {item}, computed {item*item}")
+
+    ch = make_chan(buffered=2)   # buffer of 2
+    results = []
+
+    p = go(producer, ch, 5)
+    c = go(consumer, ch, results)
+
+    p.join(); c.join()
+    print("Squares:", results)
+
+except Exception as e:
+    print(f"[conc:chan] {e}")
+    import traceback; traceback.print_exc()
+```
+
+**Select: waiting on multiple channels.** Go's `select` statement blocks until *any* of several channels is ready — the CSP choice operator. This is how event loops and multiplexers are written without callbacks.
+
+```python
+try:
+    import threading, queue, time, random
+
+    def make_chan(): return queue.Queue()
+
+    def go(fn, *args):
+        t = threading.Thread(target=fn, args=args, daemon=True)
+        t.start()
+        return t
+
+    # Simulate a "select" on two channels by using a merge channel
+    def merge(ch1, ch2, out):
+        def relay(ch):
+            while True:
+                v = ch.get()
+                if v is None:
+                    out.put(None); break
+                out.put(v)
+        go(relay, ch1)
+        go(relay, ch2)
+
+    ticker = make_chan()
+    sensor = make_chan()
+    merged = make_chan()
+    merge(ticker, sensor, merged)
+
+    def send_ticks(ch):
+        for i in range(3):
+            time.sleep(0.01)
+            ch.put(f"tick-{i}")
+        ch.put(None)
+
+    def send_sensors(ch):
+        for i in range(3):
+            time.sleep(0.015)
+            ch.put(f"temp={20 + i}")
+        ch.put(None)
+
+    go(send_ticks, ticker)
+    go(send_sensors, sensor)
+
+    done = 0
+    while done < 2:
+        msg = merged.get()
+        if msg is None:
+            done += 1
+        else:
+            print(f"  received: {msg}")
+
+except Exception as e:
+    print(f"[conc:select] {e}")
+    import traceback; traceback.print_exc()
+```
+
+---
+
+## Model 2: Channels and CSP
+
+[[MC]]
+In CSP/Go-style channels, an **unbuffered** channel's send operation blocks until a receiver is ready. What property does this enforce?
+- ( ) The sender always finishes before the receiver starts
+- (x) The send and receive happen simultaneously — the two goroutines/threads rendezvous at the channel
+- ( ) Messages are dropped if no receiver is waiting
+- ( ) The channel accumulates all messages until the receiver drains it
+
+### Critical Thinking Questions
+
+5. The actor model and CSP both eliminate shared state. What is the key difference in *when* coordination occurs? (Hint: actors are asynchronous by default; CSP channels synchronize at send.)
+
+6. Deadlock is still possible with channels: goroutine A waits to send on `ch1` while goroutine B waits to send on `ch2`, and neither will receive the other's message. How does Go's `select` statement break this deadlock? What would the equivalent in actor-based code look like?
+
+7. **Pipeline composition.** CSP channels compose naturally: `producer | transformer | consumer` where each stage reads from one channel and writes to another. Write the three-stage pipeline in pseudocode using channels. How does this compare to Unix pipes (`cat file | grep pattern | wc -l`)?
+
+8. The `merge` function above creates a new output channel and relays from two inputs. This is the **fan-in** pattern. What is the **fan-out** pattern, and how would you implement it?
+
+---
+
+# Part IV: Software Transactional Memory
+
+## 4. STM: Atomic Blocks Without Locks
+
+**Software Transactional Memory** (Haskell STM, Clojure refs) takes a third approach: allow threads to read and modify shared state, but inside **atomic transactions**. A transaction sees a consistent snapshot of memory; if two transactions conflict (both modified the same variable), one is *retried* automatically. No deadlocks: transactions don't hold locks, they just detect conflicts.
+
+```python
+try:
+    import threading, time
+    from copy import deepcopy
+
+    # Minimal STM simulation: transactional references (TVar)
+    class TVar:
+        def __init__(self, value):
+            self._value = value
+            self._lock = threading.Lock()
+
+        def read_committed(self):
+            with self._lock: return self._value
+
+        def write_committed(self, value):
+            with self._lock: self._value = value
+
+    class Transaction:
+        def __init__(self):
+            self._reads = {}    # TVar -> value at start
+            self._writes = {}   # TVar -> new value
+
+        def read(self, tvar):
+            if tvar in self._writes: return self._writes[tvar]
+            if tvar not in self._reads:
+                self._reads[tvar] = tvar.read_committed()
+            return self._reads[tvar]
+
+        def write(self, tvar, value):
+            self._writes[tvar] = value
+
+        def commit(self):
+            # Validate: check that read set hasn't changed
+            for tvar, expected in self._reads.items():
+                with tvar._lock:
+                    if tvar._value != expected:
+                        return False   # conflict — retry
+            # Write
+            for tvar, value in self._writes.items():
+                tvar.write_committed(value)
+            return True   # success
+
+    def atomically(fn):
+        """Run fn(transaction) atomically; retry on conflict."""
+        attempts = 0
+        while True:
+            tx = Transaction()
+            fn(tx)
+            if tx.commit():
+                return attempts + 1
+            attempts += 1   # retry
+
+    # Bank account transfer: atomically debit one, credit another
+    alice = TVar(1000)
+    bob   = TVar(500)
+
+    def transfer(amount):
+        def txn(tx):
+            a = tx.read(alice)
+            b = tx.read(bob)
+            if a >= amount:
+                tx.write(alice, a - amount)
+                tx.write(bob, b + amount)
+        return txn
+
+    def do_transfer(amount, results, i):
+        tries = atomically(transfer(amount))
+        results[i] = (alice.read_committed(), bob.read_committed(), tries)
+
+    results = [None] * 10
+    threads = [threading.Thread(target=do_transfer, args=(50, results, i))
+               for i in range(10)]
+    for t in threads: t.start()
+    for t in threads: t.join()
+
+    print(f"Alice final: {alice.read_committed()}, Bob final: {bob.read_committed()}")
+    print(f"Expected: Alice={1000-500}, Bob={500+500}")
+    print(f"Total retries: {sum(r[2]-1 for r in results if r)}")
+
+except Exception as e:
+    print(f"[conc:stm] {e}")
+    import traceback; traceback.print_exc()
+```
+
+---
+
+## Model 3: Transactions and Composability
+
+### Critical Thinking Questions
+
+9. STM transactions can be composed: if `debit` and `credit` are each transactions, `transfer = debit AND credit` is also a transaction — and it is atomic as a unit. Why can't you compose lock-based operations this way? (What goes wrong if you write `def transfer(): debit_lock.acquire(); credit_lock.acquire(); ...`?)
+
+10. If two transactions both read the same `TVar` and only one writes it, do they conflict? (Neither reads the other's write; both read the committed value.) What about two transactions both *writing* the same `TVar`? Which model do you think is correct, and why?
+
+11. STM requires the transaction body to be **pure** (no irreversible side effects), because a retried transaction re-executes its body. What would go wrong if a transaction body printed to the console, and the transaction was retried 3 times?
+
+12. Haskell's type system enforces STM purity: a `STM a` action can only be run inside `atomically`; it cannot perform IO. This is the same Curry-Howard connection as the IO monad — the type prevents the programmer from mixing transactional and effectful code. How does this relate to your interpreter's `ReturnSignal` exception: what would happen if a `return` statement inside a transaction could escape the transaction boundary?
+
+---
+
+# Part V: The π-Calculus — A Glimpse
+
+## 5. Mobile Channels as a Formal Foundation
+
+The **π-calculus** (Milner 1992) is to concurrent computation what the lambda calculus is to functional computation: a minimal formal system with one primitive (channel name) and one operation (send/receive a name over a channel). Names are *mobile* — you can send a channel name over a channel, so the communication topology can change at runtime. Every actor system and every channel-based language can be encoded in the π-calculus.
+
+The syntax is minimal:
+
+$$
+P, Q ::=\; 0 \quad\mid\quad \bar{x}\langle y \rangle.P \quad\mid\quad x(z).P \quad\mid\quad P \mid Q \quad\mid\quad \nu x.P \quad\mid\quad !P
+$$
+
+- $0$: the idle process
+- $\bar{x}\langle y \rangle.P$: send name $y$ on channel $x$, then continue as $P$
+- $x(z).P$: receive a name on channel $x$, bind it to $z$, continue as $P$
+- $P \mid Q$: $P$ and $Q$ running concurrently
+- $\nu x.P$: create a fresh private channel $x$ for $P$
+- $!P$: replicate $P$ (infinite server)
+
+**The key reduction rule (communication):**
+
+$$
+\bar{x}\langle y \rangle.P \mid x(z).Q \;\rightarrow\; P \mid Q[z := y]
+$$
+
+When a sender on $x$ and a receiver on $x$ are running in parallel, they synchronize: the receiver's $z$ is replaced by $y$.
+
+A function call $f(v)$ in the λ-calculus encodes as: send $v$ on channel $f$, where $f$ runs a receive. So the λ-calculus embeds in the π-calculus — concurrent computation subsumes sequential computation.
+
+---
+
+## Model 4: The π-Calculus
+
+### Critical Thinking Questions
+
+13. The π-calculus has no values, no numbers, no booleans — only channel names. Church numerals (from the Lambda Calculus activity) encode numbers as functions. How would you encode a "number" in the π-calculus? (Hint: encode it as a process that sends a fixed number of messages on a given channel.)
+
+14. The rule $\bar{x}\langle y \rangle.P \mid x(z).Q \rightarrow P \mid Q[z := y]$ looks exactly like β-reduction: $(\lambda z. Q)\; y \rightarrow Q[z := y]$. What is the "function" here, and what is the "argument"? What is the "application"?
+
+15. In the π-calculus, $\nu x.P$ creates a fresh private channel name — no process outside $P$ knows $x$. This is the formal counterpart of what language feature in your Mini interpreter? (Hint: think about local variables and scope.)
+
+---
+
+# Part VI: Comparison and Design Implications
+
+## 6. Choosing a Concurrency Primitive
+
+| | Actors | Channels (CSP) | STM |
+|---|---|---|---|
+| **Coordination** | Async message passing | Synchronous channel rendezvous | Optimistic locking with retry |
+| **State sharing** | None (each actor owns state) | None (state flows through channels) | Shared, but transactional |
+| **Deadlock** | Not possible (no blocking send) | Possible (channel misuse) | Not possible (no locks) |
+| **Composability** | Hard (reply-to patterns) | Medium (fan-in/fan-out) | Easy (transactions compose) |
+| **Side effects** | Allowed (actor's own state) | Allowed | Must be pure in transaction |
+| **Used by** | Erlang, Elixir, Akka, Pony | Go, Occam, Rust (channels), Racket | Haskell STM, Clojure refs |
+
+### Critical Thinking Questions
+
+16. Your final project has a Concurrency extension option: `spawn expr` and `channel send/receive`. Based on today's models, which primitive would you choose to implement first — actors, channels, or STM — and why? What is the minimum viable implementation in Python?
+
+17. All three models agree: **do not share mutable state**. Actors achieve this by encapsulation; channels achieve this by moving data through a conduit; STM achieves this by detecting and retrying conflicts. Which model requires the programmer to change their code structure the most? The least?
+
+18. Rust's ownership system prevents data races at compile time by ensuring only one thread can hold a mutable reference at a time. In what sense is Rust's approach a *static* enforcement of the same principle all three concurrency models pursue *dynamically*?
+
+---
+
+# Exercises
+
+1. **Actor calculator.** Implement a distributed calculator using actors: a `Parser` actor parses a string expression and sends the AST to an `Evaluator` actor, which sends the result to a `Printer` actor. Show that changing the Evaluator's behavior (e.g., to evaluate in floating-point instead of integer) requires no changes to Parser or Printer.
+
+2. **Pipeline with back-pressure.** Implement a three-stage pipeline (producer → transformer → consumer) using buffered channels. Demonstrate **back-pressure**: the producer slows down when the transformer's input channel is full. Explain why this is automatically provided by buffered channels.
+
+3. **STM bank invariant.** Extend the STM bank to enforce the invariant `alice + bob == 1500` (the total is conserved). Show that concurrent transfers never violate this invariant, even under retries. (Hint: check the invariant at the end of each transaction.)
+
+4. **π-calculus encoding.** The λ-term `(λx. x)(5)` can be encoded in the π-calculus. Write the encoding: create a channel `fn`, a process that receives on `fn` and sends the result on a reply channel, and a process that sends `5` on `fn`. Show the reduction step that corresponds to β-reduction.
+
+---
+
+## Reflection Prompt
+
+In your notebook: actors, channels, and STM all *eliminate* a feature (shared mutable state) rather than adding one. This is a recurring theme in language design — sometimes the best feature is one you cannot express. Lambda calculus has no mutation; Haskell's IO monad prevents mixing pure and impure code; STM prevents unsynchronized writes; Rust's ownership prevents dangling pointers. Is this style of design — **constraining the programmer for their own benefit** — fundamentally at odds with expressiveness? Give one example where the constraint paid off and one where it felt needlessly limiting.
+
+---
+
+## Further Reading
+
+- Hoare, C.A.R. *Communicating Sequential Processes* (1985; free PDF at usingcsp.com). The foundational text; Go's channels implement this model.
+- Armstrong, Joe. *Programming Erlang*, 2nd ed. (Pragmatic, 2013). Chapter 9 on fault-tolerant actor systems.
+- Harris, Tim et al. "Composable Memory Transactions" (PPoPP 2005). The paper introducing Haskell STM with `retry` and `orElse`.
+- Milner, Robin. *Communicating and Mobile Systems: The π-Calculus* (Cambridge, 1999). The foundational text on mobile processes.
+- Go's concurrency tour: https://go.dev/tour/concurrency — interactive examples of channels and goroutines.
+- Hewitt, Carl. "Actor Model of Computation" (1973). The original actor paper; free online.
