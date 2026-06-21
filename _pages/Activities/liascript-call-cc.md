@@ -1,4 +1,3 @@
-# Call with Current Continuation: Capturing the Future
 <!--
 author:   William Mongan
 language: en
@@ -15,7 +14,29 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Call with Current Continuation: Capturing the Future
 
-Somewhere in the middle of computing `(f (g x))`, your program has a "current continuation" — a frozen description of everything it would do with the result of `(g x)`: pass it to `f`, return from the outer expression, print the final answer. Normally this continuation is invisible, implicit in the call stack. **call/cc** (`call-with-current-continuation`) makes it a first-class value you can grab, store, and invoke later — or never, or multiple times. The result is startling: a single primitive that subsumes `return`, `break`, `throw`, `yield`, backtracking, green threads, and more.
+---
+
+## Before You Begin
+
+> **Prerequisites — make sure you are comfortable with these before proceeding:**
+>
+> - **Continuations and CPS** — You should be able to take a direct-style function and manually convert it to continuation-passing style. If that is fuzzy, revisit the [CPS Activity](_pages/Activities/liascript-cps.md) before continuing here.
+> - **Closures** — You should understand that a Python function defined inside another function "closes over" the outer variables and carries them with it.
+> - **Exceptions** — You should understand how `try / raise / except` work in Python and why raising an exception causes a non-local jump out of nested call frames.
+>
+> **Why those three?** `call/cc` is best understood as a generalization of all three at once: it is CPS made explicit, it uses closures to freeze the program state, and it performs the same kind of non-local jump that exceptions do — but under your direct control.
+
+---
+
+## Opening Hook: You Already Know call/cc
+
+Here is something surprising:
+
+> **Python's `return`, `break`, and `raise` are all forms of call/cc in disguise. They all say "throw away the rest of the current computation and jump somewhere else." The `call/cc` operator makes this explicit and first-class — you can store a 'jump target' in a variable and invoke it later.**
+
+Every time you write `return x` inside a loop, Python throws away the rest of the loop, throws away the rest of the function, and jumps to whatever called the function. `break` throws away the rest of the loop body. `raise` throws away the rest of everything until a matching `except` is found. These jumps are powerful, but they are *wired in* — you cannot pass a `return` around as a value, store it in a list, or call it five seconds later.
+
+`call/cc` unfreezes this. It lets you name the jump target, store it, and fire it whenever you want — once, never, or many times.
 
 This module follows three steps: **(1)** understand continuations as "the rest of the computation," **(2)** simulate `call/cc` in Python using CPS and mutable state, **(3)** observe how every major control-flow mechanism is secretly a restricted continuation.
 
@@ -34,11 +55,87 @@ Rotate roles every class meeting. Each model has a Python code block — run it,
 
 ---
 
-## 1. The Continuation as "The Rest of the Computation"
+## 0. Motivation: try/except Is Already call/cc
+
+Before we touch anything exotic, look at code you have been writing since CS1. The `try/except` construct is an escape continuation — a way of saying "abandon everything and jump here immediately."
+
+```python  liascript
+# Ordinary try/except: raise is an escape continuation
+class EarlyExit(Exception):
+    def __init__(self, value):
+        self.value = value
+
+def find_first_even_exceptions(lst):
+    """Return the first even number in lst, or None."""
+    try:
+        for x in lst:
+            print(f"  checking {x} ...")
+            if x % 2 == 0:
+                raise EarlyExit(x)   # JUMP out of the loop immediately
+            print(f"  {x} is odd, continuing")
+        return None
+    except EarlyExit as e:
+        print(f"  --> escaped with {e.value}")
+        return e.value
+
+print("find_first_even_exceptions([1, 3, 4, 7, 8]):")
+print(find_first_even_exceptions([1, 3, 4, 7, 8]))
+print()
+
+# Now the same idea expressed with call/cc explicitly:
+class Continuation:
+    def __init__(self):
+        self.value = None
+    def __call__(self, value):
+        self.value = value
+        raise _EscapeException(value)
+
+class _EscapeException(BaseException):
+    def __init__(self, value): self.value = value
+
+def callcc(f):
+    k = Continuation()
+    try:
+        result = f(k)
+        return result
+    except _EscapeException as e:
+        return e.value
+
+def find_first_even_callcc(lst):
+    """Same logic, but using callcc explicitly."""
+    def body(k):          # k is the escape continuation
+        for x in lst:
+            print(f"  checking {x} ...")
+            if x % 2 == 0:
+                k(x)      # escape immediately with x
+            print(f"  {x} is odd, continuing")
+        return None       # only reached if no even number found
+    return callcc(body)
+
+print("find_first_even_callcc([1, 3, 4, 7, 8]):")
+print(find_first_even_callcc([1, 3, 4, 7, 8]))
+print()
+print("Both produce the same output! try/except IS call/cc.")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+Run the code and compare the two functions carefully. They produce the same output because they are doing the same thing. The difference is that in the `callcc` version, `k` is a Python object you could, in principle, store in a variable and call later — *after* `find_first_even_callcc` has already returned.
+
+> **CTQ 0.1** In `find_first_even_exceptions`, what line causes the loop to stop early? What does Python do to the call stack when that line executes?
+
+> **CTQ 0.2** In `find_first_even_callcc`, what is the role of `k`? At the moment `k(x)` is called, what is about to be abandoned?
+
+> **CTQ 0.3** The line `print(f"  {x} is odd, continuing")` appears after the `if` check in both functions. Does it ever print for the first even number? Why not?
+
+---
+
+## 1. The "Time Capsule" Analogy
+
+> **A continuation is a frozen snapshot of the entire rest of the program. Calling it says "go back to this snapshot and resume." It is like a time capsule that, when opened, teleports you back to the moment it was sealed — with the program in exactly the state it was in then, except the value you pass in becomes the result of the original expression.**
 
 When Python evaluates `print(1 + f(3))`, the call to `f(3)` has a continuation: "take the result, add 1 to it, pass the sum to `print`." This continuation is normally invisible — it lives in the call stack. To make it visible, we shift to **Continuation-Passing Style (CPS)**: instead of returning a value, every function receives an extra argument `k` (the continuation) and calls it with the result instead of returning.
 
-```python
+```python  liascript
 # Direct style: f(x) returns x+1; main computes 1 + f(3)
 def f_direct(x):
     return x + 1
@@ -76,20 +173,121 @@ saved_k[0](99)   # call the continuation again with a different value!
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-### Critical Thinking Questions
+> **CTQ 1.1** In the direct-style call `1 + f_direct(3)`, describe the continuation of `f_direct(3)` in English. What would the computation do with the return value?
 
-1. In the direct-style call `1 + f_direct(3)`, describe the continuation of `f_direct(3)` in English. What would the computation do with the return value?
-2. In `f_capturing`, the continuation `k` is saved in `saved_k`. When we call `saved_k[0](99)` at the end, what happens? Why is the output different?
-3. We saved the continuation and invoked it twice (once from inside `f_capturing` and once from outside). What would happen if the continuation were for a `return` statement — what would invoking it twice mean?
-4. The continuation `after_f` in `main_cps` is a Python function. In what sense is a function a "frozen computation"? How is that related to closures?
+> **CTQ 1.2** In `f_capturing`, the continuation `k` is saved in `saved_k`. When we call `saved_k[0](99)` at the end, what happens? Why is the output different from the first call?
+
+> **CTQ 1.3** We saved the continuation and invoked it twice (once from inside `f_capturing` and once from outside). What would happen if the continuation were for a `return` statement — what would invoking it twice mean?
+
+> **CTQ 1.4** The continuation `after_f` in `main_cps` is a Python function. In what sense is a function a "frozen computation"? How is that related to closures?
 
 ---
 
-## 2. Simulating `call/cc`
+## 2. Step-by-Step Trace: What Does `k` Actually Capture?
+
+Before writing more code, let us slow down and trace exactly what happens in a `callcc` call. This is the part most students rush past and later regret.
+
+Consider the following call:
+
+```
+result = callcc(body)
+```
+
+Here is the sequence, step by step:
+
+1. **`callcc` creates a fresh `Continuation` object and names it `k`.** Think of `k` as a postcard with the address "return to the caller of `callcc`, and hand them this value."
+
+2. **`callcc` calls `body(k)`.** Inside `body`, `k` is just an ordinary argument — a callable Python object. The key is that it is stamped with the return address: wherever `callcc` was called from.
+
+3. **Two possible outcomes:**
+
+   - **`body` returns normally** (without calling `k`): `callcc` returns whatever `body` returned. `k` is silently discarded and never used.
+   - **`body` calls `k(value)`**: This raises `_EscapeException` internally. `callcc`'s `try/except` catches it and returns `value`. Anything that was about to happen in `body` after `k(value)` is **abandoned immediately**.
+
+4. **The code after `k(value)` inside `body` never runs.** This is not a Python bug — it is the point.
+
+The following code makes all four of these cases visible with print statements:
+
+```python  liascript
+class Continuation:
+    def __call__(self, value):
+        raise _EscapeException(value)
+
+class _EscapeException(BaseException):
+    def __init__(self, value): self.value = value
+
+def callcc(f):
+    k = Continuation()
+    try:
+        result = f(k)
+        print(f"  [callcc] body returned normally with: {result!r}")
+        return result
+    except _EscapeException as e:
+        print(f"  [callcc] k was called; escaping with: {e.value!r}")
+        return e.value
+
+# Case A: body never calls k
+print("=== Case A: body does NOT call k ===")
+val = callcc(lambda k: "hello from body")
+print(f"callcc returned: {val!r}")
+print()
+
+# Case B: body calls k immediately
+print("=== Case B: body calls k immediately ===")
+val = callcc(lambda k: k("escaped!"))
+print(f"callcc returned: {val!r}")
+print()
+
+# Case C: body calls k mid-way, abandoning remaining work
+print("=== Case C: body calls k mid-way ===")
+def body_c(k):
+    print("  body: step 1 -- about to call k")
+    k("value from k")
+    print("  body: step 2 -- THIS NEVER PRINTS")
+    return "this return is also abandoned"
+
+val = callcc(body_c)
+print(f"callcc returned: {val!r}")
+print()
+
+# Case D: k is stored and called AFTER callcc already returned
+print("=== Case D: k stored and fired later ===")
+stored_k = [None]
+
+def body_d(k):
+    stored_k[0] = k
+    return "body returned without calling k"
+
+val = callcc(body_d)
+print(f"callcc returned (first time): {val!r}")
+print("Now firing stored_k from outside callcc...")
+# Note: our simplified implementation raises an exception here;
+# a full Scheme continuation would rewind the entire call stack.
+try:
+    stored_k[0]("late escape")
+except _EscapeException as e:
+    print(f"  Caught late escape with value: {e.value!r}")
+    print("  (In full Scheme call/cc this would rewind the stack)")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+> **CTQ 2.1** In Case B, the lambda calls `k("escaped!")` and then there is no more code. Does the lambda return a value? Does it matter? What does `callcc` return?
+
+> **CTQ 2.2** In Case C, the line `print("  body: step 2 -- THIS NEVER PRINTS")` never executes. Explain precisely why — trace the exception path.
+
+> **CTQ 2.3** Case D shows the limit of our Python simulation: firing `k` after `callcc` has already returned just raises a raw exception rather than truly rewinding the stack. What would a "true" continuation do differently? Why is that impossible to simulate with Python exceptions?
+
+> **CTQ 2.4** Draw a timeline for Case C showing: when `callcc` starts, when `body_c` starts, when `k` is called, and when `callcc` returns. Mark the point where "the rest of body_c" is abandoned.
+
+---
+
+## 3. Simulating `call/cc`
 
 In Scheme, `(call/cc f)` calls `f` with the current continuation as its argument. The current continuation is packaged as an escape procedure: if you call it with a value `v`, the entire `call/cc` expression immediately returns `v`, abandoning whatever computation was pending. Here we simulate this behavior in Python using a class-based continuation object and an exception for early exit.
 
-```python
+> **Watch out!** Calling a continuation is a non-local jump. The code after `k(value)` in the current function body is DEAD — it never runs. This surprises almost everyone the first time they see it.
+
+```python  liascript
 class Continuation:
     """A reified continuation: call it to escape the current call/cc frame."""
     def __init__(self):
@@ -116,7 +314,7 @@ def call_cc(f):
         result = f(k)
         return result  # normal return path
     except _EscapeException as e:
-        return e.value  # k was invoked — return early
+        return e.value  # k was invoked -- return early
 
 # --- Example 1: call/cc as an early-exit mechanism ---
 def search(lst, target):
@@ -160,20 +358,25 @@ restart[0](5)   # "time travel": resume from where we saved the continuation
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-### Critical Thinking Questions
+> **Watch out!** In Scheme, `call/cc` captures the **entire** continuation (the entire rest of the program). In Python, we simulate this with exceptions — our continuations are more limited (they can only escape upward through the call stack, not sideways or back into a frame that has already returned). Example 3 above shows where the simulation breaks down at the edges.
 
-5. In Example 1, `escape(i)` is called inside a loop. What happens to the loop when `escape` is invoked? How does this differ from a regular `return`?
-6. Python's `try/except` implements exception handling. Compare `safe_divide` using `call_cc` to the same function using `try/except`. What is the conceptual relationship between exceptions and continuations?
-7. In Example 3, calling `restart[0](5)` makes execution resume at the line `x = call_cc(...)` but with `x=5`. What would happen if you called `restart[0](5)` a second time? A third time?
-8. What would it mean for a language to expose `call/cc` as a built-in (like Scheme does), versus simulating it with exceptions (like our Python version)? What can Scheme's `call/cc` do that our simulation cannot?
+> **CTQ 3.1** In Example 1, `escape(i)` is called inside a loop. What happens to the loop when `escape` is invoked? How does this differ from a regular `return`?
+
+> **CTQ 3.2** Python's `try/except` implements exception handling. Compare `safe_divide` using `call_cc` to the same function using `try/except`. What is the conceptual relationship between exceptions and continuations?
+
+> **CTQ 3.3** In Example 3, calling `restart[0](5)` makes execution resume at the line `x = call_cc(...)` but with `x=5`. What would happen if you called `restart[0](5)` a second time? A third time?
+
+> **CTQ 3.4** What would it mean for a language to expose `call/cc` as a built-in (like Scheme does), versus simulating it with exceptions (like our Python version)? What can Scheme's `call/cc` do that our simulation cannot?
 
 ---
 
-## 3. Non-Local Exit: `break`, `return`, and Exceptions as Continuations
+## 4. Non-Local Exit: `break`, `return`, and Exceptions as Continuations
 
 Every control-flow mechanism is a restricted form of `call/cc`. Here we derive `break`, `return`, and exception handling from `call_cc` directly, making the connection explicit.
 
-```python
+> **Watch out!** A continuation called more than once re-runs the rest of the program from that captured point. This is how some implementations of coroutines work, and it is also why unrestricted continuations can be confusing — an ordinary `return` would be disastrous if invoked twice.
+
+```python  liascript
 class Continuation:
     def __init__(self): self.value = None
     def __call__(self, v=None):
@@ -254,20 +457,98 @@ print(f"Search for 10 in matrix: {matrix_search(M, 10)}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-### Critical Thinking Questions
+> **CTQ 4.1** Python's `break` statement exits a `for` loop. How does `my_break_loop` implement the same behavior using `call_cc`? What is the "continuation" being captured?
 
-9. Python's `break` statement exits a `for` loop. How does `my_break_loop` implement the same behavior using `call_cc`? What is the "continuation" being captured?
-10. In the two-continuation style (`divide_two_cont`), there are two callbacks: `on_success` and `on_error`. How does this relate to Haskell's `Either` type or Python's `Result` type from the Error Handling activity?
-11. The matrix search uses `call_cc` to exit from a doubly-nested loop. Python has no built-in way to `break` out of two loops at once (without goto or a flag). How does `call_cc` solve this cleanly?
-12. Every use of `call/cc` in this model corresponds to a control-flow feature Python has natively. What does this suggest about the "expressive power" of `call/cc` as a primitive?
+> **CTQ 4.2** In the two-continuation style (`divide_two_cont`), there are two callbacks: `on_success` and `on_error`. How does this relate to Haskell's `Either` type or Python's `Result` type from the Error Handling activity?
+
+> **CTQ 4.3** The matrix search uses `call_cc` to exit from a doubly-nested loop. Python has no built-in way to `break` out of two loops at once (without goto or a flag). How does `call_cc` solve this cleanly?
+
+> **CTQ 4.4** Every use of `call/cc` in this model corresponds to a control-flow feature Python has natively. What does this suggest about the "expressive power" of `call/cc` as a primitive?
 
 ---
 
-## 4. Generators and Coroutines as Delimited Continuations
+## 5. Cooperative Multitasking: Continuations as Green Threads
+
+One of the most striking uses of `call/cc` is implementing cooperative multitasking — multiple "tasks" that voluntarily take turns running on a single thread. Each task, when it wants to pause, calls a `yield_control()` function. Under the hood, `yield_control()` uses `call/cc` to freeze the current task as a continuation, puts it at the back of a queue, and runs the next task. This is exactly how Python's `asyncio` event loop and early coroutine libraries worked.
+
+```python  liascript
+from collections import deque
+
+class Continuation:
+    def __call__(self, v=None): raise _Escape(v)
+
+class _Escape(BaseException):
+    def __init__(self, v=None): self.value = v
+
+def call_cc(f):
+    k = Continuation()
+    try: return f(k)
+    except _Escape as e: return e.value
+
+# The task queue holds continuations (frozen tasks waiting to resume)
+task_queue = deque()
+
+def yield_control():
+    """Pause the current task and hand control to the scheduler."""
+    def body(k):
+        # Save OUR continuation (the rest of this task) in the queue
+        task_queue.append(k)
+        # Then run the next queued task
+        _run_next()
+    call_cc(body)
+
+def _run_next():
+    """Pop the next task from the queue and resume it."""
+    if task_queue:
+        next_continuation = task_queue.popleft()
+        next_continuation(None)   # resume that task
+
+def spawn(task_fn):
+    """Add a new task to the queue."""
+    task_queue.append(lambda _: task_fn())
+
+# --- Define two tasks that interleave ---
+def task_a():
+    print("Task A: step 1")
+    yield_control()            # pause; let someone else run
+    print("Task A: step 2")
+    yield_control()
+    print("Task A: step 3 (done)")
+
+def task_b():
+    print("Task B: step 1")
+    yield_control()
+    print("Task B: step 2 (done)")
+
+# Enqueue both tasks and start the scheduler
+spawn(task_a)
+spawn(task_b)
+
+print("=== Scheduler starting ===")
+_run_next()   # kick off the first task
+print("=== Scheduler done ===")
+print()
+print("Notice: the tasks interleaved, not one-after-the-other.")
+print("yield_control() is 'pause myself and run someone else'.")
+print("That is exactly what async/await does in asyncio.")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+> **CTQ 5.1** When `task_a` calls `yield_control()`, it stores its own continuation in the queue and calls `_run_next()`. What is stored in `task_queue` at the moment `_run_next()` is called for the first time?
+
+> **CTQ 5.2** After `task_b` completes, `task_queue` still holds `task_a`'s second continuation. Trace through the execution to explain why `Task A: step 2` eventually prints.
+
+> **CTQ 5.3** This scheduler is *cooperative* (tasks yield voluntarily). A *preemptive* scheduler can interrupt tasks at any time (like the OS does with threads). Could you implement preemptive scheduling with continuations? What extra mechanism would you need?
+
+> **CTQ 5.4** Python's `async def` / `await` syntax is syntactic sugar. Based on this example, what does `await some_coroutine()` desugar to in terms of continuations and a scheduler queue?
+
+---
+
+## 6. Generators and Coroutines as Delimited Continuations
 
 Generators (`yield`) are a form of **delimited continuation** — a continuation up to a specific delimiter, not the entire rest of the program. Here we build a generator from `call_cc` to reveal what `yield` is really doing.
 
-```python
+```python  liascript
 from collections import deque
 
 class Continuation:
@@ -350,20 +631,23 @@ print("  3. When 'next()' is called, invoke the saved continuation")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-### Critical Thinking Questions
+> **CTQ 6.1** In `countdown_cps`, `k_yield` receives TWO arguments: the value AND a `resume` function. Why does it need the `resume` function? What does calling `resume()` do?
 
-13. In `countdown_cps`, `k_yield` receives TWO arguments: the value AND a `resume` function. Why does it need the `resume` function? What does calling `resume()` do?
-14. Python's `yield` statement is syntactic sugar. Based on the CPS simulation, what does `yield n` desugar to in terms of continuations?
-15. A "full continuation" captures the entire rest of the program. A "delimited continuation" captures the rest of the program up to a marked boundary. `yield` is a delimited continuation: what is the "delimiter" (what marks the boundary)?
-16. If you called `resume()` twice, what would happen? How does Python's generator prevent this (prevent "resuming" the same continuation twice)?
+> **CTQ 6.2** Python's `yield` statement is syntactic sugar. Based on the CPS simulation, what does `yield n` desugar to in terms of continuations?
+
+> **CTQ 6.3** A "full continuation" captures the entire rest of the program. A "delimited continuation" captures the rest of the program up to a marked boundary. `yield` is a delimited continuation: what is the "delimiter" (what marks the boundary)?
+
+> **CTQ 6.4** If you called `resume()` twice, what would happen? How does Python's generator prevent this (prevent "resuming" the same continuation twice)?
 
 ---
 
-## 5. Backtracking Search with Continuations
+## 7. Backtracking Search with Continuations
 
 **Prolog-style backtracking** is the most dramatic use of `call/cc` beyond exception handling. The idea: when a search fails, "rewind" to the last choice point and try the next option. Continuations make this natural — save a continuation at each choice point; on failure, invoke the saved continuation to "jump back."
 
-```python
+Think of it like a video game save point: `choose` creates a save point right before you pick an option, and `fail` loads the save point and forces you to try the next option.
+
+```python  liascript
 class Continuation:
     def __call__(self, v=None): raise _Escape(v)
 
@@ -444,12 +728,13 @@ print(f"First (x<y) with x+y=7: {result}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-### Critical Thinking Questions
+> **CTQ 7.1** In the backtracking scheme, `choose(options)` saves a continuation and returns the first option. When `fail()` is called, what does it do with the saved continuation?
 
-17. In the backtracking scheme, `choose(options)` saves a continuation and returns the first option. When `fail()` is called, what does it do with the saved continuation?
-18. Prolog's execution model is based on backtracking search. How does each Prolog clause correspond to a "choice point"? How does Prolog's `!` (cut) relate to discarding saved continuations?
-19. The backtracking example above looks like two nested for-loops. What does this tell you about the relationship between backtracking and explicit search loops?
-20. Continuations give you the ability to "jump back in time." What is a practical limit on this power — in other words, what would you NOT want to backtrack across (file writes, network calls, mutations)?
+> **CTQ 7.2** Prolog's execution model is based on backtracking search. How does each Prolog clause correspond to a "choice point"? How does Prolog's `!` (cut) relate to discarding saved continuations?
+
+> **CTQ 7.3** The backtracking example above looks like two nested for-loops. What does this tell you about the relationship between backtracking and explicit search loops?
+
+> **CTQ 7.4** Continuations give you the ability to "jump back in time." What is a practical limit on this power — in other words, what would you NOT want to backtrack across (file writes, network calls, mutations)?
 
 ---
 
@@ -491,13 +776,33 @@ print(f"First (x<y) with x+y=7: {result}")
 
 ---
 
+[[MC]] When `k(value)` is called inside a `callcc` body, what happens to the code that follows `k(value)` in that same function body?
+
+[( )] It runs after `callcc` returns
+[( )] It runs in a separate thread
+[(X)] It is abandoned immediately and never runs
+[( )] It runs once more, then stops
+
+---
+
 ## Exercises
 
 **Exercise 1: `call/cc`-based `for-each` with early exit** (15 min)
 
 Implement `for_each_until(lst, f)` using `call_cc` such that `f` is called on each element of `lst`, but if `f` ever returns the special value `"STOP"`, iteration halts immediately. No loops, no flags — use only `call_cc`.
 
-```python
+```python  liascript
+class Continuation:
+    def __call__(self, v=None): raise _Escape(v)
+
+class _Escape(BaseException):
+    def __init__(self, v=None): self.value = v
+
+def call_cc(f):
+    k = Continuation()
+    try: return f(k)
+    except _Escape as e: return e.value
+
 def for_each_until(lst, f):
     # Your implementation here
     pass
@@ -515,7 +820,18 @@ print("Exercise 1 passed:", log)
 
 Implement a `ResumableComputation` that uses `call_cc` to pause mid-computation and resume later with a new value. The computation should be able to "receive" values injected from outside.
 
-```python
+```python  liascript
+class Continuation:
+    def __call__(self, v=None): raise _Escape(v)
+
+class _Escape(BaseException):
+    def __init__(self, v=None): self.value = v
+
+def call_cc(f):
+    k = Continuation()
+    try: return f(k)
+    except _Escape as e: return e.value
+
 # A computation that asks for input mid-way and can be resumed:
 # Step 1: compute prefix = f(x)
 # Step 2: yield control, waiting for an external value y
@@ -554,12 +870,23 @@ Using only `call_cc` (no `try/except`), implement:
 - `raise_exc(tag, value)` — throw an exception with a tag and value
 - `catch(tag, body_fn, handler_fn)` — run `body_fn()` catching exceptions of `tag`; call `handler_fn(value)` on match; re-raise others
 
-```python
+```python  liascript
+class Continuation:
+    def __call__(self, v=None): raise _Escape(v)
+
+class _Escape(BaseException):
+    def __init__(self, v=None): self.value = v
+
+def call_cc(f):
+    k = Continuation()
+    try: return f(k)
+    except _Escape as e: return e.value
+
 # Your implementation:
 exception_stack = []
 
-def raise_exc(tag, value): ...
-def catch(tag, body_fn, handler_fn): ...
+def raise_exc(tag, value): pass
+def catch(tag, body_fn, handler_fn): pass
 
 # Test:
 result = catch("div_zero",
@@ -578,8 +905,19 @@ print(f"Result: {result}")
 
 Implement a minimal cooperative multitasking scheduler using `call_cc`. Tasks voluntarily `yield_control()` to transfer to another task. The scheduler keeps a queue of suspended tasks (as continuations) and runs them one at a time.
 
-```python
+```python  liascript
 from collections import deque
+
+class Continuation:
+    def __call__(self, v=None): raise _Escape(v)
+
+class _Escape(BaseException):
+    def __init__(self, v=None): self.value = v
+
+def call_cc(f):
+    k = Continuation()
+    try: return f(k)
+    except _Escape as e: return e.value
 
 task_queue = deque()
 
@@ -620,7 +958,7 @@ run_next()  # start the scheduler
 
 ## Reflection
 
-> **In your notebook:** You've now seen `call/cc` used for exceptions, early exit, generators, and backtracking. Alan Kay said "the best way to predict the future is to invent it"; Gerald Sussman said "the best way to understand a language feature is to derive it from a more primitive one." Using `call/cc` as the primitive, which of Python's control-flow features could be *removed from the language* without losing expressive power? What would be gained and lost by this simplification?
+> **In your notebook:** You have now seen `call/cc` used for exceptions, early exit, generators, cooperative multitasking, and backtracking. Alan Kay said "the best way to predict the future is to invent it"; Gerald Sussman said "the best way to understand a language feature is to derive it from a more primitive one." Using `call/cc` as the primitive, which of Python's control-flow features could be *removed from the language* without losing expressive power? What would be gained and lost by this simplification?
 
 ---
 

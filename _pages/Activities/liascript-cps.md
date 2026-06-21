@@ -1,4 +1,3 @@
-# Continuation-Passing Style: Control Flow as First-Class Values
 <!--
 author:   William Mongan
 language: en
@@ -13,7 +12,127 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 -->
 
+# Continuation-Passing Style: Control Flow as First-Class Values
+
 Continuation-Passing Style (CPS) transforms "what to do next" into an explicit first-class value called a **continuation** — a function representing the rest of the computation. Every function in CPS takes an extra argument `k` — the continuation — and instead of returning a value to its caller, it calls `k` with that result directly. This single idea unifies tail-call optimization, exceptions, async/await, generators, coroutines, and `call/cc` under one conceptual roof, revealing that these features, which appear very different on the surface, are all variations of the same underlying mechanism: the explicit manipulation of control flow as data.
+
+---
+
+> **Before You Begin — Prerequisites**
+>
+> This activity assumes you are comfortable with **closures** (functions that capture variables from their enclosing scope) and **higher-order functions** (functions that accept or return other functions). If either of those concepts feels shaky, review the [Closures activity](../closures/) before continuing. In CPS, nearly every step involves passing a function as an argument and calling it inside another function — closures are not optional background material here, they are the core mechanism.
+
+---
+
+## Why This Matters: The Stack Overflow Problem
+
+Python's call stack has a limit of roughly 1,000 frames by default. That limit exists because the interpreter stores each active function call on a fixed-size stack in memory. Try summing a list of 10,000 elements with naive recursion and Python will stop you:
+
+```python  liascript
+import sys, traceback
+
+def sum_list(lst):
+    if len(lst) == 0:
+        return 0
+    return lst[0] + sum_list(lst[1:])   # non-tail call: pending addition after return
+
+# Try with a small list first (works fine)
+print("sum_list([1,2,3,4,5]) =", sum_list([1, 2, 3, 4, 5]))
+
+# Now try 2000 elements — likely hits the recursion limit
+try:
+    result = sum_list(list(range(2000)))
+    print("sum_list(range(2000)) =", result, "(succeeded — your limit is higher than default)")
+except RecursionError as e:
+    print("RecursionError with 2000 elements:", e)
+    print("(Python's default recursion limit is", sys.getrecursionlimit(), "frames)")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+The problem is not the recursion itself — it is the **pending work** that accumulates on the stack. Each call to `sum_list` cannot return until its recursive call returns, because the addition `lst[0] + (...)` is still waiting. Python keeps every one of those frames alive simultaneously.
+
+CPS transforms this so that every call becomes a **tail call** — no pending work remains on the stack after the call. Once every call is a tail call, a technique called **trampolining** can run the computation inside a simple `while` loop, using O(1) stack space regardless of list size. You will build all of this from scratch in this activity.
+
+---
+
+## Notation Bridge: Direct Style to CPS
+
+Before diving in, here is a quick translation table. The left column shows familiar direct-style code; the right column shows its CPS equivalent. The key pattern is: wherever direct style *returns* a value, CPS *calls the continuation* `k` with that value instead.
+
+| Direct Style | CPS Style | What changed |
+|---|---|---|
+| `return x` | `k(x)` | "return" becomes "call `k` with" |
+| `f(x)` | `f_k(x, k)` | every function gains an extra `k` argument |
+| `y = f(x); g(y)` | `f_k(x, lambda y: g_k(y, k))` | sequencing becomes nested lambdas |
+| `if b: e1 else: e2` | `(lambda: k(e1))() if b else (lambda: k(e2))()` | both branches call `k` |
+| `return f(g(x))` | `g_k(x, lambda v: f_k(v, k))` | inner call names its result, outer call uses it |
+
+The notation `f_k` is a naming convention meaning "CPS version of `f`." Some authors write `f_cps` instead. Both mean the same thing: a version of `f` that takes an extra continuation argument and calls it with the result instead of returning.
+
+---
+
+## Step-by-Step CPS Transformation of Factorial
+
+Here is how to mechanically transform `factorial` from direct style to CPS. Read through each step before running any code — the goal is to understand the algorithm before you see it execute.
+
+**Original direct style:**
+
+```
+def factorial(n):
+    if n == 0:
+        return 1           # base case: returns 1
+    else:
+        return n * factorial(n - 1)   # non-tail: pending multiplication
+```
+
+**Step 1 — Add the continuation parameter `k`.**
+Every CPS function accepts `k` as its last argument.
+
+```
+def factorial_k(n, k):
+    if n == 0:
+        ...
+    else:
+        ...
+```
+
+**Step 2 — Replace `return value` with `k(value)` in the base case.**
+There is no pending work after the base case, so we just hand the result to `k`.
+
+```
+def factorial_k(n, k):
+    if n == 0:
+        k(1)               # was: return 1
+    else:
+        ...
+```
+
+**Step 3 — Handle the recursive case.**
+In direct style: `return n * factorial(n-1)`.
+The pending work is the multiplication `n * (...)`. We must capture that as a closure.
+
+- The recursive call becomes `factorial_k(n-1, ...)`.
+- The "..." is a lambda that receives the result of `factorial(n-1)`, multiplies by `n`, and passes the product to the *outer* `k`.
+- Written out: `factorial_k(n-1, lambda result: k(n * result))`
+
+```
+def factorial_k(n, k):
+    if n == 0:
+        k(1)                                         # base: call k with 1
+    else:
+        factorial_k(n - 1, lambda result: k(n * result))  # recursive tail call
+```
+
+**Why this is now tail-recursive:**
+After the `else` branch executes `factorial_k(n-1, ...)`, there is nothing left for the current call to do. The multiplication `n * result` will happen *inside* the lambda, which is called later. The current stack frame can be discarded immediately. The pending work moved from the stack to the heap (the closure).
+
+> **Watch out! — Closures and variable capture**
+>
+> In the lambda `lambda result: k(n * result)`, the variable `n` is captured from the enclosing scope. In Python, this works correctly here because `n` is a function parameter — each call to `factorial_k` creates a new `n` binding. Lambda parameters (like `result`) also create new bindings. The danger arises with **loop variables**: if you wrote `for n in range(5): lambdas.append(lambda: n)`, all lambdas would capture the same `n` and all would print `4`. When writing CPS by hand inside loops, use a default argument trick (`lambda result, _n=n: _n * result`) to freeze the value at creation time, as you will see in the trampoline code later.
+
+> **Watch out! — What the continuation `k` represents**
+>
+> The continuation `k` is "the rest of the computation." When `factorial_k(5, k)` is called, `k` is a function that knows what to do with the answer `120` once it arrives — perhaps print it, perhaps multiply it by something else, perhaps store it. Every function in CPS takes `k` and calls it with its result instead of returning. This means the result never travels back up the call stack; it always travels *forward* through the continuation chain.
 
 ---
 
@@ -40,7 +159,7 @@ Consider the factorial function written two different ways. Read both carefully 
 
 **Direct Style** — the familiar recursive version:
 
-```python
+```python  liascript
 def fact_direct(n):
     if n == 0:
         return 1
@@ -54,7 +173,7 @@ def fact_direct(n):
 
 **CPS Style** — every function takes an extra argument `k` (the continuation):
 
-```python
+```python  liascript
 def fact_cps(n, k):
     if n == 0:
         k(1)
@@ -72,7 +191,7 @@ def fact_cps(n, k):
 
 Run the cell below to see both versions produce the same output.
 
-```python  main.py
+```python  liascript
 import sys
 import traceback
 
@@ -119,7 +238,7 @@ except Exception as e:
 
 ### Critical Thinking Questions — Part I
 
-**CTQ 1.** In `fact_cps`, look at the two branches:
+**CTQ 1.1** In `fact_cps`, look at the two branches:
 
 - Branch `n == 0`: calls `k(1)`
 - Branch `n > 0`: calls `fact_cps(n - 1, lambda result: k(n * result))`
@@ -133,7 +252,7 @@ Which expression in *each* branch is in **tail position** (i.e., is the very las
 
 ---
 
-**CTQ 2.** The **identity continuation** is `lambda x: x`. When you call `fact_cps(5, lambda x: x)`, what does this continuation *do* with the final result? What is its role in the computation?
+**CTQ 1.2** The **identity continuation** is `lambda x: x`. When you call `fact_cps(5, lambda x: x)`, what does this continuation *do* with the final result? What is its role in the computation?
 
 [[___]]
 <script>true</script>
@@ -142,7 +261,7 @@ Which expression in *each* branch is in **tail position** (i.e., is the very las
 
 ---
 
-**CTQ 3.** Trace `fact_cps(3, lambda x: x)` step by step. At each step, write down:
+**CTQ 1.3** Trace `fact_cps(3, lambda x: x)` step by step. At each step, write down:
 (a) the value of `n`,
 (b) the current continuation `k` (describe it as a closure, e.g., `lambda result: outer_k(3 * result)`),
 (c) what call is made next.
@@ -162,7 +281,7 @@ Which expression in *each* branch is in **tail position** (i.e., is the very las
 
 ---
 
-**CTQ 4.** Direct-style `fact_direct` is *not* tail-recursive: after the recursive call, there is still a multiplication to do. Yet `fact_cps` **is** tail-recursive. Explain precisely how the CPS transform converts the non-tail recursive direct version into a tail-recursive CPS version. What happened to the pending multiplication?
+**CTQ 1.4** Direct-style `fact_direct` is *not* tail-recursive: after the recursive call, there is still a multiplication to do. Yet `fact_cps` **is** tail-recursive. Explain precisely how the CPS transform converts the non-tail recursive direct version into a tail-recursive CPS version. What happened to the pending multiplication?
 
 [[___]]
 <script>true</script>
@@ -211,7 +330,7 @@ Notice the **inside-out** structure: the outermost operation (`+`) ends up deepe
 
 Here is Fibonacci in direct style and in CPS. The CPS version uses a single continuation that accumulates the final sum.
 
-```python  main.py
+```python  liascript
 import sys
 import traceback
 
@@ -273,7 +392,7 @@ Assume `mul_cps(a, b, k)` and `add_cps(a, b, k)` are the CPS versions of multipl
 
 ### Critical Thinking Questions — Part II
 
-**CTQ 5.** The claim is: "Every CPS function ends with exactly one tail call." Verify this for both branches of `fib_cps`:
+**CTQ 2.1** The claim is: "Every CPS function ends with exactly one tail call." Verify this for both branches of `fib_cps`:
 
 - In the `n <= 1` branch, what is the single tail call?
 - In the `n > 0` branch, identify each tail call as you read through the nesting.
@@ -287,7 +406,7 @@ Assume `mul_cps(a, b, k)` and `add_cps(a, b, k)` are the CPS versions of multipl
 
 ---
 
-**CTQ 6.** Consider the conditional expression `if a then b else c`. Write its CPS transform. Both branches should call the continuation `k`.
+**CTQ 2.2** Consider the conditional expression `if a then b else c`. Write its CPS transform. Both branches should call the continuation `k`.
 
 [[___]]
 <script>true</script>
@@ -304,7 +423,7 @@ Assume `mul_cps(a, b, k)` and `add_cps(a, b, k)` are the CPS versions of multipl
 
 ---
 
-**CTQ 7.** The CPS transform claims to remove *all* non-tail calls from a program. Explain in your own words why this is true. (Hint: Where does the pending work go?)
+**CTQ 2.3** The CPS transform claims to remove *all* non-tail calls from a program. Explain in your own words why this is true. (Hint: Where does the pending work go?)
 
 [[___]]
 <script>true</script>
@@ -313,7 +432,7 @@ Assume `mul_cps(a, b, k)` and `add_cps(a, b, k)` are the CPS versions of multipl
 
 ---
 
-**CTQ 8.** Suppose you implement a CPS interpreter in Python that uses Python's own call stack to evaluate the CPS chain (i.e., Python evaluates each closure call by pushing a new stack frame). What specific risk does this create, and what is the standard solution? (This problem is the subject of Part V.)
+**CTQ 2.4** Suppose you implement a CPS interpreter in Python that uses Python's own call stack to evaluate the CPS chain (i.e., Python evaluates each closure call by pushing a new stack frame). What specific risk does this create, and what is the standard solution? (This problem is the subject of Part V.)
 
 [[___]]
 <script>true</script>
@@ -346,7 +465,7 @@ The `try/except` construct in direct style corresponds to:
 
 ### Runnable Model: CPS Division with Error Handler
 
-```python  main.py
+```python  liascript
 import traceback
 
 try:
@@ -403,7 +522,7 @@ except Exception as e:
 
 ### Critical Thinking Questions — Part III
 
-**CTQ 9.** When `safe_div_cps(10, 0, k, h)` calls `h("division by zero")`, what happens to the continuation `k`? Does `k` ever get called? Trace the control flow through `compute_cps(2, 0, on_success, on_error)` to explain where control goes.
+**CTQ 3.1** When `safe_div_cps(10, 0, k, h)` calls `h("division by zero")`, what happens to the continuation `k`? Does `k` ever get called? Trace the control flow through `compute_cps(2, 0, on_success, on_error)` to explain where control goes.
 
 [[___]]
 <script>true</script>
@@ -417,7 +536,7 @@ except Exception as e:
 
 ---
 
-**CTQ 10.** In direct-style Python, `raise` can "jump over" multiple stack frames at once — an exception thrown inside a deeply nested helper reaches a `try/except` many levels up without executing any of the intermediate code. Explain why this same behavior emerges naturally in the two-continuation CPS model. Where is the "distance to the handler" encoded?
+**CTQ 3.2** In direct-style Python, `raise` can "jump over" multiple stack frames at once — an exception thrown inside a deeply nested helper reaches a `try/except` many levels up without executing any of the intermediate code. Explain why this same behavior emerges naturally in the two-continuation CPS model. Where is the "distance to the handler" encoded?
 
 [[___]]
 <script>true</script>
@@ -426,7 +545,7 @@ except Exception as e:
 
 ---
 
-**CTQ 11.** A `finally` clause must execute whether or not an exception occurs. Design a two-continuation scheme to implement `finally`. How many continuations do you need? What does each one do?
+**CTQ 3.3** A `finally` clause must execute whether or not an exception occurs. Design a two-continuation scheme to implement `finally`. How many continuations do you need? What does each one do?
 
 [[___]]
 <script>true</script>
@@ -456,7 +575,7 @@ except Exception as e:
 
 Consider how Python (and Node.js) approaches asynchronous I/O. In callback style:
 
-```python
+```python  liascript
 def fetch_user(user_id, on_done):
     # ... eventually calls on_done(user_data)
     pass
@@ -476,7 +595,7 @@ This **is** CPS. `on_done` is the continuation. Nesting callbacks is manually wr
 
 Now compare `async/await`:
 
-```python
+```python  liascript
 async def get_user_posts():
     user = await fetch_user(42)     # fetch_user_cps(42, lambda user: ...)
     posts = await fetch_posts(user)  # fetch_posts_cps(user, lambda posts: ...)
@@ -488,7 +607,7 @@ The `await` keyword *is* the continuation application. The compiler desugars `x 
 
 Similarly, Python **generators** are "stackless coroutines" — they capture the continuation at the `yield` point:
 
-```python
+```python  liascript
 def my_gen():
     yield 1        # "call my caller's continuation with 1, then wait"
     yield 2        # "call my caller's continuation with 2, then wait"
@@ -500,7 +619,7 @@ Each `yield` is a `k(value)` call where `k` is "send the value to whoever is ite
 
 ### Runnable Model: Manual CPS Simulation of a Simple Event Loop
 
-```python  main.py
+```python  liascript
 import traceback
 from collections import deque
 
@@ -585,7 +704,7 @@ except Exception as e:
 
 ### Critical Thinking Questions — Part IV
 
-**CTQ 12.** When a Python generator executes `yield value`, what does it "capture" at that moment? Describe in terms of continuations: what is the continuation of a `yield` expression, and who holds it?
+**CTQ 4.1** When a Python generator executes `yield value`, what does it "capture" at that moment? Describe in terms of continuations: what is the continuation of a `yield` expression, and who holds it?
 
 [[___]]
 <script>true</script>
@@ -594,7 +713,7 @@ except Exception as e:
 
 ---
 
-**CTQ 13.** Callback-based APIs in Node.js (and early Python async code) require deeply nested callbacks for sequential asynchronous operations — a phenomenon called "callback hell." Explain precisely why this nesting arises in terms of CPS. What does the nesting structure *encode*?
+**CTQ 4.2** Callback-based APIs in Node.js (and early Python async code) require deeply nested callbacks for sequential asynchronous operations — a phenomenon called "callback hell." Explain precisely why this nesting arises in terms of CPS. What does the nesting structure *encode*?
 
 [[___]]
 <script>true</script>
@@ -603,7 +722,7 @@ except Exception as e:
 
 ---
 
-**CTQ 14.** The equivalence `async def f(): x = await g(); return x + 1` and `g_cps(lambda x: k(x + 1))` is claimed. Walk through the desugaring step by step. What does `await` *do* to the continuation? Where does `k` come from in the async version?
+**CTQ 4.3** The equivalence `async def f(): x = await g(); return x + 1` and `g_cps(lambda x: k(x + 1))` is claimed. Walk through the desugaring step by step. What does `await` *do* to the continuation? Where does `k` come from in the async version?
 
 [[___]]
 <script>true</script>
@@ -624,16 +743,32 @@ except Exception as e:
 
 In Python and JavaScript, every function call pushes a stack frame. CPS programs can chain thousands of tail calls, each one pushing a new frame — even though logically each frame is immediately garbage (there is no pending work). This causes `RecursionError` in Python even for simple CPS computations on large inputs.
 
-The solution is a **trampoline**: instead of calling the next continuation directly, return a *thunk* (a zero-argument function) that *represents* the next step. A top-level loop unwraps thunks one at a time, iteratively. This replaces the implicit call stack with a heap-allocated queue of pending work, using O(1) stack space.
+**The trampoline pattern works in three steps:**
+
+1. Instead of calling the next continuation directly, **return a thunk** — a zero-argument function (or wrapper object) that represents "the next step to execute."
+2. The caller (the trampoline loop) receives the thunk but does NOT call it immediately inside the current frame. It first returns from the current frame, then calls the thunk.
+3. A top-level `while` loop (the trampoline) keeps calling thunks until a non-thunk value emerges. This loop uses exactly one stack frame per step.
 
 ```
-Direct CPS call:      fact_cps(n-1, k)  =>  Python pushes a frame
-Trampolined CPS call: return Thunk(fact_cps, n-1, k)  =>  Python pops back to the loop
+Without trampoline (stack grows):
+  fact_tramp(5, k)
+    fact_tramp(4, k2)        <-- frame stacked on top of 5's frame
+      fact_tramp(3, k3)      <-- frame stacked on top of 4's frame
+        ...                  <-- keeps growing
+
+With trampoline (constant stack):
+  trampoline loop iteration 1: calls fact_tramp(5, k)  -> returns Thunk(fact_tramp, 4, k2)
+  trampoline loop iteration 2: calls fact_tramp(4, k2) -> returns Thunk(fact_tramp, 3, k3)
+  trampoline loop iteration 3: calls fact_tramp(3, k3) -> returns Thunk(...)
+  ...
+  At every iteration, the previous frame is GONE before the next one starts.
 ```
+
+**The key rule:** A trampolined CPS function must **return** a `Thunk` for its recursive tail call instead of **calling** it directly. This one change — `return Thunk(f, args)` instead of `f(args)` — is what makes trampolining work.
 
 ### Runnable Model: Thunk Class and Trampoline
 
-```python  main.py
+```python  liascript
 import traceback
 
 try:
@@ -761,7 +896,7 @@ except Exception as e:
 
 ### Critical Thinking Questions — Part V
 
-**CTQ 15.** In `fact_tramp`, the recursive branch returns `Thunk(fact_tramp, n-1, new_k)` instead of calling `fact_tramp(n-1, new_k)` directly. Why does wrapping in a `Thunk` prevent the immediate recursion that would otherwise occur?
+**CTQ 5.1** In `fact_tramp`, the recursive branch returns `Thunk(fact_tramp, n-1, new_k)` instead of calling `fact_tramp(n-1, new_k)` directly. Why does wrapping in a `Thunk` prevent the immediate recursion that would otherwise occur?
 
 [[___]]
 <script>true</script>
@@ -772,7 +907,7 @@ except Exception as e:
 
 ---
 
-**CTQ 16.** The trampoline loop uses O(1) stack space regardless of program depth. Explain why. Be specific about what is on the stack at each iteration of the loop, and contrast this with what would be on the stack during a naive recursive CPS execution of the same program.
+**CTQ 5.2** The trampoline loop uses O(1) stack space regardless of program depth. Explain why. Be specific about what is on the stack at each iteration of the loop, and contrast this with what would be on the stack during a naive recursive CPS execution of the same program.
 
 [[___]]
 <script>true</script>
@@ -785,7 +920,7 @@ except Exception as e:
 
 ---
 
-**CTQ 17.** In the Scheme tail-call activity (which you may have completed earlier in this course), Scheme guarantees proper tail calls by having the interpreter reuse the current stack frame instead of pushing a new one. Compare this to trampolining: what is the *same* about both approaches, and what is *different*?
+**CTQ 5.3** In the Scheme tail-call activity (which you may have completed earlier in this course), Scheme guarantees proper tail calls by having the interpreter reuse the current stack frame instead of pushing a new one. Compare this to trampolining: what is the *same* about both approaches, and what is *different*?
 
 [[___]]
 <script>true</script>
@@ -804,13 +939,21 @@ except Exception as e:
 
 ## Exercises
 
+> **Watch out! — Before the exercises: closures and loop variables**
+>
+> The exercises below ask you to write CPS functions by hand. Watch for this common mistake: if you build a continuation inside a loop or a function that rebinds a variable, all closures you create in that loop will share the *same* variable reference. Example: `[lambda: i for i in range(3)]` produces three lambdas that all return `2` (the final value of `i`), not `0`, `1`, `2`. Fix it with a default argument: `[lambda _i=i: _i for i in range(3)]`. The trampolined factorial above uses this pattern: `lambda result, _n=n, _k=k: _k(_n * result)`.
+
+> **Watch out! — Before the exercises: the continuation is always the last argument**
+>
+> By convention throughout these exercises, the continuation `k` is always the *last* argument to any CPS function. When composing CPS functions, the inner function receives the outer function's continuation as its `k`. The outermost call always receives a final "sink" continuation (e.g., `print` or a `capture` function) that consumes the answer without passing it further.
+
 ### Exercise 1: CPS-Transform `map`
 
 In direct style, `map(f, lst)` applies `f` to each element of `lst` and returns a new list. In CPS, every call to `f` must use `f_cps`, and the result should be passed to `k` only once — after all elements have been processed.
 
 Write `map_cps(f_cps, lst, k)` such that `k` receives the complete mapped list. Your implementation should be fully CPS: no intermediate returns, only tail calls to continuations.
 
-```python  main.py
+```python  liascript
 import traceback
 
 try:
@@ -875,7 +1018,7 @@ Consider the following tiny expression language:
 
 Write `eval_cps(node, env, k)` that evaluates `node` in environment `env` and calls `k` with the result. Every recursive call should be a tail call (CPS style).
 
-```python  main.py
+```python  liascript
 import traceback
 
 try:
@@ -968,7 +1111,7 @@ except Exception as e:
 
 In CPS, `call/cc` is straightforward: since `k` already *is* the current continuation, we just pass `k` to `f`.
 
-```python  main.py
+```python  liascript
 import traceback
 
 try:
@@ -1065,7 +1208,7 @@ except Exception as e:
 
 Python generators hide their continuation machinery. In this exercise you will build a simple "generator" manually using closures and CPS-style state, revealing exactly what `yield` is doing under the hood.
 
-```python  main.py
+```python  liascript
 import traceback
 
 try:
