@@ -451,7 +451,7 @@ let x = e1 in (let y = e2 in (... body))
 
 Implement a `syntax_rules` function that lets you define macros via patterns:
 
-```python
+```python  liascript
 cond_macro = syntax_rules('cond', [
     ('(cond)', lambda: ('nil',)),
     ('(cond (else e))', lambda e: e),
