@@ -105,7 +105,7 @@ block  -> "{" { stmt } "}"
 
 ## Code Cell
 
-```python
+```python  liascript
 # A grammar is data. Here is the signed-integer EBNF as a Python structure,
 # and a hand-rolled recognizer that follows it: [sign] digit {digit}.
 
@@ -129,6 +129,7 @@ def recognize_signed(s):
 for test in ["42", "-42", "+7", "4-2", "-", "", "007"]:
     print(f"{test!r:8} -> {recognize_signed(test)}")
 ```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -138,6 +139,275 @@ for test in ["42", "-42", "+7", "4-2", "-", "", "007"]:
 
 8. Match each EBNF construct to its code shape in the recognizer: `[ ... ]` became which statement, and `{ ... }` became which? This mapping is the entire secret of recursive descent parsing, six weeks early.
 9. `007` is accepted. Is that a grammar bug, a feature, or a question for the language designer? Amend the EBNF to forbid leading zeros (except for `0` itself), then explain what the amendment costs in rule complexity.
+
+---
+
+## Model 4: Grammar as a Python Data Structure
+
+A grammar is just data: a mapping from nonterminal names to lists of alternatives, where each alternative is a list of symbols. Terminals are plain strings; nonterminals are wrapped to distinguish them. The checker below walks a token sequence against an arithmetic-expression grammar and reports whether it is valid.
+
+The grammar for arithmetic expressions:
+
+```
+expr   -> term { ("+" | "-") term }
+term   -> factor { ("*" | "/") factor }
+factor -> NUMBER | "(" expr ")"
+```
+
+```python  liascript
+# Grammar as a Python dict: each key is a nonterminal, each value is
+# a list of alternatives. Each alternative is a list of symbols.
+# "t:X" means terminal X; "n:X" means nonterminal X.
+
+GRAMMAR = {
+    "expr":   [["n:term", "n:expr_rest"]],
+    "expr_rest": [["t:+", "n:term", "n:expr_rest"],
+                  ["t:-", "n:term", "n:expr_rest"],
+                  []],                          # epsilon (empty)
+    "term":   [["n:factor", "n:term_rest"]],
+    "term_rest": [["t:*", "n:factor", "n:term_rest"],
+                  ["t:/", "n:factor", "n:term_rest"],
+                  []],
+    "factor": [["t:NUM"], ["t:(", "n:expr", "t:)"]],
+}
+
+def parse(tokens, rule, pos):
+    """Try to match 'rule' starting at tokens[pos].
+    Returns (success, new_pos). Tries each alternative in order."""
+    if rule not in GRAMMAR:
+        return False, pos
+    for alt in GRAMMAR[rule]:
+        ok, npos = match_alt(tokens, alt, pos)
+        if ok:
+            return True, npos
+    return False, pos
+
+def match_alt(tokens, alt, pos):
+    cur = pos
+    for sym in alt:
+        if sym.startswith("t:"):
+            term = sym[2:]
+            if cur >= len(tokens) or tokens[cur] != term:
+                return False, pos   # backtrack to original pos
+            cur += 1
+        elif sym.startswith("n:"):
+            ok, cur = parse(tokens, sym[2:], cur)
+            if not ok:
+                return False, pos
+    return True, cur
+
+def check(tokens):
+    ok, end = parse(tokens, "expr", 0)
+    return ok and end == len(tokens)
+
+test_cases = [
+    (["NUM", "+", "NUM"],                   True,  "a + b"),
+    (["NUM", "*", "NUM", "+", "NUM"],       True,  "a*b + c"),
+    (["(", "NUM", "+", "NUM", ")"],         True,  "(a + b)"),
+    (["NUM", "+"],                          False, "a + (missing rhs)"),
+    (["*", "NUM"],                          False, "* a (no lhs)"),
+    (["NUM", "NUM"],                        False, "a b (no operator)"),
+    (["NUM", "+", "NUM", "*", "NUM"],       True,  "a + b*c"),
+]
+
+print(f"{'tokens':<35} {'expect':>6}  {'got':>6}  {'pass':>4}")
+print("-" * 58)
+for tokens, expected, label in test_cases:
+    result = check(tokens)
+    status = "OK" if result == expected else "FAIL"
+    print(f"{label:<35} {str(expected):>6}  {str(result):>6}  {status:>4}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Critical Thinking Questions
+
+10. The grammar stores `expr_rest` and `term_rest` as separate rules to encode left-associative repetition without left recursion. Why is left recursion (`expr -> expr "+" term`) a problem for a top-down recognizer like this one? Describe the infinite loop that would occur.
+11. `match_alt` returns `(False, pos)` — the *original* position — on failure, not the furthest position reached. Why does restoring the original position matter when there are multiple alternatives?
+12. The grammar currently uses token strings like `"NUM"`, `"+"`, `"*"`. Sketch how you would extend this representation to carry actual lexemes (e.g., distinguish integer literal `3` from float `3.14`) without rewriting the entire matching engine.
+13. The checker only returns True/False. What would a *parse tree* version return instead, and what would one node of that tree look like as a Python value?
+
+---
+
+## Model 5: BNF vs EBNF — Two Notations, One Language
+
+BNF encodes repetition as *recursion*, which forces an extra nonterminal and two alternatives for every repeated construct. EBNF adds `*` and `+` as sugar. The recognizer below demonstrates that both styles accept exactly the same strings for a comma-separated list grammar.
+
+**BNF version** (repetition via recursion):
+```
+list     -> item list_tail
+list_tail -> "," item list_tail | (empty)
+item     -> NUMBER
+```
+
+**EBNF version** (repetition via `{ }`):
+```
+list -> item { "," item }
+item -> NUMBER
+```
+
+```python  liascript
+# Both recognizers operate on a flat list of token strings.
+# Tokens are "NUM" for any number, "," for comma.
+
+def bnf_list(tokens):
+    """BNF-style: list -> item list_tail"""
+    pos = bnf_item(tokens, 0)
+    if pos is None:
+        return False
+    pos = bnf_list_tail(tokens, pos)
+    return pos == len(tokens)
+
+def bnf_item(tokens, pos):
+    if pos < len(tokens) and tokens[pos] == "NUM":
+        return pos + 1
+    return None
+
+def bnf_list_tail(tokens, pos):
+    """list_tail -> ',' item list_tail | epsilon"""
+    if pos < len(tokens) and tokens[pos] == ",":
+        pos2 = bnf_item(tokens, pos + 1)
+        if pos2 is None:
+            return pos          # comma with no following item: stay before comma
+        return bnf_list_tail(tokens, pos2)
+    return pos                  # epsilon: consume nothing
+
+def ebnf_list(tokens):
+    """EBNF-style: list -> item { ',' item }"""
+    if not tokens or tokens[0] != "NUM":
+        return False
+    pos = 1
+    while pos < len(tokens):
+        if tokens[pos] != ",":
+            break
+        if pos + 1 >= len(tokens) or tokens[pos + 1] != "NUM":
+            break
+        pos += 2
+    return pos == len(tokens)
+
+test_cases = [
+    (["NUM"],                               True,  "single item"),
+    (["NUM", ",", "NUM"],                   True,  "two items"),
+    (["NUM", ",", "NUM", ",", "NUM"],       True,  "three items"),
+    ([],                                    False, "empty"),
+    (["NUM", ","],                          False, "trailing comma"),
+    ([",", "NUM"],                          False, "leading comma"),
+    (["NUM", "NUM"],                        False, "missing comma"),
+]
+
+print(f"{'description':<20} {'tokens':<30} {'BNF':>4} {'EBNF':>5} {'agree':>6}")
+print("-" * 68)
+for tokens, expected, label in test_cases:
+    b = bnf_list(tokens)
+    e = ebnf_list(tokens)
+    agree = "YES" if b == e else "NO"
+    tok_str = str(tokens)[:28]
+    print(f"{label:<20} {tok_str:<30} {str(b):>4} {str(e):>5} {agree:>6}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Critical Thinking Questions
+
+14. Both columns should agree on every row. If they disagree, that is a bug in one recognizer — find it and explain the fix. (They should agree; this question asks you to *verify* equivalence, not just trust it.)
+15. The BNF version uses recursion; the EBNF version uses a `while` loop. Which is easier to read, and which maps more directly to the grammar notation? Does the answer change when the grammar has nested repetition?
+16. The BNF `list_tail` handles the empty case by returning `pos` unchanged. In a grammar with *two* optional suffixes, what would BNF require that EBNF avoids?
+
+---
+
+## Model 6: FIRST Sets (Preview)
+
+The **FIRST set** of a grammar symbol is the set of terminals that can begin a string derivable from that symbol. Parsers use FIRST sets to decide which rule to apply without backtracking: if the next token is in `FIRST(A)`, try rule A. Computing FIRST sets is a fixed-point algorithm: start with the obvious cases (a terminal's FIRST is itself; an epsilon production contributes epsilon) and iterate until nothing changes.
+
+```python  liascript
+# Grammar for arithmetic expressions (token-level, no whitespace).
+# We represent each production as a list of symbols.
+# "" means epsilon (empty string).
+
+PRODS = {
+    "expr":      [["term", "expr_rest"]],
+    "expr_rest": [["+", "term", "expr_rest"],
+                  ["-", "term", "expr_rest"],
+                  [""]],                       # epsilon
+    "term":      [["factor", "term_rest"]],
+    "term_rest": [["*", "factor", "term_rest"],
+                  ["/", "factor", "term_rest"],
+                  [""]],
+    "factor":    [["NUM"], ["(", "expr", ")"]],
+}
+NONTERMINALS = set(PRODS.keys())
+EPSILON = ""
+
+def compute_first(prods):
+    first = {nt: set() for nt in prods}
+
+    def first_of_symbol(sym):
+        if sym == EPSILON:
+            return {EPSILON}
+        if sym not in NONTERMINALS:
+            return {sym}          # terminal: FIRST is itself
+        return first[sym]
+
+    changed = True
+    while changed:
+        changed = False
+        for nt, alternatives in prods.items():
+            for alt in alternatives:
+                # Walk alt left-to-right; add FIRST(sym) - {ε}.
+                # Continue to next sym only if ε ∈ FIRST(sym).
+                add_eps = True
+                for sym in alt:
+                    contrib = first_of_symbol(sym) - {EPSILON}
+                    before = len(first[nt])
+                    first[nt] |= contrib
+                    if len(first[nt]) > before:
+                        changed = True
+                    if EPSILON not in first_of_symbol(sym):
+                        add_eps = False
+                        break
+                if add_eps:
+                    before = len(first[nt])
+                    first[nt].add(EPSILON)
+                    if len(first[nt]) > before:
+                        changed = True
+    return first
+
+first_sets = compute_first(PRODS)
+
+print("FIRST sets for arithmetic expression grammar:")
+print()
+for nt in ["expr", "expr_rest", "term", "term_rest", "factor"]:
+    tokens = sorted(t for t in first_sets[nt] if t != EPSILON)
+    has_eps = EPSILON in first_sets[nt]
+    eps_str = " + ε" if has_eps else ""
+    print(f"  FIRST({nt:<12}) = {{ {', '.join(tokens)} }}{eps_str}")
+
+print()
+print("Parser decision table (which rule fires for each lookahead):")
+print()
+for nt in ["expr", "expr_rest", "term", "term_rest", "factor"]:
+    for i, alt in enumerate(PRODS[nt]):
+        alt_str = " ".join(alt) if alt != [""] else "ε"
+        # Compute FIRST of this alternative
+        alt_first = set()
+        add_eps = True
+        for sym in alt:
+            sf = first_sets.get(sym, {sym}) if sym != "" else {EPSILON}
+            alt_first |= sf - {EPSILON}
+            if EPSILON not in sf:
+                add_eps = False
+                break
+        if add_eps:
+            alt_first.add(EPSILON)
+        triggers = sorted(t for t in alt_first if t != EPSILON)
+        print(f"  {nt} -> {alt_str:<30} fires on: {triggers}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Critical Thinking Questions
+
+17. `FIRST(expr)` and `FIRST(term)` should be identical. Explain why: trace the derivation path from `expr` to see which terminals can appear first.
+18. `FIRST(expr_rest)` contains `+`, `-`, and `ε`. Why does the presence of `ε` in a FIRST set matter to a parser when `expr_rest` appears in the *middle* of a longer alternative like `["term", "expr_rest"]`?
+19. The algorithm iterates until `changed` is False (a fixed-point computation). Construct a tiny grammar where the FIRST set of one nonterminal only becomes complete after *two* iterations, and trace the two rounds.
+20. FOLLOW sets (which tokens can come *after* a nonterminal) are needed alongside FIRST sets to build a complete LL(1) parse table. Without computing them, predict: what would `FOLLOW(expr_rest)` contain in this grammar, and why?
 
 ---
 

@@ -114,41 +114,56 @@ Read PLUS aloud: "apply $f$ $n$ times to $x$, then $m$ more times." Read MULT: "
 
 ---
 
-## Code Cell
+## Church Encodings — Runnable
 
 ```python
 # Church encodings, executable. Python lambdas ARE lambda calculus terms.
 
-try:
-    TRUE  = lambda x: lambda y: x          # K
-    FALSE = lambda x: lambda y: y          # KI
-    NOT   = lambda b: b(FALSE)(TRUE)
-    AND   = lambda p: lambda q: p(q)(p)
-    OR    = lambda p: lambda q: p(p)(q)
+TRUE  = lambda x: lambda y: x          # K  (Kestrel)
+FALSE = lambda x: lambda y: y          # KI (Kite)
+NOT   = lambda b: b(FALSE)(TRUE)
+AND   = lambda p: lambda q: p(q)(p)
+OR    = lambda p: lambda q: p(p)(q)
+XOR   = lambda p: lambda q: p(NOT(q))(q)
 
-    show_bool = lambda b: b("TRUE")("FALSE")    # a boolean selects its own name
-    print("NOT TRUE        =", show_bool(NOT(TRUE)))
-    print("AND TRUE FALSE  =", show_bool(AND(TRUE)(FALSE)))
-    print("OR  FALSE TRUE  =", show_bool(OR(FALSE)(TRUE)))
+show_bool = lambda b: b("TRUE")("FALSE")    # a boolean selects its own name
 
-    ZERO  = lambda f: lambda x: x
-    SUCC  = lambda n: lambda f: lambda x: f(n(f)(x))
-    PLUS  = lambda m: lambda n: lambda f: lambda x: m(f)(n(f)(x))
-    MULT  = lambda m: lambda n: lambda f: m(n(f))
+print("=== Church Booleans ===")
+print("NOT TRUE        =", show_bool(NOT(TRUE)))
+print("NOT FALSE       =", show_bool(NOT(FALSE)))
+print("AND TRUE FALSE  =", show_bool(AND(TRUE)(FALSE)))
+print("OR  FALSE TRUE  =", show_bool(OR(FALSE)(TRUE)))
+print("XOR TRUE  TRUE  =", show_bool(XOR(TRUE)(TRUE)))
+print("XOR TRUE  FALSE =", show_bool(XOR(TRUE)(FALSE)))
 
-    ONE, TWO = SUCC(ZERO), SUCC(SUCC(ZERO))
-    THREE    = PLUS(ONE)(TWO)
-    SIX      = MULT(TWO)(THREE)
+print("\n=== Church Numerals ===")
+ZERO  = lambda f: lambda x: x
+SUCC  = lambda n: lambda f: lambda x: f(n(f)(x))
+PLUS  = lambda m: lambda n: lambda f: lambda x: m(f)(n(f)(x))
+MULT  = lambda m: lambda n: lambda f: m(n(f))
+EXP   = lambda m: lambda n: n(m)    # m^n — shockingly simple
 
-    to_int = lambda n: n(lambda k: k + 1)(0)    # count the repetitions
-    print("1, 2, 1+2, 2*3  =", to_int(ONE), to_int(TWO), to_int(THREE), to_int(SIX))
+ONE, TWO = SUCC(ZERO), SUCC(SUCC(ZERO))
+THREE    = PLUS(ONE)(TWO)
+SIX      = MULT(TWO)(THREE)
+EIGHT    = EXP(TWO)(THREE)   # 2^3
 
-    # if-then-else is just application: b(then)(else)
-    print("if TRUE: 'yes'  =", TRUE("yes")("no"))
-except Exception as e:
-    print(f"[lambda2:church] {e}")
-    import traceback; traceback.print_exc()
+to_int = lambda n: n(lambda k: k + 1)(0)    # decode: count repetitions
+print("ONE, TWO, 1+2, 2*3  =", to_int(ONE), to_int(TWO), to_int(THREE), to_int(SIX))
+print("2^3 =", to_int(EIGHT))
+
+# if-then-else is just application: b(then)(else)
+print("\n=== Church if-then-else ===")
+print("if TRUE: 'yes'  =", TRUE("yes")("no"))
+print("if FALSE: 'yes' =", FALSE("yes")("no"))
+
+# ISZERO: apply (lambda x: FALSE) n times to TRUE. If n=0, never applied.
+ISZERO = lambda n: n(lambda _: FALSE)(TRUE)
+print("\n=== ISZERO ===")
+for n, val in [(ZERO, "ZERO"), (ONE, "ONE"), (TWO, "TWO")]:
+    print(f"ISZERO({val}) = {show_bool(ISZERO(n))}")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -170,12 +185,68 @@ Under Church encoding, the expression `b(t)(e)` where b is a Church boolean impl
 
 ---
 
+## Model 4: Pairs and the Predecessor
+
+**Church pairs — building linked data from functions:**
+```python
+# Church pairs: PAIR a b f = f a b
+# FST p = p K  (select first)
+# SND p = p KI (select second)
+
+TRUE  = lambda x: lambda y: x   # K
+FALSE = lambda x: lambda y: y   # KI
+to_int = lambda n: n(lambda k: k+1)(0)
+ZERO  = lambda f: lambda x: x
+SUCC  = lambda n: lambda f: lambda x: f(n(f)(x))
+
+PAIR = lambda a: lambda b: lambda f: f(a)(b)
+FST  = lambda p: p(TRUE)
+SND  = lambda p: p(FALSE)
+
+print("=== Church Pairs ===")
+p = PAIR("hello")("world")
+print(f"FST (PAIR 'hello' 'world') = {FST(p)!r}")
+print(f"SND (PAIR 'hello' 'world') = {SND(p)!r}")
+
+# Numeric pairs for predecessor: PAIR n (n-1)
+# Increment a pair: (n,m) → (SUCC n, n)  i.e., shift right
+shift = lambda p: PAIR(SUCC(FST(p)))(FST(p))
+
+# PRED n: start from (0,0), apply shift n times, take SND
+ZERO_PAIR = PAIR(ZERO)(ZERO)
+PRED = lambda n: SND(n(shift)(ZERO_PAIR))
+
+# Build some numerals
+ONE = SUCC(ZERO); TWO = SUCC(ONE); THREE = SUCC(TWO); FOUR = SUCC(THREE)
+
+print("\n=== Predecessor ===")
+print(f"PRED(0) = {to_int(PRED(ZERO))}")   # 0 (special case)
+print(f"PRED(1) = {to_int(PRED(ONE))}")    # 0
+print(f"PRED(2) = {to_int(PRED(TWO))}")    # 1
+print(f"PRED(4) = {to_int(PRED(FOUR))}")   # 3
+
+# Subtraction from predecessor:
+MINUS = lambda m: lambda n: n(PRED)(m)
+print(f"\n4 - 2 = {to_int(MINUS(FOUR)(TWO))}")   # 2
+print(f"3 - 5 = {to_int(MINUS(THREE)(FOUR))}")   # 0 (floored)
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+12. The pair-based predecessor works by shifting: `(0,0) → (1,0) → (2,1) → (3,2)`. After applying shift $n$ times to $(0,0)$, what is the SND? Why does `PRED(ZERO)` return ZERO rather than negative one?
+13. Subtraction `m - n` is defined as "apply PRED n times to m." What is `3 - 5` under this definition? This is called *monus* (truncated subtraction). Is this a bug or a deliberate design choice?
+14. You now have: booleans, conditionals, numerals, arithmetic, pairs. What other data structures (lists, trees) could be built from Church pairs? Sketch the encoding for a two-element list [a, b].
+
+---
+
 ## 4. Exercises
 
 1. *Pairs.* Define $\textbf{PAIR} = \lambda a. \lambda b. \lambda f.\, f\, a\, b$, with $\textbf{FST} = \lambda p.\, p\, \textbf{K}$ and $\textbf{SND} = \lambda p.\, p\, \textbf{KI}$. Verify in Python, then say what data structure you just built from nothing, and what your AST could, in principle, be encoded as.
 2. *IS-ZERO.* Define $\textbf{ISZERO} = \lambda n.\, n\, (\lambda x.\, \textbf{FALSE})\, \textbf{TRUE}$ and verify on 0, 1, 2. Explain the trick: what happens to TRUE if $f$ is applied even once?
 3. *XOR.* Build XOR from the flock (any correct construction), verify all four input pairs in code, and present your reduction for one pair on the board.
 4. *Flock report.* Watch or skim Lebec's "A Flock of Functions" (linked below) and write a half page: one construction he presents that we did not build today, reduced or verified yourself.
+5. *Church list.* Build a Church-encoded linked list: `NIL`, `CONS(head)(tail)`, `HEAD`, `TAIL`, `ISNIL`. Represent the list `[1, 2, 3]` as Church numerals in a Church list, and write a `to_python_list` function that decodes it.
 
 ---
 

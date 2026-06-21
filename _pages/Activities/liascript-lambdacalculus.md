@@ -270,6 +270,276 @@ Exercises 1 through 3 are individual; exercises 4 and 5 are partner exercises, a
 
 ---
 
+# Part IV: Runnable Models
+
+## Model 6: Beta Reduction Stepper
+
+Instead of reducing on paper, this model implements a step-by-step beta reducer that shows each intermediate term. Terms are represented as Python objects (a small data structure), and the stepper prints one reduction at a time until a normal form is reached or a step limit is hit.
+
+```python
+# Beta-reduction stepper using an explicit term representation.
+# Terms: Var(name), Lam(param, body), App(func, arg)
+
+from dataclasses import dataclass, field
+from typing import Union
+import itertools
+
+_counter = itertools.count()
+
+@dataclass
+class Var:
+    name: str
+    def __repr__(self): return self.name
+
+@dataclass
+class Lam:
+    param: str
+    body: "Term"
+    def __repr__(self): return f"(λ{self.param}.{self.body})"
+
+@dataclass
+class App:
+    func: "Term"
+    arg: "Term"
+    def __repr__(self): return f"({self.func} {self.arg})"
+
+Term = Union[Var, Lam, App]
+
+def free_vars(t: Term) -> set:
+    if isinstance(t, Var): return {t.name}
+    if isinstance(t, Lam): return free_vars(t.body) - {t.param}
+    return free_vars(t.func) | free_vars(t.arg)
+
+def fresh(avoid: set) -> str:
+    for letter in "abcdefghijklmnopqrstuvwxyz":
+        if letter not in avoid: return letter
+    # fallback: numbered variables
+    n = next(_counter); return f"v{n}"
+
+def subst(t: Term, var: str, val: Term) -> Term:
+    """Capture-avoiding substitution: t[var := val]."""
+    if isinstance(t, Var):
+        return val if t.name == var else t
+    if isinstance(t, Lam):
+        if t.param == var:          # bound variable shadows; stop here
+            return t
+        fv = free_vars(val)
+        if t.param in fv:           # would capture; rename first
+            w = fresh(fv | free_vars(t.body) | {var})
+            renamed_body = subst(t.body, t.param, Var(w))
+            return Lam(w, subst(renamed_body, var, val))
+        return Lam(t.param, subst(t.body, var, val))
+    # App
+    return App(subst(t.func, var, val), subst(t.arg, var, val))
+
+def step(t: Term):
+    """Return (reduced_term, True) if a beta step was taken, else (t, False)."""
+    if isinstance(t, App):
+        if isinstance(t.func, Lam):     # beta redex at top level
+            return subst(t.func.body, t.func.param, t.arg), True
+        # Try to reduce func first (normal order: leftmost-outermost)
+        reduced, fired = step(t.func)
+        if fired: return App(reduced, t.arg), True
+        reduced, fired = step(t.arg)
+        if fired: return App(t.func, reduced), True
+    if isinstance(t, Lam):
+        reduced, fired = step(t.body)
+        if fired: return Lam(t.param, reduced), True
+    return t, False
+
+def reduce(t: Term, limit: int = 20):
+    print(f"  start : {t}")
+    for i in range(limit):
+        t2, fired = step(t)
+        if not fired:
+            print(f"  → normal form reached after {i} step(s)")
+            return t2
+        print(f"  step {i+1}: {t2}")
+        t = t2
+    print(f"  (stopped after {limit} steps — may diverge)")
+    return t
+
+# ── Demo terms ────────────────────────────────────────────────────────────────
+
+identity = Lam("x", Var("x"))
+const    = Lam("x", Lam("y", Var("x")))
+
+print("=== (λx.x) 42-analogue: identity applied to const ===")
+reduce(App(identity, const))
+
+print()
+# (λf.λx. f (f x)) (λy. y)  — "twice" applied to identity
+twice  = Lam("f", Lam("x", App(Var("f"), App(Var("f"), Var("x")))))
+print("=== twice identity ===")
+reduce(App(twice, identity))
+```
+@LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "OK"`, `python3 main.py`)
+
+### Critical Thinking Questions
+
+21. The `step` function first tries to fire a redex at the **top level** of an `App`, then recurses left, then right. This implements leftmost-outermost (normal-order) reduction. Modify the call order to get **applicative-order**: reduce the argument *before* applying the function. What changes in the `step` code, and what would happen if you fed `Omega` under applicative order?
+22. Trace `step` manually for `(λf.λx. f (f x)) (λy.y)`. After the first call to `step`, what is the returned term? After the second call? Confirm the final result matches the pen-and-paper reduction from Section 2.
+23. The `fresh` helper searches lowercase letters to avoid capture. Why is generating a truly *fresh* name more than a naming preference — what semantic property of the term breaks if the same name is reused?
+
+---
+
+## Model 7: Church Numerals
+
+Church numerals exist in the lambda calculus as pure functions, but Python's `lambda` executes them directly, letting us verify arithmetic identities like `add(two)(three) == five` by checking `church_to_int` on both sides.
+
+```python
+# Church numerals: zero, succ, add, mult — all as Python lambdas.
+# church_to_int is only a display device; it is not part of the encoding.
+
+zero  = lambda f: lambda x: x
+succ  = lambda n: lambda f: lambda x: f(n(f)(x))
+add   = lambda m: lambda n: lambda f: lambda x: m(f)(n(f)(x))
+mult  = lambda m: lambda n: lambda f: m(n(f))
+exp   = lambda m: lambda n: n(m)   # Church exponentiation: m^n
+
+church_to_int = lambda n: n(lambda k: k + 1)(0)
+
+# Build the first several numerals via succ
+one   = succ(zero)
+two   = succ(one)
+three = succ(two)
+four  = succ(three)
+five  = succ(four)
+
+print("=== Basic numerals ===")
+for name, num in [("zero",zero),("one",one),("two",two),("three",three)]:
+    print(f"  {name} -> {church_to_int(num)}")
+
+print()
+print("=== Arithmetic ===")
+print(f"  add(two)(three)  = {church_to_int(add(two)(three))}")    # 5
+print(f"  mult(two)(three) = {church_to_int(mult(two)(three))}")   # 6
+print(f"  exp(two)(three)  = {church_to_int(exp(two)(three))}")    # 8  (2^3)
+
+# Verify add(two)(three) == five
+assert church_to_int(add(two)(three)) == 5, "arithmetic failed!"
+assert church_to_int(mult(two)(three)) == 6, "multiplication failed!"
+assert church_to_int(exp(two)(three)) == 8, "exponentiation failed!"
+print()
+print("All assertions passed.")
+
+# ── Bonus: Church booleans and iszero ────────────────────────────────────────
+iszero = lambda n: n(lambda _: False)(True)
+print()
+print("=== iszero ===")
+for num, name in [(zero,"zero"),(one,"one"),(two,"two")]:
+    print(f"  iszero({name}) = {iszero(num)}")
+```
+@LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "OK"`, `python3 main.py`)
+
+### Critical Thinking Questions
+
+24. `church_to_int` is defined as `lambda n: n(lambda k: k+1)(0)`. Unpack this: what does `n` receive as its first argument `f`, and what as its second argument `x`? Why does this produce the integer value of the Church numeral? Trace `church_to_int(two)` step by step.
+25. `mult(two)(three)` is implemented as `lambda f: two(three(f))`. Explain this in English: `three(f)` is "apply `f` three times"; `two(three(f))` does what? How does this mirror the mathematical definition $m \times n$ as "apply $f$ a total of $m \times n$ times"?
+26. The `exp` encoding `lambda m: lambda n: n(m)` looks surprisingly simple. Verify by hand that `exp(two)(three)` produces `eight`. (Hint: `three(two)` means "apply `two` three times, starting from `f`".)
+27. Define `pred` (predecessor) in Python using the Church numeral representation. This is famously tricky — look up the "pair trick" (Kleene's predecessor). Implement it and verify `church_to_int(pred(three)) == 2`.
+
+---
+
+## Model 8: Alpha Equivalence
+
+Two lambda terms are **alpha-equivalent** if they differ only in the names of their bound variables. `λx.x` and `λy.y` are the same function; only the label changed. This model implements a canonical renaming (de Bruijn–style index assignment) so that alpha-equivalent terms produce identical canonical forms, then uses that to check equivalence.
+
+```python
+# Alpha equivalence via canonical renaming.
+# Strategy: replace each bound variable with a positional index
+# (depth from binding lambda), eliminating names for bound vars entirely.
+# Free variables keep their names.
+
+from dataclasses import dataclass
+from typing import Union
+
+# Reuse the term dataclasses from Model 6
+@dataclass
+class Var:
+    name: str
+    def __repr__(self): return self.name
+
+@dataclass
+class Lam:
+    param: str
+    body: "Term"
+    def __repr__(self): return f"(λ{self.param}.{self.body})"
+
+@dataclass
+class App:
+    func: "Term"
+    arg: "Term"
+    def __repr__(self): return f"({self.func} {self.arg})"
+
+Term = Union[Var, Lam, App]
+
+def canonicalize(t: Term, env: dict = None) -> str:
+    """Return a canonical string where bound variables are replaced by
+    their de Bruijn depth index.  Free variables keep their original names."""
+    if env is None:
+        env = {}
+    if isinstance(t, Var):
+        if t.name in env:
+            return f"#{env[t.name]}"     # bound: use depth index
+        return t.name                    # free: keep name
+    if isinstance(t, Lam):
+        depth = len(env)
+        new_env = {**env, t.param: depth}
+        return f"(λ#{depth}.{canonicalize(t.body, new_env)})"
+    # App
+    return f"({canonicalize(t.func, env)} {canonicalize(t.arg, env)})"
+
+def alpha_equiv(t1: Term, t2: Term) -> bool:
+    return canonicalize(t1) == canonicalize(t2)
+
+# ── Build terms ───────────────────────────────────────────────────────────────
+
+lam_x_x = Lam("x", Var("x"))          # λx.x
+lam_y_y = Lam("y", Var("y"))          # λy.y
+lam_z_z = Lam("z", Var("z"))          # λz.z
+lam_x_y = Lam("x", Var("y"))          # λx.y  (y is FREE here)
+lam_y_x = Lam("y", Var("x"))          # λy.x  (x is FREE here)
+
+# λx.λy.x  vs  λa.λb.a  (both are Church TRUE / K combinator)
+true1 = Lam("x", Lam("y", Var("x")))
+true2 = Lam("a", Lam("b", Var("a")))
+
+# λx.λy.y  vs  λa.λb.b  (both are Church FALSE)
+false1 = Lam("x", Lam("y", Var("y")))
+false2 = Lam("a", Lam("b", Var("b")))
+
+print("=== Canonical forms ===")
+for name, t in [("λx.x", lam_x_x), ("λy.y", lam_y_y), ("λz.z", lam_z_z),
+                ("λx.y", lam_x_y), ("λy.x", lam_y_x)]:
+    print(f"  {name:8} -> {canonicalize(t)}")
+
+print()
+print("=== Alpha equivalence checks ===")
+tests = [
+    ("λx.x",    lam_x_x, "λy.y",    lam_y_y, True),
+    ("λx.x",    lam_x_x, "λz.z",    lam_z_z, True),
+    ("λx.y",    lam_x_y, "λz.y",    Lam("z", Var("y")), True),
+    ("λx.y",    lam_x_y, "λy.x",    lam_y_x, False),  # different free vars
+    ("true1",   true1,   "true2",   true2,   True),
+    ("false1",  false1,  "false2",  false2,  True),
+    ("true1",   true1,   "false1",  false1,  False),
+]
+for n1, t1, n2, t2, expected in tests:
+    result = alpha_equiv(t1, t2)
+    status = "PASS" if result == expected else "FAIL"
+    print(f"  [{status}] alpha_equiv({n1}, {n2}) = {result}  (expected {expected})")
+```
+@LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "OK"`, `python3 main.py`)
+
+### Critical Thinking Questions
+
+28. `λx.y` and `λz.y` are alpha-equivalent because `y` is **free** in both and the bound variable name is irrelevant. But `λx.y` and `λy.x` are **not** alpha-equivalent. Explain why: what is `y`'s status in the first term and `x`'s status in the second?
+29. The canonical form uses depth indices for bound variables. What is the canonical form of `λx.λy.x`? What about `λa.λb.b`? Verify your answers match the test cases above and explain why the depth index correctly distinguishes the two terms.
+30. Alpha equivalence is the "cheapest" notion of equivalence for lambda terms. Two stronger notions are **beta equivalence** (reduce both to normal form and compare) and **eta equivalence** (`λx.f x` ≡ `f` when `x` not free in `f`). Give an example where two terms are beta-equivalent but the canonical form check would say they are different. Why is this not a bug in the alpha-checker?
+
+---
+
 ## 8. Further Reading
 
 - Pierce, Benjamin C. *Types and Programming Languages* (MIT Press, 2002). Chapter 5 is the standard modern treatment of the untyped calculus, including the substitution definition used here.

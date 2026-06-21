@@ -136,6 +136,217 @@ for s in ["ab", "aabb", "aaabbb", "aab", "ba", "abab"]:
 
 ---
 
+## Model 3: Python CFG Representation (Runnable)
+
+A grammar can be represented as a Python `dict` mapping each nonterminal to a list of right-hand sides (each RHS is itself a list of symbols). The breadth-first derivation checker below tests membership for short strings. Run it and observe which strings are in the language.
+
+```python   @LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "ok"`, `python3 main.py`)
+# Model 3: CFG as a Python dict + membership checker
+# Grammar: arithmetic over single-digit numbers with + and *
+# E -> E + T | T
+# T -> T * F | F
+# F -> num
+# (we use right-recursive stand-ins so BFS stays finite)
+
+GRAMMAR = {
+    "E": [["E", "+", "T"], ["T"]],
+    "T": [["T", "*", "F"], ["F"]],
+    "F": [["0"], ["1"], ["2"], ["3"], ["4"],
+          ["5"], ["6"], ["7"], ["8"], ["9"]],
+}
+
+def derivable(target, grammar, start="E", max_steps=20):
+    """BFS over sentential forms; returns True if target is reachable."""
+    try:
+        nonterminals = set(grammar.keys())
+        frontier = [tuple([start])]
+        visited = {tuple([start])}
+        for _ in range(max_steps):
+            next_frontier = []
+            for form in frontier:
+                # all-terminal: check
+                if all(sym not in nonterminals for sym in form):
+                    if "".join(form) == target:
+                        return True
+                    continue
+                # expand the FIRST nonterminal (leftmost derivation)
+                idx = next(i for i, s in enumerate(form) if s in nonterminals)
+                for rhs in grammar[form[idx]]:
+                    candidate = form[:idx] + tuple(rhs) + form[idx+1:]
+                    # prune: terminal prefix must match target prefix
+                    term_prefix = "".join(
+                        s for s in candidate if s not in nonterminals)
+                    if not target.startswith(term_prefix[:len(term_prefix)]):
+                        continue
+                    if candidate not in visited and len(candidate) <= len(target) * 2:
+                        visited.add(candidate)
+                        next_frontier.append(candidate)
+            frontier = next_frontier
+        return False
+    except Exception as e:
+        print(f"[cfgcheck:derivable] {e}")
+        import traceback; traceback.print_exc()
+        return False
+
+tests = ["2+3", "2*3", "1+2*3", "2++3", "2+", "+2", "9*8*7"]
+for s in tests:
+    print(f"  {s!r:12} in L(G)? {derivable(s, GRAMMAR)}")
+```
+
+### Critical Thinking Questions
+
+11. `1+2*3` is accepted and `2++3` is rejected. Without running any code, trace the first three sentential forms BFS explores for `1+2*3` starting from `E`. What production fires first in a leftmost derivation?
+12. This grammar is left-recursive (`E -> E + T`). The BFS still terminates because of the length bound `len(candidate) <= len(target) * 2`. Explain why a top-down *recursive descent* parser would loop infinitely on the same grammar but BFS does not.
+13. Add a rule `F -> "(" E ")"` (using the symbols `"("` and `")"`) and add `"(2+3)"` to the test list. Predict whether it will be accepted before running, then verify. What does this tell you about where parentheses must sit in the precedence hierarchy?
+
+---
+
+## Model 4: Left Recursion Detection (Runnable)
+
+Before converting a grammar to recursive descent we need to know which nonterminals are directly left-recursive. A nonterminal $A$ is directly left-recursive if it has a production $A \rightarrow A\,\alpha$ for some $\alpha$.
+
+```python   @LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "ok"`, `python3 main.py`)
+# Model 4: Detecting direct left recursion in a grammar dict
+
+def find_left_recursive(grammar):
+    """Return the set of nonterminals that are directly left-recursive."""
+    try:
+        left_recursive = set()
+        for head, productions in grammar.items():
+            for rhs in productions:
+                if rhs and rhs[0] == head:
+                    left_recursive.add(head)
+        return left_recursive
+    except Exception as e:
+        print(f"[lrdetect:find_left_recursive] {e}")
+        import traceback; traceback.print_exc()
+        return set()
+
+def report(name, grammar):
+    lr = find_left_recursive(grammar)
+    if lr:
+        print(f"{name}: LEFT-RECURSIVE nonterminals = {sorted(lr)}")
+    else:
+        print(f"{name}: no direct left recursion found")
+
+# Left-recursive arithmetic grammar (standard textbook form)
+grammar_lr = {
+    "E": [["E", "+", "T"], ["T"]],
+    "T": [["T", "*", "F"], ["F"]],
+    "F": [["num"]],
+}
+
+# Right-recursive rewrite (suitable for recursive descent)
+grammar_rr = {
+    "E":  [["T", "E'"]],
+    "E'": [["+", "T", "E'"], []],   # empty list = epsilon
+    "T":  [["F", "T'"]],
+    "T'": [["*", "F", "T'"], []],
+    "F":  [["num"]],
+}
+
+# Balanced-parens grammar (no left recursion)
+grammar_bp = {
+    "S": [["(", "S", "S", ")"], []],
+}
+
+report("Left-recursive arithmetic", grammar_lr)
+report("Right-recursive (LL) arithmetic", grammar_rr)
+report("Balanced parentheses", grammar_bp)
+```
+
+### Critical Thinking Questions
+
+14. `grammar_rr` introduces `E'` and `T'` (read "E-prime"). These are the standard *left-recursion elimination* trick. Explain, in one sentence, what `E' -> + T E' | ε` accomplishes compared to `E -> E + T | T`.
+15. The detector only finds *direct* left recursion (A → A…). Indirect left recursion would require A → B… and B → A…. Sketch how you would extend `find_left_recursive` to detect one step of indirect left recursion. You do not need to implement it; a clear English description is enough.
+16. Why does a recursive descent parser loop forever on `grammar_lr` but successfully parse on `grammar_rr`? Trace the call stack for the first two tokens of `3 + 5` under each grammar.
+
+---
+
+## Model 5: Parse Trees as Python Dicts (Runnable)
+
+A parse tree is a nested dictionary `{"node": label, "children": [...]}`. Building one by hand for `2 + 3 * 4` under the layered grammar and pretty-printing it shows directly that the `*` subtree is nested *inside* the `+` subtree — operator precedence made structurally explicit.
+
+```python   @LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "ok"`, `python3 main.py`)
+# Model 5: Parse trees as nested dicts + pretty printer
+
+def leaf(val):
+    return {"node": str(val), "children": []}
+
+def tree(label, *children):
+    return {"node": label, "children": list(children)}
+
+def pretty(t, indent=0):
+    """Indented ASCII art of the parse tree."""
+    try:
+        prefix = "  " * indent
+        print(f"{prefix}{t['node']}")
+        for child in t["children"]:
+            pretty(child, indent + 1)
+    except Exception as e:
+        print(f"[parsetree:pretty] {e}")
+        import traceback; traceback.print_exc()
+
+def evaluate(t):
+    """Evaluate the tree bottom-up."""
+    try:
+        if not t["children"]:
+            return float(t["node"])
+        op = t["node"]
+        vals = [evaluate(c) for c in t["children"]]
+        if op == "+": return vals[0] + vals[1]
+        if op == "*": return vals[0] * vals[1]
+        if op == "-": return vals[0] - vals[1]
+        if op == "/": return vals[0] / vals[1]
+    except Exception as e:
+        print(f"[parsetree:evaluate] {e}")
+        import traceback; traceback.print_exc()
+        return None
+
+# Parse tree for  2 + 3 * 4  under the LAYERED grammar (only one tree)
+#        E
+#       /|\
+#      E + T
+#      |  /|\
+#      T T * F
+#      | |   |
+#      F F   4
+#      | |
+#      2 3
+correct_tree = tree("+",
+                    leaf(2),
+                    tree("*", leaf(3), leaf(4)))
+
+# The WRONG tree the naive grammar also permits
+wrong_tree = tree("*",
+                  tree("+", leaf(2), leaf(3)),
+                  leaf(4))
+
+print("=== Correct parse tree for 2 + 3 * 4 ===")
+pretty(correct_tree)
+print(f"Value: {evaluate(correct_tree)}")   # 14
+
+print()
+print("=== Naive grammar's alternate tree (WRONG) ===")
+pretty(wrong_tree)
+print(f"Value: {evaluate(wrong_tree)}")     # 20
+
+print()
+# Associativity: 7 - 2 - 1  left-associative
+left_tree  = tree("-", tree("-", leaf(7), leaf(2)), leaf(1))
+right_tree = tree("-", leaf(7), tree("-", leaf(2), leaf(1)))
+print(f"Left-assoc  (7-2)-1 = {evaluate(left_tree)}")   # 2
+print(f"Right-assoc 7-(2-1) = {evaluate(right_tree)}")  # 6
+```
+
+### Critical Thinking Questions
+
+17. In `correct_tree`, the `*` node is a *child* of `+`. In `wrong_tree`, `+` is a child of `*`. Explain why "deeper in the tree" corresponds to "tighter binding" when the interpreter evaluates children before parents.
+18. The pretty-printer uses indentation level to show depth. Sketch (on paper) how the indented output for `correct_tree` would look, and verify it matches the program's output. Does the deepest line correspond to the highest-precedence operation?
+19. Extend the `tree` / `leaf` / `evaluate` code (mentally or on paper) to handle the string `(2 + 3) * 4`. What node becomes the root, and how does the parenthesis change the tree's shape compared to `2 + 3 * 4`?
+
+---
+
 # Part III: Synthesis and Practice
 
 ## 3. Exercises
