@@ -452,6 +452,8 @@ A function call $f(v)$ in the λ-calculus encodes as: send $v$ on channel $f$, w
 
 ## Model 4: The π-Calculus
 
+**Intuition.** Just as the lambda calculus gave us a minimal formal foundation for sequential computation (everything is a function, application is the only operation), the π-calculus gives us a minimal formal foundation for concurrent computation (everything is a channel name, send/receive is the only operation). The power comes from *mobility*: you can send a channel name over a channel, which means the communication topology can change at runtime. A function call — "send my argument to this function and wait for the reply" — is just a special case of channel communication. The reduction rule $\bar{x}\langle y \rangle.P \mid x(z).Q \rightarrow P \mid Q[z := y]$ looks almost identical to β-reduction, confirming that function application *is* a form of communication.
+
 ### Critical Thinking Questions
 
 13. The π-calculus has no values, no numbers, no booleans — only channel names. Church numerals (from the Lambda Calculus activity) encode numbers as functions. How would you encode a "number" in the π-calculus? (Hint: encode it as a process that sends a fixed number of messages on a given channel.)
