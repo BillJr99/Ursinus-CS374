@@ -192,6 +192,8 @@ print(f"\nLoaded plugins: {list(loaded.keys())}")
 
 ## Model 4: `__all__`, `__init__.py`, and Module Interfaces
 
+**Intuition.** A library's public API is a *promise*. Everything you expose to callers is something you must maintain and keep stable; everything you keep internal can change freely. Python has no access modifiers like `private` or `protected` — by convention, names starting with `_` are internal, and `__all__` explicitly lists what `from module import *` should export. This is library design as a language design decision: by controlling what names you expose, you are defining the vocabulary of your mini-language. A well-curated `__all__` tells callers exactly which abstractions they are supposed to think in, and shields them from implementation details they should not depend on.
+
 A module's **public interface** is the set of names that clients are expected to use. Python enforces this convention through `__all__`: a list of names that `from module import *` will bind in the caller's namespace. Without `__all__`, the star import brings in every name that does not start with `_`.
 
 ```python  liascript
@@ -239,6 +241,8 @@ print(f"pi is now in globals: {'pi' in dir()}")
 # Part III: Building a Module System
 
 ## Model 5: Implementing a Module System in a Mini Interpreter
+
+**Intuition.** The best way to truly understand a mechanism is to build a stripped-down version of it. A module system has three core parts: (1) an **environment** — a dictionary mapping names to values, which is what a module *is*; (2) a **registry** — a dictionary mapping module names to their environments, which is what `sys.modules` *is*; and (3) **import operations** — procedures that look up a name in the registry and copy bindings into the caller's environment. Everything else in Python's real import system (finders, loaders, bytecode caching, relative imports) is elaboration on these three ideas. The mini-interpreter here is deliberately bare-bones so each concept is visible without distraction.
 
 The models above described Python's module system as a user. Now we build one. The core idea is simple: a **module** is an **environment** (a namespace), and a **module registry** is a dictionary from names to environments — exactly what `sys.modules` is.
 
@@ -321,6 +325,8 @@ print(f"mul(3, 4) = {mul_fn(3, 4)}")
 > **CTQ 5.2** `do_import` binds a **module object** (a dict) into `global_env`. In Python, `import math` creates a name `math` in the caller's namespace that refers to the module object. Trace the parallel: what is the module object in Python, and how does attribute access (`math.pi`) work in terms of the module's `__dict__`?
 
 > **CTQ 5.3** `do_from_import` copies a single binding from the module's environment into the caller's environment. After `from mymath import mul`, if you redefine `mymath.mul` in the registry, does the caller's `mul` reflect the change? Why or why not?
+
+> **Watch out!** Circular imports are one of the most confusing bugs in Python. Module A imports B; during B's initialization, B imports A — but A is not fully initialized yet, so the partially-built module object is what B gets. If B tries to access a name from A that has not been defined yet in A's initialization sequence, you get an `AttributeError` or `ImportError`, even though the `import` statement itself succeeds. The fix Python uses — inserting a placeholder entry into `sys.modules` before running the module body — prevents infinite recursion but does not prevent partially-initialized modules from being used. The real fix is to restructure your dependencies to avoid the cycle.
 
 > **CTQ 5.4** To support **circular imports** (module A imports B, B imports A), what single change to `do_import` would prevent infinite recursion? (Hint: look at how Python handles this with a partially-initialized module entry in `sys.modules`.)
 

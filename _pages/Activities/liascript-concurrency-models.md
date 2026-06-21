@@ -89,6 +89,8 @@ except Exception as e:
 
 ## 2. Actors: No Sharing, Only Messages
 
+**Intuition.** The actor model is the "each chef has their own station" solution. An actor is a tiny, self-contained process with its own private state and its own mailbox (an inbox queue). No other actor can reach in and modify that state — the only thing one actor can do to another is *drop a message in its mailbox*. The receiving actor picks up messages one at a time, processes each one, updates its own state, and optionally sends messages onward. Because nothing is shared, there are no races. Because messages are queued, no message is lost. The price: communication is asynchronous — the sender does not wait for a reply, which makes "call and wait for result" patterns more complex than a simple function call.
+
 An **actor** is a unit of computation with:
 - Its own **private state** (no other actor touches it)
 - A **mailbox** (a queue of incoming messages)
@@ -157,6 +159,8 @@ except Exception as e:
 
 ## Model 1: Actor Properties
 
+**Intuition.** The code above shows a counter actor that is race-free by construction — not because of any lock, but because the counter's state (`state['count']`) is only ever read and written inside `counter_behavior`, which runs on a single thread (the actor's own thread). Any number of external threads can send `('increment',)` messages, but those messages are queued and processed one at a time. The mailbox *is* the synchronization primitive.
+
 ### Critical Thinking Questions
 
 1. In the actor model, the counter's `count` variable is never shared — it lives only inside `counter_behavior`'s `state` dictionary. Why does this eliminate the race condition that the `BrokenCounter` had? What precisely is different?
@@ -172,6 +176,8 @@ except Exception as e:
 # Part III: Channels and CSP
 
 ## 3. Go-Style Channels: Synchronize on Communication
+
+**Intuition.** Channels solve the coordination problem differently: instead of isolating state inside actors, channels give you a *meeting point* — a named conduit where one goroutine (or thread) can hand a value directly to another. With an unbuffered channel, the sender pauses until the receiver arrives at the channel to collect, and vice versa. The two parties *rendezvous* at the channel, synchronizing their progress. With a buffered channel of size N, the sender can deposit up to N items without waiting, and slows down only when the buffer is full. This back-pressure mechanism is what prevents a fast producer from overwhelming a slow consumer.
 
 **Communicating Sequential Processes** (CSP, Tony Hoare 1978) and Go's channels take a different view: concurrency is about *synchronization points*. A **channel** is a typed conduit; a send blocks until a receiver is ready, and vice versa (for unbuffered channels). Coordination happens *at the moment of communication*, not via shared state.
 
@@ -216,6 +222,8 @@ except Exception as e:
     import traceback; traceback.print_exc()
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+> **Watch out!** It is tempting to think that buffered channels eliminate blocking entirely. They do not — they only defer it. A sender on a buffered channel of size 2 will still block on the *third* send if the receiver has not consumed anything yet. Removing back-pressure entirely (by using an unbounded buffer) can cause the producer to race arbitrarily far ahead, consuming memory without bound. Back-pressure is a feature, not a limitation.
 
 **Select: waiting on multiple channels.** Go's `select` statement blocks until *any* of several channels is ready — the CSP choice operator. This is how event loops and multiplexers are written without callbacks.
 
@@ -278,6 +286,8 @@ except Exception as e:
 ---
 
 ## Model 2: Channels and CSP
+
+**Intuition.** The `select` simulation above shows the fan-in pattern: two independent streams of events (ticks and sensor readings) are merged into one stream for a single consumer. In Go, `select` is built into the language; here we simulate it by spinning up relay threads. The key insight is that the *structure* of the communication topology — who sends to whom, through which channels, in what order — determines the program's concurrent behavior. CSP lets you reason about that structure precisely, which is why Go's concurrency model is considered one of the cleaner ones in production languages.
 
 [[MC]]
 In CSP/Go-style channels, an **unbuffered** channel's send operation blocks until a receiver is ready. What property does this enforce?

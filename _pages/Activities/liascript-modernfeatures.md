@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Modern Language Features
 
+> **Opening Hook:** Modern programming language features are not invented randomly or for aesthetic reasons — each one solves a concrete expressivity or safety problem that practitioners encountered at scale. Pattern matching exists because nested if-else chains and field accesses made tree-walking code unreadable and error-prone at the scale of production compilers. Generics exist because the alternative — writing the same `sort` function separately for every element type — was both tedious and unsafe. Ownership exists because C's manual memory management caused security vulnerabilities in billions of lines of deployed code. Async/await exists because callback-based I/O shredded programs into pieces so small that the control flow became impossible to follow. The through-line: language features are engineering responses to pain points, and understanding the pain explains the solution.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -24,6 +26,20 @@ By the end of this activity, you will be able to:
 - Explain Rust's ownership and borrowing model and contrast it with garbage collection and manual memory management as approaches to memory safety
 - Describe how `async`/`await` concurrency differs from OS threads and identify the performance tradeoffs of each model
 - Evaluate which modern features are appropriate candidates for inclusion in a language design project and justify the choice using the problem/mechanism/cost framework
+
+---
+
+> **Before You Begin**
+>
+> This module assumes you are comfortable with:
+> - Writing Python functions, classes, and basic control flow (if/else, for, while)
+> - What an AST (Abstract Syntax Tree) is and how a tree-walking evaluator works — you should have built one in an earlier module
+> - The idea that a *type* constrains what operations are valid on a value
+> - Basic familiarity with at least one language besides Python (Java, C, JavaScript, or Rust)
+>
+> You do **not** need prior experience with Rust, Haskell, or async programming. All features are introduced with Python examples before any cross-language comparisons.
+
+---
 
 Language design did not stop with the features your interpreter implements; it accelerated. Today we survey four ideas that define the current generation (pattern matching, generics, memory safety through ownership, and async concurrency), each through the lenses you have built: what problem it solves, what it costs, and which evaluation criterion it serves. Your project pitches a feature menu next week; today stocks the menu. The arc: **pattern matching $\rightarrow$ generics $\rightarrow$ ownership $\rightarrow$ async $\rightarrow$ choosing for your language**.
 

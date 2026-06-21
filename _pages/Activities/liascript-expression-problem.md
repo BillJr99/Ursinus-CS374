@@ -14,6 +14,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-CS374-Fall2026@gh-pages/ass
 
 # The Expression Problem
 
+Every large software system eventually hits a wall where adding a new feature requires editing dozens of existing files. The Expression Problem names this wall precisely and asks whether any language can tear it down. Think of it like a spreadsheet: OOP lets you add rows easily but adding columns is painful, while functional programming flips that — and the goal is a design where both are free. Understanding this tension explains why Haskell typeclasses, Rust traits, and Go interfaces exist and why they are shaped the way they are.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:

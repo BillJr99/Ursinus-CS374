@@ -152,6 +152,8 @@ print(True + 1)        # 2 — bool IS a subclass of int in Python (one coercion
 
 ## Model 3: Structural vs Nominal Typing
 
+> **Intuition:** Imagine hiring for a job. A nominal hiring process checks your official job title on your resume — if it doesn't say "Senior Engineer," you don't qualify, even if you can do everything the role requires. A structural hiring process checks your skills — if you can write code, debug systems, and design architecture, you qualify, regardless of what your title says. Nominal typing is the first process; structural typing is the second. Python's duck typing takes this to the extreme: it doesn't even check at hire time, it just tries the work and fails if you can't do it.
+
 Two philosophies for deciding whether two types are *compatible*:
 
 **Nominal typing** — compatibility is determined by *name* (and explicit declaration).
@@ -230,7 +232,11 @@ print(isinstance(t, Drawable))   # True — structural, not nominal!
 
 ---
 
+> **Watch out!** Python's `Protocol` and duck typing look similar but operate at different times. Duck typing is a *runtime* check — Python tries to call the method and raises `AttributeError` if it's missing. A `Protocol` with `@runtime_checkable` allows `isinstance` checks at runtime, but the real power is enabling *static* tools like `mypy` to verify structural compatibility before you run the program at all.
+
 ## Model 4: Gradual Typing and Type Annotations
+
+> **Intuition:** Gradual typing is a spectrum dial, not a binary switch. At one end, every value is untyped and any operation is attempted at runtime. At the other end, every expression has a verified static type and the compiler rejects anything inconsistent. Gradual typing lets you place individual functions or modules at any point on this dial, which is why Python went from zero type annotation support (Python 2) to a rich annotation system (Python 3.5+) without breaking existing code. The unannotated parts behave as before; the annotated parts gain static checking.
 
 Some languages allow mixing typed and untyped code in the same program. This is **gradual typing**.
 
@@ -282,7 +288,11 @@ result: str = double(5)   # error: Incompatible types in assignment
 
 ---
 
+> **Watch out!** Python's type annotations do *not* raise errors at runtime. `def greet(name: str)` followed by `greet(42)` will run without complaint. The annotation is stored as metadata (accessible via `__annotations__`) but ignored by the Python interpreter. The enforcement only happens if you run a separate static checker like `mypy`. This surprises many students who expect Java-like behavior.
+
 ## Model 5: Type Erasure
+
+> **Intuition:** Type erasure is the compiler's answer to a performance problem: if `List<String>` and `List<Integer>` had to be separate classes in memory, you would need an explosion of class definitions. Instead, the Java compiler checks all the generic types at compile time for correctness, then *throws away* the type parameters and produces a single `List` class at the bytecode level. The safety was verified already — no need to repeat it at runtime. C++ takes the opposite approach (monomorphization): it keeps the type information and generates a separate specialized function for each instantiation, trading binary size for the ability to optimize each version independently.
 
 When generic types are compiled, the type parameter often disappears. This is **type erasure**.
 

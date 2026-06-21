@@ -104,6 +104,8 @@ This works! But `step1(step1)` is repetitive, and the body has `self(self)(n-1)`
 
 ## 2. Step 2: Cleaning Up the Body
 
+The self-application ugliness (`self(self)(n-1)`) is a leaky abstraction: the *caller's* machinery is bleeding into the function's *logic*. The fix is a wrapper that absorbs the machinery, so the recursive call site looks like an ordinary call `rec(n-1)`. Think of `rec` as a pre-packaged "call-me-again" token that the function receives and uses freely, without knowing or caring that underneath it is `self(self)`.
+
 The `self(self)(n-1)` pattern is ugly. Let us hide it inside a helper `rec`:
 
 ```python
@@ -126,6 +128,8 @@ Now the body `lambda n: 1 if n == 0 else n * rec(n - 1)` looks like a normal rec
 ---
 
 ## 3. Step 3: Separating the Logic from the Fixed-Point Machinery
+
+This is the key abstraction step. Once the self-application plumbing is hidden in `rec`, the factorial logic becomes a perfectly ordinary function generator: "give me a `rec` that handles the recursive call, and I will give you a working factorial." This generator works for *any* recursive function — not just factorial. The machinery that turns a generator into a recursive function is independent of what the function computes. That machinery — currently called `Y_machinery` — is the Y combinator. You have now rebuilt it from scratch.
 
 Notice that `lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1)` is just the factorial *logic* — a function that takes its recursive call-stub and returns the actual implementation. Let us name this "the step" or "the generator":
 
@@ -155,6 +159,8 @@ print([fib_v3(n) for n in range(10)])   # [0,1,1,2,3,5,8,13,21,34]
 
 ## 4. The Formal Definition
 
+The formal definition of Y in the lambda calculus is exactly the `Y_machinery` you built in Part I, written in lambda notation and compressed. The self-playing record analogy pays off here: $\lambda x.\ f\ (x\ x)$ is the "groove" — a function that, when applied to itself, hands $f$ a way to replay itself. Applied to itself, it produces $f\ (\text{the whole thing again})$. The outer $\lambda f$ makes the machinery generic: it works for *any* generator $f$, not just factorial. The one practical obstacle is evaluation order, which forces us to use the Z variant in Python.
+
 The **Y combinator** in the pure lambda calculus is:
 
 $$
@@ -179,6 +185,10 @@ $$
 This is the **unfolding equation**: $Y\ g$ reduces to $g$ applied to $Y\ g$ applied to itself. Exactly what a recursive call does.
 
 **Why we need the Z variant for strict languages:** Pure Y in Python loops:
+
+> **Watch out! — Python evaluates arguments before calling functions**
+>
+> In the pure Y combinator, the body contains `x(x)` as a sub-expression. Python (like most languages) evaluates *both* arguments before making a function call. So when it processes `(lambda x: f(x(x)))(lambda x: f(x(x)))`, it tries to evaluate the argument `lambda x: f(x(x))` applied to itself *immediately* — before any base case can fire — resulting in infinite recursion. The fix is eta-expansion: wrap `x(x)` in `lambda v: x(x)(v)`, which delays evaluation until `v` is actually provided. This single change converts the call-by-name Y into the call-by-value Z.
 
 ```python
 # Y = lambda f: (lambda x: f(x(x)))(lambda x: f(x(x)))
@@ -249,6 +259,8 @@ factorial = fix (\rec n -> if n == 0 then 1 else n * rec (n - 1))
 
 ## 6. Y as a Fixed-Point Operator
 
+A fixed point is a value that a function maps to itself: $g(x) = x$. For numeric functions, this is a concrete number (the fixed point of cosine is about 0.739). For function-valued functions — generators that take a recursive call-stub and return a function — the "fixed point" is the fully recursive function itself. This is the self-playing record in precise mathematical language: the record that, when played, produces itself as output. The Y combinator finds that fixed point for any generator.
+
 A **fixed point** of a function $g$ is a value $x$ such that $g(x) = x$. The Y combinator computes a fixed point of $g$ in the following sense:
 
 $$
@@ -293,6 +305,8 @@ print("Fixed point verified: Z(fact_gen)(n) == fact_gen(Z(fact_gen))(n) for all 
 ---
 
 ## 7. Y Without Y: Other Fixed-Point Tricks
+
+Real-world code rarely spells out `Z = lambda f: (lambda x: ...)`. Instead, programmers reach for idioms that produce the same effect — passing `self` as an argument, wrapping in a class, using a shared namespace. These are all approximations of the fixed-point idea, using features (assignment, objects, closures) that the lambda calculus deliberately excludes. Recognizing them as instances of the same underlying pattern is the payoff of having studied Y from scratch.
 
 Several practical patterns implement the same idea without writing Y explicitly:
 

@@ -331,6 +331,8 @@ Memoization in `.tail` also matters here: every time `stream_take(primes, 10)` a
 
 ## Model 5 — By-Value vs. By-Name: Call Strategies in Language Design
 
+> **Intuition.** You have now built lazy evaluation by hand. This model zooms out to ask: why don't all languages work this way? The answer is a trade-off with three points. By-value (eager): pay upfront, pay once per argument, predictable cost. By-name (lazy without memoization): skip unused arguments for free, but pay again for each use of the same argument. By-need (lazy with memoization, i.e., Haskell): skip unused arguments AND pay at most once per argument, but carry overhead for the thunk bookkeeping on every expression. The timing experiment below makes the cost of by-name's double-evaluation tangible.
+
 Every language makes a fundamental decision at each function call: when do you evaluate the arguments? The two classic answers are:
 
 - **Call-by-value** (eager, applicative-order): evaluate all arguments before entering the function body. Python, Java, C, Ruby, and almost every mainstream language use this.

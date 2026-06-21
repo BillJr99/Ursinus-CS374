@@ -181,9 +181,13 @@ Step by step:
 
 Result: `g(g a)`. This applies `g` twice to `a` — exactly what `twice(g)(a)` does in Python.
 
+> **Watch out! — The order of reduction matters for termination, but not for the final result.** If you reduce the same expression two different ways (choosing different redexes at each step), you may take a different number of steps, or one path may loop while the other terminates. However, the Church-Rosser theorem guarantees that if both paths reach a normal form, the normal forms are identical. A key corollary: always prefer normal-order (outermost-first) reduction when working by hand, because it is the strategy most likely to find a normal form if one exists.
+
 ---
 
 ## Model 2: Reduce by Hand
+
+> **Intuition**: Work through each reduction at the pace of one substitution per arrow. Before you write an arrow, identify: (1) which subexpression is the redex — a `(λx.body) arg` shape — and (2) what substitution you will perform. Write the result of the substitution, draw the arrow, and look for the next redex. The Omega term in Question 7 is the key insight: some expressions have no normal form, which means not every computation terminates.
 
 ### Critical Thinking Questions
 
@@ -195,6 +199,8 @@ Result: `g(g a)`. This applies `g` twice to `a` — exactly what `twice(g)(a)` d
 ---
 
 ## 3. Alpha Renaming: When Names Collide
+
+> **Intuition**: The variable capture problem is subtle but important. Imagine you are substituting a free variable `y` into an expression that happens to bind `y` internally. The substituted `y` would fall under the inner binder and suddenly mean something different. The fix is simple: rename the inner binder to a fresh name before substituting. Think of it as "pick a local variable name that does not clash with anything in scope" — exactly what good programmers do to avoid shadowing bugs.
 
 Substitution has one trap: **capture**. Reduce $(\lambda x. \lambda y.\, x)\; y$ naively and the free $y$ we substitute lands inside $\lambda y$, where it is suddenly, wrongly, bound: the meaning changed. The repair is **alpha renaming**: bound names are arbitrary ($\lambda y. e$ and $\lambda z. e[y := z]$ are the same function), so rename the binder first:
 
@@ -236,6 +242,8 @@ The reduction $(\lambda x. \lambda y.\, x\, y)\; y \rightarrow \lambda y.\, y\, 
 # Part III: Runnable Models
 
 ## Model 3: Beta Reduction Step Tracer
+
+> **Intuition**: This tracer represents lambda expressions as nested Python tuples and implements the substitution rule explicitly. Before running it, predict what the output will be for the first two examples by applying the substitution rule by hand. Then run the code and compare. Pay special attention to the alpha-rename message in the capture example — this is the mechanism you applied manually in Section 3, now automated.
 
 The tracer below parses a simple subset of the lambda calculus (no real substitution engine is needed for small examples) and prints each beta-reduction step. Study the output to see exactly what the substitution rule does.
 
@@ -375,6 +383,8 @@ print("Free vars in (λx.λy. x):", free_vars(lam('x', lam('y', var('x')))))
 
 ## Model 3b: Interactive Reduction Simulator
 
+> **Intuition**: This simulator uses Python dataclasses (`Var`, `Lam`, `App`) to represent the three syntactic forms as Python objects, making the structure of each expression explicit and inspectable. Use it to check your hand reductions from Model 2 — build the same expression you reduced on the whiteboard, run `normalize`, and verify the steps match. Notice that the `subst` function here does not implement full capture-avoiding renaming; compare this to Model 3 to see what is missing.
+
 The simulator below lets you construct any lambda expression using the `Var`, `Lam`, and `App` building blocks, then watch each substitution step. Use it to check your hand reductions from Model 2. Build the expression you want, call `normalize(...)`, and compare to your whiteboard work.
 
 ```python
@@ -459,6 +469,8 @@ normalize(App(App(Lam("f", Lam("x", App(Var("f"), App(Var("f"), Var("x"))))), Va
 ---
 
 ## Model 4: Alpha Equivalence Checker
+
+> **Intuition**: De Bruijn indices solve the alpha-equivalence problem elegantly: instead of naming bound variables, replace each one with a number saying "I am bound by the lambda that is this many steps outward." Under this scheme, `λx.x` and `λy.y` both become `λ_.#0` (the bound variable is index 0 — the immediately enclosing lambda). Two expressions are alpha-equivalent if and only if their de Bruijn representations are identical. Free variables keep their names because they refer to the *same* external binding regardless of renaming.
 
 Two lambda expressions are **alpha-equivalent** ($=_\alpha$) if one can be obtained from the other by consistently renaming bound variables. They are *semantically identical* — only the choice of parameter names differs.
 

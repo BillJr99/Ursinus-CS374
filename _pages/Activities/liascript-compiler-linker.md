@@ -113,6 +113,8 @@ exec(code)
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** "Python is interpreted, not compiled" is a common but misleading claim. Python *does* compile your source code — to bytecode — every time you run a `.py` file. The difference from C is that Python's target is a *software* CPU (the CPython VM) rather than a *hardware* CPU. The `.pyc` files you may have seen in `__pycache__/` are the cached bytecode output of this compilation step. Saying Python is "interpreted" means the bytecode is executed by a software interpreter, not that compilation never happens.
+
 **Critical Thinking Questions (CTQs) — Model 1**
 
 1. List the stages of compilation shown in the code comments above (Stage 1 through Stage 4). How do they map onto the seven stages described in the introduction?
@@ -186,6 +188,8 @@ print("\nCompute(3, 4, 5) =", compute(3, 4, 5))
 
 ## Model 3: Object Files and Symbol Tables
 
+**Intuition:** When your team splits a large project across multiple files and each person compiles their own file independently, the compiler cannot know the final addresses of functions defined in *other* files — those files haven't been compiled yet, or might not even exist. So the compiler produces an **object file** that is like a translated chapter with blanks left wherever a cross-reference to another chapter belongs. The object file also ships a **symbol table** — a two-column list: "here is what I *define* (with its address)" and "here is what I *need* but didn't define (blank for now)." The linker reads all these lists and fills in every blank.
+
 When a compiler processes a single source file, it produces an **object file** (`.o` on Linux/Mac, `.obj` on Windows). An object file contains:
 
 - **Machine code** (or bytecode) for the functions defined in that file.
@@ -240,6 +244,8 @@ print("main.o undefined refs:", [s.name for s in main_obj.undefined_refs()])
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** An undefined reference in an object file is **not** a compile-time error. The C compiler happily produces `main.o` even though it references `printf` without seeing its definition — it just records the reference in the symbol table. The error only fires at **link time**, when the linker discovers no object file or library provides the definition. This is why you can get "successful" compilation but a failing `gcc` invocation: the compile step passed but the link step failed.
+
 **Critical Thinking Questions (CTQs) — Model 3**
 
 1. What is a **symbol table**? What two kinds of information does it record for each symbol, according to the `Symbol` dataclass above?
@@ -253,6 +259,8 @@ print("main.o undefined refs:", [s.name for s in main_obj.undefined_refs()])
 ---
 
 ## Model 4: Linking — Resolving Symbols
+
+**Intuition:** The linker is like a fact-checker working through every "see Chapter 7, page X" placeholder in the assembled manuscript. It builds a master index (the global symbol table) from all the chapter-level indexes, then walks through every placeholder and writes in the correct page number. If any placeholder references a chapter that was never submitted — say, `printf` from the C library was never included — the fact-checker stops and reports an error: "undefined reference." This is the linker error you have probably seen when you forgot to link a library (`-lm` for math, for example). The linker *refuses* to produce the book until every cross-reference is resolved.
 
 The **linker** takes multiple object files, merges their symbol tables, resolves all undefined references, and assigns final addresses. If any symbol is still undefined after processing all object files (and any requested libraries), the linker reports an error and refuses to produce an executable.
 
@@ -325,6 +333,8 @@ linker.link()
 ---
 
 ## Model 5: Static vs. Dynamic Linking and Python's Import System
+
+**Intuition:** Static linking is like photocopying the relevant pages of a reference book into your own report — every reader of your report gets a self-contained document, but your report is bulkier and cannot benefit from corrections made to the original book later. Dynamic linking is like writing "see the library's copy of *Reference Book X*, page 47" — your report is slim, multiple readers share the same library book, and if the library updates its copy everyone benefits automatically. Python's `import` system is the clearest high-level example of dynamic linking: modules are found and loaded on demand, cached so they are only loaded once, and swappable by inserting a replacement into `sys.modules`.
 
 In static linking, all dependencies are baked into the executable at build time. In dynamic linking, the operating system's **dynamic linker/loader** (e.g., `ld.so` on Linux) resolves symbol references at load time or even at first use (lazy binding). Python's `import` statement is a high-level version of dynamic linking: Python searches `sys.path` for modules, loads them on demand, and caches them in `sys.modules`.
 

@@ -324,6 +324,8 @@ print(f"  Direct test of callback: my_handler(10, 3) = {cb.c_ptr(10, 3)}")
 
 ## Model 4: Name Mangling and Symbol Resolution
 
+*Intuition:* When a program links against a library, it looks up function names in the library's *symbol table* — a dictionary inside the compiled binary. C's symbol for `strlen` is literally the string `"strlen"`. C++ cannot do this for overloaded functions: `foo(int)` and `foo(double)` both spell `foo`, but they are different functions with different machine code. C++ solves this by *mangling* the name — encoding the parameter types into the symbol string so that `foo(int)` becomes something like `_ZN3foo1iE`. This is the "name" the linker actually looks up. FFI tools must understand mangling to call C++ functions correctly.
+
 C uses simple symbol names (`strlen`, `printf`). C++ mangles names to encode type signatures. Understanding this is essential for building FFI tools.
 
 ```python
@@ -415,6 +417,8 @@ for cls, fn, params in examples:
 ---
 
 ## Model 5: Implementing a Simple FFI in a Mini Interpreter
+
+*Intuition:* Now that you understand the mechanics of crossing the language boundary, you can add that crossing point to your own interpreter. The key design decision is: what does an FFI call look like *in your language's syntax*, and how does the interpreter translate that into an actual call? This model shows the minimum viable implementation: an `FfiCall` AST node carries the library name, function name, type annotations, and arguments. The interpreter's `eval_node` function dispatches it to a registry that handles the marshaling. Even a simple version like this is enough to give your mini language access to the entire C standard library.
 
 A language interpreter can support FFI by letting programs call Python built-ins or C functions by name. Here is a minimal implementation.
 

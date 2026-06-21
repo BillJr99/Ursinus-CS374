@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # The Curry-Howard Correspondence: Programs Are Proofs
 
+This is one of the most beautiful results in computer science. The Curry-Howard correspondence reveals that writing a program and proving a theorem are secretly the same activity. Consider the type `A → B`: in a programming language it means "a function from A to B," and you produce a value of that type by writing a function body that takes an A and returns a B. In logic, `A → B` means "A implies B," and you produce a proof of it by assuming A and deriving B — exactly what a function body does. A value of type `A → B` is simultaneously *a function* and *a proof of A implies B*. Every type annotation you write is a logical proposition; every well-typed function you write is a proof of that proposition; and every type error your checker reports is a gap in your proof. This correspondence runs all the way down: conjunction, disjunction, the empty type, and even dependent types all have precise logical counterparts. By the end of this activity you will be able to read a type signature as a logical formula and write a function as a logical proof.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -23,6 +25,27 @@ By the end of this activity, you will be able to:
 - Construct Python type annotations that encode logical conjunction (product types) and disjunction (sum types), and explain why an uninhabited type corresponds to absurdity
 - Write a function whose type signature constitutes a proof of a propositional tautology, and identify a function whose type cannot be inhabited
 - Connect the Curry-Howard correspondence to practical language features in Rust (ownership types), Haskell (type classes), and proof assistants such as Coq
+
+> **Before You Begin — Prerequisites**
+>
+> You should be comfortable with the following before starting this activity:
+>
+> - **Types in Python**: you can read and write type annotations (`int`, `str`, `Tuple[A, B]`, `Callable[[A], B]`, `Optional[A]`) and understand what it means for a value to have a type.
+> - **Higher-order functions**: you can pass functions as arguments and return functions as values; you have worked with `map`, `filter`, and function composition.
+> - **Lambda calculus basics**: you understand that a lambda `λx.e` takes an argument and substitutes it into a body, and you have seen combinator notation (K, S, I).
+> - **Basic logic**: you know what a proposition, an implication (`P → Q`), a conjunction (`P ∧ Q`), and a disjunction (`P ∨ Q`) mean informally.
+>
+> **Quick Notation Bridge**
+>
+> | Logic | Type Theory | Meaning |
+> |-------|-------------|---------|
+> | Proposition P | Type `P` | Something to prove / construct |
+> | Proof of P | Value of type `P` | Evidence / witness |
+> | P ∧ Q | `(P, Q)` (product type) | Pair of proofs — need both |
+> | P ∨ Q | `Either P Q` (sum type) | Proof of one or the other |
+> | P → Q | `P -> Q` (function type) | Proof transformer — given P, produce Q |
+>
+> Keep this table open as you work through the activity; every code cell below illustrates one or more of these rows.
 
 In 1934 Haskell Curry noticed that the type `A → B` resembles the logical implication `A ⊃ B`. In 1969 William Howard made it precise: **types are propositions, programs are proofs, and type-checking is proof-checking**. Every function you write is a proof of its type; every type error is a proof gap. This equivalence — called the **Curry-Howard correspondence** — connects programming language theory to mathematical logic at the deepest level, and it is the reason Rust, Haskell, and proof assistants like Coq and Lean can all be understood from the same foundation. The arc: **propositions-as-types → proof terms → product types as conjunction → sum types as disjunction → the empty type as absurdity → dependent types (a glimpse)**.
 
@@ -37,6 +60,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 # Part I: The Correspondence
 
 ## 1. Types Are Propositions
+
+**Intuition.** In ordinary mathematics, a proposition is a statement that is either true or false, and a proof is the evidence that makes it true. In type theory, a *type* plays the role of a proposition: it is a specification that says "something of this shape exists." A *value* of that type plays the role of a proof: it is the concrete witness that the specification can be satisfied. The identity function `lambda x: x` has type `A -> A` for any type `A` — and indeed, `A implies A` is always true in logic (it is a tautology). Writing the function IS the proof.
 
 The central table, which you will complete as you work through the activity:
 
@@ -73,6 +98,10 @@ The row you will use most today: **a function of type `A -> B` is a proof that `
 # Part II: Products and Sums
 
 ## 2. Conjunction as Pairs
+
+**Intuition.** When you pair two values together — `(proof_of_P, proof_of_Q)` — you are doing exactly what a logician does when they say "here is a proof of P AND here is a proof of Q, therefore P ∧ Q is proved." The pair constructor IS the introduction rule for conjunction; tuple indexing (`pair[0]`, `pair[1]`) IS the two elimination rules. Once you see tuples this way, commutativity of `∧` becomes obvious: swap the elements of the pair.
+
+> **Watch out!** In Python, `(a, b)` is just a runtime value — the type checker does not enforce that `a` has type `P` and `b` has type `Q` without explicit annotations. In Haskell or Rust the types are checked at compile time, so a pair truly *is* a proof. When you see `Tuple[P, Q]` annotations in the code cells below, pretend you are in a strict language: the annotation is the proposition, and the value is the proof.
 
 In logic, a proof of `P ∧ Q` requires: a proof of `P` and a proof of `Q`. In programming, a value of type `(P, Q)` (a pair) is: a value of type `P` and a value of type `Q`. The correspondence is exact.
 

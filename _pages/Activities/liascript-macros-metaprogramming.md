@@ -23,6 +23,17 @@ By the end of this activity, you will be able to:
 - Compare macro systems across languages (Lisp, Rust, Julia, Elixir) and evaluate the expressiveness-versus-safety tradeoffs each makes
 - Apply metaprogramming techniques to define new control-flow constructs that cannot be expressed as ordinary functions
 
+> **Before You Begin**
+>
+> This activity assumes you are comfortable with:
+>
+> - **Abstract Syntax Trees (ASTs)** — programs are represented as nested data structures (tuples/dicts) before they are executed. If you have not seen an AST before, think of it as a parse tree: `1 + 2 * 3` becomes `('add', ('num', 1), ('mul', ('num', 2), ('num', 3)))`.
+> - **Higher-order functions and decorators** — Model 5 registers macros using a `@defmacro` decorator. A decorator is just a function that takes a function and returns a (possibly modified) function.
+> - **Python's `match`/`case` statement** — Model 3 uses structural pattern matching to destructure AST nodes. The pattern `case ('call', ('var', name), args)` succeeds when the tuple has exactly that shape and binds `name` and `args`.
+> - **Evaluation order** — the key distinction in this activity is *when* arguments are evaluated: before a function call (eager evaluation) versus not at all until the macro expander decides (macro expansion time).
+>
+> No prior knowledge of Lisp or Scheme is required, though examples from those languages will appear for comparison.
+
 > **"Macros are the most powerful feature in Lisp — and the most dangerous."**
 >
 > Languages like Lisp, Rust, Julia, and Elixir give programmers the ability to extend the language itself at compile time. Today you'll discover *why* macros are powerful, *what* hygienic macros solve, and *how* to implement a macro system in Mini.
@@ -39,6 +50,8 @@ Work in groups of 3–4. Rotate roles every 20 minutes.
 ---
 
 ## Model 1 — What is a Macro?
+
+**Intuition.** The root difference between a function and a macro is *when* the arguments are evaluated. When you call `f(expensive_computation())`, Python evaluates `expensive_computation()` first, then passes the result to `f` — no matter what `f` does with it. A macro receives the *unevaluated expression* `expensive_computation()` as a chunk of syntax. It can choose to insert that expression into its output zero times (never run it), once, or multiple times. This is exactly why `and`/`or` can short-circuit but a function `my_and` cannot: `and` is macro-like, receiving unevaluated operands.
 
 A **function** receives *values* as arguments and returns a value. A **macro** receives *syntax* (unevaluated AST nodes) as arguments and returns *syntax* that replaces the macro call at compile time.
 
@@ -80,6 +93,8 @@ print(f"my_and(False, side_effect()) = {result2}")
 > **CTQ 1.3** Name three features in Python that are "macro-like" (i.e., they have special evaluation rules that can't be replicated with a function). Examples: `with`, `yield`, `@decorator`.
 
 ---
+
+> **Watch out!** The C preprocessor is shockingly literal. It substitutes text tokens with no understanding of operator precedence, parentheses, or statement boundaries. The traditional fix — wrapping every parameter and the whole body in parentheses (`((x) * (x))`) — is a workaround for the fact that the preprocessor cannot *understand* the code it is rewriting. Keep this in mind when you run the model below: the danger examples are real bugs that appear in production C code.
 
 ## Model 2 — Textual Macros: The C Preprocessor
 
@@ -139,6 +154,8 @@ print(expand_macros('int m = MAX(f(), g());', macros))
 ---
 
 ## Model 3 — AST Macros: Quoting and Quasiquoting
+
+**Intuition.** The step from textual macros to AST macros is the step from text-editor find-and-replace to a real program transformation. Once you represent code as a *tree*, you can navigate it, inspect it, and build new trees from parts — all without worrying about parentheses or operator precedence, because the tree already encodes the structure. Quasiquote is a template-filling mechanism for trees: you write the output shape you want and mark the "holes" where computed values get spliced in, just like a string template but operating on tree nodes instead of characters.
 
 Proper macro systems operate on **AST nodes**, not text. This requires two operations:
 
@@ -219,6 +236,10 @@ print(swap_ab)
 
 ## Model 4 — The Hygiene Problem and Hygienic Macros
 
+**Intuition.** Imagine your macro generates code that uses a helper variable called `tmp`. Now suppose the programmer using your macro also has a variable called `tmp`. After expansion, the two `tmp` references get tangled — the programmer's `tmp` is now in scope where your macro's `tmp` was supposed to be, or vice versa. This variable capture is the *hygiene problem*. The fix — `gensym`, generating a globally unique name like `_or_tmp7` — guarantees no accidental clash, because no human would ever choose that name.
+
+> **Watch out!** The hygiene problem is subtle because it only shows up when *both* the macro author and the macro user happen to choose the same name. A macro might work correctly in 999 cases and silently break in the 1000th, when a user happens to name a variable `_tmp`. This is why modern macro systems (Scheme `syntax-rules`, Rust's macro hygiene) solve hygiene *automatically* — so library authors cannot accidentally ship a broken macro.
+
 **Unhygienic macros** can accidentally *capture* variables from the context they're expanded in:
 
 ```python  liascript
@@ -277,6 +298,8 @@ print(expand_or2_hygienic(('var', '_tmp'), ('gt', ('var', 'x'), ('num', 0))))
 ---
 
 ## Model 5 — Implementing a Macro Expander for Mini
+
+**Intuition.** The macro expander is a tree-walking pass that runs *before* the interpreter. It visits every node in the AST; when it finds a call whose function name is a registered macro, it invokes that macro's Python function with the raw (unevaluated) AST arguments, gets a new AST back, and then *expands the result again* (because a macro can expand into another macro call). When no macro calls remain, the fully expanded AST is handed to the interpreter. The interpreter never sees any macro names — by the time it runs, all macros have been dissolved into ordinary code.
 
 A complete macro system for Mini needs:
 1. A way to *define* macros (as functions from AST → AST)
