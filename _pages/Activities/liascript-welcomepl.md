@@ -44,35 +44,72 @@ Consider each model below and answer the questions provided. First reflect on th
 
 ## Model 1: One Idea, Four Notations
 
-The same computation, summing the squares of the even numbers in a list, in four languages:
+The same computation — summing the squares of the even numbers in a list — in four notations:
 
-```
-# Python
+**Python (imperative/functional blend):**
+```python
+nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 total = sum(x*x for x in nums if x % 2 == 0)
+print(total)  # 220
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-```
-// Java (classic style)
-int total = 0;
-for (int x : nums) { if (x % 2 == 0) { total += x * x; } }
-```
+**Python OO style:**
+```python
+nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-```
-;; Scheme
-(apply + (map (lambda (x) (* x x)) (filter even? nums)))
-```
+class VowelCounter:  # reusing class structure for illustration
+    def __init__(self, data): self.data = data
+    def sum_even_squares(self):
+        return sum(x*x for x in self.data if x % 2 == 0)
 
+vc = VowelCounter(nums)
+print(vc.sum_even_squares())  # 220
 ```
--- SQL
-SELECT SUM(x * x) FROM nums WHERE x % 2 = 0;
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+**Scheme-style functional (Python simulation):**
+```python
+from functools import reduce
+
+nums = list(range(1, 11))
+even = list(filter(lambda x: x % 2 == 0, nums))
+squared = list(map(lambda x: x * x, even))
+total = reduce(lambda a, b: a + b, squared, 0)
+print(total)  # 220
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+**All four approaches — same answer, different mental models:**
+```python
+nums = list(range(1, 11))
+
+# Imperative: explicit state
+total_imp = 0
+for x in nums:
+    if x % 2 == 0:
+        total_imp += x * x
+
+# Functional: composition
+from functools import reduce
+total_func = reduce(lambda a,b: a+b, map(lambda x: x*x, filter(lambda x: x%2==0, nums)), 0)
+
+# Comprehension: declarative
+total_comp = sum(x*x for x in nums if x % 2 == 0)
+
+print(f"Imperative: {total_imp}")
+print(f"Functional: {total_func}")
+print(f"Comprehension: {total_comp}")
+print(f"All equal? {total_imp == total_func == total_comp}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
 1. For each version, identify what the *programmer* must keep track of (loop counters, intermediate state, nothing?). Which version says *what* to compute and which says *how*?
 2. Rank the four for readability by a newcomer, and separately for your own confidence that each is correct. Did the rankings differ? Why might they?
-3. The Scheme version is built from three reusable pieces (`filter`, `map`, `apply +`). Identify the analogous pieces hiding inside the Python version's syntax.
-4. Propose one computation that would be awkward in SQL but easy in Python. What does that suggest about general-purpose versus domain-specific languages?
+3. The Scheme-style version is built from three reusable pieces (`filter`, `map`, `reduce`). Identify the analogous pieces hiding inside the Python comprehension.
+4. Propose one computation that would be awkward to express declaratively but easy imperatively. What does that suggest about general-purpose versus domain-specific languages?
 
 ---
 
@@ -99,11 +136,75 @@ In the pipeline above, the component whose job is to decide that the characters 
 
 Consider the source text: `total = 3 + price * 2`
 
+**A minimal Python tokenizer — watch the pipeline live:**
+```python
+import re
+
+source = "total = 3 + price * 2"
+
+# A simple token spec: (type, pattern)
+TOKEN_SPEC = [
+    ("NUMBER",  r"\d+(\.\d*)?"),
+    ("IDENT",   r"[A-Za-z_]\w*"),
+    ("ASSIGN",  r"="),
+    ("PLUS",    r"\+"),
+    ("STAR",    r"\*"),
+    ("WS",      r"\s+"),
+]
+
+master = "|".join(f"(?P<{name}>{pat})" for name, pat in TOKEN_SPEC)
+tokens = []
+for m in re.finditer(master, source):
+    kind = m.lastgroup
+    if kind != "WS":
+        tokens.append((kind, m.group()))
+
+for tok in tokens:
+    print(tok)
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
 ### Critical Thinking Questions
 
-5. As a team, list the tokens a lexer should produce, in order. How many are there? Did anyone's count differ, and over what (whitespace? the `=`?)?
-6. The interpreter must compute `price * 2` before adding 3. Where in the pipeline is that ordering decided: the lexer, the parser, or the interpreter? Defend your answer; we will test it in week 3.
+5. As a team, list the tokens the lexer produced. How many are there? Did anyone's count differ?
+6. The interpreter must compute `price * 2` before adding 3. Where in the pipeline is that ordering decided: the lexer, the parser, or the interpreter? Defend your answer.
 7. Suppose the text were `total = 3 + * 2`. At which stage should the error be caught, and what should a *helpful* error message say?
+
+---
+
+## Model 3: Python's Own Pipeline
+
+Python itself uses the same pipeline. You can inspect every stage:
+
+```python
+import ast, dis, tokenize, io
+
+source = "total = 3 + 2 * 5"
+
+# Stage 1: Tokens
+print("=== TOKENS ===")
+tokens = list(tokenize.generate_tokens(io.StringIO(source).readline))
+for tok in tokens:
+    if tok.type not in (tokenize.NL, tokenize.NEWLINE, tokenize.ENDMARKER):
+        print(f"  {tokenize.tok_name[tok.type]:10} {tok.string!r}")
+
+# Stage 2: AST
+print("\n=== AST ===")
+tree = ast.parse(source)
+print(ast.dump(tree, indent=2))
+
+# Stage 3: Bytecode (compiled)
+print("\n=== BYTECODE ===")
+code = compile(source, "<string>", "exec")
+dis.dis(code)
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+8. How many tokens does Python produce for `total = 3 + 2 * 5`? Which token is the operator precedence information *not* encoded in (it appears in the AST instead)?
+9. The AST shows a `BinOp` with `Mult` nested inside `Add`. How does the tree *encode* precedence without any explicit precedence rules?
+10. The bytecode shows `BINARY_OP` instructions. These are the *output* of Python's compiler. What is the input to an interpreter, by contrast?
 
 ---
 
@@ -117,13 +218,15 @@ The first half of the semester builds your skills bottom-up through scaffolded i
 
 1. *Language autobiography.* List every programming language and notation (count spreadsheets and regex!) you have used. For each, one sentence: what was it good at?
 2. *Notation hunt.* Find one notation in daily life that has a syntax and a semantics but is not usually called a programming language (music notation, knitting patterns, chess notation). The Presenter shares the team's best example.
-3. *Team charter.* Draft your team's working agreement: role rotation, communication, preparation norms, and disagreement resolution. The Recorder posts it.
+3. *Tokenizer extension.* Extend the minimal tokenizer above to also recognize `(`, `)`, `-`, `/`, and floating-point numbers like `3.14`. Test it on `result = (a - 3.14) / b`. How many tokens does it produce?
+4. *Pipeline trace.* Manually trace the three stages of the pipeline for the expression `2 * (x + 1)`: list tokens, draw the parse tree, and show the evaluation order.
+5. *Team charter.* Draft your team's working agreement: role rotation, communication, preparation norms, and disagreement resolution. The Recorder posts it.
 
 ---
 
 ## Reflection Prompt
 
-In your notebook: describe one moment when a programming language fought you, when the thing you wanted to say was hard to express. Knowing you will design a language this semester, what would you change to make that moment easier?
+In your notebook: describe one moment when a programming language fought you — when the thing you wanted to say was hard to express. Knowing you will design a language this semester, what would you change to make that moment easier? And after seeing Python's own tokens/AST/bytecode pipeline, does Python feel more or less like magic to you?
 
 ---
 
@@ -132,3 +235,4 @@ In your notebook: describe one moment when a programming language fought you, wh
 - Douglas Thain. *Introduction to Compilers and Language Design* (2nd ed.), Chapter 1. Our pipeline, named and framed.
 - Shriram Krishnamurthi. *Programming Languages: Application and Interpretation* (online). The interpreter-first philosophy we follow.
 - Robert Nystrom. *Crafting Interpreters* (online), "A Map of the Territory."
+- The `ast` module docs: `help(ast)` in Python shows every node type you'll encounter.

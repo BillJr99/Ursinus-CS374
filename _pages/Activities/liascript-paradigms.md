@@ -43,41 +43,89 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 ## Model 1: Same Problem, Four Ways
 
-Count the vowels in a string.
+Count the vowels in a string. Run each approach and compare:
 
-```
-# Imperative (Python)
+**Imperative — explicit state mutation:**
+```python
+s = "programming languages are fascinating"
+
 count = 0
 for ch in s:
     if ch in "aeiou":
         count = count + 1
-```
 
+print(f"Imperative count: {count}")
 ```
-# Object-oriented (Python)
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+**Object-oriented — encapsulated state:**
+```python
+s = "programming languages are fascinating"
+
 class VowelCounter:
-    def __init__(self, text): self.text = text
+    VOWELS = set("aeiou")
+
+    def __init__(self, text):
+        self.text = text
+        self._count = None  # lazy computation
+
     def count(self):
-        return sum(1 for ch in self.text if ch in "aeiou")
-```
+        if self._count is None:
+            self._count = sum(1 for ch in self.text if ch in self.VOWELS)
+        return self._count
 
-```
-;; Functional (Scheme)
-(length (filter (lambda (ch) (member ch '(#\a #\e #\i #\o #\u)))
-                (string->list s)))
-```
+    def __repr__(self):
+        return f"VowelCounter({self.text!r}, count={self.count()})"
 
+vc = VowelCounter(s)
+print(f"OO count: {vc.count()}")
+print(repr(vc))
 ```
-% Logic (Prolog, sketch)
-vowel(a). vowel(e). vowel(i). vowel(o). vowel(u).
-count_vowels(S, N) :- include(vowel, S, Vs), length(Vs, N).
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+**Functional — composition of pure functions:**
+```python
+from functools import reduce
+
+s = "programming languages are fascinating"
+
+# No variables mutated; each step is a pure function
+is_vowel  = lambda ch: ch in "aeiou"
+to_one    = lambda _: 1
+add       = lambda a, b: a + b
+
+count = reduce(add, map(to_one, filter(is_vowel, s)), 0)
+print(f"Functional count: {count}")
+
+# Even more compact with sum + generator:
+count2 = sum(1 for ch in s if ch in "aeiou")
+print(f"Comprehension count: {count2}")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+**Logic-style — simulate Prolog with constraint search:**
+```python
+# Python simulation of logic-style declarative counting
+s = "programming languages are fascinating"
+
+# "Facts" — vowel membership
+vowels = {"a", "e", "i", "o", "u"}
+
+# "Rule" — count is cardinality of {ch | ch in s AND vowel(ch)}
+count = len({i: ch for i, ch in enumerate(s) if ch in vowels})
+print(f"Logic-style count: {count}")
+
+# More Prolog-like: unification via list comprehension
+answer = [ch for ch in s if ch in vowels]
+print(f"Witness list: {answer[:10]}... (length {len(answer)})")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
 1. Identify the mutable state in each version (there may be none). Which versions could safely run on two halves of the string in parallel and add the results, and why?
-2. The OO version wraps the same logic in a class. Name one situation where that wrapping pays for itself, and one where it is ceremony.
-3. In the Prolog sketch, where is the loop? What does its absence tell you about who owns control flow in logic programming?
+2. The OO version wraps the same logic in a class with lazy computation. Name one situation where that wrapping pays for itself, and one where it is ceremony without benefit.
+3. In the logic-style version, where is the loop? What does its absence tell you about who owns control flow in a declarative style?
 4. Your team's language project must choose: mutable variables or immutable bindings (or both). List one implementation consequence of each choice for the *interpreter* you will build.
 
 ---
@@ -95,6 +143,13 @@ A language guarantees that no value can ever be modified after creation and that
 - (x) The functional paradigm
 - ( ) The logic paradigm
 
+[[MC]]
+A program in language X cannot run a function until every argument is known. Language Y can pass a function as a value and call it later. The property that distinguishes Y from X is:
+- ( ) Dynamic typing
+- ( ) Object orientation
+- (x) First-class functions
+- ( ) Static scoping
+
 ---
 
 ## Model 2: Classify the Snippets
@@ -106,11 +161,79 @@ A language guarantees that no value can ever be modified after creation and that
 | `(reduce + 0 prices)` | ? |
 | `sibling(X,Y) :- parent(P,X), parent(P,Y).` | ? |
 
+**Paradigm Detective — run this and read the clues:**
+```python
+snippets = [
+    ("account.deposit(50)",                      "sends a message to an object"),
+    ("x := x + 1",                              "named cell changes over time"),
+    ("(reduce + 0 prices)",                      "function applied to function applied to list"),
+    ("sibling(X,Y) :- parent(P,X), parent(P,Y)", "rule: X and Y share a parent"),
+]
+
+paradigm_hints = {
+    "sends a message to an object":         "Object-Oriented",
+    "named cell changes over time":         "Imperative",
+    "function applied to function applied": "Functional",
+    "rule: X and Y share a parent":         "Logic/Declarative",
+}
+
+for snippet, hint in snippets:
+    for key, paradigm in paradigm_hints.items():
+        if key in hint:
+            print(f"  [{paradigm:20}] {snippet}")
+            break
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
 ### Critical Thinking Questions
 
 5. Classify each snippet and name the *single feature* that gave it away.
 6. `account.deposit(50)` mutates state *and* sends a message to an object. Is OO a kind of imperative programming with better manners, or something fundamentally different? Take a team position.
 7. Modern Python lets you write all four rows' ideas (the fourth via libraries). Does multi-paradigm flexibility help or hurt the *reader* of a program? Connect to tomorrow's topic, language evaluation criteria.
+
+---
+
+## Model 3: Paradigm Costs and Benefits
+
+The choice of paradigm shapes what is easy and what is hard. Run this performance comparison:
+
+```python
+import time
+
+data = list(range(1, 100001))
+target = lambda x: x % 2 == 0
+
+# Imperative
+t0 = time.perf_counter()
+result_imp = []
+for x in data:
+    if target(x):
+        result_imp.append(x * x)
+total_imp = sum(result_imp)
+t1 = time.perf_counter()
+
+# Functional (generator — lazy, low memory)
+t2 = time.perf_counter()
+total_func = sum(x*x for x in data if target(x))
+t3 = time.perf_counter()
+
+print(f"Imperative:  {total_imp}  ({(t1-t0)*1000:.2f} ms)")
+print(f"Functional:  {total_func}  ({(t3-t2)*1000:.2f} ms)")
+print(f"Same result? {total_imp == total_func}")
+
+# Key observation: functional version never builds an intermediate list
+import sys
+imp_list_size = sys.getsizeof(result_imp)
+print(f"Imperative list size in memory: {imp_list_size} bytes")
+print(f"Functional generator: no intermediate list (lazy evaluation)")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+8. The functional version uses a generator expression. What does "lazy evaluation" mean in this context, and why does it save memory?
+9. For a list of 100,000 elements, which approach do you expect to be faster? Run it and report your findings.
+10. If you wanted to parallelize this computation across 4 CPU cores, which style (imperative or functional) is easier to split safely? Why?
 
 ---
 
@@ -121,12 +244,14 @@ A language guarantees that no value can ever be modified after creation and that
 1. *Paradigm translation.* Take the imperative vowel counter and rewrite it functionally in Python using `filter` and `len` with no assignment statements. Verify both produce identical results on three inputs.
 2. *Blend audit.* Pick one language a teammate knows well and list which paradigm supplies its defaults and which paradigms are available on request, with one feature as evidence each.
 3. *Design straw poll.* As a team, record a provisional decision for your future language: primary paradigm, mutability default, and whether functions are first-class. You may change it later; the exercise is having reasons now.
+4. *Referential transparency test.* Write a Python function that violates referential transparency (its output depends on something other than its arguments). Then write a pure version. Explain what changed and why the pure version is easier to test.
+5. *Paradigm mashup.* Write a Python program that uses all four paradigm styles to solve the same problem (filter even numbers, square them, sum). Use: imperative loop, class with method, `filter`/`map`/`reduce`, and a set comprehension. Show all four produce the same answer.
 
 ---
 
 ## Reflection Prompt
 
-In your notebook: which paradigm fits the way *you* naturally think about problems, and which feels most foreign? Describe one problem from another course (mathematics, biology, economics) and which paradigm would express it most directly.
+In your notebook: which paradigm fits the way *you* naturally think about problems, and which feels most foreign? Describe one problem from another course (mathematics, biology, economics) and which paradigm would express it most directly. Then: now that you have seen the cost/benefit tradeoffs, does your answer change when the problem needs to scale to millions of items?
 
 ---
 
@@ -135,3 +260,4 @@ In your notebook: which paradigm fits the way *you* naturally think about proble
 - Douglas Thain. *Introduction to Compilers and Language Design*, Chapter 1.
 - Peter Van Roy. "Programming Paradigms for Dummies: What Every Programmer Should Know" (2009, online). A famous map of the paradigm space.
 - Shriram Krishnamurthi. *PLAI*, early chapters on the functional core.
+- Rich Hickey. "Simple Made Easy" (Strange Loop 2011, YouTube). A functional programming designer's case for immutability.
