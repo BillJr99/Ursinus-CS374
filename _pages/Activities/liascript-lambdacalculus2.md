@@ -187,6 +187,7 @@ In your notebook: numbers, booleans, pairs, and conditionals all dissolved into 
 
 ## 5. Further Reading
 
-- Gabriel Lebec. "Lambda as JS, or A Flock of Functions": https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript (talk recording also online).
+- Gabriel Lebec. "Lambda as JS, or A Flock of Functions": https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript (talk recording also online). This is the companion reading for today's module — every Python cell here mirrors a section of that talk.
+- **Lambda Py** — run every Church encoding from today interactively in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html
 - Raymond Smullyan. *To Mock a Mockingbird* (1985): the combinator birds.
 - Raul Rojas. "A Tutorial Introduction to the Lambda Calculus" (online), sections on encodings.
