@@ -1,59 +1,91 @@
-# The Metacircular Evaluator: Scheme in Python
-
 <!--
-author:   William Mongan
+author:   CS374 Course Staff
+email:    
+version:  0.0.1
 language: en
-narrator: US English Male
-
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/main/_pages/Activities/liascript-scheme-interpreter.md
-
-import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
-
-link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css/liascript-custom.css?v=2025-08-23-4
-        https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap
-
+narrator: US English Female
+comment:  Build a metacircular evaluator for Scheme — an interpreter for a language written in that language's host.
+import:   https://raw.githubusercontent.com/liaScript/mermaid_template/master/README.md
+          https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
+link:     https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css
+          https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css/liascript-custom.css?v=2025-08-23-4
+          https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap
 -->
 
 # The Metacircular Evaluator: Scheme in Python
 
-A **metacircular evaluator** is an interpreter for a language written in that language itself, or (as here) written in a language so structurally similar that the evaluation rules read like a direct transcription of the language's own semantics. This two-day module builds a complete Scheme interpreter in Python. The interpreter is small enough to fit in one screen and powerful enough to run recursive programs. The arc: **why Scheme first $\rightarrow$ s-expression parsing $\rightarrow$ the evaluator as a dispatch table $\rightarrow$ environments as closures $\rightarrow$ tail-call optimization**.
+> **"To understand the evaluator is to understand computation."** — SICP
 
-Abelson and Sussman open SICP Chapter 4 with the evaluator-as-program idea: once you can write the evaluator, you understand the language completely. You have already built a Mini language interpreter. Here you build one for a language that was designed to be easy to interpret, and compare the effort.
+A **metacircular evaluator** is an interpreter for a language written in (or very close to) that language itself. In SICP Chapter 4, Abelson and Sussman build a Scheme interpreter *in Scheme*, revealing that the evaluation rules almost write themselves — because the host language and the implemented language share the same underlying ideas. Here, we build a Scheme interpreter in Python. Python is close enough that the translation is direct; different enough that we must make every semantic choice explicit.
+
+You have already built a Mini-language interpreter in this course. That experience carries over completely. The arc of this activity: **Scheme code as data (s-expressions)** → **the environment model** → **the evaluator dispatch loop** → **the global environment** → **tail-call optimization via trampoline**.
+
+By the end you will have a working REPL that can evaluate recursive Scheme programs of arbitrary depth.
 
 ---
 
 ## Directions and Group Roles
 
-Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**). Today is hands-on: the Manager drives all code cells, every teammate predicts output before running. The Recorder posts answers to the Class Activity Questions discussion board; the Presenter reports out areas of disagreement or alternative interpretations. After class, respond to the reflective prompt individually in your notebook.
+Work in your POGIL team of four with the following roles. Rotate roles each class meeting.
+
+| Role | Responsibility |
+|------|----------------|
+| **Facilitator** | Keeps the group on track; ensures every member speaks before moving on |
+| **Recorder** | Writes down agreed answers; posts Critical Thinking Question (CTQ) responses to the discussion board |
+| **Reporter** | Presents the group's findings to the class; flags unresolved disagreements |
+| **Reflector** | Monitors process; leads the end-of-activity reflection; notes what confused the group |
+
+**Working norms:** Predict every code cell's output *before* running it. Write your prediction in the space above the cell. If the result surprises you, explain why *before* moving to the next question.
 
 ---
 
-# Part I: Why Scheme First? (Day 1)
+# Part I: S-Expressions — Code as Data
 
-## 1. Scheme as an Interpreter's Best Friend
+## Model 1: S-Expressions
 
-Scheme is the ideal first interpreter to write, for four concrete reasons:
+Scheme's defining design choice: **program text and data share the same representation.** Every Scheme expression is an *s-expression* (symbolic expression): either an **atom** (number, boolean, string, or symbol) or a **pair** `(head . tail)`, where tail is usually another pair, recursively, giving a list. The surface syntax `(op arg1 arg2 ...)` is just a printed list.
 
-- **S-expression syntax means the AST is already in the source.** `(+ (* 2 3) 4)` is a parenthesized prefix list; its nesting is the parse tree. There is no operator precedence to recover, no associativity to resolve, no statement-expression distinction. The tokenizer and parser together are fewer than thirty lines.
-- **Minimal special forms.** The entire language requires exactly six: `lambda`, `if`, `define`, `quote`, `let`, and `begin`. Every other construct (`cond`, `letrec`, `and`, `or`) is either a library function or sugar for these six.
-- **Dynamic typing.** Values carry their types; the evaluator never consults a type environment. A number is a number; a list is a list; a procedure is a procedure. No inference, no annotations.
-- **Used in SICP to explain computation itself.** Abelson and Sussman's metacircular evaluator is the central object of Chapter 4; building one puts you in direct conversation with that tradition.
+This is not a curiosity — it is what makes Scheme's macros, `eval`, and `quote` work: a program can construct and execute another program using the same list operations it uses on ordinary data.
 
-Contrast this with your Mini language: it has infix arithmetic (requiring a precedence grammar), multiple statement forms, and a richer syntax that demanded a real recursive-descent parser. Scheme trades syntactic familiarity for structural transparency.
+### Mapping Scheme to Python
 
----
+For our interpreter we represent s-expressions as nested Python lists of atoms. The correspondence:
 
-## Code Cell
+| Scheme source | Python representation |
+|---------------|-----------------------|
+| `(+ 1 2)` | `['+', 1, 2]` |
+| `(define x 42)` | `['define', 'x', 42]` |
+| `(lambda (x) (* x x))` | `['lambda', ['x'], ['*', 'x', 'x']]` |
+| `(if #t 1 0)` | `['if', True, 1, 0]` |
+| `(let ((x 5)) (+ x 1))` | `['let', [['x', 5]], ['+', 'x', 1]]` |
+| `'foo` | `['quote', 'foo']` |
+
+Atoms map to: Python `int`/`float`, `bool`, `str` (for Scheme strings), or Python `str` (for Scheme symbols — we distinguish symbol from string by context).
+
+### The Parser
+
+The parser has two stages: a **tokenizer** that splits the input string into a flat list of token strings, then a **recursive descent** step that folds those tokens into nested Python lists.
 
 ```python
 import re
 
-def tokenize_scheme(source):
-    token_pat = r'\"(?:[^\"\\]|\\.)*\"|\(|\)|[^\s()\";]+|;[^\n]*'
-    tokens = re.findall(token_pat, source)
-    return [t for t in tokens if not t.startswith(';')]
+def tokenize(s):
+    """
+    Split a Scheme source string into a list of token strings.
+    Handles: parentheses, strings, #t/#f, numbers, symbols.
+    """
+    # Insert spaces around parens, then split; handle quoted strings carefully
+    token_pattern = r'\"[^\"]*\"|\(|\)|[^\s()\"]+' 
+    return re.findall(token_pattern, s)
 
 def parse_atom(token):
+    """Convert a single token string to its Python atom value."""
+    if token == '#t':
+        return True
+    if token == '#f':
+        return False
+    if token.startswith('"') and token.endswith('"'):
+        return token[1:-1]            # strip quotes; store as Python str
     try:
         return int(token)
     except ValueError:
@@ -62,427 +94,970 @@ def parse_atom(token):
         return float(token)
     except ValueError:
         pass
-    if token.startswith('"'):
-        return token[1:-1]
-    if token == '#t':
-        return True
-    if token == '#f':
-        return False
-    return token
+    return token                      # symbol: just keep the string
 
-def parse_sexp(tokens, pos=0):
-    if pos >= len(tokens):
-        raise SyntaxError("unexpected end of input")
-    token = tokens[pos]
+def parse_tokens(tokens):
+    """
+    Consume tokens (a list used as a mutable queue via pop(0)) and return
+    the next complete s-expression as a nested Python list/atom.
+    """
+    if not tokens:
+        raise SyntaxError("Unexpected EOF")
+    token = tokens.pop(0)
     if token == '(':
-        lst = []
-        pos += 1
-        while pos < len(tokens) and tokens[pos] != ')':
-            item, pos = parse_sexp(tokens, pos)
-            lst.append(item)
-        if pos >= len(tokens):
-            raise SyntaxError("missing closing parenthesis")
-        return lst, pos + 1
+        result = []
+        while tokens[0] != ')':
+            result.append(parse_tokens(tokens))
+        tokens.pop(0)                 # consume ')'
+        return result
     elif token == ')':
-        raise SyntaxError("unexpected ')'")
+        raise SyntaxError("Unexpected ')'")
+    elif token == "'":                # shorthand quote
+        return ['quote', parse_tokens(tokens)]
     else:
-        return parse_atom(token), pos + 1
+        return parse_atom(token)
 
-def read(source):
-    tokens = tokenize_scheme(source)
-    expr, _ = parse_sexp(tokens)
-    return expr
+def parse_sexp(s):
+    """Parse a Scheme source string and return its Python representation."""
+    tokens = tokenize(s)
+    return parse_tokens(tokens)
 
-try:
-    print(read("(+ 1 2)"))
-    print(read("(if (> x 0) x (- 0 x))"))
-    print(read("(lambda (x y) (+ x y))"))
-    print(read("(define (fact n) (if (= n 0) 1 (* n (fact (- n 1)))))"))
-except Exception as e:
-    print(f"[parser] {e}")
-    import traceback; traceback.print_exc()
+# --- Demo ---
+examples = [
+    "(+ 1 2)",
+    "(define x 42)",
+    "(lambda (x) (* x x))",
+    "(if #t 1 0)",
+    "(let ((x 5)) (+ x 1))",
+]
+for src in examples:
+    print(f"{src!s:40s} => {parse_sexp(src)}")
 ```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
-## Model 1: The S-expression Structure
+### Critical Thinking Questions — Model 1
 
-The output of `read` on `(+ 1 2)` is the Python list `['+', 1, 2]`. The head is the operator; the tail is the argument list. Nested expressions nest lists:
+**CTQ 1.** What Python type represents a Scheme pair/list in our encoding? What Python type represents a Scheme symbol? How does the evaluator distinguish a symbol `"x"` (which should be looked up) from a Scheme string `"hello"` (which is a literal value)?
 
-```
-(+ (* 2 3) 4)      →  ['+', ['*', 2, 3], 4]
-(if (> x 0) x 0)   →  ['if', ['>', 'x', 0], 'x', 0]
-(lambda (x) x)     →  ['lambda', ['x'], 'x']
-```
+> *Write your group's answer here.*
 
-Atoms (numbers, booleans, strings) parse to their Python equivalents. Symbols parse to Python strings. A compound form `(f a b ...)` parses to a Python list whose first element names the head.
+**CTQ 2.** What does `parse_sexp("(+ (* 2 3) 4)")` return? Trace through `parse_tokens` step by step, listing the state of `tokens` at each recursive call.
 
-### Critical Thinking Questions
+> *Write your group's answer here.*
 
-1. `(+ 1 2)` parses to `['+', 1, 2]`. What Python type is the atom `1`? What Python type is the symbol `'+'`? Why does the same Python type serve both roles, and how will the evaluator tell them apart?
-2. What Python type represents a compound form `(f a b ...)`? How do you distinguish a parsed compound form from a parsed atom at runtime, without any class hierarchy?
-3. Given a parsed form `x`, write the Python condition (no more than one line) that determines whether `x` is a special form named `'if'`. How does this compare to checking `isinstance(node, IfNode)` in your Mini interpreter?
-4. In your Mini language, what was the most complex part of the parser? Why does that complexity not appear here?
+**CTQ 3.** Numbers and booleans are stored as Python `int`, `float`, and `bool` rather than as strings. What advantage does this give the evaluator? What would break if `(+ 1 2)` were stored as `['+', '1', '2']`?
+
+> *Write your group's answer here.*
 
 ---
 
-# Part II: The Evaluator (Day 1 continued)
+# Part II: Environments
 
-## 2. Environments
+## Model 2: The Environment as a Linked Chain of Frames
 
-The environment chain is structurally identical to the one you built in the environments module. The only difference is the constructor signature, which accepts a list of parameter names and a list of argument values and zips them into the initial dictionary.
-
-## Code Cell
+An **environment** in our interpreter is a dictionary that may have a pointer to an **outer** (enclosing) environment. Variable lookup walks the chain until the name is found or the outermost frame is exhausted.
 
 ```python
-class Env:
+class SchemeError(Exception):
+    pass
+
+class Env(dict):
+    """
+    A single environment frame.
+    Inherits from dict so frame[var] = val works directly.
+    outer: the enclosing environment, or None for the global frame.
+    """
     def __init__(self, params=(), args=(), outer=None):
-        self.d = dict(zip(params, args))
+        super().__init__()
         self.outer = outer
+        if len(params) != len(args):
+            raise SchemeError(
+                f"Arity mismatch: expected {len(params)} args, got {len(args)}"
+            )
+        self.update(zip(params, args))   # bind each param to its arg
 
-    def find(self, name):
-        if name in self.d:
-            return self.d
-        if self.outer:
-            return self.outer.find(name)
-        raise NameError(f"unbound variable: {name!r}")
+    def find(self, var):
+        """
+        Return the innermost frame that contains var.
+        Raises SchemeError if var is unbound anywhere in the chain.
+        """
+        if var in self:
+            return self
+        if self.outer is None:
+            raise SchemeError(f"Unbound variable: {var!r}")
+        return self.outer.find(var)
 
-    def __setitem__(self, name, val):
-        self.d[name] = val
+# --- Demo: manual environment construction ---
+global_env = Env()
+global_env['y'] = 10
 
-    def __getitem__(self, name):
-        return self.find(name)[name]
+# Simulate (lambda (x) (+ x y)) called with x=3
+call_env = Env(params=['x'], args=[3], outer=global_env)
 
-try:
-    g = Env(params=['x', 'y'], args=[3, 4])
-    inner = Env(params=['z'], args=[10], outer=g)
-    print(inner['x'])
-    print(inner['z'])
-    g['w'] = 99
-    print(inner['w'])
-    inner['x']
-except NameError as e:
-    print(f"NameError: {e}")
-except Exception as e:
-    print(f"[env] {e}")
-    import traceback; traceback.print_exc()
+print("x in call_env:", call_env.find('x')['x'])   # 3
+print("y via outer:  ", call_env.find('y')['y'])   # 10
 ```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+The chain for `(define f (lambda (x) (+ x y)))` where `y = 10` in the global environment looks like this:
+
+```
+Global frame:  { y: 10, f: <Procedure> }
+                        ^
+                        | outer
+Call frame:    { x: 3  }
+```
+
+When the body `(+ x y)` is evaluated in the call frame, `x` resolves immediately; `y` requires walking up one link to the global frame.
 
 ---
 
-## 3. The Evaluator
+### Critical Thinking Questions — Model 2
 
-`scheme_eval` is a single function that dispatches on the shape of the parsed expression. Self-evaluating forms return immediately. Symbols do an environment lookup. Compound forms dispatch on the head: special forms have named cases; everything else is a function call.
+**CTQ 4.** What happens when `find` reaches the outermost environment (where `outer is None`) and the variable still has not been found? Write the exact exception that would be raised for `(+ x undefined-var)`.
 
-## Code Cell
+> *Write your group's answer here.*
+
+**CTQ 5.** Lexical (static) scope vs. dynamic scope differs entirely in *which frame becomes the `outer`* of a new call frame. In lexical scope, which environment is passed as `outer` when a closure is called? In dynamic scope, which environment would be passed instead?
+
+> *Write your group's answer here.*
+
+**CTQ 6.** Trace the full environment chain for the following interaction:
+
+```scheme
+(define y 10)
+(define f (lambda (x) (+ x y)))
+(f 5)
+```
+
+Draw the frames that exist when `(+ x y)` is being evaluated. Label every `outer` pointer. Then answer: if `y` were rebound to `20` *after* `f` was defined, would `(f 5)` return 15 or 25? Why?
+
+> *Write your group's answer here.*
+
+---
+
+# Part III: The Evaluator Core
+
+## Model 3: `scheme_eval` — Dispatch on Form
+
+The evaluator is a single function that **dispatches** on the type and shape of the expression. Atoms evaluate to themselves or to their binding. Lists beginning with a keyword are **special forms** handled directly. Any other list is a **procedure call**.
 
 ```python
-import operator
-import math
+# We assume Env and SchemeError from Model 2 are already defined.
 
 class Procedure:
+    """
+    A first-class Scheme procedure (closure).
+    params: list of parameter name strings
+    body:   s-expression (the body, a single expression or begin-list)
+    env:    the defining environment (captured at lambda creation)
+    """
     def __init__(self, params, body, env):
         self.params = params
-        self.body = body
-        self.env = env
+        self.body   = body
+        self.env    = env           # lexical environment — the closure
 
-    def __call__(self, *args):
-        return scheme_eval(self.body, Env(self.params, args, self.env))
+    def __call__(self, args):
+        """Create a new frame on the *defining* environment, then evaluate body."""
+        call_env = Env(self.params, args, self.env)
+        return scheme_eval(self.body, call_env)
 
     def __repr__(self):
         return f"#<procedure ({' '.join(self.params)})>"
 
+
 def scheme_eval(x, env):
-    if isinstance(x, bool) or not isinstance(x, (str, list)):
+    """
+    Evaluate s-expression x in environment env.
+    Returns a Python value representing the Scheme result.
+    """
+
+    # --- Self-evaluating atoms ---
+    if isinstance(x, (int, float, bool)):
         return x
+    if isinstance(x, str) and x.startswith('"'):
+        return x                          # Scheme string literal
+
+    # --- Symbol lookup ---
     if isinstance(x, str):
-        return env[x]
+        return env.find(x)[x]
+
+    # --- Special forms and procedure calls (x is a list) ---
+    if not isinstance(x, list) or len(x) == 0:
+        raise SchemeError(f"Cannot evaluate: {x!r}")
+
     head = x[0]
+
+    # (quote datum)
     if head == 'quote':
         return x[1]
+
+    # (if test consequent [alternate])
     if head == 'if':
-        _, test, then, *rest = x
-        branch = then if scheme_eval(test, env) else (rest[0] if rest else False)
+        test = scheme_eval(x[1], env)
+        # In Scheme only #f is false; everything else (including 0) is truthy
+        branch = x[2] if test is not False else (x[3] if len(x) > 3 else False)
         return scheme_eval(branch, env)
+
+    # (define symbol value)  or  (define (name params...) body)
     if head == 'define':
-        _, name, val = x
-        env[name] = scheme_eval(val, env)
+        if isinstance(x[1], list):
+            # Syntactic sugar: (define (f x y) body) => (define f (lambda (x y) body))
+            name   = x[1][0]
+            params = x[1][1:]
+            body   = x[2]
+            env[name] = Procedure(params, body, env)
+        else:
+            env[x[1]] = scheme_eval(x[2], env)
         return None
+
+    # (set! symbol value)
+    if head == 'set!':
+        env.find(x[1])[x[1]] = scheme_eval(x[2], env)
+        return None
+
+    # (lambda (params...) body)
     if head == 'lambda':
-        _, params, body = x
+        params = x[1]
+        body   = x[2] if len(x) == 3 else ['begin'] + x[2:]
         return Procedure(params, body, env)
+
+    # (begin expr1 expr2 ...)
     if head == 'begin':
         result = None
         for expr in x[1:]:
             result = scheme_eval(expr, env)
         return result
+
+    # (let ((var val) ...) body)
     if head == 'let':
-        _, bindings, body = x
-        params = [b[0] for b in bindings]
-        args = [scheme_eval(b[1], env) for b in bindings]
-        return scheme_eval(body, Env(params, args, env))
+        bindings = x[1]          # list of [var, val] pairs
+        body     = x[2]
+        params   = [b[0] for b in bindings]
+        args     = [scheme_eval(b[1], env) for b in bindings]
+        # Desugar: ((lambda (params...) body) args...)
+        proc = Procedure(params, body, env)
+        return proc(args)
+
+    # (and expr ...)
+    if head == 'and':
+        result = True
+        for expr in x[1:]:
+            result = scheme_eval(expr, env)
+            if result is False:
+                return False
+        return result
+
+    # (or expr ...)
+    if head == 'or':
+        for expr in x[1:]:
+            result = scheme_eval(expr, env)
+            if result is not False:
+                return result
+        return False
+
+    # --- Procedure call: (proc arg1 arg2 ...) ---
     proc = scheme_eval(head, env)
-    args = [scheme_eval(arg, env) for arg in x[1:]]
-    return proc(*args)
+    args = [scheme_eval(a, env) for a in x[1:]]
+    if callable(proc):
+        return proc(args)
+    raise SchemeError(f"Not a procedure: {proc!r}")
+
+
+# --- Minimal global environment for the demo ---
+import operator, math
 
 def make_global_env():
     env = Env()
-    env.d.update({
-        '+': lambda *a: sum(a),
-        '-': lambda a, b=None: -a if b is None else a - b,
-        '*': lambda a, b: a * b,
-        '/': lambda a, b: a / b,
-        '=': operator.eq,
-        '<': operator.lt,
-        '>': operator.gt,
-        '<=': operator.le,
-        '>=': operator.ge,
-        'not': operator.not_,
-        'and': lambda a, b: a and b,
-        'or': lambda a, b: a or b,
-        'cons': lambda a, b: [a] + (b if isinstance(b, list) else [b]),
-        'car': lambda x: x[0],
-        'cdr': lambda x: x[1:],
-        'null?': lambda x: x == [],
-        'list': lambda *a: list(a),
-        'display': print,
-        'newline': lambda: print(),
-        '#t': True,
-        '#f': False,
+    env.update({
+        '+':  lambda args: args[0] + args[1],
+        '-':  lambda args: args[0] - args[1],
+        '*':  lambda args: args[0] * args[1],
+        '/':  lambda args: args[0] / args[1],
+        '<':  lambda args: args[0] < args[1],
+        '>':  lambda args: args[0] > args[1],
+        '<=': lambda args: args[0] <= args[1],
+        '>=': lambda args: args[0] >= args[1],
+        '=':  lambda args: args[0] == args[1],
+        'not':       lambda args: args[0] is False,
+        'display':   lambda args: print(args[0], end=''),
+        'newline':   lambda args: print(),
     })
     return env
 
-def run(source, env):
-    return scheme_eval(read(source), env)
+# --- Tokenizer / parser (abbreviated; same as Model 1) ---
+import re
 
-try:
-    g = make_global_env()
-    print(run("(+ 1 2)", g))
-    print(run("(if #t 42 0)", g))
-    run("(define x 10)", g)
-    print(run("(* x x)", g))
-    run("(define fact (lambda (n) (if (= n 0) 1 (* n (fact (- n 1))))))", g)
-    print(run("(fact 10)", g))
-    print(run("(let ((a 3) (b 4)) (+ a b))", g))
-except Exception as e:
-    print(f"[eval] {e}")
-    import traceback; traceback.print_exc()
+def tokenize(s):
+    return re.findall(r'\"[^\"]*\"|\(|\)|[^\s()\"]+', s)
+
+def parse_atom(t):
+    if t == '#t': return True
+    if t == '#f': return False
+    if t.startswith('"'): return t
+    try: return int(t)
+    except ValueError: pass
+    try: return float(t)
+    except ValueError: pass
+    return t
+
+def parse_tokens(tokens):
+    if not tokens: raise SyntaxError("EOF")
+    t = tokens.pop(0)
+    if t == '(':
+        lst = []
+        while tokens[0] != ')':
+            lst.append(parse_tokens(tokens))
+        tokens.pop(0)
+        return lst
+    elif t == "'":
+        return ['quote', parse_tokens(tokens)]
+    else:
+        return parse_atom(t)
+
+def parse_sexp(s):
+    return parse_tokens(tokenize(s))
+
+# --- Run some expressions ---
+genv = make_global_env()
+
+tests = [
+    "(+ 2 3)",
+    "(if #t 42 0)",
+    "(if #f 42 99)",
+    "(define x 10)",
+    "(+ x 5)",
+    "(define square (lambda (n) (* n n)))",
+    "(square 7)",
+    "(let ((a 3) (b 4)) (+ (* a a) (* b b)))",
+    "(and #t #t #f)",
+    "(or  #f #f 7)",
+    "(begin (define y 100) (+ y 1))",
+]
+
+for src in tests:
+    ast    = parse_sexp(src)
+    result = scheme_eval(ast, genv)
+    if result is not None:
+        print(f"{src!s:50s} => {result}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+---
+
+### Critical Thinking Questions — Model 3
+
+**CTQ 7.** Why does `define` store into `env` directly with `env[x[1]] = ...` while `set!` uses `env.find(x[1])[x[1]] = ...`? What would happen if `set!` used `env[x[1]] = ...` instead? Give a concrete example where the behavior would differ.
+
+> *Write your group's answer here.*
+
+**CTQ 8.** Show the complete desugaring of `(let ((x 5) (y 3)) (+ x y))` into a lambda application. Write out both the s-expression that `scheme_eval` actually evaluates and the equivalent Python call tree that results.
+
+> *Write your group's answer here.*
+
+**CTQ 9.** Consider:
+
+```scheme
+(define fact
+  (lambda (n)
+    (if (<= n 1)
+        1
+        (* n (fact (- n 1))))))
+(fact 5)
 ```
 
----
+Does this work in our evaluator? Trace through why `fact` is visible inside its own body even though it is being defined *right now*. (Hint: look at how `define` stores the procedure into `env` *before* the body is ever called.)
 
-## Model 2: Running the Evaluator
-
-The evaluator's dispatch is a direct translation of Scheme's evaluation rules. Each special form is a named case; function calls are the default. The `Procedure` class captures the parameter list, body, and the **defining environment** at lambda creation time.
-
-### Critical Thinking Questions
-
-1. Why is `(quote x)` needed? Write what happens if the evaluator encounters the symbol `x` without `quote` and `x` is not bound in the environment. Give a concrete example where `quote` is necessary.
-2. The `Procedure` constructor stores `env`, the environment at the point the `lambda` is evaluated, not the environment at the point the function is *called*. What scoping rule does this implement? What would change if you used the call-site environment instead?
-3. The evaluator handles `let` by desugaring it: `(let ((x 3) (y 4)) (+ x y))` is treated as if it were `((lambda (x y) (+ x y)) 3 4)`. Write out the desugared form explicitly, then trace `scheme_eval` on it for two levels to show that the result is 7.
-4. Consider `(define fact (lambda (n) (if (= n 0) 1 (* n (fact (- n 1))))))`. When the `lambda` is evaluated, `fact` is not yet bound in the environment. Yet the recursive call `(fact (- n 1))` works. Trace exactly when and where `fact` is resolved: is it at lambda creation time, or at each call time? Why does the chain-of-environments design make this work?
+> *Write your group's answer here.*
 
 ---
 
-[[MC]]
-In the metacircular evaluator, evaluating `(lambda (x) (+ x 1))` in the global environment:
-- (x) Returns a Procedure object that closes over the global environment
-- ( ) Immediately calls the function with no argument
-- ( ) Looks up `lambda` in the environment and signals an error if not found
-- ( ) Returns the symbol `lambda`
+# Part IV: The Global Environment
 
----
+## Model 4: `make_global_env` — The Built-In World
 
-# Part III: Tail Calls and Optimization (Day 2)
-
-## 4. The Cost of Naive Recursion
-
-Scheme programs that use recursion as iteration can require millions of recursive calls. In Python, function call depth is limited (typically 1000 frames by default). A straightforward recursive loop will crash:
-
-## Code Cell
+The global environment pre-loads all the primitive operations. In real Scheme these are implemented in a low-level language for speed; in our interpreter they are just Python lambdas.
 
 ```python
-try:
-    g2 = make_global_env()
-    run("(define loop (lambda (n) (if (= n 0) (quote done) (loop (- n 1)))))", g2)
-    print(run("(loop 5)", g2))
-    print(run("(loop 500)", g2))
-    print(run("(loop 5000)", g2))
-except RecursionError as e:
-    print(f"RecursionError: {e}")
-except Exception as e:
-    print(f"[tco] {e}")
-    import traceback; traceback.print_exc()
+import operator, math
+
+# (Re-use Env, SchemeError, Procedure, scheme_eval from Models 2–3)
+
+def make_global_env():
+    """Return an Env pre-loaded with standard Scheme primitives."""
+    env = Env()
+    env.update({
+        # --- Arithmetic ---
+        '+':  lambda a: sum(a),
+        '-':  lambda a: a[0] - a[1] if len(a) == 2 else -a[0],
+        '*':  lambda a: a[0] * a[1],
+        '/':  lambda a: a[0] / a[1],
+        '%':  lambda a: a[0] % a[1],
+
+        # --- Comparison ---
+        '<':  lambda a: a[0] <  a[1],
+        '>':  lambda a: a[0] >  a[1],
+        '<=': lambda a: a[0] <= a[1],
+        '>=': lambda a: a[0] >= a[1],
+        '=':  lambda a: a[0] == a[1],
+
+        # --- List operations ---
+        # We represent Scheme pairs as Python 2-tuples (head, tail).
+        # The empty list is None (representing Scheme's '()).
+        'cons':   lambda a: (a[0], a[1]),
+        'car':    lambda a: a[0][0],
+        'cdr':    lambda a: a[0][1],
+        'list':   lambda a: _make_list(a),
+        'null?':  lambda a: a[0] is None,
+        'pair?':  lambda a: isinstance(a[0], tuple),
+        'length': lambda a: _length(a[0]),
+        'append': lambda a: _append(a[0], a[1]),
+        'map':    lambda a: _map(a[0], a[1]),
+
+        # --- Boolean ---
+        'not':      lambda a: a[0] is False,
+        'boolean?': lambda a: isinstance(a[0], bool),
+
+        # --- Type predicates ---
+        'number?':    lambda a: isinstance(a[0], (int, float)) and not isinstance(a[0], bool),
+        'symbol?':    lambda a: isinstance(a[0], str) and not a[0].startswith('"'),
+        'string?':    lambda a: isinstance(a[0], str) and a[0].startswith('"'),
+        'procedure?': lambda a: callable(a[0]),
+
+        # --- I/O ---
+        'display':  lambda a: (print(a[0], end=''), None)[1],
+        'newline':  lambda a: (print(), None)[1],
+    })
+    return env
+
+# --- Helpers for list operations ---
+def _make_list(items):
+    result = None
+    for item in reversed(items):
+        result = (item, result)
+    return result
+
+def _length(pair):
+    count = 0
+    while pair is not None:
+        count += 1
+        pair = pair[1]
+    return count
+
+def _append(p1, p2):
+    if p1 is None:
+        return p2
+    return (p1[0], _append(p1[1], p2))
+
+def _map(proc, lst):
+    if lst is None:
+        return None
+    return (proc([lst[0]]), _map(proc, lst[1]))
+
+def scheme_list_to_python(pair):
+    """Convert our pair-based list to a Python list for display."""
+    result = []
+    while pair is not None:
+        result.append(pair[0])
+        pair = pair[1]
+    return result
+
+# --- Test the global environment ---
+# (Re-define tokenizer, parser, Env, Procedure, scheme_eval here — abbreviated)
+import re
+
+class SchemeError(Exception): pass
+
+class Env(dict):
+    def __init__(self, params=(), args=(), outer=None):
+        super().__init__()
+        self.outer = outer
+        self.update(zip(params, args))
+    def find(self, var):
+        if var in self: return self
+        if self.outer is None: raise SchemeError(f"Unbound: {var!r}")
+        return self.outer.find(var)
+
+class Procedure:
+    def __init__(self, params, body, env):
+        self.params, self.body, self.env = params, body, env
+    def __call__(self, args):
+        return scheme_eval(self.body, Env(self.params, args, self.env))
+    def __repr__(self): return f"#<procedure>"
+
+def scheme_eval(x, env):
+    if isinstance(x, (int, float, bool)): return x
+    if isinstance(x, str) and x.startswith('"'): return x
+    if isinstance(x, str): return env.find(x)[x]
+    if not isinstance(x, list) or not x: raise SchemeError(f"Bad expr: {x!r}")
+    head = x[0]
+    if head == 'quote': return x[1]
+    if head == 'if':
+        test = scheme_eval(x[1], env)
+        branch = x[2] if test is not False else (x[3] if len(x) > 3 else False)
+        return scheme_eval(branch, env)
+    if head == 'define':
+        if isinstance(x[1], list):
+            env[x[1][0]] = Procedure(x[1][1:], x[2], env)
+        else:
+            env[x[1]] = scheme_eval(x[2], env)
+        return None
+    if head == 'set!':
+        env.find(x[1])[x[1]] = scheme_eval(x[2], env); return None
+    if head == 'lambda':
+        body = x[2] if len(x)==3 else ['begin']+x[2:]
+        return Procedure(x[1], body, env)
+    if head == 'begin':
+        result = None
+        for e in x[1:]: result = scheme_eval(e, env)
+        return result
+    if head == 'let':
+        params = [b[0] for b in x[1]]; args = [scheme_eval(b[1],env) for b in x[1]]
+        return Procedure(params, x[2], env)(args)
+    if head == 'and':
+        r = True
+        for e in x[1:]:
+            r = scheme_eval(e, env)
+            if r is False: return False
+        return r
+    if head == 'or':
+        for e in x[1:]:
+            r = scheme_eval(e, env)
+            if r is not False: return r
+        return False
+    proc = scheme_eval(head, env); args = [scheme_eval(a,env) for a in x[1:]]
+    if callable(proc): return proc(args)
+    raise SchemeError(f"Not a procedure: {proc!r}")
+
+def tokenize(s): return re.findall(r'\"[^\"]*\"|\(|\)|[^\s()\"]+', s)
+def parse_atom(t):
+    if t=='#t': return True
+    if t=='#f': return False
+    if t.startswith('"'): return t
+    try: return int(t)
+    except: pass
+    try: return float(t)
+    except: pass
+    return t
+def parse_tokens(tokens):
+    if not tokens: raise SyntaxError("EOF")
+    t = tokens.pop(0)
+    if t=='(':
+        lst=[]
+        while tokens[0]!=')': lst.append(parse_tokens(tokens))
+        tokens.pop(0); return lst
+    elif t=="'": return ['quote',parse_tokens(tokens)]
+    else: return parse_atom(t)
+def parse_sexp(s): return parse_tokens(tokenize(s))
+
+genv = make_global_env()
+
+tests = [
+    ("(cons 1 2)",           None),
+    ("(car (cons 1 2))",     None),
+    ("(cdr (cons 1 2))",     None),
+    ("(null? (list))",       None),
+    ("(pair? (cons 1 2))",   None),
+    ("(number? 42)",         None),
+    ("(boolean? #t)",        None),
+    ("(procedure? car)",     None),
+]
+
+for src, _ in tests:
+    result = scheme_eval(parse_sexp(src), genv)
+    print(f"{src!s:40s} => {result}")
+
+# List demo
+lst = scheme_eval(parse_sexp("(list 1 2 3 4)"), genv)
+print("(list 1 2 3 4) as Python:", scheme_list_to_python(lst))
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+---
+
+### Critical Thinking Questions — Model 4
+
+**CTQ 10.** Our `cons` returns a Python 2-tuple `(head, tail)`, not a Python list. This means `(list 1 2 3)` produces `(1, (2, (3, None)))`. Name two operations from Model 3 that would break if we used Python lists instead of tuples for pairs. Why would the `null?` check fail?
+
+> *Write your group's answer here.*
+
+---
+
+# Part V: Tail Call Optimization
+
+## Model 5: The Stack Overflow Problem and the Trampoline
+
+Python has a default recursion limit of about 1000 frames. A naive Scheme-in-Python evaluator will hit this limit when evaluating deeply recursive Scheme programs — even if the Scheme program is *tail recursive* and should need no stack at all.
+
+Consider:
+
+```scheme
+(define count-down
+  (lambda (n)
+    (if (= n 0)
+        'done
+        (count-down (- n 1)))))
+(count-down 10000)   ; Should work in Scheme; crashes in naive Python evaluator
 ```
 
----
-
-## 5. Proper Tail Calls
-
-A **tail call** is a function call that is the last action of the calling function: the caller has nothing left to do after the call returns except return that same value. The Scheme standard requires that tail calls not consume stack space. This is called **proper tail recursion** or **tail call optimization (TCO)**.
-
-The key insight: if the caller has nothing left to do, its stack frame is not needed after the call. We can reuse it (or, in Python where we cannot control frames directly, simulate the same effect with a loop).
-
-A **trampoline** implements this. Instead of making the tail call directly, the evaluator returns a `Thunk` — a suspended call — to an outer loop that keeps driving execution until it gets a real value. The stack never grows past one frame deep.
-
-## Code Cell
+The fix is a **trampoline**: instead of calling the recursive eval directly, return a *thunk* (a zero-argument lambda that will do the work) from tail positions. The trampoline loop bounces on thunks until a real value emerges.
 
 ```python
+# Trampoline-based TCO evaluator
+
 class Thunk:
-    def __init__(self, fn, *args):
-        self.fn = fn
-        self.args = args
+    """A deferred computation: a zero-argument callable."""
+    def __init__(self, thunk_fn):
+        self.thunk_fn = thunk_fn
+    def __call__(self):
+        return self.thunk_fn()
 
 def trampoline(val):
+    """Repeatedly call val() while val is a Thunk; return the final value."""
     while isinstance(val, Thunk):
-        val = val.fn(*val.args)
+        val = val()
     return val
 
+# In scheme_eval_tco we return Thunk objects at tail positions.
+# Here is the key part of the TCO evaluator — only the changed branches shown:
+
 def scheme_eval_tco(x, env):
-    while True:
-        if isinstance(x, bool) or not isinstance(x, (str, list)):
+    """
+    TCO variant: tail calls return Thunk instead of recursing.
+    Call via trampoline(scheme_eval_tco(expr, env)).
+    """
+    while True:   # Use a loop for self-tail-calls to avoid Python stack growth
+        if isinstance(x, (int, float, bool)):
+            return x
+        if isinstance(x, str) and x.startswith('"'):
             return x
         if isinstance(x, str):
-            return env[x]
+            return env.find(x)[x]
+        if not isinstance(x, list) or not x:
+            raise SchemeError(f"Bad expr: {x!r}")
+
         head = x[0]
+
         if head == 'quote':
             return x[1]
+
+        # (if ...) — only the taken branch is a tail position
         if head == 'if':
-            _, test, then, *rest = x
-            x = then if scheme_eval_tco(test, env) else (rest[0] if rest else False)
+            test = trampoline(scheme_eval_tco(x[1], env))
+            branch = x[2] if test is not False else (x[3] if len(x) > 3 else False)
+            x = branch          # tail position: loop instead of recurse
             continue
+
         if head == 'define':
-            _, name, val = x
-            env[name] = scheme_eval_tco(val, env)
+            if isinstance(x[1], list):
+                env[x[1][0]] = ProcedureTCO(x[1][1:], x[2], env)
+            else:
+                env[x[1]] = trampoline(scheme_eval_tco(x[2], env))
             return None
+
+        if head == 'set!':
+            env.find(x[1])[x[1]] = trampoline(scheme_eval_tco(x[2], env))
+            return None
+
         if head == 'lambda':
-            _, params, body = x
-            return ProcedureTCO(params, body, env)
+            body = x[2] if len(x)==3 else ['begin']+x[2:]
+            return ProcedureTCO(x[1], body, env)
+
+        # (begin ...) — last expression is in tail position
         if head == 'begin':
             for expr in x[1:-1]:
-                scheme_eval_tco(expr, env)
-            x = x[-1]
+                trampoline(scheme_eval_tco(expr, env))
+            x = x[-1]          # tail position: loop
             continue
+
         if head == 'let':
-            _, bindings, body = x
-            params = [b[0] for b in bindings]
-            args = [scheme_eval_tco(b[1], env) for b in bindings]
+            params = [b[0] for b in x[1]]
+            args   = [trampoline(scheme_eval_tco(b[1], env)) for b in x[1]]
             env = Env(params, args, env)
-            x = body
+            x   = x[2]         # tail position: loop
             continue
-        proc = scheme_eval_tco(head, env)
-        args = [scheme_eval_tco(arg, env) for arg in x[1:]]
+
+        # Procedure call
+        proc = trampoline(scheme_eval_tco(head, env))
+        args = [trampoline(scheme_eval_tco(a, env)) for a in x[1:]]
         if isinstance(proc, ProcedureTCO):
             env = Env(proc.params, args, proc.env)
-            x = proc.body
+            x   = proc.body    # tail call: loop
             continue
-        return proc(*args)
+        elif callable(proc):
+            return proc(args)
+        raise SchemeError(f"Not a procedure: {proc!r}")
+
 
 class ProcedureTCO:
     def __init__(self, params, body, env):
-        self.params = params
-        self.body = body
-        self.env = env
+        self.params, self.body, self.env = params, body, env
+    def __repr__(self): return "#<procedure-tco>"
 
-    def __call__(self, *args):
-        return scheme_eval_tco(self.body, Env(self.params, args, self.env))
 
-    def __repr__(self):
-        return f"#<procedure ({' '.join(self.params)})>"
+# --- We need supporting code from previous models here ---
+import re
+
+class SchemeError(Exception): pass
+
+class Env(dict):
+    def __init__(self, params=(), args=(), outer=None):
+        super().__init__(); self.outer = outer; self.update(zip(params, args))
+    def find(self, var):
+        if var in self: return self
+        if self.outer is None: raise SchemeError(f"Unbound: {var!r}")
+        return self.outer.find(var)
+
+def tokenize(s): return re.findall(r'\"[^\"]*\"|\(|\)|[^\s()\"]+', s)
+def parse_atom(t):
+    if t=='#t': return True
+    if t=='#f': return False
+    if t.startswith('"'): return t
+    try: return int(t)
+    except: pass
+    try: return float(t)
+    except: pass
+    return t
+def parse_tokens(tokens):
+    if not tokens: raise SyntaxError("EOF")
+    t = tokens.pop(0)
+    if t=='(':
+        lst=[]
+        while tokens[0]!=')': lst.append(parse_tokens(tokens))
+        tokens.pop(0); return lst
+    elif t=="'": return ['quote', parse_tokens(tokens)]
+    else: return parse_atom(t)
+def parse_sexp(s): return parse_tokens(tokenize(s))
 
 def make_global_env_tco():
     env = Env()
-    env.d.update({
-        '+': lambda *a: sum(a),
-        '-': lambda a, b=None: -a if b is None else a - b,
-        '*': lambda a, b: a * b,
-        '/': lambda a, b: a / b,
-        '=': operator.eq,
-        '<': operator.lt,
-        '>': operator.gt,
-        '<=': operator.le,
-        '>=': operator.ge,
-        'not': operator.not_,
-        'and': lambda a, b: a and b,
-        'or': lambda a, b: a or b,
-        'cons': lambda a, b: [a] + (b if isinstance(b, list) else [b]),
-        'car': lambda x: x[0],
-        'cdr': lambda x: x[1:],
-        'null?': lambda x: x == [],
-        'list': lambda *a: list(a),
-        'display': print,
-        'newline': lambda: print(),
-        '#t': True,
-        '#f': False,
+    env.update({
+        '+':  lambda a: a[0]+a[1], '-': lambda a: a[0]-a[1],
+        '*':  lambda a: a[0]*a[1], '/': lambda a: a[0]/a[1],
+        '<=': lambda a: a[0]<=a[1], '>=': lambda a: a[0]>=a[1],
+        '<':  lambda a: a[0]<a[1],  '>':  lambda a: a[0]>a[1],
+        '=':  lambda a: a[0]==a[1],
+        'display': lambda a: (print(a[0], end=''), None)[1],
+        'newline': lambda a: (print(), None)[1],
     })
     return env
 
-def run_tco(source, env):
-    return scheme_eval_tco(read(source), env)
+def run(src):
+    genv = make_global_env_tco()
+    exprs = []
+    tokens = tokenize(src)
+    while tokens:
+        exprs.append(parse_tokens(tokens))
+    result = None
+    for expr in exprs:
+        result = trampoline(scheme_eval_tco(expr, genv))
+    return result
 
-try:
-    g3 = make_global_env_tco()
-    run_tco("(define loop (lambda (n) (if (= n 0) (quote done) (loop (- n 1)))))", g3)
-    print(run_tco("(loop 5)", g3))
-    print(run_tco("(loop 100000)", g3))
-    run_tco("(define fact-iter (lambda (n acc) (if (= n 0) acc (fact-iter (- n 1) (* n acc)))))", g3)
-    run_tco("(define fact (lambda (n) (fact-iter n 1)))", g3)
-    print(run_tco("(fact 10)", g3))
-except RecursionError as e:
-    print(f"RecursionError: {e}")
-except Exception as e:
-    print(f"[tco] {e}")
-    import traceback; traceback.print_exc()
+# --- Demo: deep recursion without stack overflow ---
+prog = """
+(define count-down
+  (lambda (n)
+    (if (= n 0)
+        0
+        (count-down (- n 1)))))
+"""
+print("count-down 100000 =>", run(prog + "(count-down 100000)"))
+
+# Tail-recursive sum
+prog2 = """
+(define sum-iter
+  (lambda (n acc)
+    (if (= n 0)
+        acc
+        (sum-iter (- n 1) (+ acc n)))))
+"""
+print("sum 0..1000 =>", run(prog2 + "(sum-iter 1000 0)"))
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+---
+
+### Critical Thinking Questions — Model 5
+
+**CTQ 11.** In the expression `(if test then-branch else-branch)`, which sub-expressions are in **tail position** and which are not? Justify your answer by explaining what computation (if any) must happen *after* that sub-expression returns.
+
+> *Write your group's answer here.*
+
+**CTQ 12.** Python does not automatically optimize tail calls, even when the programmer writes a tail-recursive function. Name two language design decisions in Python that make automatic tail-call optimization difficult or undesirable (consider stack traces, debugging, and Python's object model).
+
+> *Write your group's answer here.*
+
+---
+
+# Part VI: Multiple Choice Comprehension Check
+
+Answer individually, then compare with your group.
+
+**Question 1.** What does evaluating `(lambda (x) x)` return in our interpreter?
+
+    [( )] The number `0`
+    [(x)] A `Procedure` object (a closure)
+    [( )] The symbol `x`
+    [( )] A `SchemeError` because `x` is unbound
+
+**Question 2.** The expression `(let ((x 5)) (+ x 1))` desugars to which of the following?
+
+    [( )] `(define x 5) (+ x 1)`
+    [(x)] `((lambda (x) (+ x 1)) 5)`
+    [( )] `(set! x 5) (+ x 1)`
+    [( )] `(begin (define x 5) (+ x 1))`
+
+**Question 3.** In `(define (square n) (* n n))`, the list `(square n)` as the first argument to `define` is:
+
+    [( )] A syntax error in standard Scheme
+    [( )] A pair of a function name and its return type
+    [(x)] Syntactic sugar that expands to `(define square (lambda (n) (* n n)))`
+    [( )] A call to the `square` function before it is defined
+
+**Question 4.** Which component of the evaluator is directly responsible for implementing **lexical scope**?
+
+    [( )] The tokenizer, which preserves symbol names
+    [( )] The `scheme_eval` dispatch loop
+    [(x)] The `Env` chain: each `Procedure` captures and stores its *defining* environment, which becomes the `outer` of each call frame
+    [( )] The `trampoline` function
+
+---
+
+# Part VII: Exercises
+
+Work through these exercises in your group. Each builds directly on the evaluator code from Parts I–V.
+
+---
+
+## Exercise 1: Add `cond`
+
+Scheme's `cond` is a multi-way conditional:
+
+```scheme
+(cond
+  ((< x 0) 'negative)
+  ((= x 0) 'zero)
+  (else    'positive))
 ```
 
----
+It evaluates each test in order; the first truthy test causes its associated expression to be evaluated and returned. The `else` clause (if present) is always truthy.
 
-## Model 3: Tail Calls
+**Task:** Add a `cond` branch to `scheme_eval` (or `scheme_eval_tco`). The clause list is `x[1:]`; each clause is a two-element list `[test, expr]`. The special symbol `'else'` should be treated as always true.
 
-The TCO evaluator replaces function call recursion with a `while True` loop. When a tail call is detected (the called procedure is a `ProcedureTCO` and the call is in tail position), the evaluator rebinds `x` and `env` and loops rather than recursing. The stack depth stays constant.
+```python
+# Starter: fill in the cond branch inside scheme_eval
 
-### Critical Thinking Questions
+# if head == 'cond':
+#     for clause in x[1:]:
+#         test_expr, result_expr = clause[0], clause[1]
+#         if test_expr == 'else' or scheme_eval(test_expr, env) is not False:
+#             return scheme_eval(result_expr, env)
+#     return None   # no matching clause
 
-1. The expression `(+ n (loop (- n 1)))` contains a call to `loop`. Is this call in tail position? Explain: what does the evaluator still need to do with the result of `loop` after it returns, and why does that prevent tail-call optimization here?
-2. In `(if cond (loop a) (loop b))`, both `(loop a)` and `(loop b)` are calls. Are both in tail position? In `scheme_eval_tco`, which case handles the `if` form, and how does it ensure the selected branch is handled without a recursive call to `scheme_eval_tco`?
-3. The TCO evaluator converts tail recursion into a `while True` loop by reassigning `x` and `env`. Compare this to the `{term}*` repetition pattern in a recursive-descent parser, where a left-recursive rule is converted into a loop to avoid infinite recursion. In both cases, recursion in the specification becomes iteration in the implementation. State the structural analogy precisely: what is the "recursive call" in each case, and what is the "loop body"?
+# Test with:
+# (cond ((< 3 0) 'neg) ((= 3 0) 'zero) (else 'pos))
+# Expected: 'pos'
+```
 
----
-
-[[MC]]
-The key property that makes tail-call optimization possible is:
-- ( ) The function being called is pure (no side effects)
-- (x) The result of the call IS the result of the caller, so the caller's stack frame is not needed after the call
-- ( ) The function is defined at the top level
-- ( ) The function takes exactly one argument
-
----
-
-# Part IV: Exercises
-
-## 6. Exercises
-
-1. **Add `cond`.** Add `(cond (test1 result1) (test2 result2) ... (else default))` as a special form in `scheme_eval`. The `else` keyword is treated as a test that always passes. Demonstrate it classifying integers as negative, zero, or positive using `(cond ((< n 0) (quote negative)) ((= n 0) (quote zero)) (else (quote positive)))`.
-
-2. **Add `letrec`.** `let` evaluates all binding expressions in the *outer* environment, so bindings cannot refer to each other. `letrec` allows mutually recursive bindings by first creating placeholder bindings in a new environment, then evaluating and installing the values in that same environment. Implement `letrec` as a special form and verify that `(letrec ((fact (lambda (n) (if (= n 0) 1 (* n (fact (- n 1))))))) (fact 5))` returns 120.
-
-3. **Add `set!`.** Implement `(set! name val)` which finds the existing binding for `name` in the environment chain (using the `assign`-style walk, not defining a new binding) and updates it. Use it to implement a mutable counter: `(define count 0)` followed by `(set! count (+ count 1))` three times, then print `count`. Compare this to your Mini language's assignment statement.
-
-4. **Port Mini programs.** Take three programs you wrote for your Mini language interpreter assignments and translate them to run in this Scheme evaluator. For each one, record: (a) whether the translation was straightforward, (b) one thing that was easier in Scheme, (c) one thing that was harder or impossible without extending the evaluator, and (d) the line count in Mini source versus Scheme source.
-
-5. **Mutual recursion.** Using only `define` (no `letrec`), define `even?` and `odd?` in the global environment: `(define (even? n) (if (= n 0) #t (odd? (- n 1))))` and `(define (odd? n) (if (= n 0) #f (even? (- n 1))))`. (Use the `(define (f x) body)` shorthand by first parsing it manually, or add that shorthand as a third exercise extension.) Does mutual recursion work? Explain why the global-environment design makes forward references possible in a way that a single-pass compiler would not.
+Write the complete working implementation and verify it handles the test case above, plus a case where the first clause matches and the others are never evaluated.
 
 ---
 
-## Reflection Prompt
+## Exercise 2: Add Scheme `do` Loops
 
-In your notebook: the metacircular evaluator is fewer than 50 lines of Python (excluding the built-in library), yet it runs all of core Scheme, including recursion, closures, and higher-order functions. Abelson and Sussman present this as evidence that computation itself is simple: complexity lives in the *libraries*, not the *language kernel*. Does that match what you experienced building your Mini interpreter? Identify two places where your Mini interpreter's complexity came from the language features themselves, and two places where it came from the implementation machinery (parsing, environment wiring, error handling). Is the 50-line figure honest, or does it hide work that your Mini interpreter made explicit?
+Scheme's `do` loop is a structured iteration form:
+
+```scheme
+(do ((i 0 (+ i 1))     ; var init step
+     (sum 0 (+ sum i)))
+    ((= i 5) sum)       ; termination test, result
+  (display i))          ; body (side effect only; run each iteration)
+```
+
+Each binding is `(var init step)`. On each iteration: evaluate all `step` expressions (using the *current* bindings, not the updated ones), then rebind. When `test` is true, evaluate `result` and return it.
+
+**Task:** Implement `do` as a special form in `scheme_eval`. You will need to:
+1. Extract bindings, the termination clause, and the body.
+2. Create an initial environment with `var = init` for each binding.
+3. Loop: check the test; if true, evaluate and return the result expression. Otherwise evaluate the body, compute all new step values simultaneously, rebind, repeat.
 
 ---
 
-## Further Reading
+## Exercise 3: Tail-Recursive `map` in Pure Scheme
 
-- Abelson and Sussman. *Structure and Interpretation of Computer Programs*, Chapter 4: the original metacircular evaluator, with a full treatment of the environment model and tail calls.
-- Peter Norvig. "lispy.py" (online, norvig.com): a 90-line Scheme interpreter in Python, the canonical short reference implementation.
-- Kent Dybvig. *The Scheme Programming Language*, 4th ed. (free online, scheme.com): the authoritative reference, with a clear exposition of proper tail recursion.
-- Daniel P. Friedman and Matthias Felleisen. *The Little Schemer*: recursive descent through a tiny mind, structured as a dialogue, with the Y combinator as its final destination.
+The built-in `map` uses Python recursion. Write a **pure Scheme** `map` that is tail-recursive using an accumulator, then reverses the result.
+
+```scheme
+(define my-reverse
+  (lambda (lst acc)
+    (if (null? lst)
+        acc
+        (my-reverse (cdr lst) (cons (car lst) acc)))))
+
+(define my-map
+  (lambda (f lst)
+    ; YOUR CODE HERE
+    ; Use my-reverse and an accumulator
+    ))
+
+(my-map (lambda (x) (* x x)) (list 1 2 3 4 5))
+; Expected: (1 4 9 16 25) as a Scheme list
+```
+
+Verify that your implementation produces the correct result by running it in the TCO evaluator. Then explain: is your `my-map` call to `my-map` in the recursive case actually in tail position? Draw the call to convince yourself.
+
+---
+
+## Exercise 4: The Y Combinator
+
+Without `define`, a lambda cannot refer to itself by name. The **Y combinator** makes anonymous recursion possible. In our evaluator (which uses applicative-order evaluation), the Z combinator (the strict variant) works:
+
+```scheme
+(define Z
+  (lambda (f)
+    ((lambda (x) (f (lambda (v) ((x x) v))))
+     (lambda (x) (f (lambda (v) ((x x) v)))))))
+
+(define fact
+  (Z (lambda (self)
+       (lambda (n)
+         (if (<= n 1)
+             1
+             (* n (self (- n 1))))))))
+
+(fact 6)
+; Expected: 720
+```
+
+**Task:**
+1. Run the Z combinator in your evaluator. Verify `(fact 6) = 720`.
+2. Explain in one paragraph why the *eager Y combinator* `(lambda (f) ((lambda (x) (f (x x))) (lambda (x) (f (x x)))))` diverges under applicative-order evaluation but the Z combinator above does not.
+3. *Challenge:* Define `fib` using `Z` without `define`. Test `(fib 10)`.
+
+---
+
+# Part VIII: Reflection
+
+Answer these questions individually in your course notebook after completing the activity.
+
+**Reflection 1.** The word "metacircular" implies the evaluator is defined in terms of itself. Our evaluator is written in Python, not Scheme — so in what sense is it still "metacircular"? What would it take to port our evaluator from Python into the Scheme subset our evaluator understands, and what would that accomplish?
+
+**Reflection 2.** The course final project asks you to extend a language interpreter. Identify **three specific features** from this evaluator — the `Env` chain, `Procedure` as a closure, or TCO via trampoline — that map directly to something you will need in your final project. For each, write one sentence explaining the connection.
+
+**Reflection 3.** Our evaluator has no type system: `(+ 1 "hello")` raises a Python `TypeError` that leaks through the abstraction boundary. Describe at minimum **two changes** you would make to add a static type system to this evaluator. Consider: where would type annotations appear in the s-expression representation? Where in `scheme_eval` would you insert a type-checking pass? What new data structure would represent a type error vs. a value?
+
+---
+
+# Further Reading
+
+- **SICP Chapter 4** — Abelson & Sussman, *Structure and Interpretation of Computer Programs*, 2nd ed. The original metacircular evaluator. MIT Press open access: [https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf)
+
+- **"The Art of the Interpreter"** — Guy Steele & Gerald Sussman (1978). The foundational paper on meta-circular evaluation, environments, and the relationship between interpreters and compilers. [MIT AI Memo 452.](https://dspace.mit.edu/handle/1721.1/6094)
+
+- **Norvig's `lis.py`** — Peter Norvig's "How to Write a (Lisp) Interpreter in Python." Norvig's version is compact and elegant; ours extends it with TCO and a fuller special-form set. Search for "Norvig lis.py" to find his blog post.
+
+- **R7RS Scheme specification** — The current small Scheme standard. Section 4 (Expressions) maps directly to our `scheme_eval` dispatch table. Available at [https://small.r7rs.org/](https://small.r7rs.org/).
+
+- **"Proper Tail Recursion and Space Efficiency"** — Will Clinger (PLDI 1998). A careful treatment of what tail-call optimization guarantees and how to implement it correctly.

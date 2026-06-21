@@ -1,10 +1,9 @@
-# Closures and First-Class Functions
 <!--
 author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-closures.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-closures.md
+comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-closures.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -15,13 +14,15 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Closures and First-Class Functions
 
-Every thread of the semester knots together today: when a language with **first-class functions** and **static scope** lets a function escape the scope where it was born, the function must carry its birthplace with it. That bundle of code plus captured environment is a **closure**, the mechanism behind `make_adder`, behind every Church encoding you ran in Python, and behind the function feature your team may add to your interpreter. The arc: **the problem closures solve $\rightarrow$ the mechanism, drawn precisely $\rightarrow$ closures in your interpreter $\rightarrow$ the loop-variable trap**.
+Every thread of the semester knots together today: when a language with **first-class functions** and **static scope** lets a function escape the scope where it was born, the function must carry its birthplace with it. That bundle of code plus captured environment is a **closure** — the mechanism behind `make_adder`, behind every Church encoding, and behind the `FunDef` node your interpreter will support.
+
+Arc: **the problem closures solve → the mechanism drawn precisely → closures in your interpreter → the loop-variable trap → objects vs closures**
 
 ---
 
 ## Directions and Group Roles
 
-Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**). Consider each model and question individually first, then discuss with your group. The Recorder posts answers to the Class Activity Questions discussion board; the Presenter reports out areas of disagreement or alternative approaches. After class, respond to the reflective prompt individually in your notebook.
+Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**). Consider each model individually first, then discuss with your group.
 
 ---
 
@@ -29,38 +30,120 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 ## 1. A Function Outlives Its Scope
 
-Recall `make_adder`:
-
-```python
+```python  liascript
 def make_adder(n):
     def adder(x):
         return x + n
     return adder
 
-add5 = make_adder(5)
-print(add5(10))      # 15... but make_adder returned long ago. Where does n live?
+add5  = make_adder(5)
+add10 = make_adder(10)
+
+print(f"add5(3)  = {add5(3)}")    # 8
+print(f"add10(3) = {add10(3)}")   # 13
+
+# make_adder has RETURNED, yet n=5 and n=10 still live somewhere.
+# Where?
+print(f"add5's closure cells: {add5.__closure__[0].cell_contents}")
+print(f"add10's closure cells: {add10.__closure__[0].cell_contents}")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-By the lifetime rules of the environments module, `make_adder`'s local scope should die at return, taking `n` with it, yet `add5` still finds `n = 5`. **The resolution: a function value is not just code; it is a closure, a pair of (code, defining environment)**, and when `adder` was created, it captured a reference to the environment where `n` was bound. That environment survives, not because of magic, but because something (the closure) still points to it: lifetime follows reachability.
+By the lifetime rules of the environments module, `make_adder`'s local scope should die at `return`, taking `n` with it — yet `add5` still finds `n = 5`. The resolution: **a function value is not just code; it is a closure**, a pair of `(code, defining_environment)`. When `adder` was created, it captured a reference to the environment where `n` was bound. That environment survives because the closure still points to it — lifetime follows reachability.
 
-**Calling a closure resurrects its birthplace.** The call `add5(10)` creates a fresh environment for the parameters (`x = 10`) whose **parent is the closure's captured environment**, not the caller's. The body's `n` resolves up the *captured* chain: this is static scoping enforced at runtime, and it is the entire difference between lexical and dynamic scope, implemented in one decision about which parent pointer to use.
+$$\text{closure} = \langle \text{params}, \text{body}, E_{\text{def}} \rangle$$
 
-$$
-\text{closure} = \langle \text{params}, \text{body}, E_{\text{def}} \rangle
-\qquad
-\text{call: } E_{\text{call}} = \text{Environment}(\text{parent} = E_{\text{def}})
-$$
+**Calling a closure resurrects its birthplace.** The call `add5(10)` creates a fresh environment for the parameter (`x = 10`) whose **parent is the closure's captured environment** (where `n = 5`), not the caller's. This is static scoping enforced at runtime — the entire difference between lexical and dynamic scope, implemented in one decision about which parent pointer to use.
+
+**Critical Thinking Questions (CTQs)**
+
+> **CTQ 1.1** Draw the environment diagram at `print(add5(3))`: the global frame, the still-alive `make_adder` frame holding `n = 5`, the call frame holding `x = 3`, and every parent arrow. Which arrow embodies "static scope"?
+
+> **CTQ 1.2** After `add5 = make_adder(5)` and `add10 = make_adder(10)`, how many `make_adder` environments exist simultaneously? What does each closure's captured pointer tell you about whether closures *copy* or *reference* their environment?
+
+> **CTQ 1.3** In the lambda calculus, `(λn. λx. x + n) 5` reduces to `λx. x + 5` by *substitution* — the 5 is pasted into the body. State the relationship: closures are an *implementation strategy* for what substitution *specifies*. Why might an interpreter prefer environments over literal substitution for large function bodies?
 
 ---
 
-## Model 1: Draw the Capture
+## Model 1: Closures Capture, Not Copy
 
-### Critical Thinking Questions
+```python  liascript
+# CRITICAL: closures capture the VARIABLE BINDING, not the value at capture time
 
-1. Draw the environment diagram at `print(add5(10))`: the global frame, the (still-alive) `make_adder` frame holding `n = 5`, the call frame holding `x = 10`, and every parent arrow. Which arrow embodies "static scope"?
-2. Run `add3 = make_adder(3)` too. How many `make_adder` environments now exist? What does each closure's captured pointer prove about whether closures *copy* or *reference* their environment?
-3. Replay the scope module's `show`/`demo` program: explain in closure vocabulary why static scope printed 10, identifying precisely which environment `show`'s closure captured.
-4. In the lambda calculus, $(\lambda n. \lambda x.\, x + n)\, 5$ reduces to $\lambda x.\, x + 5$ by *substitution*: the 5 is pasted in, and no environment exists. State the relationship: closures are an *implementation strategy* for what substitution *specifies*. Why might an interpreter prefer environments to literal substitution? (Think cost of copying large bodies.)
+x = 10
+
+def get_x():
+    return x    # captures the variable x, not the value 10
+
+print(f"get_x() = {get_x()}")   # 10
+
+x = 99
+print(f"After x=99, get_x() = {get_x()}")   # 99 — the closure sees the new value!
+
+# Contrast: a default argument captures the VALUE at definition time
+def get_x_snapshot(val=x):
+    return val
+
+x = 42
+print(f"get_x_snapshot() = {get_x_snapshot()}")   # 99, not 42 — captured at def time
+
+# Multiple closures sharing a mutable cell:
+def make_counter():
+    count = [0]   # list so we can mutate it (Python 2 workaround; Python 3 uses nonlocal)
+    def increment():
+        count[0] += 1
+        return count[0]
+    def reset():
+        count[0] = 0
+    return increment, reset
+
+inc, rst = make_counter()
+print(inc(), inc(), inc())   # 1 2 3
+rst()
+print(inc())                 # 1 — both closures share the same count cell
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+> **CTQ 1.4** `get_x()` returns 99 after `x = 99`. What does this prove about whether closures copy or reference the captured binding?
+
+> **CTQ 1.5** The `make_counter` example has TWO closures (`increment` and `reset`) that share ONE captured environment containing `count`. Draw the environment diagram. Which arrow makes them share state?
+
+---
+
+## Model 2: Lexical vs. Dynamic Scope
+
+```python  liascript
+# Python uses LEXICAL (static) scope.
+# Let's simulate what DYNAMIC scope would look like.
+
+x = "global"
+
+def show():
+    print(f"show sees x = {x}")  # always sees x from DEFINING scope (global)
+
+def demo():
+    x = "demo"     # local x in demo's frame
+    show()         # show() is NOT affected by demo's x
+
+demo()  # prints "global" — static scope: show sees the global x
+
+# What dynamic scope would look like (manually simulated):
+def show_dynamic(env):
+    print(f"show_dynamic sees x = {env.get('x', 'not found')}")
+
+def demo_dynamic():
+    local_env = {'x': 'demo'}
+    show_dynamic(local_env)   # show uses CALLER's environment
+
+demo_dynamic()  # prints "demo" — dynamic scope: show sees caller's x
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+> **CTQ 2.1** Python's `show()` prints `"global"` even when called from `demo()` where `x = "demo"` is in scope. Explain why, using the environment chain diagram.
+
+> **CTQ 2.2** Early Lisp used dynamic scope by accident. Under dynamic scope, `show_dynamic(local_env)` prints `"demo"`. Write a scenario where dynamic scope causes a bug: a function `show_name()` that reads a variable `name` from the environment, and a caller that accidentally shadows `name` with a different value.
+
+> **CTQ 2.3** The single decision that implements static scope in the evaluator is: when creating a closure, save the **defining environment**, not the calling environment. Locate this decision in the closure code in Part II.
 
 ---
 
@@ -68,109 +151,277 @@ $$
 
 ## 2. Twenty Lines to First-Class Functions
 
-Adding functions to your language requires: a `FunDef` node and a `Call` node from the parser; a `Closure` value created at definition time capturing the *current* environment; and a call rule that builds the new environment on the captured parent. The code is short because the environments module did the heavy lifting.
+Adding closures to Mini requires:
+1. A `FunDef` node and a `Call` node from the parser
+2. A `Closure` value created at **definition time**, capturing the *current* environment
+3. A call rule that builds the new environment parented on the **closure's captured environment**
 
----
+```python  liascript
+# Closure-based interpreter for Mini (simplified)
 
-## Code Cell
+class Environment:
+    def __init__(self, parent=None):
+        self._vars = {}
+        self.parent = parent
 
-```python
-# First-class functions with closures, in the interpreter architecture.
-# Assumes Environment from the environments module.
+    def define(self, name, value):
+        self._vars[name] = value
 
-class FunDef:                        # fun name(params) { body }
-    def __init__(self, name, params, body):
-        self.name, self.params, self.body = name, params, body
+    def lookup(self, name):
+        if name in self._vars:
+            return self._vars[name]
+        if self.parent is not None:
+            return self.parent.lookup(name)
+        raise NameError(f"Undefined: {name}")
 
-class Call:                          # name(args...)
-    def __init__(self, callee, args):
-        self.callee, self.args = callee, args
+    def assign(self, name, value):
+        if name in self._vars:
+            self._vars[name] = value
+        elif self.parent is not None:
+            self.parent.assign(name, value)
+        else:
+            raise NameError(f"Undefined: {name}")
 
 class Closure:
-    """A function VALUE: code plus the environment where it was defined."""
     def __init__(self, params, body, env):
-        self.params, self.body, self.env = params, body, env
+        self.params = params
+        self.body   = body
+        self.env    = env   # THE CAPTURED ENVIRONMENT — static scope lives here
 
 class ReturnSignal(Exception):
     def __init__(self, value): self.value = value
 
-def execute_fundef(node, env):
-    env.define(node.name, Closure(node.params, node.body, env))   # capture HERE
+def execute_fundef(name, params, body, env):
+    """Create a closure and bind it to name in env."""
+    closure = Closure(params, body, env)   # capture env HERE
+    env.define(name, closure)
 
-def eval_call(node, env, evaluate, execute):
+def eval_call(callee_val, arg_vals, evaluate_body, env):
+    """Call a closure with evaluated argument values."""
+    fn = callee_val
+    if not isinstance(fn, Closure):
+        raise TypeError(f"Not callable: {fn!r}")
+    if len(arg_vals) != len(fn.params):
+        raise TypeError(f"Expected {len(fn.params)} args, got {len(arg_vals)}")
+    # *** THE ONE LINE THAT CHOOSES LEXICAL SCOPE ***
+    local = Environment(parent=fn.env)   # parent = DEFINING env, not calling env!
+    for name, val in zip(fn.params, arg_vals):
+        local.define(name, val)
     try:
-        fn = evaluate(node.callee, env)
-        if not isinstance(fn, Closure):
-            raise TypeError("attempted to call a non-function value")
-        if len(node.args) != len(fn.params):
-            raise TypeError(f"expected {len(fn.params)} arguments, got {len(node.args)}")
-        # THE closure rule: parent is the DEFINING env, not the calling env
-        local = Environment(parent=fn.env)
-        for name, arg in zip(fn.params, node.args):
-            local.define(name, evaluate(arg, env))   # args evaluated in CALLER's env
-        try:
-            execute(fn.body, local)
-        except ReturnSignal as r:
-            return r.value
-        return None
-    except (TypeError, ReturnSignal):
-        raise
-    except Exception as e:
-        print(f"[closures:eval_call] {e}")
-        import traceback; traceback.print_exc()
-        raise
+        evaluate_body(fn.body, local)
+    except ReturnSignal as r:
+        return r.value
+    return None
+
+# Demo: make_adder in this closure system
+global_env = Environment()
+
+execute_fundef("make_adder", ["n"],
+    # body: return lambda x: x + n  (simulated as a nested closure)
+    [("fundef", "adder", ["x"], [("return", ("add", ("var", "x"), ("var", "n")))])],
+    global_env)
+
+# Verify the closure was created and captured the right env
+ma = global_env.lookup("make_adder")
+print(f"make_adder is a Closure: {isinstance(ma, Closure)}")
+print(f"make_adder captured env has 'make_adder': {'make_adder' in ma.env._vars}")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+**CTQs**
+
+> **CTQ 3.1** Find the single line `local = Environment(parent=fn.env)` that decides static-versus-dynamic scope. Write the one-token change that would make your language dynamically scoped. (Hint: what if you used `env` instead of `fn.env`?)
+
+> **CTQ 3.2** Arguments are evaluated in `env` (the caller's environment) but bound in `local` (parented on the *definer's* environment). Construct a program where these two environments differ and where confusing them would change the output.
+
+> **CTQ 3.3** `ReturnSignal` rides an exception out of nested blocks to the call boundary. What would happen if `eval_call` caught *all* exceptions rather than only `ReturnSignal`?
 
 ---
 
-## Model 2: The One Line That Chooses Lexical Scope
+## Model 3: Closures Enable Recursion
 
-### Critical Thinking Questions
+```python  liascript
+# Recursion requires the function to see itself in its own closure.
+# execute_fundef binds the name BEFORE returning, so:
 
-5. Find the single line that decides static-versus-dynamic scope, and write the one-token change that would make your language dynamically scoped. (You now possess the power early Lisp implementers stumbled into.)
-6. Arguments are evaluated in `env` (the caller's environment) but bound in `local` (parented on the *definer's*). Construct a program where confusing those two environments changes the output.
-7. `ReturnSignal` rides an exception out of nested blocks to the call boundary, exactly like `break` did for loops. State the shared implementation idea in one sentence, and note what would go wrong if `eval_call` caught *all* exceptions rather than only `ReturnSignal`.
-8. Trace your language running the `make_adder` program (write it in your language's syntax first). Confirm the diagram from Model 1 falls out of the code.
+class Environment:
+    def __init__(self, parent=None):
+        self._vars = {}
+        self.parent = parent
+    def define(self, name, val):   self._vars[name] = val
+    def lookup(self, name):
+        if name in self._vars: return self._vars[name]
+        if self.parent: return self.parent.lookup(name)
+        raise NameError(name)
+
+class Closure:
+    def __init__(self, params, body_fn, env):
+        self.params = params; self.body_fn = body_fn; self.env = env
+    def __call__(self, *args):
+        local = Environment(parent=self.env)
+        for p, a in zip(self.params, args):
+            local.define(p, a)
+        return self.body_fn(local)
+
+global_env = Environment()
+
+# Define factorial using our closure mechanism
+# fact(n) = if n <= 0 then 1 else n * fact(n-1)
+def fact_body(env):
+    n = env.lookup('n')
+    if n <= 0: return 1
+    return n * env.lookup('fact')(n - 1)   # looks up 'fact' via captured env!
+
+fact_closure = Closure(['n'], fact_body, global_env)
+global_env.define('fact', fact_closure)    # bind BEFORE any calls
+
+print(f"fact(0) = {global_env.lookup('fact')(0)}")
+print(f"fact(5) = {global_env.lookup('fact')(5)}")
+print(f"fact(10) = {global_env.lookup('fact')(10)}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+> **CTQ 4.1** `execute_fundef` defines the name in the *current* environment before any calls. When `fact_body` runs and looks up `'fact'`, it finds the closure in `global_env`. Trace the environment chain: call frame → captured `global_env` → finds `fact`. What would break if we didn't define the name until after creating the closure?
+
+> **CTQ 4.2** `make_adder` creates a new closure for each call. `fact` is a single closure that calls itself. Draw the environment chain for `fact(3)` calling `fact(2)` calling `fact(1)` calling `fact(0)`. How deep does the chain grow?
+
+---
+
+# Part III: The Loop-Variable Trap
+
+## 3. The Famous Python Bug
+
+```python  liascript
+# The loop-variable trap — every Python programmer falls into this once
+fns = [lambda: i for i in range(3)]
+print("Results:", [f() for f in fns])     # [2, 2, 2], not [0, 1, 2]!
+
+# Why? All three lambdas captured the SAME binding of 'i'.
+# By the time they're called, i == 2.
+print("i after loop:", end=" ")
+try:
+    print(i)  # i still exists after the loop! (Python scoping quirk)
+except NameError:
+    print("not available")
+
+# Fix 1: default argument captures VALUE at definition time
+fns_fixed1 = [lambda i=i: i for i in range(3)]
+print("Fix 1 (default arg):", [f() for f in fns_fixed1])   # [0, 1, 2]
+
+# Fix 2: factory function creates a new scope per iteration
+def make_fn(i):
+    return lambda: i
+
+fns_fixed2 = [make_fn(i) for i in range(3)]
+print("Fix 2 (factory):", [f() for f in fns_fixed2])   # [0, 1, 2]
+
+# The lesson: each iteration needs its OWN binding, not a shared one
+# JavaScript's 'let' fixed this at the ecosystem scale (was 'var' before)
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+> **CTQ 5.1** All three lambdas captured the same `i` binding. After the loop, what is `i`? Why do all three lambdas return 2?
+
+> **CTQ 5.2** Fix 1 uses `lambda i=i: i`. The outer `i` (the default argument value) is evaluated at *definition time*, capturing the current value. Why does this work, while the capture in the original version doesn't?
+
+> **CTQ 5.3** Fix 2 uses a factory function `make_fn(i)` that creates a new scope. Draw the environment diagram showing why each returned lambda has a *different* captured environment.
+
+> **CTQ 5.4** JavaScript's historic `var` scoping caused the same bug; `let` was introduced to fix it. How does `let` create "per-iteration" scope? Why can't `var` do this?
+
+---
 
 [[MC]]
-Two closures created by separate calls to make_adder(5) and make_adder(3) return different results for the same input because:
-- ( ) The function body's code differs between them
-- (x) Each closure captured a different defining environment, in which n is bound to a different value
-- ( ) Python caches the most recent return value
-- ( ) Closures copy the global environment at call time
+Two closures created by separate calls to `make_adder(5)` and `make_adder(3)` return different results for the same input because:
+
+    [( )] The function body's code differs between them
+    [(x)] Each closure captured a different defining environment in which `n` is bound to a different value
+    [( )] Python caches the most recent return value
+    [( )] Closures copy the global environment at call time
 
 ---
 
-# Part III: The Trap, and Practice
+# Part IV: Closures vs. Objects
 
-## 3. The Loop-Variable Trap
+## 4. The Koan: Closures Are Poor Man's Objects
 
-The famous surprise:
+The famous koan: "Closures are a poor man's objects; objects are a poor man's closures." They are dual.
 
-```python
-fns = [lambda: i for i in range(3)]
-print([f() for f in fns])     # [2, 2, 2], not [0, 1, 2]
+```python  liascript
+# Objects approach: counter using a class
+class Counter:
+    def __init__(self, start=0):
+        self._count = start
+    def increment(self):
+        self._count += 1
+        return self._count
+    def reset(self):
+        self._count = 0
+    def value(self):
+        return self._count
+
+# Closures approach: counter using closures (no class!)
+def make_counter(start=0):
+    count = [start]   # mutable cell
+    return {
+        'increment': lambda: (count.__setitem__(0, count[0] + 1), count[0])[1],
+        'reset':     lambda: count.__setitem__(0, 0),
+        'value':     lambda: count[0],
+    }
+
+obj_counter = Counter(0)
+clo_counter = make_counter(0)
+
+obj_counter.increment(); obj_counter.increment()
+print(f"Object counter: {obj_counter.value()}")
+
+clo_counter['increment'](); clo_counter['increment']()
+print(f"Closure counter: {clo_counter['value']()}")
+
+# Both share mutable state via different mechanisms:
+# Object: self._count (field in object's dictionary)
+# Closure: count (binding in captured environment)
+# They are structurally dual.
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-All three lambdas captured the *same* binding of `i` (closures reference, never copy), and by call time that one binding holds 2. The standard fixes (a default argument `lambda i=i: i`, or a factory function) work by creating a *fresh binding per iteration*, which is exactly the per-iteration-scope design question from your environments exercise, now revealed as the difference between `[2,2,2]` and `[0,1,2]` in every language that combines closures with loops (JavaScript's `var`-to-`let` migration was this exact repair, at ecosystem scale).
+> **CTQ 6.1** In the closure-based counter, `count` is a shared mutable cell. In the object-based counter, `self._count` is a field. What is the structural difference? What is the conceptual difference?
 
-## 4. Exercises
+> **CTQ 6.2** The closure counter uses a list `[start]` to work around Python's scoping rules for `nonlocal`. Rewrite it using `nonlocal count` (Python 3) instead of a list. Why is `nonlocal` cleaner?
 
-1. *Ship functions.* Integrate today's nodes into your full pipeline (lexer keywords, parser rules `fundef` and call-in-primary from the expressions module, evaluator). Demonstrate: a plain function, a recursive `factorial(5)`, and `make_adder` working in *your* language. (Why does recursion already work? Examine what `execute_fundef` defined, and where.)
-2. *Counter objects.* In your language or Python, build `make_counter()` returning a function that increments and returns a captured count. You have implemented state without classes; one paragraph on what this suggests about whether your language needs objects at all (closures are the poor man's objects, and vice versa, as the koan goes).
-3. *Trap tour.* Reproduce the loop-variable trap in your language (if your loops and closures permit) or in Python, apply both fixes, and explain each fix's mechanism in environment-diagram terms.
-4. *Scope flip experiment.* Apply the one-token change from question 5, rerun the scope module's `show`/`demo` program in your language, and report the output flip with the diagram of what the call-parented chain resolved.
+> **CTQ 6.3** Languages like OCaml and Haskell have closures but no classes. Languages like Java (pre-lambda) have classes but no closures (lambdas are objects). From what you now know about the implementation of each, argue: which is more fundamental?
+
+---
+
+## Exercises
+
+### Exercise 1 — Integrate Closures into Mini (30 min)
+Add closures to your Mini interpreter:
+1. Add `FunDef(name, params, body)` and `Call(callee, args)` AST nodes
+2. In the parser, add `fun name(params) { body }` syntax and `name(args)` call syntax
+3. In the evaluator, implement `execute_fundef` (create closure, bind name) and `eval_call` (create child env, run body, catch ReturnSignal)
+4. Demonstrate: a plain function, `factorial(5)`, and `make_adder` working in your language
+
+### Exercise 2 — Counter Objects (15 min)
+Build `make_counter()` using closures (not a class) that returns an increment function. Then build `make_account(balance)` with `deposit(amount)` and `withdraw(amount)` methods. Demonstrate shared state between the two returned functions.
+
+### Exercise 3 — Trap Tour (15 min)
+Reproduce the loop-variable trap in your language (or Python), apply both fixes, and explain each fix's mechanism with environment diagrams.
+
+### Exercise 4 — Scope Flip Experiment (20 min)
+Apply the one-token change from CTQ 3.1 to make your interpreter dynamically scoped. Rerun the `show`/`demo` program from the scope module. Report the output difference and explain with a diagram which environment chain the dynamically scoped version follows.
 
 ---
 
 ## Reflection Prompt
 
-In your notebook: a closure carries its context everywhere, so it always means what it meant at home; dynamically scoped code means whatever its surroundings impose. People can resemble both. When has carrying your own context served you, and when has adapting to the caller been the wiser semantics?
+A closure carries its context everywhere, so it always means what it meant at home. Dynamically scoped code means whatever its surroundings currently impose. People can resemble both: some carry their context everywhere; others adapt to whoever is calling. When has carrying your own context served you, and when has adapting to the caller been the wiser semantics?
 
 ---
 
-## 5. Further Reading
+## Further Reading
 
-- Robert Nystrom. *Crafting Interpreters*, "Functions" and "Closures" (online): our exact implementation, then optimized.
-- Abelson and Sussman. *SICP*, section 3.2.
-- Douglas Thain. *Introduction to Compilers and Language Design*, Chapter 7.
+- **"Crafting Interpreters"** — Robert Nystrom, "Functions" and "Closures" chapters (online, free): our exact implementation, then optimized
+- **SICP Section 3.2** — Abelson & Sussman: the environment model of evaluation
+- **"The Art of the Interpreter"** — Steele & Sussman (1978): closures invented and explained
+- **Python `__closure__`** — CPython exposes closures via `fn.__closure__`: introspect live closures
+- **JavaScript `let` vs `var`** — MDN: the real-world consequence of the loop-variable trap at ecosystem scale
