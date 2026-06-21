@@ -16,6 +16,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Scanners and Parsers with Flex and Yacc: Building a Mini-Notation Parser
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Write Flex lexer rules using regular expressions and explain how the tool compiles them into a DFA for token recognition
+- Write Yacc/Bison grammar productions and semantic actions that construct an AST from recognized tokens
+- Explain the two-stage pipeline (character stream → tokens → AST) and justify why each stage requires a different class of automaton
+- Define the mini-notation grammar for sequences, groups, repetition, and rests, and trace the parse of a sample pattern string
+- Implement a Flex/Bison parser for a domain-specific language and verify correctness by evaluating the resulting AST against expected musical timing output
+
 This module develops **lexical analysis** and **syntax analysis** by building a real scanner and parser, using **flex** and **yacc** (GNU bison), for the **mini-notation** shared by the live coding music languages **TidalCycles** and **Strudel**. We move from **language classes $\rightarrow$ regular expressions and DFAs $\rightarrow$ context-free grammars $\rightarrow$ LALR(1) parsing $\rightarrow$ abstract syntax trees $\rightarrow$ semantics**, so that by the end of the module a string like `bd [sn sn] hh*2 ~` becomes a tree, and that tree becomes a timeline of musical events you can hear in your head, and verify in code.
 
 ---

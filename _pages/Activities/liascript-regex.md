@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Regular Expressions
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Define the three fundamental regular expression operators (concatenation, alternation, Kleene star) and construct regular expressions for specified string sets using only these operators
+- Trace a regular expression against a target string to predict whether it matches, citing operator precedence rules where applicable
+- Implement pattern matching, capturing, and substitution tasks using Python's `re` module (`match`, `search`, `fullmatch`, `findall`, `sub`)
+- Identify the limits of regular expressions by constructing a language that requires counting or matching nested structure, and explaining why no regex can describe it
+- Write the regular expression for a programming language token type (identifier, integer literal, floating-point literal) suitable for use in a lexer specification
+
 The Chomsky hierarchy's bottom rung, regular languages, comes with the most widely used notation in computing: **regular expressions**. Over this two-day module we master them twice: as *theory* (three operators and what they can and cannot describe) and as *practice* (Python's `re` library, the tool of your next assignment and the specification language of your lexer). The arc: **the three operators $\rightarrow$ practical syntax $\rightarrow$ matching, capturing, substituting in Python $\rightarrow$ the limits**.
 
 ---

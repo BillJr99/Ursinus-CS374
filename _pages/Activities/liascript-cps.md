@@ -14,6 +14,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Continuation-Passing Style: Control Flow as First-Class Values
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Mechanically transform a direct-style function into continuation-passing style (CPS), making every return explicit as a call to a continuation `k`
+- Explain why CPS converts every call into a tail call and why tail calls do not grow the stack
+- Implement a trampoline that executes a CPS computation in O(1) stack space using an iterative loop
+- Identify the continuation at each point in a computation and describe what "the rest of the program" means at that point
+- Recognize CPS as the common underlying mechanism behind tail-call optimization, exceptions, generators, async/await, and `call/cc`
+
 Continuation-Passing Style (CPS) transforms "what to do next" into an explicit first-class value called a **continuation** — a function representing the rest of the computation. Every function in CPS takes an extra argument `k` — the continuation — and instead of returning a value to its caller, it calls `k` with that result directly. This single idea unifies tail-call optimization, exceptions, async/await, generators, coroutines, and `call/cc` under one conceptual roof, revealing that these features, which appear very different on the surface, are all variations of the same underlying mechanism: the explicit manipulation of control flow as data.
 
 ---

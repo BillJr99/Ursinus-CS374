@@ -14,6 +14,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-CS374-Fall2026@gh-pages/ass
 
 # Lazy Evaluation and Infinite Structures
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Distinguish eager (strict/call-by-value) from lazy (non-strict/call-by-need) evaluation strategies and explain the practical consequences of each for infinite data structures
+- Implement a **thunk** in Python as a zero-argument closure that defers computation, and use it to represent an unevaluated expression
+- Build a **lazy stream** (cons-cell with a thunk for the tail) and use it to represent and traverse infinite sequences such as the natural numbers or all primes
+- Implement the Sieve of Eratosthenes as a lazy stream and use it to generate the first N primes without pre-specifying an upper bound
+- Identify Python generators and iterators as built-in lazy evaluation mechanisms, and relate them to the thunk/stream model developed in this activity
+
 Most programs you have written evaluate every expression the moment they encounter it. Add two numbers? The addition happens immediately. Build a list? Every element is computed before the list is returned. This strategy — called **eager evaluation** or **strict evaluation** — is the default in Python, Java, C, and most mainstream languages. It is easy to reason about: expressions have values, values are computed in order, and nothing is deferred.
 
 But eager evaluation has a structural weakness. It forces you to know, before you start computing, how much you will need. You cannot ask for "the first five primes" without either pre-specifying a search limit or building a general-purpose lazy abstraction yourself. The moment your data source is conceptually infinite — the sequence of all primes, all Fibonacci numbers, all natural numbers — strict evaluation runs into a wall.

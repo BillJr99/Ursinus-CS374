@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # The Lambda Calculus, Part 1: Syntax and Reduction
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Write and read lambda calculus expressions in formal notation, applying left-associative application and maximal-body abstraction conventions
+- Classify every variable occurrence in a lambda expression as either bound (and identify its binding λ) or free
+- Perform beta reduction step by step on paper, substituting arguments into function bodies following the one reduction rule
+- Recognize when variable capture would occur during substitution and apply alpha-renaming to avoid it
+- Translate between lambda calculus notation and equivalent Python `lambda` expressions
+
 Lambda calculus was invented by Alonzo Church in the 1930s to answer a fundamental question: what does it mean to *compute*? Church showed that two symbols — λ (for "function") and · (for "apply") — are sufficient to compute anything that is computable. Every programming language you have ever used, including Python, is secretly a lambda calculus with extra syntax. By the end of this activity, you will have seen Python's entire evaluation model in eight lines of math.
 
 Beneath Scheme, beneath Python's `lambda`, beneath every functional language, sits a formal system from 1936 with **three forms of expression and one rule of computation**: Alonzo Church's **lambda calculus**, in which functions are the only thing that exists, and computing means substituting arguments into bodies. Today we learn to read it and to reduce expressions **by hand**, the way Church did, because by-hand reduction is the only way the system becomes real. The arc: **the three forms $\rightarrow$ free and bound variables $\rightarrow$ beta reduction by hand $\rightarrow$ alpha renaming when names collide**.

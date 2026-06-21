@@ -16,6 +16,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # LL and LR Parsing: Tables, Conflicts, and How Yacc Works
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Compute FIRST and FOLLOW sets by hand for any context-free grammar and use them to populate an LL(1) parsing table
+- Identify LL(1) conflicts in a parsing table and determine whether the conflict arises from ambiguity, left recursion, or shared FIRST sets
+- Construct the LR(0) item sets and SLR(1) parsing table for a small grammar and execute a simulated bottom-up parse
+- Explain what yacc/bison does internally when given a `.y` grammar file, connecting LR item construction to the generated parse table
+- Compare LL(1) and SLR(1)/LALR(1) parsing power, identifying grammars that one technique accepts and the other rejects
+
 *"The LL(1) condition is exactly the condition under which you can parse without backtracking: always knowing what to do from one token."*
 
 You have already implemented a **recursive descent parser** — an LL(k) parser in procedural disguise. Every function in your parser corresponds to a nonterminal; every `if` on the current token corresponds to a table lookup. In this module we make that correspondence explicit by constructing the actual **LL(1) parsing table** from your grammar, then turn the table bottom-up to understand **LR parsing** — the more powerful technique that yacc, bison, and most production parsers use. By the end you will be able to: compute FIRST and FOLLOW sets by hand for any context-free grammar; construct an LL(1) table and identify conflicts; construct LR(0) items and an SLR(1) table; and explain precisely what yacc does when it processes your `.y` grammar file.

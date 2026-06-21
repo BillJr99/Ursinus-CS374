@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Evaluating Languages: Readability, Writability, Reliability
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Define the four classical language evaluation criteria (readability, writability, reliability, cost) and explain how each is measured
+- Identify specific language features (orthogonality, type checking, abstraction support, etc.) and predict their effect on each evaluation criterion
+- Analyze code examples to detect orthogonality failures and explain the programmer confusion they produce
+- Compare two languages on at least two evaluation criteria using concrete feature-level evidence rather than personal preference
+- Apply the evaluation framework as a scorecard to justify design decisions for your own language project
+
 "Which language is best?" is a bad question; "best *for what*, judged *by what criteria*" is an engineering question. Today we adopt the classical evaluation framework (readability, writability, reliability, and cost) and the design tradeoffs that connect them, because every choice your team makes in December will trade one criterion against another. The arc: **the criteria $\rightarrow$ the design features that drive them $\rightarrow$ tradeoffs in real languages $\rightarrow$ a scorecard for your own design**.
 
 ---

@@ -11,6 +11,16 @@ link:     https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.
 
 # Denotational Semantics: Programs as Mathematical Functions
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Define denotational semantics and explain how it differs from operational and axiomatic semantics
+- Apply the compositionality principle to construct semantic functions for compound expressions in a simple language
+- Identify the mathematical domain (integers, functions, or lifted types) appropriate for modeling a given language construct
+- Explain how denotational semantics handles non-termination using the bottom element and domain theory
+- Compare two programs for semantic equivalence by evaluating their denotations on the same environment
+
 > **"The meaning of a program is a function from inputs to outputs."**
 >
 > Denotational semantics gives us a way to assign a precise mathematical meaning — a *denotation* — to every program, independent of how any computer would execute it. Today you'll see how to define the meaning of a language mathematically, and why this matters for reasoning about programs.

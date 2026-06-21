@@ -11,6 +11,16 @@ link:     https://cdn.jsdelivr.net/chartist.min.css
 
 # Type Systems: From Weak to Strong, Static to Dynamic
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Identify where a language falls on the 2×2 matrix of static/dynamic and strong/weak type disciplines
+- Analyze JavaScript-style implicit coercions and predict the result of mixed-type expressions
+- Compare structural typing and nominal typing and determine which relationship holds for two given types
+- Explain type erasure and describe how generic types are represented at runtime in a JVM-style language
+- Evaluate the correctness risks introduced by weak typing and implicit coercions in real-world code
+
 > **Prerequisites:** Basic programming in Python and one statically-typed language
 > **Goal:** Understand the 2×2 matrix of type discipline, how type coercion works, what structural vs nominal typing means, and how type erasure lets generics coexist with runtime efficiency.
 

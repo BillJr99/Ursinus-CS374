@@ -13,6 +13,17 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 -->
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Write PLY lexer rules using regular-expression strings and docstring-regex functions, and explain how PLY selects among competing rules
+- Write PLY parser rules as LALR(1) grammar productions with semantic actions that construct an AST
+- Declare operator precedence and associativity in PLY to resolve shift-reduce conflicts without rewriting the grammar
+- Trace a PLY-generated parser on a given input token stream and predict the AST it produces
+- Translate an equivalent Flex/Bison grammar into its PLY form and identify the structural correspondences between the two tools
+- Implement error recovery in a PLY parser and explain how error tokens allow parsing to resume after a syntax error
+
 ## Overview
 
 This POGIL activity teaches lexical analysis and parsing using **PLY (Python Lex-Yacc)**, a pure-Python library that implements the same algorithms as the classic Flex and Bison tools you have studied. Every code example in this activity runs directly in your browser, letting you experiment with grammars, tokens, and abstract syntax trees without a C compiler or build system.

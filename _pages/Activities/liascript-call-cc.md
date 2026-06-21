@@ -14,6 +14,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Call with Current Continuation: Capturing the Future
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Describe what the "current continuation" is at any point in a CPS program and explain what it means to "capture" it
+- Simulate `call/cc` in Python by building an escape continuation using CPS and a mutable cell, and use it to implement early exit from nested computation
+- Identify `return`, `break`, and `raise` as restricted forms of escape continuations, and explain what makes `call/cc` more powerful than each of them
+- Implement at least two control-flow patterns using captured continuations: early exit and coroutine-style cooperative multitasking
+- Explain the connection between `call/cc`, CPS, and closures: continuations are closures over the rest of the program
+
 ---
 
 ## Before You Begin

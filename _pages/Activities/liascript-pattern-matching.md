@@ -11,6 +11,15 @@ link:     https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.
 
 # Algebraic Data Types and Pattern Matching
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Define algebraic data types (product types and sum types) using Python dataclasses and sealed class hierarchies
+- Write pattern-matching code using Python's `match`/`case` syntax to safely deconstruct ADT values exhaustively
+- Explain how sum types make illegal states unrepresentable and eliminate a class of runtime `None`/tag-check errors
+- Apply ADTs and pattern matching to model a Mini-language AST, writing a recursive evaluator that dispatches on node type
+
 > **"Pattern matching is the most powerful idea you haven't seen yet."**
 >
 > Today you will discover how types can model *everything* — shapes, trees, expressions, errors, results — and how pattern matching eliminates a whole class of runtime errors by making the impossible unrepresentable.

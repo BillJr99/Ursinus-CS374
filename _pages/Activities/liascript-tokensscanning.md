@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tokens and Scanning: Building a Lexer
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Define the structure of a token (type, lexeme, position) and explain the lexer's contract with the parser downstream
+- Apply the maximal munch rule and priority ordering to resolve ambiguous tokenizations by hand and predict the output token stream for a given input string
+- Implement a table-driven lexer in Python that uses an ordered token specification, a master regex, and `re.finditer` to emit a typed token stream with line and column positions
+- Identify and handle lexer error conditions (illegal characters, unterminated strings) and explain why error recovery strategy must be chosen deliberately
+- Construct a token specification (TOKEN_SPEC) for a new language, ordering rules correctly to enforce keyword priority over identifier patterns
+
 Today the theory pays its first concrete dividend: over two days we build a working **lexer**, the first stage of your project pipeline, which converts raw characters into a stream of typed **tokens** using exactly the regular machinery of the past two weeks. The arc: **what a token is $\rightarrow$ the scanning rules (maximal munch, priority) $\rightarrow$ a complete Python lexer $\rightarrow$ error handling and positions**.
 
 ---

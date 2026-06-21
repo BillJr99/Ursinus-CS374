@@ -14,6 +14,15 @@ link:     https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.
 
 # The Metacircular Evaluator: Scheme in Python
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Parse Scheme s-expressions into Python data structures and traverse them to implement `eval` and `apply`
+- Implement lexical scoping using a linked chain of environment frames that correctly handles closures
+- Build a trampoline-based tail-call optimizer that runs deeply recursive Scheme programs without stack overflow
+- Explain the relationship between the metacircular evaluator and the course's Mini-language interpreter, identifying where the two designs converge and diverge
+
 > **"To understand the evaluator is to understand computation."** — SICP
 
 A **metacircular evaluator** is an interpreter for a language written in (or very close to) that language itself. In SICP Chapter 4, Abelson and Sussman build a Scheme interpreter *in Scheme*, revealing that the evaluation rules almost write themselves — because the host language and the implemented language share the same underlying ideas. Here, we build a Scheme interpreter in Python. Python is close enough that the translation is direct; different enough that we must make every semantic choice explicit.

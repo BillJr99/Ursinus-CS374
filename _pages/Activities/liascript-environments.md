@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Environments: Implementing Scope
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Implement an `Environment` class as a chain of dictionaries linked by parent pointers and explain why a single flat dictionary cannot correctly model nested scope
+- Trace the four environment operations — `define`, `lookup`, `assign`, and scope entry/exit — on a program with nested blocks
+- Predict the value printed at each point in a program with shadowed variable names, explaining each step of the chain-walk lookup
+- Construct the environment chain diagram for a given program snapshot and identify the lifetime and scope of each binding
+- Integrate the `Environment` class into a tree-walking interpreter so that block statements correctly push and pop scopes
+
 Yesterday's scope rules become today's data structure: the **environment**, a chain of dictionaries linked by parent pointers, in which lookup walks outward exactly as static scoping's "innermost enclosing declaration" demands. This two-day module builds the `Environment` class your interpreter assignment requires, and rehearses every operation on it until the picture is second nature. The arc: **why one dict fails $\rightarrow$ the chain $\rightarrow$ the four operations $\rightarrow$ blocks creating and discarding scopes**.
 
 ---

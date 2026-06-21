@@ -14,6 +14,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Gradual Typing: Between Static and Dynamic
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Define gradual typing and explain how the unknown type `?` bridges statically-typed and dynamically-typed code
+- Identify the consistency relation between types and distinguish it from type equality and subtyping
+- Implement a bidirectional type checker that accepts gradually-typed programs and inserts runtime casts at typed/untyped boundaries
+- Analyze blame assignment at static/dynamic boundaries and determine which component (caller or callee) is responsible for a cast failure
+- Evaluate the correctness guarantees a gradually-typed language can and cannot provide compared to fully static or fully dynamic typing
+
 Real-world languages rarely commit fully to either end of the static/dynamic spectrum. TypeScript adds optional types to JavaScript. mypy adds optional types to Python. Dart, Hack (PHP), and Typed Racket all make the same bet: let programmers annotate where they care about correctness, leave the rest unchecked, and insert runtime guards at the boundaries. The theory behind this approach — **gradual typing** — was formalized by Siek and Taha in 2006. It is not simply "some types, sometimes." It is a precise design with a formal consistency relation, a blame calculus for tracking contract violations, and deep consequences for what your language can and cannot guarantee.
 
 Today you will move from pure dynamic typing (Model 1) through optional annotations (Model 2), implement a mini bi-directional type checker with a gradual consistency relation (Model 3), track blame at typed/untyped boundaries (Model 4), and wire a runtime type-checking interpreter that enforces annotated boundaries while leaving unannotated code free (Model 5).

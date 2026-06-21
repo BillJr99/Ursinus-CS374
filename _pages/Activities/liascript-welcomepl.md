@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Welcome: Why Study Programming Languages?
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Identify the three parties involved in every programming language (author, machine, and reader) and explain the role each plays
+- Compare at least three distinct programming languages by describing the specific design choices that differentiate their syntax and semantics
+- Trace the pipeline from source text to program behavior, naming each stage and its input/output
+- Explain the trade-offs a language designer faces among expressiveness, safety, and machine efficiency
+- Classify a given code snippet by the paradigm it primarily represents and justify that classification
+
 By December, your team will have built a programming language of your own: a lexer, a parser, and an interpreter, assembled from components you write one assignment at a time. Today we ask why that journey is worth taking. We move from **what a language is $\rightarrow$ why languages differ $\rightarrow$ the pipeline from text to behavior $\rightarrow$ how this course works**.
 
 ---

@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Control Flow Semantics
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Define non-strict evaluation and explain why `if` must not evaluate both branches
+- Compare truthiness policies (booleans-only, universal truthiness, C-style numeric truth) and identify which values each policy accepts or rejects
+- Explain short-circuit evaluation for `and` and `or`, and trace whether the right operand is evaluated in a given expression
+- Implement a `truthy` predicate and a short-circuiting `and`/`or` evaluator consistent with a chosen policy
+- Analyze how the design choices of truthiness and short-circuit semantics interact with a language's type system
+
 `if` and `while` look trivial until you must implement them, at which point a swarm of decisions appears: what counts as true? are both branches evaluated? does `and` evaluate its right side when the left already decides? Today we pin down **control flow semantics** for your interpreter assignment, with special attention to **truthiness** and **short-circuit evaluation**, two places where languages quietly disagree. The arc: **selection semantics $\rightarrow$ truthiness $\rightarrow$ short-circuiting $\rightarrow$ iteration and its design questions**.
 
 ---

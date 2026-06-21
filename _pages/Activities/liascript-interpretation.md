@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tree-Walking Interpretation
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Implement a recursive tree-walking evaluator and trace its post-order execution on a given AST
+- Evaluate arithmetic, boolean, and comparison expressions by dispatching on AST node type and combining child values
+- Explain the semantics of assignment, print, while, and if statements as implemented in the evaluator, including how control flow is handled
+- Identify and resolve the semantic design decisions embedded in an evaluator (short-circuit evaluation, type coercion, division semantics)
+- Integrate a lexer, parser, and evaluator into a functioning REPL and trace the complete pipeline from source string to printed output
+
 The pipeline completes its first full circuit: this two-day module builds the **evaluator**, the recursive tree walk that turns ASTs into values, upgrading your pretty-printer's skeleton into an interpreter. With lexer, parser, and evaluator joined, you will run a program in a language that exists because you built it. The arc: **evaluation as recursion $\rightarrow$ the evaluator in code $\rightarrow$ semantics decisions hiding in plain sight $\rightarrow$ the REPL**.
 
 ---

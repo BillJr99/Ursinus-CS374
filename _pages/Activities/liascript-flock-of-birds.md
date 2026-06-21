@@ -16,6 +16,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Flock of Birds: Combinatory Logic and the SKI Calculus
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Reduce combinatory logic expressions (I, K, S, B, C, W, M) to normal form using the combinator reduction rules, circling the active redex at each step
+- Translate lambda expressions into combinator form using bracket abstraction, eliminating all variable bindings
+- Implement the standard combinator birds in Python and verify their reduction behavior by execution
+- Explain why S and K together are computationally complete (Schönfinkel's theorem) and connect this to the Church-Turing thesis
+- Derive familiar higher-order functions (function composition, `flip`, `const`, identity) directly from combinator definitions
+
 *"To every combination there corresponds a unique bird."* — Raymond Smullyan, *To Mock a Mockingbird* (1985)
 
 In the lambda calculus module we built computation from three syntactic forms: variables, abstraction, and application. Today we take the abstraction away. **Combinatory logic** is the lambda calculus with no bound variables — no $\lambda x$, no substitution, no alpha-conversion, no capture to fear. Only application and a small fixed collection of **combinators**: functions with no free variables whose behavior is defined entirely by how they transform their arguments. In 1924, Moses Schönfinkel proved that just two combinators, **S** and **K**, suffice to express any computable function. The birds are named in Raymond Smullyan's puzzle book, and Gabriel Lebec's 2016 London talk "*A Flock of Functions*" demonstrates the entire menagerie live in JavaScript. By the end of this module you will reduce terms in the combinator calculus by hand, implement all the birds in Python, derive familiar operations (function composition, `flip`, `const`, `id`) directly from the birds, and understand why SKI completeness is the combinatory-logic version of the Church-Turing thesis.

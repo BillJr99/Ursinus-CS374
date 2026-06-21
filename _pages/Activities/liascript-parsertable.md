@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Table-Driven and LR Parsing
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Execute a shift-reduce parse by hand, maintaining a stack-and-input table and selecting shift or reduce at each step
+- Explain why left-recursive grammar rules that defeat recursive descent are handled naturally by an LR parser
+- Identify shift-reduce and reduce-reduce conflicts in an LR grammar and describe the grammar restructuring or precedence declaration needed to resolve each
+- Compare LL(1) and LR(1) parsing strategies on the dimensions of grammar coverage, implementation complexity, and error-message quality
+- Determine which parsing strategy (hand-written descent vs. table-driven generator) is appropriate for a given language design scenario
+
 Recursive descent is top-down: it predicts what must come next. The industrial-strength alternative works **bottom-up**: an **LR parser** shifts tokens onto a stack and reduces them to nonterminals when it recognizes a completed right-hand side, driven entirely by a precomputed table. Over two days we learn to *read and execute* this machinery by hand, because parser generators (yacc, bison, ANTLR) emit it, error messages reference it, and the left recursion that broke descent is exactly what LR handles natively. The arc: **shift-reduce intuition $\rightarrow$ executing a parse by hand $\rightarrow$ conflicts $\rightarrow$ when to use which technology**.
 
 ---

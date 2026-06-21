@@ -14,6 +14,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # The Lambda Calculus, Part 2: Church Encodings and Combinators
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Define and reduce the named combinators I, K, KI, and C as pure lambda terms, and verify their behavior by hand reduction and Python execution
+- Encode booleans as lambda terms (Church booleans) and implement `AND`, `OR`, `NOT`, and `IF-THEN-ELSE` using only function application
+- Encode natural numbers as Church numerals and implement successor, addition, and multiplication as lambda functions
+- Demonstrate that every combinator with no free variables can be given a permanent name, and connect this to the concept of referential transparency
+- Trace the full reduction of an arithmetic expression written in Church numeral notation to its normal form
+
 > **Before You Begin**
 >
 > This activity builds directly on **Lambda Calculus, Part 1**. Before starting, you should be comfortable with:

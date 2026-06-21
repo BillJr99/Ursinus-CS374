@@ -14,6 +14,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Functional Programming
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Distinguish pure functions from impure ones and explain why purity enables referential transparency, testability, and safe parallelism
+- Apply `map`, `filter`, and `reduce` to transform and aggregate data without explicit loops
+- Write higher-order functions that accept and return other functions, including anonymous `lambda` expressions
+- Use currying and partial application to build specialized functions from general ones
+- Implement recursive solutions to iterative problems without using mutable state or assignment
+
 Unit 3 turns from building languages to inhabiting one paradigm deeply. We practice **functional programming** in Python — `lambda`, `map`, `filter`, `reduce` — with the discipline of **purity** and **immutability**, because the functional toolkit is both a daily professional skill (data pipelines, modern Java/JavaScript/Rust) and the bridge to Scheme and the lambda calculus ahead.
 
 Arc: **purity and why it pays → the big three combinators → higher-order thinking → currying and partial application → recursion without loops**

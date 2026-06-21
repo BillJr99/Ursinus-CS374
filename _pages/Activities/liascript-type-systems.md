@@ -16,6 +16,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Type Systems: From Annotations to Inference
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Compare static and dynamic typing by predicting when a type error is caught for a given program and test suite
+- Explain how type inference allows a statically typed language to eliminate annotation overhead while preserving compile-time guarantees
+- Trace the Hindley-Milner type inference process by assigning type variables, generating constraints, and applying unification
+- Evaluate the trade-offs between type annotation burden and error-message clarity in languages with type inference
+- Implement basic type-checking logic in Python that rejects ill-typed expressions before evaluation
+
 *"A type system is a tractable syntactic method for proving the absence of certain program behaviors by classifying phrases according to the kinds of values they compute."* — Benjamin Pierce, *Types and Programming Languages*
 
 A type is a **proof** carried in the program, checked by the compiler, that a value will be used consistently. When the checker passes, you have a machine-verified claim that the program is free of entire classes of errors — not just the errors you thought to test for, but all errors of that shape. This module traces the design space: from **dynamic typing** (types checked at runtime), through **static typing** (types checked at compile time), to **type inference** (types deduced by the compiler without annotations), to the beautiful algorithm at the heart of Haskell's type system — **Hindley-Milner**, the method that lets you write:

@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Language Design Studio: Sprint 0
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Construct a language identity statement that identifies a target niche, a distinctive feature, and the non-negotiable implementation requirements
+- Evaluate two syntax variants of the same language on the criteria of readability, writability, and learnability, citing specific syntactic evidence
+- Apply the language design scorecard to score and justify design decisions for your own language project
+- Define the required components of a Sprint 0 language specification: grammar sketch, node inventory, and design document outline
+- Compare the consequences of at least two specific syntax design choices (e.g., keyword blocks vs. brace blocks) for both users and implementers
+
 The team project begins today: your team will design and implement **a programming language of your own**, assembling the lexer, parser, AST, environments, and evaluator you each built into one system with an identity, a grammar, and a Demo Day. Today is Sprint 0: identity, scorecard, grammar v0, and a working plan. The arc: **what makes a language yours $\rightarrow$ the design scorecard $\rightarrow$ grammar and node inventory v0 $\rightarrow$ sprint roles and cadence**.
 
 ---

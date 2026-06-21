@@ -14,6 +14,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Monads: Programmable Semicolons
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Implement a `Maybe` monad in Python with `bind` (`>>=`) and `return`/`unit`, and use it to eliminate pyramid-of-doom null-checking from a multi-step pipeline
+- State and verify the three monad laws (left identity, right identity, associativity) for a concrete monad implementation
+- Implement a `List` monad and use it to model nondeterministic computation, explaining how `bind` distributes over the list of possibilities
+- Read basic Haskell `do`-notation and translate it into the equivalent chain of `>>=` calls
+- Recognize monadic patterns in Python code you already use (`with` blocks as IO monad, `async`/`await` as continuation monad, `None`-propagation as Maybe monad)
+
 A **monad** is a design pattern for sequencing computations when something extra needs to happen between each step — propagating failure, threading state, collecting effects, or managing nondeterminism. Philip Wadler called `>>=` (pronounced "bind") a *programmable semicolon*: instead of `;` running statements silently in sequence, `>>=` runs a customizable "glue" operation between each step. Today we build the intuition bottom-up — from functions to functors to monads — and verify every construction in Python before touching Haskell. The arc: **the problem → Maybe → the three monad laws → List → do-notation → IO**.
 
 ---

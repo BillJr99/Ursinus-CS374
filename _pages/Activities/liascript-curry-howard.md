@@ -15,6 +15,15 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # The Curry-Howard Correspondence: Programs Are Proofs
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- State the Curry-Howard correspondence and map each of its three pillars — propositions-as-types, proofs-as-programs, proof-checking-as-type-checking — to concrete Python examples
+- Construct Python type annotations that encode logical conjunction (product types) and disjunction (sum types), and explain why an uninhabited type corresponds to absurdity
+- Write a function whose type signature constitutes a proof of a propositional tautology, and identify a function whose type cannot be inhabited
+- Connect the Curry-Howard correspondence to practical language features in Rust (ownership types), Haskell (type classes), and proof assistants such as Coq
+
 In 1934 Haskell Curry noticed that the type `A → B` resembles the logical implication `A ⊃ B`. In 1969 William Howard made it precise: **types are propositions, programs are proofs, and type-checking is proof-checking**. Every function you write is a proof of its type; every type error is a proof gap. This equivalence — called the **Curry-Howard correspondence** — connects programming language theory to mathematical logic at the deepest level, and it is the reason Rust, Haskell, and proof assistants like Coq and Lean can all be understood from the same foundation. The arc: **propositions-as-types → proof terms → product types as conjunction → sum types as disjunction → the empty type as absurdity → dependent types (a glimpse)**.
 
 ---

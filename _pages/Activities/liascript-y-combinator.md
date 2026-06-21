@@ -16,6 +16,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # The Y Combinator: Self-Reference Without Names
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Explain why named self-reference is unavailable in the pure lambda calculus and why an anonymous recursive function requires a fixed-point operator
+- Derive the Y combinator step by step from the self-application trick, tracing how each intermediate form eliminates a deficiency of the previous one
+- Implement a working Y combinator in Python (using the Z combinator variant for strict evaluation) and use it to express factorial without `def` or assignment
+- Define what it means for Y to be a fixed-point operator (`Y f = f (Y f)`) and verify this property by hand reduction
+- Recognize the Y combinator pattern in real code (trampolined recursion, anonymous recursion idioms in JavaScript and Haskell)
+
 *"The Y combinator is probably the most ingenious and least intuitive result in the lambda calculus."* — Pierce, *TAPL*
 
 Every recursive function you have ever written calls itself by name: `factorial` calls `factorial`, `fib` calls `fib`. This seems obvious and necessary. But names are a feature of programming environments, not a feature of computation itself. The lambda calculus has no names — every definition is anonymous. So how do you write a recursive function when you cannot name it? How do you call a function you cannot refer to?

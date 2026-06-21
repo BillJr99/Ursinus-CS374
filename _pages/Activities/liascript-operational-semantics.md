@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Operational Semantics: Specifying Languages with Inference Rules
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Define the components of an inference rule (premises, conclusion, axiom) and interpret inference rule notation correctly
+- Construct big-step derivation trees for arithmetic and conditional expressions using big-step (natural) semantics rules
+- Trace small-step reduction sequences for expressions, identifying each intermediate configuration
+- Compare big-step and small-step operational semantics and explain which style aligns more closely with a tree-walking interpreter
+- Analyze the connection between operational semantics rules and the corresponding cases in an interpreter's `eval` function
+
 Your interpreter is an implementation of a language — but implementations can have bugs. A **formal semantics** is a mathematical specification of the language that is separate from any implementation: you check your interpreter against the semantics, not the other way around. Today we study **operational semantics**, the dominant style in programming language theory, which defines meaning by specifying computation as a set of formal **inference rules** over program configurations. The arc: **configurations → big-step semantics → small-step semantics → connecting to your evaluator → where semantics and type systems meet**.
 
 ---

@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Names, Binding, and Scope
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Classify a name's binding time (language-design time, compile time, load time, or run time) and justify the classification for examples in Python and Java
+- Distinguish static (lexical) scope from dynamic scope by tracing name resolution under each rule for a program with nested function calls
+- Define the concepts of binding, declaration, use, shadowing, and lifetime, and apply each term correctly to code examples
+- Analyze the trade-offs of static versus dynamic typing as a binding-time decision, articulating what each buys and what each costs
+- Specify the scoping and binding rules for a new language design, defending the chosen rules in terms of predictability, flexibility, and implementation complexity
+
 Your interpreter currently stores every variable in one flat dictionary, and that simplicity is about to fail you: what happens when two parts of a program use the same name? Today we develop the vocabulary of **binding** (attaching a name to a meaning) and **scope** (where that attachment is visible), the semantics decisions at the heart of your interpreter assignment. The arc: **binding times $\rightarrow$ static versus dynamic scope $\rightarrow$ lifetime $\rightarrow$ design decisions for your language**.
 
 ---

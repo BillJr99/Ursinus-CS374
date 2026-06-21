@@ -14,6 +14,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Abstract Syntax Trees
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Distinguish between a parse tree and an abstract syntax tree (AST) and explain what information each retains or discards
+- Construct AST node classes using Python dataclasses and identify the fields required for each language construct
+- Trace the post-order recursive walk over an AST to predict the output of a pretty-printer or evaluator
+- Build an AST by hand for a given arithmetic or assignment expression, annotating each node with its type and children
+- Apply tree transformations (constant folding, dead-code elimination) and explain how each transformation preserves program semantics
+
 Your parser has been quietly building nested tuples; this two-day module makes the tree a first-class citizen: the **abstract syntax tree (AST)**, the central data structure of every language implementation and the hinge of your whole project. The arc: **parse trees vs. ASTs → node classes → building trees in the parser → walking trees (printing today, evaluating soon) → transforming trees (optimizing)**
 
 ---

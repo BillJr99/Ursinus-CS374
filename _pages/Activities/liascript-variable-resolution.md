@@ -11,6 +11,16 @@ link:     https://cdn.jsdelivr.net/chartist.min.css
 
 # Variable Resolution: From Name to Value
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Trace variable lookup through a chain of nested scopes (local, enclosing, global, built-in) for Python, JavaScript, and C programs
+- Compare static (lexical) scoping and dynamic scoping and predict the value each produces for a given call sequence
+- Implement an environment as a stack of frames and define the lookup algorithm that walks the chain
+- Identify the LEGB rule in Python and explain what happens when `global` or `nonlocal` declarations modify the default resolution path
+- Analyze how scope-chain design decisions (closure semantics, hoisting, block scope) affect correctness and readability of programs
+
 > **Prerequisites:** Basic programming, functions, variables
 > **Goal:** Understand exactly how a language looks up a variable name — the scope chain, LIFO stack of environments, and why Python/JavaScript/C make different choices.
 

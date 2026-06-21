@@ -15,6 +15,15 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Scheme: Code as Data
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Explain the uniform s-expression syntax of Scheme and why programs and data share the same structure
+- Trace the evaluation of recursive Scheme functions, including higher-order functions like `map` and `fold`
+- Describe how Scheme's `quote` and `eval` mechanisms enable code to be treated as data and vice versa
+- Contrast Scheme's functional style with imperative Python, identifying where recursion replaces loops and closures replace mutable state
+
 Today we study a language as an *artifact*: **Scheme** (we use its Racket dialect), a tiny functional language whose syntax is so uniform that programs and data share one shape, the parenthesized list. Scheme matters to this course twice over: it is functional programming distilled to essentials, and its **s-expression** syntax makes the lexer-parser machinery you built almost disappear, a designed contrast your team should feel. The arc: **s-expressions $\rightarrow$ evaluation rules $\rightarrow$ recursion as the only loop $\rightarrow$ code as data**.
 
 ---

@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Syntax and BNF/EBNF
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Define the components of a BNF grammar (terminals, nonterminals, productions, start symbol) and identify each in a given grammar
+- Construct a derivation sequence for a target string using a provided BNF grammar, applying one rule per step
+- Translate EBNF shorthand constructs (repetition `{ }`, optional `[ ]`, grouping `( )`) into their equivalent BNF recursive rules
+- Write a BNF or EBNF grammar for a simple programming language construct such as an integer literal, an identifier, or an arithmetic expression
+- Explain how EBNF constructs map directly to parser implementation patterns (while loop, if statement) in recursive descent
+
 English describes syntax vaguely; a language definition cannot afford vagueness. Today we learn **Backus-Naur Form (BNF)** and its extended cousin **EBNF**, the notations in which every modern language's syntax is published, and which your parser assignment will translate, rule by rule, into code. The arc: **why formal syntax $\rightarrow$ BNF mechanics $\rightarrow$ EBNF conveniences $\rightarrow$ writing grammars for real constructs**.
 
 ---

@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Grammars and the Chomsky Hierarchy
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Classify a grammar into its Chomsky hierarchy level (Type 0–3) by examining the shape of its productions and identifying the corresponding recognizing machine
+- Explain why programming language lexers use regular (Type 3) grammars and parsers use context-free (Type 2) grammars, citing the limitations of each class
+- Construct a context-free grammar for a given language and produce a derivation sequence for a specific target string
+- Demonstrate why certain languages (such as $a^n b^n c^n$) require a more powerful grammar class than context-free, by identifying what information no pushdown automaton can track
+- Write a context-free grammar for a real programming construct (expressions, conditionals, or function calls) and verify it by deriving at least two distinct valid programs
+
 > **Before You Begin — Prerequisite Check**
 >
 > This activity assumes you are comfortable with BNF syntax from the previous activity: you can read a rule like `expr ::= expr "+" term | term`, you know what "nonterminal" and "terminal" mean, and you have seen at least one derivation step. If any of those concepts are fuzzy, re-read your notes from the BNF activity before proceeding.

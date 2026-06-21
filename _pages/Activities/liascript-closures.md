@@ -14,6 +14,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Closures and First-Class Functions
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Define a closure as a pair of code and its defining environment, and explain why it is necessary in a language with first-class functions and static scope
+- Trace environment diagrams for closure creation and invocation, identifying captured variable bindings and parent environment pointers
+- Implement closure creation and application in an interpreter by storing and restoring the defining environment at call time
+- Identify the loop-variable capture trap and explain why closures in loops capture a reference rather than a value
+- Compare closures and objects as dual mechanisms for bundling state with behavior
+
 Every thread of the semester knots together today: when a language with **first-class functions** and **static scope** lets a function escape the scope where it was born, the function must carry its birthplace with it. That bundle of code plus captured environment is a **closure** — the mechanism behind `make_adder`, behind every Church encoding, and behind the `FunDef` node your interpreter will support.
 
 Arc: **the problem closures solve → the mechanism drawn precisely → closures in your interpreter → the loop-variable trap → objects vs closures**

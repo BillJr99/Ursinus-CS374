@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Parsing Expressions: Left Factoring, Precedence, and Iteration
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Rewrite a left-recursive expression grammar into an equivalent iterative (loop) form suitable for recursive descent
+- Implement a multi-tier expression parser that enforces operator precedence through the depth of the parsing function chain
+- Trace the left-fold accumulation loop and predict the AST it produces for a given sequence of same-precedence operators
+- Explain why left-folding (rather than right-folding) is required for left-associative operators such as subtraction and division
+- Extend the expression grammar to include unary negation and parenthesized subexpressions, and implement the corresponding parser functions
+
 This two-day module is the heart of your parser: turning the layered expression grammar (the cure for ambiguity) into running code, with explicit, careful attention to the move students find hardest: rewriting left recursion as the iteration pattern `term { (op) term }` and folding the loop's results into a left-leaning structure. We build it slowly, one operator tier at a time, exactly as your assignment will. The arc: **the ladder restated for descent $\rightarrow$ one tier in code $\rightarrow$ chaining operators in the loop $\rightarrow$ the full ladder with parentheses and unary minus**.
 
 ---

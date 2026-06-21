@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Derivations, Parse Trees, Ambiguity, and Precedence
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Construct a leftmost derivation and draw the corresponding parse tree for a given string under a provided context-free grammar
+- Define grammar ambiguity precisely and demonstrate it by producing two distinct parse trees for the same string under an ambiguous grammar
+- Explain how a layered (stratified) expression grammar encodes operator precedence and associativity in its structure rather than in external rules
+- Construct an unambiguous expression grammar that enforces a specified precedence and associativity for multiple operator levels, and verify it by deriving a target expression
+- Analyze an existing grammar to determine whether it correctly captures left or right associativity, and modify it to reverse the associativity if needed
+
 A grammar that accepts the right strings can still mean the wrong things: if `2 + 3 * 4` has *two* parse trees, the language has two meanings for one program. Today we build, slowly and deliberately, the standard cure: a layered expression grammar in which **precedence and associativity live in the grammar's shape**. This build-up is the single most important preparation for your parser assignment. The arc: **derivations and trees $\rightarrow$ ambiguity diagnosed $\rightarrow$ the layered grammar, constructed step by step $\rightarrow$ associativity**.
 
 ---

@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Finite Automata
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Define a DFA as a five-tuple and trace its execution on an input string, identifying the state after each symbol and determining acceptance or rejection
+- Construct a DFA for a specified regular language by identifying the finite information the machine must track and assigning one state per distinguishable memory value
+- Define an NFA and explain how it differs from a DFA in its transition function, including epsilon transitions
+- Explain the subset construction argument for DFA-NFA equivalence and apply it to convert a small NFA into an equivalent DFA
+- Implement a DFA simulator in Python using a transition table (dict of dicts) and connect the automaton model to the operation of a regex-based lexer
+
 A regular expression *describes* a set of strings; a **finite automaton** *recognizes* one, a machine so simple it is just states and arrows, yet exactly as powerful as the regex notation. Over two days we build the machine view: **DFAs $\rightarrow$ NFAs $\rightarrow$ their surprising equivalence $\rightarrow$ simulation in Python**, the theory under your next assignment and the engine inside every lexer, including yours.
 
 ---

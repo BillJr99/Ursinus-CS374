@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Type Systems
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Define the two independent axes of type system design (static/dynamic and strong/weak) and place common languages on each axis
+- Identify type errors in Python code and predict whether they are caught at parse time, compile time, or runtime
+- Compare the trade-offs between static and dynamic typing with respect to early error detection and programming flexibility
+- Explain type coercion and distinguish implicit coercion (weak typing) from explicit conversion (strong typing)
+- Apply type-system concepts to specify the typing rules for a language being implemented in an interpreter project
+
 Your interpreter happily computes `5 / 0`'s error, but what should it do with `"hello" * true`? A **type system** is a language's machinery for classifying values and rejecting senseless combinations, and the design axes (static or dynamic, strong or weak, declared or inferred) are among the most consequential your team will choose. The arc: **what types are for $\rightarrow$ the two axes $\rightarrow$ inference $\rightarrow$ adding type errors to your interpreter**.
 
 ---

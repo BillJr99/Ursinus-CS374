@@ -16,6 +16,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # The Lambda Calculus: From Church to Strudel
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Parse and fully parenthesize lambda calculus expressions using the three syntactic forms (variable, abstraction, application), correctly applying left-associativity and maximal-body conventions
+- Perform beta reduction step by step, applying capture-avoiding substitution and alpha-renaming when variable capture would otherwise occur
+- Construct Church encodings for booleans and natural numbers from pure lambda terms, and verify them by hand reduction
+- Derive the Y combinator from first principles and explain how it achieves recursion without named self-reference
+- Identify where lambda calculus constructs appear in real languages (Python `lambda`, Haskell functions, TidalCycles/Strudel patterns)
+
 This module develops the **lambda calculus**, the three-rule language from 1936 that is simultaneously the smallest programming language ever designed and the theoretical core of every functional language you use. We move from **syntax $\rightarrow$ substitution and $\beta$-reduction $\rightarrow$ evaluation strategies $\rightarrow$ Church encodings $\rightarrow$ recursion via the Y combinator $\rightarrow$ the calculus alive in modern code**, and we keep one practical thread taut throughout: the live coding languages we have been studying, TidalCycles in Haskell and Strudel in JavaScript, are lambda calculus with costumes on, and by the end of this module you will be able to point to exactly where the costume ends.
 
 ---
