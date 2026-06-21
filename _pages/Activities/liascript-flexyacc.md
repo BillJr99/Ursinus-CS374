@@ -161,6 +161,59 @@ Notice that whitespace has vanished entirely, and that the scanner has no opinio
 
 ---
 
+### Model 1: Python Equivalent of the Flex Scanner
+
+Flex compiles each rule's regex into an NFA (Thompson's construction), merges all NFAs into one, applies the subset construction to get a single DFA, and walks that DFA character by character. Python's `re` module does exactly the same thing under the hood. Here is the flex scanner above written as Python, so you can run it and inspect every token:
+
+```python
+import re
+
+# Same token spec as mininotation.l, in order.
+# Rule priority: FIRST match in the list wins among equal-length matches.
+# Maximal munch: re always takes the longest match.
+TOKEN_SPEC = [
+    ("WORD",   r"[a-zA-Z][a-zA-Z0-9]*"),
+    ("NUMBER", r"[0-9]+"),
+    ("REST",   r"~"),
+    ("LBRACK", r"\["),
+    ("RBRACK", r"\]"),
+    ("STAR",   r"\*"),
+    ("SLASH",  r"/"),
+    ("QMARK",  r"\?"),
+    ("WS",     r"[ \t\r\n]+"),
+    ("ERROR",  r"."),
+]
+
+MASTER = re.compile("|".join(f"(?P<{name}>{pat})" for name, pat in TOKEN_SPEC))
+
+def scan(source):
+    tokens = []
+    for m in MASTER.finditer(source):
+        kind, lexeme = m.lastgroup, m.group()
+        if kind == "WS":
+            continue          # discard whitespace, just like the flex rule
+        if kind == "ERROR":
+            raise SyntaxError(f"unexpected: {lexeme!r}")
+        tokens.append((kind, lexeme))
+    return tokens
+
+for src in ["bd sn hh", "bd [sn sn]*2 ~", "hh*4 ~ hh*4 ~", "[bd [sn sn]]/2"]:
+    toks = scan(src)
+    print(f"{src!r}")
+    for kind, lex in toks:
+        print(f"  ({kind}, {lex!r})")
+    print()
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions — *Solo*
+
+- The `ERROR` catch-all `.` appears last. What happens if you move it to the top of `TOKEN_SPEC`? Try predicting, then test by swapping its position.
+- Maximal munch: what does the scanner produce for the input `bd2`? Is `bd2` one token or two? Which rule consumes it, and why?
+- This Python scanner and the flex scanner produce identical token streams for the same input. What *implementation* is different between them (hint: flex builds a C DFA at compile time), and why does that matter for production use?
+
+---
+
 ## 4. A Grammar for the Mini-Notation
 
 **We now give the structure of patterns as a context-free grammar.** Let $G = (V, \Sigma, R, S)$ with start symbol `pattern`. We write the productions in the notation yacc accepts, where `|` separates alternatives:
@@ -257,6 +310,100 @@ function LR-PARSE(tokens):
         else:
             report syntax error at a
 ```
+
+### Model 2: Shift-Reduce Parsing in Python
+
+Before reading the bison output, run the algorithm yourself on a tiny grammar. The code below simulates a shift-reduce parser for simple arithmetic expressions (`n + n * n`) with an explicit stack and action trace — the same algorithm bison generates for the mini-notation, just with a hand-written action table instead of a generated one.
+
+```python
+# Shift-reduce parser trace for: E → E+T | T,  T → T*F | F,  F → n
+# ACTION table and GOTO table are encoded as dicts (state, symbol) → action.
+# Actions: ("shift", next_state), ("reduce", rule), "accept", "error"
+
+# Grammar rules: name → (symbols_to_pop, nonterminal_to_push)
+RULES = {
+    "E→E+T": (3, "E"),  # pop E, +, T  → push E
+    "E→T":   (1, "E"),
+    "T→T*F": (3, "T"),
+    "T→F":   (1, "T"),
+    "F→n":   (1, "F"),
+}
+
+# Minimal LR(0) action table for this grammar (hand-constructed, state 0-11)
+ACTION = {
+    (0,"n"):  ("shift",5),  (0,"("):  ("shift",4),
+    (1,"+"):  ("shift",6),  (1,"$"):  "accept",
+    (2,"+"):  ("reduce","E→T"), (2,"*"): ("shift",7), (2,"$"): ("reduce","E→T"),
+    (3,"+"):  ("reduce","T→F"), (3,"*"): ("reduce","T→F"), (3,"$"): ("reduce","T→F"),
+    (4,"n"):  ("shift",5),  (4,"("):  ("shift",4),
+    (5,"+"):  ("reduce","F→n"), (5,"*"): ("reduce","F→n"), (5,"$"): ("reduce","F→n"),
+    (6,"n"):  ("shift",5),  (6,"("):  ("shift",4),
+    (7,"n"):  ("shift",5),  (7,"("):  ("shift",4),
+    (8,"+"):  ("shift",6),  (8,")"):  ("shift",11),
+    (9,"+"):  ("reduce","E→E+T"), (9,"*"): ("shift",7),
+              (9,")"): ("reduce","E→E+T"), (9,"$"): ("reduce","E→E+T"),
+    (10,"+"): ("reduce","T→T*F"), (10,"*"): ("reduce","T→T*F"),
+              (10,")"): ("reduce","T→T*F"), (10,"$"): ("reduce","T→T*F"),
+    (11,"+"): ("reduce","F→(E)"), (11,"*"): ("reduce","F→(E)"),
+              (11,")"): ("reduce","F→(E)"), (11,"$"): ("reduce","F→(E)"),
+}
+GOTO = {
+    (0,"E"):1, (0,"T"):2, (0,"F"):3,
+    (4,"E"):8, (4,"T"):2, (4,"F"):3,
+    (6,"T"):9, (6,"F"):3,
+    (7,"F"):10,
+}
+
+def lr_parse(tokens):
+    tokens = tokens + ["$"]
+    stack = [0]        # state stack
+    sym_stack = []     # symbol stack (for display)
+    pos = 0
+
+    print(f"{'Stack':35} {'Remaining':18} Action")
+    print("-" * 75)
+
+    while True:
+        state = stack[-1]
+        tok   = tokens[pos]
+        disp_stack = " ".join(str(x) for x in sym_stack) or "⊥"
+        disp_rest  = " ".join(tokens[pos:])
+        action = ACTION.get((state, tok), "error")
+
+        if action == "accept":
+            print(f"{disp_stack:35} {disp_rest:18} ACCEPT ✓")
+            return
+        elif action == "error":
+            print(f"{disp_stack:35} {disp_rest:18} ERROR at {tok!r}")
+            return
+        elif action[0] == "shift":
+            _, next_state = action
+            print(f"{disp_stack:35} {disp_rest:18} SHIFT  {tok} → state {next_state}")
+            sym_stack.append(tok); stack.append(next_state); pos += 1
+        elif action[0] == "reduce":
+            rule = action[1]
+            pop_n, lhs = RULES[rule]
+            for _ in range(pop_n): sym_stack.pop(); stack.pop()
+            top = stack[-1]
+            goto_state = GOTO[(top, lhs)]
+            sym_stack.append(lhs); stack.append(goto_state)
+            print(f"{disp_stack:35} {disp_rest:18} REDUCE {rule}")
+
+print("=== n + n * n (right operand tighter) ===")
+lr_parse(["n", "+", "n", "*", "n"])
+print()
+print("=== n * n + n (left operand tighter) ===")
+lr_parse(["n", "*", "n", "+", "n"])
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions — *Pairs*
+
+- In the first trace (`n + n * n`), at what point does the parser shift `*` instead of reducing the first `n + n`? What state and lookahead determine this decision?
+- In the RULES table, `"E→E+T": (3, "E")` pops 3 symbols. What are those 3 symbols, and why does popping them from the stack correspond to "recognizing a complete E+T"?
+- If you added `"E→E+E"` to the grammar (making addition left-recursive in a second way), which `ACTION` table entry would conflict with an existing one? This is a shift/reduce conflict — identify the state and the competing actions.
+
+---
 
 **LALR(1) is LR(1) with merged states.** Full LR(1) tables distinguish states by lookahead and grow large; LALR(1) merges LR(1) states that share the same item cores, keeping the table compact at the cost of accepting a slightly smaller family of grammars. Our mini-notation grammar is comfortably LALR(1): you can verify with `bison -v mininotation.y`, which writes the full automaton, every state and item set, to `mininotation.output`. Reading that file once, slowly, will teach you more about LR parsing than any lecture, and we will do exactly that in the partner activity below.
 

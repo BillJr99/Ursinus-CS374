@@ -48,6 +48,7 @@ class Call:
 
 print("AST nodes loaded.")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -64,6 +65,21 @@ Your tree-walking interpreter is a set of `if isinstance(node, ...)` branches in
 The Visitor pattern separates the **what to do** (the visitor) from the **what to visit** (the AST). Adding a new operation (e.g., a type checker, an optimizer, a pretty-printer) requires adding a new visitor class — not modifying the AST.
 
 ```python
+class Num:
+    def __init__(self, value): self.value = value
+class BinOp:
+    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right
+class Var:
+    def __init__(self, name): self.name = name
+class Let:
+    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body
+class IfExpr:
+    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_
+class FuncDef:
+    def __init__(self, param, body): self.param = param; self.body = body
+class Call:
+    def __init__(self, func, arg): self.func = func; self.arg = arg
+
 # Visitor base class
 class Visitor:
     def visit(self, node):
@@ -114,6 +130,7 @@ interp = Interpreter()
 ast = Let("x", Num(3), BinOp("+", BinOp("*", Var("x"), Num(2)), Num(1)))
 print("Interpreter result:", interp.visit(ast))   # 7
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -124,6 +141,31 @@ print("Interpreter result:", interp.visit(ast))   # 7
 A transpiler is a visitor that **returns strings** instead of values. Each `visit_*` method returns a Python expression string. The result of visiting the root is a complete Python expression (or program).
 
 ```python
+class Num:
+    def __init__(self, value): self.value = value
+class BinOp:
+    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right
+class Var:
+    def __init__(self, name): self.name = name
+class Let:
+    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body
+class IfExpr:
+    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_
+class FuncDef:
+    def __init__(self, param, body): self.param = param; self.body = body
+class Call:
+    def __init__(self, func, arg): self.func = func; self.arg = arg
+
+class Visitor:
+    def visit(self, node):
+        method_name = f"visit_{type(node).__name__}"
+        method = getattr(self, method_name, self.generic_visit)
+        return method(node)
+    def generic_visit(self, node):
+        raise NotImplementedError(f"No visitor for {type(node).__name__}")
+
+ast = Let("x", Num(3), BinOp("+", BinOp("*", Var("x"), Num(2)), Num(1)))
+
 class PythonTranspiler(Visitor):
     """Transpiles our mini-language AST to Python source code."""
 
@@ -169,6 +211,7 @@ print("Python code:", py_code)
 result   = eval(py_code)
 print("Evaluated: ", result)   # should be 7
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -177,6 +220,31 @@ print("Evaluated: ", result)   # should be 7
 The same AST, same visitor structure, different target language:
 
 ```python
+class Num:
+    def __init__(self, value): self.value = value
+class BinOp:
+    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right
+class Var:
+    def __init__(self, name): self.name = name
+class Let:
+    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body
+class IfExpr:
+    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_
+class FuncDef:
+    def __init__(self, param, body): self.param = param; self.body = body
+class Call:
+    def __init__(self, func, arg): self.func = func; self.arg = arg
+
+class Visitor:
+    def visit(self, node):
+        method_name = f"visit_{type(node).__name__}"
+        method = getattr(self, method_name, self.generic_visit)
+        return method(node)
+    def generic_visit(self, node):
+        raise NotImplementedError(f"No visitor for {type(node).__name__}")
+
+ast = Let("x", Num(3), BinOp("+", BinOp("*", Var("x"), Num(2)), Num(1)))
+
 class JavaScriptTranspiler(Visitor):
     """Transpiles our mini-language AST to JavaScript source code."""
 
@@ -221,6 +289,7 @@ print("JavaScript code:", js_code)
 # Output: ((x) => ((x * 2) + 1))(3)
 # Paste into browser console to verify: returns 7
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -229,6 +298,31 @@ print("JavaScript code:", js_code)
 Haskell uses `let ... in ...` naturally for our `Let` node, and lambda syntax for `FuncDef`. The transpiler produces valid Haskell expressions:
 
 ```python
+class Num:
+    def __init__(self, value): self.value = value
+class BinOp:
+    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right
+class Var:
+    def __init__(self, name): self.name = name
+class Let:
+    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body
+class IfExpr:
+    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_
+class FuncDef:
+    def __init__(self, param, body): self.param = param; self.body = body
+class Call:
+    def __init__(self, func, arg): self.func = func; self.arg = arg
+
+class Visitor:
+    def visit(self, node):
+        method_name = f"visit_{type(node).__name__}"
+        method = getattr(self, method_name, self.generic_visit)
+        return method(node)
+    def generic_visit(self, node):
+        raise NotImplementedError(f"No visitor for {type(node).__name__}")
+
+ast = Let("x", Num(3), BinOp("+", BinOp("*", Var("x"), Num(2)), Num(1)))
+
 class HaskellTranspiler(Visitor):
     """Transpiles our mini-language AST to Haskell expressions."""
 
@@ -271,6 +365,7 @@ print("Haskell expression:", hs_code)
 # Output: (let x = 3 in ((x * 2) + 1))
 # Load in GHCi to verify: returns 7
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -305,6 +400,27 @@ Real compilers (Python, Java, Lua) compile to a **bytecode** for a virtual stack
 Compilation is a visitor that emits a list of these instructions:
 
 ```python
+class Num:
+    def __init__(self, value): self.value = value
+class BinOp:
+    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right
+class Var:
+    def __init__(self, name): self.name = name
+class Let:
+    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body
+class IfExpr:
+    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_
+
+class Visitor:
+    def visit(self, node):
+        method_name = f"visit_{type(node).__name__}"
+        method = getattr(self, method_name, self.generic_visit)
+        return method(node)
+    def generic_visit(self, node):
+        raise NotImplementedError(f"No visitor for {type(node).__name__}")
+
+ast = Let("x", Num(3), BinOp("+", BinOp("*", Var("x"), Num(2)), Num(1)))
+
 class Bytecode:
     def __init__(self, op, *args):
         self.op   = op
@@ -361,6 +477,7 @@ print("Bytecode for: let x = 3 in x * 2 + 1")
 for i, instr in enumerate(compiler.instructions):
     print(f"  {i:3d}  {instr}")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -369,6 +486,69 @@ for i, instr in enumerate(compiler.instructions):
 The bytecode interpreter is now much simpler than the tree-walking interpreter: it is a loop over a flat instruction list with a stack:
 
 ```python
+class Num:
+    def __init__(self, value): self.value = value
+class BinOp:
+    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right
+class Var:
+    def __init__(self, name): self.name = name
+class Let:
+    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body
+class IfExpr:
+    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_
+
+class Visitor:
+    def visit(self, node):
+        method_name = f"visit_{type(node).__name__}"
+        method = getattr(self, method_name, self.generic_visit)
+        return method(node)
+    def generic_visit(self, node):
+        raise NotImplementedError(f"No visitor for {type(node).__name__}")
+
+class Bytecode:
+    def __init__(self, op, *args):
+        self.op   = op
+        self.args = args
+    def __repr__(self):
+        return f"{self.op} {' '.join(str(a) for a in self.args)}".strip()
+
+class BytecodeCompiler(Visitor):
+    def __init__(self):
+        self.instructions = []
+        self._label_count = 0
+    def fresh_label(self, prefix="L"):
+        self._label_count += 1
+        return f"{prefix}{self._label_count}"
+    def emit(self, op, *args):
+        self.instructions.append(Bytecode(op, *args))
+    def visit_Num(self, node):
+        self.emit("PUSH", node.value)
+    def visit_Var(self, node):
+        self.emit("LOAD", node.name)
+    def visit_BinOp(self, node):
+        self.visit(node.left)
+        self.visit(node.right)
+        ops = {'+': 'ADD', '-': 'SUB', '*': 'MUL', '/': 'DIV'}
+        self.emit(ops[node.op])
+    def visit_Let(self, node):
+        self.visit(node.value)
+        self.emit("STORE", node.name)
+        self.visit(node.body)
+    def visit_IfExpr(self, node):
+        else_lbl = self.fresh_label("ELSE")
+        end_lbl  = self.fresh_label("END")
+        self.visit(node.cond)
+        self.emit("JMP_IF_FALSE", else_lbl)
+        self.visit(node.then_)
+        self.emit("JMP", end_lbl)
+        self.emit("LABEL", else_lbl)
+        self.visit(node.else_)
+        self.emit("LABEL", end_lbl)
+
+ast = Let("x", Num(3), BinOp("+", BinOp("*", Var("x"), Num(2)), Num(1)))
+compiler = BytecodeCompiler()
+compiler.visit(ast)
+
 class StackMachine:
     def __init__(self, instructions):
         self.instructions = instructions
@@ -414,6 +594,7 @@ vm = StackMachine(compiler.instructions)
 result = vm.run()
 print("VM result:", result)   # 7
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -424,6 +605,67 @@ print("VM result:", result)   # 7
 A **source map** connects positions in the generated code back to positions in the source. This is why browser developer tools can show you a TypeScript error on the TypeScript line, even though the browser runs JavaScript. For our bytecode, a source map is a list of `(instruction_index, source_line)` pairs.
 
 ```python
+class Num:
+    def __init__(self, value): self.value = value
+class BinOp:
+    def __init__(self, op, left, right): self.op = op; self.left = left; self.right = right
+class Var:
+    def __init__(self, name): self.name = name
+class Let:
+    def __init__(self, name, value, body): self.name = name; self.value = value; self.body = body
+class IfExpr:
+    def __init__(self, cond, then_, else_): self.cond = cond; self.then_ = then_; self.else_ = else_
+
+class Visitor:
+    def visit(self, node):
+        method_name = f"visit_{type(node).__name__}"
+        method = getattr(self, method_name, self.generic_visit)
+        return method(node)
+    def generic_visit(self, node):
+        raise NotImplementedError(f"No visitor for {type(node).__name__}")
+
+class Bytecode:
+    def __init__(self, op, *args):
+        self.op   = op
+        self.args = args
+    def __repr__(self):
+        return f"{self.op} {' '.join(str(a) for a in self.args)}".strip()
+
+class BytecodeCompiler(Visitor):
+    def __init__(self):
+        self.instructions = []
+        self._label_count = 0
+    def fresh_label(self, prefix="L"):
+        self._label_count += 1
+        return f"{prefix}{self._label_count}"
+    def emit(self, op, *args):
+        self.instructions.append(Bytecode(op, *args))
+    def visit_Num(self, node):
+        self.emit("PUSH", node.value)
+    def visit_Var(self, node):
+        self.emit("LOAD", node.name)
+    def visit_BinOp(self, node):
+        self.visit(node.left)
+        self.visit(node.right)
+        ops = {'+': 'ADD', '-': 'SUB', '*': 'MUL', '/': 'DIV'}
+        self.emit(ops[node.op])
+    def visit_Let(self, node):
+        self.visit(node.value)
+        self.emit("STORE", node.name)
+        self.visit(node.body)
+    def visit_IfExpr(self, node):
+        else_lbl = self.fresh_label("ELSE")
+        end_lbl  = self.fresh_label("END")
+        self.visit(node.cond)
+        self.emit("JMP_IF_FALSE", else_lbl)
+        self.visit(node.then_)
+        self.emit("JMP", end_lbl)
+        self.emit("LABEL", else_lbl)
+        self.visit(node.else_)
+        self.emit("LABEL", end_lbl)
+
+ast = Let("x", Num(3), BinOp("+", BinOp("*", Var("x"), Num(2)), Num(1)))
+
 class TracingCompiler(BytecodeCompiler):
     """Extends BytecodeCompiler to emit source map entries."""
 
@@ -447,6 +689,7 @@ print("\nSource map excerpt (instruction index -> operation):")
 for idx, op in tc.source_map[:8]:
     print(f"  {idx}: {op}")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 

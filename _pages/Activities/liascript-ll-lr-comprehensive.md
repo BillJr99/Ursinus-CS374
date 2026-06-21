@@ -109,6 +109,7 @@ first = compute_first(grammar, terminals)
 for sym in ['E', "E'", 'T', "T'", 'F']:
     print(f"FIRST({sym:3s}) = {sorted(first[sym])}")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -124,6 +125,43 @@ $\mathrm{FOLLOW}(A)$ is the set of terminals that can appear immediately after $
 3. Repeat until no changes.
 
 ```python
+from collections import defaultdict
+
+EPSILON = 'ε'
+
+grammar = {
+    'E':  [['T', "E'"]],
+    "E'": [['+', 'T', "E'"], [EPSILON]],
+    'T':  [['F', "T'"]],
+    "T'": [['*', 'F', "T'"], [EPSILON]],
+    'F':  [['(', 'E', ')'], ['id']],
+}
+terminals = {'+', '*', '(', ')', 'id', '$', EPSILON}
+
+def compute_first(grammar, terminals):
+    first = defaultdict(set)
+    for t in terminals:
+        first[t] = {t}
+    changed = True
+    while changed:
+        changed = False
+        for nt, productions in grammar.items():
+            for prod in productions:
+                for sym in prod:
+                    addition = first[sym] - {EPSILON}
+                    if not addition.issubset(first[nt]):
+                        first[nt] |= addition
+                        changed = True
+                    if EPSILON not in first[sym]:
+                        break
+                else:
+                    if EPSILON not in first[nt]:
+                        first[nt].add(EPSILON)
+                        changed = True
+    return first
+
+first = compute_first(grammar, terminals)
+
 def compute_follow(grammar, first, start='E'):
     follow = defaultdict(set)
     follow[start].add('$')
@@ -162,6 +200,7 @@ follow = compute_follow(grammar, first)
 for sym in ['E', "E'", 'T', "T'", 'F']:
     print(f"FOLLOW({sym:3s}) = {sorted(follow[sym])}")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -176,6 +215,75 @@ The **LL(1) parsing table** $M[A, a]$ specifies: when parsing nonterminal $A$ wi
 **A grammar is LL(1) if and only if no table entry has more than one production.**
 
 ```python
+from collections import defaultdict
+
+EPSILON = 'ε'
+
+grammar = {
+    'E':  [['T', "E'"]],
+    "E'": [['+', 'T', "E'"], [EPSILON]],
+    'T':  [['F', "T'"]],
+    "T'": [['*', 'F', "T'"], [EPSILON]],
+    'F':  [['(', 'E', ')'], ['id']],
+}
+terminals = {'+', '*', '(', ')', 'id', '$', EPSILON}
+
+def compute_first(grammar, terminals):
+    first = defaultdict(set)
+    for t in terminals:
+        first[t] = {t}
+    changed = True
+    while changed:
+        changed = False
+        for nt, productions in grammar.items():
+            for prod in productions:
+                for sym in prod:
+                    addition = first[sym] - {EPSILON}
+                    if not addition.issubset(first[nt]):
+                        first[nt] |= addition
+                        changed = True
+                    if EPSILON not in first[sym]:
+                        break
+                else:
+                    if EPSILON not in first[nt]:
+                        first[nt].add(EPSILON)
+                        changed = True
+    return first
+
+def compute_follow(grammar, first, start='E'):
+    follow = defaultdict(set)
+    follow[start].add('$')
+    changed = True
+    while changed:
+        changed = False
+        for nt, productions in grammar.items():
+            for prod in productions:
+                for i, sym in enumerate(prod):
+                    if sym in terminals or sym == EPSILON:
+                        continue
+                    beta = prod[i+1:]
+                    first_beta = set()
+                    all_nullable = True
+                    for s in beta:
+                        first_beta |= first[s] - {EPSILON}
+                        if EPSILON not in first[s]:
+                            all_nullable = False
+                            break
+                    else:
+                        all_nullable = True
+                    addition = first_beta - {EPSILON}
+                    if not addition.issubset(follow[sym]):
+                        follow[sym] |= addition
+                        changed = True
+                    if all_nullable or beta == []:
+                        if not follow[nt].issubset(follow[sym]):
+                            follow[sym] |= follow[nt]
+                            changed = True
+    return follow
+
+first = compute_first(grammar, terminals)
+follow = compute_follow(grammar, first)
+
 def build_ll1_table(grammar, first, follow, terminals):
     table = defaultdict(dict)
     conflicts = []
@@ -226,6 +334,7 @@ for nt in nonterminals:
 
 print("\nConflicts:", conflicts if conflicts else "None — grammar is LL(1)!")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -241,6 +350,101 @@ With the table in hand, the parser is a simple stack machine:
    - If top of stack is $ and input is $: **accept**
 
 ```python
+from collections import defaultdict
+
+EPSILON = 'ε'
+
+grammar = {
+    'E':  [['T', "E'"]],
+    "E'": [['+', 'T', "E'"], [EPSILON]],
+    'T':  [['F', "T'"]],
+    "T'": [['*', 'F', "T'"], [EPSILON]],
+    'F':  [['(', 'E', ')'], ['id']],
+}
+terminals = {'+', '*', '(', ')', 'id', '$', EPSILON}
+
+def compute_first(grammar, terminals):
+    first = defaultdict(set)
+    for t in terminals:
+        first[t] = {t}
+    changed = True
+    while changed:
+        changed = False
+        for nt, productions in grammar.items():
+            for prod in productions:
+                for sym in prod:
+                    addition = first[sym] - {EPSILON}
+                    if not addition.issubset(first[nt]):
+                        first[nt] |= addition
+                        changed = True
+                    if EPSILON not in first[sym]:
+                        break
+                else:
+                    if EPSILON not in first[nt]:
+                        first[nt].add(EPSILON)
+                        changed = True
+    return first
+
+def compute_follow(grammar, first, start='E'):
+    follow = defaultdict(set)
+    follow[start].add('$')
+    changed = True
+    while changed:
+        changed = False
+        for nt, productions in grammar.items():
+            for prod in productions:
+                for i, sym in enumerate(prod):
+                    if sym in terminals or sym == EPSILON:
+                        continue
+                    beta = prod[i+1:]
+                    first_beta = set()
+                    all_nullable = True
+                    for s in beta:
+                        first_beta |= first[s] - {EPSILON}
+                        if EPSILON not in first[s]:
+                            all_nullable = False
+                            break
+                    else:
+                        all_nullable = True
+                    addition = first_beta - {EPSILON}
+                    if not addition.issubset(follow[sym]):
+                        follow[sym] |= addition
+                        changed = True
+                    if all_nullable or beta == []:
+                        if not follow[nt].issubset(follow[sym]):
+                            follow[sym] |= follow[nt]
+                            changed = True
+    return follow
+
+def build_ll1_table(grammar, first, follow, terminals):
+    table = defaultdict(dict)
+    conflicts = []
+    for nt, productions in grammar.items():
+        for prod in productions:
+            first_rhs = set()
+            all_nullable = True
+            for sym in prod:
+                first_rhs |= first[sym] - {EPSILON}
+                if EPSILON not in first[sym]:
+                    all_nullable = False
+                    break
+            if prod == [EPSILON] or all_nullable:
+                first_rhs.add(EPSILON)
+            for a in first_rhs - {EPSILON}:
+                if a in table[nt]:
+                    conflicts.append((nt, a, table[nt][a], prod))
+                table[nt][a] = prod
+            if EPSILON in first_rhs:
+                for b in follow[nt]:
+                    if b in table[nt]:
+                        conflicts.append((nt, b, table[nt][b], prod))
+                    table[nt][b] = prod
+    return table, conflicts
+
+first = compute_first(grammar, terminals)
+follow = compute_follow(grammar, first)
+ll1_table, _ = build_ll1_table(grammar, first, follow, terminals)
+
 def ll1_parse(tokens, table, start='E'):
     """
     tokens: list of terminal strings, ending with '$'
@@ -287,6 +491,7 @@ print("Parsing:", " ".join(tokens[:-1]))
 for action, detail in ll1_parse(tokens, ll1_table):
     print(f"  {action:8s}  {detail}")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -388,6 +593,7 @@ for sid, items in enumerate(states):
         after  = " ".join(prod[dot:])
         print(f"  {nt} -> {before} . {after}")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
