@@ -13,6 +13,18 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 -->
 
+# A Gallery of Programming Languages: Same Problem, Different Minds
+
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Identify the five major programming paradigms (imperative, object-oriented, functional, logic, declarative) and characterize the computational worldview each embodies
+- Implement the same problem in multiple paradigms in Python and explain how the choice of paradigm shapes the structure and readability of the solution
+- Compare how different paradigms handle state, control flow, and abstraction, and evaluate the tradeoffs in expressiveness and correctness
+- Apply the concept of paradigm as a design choice — not a fact — when selecting an approach for a given problem
+- Analyze an unfamiliar language feature and classify it within the paradigm taxonomy based on its behavior
+
 ## Introduction
 
 Here is a fact that most programming courses hide from you: **programming languages are not tools — they are philosophical positions.**

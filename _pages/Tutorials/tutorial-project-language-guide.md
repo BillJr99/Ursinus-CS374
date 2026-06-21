@@ -11,6 +11,16 @@ link:     https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.
 
 # Building the Mini Language: A Complete Guide
 
+## Learning Goals
+
+By the end of this tutorial, you will have:
+
+- Designed example programs in the Mini language before writing a single line of interpreter code, establishing syntax and semantics by example
+- Built a complete lexer, recursive-descent parser, and AST for the Mini language
+- Implemented a tree-walking evaluator with lexical scoping, first-class functions, closures, and recursive definitions
+- Added at least one extension to the baseline interpreter (e.g., lists, pattern matching, or a type checker)
+- Delivered a working REPL and file-runner that can run all provided example programs
+
 > **Tutorial Goal:** By the end of this tutorial, you will have built a fully working interpreter for the Mini programming language — complete with variables, functions, closures, recursion, and a REPL. Each phase builds directly on the previous one, so follow them in order.
 >
 > **Time estimate:** 8–12 hours total (all 10 phases)

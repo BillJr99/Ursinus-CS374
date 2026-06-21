@@ -14,6 +14,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-CS374-Fall2026@gh-pages/ass
 
 # The Expression Problem
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- State the Expression Problem precisely and explain why neither OOP nor functional pattern matching solves both dimensions simultaneously
+- Demonstrate the OOP extensibility axis (easy new types, hard new operations) and the functional extensibility axis (easy new operations, hard new types) with concrete code examples
+- Implement a dispatch-table solution to the Expression Problem in Python and explain how it achieves independent extensibility in both dimensions
+- Connect the dispatch-based solution to Haskell typeclasses, Rust traits, and Go interfaces as language-level mechanisms for the same pattern
+- Evaluate a given language feature or design choice by identifying which dimension of the Expression Problem it prioritizes
+
 The **Expression Problem** is one of the most important design tensions in programming language theory. Coined by Philip Wadler in a 1998 mailing list post, it asks a deceptively simple question:
 
 > *Can you add new data types AND new operations to a program without modifying any existing code?*

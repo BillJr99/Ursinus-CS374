@@ -16,6 +16,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tutorial: Build a Complete Interpreter in Python — Step by Step
 
+## Learning Goals
+
+By the end of this tutorial, you will have:
+
+- Built a hand-written lexer that converts Mini source code into a typed token stream with line and column positions
+- Built a recursive-descent parser that converts the token stream into a typed AST with one class per node type
+- Implemented a tree-walking evaluator with a lexical environment chain that correctly handles nested `let` bindings
+- Implemented first-class functions and closures so that inner functions capture and carry their enclosing environments
+- Implemented recursive definitions (`letrec`), error reporting, and a working REPL and file-runner
+
 This tutorial walks you through every line of a complete interpreter for a small programming language called **Mini**. Mini supports integers, booleans, arithmetic, comparisons, let-bindings, conditionals, first-class functions, and recursive definitions. By the end you will have a working REPL and a file-runner, and you will understand how each piece connects to the theory covered in class.
 
 **What you will build, in order:**

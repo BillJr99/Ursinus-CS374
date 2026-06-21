@@ -18,6 +18,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tutorial: Building a Bytecode VM for Mini
 
+## Learning Goals
+
+By the end of this tutorial, you will have:
+
+- Defined a Mini instruction set architecture (`Opcode` enum and `Instruction` dataclass) and explained why a flat instruction list is more cache-friendly than an AST
+- Implemented a compiler that walks the Mini AST and emits bytecode instructions with a constant pool and jump backpatching
+- Implemented a stack-based VM dispatch loop that executes bytecode using a value stack and a call stack of frames
+- Implemented upvalues (the Lua trick) so that closures in the VM correctly capture variables from enclosing frames
+- Verified that the VM produces identical output to the tree-walking interpreter on all provided test programs and measured the speedup
+
 Your tree-walking interpreter is correct and elegant — but every time it evaluates `x + 1` it traverses three AST nodes, looks up `x` in the environment dictionary, allocates a new addition result, and works its way back up. For programs with tight loops or deeply recursive functions, this overhead adds up. **Bytecode virtual machines** solve this by translating the AST once into a flat sequence of simple instructions, then running those instructions in a tight loop. This is the architecture behind CPython, the Java Virtual Machine, Lua, Ruby's YARV, and dozens of other production runtimes.
 
 This tutorial builds a complete bytecode VM for Mini in six phases:

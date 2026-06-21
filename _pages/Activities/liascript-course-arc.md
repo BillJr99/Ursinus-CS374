@@ -13,6 +13,18 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 -->
 
+# The Arc of This Course: From Symbols to Languages
+
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Trace the arc from lambda calculus through grammars, parsing, type systems, and interpreter construction, and explain how each stage builds on the previous
+- Encode Church booleans, Church numerals, and basic arithmetic in pure lambda calculus, demonstrating that computation requires no primitives beyond functions
+- Identify the three phases of a language implementation pipeline (lexing, parsing, evaluation) and describe the data structure each phase produces
+- Explain why the theoretical machinery of this course (grammar rules, type judgments, reduction rules) and the engineering artifacts (parsers, type checkers, interpreters) are the same ideas at different levels of abstraction
+- Formulate at least one substantive question about a topic previewed today that you do not yet understand
+
 By December, you will have built a working programming language — a language you designed, with syntax you chose, with semantics you defined, that runs real programs. Today, on the first day, we will preview every major idea you will need to get there, condensed into 90 minutes of exploration. You will not understand everything today — that is the point. These are the questions this course answers.
 
 The course begins with beauty: lambda calculus, the mathematical theory of computation published by Alonzo Church in 1936 — before computers existed — showing that all of computation can be built from a single idea (functions) and three rules (variables, abstraction, application). From there it moves through theory: grammars that define the shape of legal programs, parsing algorithms (LL, LR, and the tools Flex and Bison) that turn source text into structured data, and type systems that reason about program correctness without running a single line. The course ends with engineering: building a real interpreter, transpiler, or compiler for a language you have designed yourself. The magic is that the theory and the engineering are the same thing at different levels of abstraction — the grammar rules you write in Week 7 become the parser functions you write in Week 10, which become the type-checker you extend in Week 12, which becomes the interpreter you complete in Week 15.

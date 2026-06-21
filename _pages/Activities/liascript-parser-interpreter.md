@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Parsing and Interpreting: Putting It All Together
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Trace a source string through the complete tokenizer → parser → evaluator pipeline and explain the data structure produced at each stage
+- Implement a recursive descent parser that constructs an abstract syntax tree from a token stream for arithmetic and boolean expressions
+- Construct an environment-passing interpreter that evaluates an AST, correctly handling variable lookup, function application, and nested scopes
+- Identify and fix common interpreter bugs: incorrect precedence, wrong scoping rules, missing base cases in recursive evaluation
+- Extend the pipeline with a new language feature — new syntax, new AST node, and new evaluation rule — end-to-end
+
 **CS374 Principles of Programming Languages — Weeks 11–14**
 
 **References:** Compilers (Dragon Book) Ch. 4–5 | PLAI Ch. 15–17

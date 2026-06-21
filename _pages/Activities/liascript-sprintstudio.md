@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Sprint Studio and Gallery Walk
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Conduct a structured stand-up by reporting concrete metrics (passing tests, completed AST nodes, known failures) rather than qualitative status assessments
+- Calculate sprint velocity from planned versus completed work items and use it to project whether the team will finish on time
+- Apply the gallery walk protocol to give and receive structured peer feedback on a language implementation in progress
+- Triage feedback into actionable backlog items prioritized by risk and impact on the final release
+- Evaluate your language implementation against a release checklist and identify the highest-risk unfinished pieces
+
 Studio days are structured work time for the team language project: a stand-up, focused build time, and, on designated days, the formal **gallery walk** peer review that feeds your final sprint. This page is the protocol for every studio day; the gallery walk sections apply on the scheduled walk day. The arc: **stand-up $\rightarrow$ build $\rightarrow$ gallery walk $\rightarrow$ triage $\rightarrow$ release checklist**.
 
 ---

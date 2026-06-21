@@ -14,23 +14,23 @@ info:
     - To deliver a fully tested component that the parser assignment and team project will import unchanged
   rubric:
     - weight: 30
-      description: Token Specification
+      description: "Token Specification (Goal 1: specify a complete token grammar using ordered regular-expression rules)"
       preemerging: Fewer than half the required token types are defined, or patterns are so incorrect that the lexer cannot tokenize even simple programs
       beginning: Most token types are defined but several patterns are wrong (e.g., keywords not prioritized over identifiers, or operators missing from the spec)
       progressing: All required token types are defined with correct patterns, but the specification has a minor ordering or coverage gap (e.g., multi-character operators not listed before single-character ones)
-      proficient: All 15+ token types are defined in the correct priority order, keywords are prioritized before IDENT, multi-character operators before single-character ones, whitespace and comments are skipped, and the spec is externalized in a loadable JSON file
+      proficient: All 15+ token types are defined in the correct priority order — keywords before IDENT, multi-character operators before their single-character prefixes, whitespace and comments skipped — demonstrating mastery of ordered regular-expression rule specification; the spec is externalized in a loadable JSON file
     - weight: 40
-      description: Lexer Implementation
+      description: "Lexer Implementation (Goal 2: harden the tokenizer into a reusable Lexer component with peek, advance, and expect)"
       preemerging: The Lexer class does not exist or the peek/advance interface is fundamentally broken
       beginning: The Lexer class exists with peek and advance, but one or both are incorrect — e.g., peek consumes input, or advance skips tokens
       progressing: peek and advance work correctly for most inputs, but edge cases fail — e.g., repeated peek calls return different tokens, or EOF is not handled gracefully
-      proficient: The Lexer class implements peek, advance, and expect correctly; peek is idempotent; both return an EOF token (not None or an exception) at end of input; expect raises a located LexError on mismatch; and the lexer imports cleanly as a module with no side effects at import time
+      proficient: The Lexer class implements peek, advance, and expect correctly — peek is idempotent, both return an EOF token at end of input, expect raises a located LexError on mismatch — demonstrating that the component is ready to be imported unchanged by the parser; the lexer has no side effects at import time
     - weight: 30
-      description: Error Handling, Positions, and Test Suite
+      description: "Error Handling, Positions, and Test Suite (Goals 3–5: escape sequences, precise error positions, collect-all mode, and a fully tested deliverable)"
       preemerging: Lexical errors crash Python with an unhandled exception, positions are absent, and no test suite exists
       beginning: Errors are caught and reported, but positions are missing or incorrect, and the test suite covers only a handful of token types
       progressing: Errors include line and column, the test suite covers most token types, but error recovery (collect-all mode) is missing or incorrect, and escape sequences are not fully tested
-      proficient: Every error includes line, column, and the offending text; collect-all mode gathers every error in a single pass; the test suite covers all token types, all escape sequences, all maximal-munch cases, and at least five deliberate error programs with their expected messages verified
+      proficient: Every error includes line, column, and the offending text; collect-all mode gathers every error in a single pass without stopping; string-literal escape sequences are fully implemented; and the test suite covers all token types, all escape sequences, all maximal-munch cases, and at least five deliberate error programs with expected messages verified — demonstrating a deliverable that the team project can import unchanged
   readings:
     - rtitle: "Tokens and Scanning Activity"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-tokensscanning.md"

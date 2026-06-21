@@ -14,23 +14,23 @@ info:
     - To report syntax errors with positions, expected tokens, and found tokens
   rubric:
     - weight: 30
-      description: EBNF Grammar
+      description: "EBNF Grammar (Goal 1: write a formal EBNF grammar covering expressions, statements, and programs)"
       preemerging: No grammar is provided, or the grammar is so incomplete that fewer than half the language constructs are covered
       beginning: A grammar is provided but contains ambiguities, missing precedence levels, or structural errors that would cause the parser to behave incorrectly
       progressing: The grammar covers all constructs and is mostly unambiguous, but the precedence ladder is incomplete (e.g., comparison operators at the wrong level) or associativity is not explicit
-      proficient: The grammar is complete, unambiguous, and matches the implemented parser exactly; every precedence level is a separate non-terminal; associativity is enforced by left-recursive structure (flattened to a loop in the implementation); the dangling-else resolution is stated explicitly
+      proficient: The grammar is complete, unambiguous, and matches the implemented parser exactly — every precedence level is a separate non-terminal, associativity is enforced by structure, and the dangling-else resolution is stated explicitly — demonstrating mastery of formal language specification
     - weight: 40
-      description: Recursive Descent Parser
+      description: "Recursive Descent Parser (Goals 2–3: implement a recursive descent parser with the full precedence ladder and correct associativity)"
       preemerging: The parser fails to run or fails most provided programs due to major structural errors
       beginning: The parser runs but fails on several test programs — e.g., it cannot parse nested constructs, or associativity is wrong at one or more tiers
       progressing: The parser passes the provided test programs but fails on edge cases — e.g., it left-associates `and`/`or` instead of right-associating, or it crashes on certain valid inputs
-      proficient: A correct parser passes all provided and hidden test programs; precedence and associativity are correct at every tier; parenthesized subexpressions, nested blocks, and if-else chains parse correctly; and the parser is built by importing the Lexer unchanged
+      proficient: A correct parser passes all provided and hidden test programs with correct precedence and associativity at every tier; parenthesized subexpressions, nested blocks, and if-else chains parse correctly; and the parser is built by importing the Lexer unchanged — demonstrating that Goals 2 and 3 are met end-to-end
     - weight: 30
-      description: AST Design, Tooling, and Error Reporting
+      description: "AST Design, Tooling, and Error Reporting (Goals 4–5: produce a dataclass AST with pretty-printer/unparser, and report errors with positions)"
       preemerging: No AST node classes exist, or the tree structure does not reflect the program's meaning
       beginning: Node classes exist but the pretty-printer or unparser is missing, or error messages lack positions
       progressing: Node classes, pretty-printer, and unparser work for most constructs; errors include positions; but the round-trip property is not verified programmatically
-      proficient: Node dataclasses cover every construct with documented fields; the pretty-printer renders nested structure clearly; the unparser inserts parentheses only where the tree shape requires them; the round-trip property parse(unparse(parse(s))) is verified across the full test suite; every error states what was expected, what was found, and the line and column
+      proficient: Node dataclasses cover every construct with documented fields; the pretty-printer renders nested structure clearly; the unparser inserts parentheses only where the tree shape requires them; the round-trip property parse(unparse(parse(s))) is verified across the full test suite; every error states what was expected, what was found, and the line and column — demonstrating that the AST is a complete, self-documenting artifact
   readings:
     - rtitle: "Recursive Descent Activity"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-recursivedescent.md"

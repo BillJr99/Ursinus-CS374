@@ -14,6 +14,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Libraries and Modules in Programming Languages
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Explain how Python's module system uses namespaces and `sys.modules` to isolate names and prevent re-execution on repeated imports
+- Trace name resolution through nested scopes and module namespaces, predicting which binding is selected for a given identifier
+- Implement a minimal module system in Python — loading, caching, and exposing a controlled public API — from first principles
+- Compare explicit exports (`__all__`, `__init__.py`) with fully open namespaces and evaluate the encapsulation tradeoffs
+- Analyze circular import scenarios and explain why they arise and how module caching either resolves or deepens them
+
 Every non-trivial program is an assembly of parts: code you wrote, code your colleagues wrote, and code the language ecosystem provides. The mechanisms that let these parts coexist — without stomping on each other's names, without loading code you don't need, and without requiring every collaborator to agree on internal naming — are collectively called the **module system**. Today you dissect Python's module system from the outside in, and then build a miniature one from scratch.
 
 Arc: **the problem modules solve → namespaces and name lookup → dynamic loading → controlling the public API → implementing a module system**

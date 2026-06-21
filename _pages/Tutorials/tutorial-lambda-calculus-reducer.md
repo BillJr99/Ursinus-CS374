@@ -16,6 +16,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tutorial: Implementing a Lambda Calculus Reducer
 
+## Learning Goals
+
+By the end of this tutorial, you will have:
+
+- Implemented the `Var`, `Lam`, and `App` AST nodes for the lambda calculus and a pretty-printer that produces readable output
+- Implemented `free_vars` correctly and tested it on abstractions, applications, and variables bound vs. free in the same term
+- Implemented capture-avoiding substitution and verified it does not accidentally rename variables in the substituted term
+- Implemented both normal-order and applicative-order beta reduction strategies and observed on a concrete term where they differ
+- Built a step-tracer and REPL that interactively reduces lambda calculus terms, suitable for use in the Lambda Calculus assignment
+
 This tutorial builds a complete, correct lambda calculus reducer in Python — the same one you need for the Lambda Calculus assignment. We go slowly through every design decision and every subtle point, so that when you write your own from scratch, you understand *why* each piece works, not just *what* it does.
 
 By the end you will have:

@@ -14,25 +14,25 @@ info:
 
   rubric:
     - weight: 25
-      description: CPS Transform
+      description: "CPS Transform (Goal 1)"
       preemerging: The student does not add a continuation parameter to interp, or the transformation compiles but produces wrong results for more than half the test cases due to incorrect continuation threading
       beginning: The continuation parameter is added and simple expressions (Num, Bool, Var) pass their value to k, but compound expressions such as BinOp, Let, and App do not chain continuations correctly — inner calls return values directly instead of calling k
       progressing: All expression types thread continuations correctly and interp_k(expr, env, lambda v v) agrees with interp(expr, env) for the provided test suite, but the trampoline is absent or incomplete so deeply nested programs still hit Python's recursion limit
       proficient: Every expression type passes its result through k with no direct returns; interp_k agrees with interp on all provided and hidden test cases; a working trampoline wraps all tail calls in thunks and a while loop drives them to completion; the student explains in comments why each recursive call is now a tail call
     - weight: 25
-      description: call/cc Implementation
+      description: "call/cc Implementation (Goals 2, 4)"
       preemerging: The Callcc AST node is defined but interp_k does not handle it, or the captured continuation is implemented as a plain closure that ignores the ContinuationEscape mechanism so invoking it does not actually escape
       beginning: ContinuationEscape and the Continuation class are present and the top-level driver catches the exception, but the captured continuation is applied at the wrong point — either it wraps the wrong k or it is invoked before the function argument is evaluated
       progressing: call/cc correctly escapes from within a single level of nesting (e.g., a flat list search) but fails when the escape must cross multiple continuation frames, such as escaping from a nested App or Let
       proficient: call/cc captures the exact current continuation k, wraps it as a Continuation that raises ContinuationEscape when called, the top-level driver unwraps the escaped value, and all three demonstration programs (non-local exit, abort, and try/raise) produce the specified output
     - weight: 25
-      description: Control Flow Applications
+      description: "Control Flow Applications (Goals 3, 4)"
       preemerging: Fewer than two of the three applications (non-local exit, exceptions, generators) are attempted, or those that are attempted do not use continuations — they use Python break/return/StopIteration directly instead
       beginning: Two of the three applications are implemented but one is structurally incorrect — for example, the exception mechanism uses only one continuation instead of two, or the generator saves state in a mutable list rather than in a captured continuation
       progressing: All three applications are implemented and produce correct output for the provided examples, but edge cases fail — the generator does not handle exhaustion gracefully, or the raise/handle mechanism does not propagate through nested handle calls correctly
       proficient: All three applications are implemented correctly using only continuations as the control mechanism; the non-local exit demo breaks at the right element; the raise/handle mechanism correctly propagates through nested frames; the range_gen generator yields every integer in range and raises StopIteration (or equivalent) on exhaustion; each application includes an explanatory comment connecting it to the continuation model
     - weight: 25
-      description: Testing and Documentation
+      description: "Testing and Documentation (Goals 1, 2, 3, 4)"
       preemerging: Fewer than five unit tests are present, or the test file does not import the student's module and instead tests stub functions, so the tests do not actually verify the implementation
       beginning: At least five tests are present and run against the real implementation, but they duplicate the same scenario with different literals — CPS equivalence, call/cc escape, the exception mechanism, and the generator protocol are not all covered
       progressing: Ten or more distinct tests cover all four required areas and all pass, but the README section is missing one or more of the three required explanations (what a continuation is, why call/cc is the mother of all control structures, which Python built-ins are special cases)

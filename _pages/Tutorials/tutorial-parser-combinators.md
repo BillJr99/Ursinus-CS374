@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tutorial: Parser Combinators — Parsers as First-Class Values
 
+## Learning Goals
+
+By the end of this tutorial, you will have:
+
+- Implemented the core `Parser` type as a function from `(str, int)` to `(value, int) | None` and built atomic parsers for single characters and character classes
+- Implemented the four fundamental combinators: `seq` (sequence), `alt` (alternation), `many` (repetition), and `map` (transformation)
+- Built a complete expression parser for Mini arithmetic that handles operator precedence without separate grammar notation
+- Connected parser combinators to the monad abstraction from the Monads activity and explained what `bind` does in the parsing context
+- Compared the combinator parser to the recursive-descent parser from the interpreter assignment, identifying the tradeoffs in readability, error messages, and extensibility
+
 A **parser combinator library** builds parsers by composing small parser values with combinator functions. A parser is simply a function from a string position to either `(value, new_position)` on success or `None` on failure. Combinators — `seq`, `alt`, `many`, `map` — combine parsers into larger parsers the same way function composition combines functions. The result is a recursive-descent parser written in the host language's normal expression syntax, with no separate grammar notation. This tutorial walks from the atomic building block up to a complete expression parser for Mini's arithmetic, all in ~200 lines of Python. **Prerequisites:** Monads activity (parsers form a monad); Lambda Calculus and Recursive Descent activities.
 
 ---

@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tutorial: Implementing Hindley-Milner Type Inference
 
+## Learning Goals
+
+By the end of this tutorial, you will have:
+
+- Implemented Robinson's unification algorithm with the occurs check and verified it on composed type expressions
+- Implemented `apply` and `compose` for type substitutions and confirmed substitution composition is associative
+- Implemented Algorithm W that walks the Mini AST and returns a principal type for every expression node
+- Implemented let-polymorphism (generalization and instantiation) so that a polymorphic identity function type-checks at multiple types in the same scope
+- Produced clear, position-tagged type error messages that name both conflicting types and the source location
+
 Hindley-Milner (HM) type inference deduces the type of every expression without any type annotations. It powers Haskell, OCaml, and Rust's type inference. This tutorial walks you step-by-step through building a complete HM inference engine over the Mini language AST: types, unification with occurs check, Algorithm W, and let-polymorphism. Each phase includes working Python code you can run and test before moving to the next. **Prerequisites:** the Type Systems activity, the Curry-Howard activity, and your Mini interpreter assignment.
 
 ---

@@ -16,6 +16,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Languages for Live Coding Music: Strudel and TidalCycles
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Distinguish embedded DSLs from external DSLs and explain the design tradeoffs that led TidalCycles and Strudel to use a hybrid of both
+- Identify how live coding's domain requirements (conciseness, modifiability at runtime, declarative time, recoverable errors) drive specific language design decisions
+- Define the denotational model of a pattern as a function from time to values and trace how combinators compose patterns algebraically
+- Analyze the mini-notation grammar of Strudel/TidalCycles and explain how parsing it requires a separate external language within the host language
+- Evaluate how DSL design choices generalize beyond music to configuration languages, query builders, and infrastructure description languages
+
 This module introduces **domain-specific languages (DSLs)** through two living, performing specimens: **TidalCycles**, a pattern language embedded in Haskell, and **Strudel**, its JavaScript-hosted sibling that runs in any browser. We move from **the live coding problem domain $\rightarrow$ embedded versus external DSL design $\rightarrow$ a formal model of patterns as functions of time $\rightarrow$ combinators and their algebraic laws $\rightarrow$ hands-on performance**, and in doing so we assemble the conceptual vocabulary, syntax versus semantics, host language leverage, denotation, and equational reasoning, that the rest of this unit will exercise when we build a parser for these languages ourselves.
 
 ---
