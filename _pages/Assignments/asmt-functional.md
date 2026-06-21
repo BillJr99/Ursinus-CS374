@@ -13,29 +13,29 @@ info:
     - To implement lazy sequences using Python generators and compare with strict evaluation
   rubric:
     - weight: 25
-      description: Pure Functions and Higher-Order Functions
+      description: "Pure Functions and Higher-Order Functions (Goal 1: write pure functions and higher-order functions using map, filter, reduce, and recursion without loops or assignment)"
       preemerging: The solutions rely pervasively on loops and assignment, or fail to run due to major errors
       beginning: Most solutions run but several use loops or assignment where the directions forbid them, or combinator usage is incorrect (e.g., map returns a map object that is never consumed)
       progressing: All solutions are correct and respect the no-loop and no-assignment constraints, but combinators are used awkwardly (e.g., reduce used where map would suffice, or lambda where a named function would be clearer)
-      proficient: Correct solutions use map, filter, reduce, and recursion idiomatically throughout; the compose function works for any arity; my_map and my_reduce are property-tested against the built-ins; and each function is documented with its type signature and one-sentence description
+      proficient: Correct solutions use map, filter, reduce, and recursion idiomatically throughout with no loops or assignment in solution bodies — demonstrating Goal 1; the compose function works for any arity; my_map and my_reduce are property-tested against the built-ins; and each function is documented with its type signature and one-sentence description
     - weight: 25
-      description: Recursive Data Structures
+      description: "Recursive Data Structures (Goal 2: implement recursive data structures including trees and linked lists with map and fold operations)"
       preemerging: The tree or linked-list structures are missing, or the recursive cases do not terminate
       beginning: The structures are defined but tree_map or tree_fold is missing, or the linked-list fold does not handle the empty-list base case
       progressing: All structures and operations are implemented correctly for the provided test cases, but the functions are not generic — e.g., tree_fold is hardcoded to addition rather than taking a combining function
-      proficient: Both the binary tree and the linked-list structures are defined as dataclasses; tree_map, tree_fold, list_map, and list_fold all take a function argument and work for any operation; the class-defined flatten and depth functions are implemented in terms of fold; and all operations are tested with at least four inputs including edge cases (empty list, single-node tree)
+      proficient: Both the binary tree and the linked-list structures are defined as dataclasses; tree_map, tree_fold, list_map, and list_fold all take a function argument and work for any operation — demonstrating Goal 2; flatten and depth are implemented in terms of fold; and all operations are tested with at least four inputs including edge cases (empty list, single-node tree)
     - weight: 25
-      description: Closures and Function Factories
+      description: "Closures and Function Factories (Goal 3: build closures and function factories that capture and return behavior)"
       preemerging: The closure-based functions are not implemented, or closures are not used — instead the factories use global state
       beginning: Closures are used but one or more factories are incorrect — e.g., the adder factory returns the wrong sum, or the memoizer does not cache correctly
       progressing: All factories work correctly for the provided test cases, but the memoizer does not handle multiple arguments, or the decorator version of memoize is not provided
-      proficient: All five closure-based functions (adder, multiplier, counter, memoize, once) are implemented correctly; memoize works for any hashable arguments; the decorator pattern is demonstrated; and the writeup includes a diagram (ASCII or prose) showing what each closure captures and why the captured variable does not leak between independent factory calls
+      proficient: All five closure-based functions (adder, multiplier, counter, memoize, once) are implemented correctly using closures — demonstrating Goal 3; memoize works for any hashable arguments; the decorator pattern is demonstrated; and the writeup includes a diagram showing what each closure captures and why the captured variable does not leak between independent factory calls
     - weight: 25
-      description: Lazy Sequences with Generators
+      description: "Lazy Sequences with Generators (Goal 4: implement lazy sequences using Python generators and compare with strict evaluation)"
       preemerging: No generators are implemented, or all functions use lists and eager evaluation throughout
       beginning: Some generator functions are implemented but they do not use yield, or they materialize the entire sequence in memory before yielding
       progressing: All generator functions are implemented correctly with yield, but take() or the pipeline composition is missing, or infinite sequences are not demonstrated
-      proficient: All five generator functions (naturals, fibonacci, take, gen_map, gen_filter) are implemented with yield; infinite sequences are demonstrated without hanging; lazy pipelines are built using gen_map and gen_filter; the strict vs. lazy comparison demonstrates a concrete performance difference; and the writeup explains what would happen if naturals() used a list instead of yield
+      proficient: All five generator functions (naturals, fibonacci, take, gen_map, gen_filter) are implemented with yield and infinite sequences are demonstrated without hanging — demonstrating Goal 4; lazy pipelines are built using gen_map and gen_filter; the strict vs. lazy comparison demonstrates a concrete performance difference; and the writeup explains what would happen if naturals() used a list instead of yield
   readings:
     - rtitle: "Functional Programming Activity"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-functional.md"

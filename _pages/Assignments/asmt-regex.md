@@ -14,25 +14,25 @@ info:
     - To explain the theoretical limits of regular languages and connect them to the Chomsky hierarchy
   rubric:
     - weight: 25
-      description: Pattern Library
+      description: "Pattern Library (Goal 1)"
       preemerging: Fewer than five patterns are provided, or most patterns match clearly wrong strings on the provided test cases
       beginning: Most patterns are provided but several fail on edge cases (e.g., missing anchors allow partial matches, or character classes are too broad or too narrow)
       progressing: All ten patterns pass the provided positive and negative test cases, but two or more patterns have minor issues that would fail on hidden test inputs (e.g., permitting leading zeros in integers, or not anchoring a pattern that should be anchored)
       proficient: All ten patterns pass all provided and hidden test cases; raw strings are used throughout; each pattern is named, accompanied by a one-sentence explanation of each non-trivial construct, and tested with at least three positive and two negative cases via the check() harness
     - weight: 25
-      description: Mini Lexer with re.finditer
+      description: "Mini Lexer with re.finditer (Goal 2)"
       preemerging: The mini lexer is not implemented, or it uses re.match in a loop rather than re.finditer with alternation
       beginning: The mini lexer uses finditer but the TOKEN_SPEC ordering is wrong (e.g., keywords not before identifiers), producing incorrect token types for some inputs
       progressing: The mini lexer produces correct token types for most inputs, but one or more token types are misclassified and gaps between matches (unrecognized characters) are not detected
       proficient: The mini lexer uses a single compiled alternation pattern with named groups; produces correct token type and value for every input; detects and reports gaps (unrecognized characters) with their position; and handles the maximal-munch ordering correctly for all test cases
     - weight: 25
-      description: Text Transformer and Log Parser
+      description: "Text Transformer and Log Parser (Goals 1, 3)"
       preemerging: Neither the transformer nor the log parser is implemented, or both produce clearly wrong output
       beginning: One of the two is implemented but produces incorrect output on several provided inputs (e.g., date conversion uses the wrong group references, or the log parser drops some records)
       progressing: Both are implemented and produce correct output on the provided inputs, but the log parser does not handle malformed lines, or the transformer does not handle edge cases (e.g., dates at the start or end of a string)
       proficient: Both the text transformer and the log parser work correctly on all provided and hidden inputs; malformed log lines are detected and reported with their line number; the configuration is externalized in a JSON file; and the errors.txt output is generated correctly
     - weight: 25
-      description: Pattern Analysis and Limits Discussion
+      description: "Pattern Analysis and Limits Discussion (Goals 4, 5)"
       preemerging: No analysis is provided, or the analysis is a generic restatement of course notes without applying concepts to the student's patterns
       beginning: The analysis addresses greedy vs. lazy and anchors, but the explanations are superficial and the examples do not clearly illustrate the difference
       progressing: The analysis covers greedy vs. lazy, anchors, and groups with working examples, but the Chomsky hierarchy discussion is missing or incorrect

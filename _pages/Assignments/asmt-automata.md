@@ -14,25 +14,25 @@ info:
     - To connect automata to the regular expressions and lexer of the surrounding course
   rubric:
     - weight: 25
-      description: DFA Design and Simulation
+      description: "DFA Design and Simulation (Goals 1, 2)"
       preemerging: The DFA simulator fails to run or fails most provided machines due to major structural errors
       beginning: The DFA simulator runs but fails on several test cases due to minor issues such as incorrect transition lookups or missing alphabet validation
       progressing: The DFA simulator passes the provided test cases but mishandles edge cases such as the empty string, symbols outside the alphabet, or trap states
       proficient: A correct DFA simulator passes all provided and hidden test cases, handles the empty string and out-of-alphabet symbols deliberately, supports trace mode, and runs all three required DFA designs with documented state meanings
     - weight: 25
-      description: NFA Design and Simulation
+      description: "NFA Design and Simulation (Goals 1, 2)"
       preemerging: The NFA simulator is missing or fails to compute epsilon-closures correctly
       beginning: The NFA simulator runs but produces incorrect results on several machines due to epsilon-closure errors or incorrect powerset tracking
       progressing: The NFA simulator passes the provided test cases but would fail on machines with epsilon cycles or machines that require epsilon closure at the final step
       proficient: A correct NFA simulator correctly computes epsilon-closures with cycle detection, tracks the powerset of states, and passes all provided and hidden test cases including all three required NFA designs with traced execution paths
     - weight: 25
-      description: Subset Construction
+      description: "Subset Construction (Goals 2, 3)"
       preemerging: The subset construction is not attempted or the resulting DFA is fundamentally incorrect
       beginning: The subset construction table is partially complete but the encoded DFA diverges from the NFA on several test strings
       progressing: The subset construction table is complete and the DFA is correctly encoded, but simulation agreement with the NFA is only verified on a few strings
       proficient: The subset construction is carried out fully by hand with every powerset state documented, the resulting DFA is encoded as JSON, and simulation agreement with the original NFA is verified programmatically across the full test suite
     - weight: 25
-      description: Thompson's Construction and Writeup
+      description: "Thompson's Construction and Writeup (Goals 4, 5)"
       preemerging: Thompson's construction is not attempted or produces a machine that accepts clearly wrong strings
       beginning: Thompson's construction produces a machine for simple cases but fails on concatenation or union of sub-expressions
       progressing: Thompson's construction produces a correct NFA for the given regex and is verified by simulation, with limited explanation of the construction steps

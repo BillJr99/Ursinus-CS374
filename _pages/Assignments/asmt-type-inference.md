@@ -13,25 +13,25 @@ info:
     - To produce clear, position-tagged type error messages
   rubric:
     - weight: 30
-      description: Unification and Substitution
+      description: "Unification and Substitution (Goal 1)"
       preemerging: Unification is not implemented or fails on basic cases
       beginning: Unification handles trivial cases but fails on composed types or does not apply substitution transitively
       progressing: Unification works for composed types with a minor defect such as missing occurs check allowing infinite types
       proficient: Unification correctly handles all cases including occurs check, composed types, and transitive substitution composition; raises a clear TypeError naming both conflicting types on failure
     - weight: 35
-      description: Algorithm W Type Inference
+      description: "Algorithm W Type Inference (Goals 1, 2)"
       preemerging: Algorithm W is not implemented or infers incorrect types for basic expressions
       beginning: Algorithm W infers types for literals and variables but fails on function application or let
       progressing: Algorithm W infers correct types for most expressions but has a defect in one case (e.g., incorrect constraint for binary operators, or missing generalization for let)
       proficient: Algorithm W infers correct principal types for all node types in the Mini AST (literals, variables, binary operators, if, let, fun, call) and threads substitutions correctly throughout
     - weight: 20
-      description: Let-Polymorphism
+      description: "Let-Polymorphism (Goal 3)"
       preemerging: Let-generalization is not implemented; let-bound functions are monomorphic
       beginning: Generalization exists but does not correctly exclude variables free in the environment, causing unsoundness
       progressing: Generalization and instantiation work for simple polymorphic let (e.g., identity function), but a complex case such as nested let or self-application fails
       proficient: Let-generalization correctly quantifies over variables not free in the current environment; instantiation refreshes every quantified variable; polymorphic identity applied to both Int and Bool in the same scope type-checks correctly
     - weight: 15
-      description: Error Messages and Submission
+      description: "Error Messages and Submission (Goal 4)"
       preemerging: No error messages; the typechecker crashes or returns no useful information on failure
       beginning: Type errors are reported but without source position or with messages that are difficult to understand
       progressing: Type errors report the conflicting types, with minor omissions such as missing position or unclear variable names

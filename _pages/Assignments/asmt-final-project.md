@@ -13,25 +13,25 @@ info:
     - To document and present a complete language specification
   rubric:
     - weight: 30
-      description: Language Design and Specification
+      description: "Language Design and Specification (Goals 2, 4)"
       preemerging: No language specification is provided; the design is a copy of Mini with no distinguishing choices
       beginning: A specification exists but is incomplete or internally inconsistent
       progressing: The specification covers syntax (EBNF), semantics, and design rationale with minor omissions
       proficient: The specification gives complete EBNF grammar, operational semantics for all constructs, a rationale for every non-default design decision, and at least three example programs that motivate the design; the specification is self-consistent and could be reimplemented from scratch by another team
     - weight: 40
-      description: Implementation
+      description: "Implementation (Goals 1, 3)"
       preemerging: No working interpreter or compiler; the code does not run
       beginning: A running implementation exists but fails on more than two of the provided test categories
       progressing: All core features (variables, control flow, functions, recursion) work; at least one extension feature is implemented with a minor defect
       proficient: All core features pass the test suite; at least one extension feature is fully implemented and tested; the implementation is modular (separate lexer, parser, AST, evaluator/compiler); error messages name the offending construct and line number; the implementation handles all provided test programs correctly
     - weight: 20
-      description: Testing
+      description: "Testing (Goals 1, 3)"
       preemerging: Fewer than three test programs; no expected-output comparison
       beginning: Tests exist but do not cover the extension feature or edge cases
       progressing: At least eight test programs covering core and extension features; a test harness diffs actual vs expected output with minor gaps
       proficient: At least twelve test programs; the harness runs all tests and reports PASS/FAIL; tests include edge cases (empty input, recursion depth, type error recovery); test coverage includes the extension feature's stated semantics
     - weight: 10
-      description: Presentation and Writeup
+      description: "Presentation and Writeup (Goals 2, 4)"
       preemerging: No presentation or writeup
       beginning: A presentation exists but the design rationale and extension feature are not explained clearly
       progressing: The presentation covers design, implementation, and demo with minor time management issues; the README is mostly complete

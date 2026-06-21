@@ -13,29 +13,29 @@ info:
     - To understand the design tradeoffs between interpretation, transpilation, and compilation
   rubric:
     - weight: 40
-      description: Transpiler Implementation
+      description: "Transpiler Implementation (Goals 1–2: implement the Visitor pattern and transpile Mini ASTs to Python and JavaScript)"
       preemerging: No working transpiler; visitors are missing or produce incorrect output
       beginning: A visitor exists and handles some nodes but fails on control flow or function definitions
       progressing: Transpilation to at least one target language works for all node types with a minor defect such as incorrect operator precedence in the output or missing newlines around blocks
-      proficient: Both target transpilers produce syntactically correct, runnable output for all provided Mini programs; Python output runs under Python 3; JavaScript output runs under Node.js; operator precedence is correctly parenthesized in the output; and the output is idiomatic for each target
+      proficient: Both target transpilers produce syntactically correct, runnable output for all provided Mini programs using the Visitor pattern — demonstrating Goals 1 and 2; Python output runs under Python 3; JavaScript output runs under Node.js; operator precedence is correctly parenthesized in the output; and the output is idiomatic for each target
     - weight: 30
-      description: Bytecode Compiler and Stack Machine
+      description: "Bytecode Compiler and Stack Machine (Goal 3: implement a stack-machine bytecode compiler and a virtual machine to run the bytecode)"
       preemerging: No bytecode compiler exists
       beginning: A bytecode compiler exists but generates incorrect code for arithmetic or control flow
       progressing: The bytecode compiler handles expressions and simple statements correctly but fails on function calls or closures
-      proficient: The bytecode compiler generates correct sequences for all expressions, statements, if/while, and function calls; the stack machine executes them and produces the same output as the interpreter; an annotated trace of one program's execution (instruction, stack state, environment) is included
+      proficient: The bytecode compiler generates correct sequences for all expressions, statements, if/while, and function calls — demonstrating Goal 3; the stack machine executes them and produces the same output as the interpreter; an annotated trace of one program's execution (instruction, stack state, environment) is included
     - weight: 20
-      description: Testing and Comparison
+      description: "Testing and Comparison (Goal 4: understand the design tradeoffs between interpretation, transpilation, and compilation through end-to-end equivalence testing)"
       preemerging: No systematic testing; transpiler output is not verified against the interpreter
       beginning: Ad-hoc tests exist but the outputs of the transpiler and interpreter are not directly compared
       progressing: A test harness runs each Mini program through the interpreter, both transpilers, and the stack machine, comparing outputs; minor discrepancies exist on edge cases
-      proficient: All four execution paths (interpreter, Python transpile-and-run, JS transpile-and-run, stack machine) produce identical output for the full test suite; discrepancies are documented and explained; the harness is part of the submission
+      proficient: All four execution paths (interpreter, Python transpile-and-run, JS transpile-and-run, stack machine) produce identical output for the full test suite — demonstrating Goal 4 through concrete cross-backend verification; discrepancies are documented and explained; the harness is part of the submission
     - weight: 10
-      description: Writeup and Reflection
+      description: "Writeup and Reflection (Goal 4: articulate the design tradeoffs between interpretation, transpilation, and compilation)"
       preemerging: An incomplete submission is provided
       beginning: The program is submitted, but not according to the directions in one or more ways
       progressing: The program is submitted according to the directions with a minor omission
-      proficient: The submission includes a README explaining the design decisions for each target language, a table comparing the four execution approaches on the correctness/speed/debuggability axes, and thoughtful answers to the reflection prompts
+      proficient: The submission includes a README explaining the design decisions for each target language, a table comparing the four execution approaches on the correctness/speed/debuggability axes, and thoughtful answers to the reflection prompts — demonstrating Goal 4 through articulated analysis of language implementation tradeoffs
   readings:
     - rtitle: "Transpilers and Compilers Activity"
       rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-transpiler-compiler.md"
