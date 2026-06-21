@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # A Gallery of Programming Languages: Same Problem, Different Minds
 
+A programming language is not just a tool — it is a crystallized theory of what computation is. Every `for` loop, list comprehension, or logic clause embeds a belief about how problems should be decomposed and what the programmer should have to say explicitly. Exploring many languages through the same problem is like tasting the same dish cooked by five different chefs: the ingredients are the same, but the philosophy behind the recipe changes everything.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -24,6 +26,13 @@ By the end of this activity, you will be able to:
 - Compare how different paradigms handle state, control flow, and abstraction, and evaluate the tradeoffs in expressiveness and correctness
 - Apply the concept of paradigm as a design choice — not a fact — when selecting an approach for a given problem
 - Analyze an unfamiliar language feature and classify it within the paradigm taxonomy based on its behavior
+
+> **Before You Begin:** This activity assumes you can:
+> - Write Python functions using loops, list comprehensions, and lambda expressions
+> - Describe in plain English what a recursive function does on a concrete example
+> - Explain what an environment (dictionary of variable-to-value mappings) is in the context of an interpreter
+>
+> If any of these feel shaky, review them first.
 
 ## Introduction
 
@@ -36,6 +45,8 @@ This activity takes a small number of concrete problems and solves each one thro
 ---
 
 ## Model 1: Five Ways to Sum a List
+
+All five snippets below compute the same number (171700), yet they read like different languages from different planets. As you read each one, ask yourself: what does the programmer have to say explicitly? What does the language figure out on its own? The answers reveal the core trade-off each paradigm is making between programmer control and language assistance.
 
 > **The Problem:** Compute the sum of the squares of all even numbers from 1 to 100.
 >
@@ -93,6 +104,8 @@ print("\nAll paradigms agree: 171700")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** The NumPy array-oriented version returns a NumPy scalar (`numpy.int64`), not a plain Python `int`. The `==` comparison still works, but `type(result_apl) == int` is `False`. This is a common source of subtle bugs when mixing NumPy and pure Python code.
+
 ---
 
 **Critical Thinking Questions**
@@ -108,6 +121,10 @@ print("\nAll paradigms agree: 171700")
 ---
 
 ## Model 2: Fibonacci — Recursion, Memoization, and Generators
+
+The naive recursive Fibonacci is famous for being simultaneously the clearest expression of the mathematical definition and a comically slow program. The five variants here each fix the performance problem in a different way — and each fix reveals a different language design concept. Pay attention to what changes between versions and what stays the same.
+
+> **Watch out!** `@lru_cache` caches based on argument equality. If you call `fib_memo(20)` in two different places, the second call returns the cached result instantly. But the cache is tied to the function object — a new function defined with the same body gets its own empty cache. This catches students who define their own cached function and wonder why it is still slow.
 
 > **The Problem:** Compute Fibonacci numbers.
 >
@@ -198,6 +215,8 @@ print(f"\nFirst 10: {[next(stream) for _ in range(10)]}")
 
 ## Model 3: Sorting — Algorithms as Philosophies
 
+Sorting algorithms are taught as performance exercises, but viewed through a PL lens they are paradigm exercises: quicksort embodies divide-and-conquer recursion, mergesort embodies pure functional immutability, and the "specification" approach embodies the logic programming idea that you should describe what you want and let the runtime figure out how. Watch for what each style makes easy and what it hides.
+
 > **The Problem:** Sort a list of integers.
 >
 > **The Claim:** Different sorting algorithms encode different philosophical commitments about how to break a problem apart, and different language paradigms make some commitments more natural to express than others.
@@ -260,6 +279,8 @@ print(f"\nSpecification-verified sort: {result[:5]}...{result[-5:]}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** The `merge` function above creates new lists with `[a[0]] + merge(...)` on every recursive call, giving O(n²) total allocation. This is pedagogically clean but performance-terrible for large inputs. Real mergesort implementations use in-place merging or pre-allocated buffers — a good example of the gap between a paradigm-pure implementation and a production one.
+
 ---
 
 **Critical Thinking Questions**
@@ -275,6 +296,8 @@ print(f"\nSpecification-verified sort: {result[:5]}...{result[-5:]}")
 ---
 
 ## Model 4: Tree Operations — Pattern Matching vs. Visitor Pattern
+
+Expression trees are the central data structure of every interpreter you will write this semester. This model shows three philosophically distinct ways to traverse the same tree: functional pattern matching (enumerate cases in a function), OOP visitor (dispatch through method overriding), and fold (replace constructors with functions). Notice that the fold produces `eval`, `count`, and `depth` from a single recursive structure — you provide the algebra, not the recursion.
 
 > **The Problem:** Evaluate, pretty-print, count, and measure the depth of an expression tree.
 >
@@ -390,6 +413,10 @@ What is a catamorphism?
 ---
 
 ## Model 5: The Same Interpreter in Three Styles
+
+A tree-walking interpreter, a CPS interpreter, and a bytecode-plus-VM compiler all compute the same thing — they implement the same semantics, just at different altitudes. Understanding why they are equivalent (and what differs) is the conceptual foundation for the rest of the course. Trace through the CPS version slowly: the continuation `k` is "what to do with this result when it is ready," and every recursive call hands off that baton rather than waiting for it.
+
+> **Watch out!** The tree-walker in Style 1 uses `env={}` as a default mutable argument — a classic Python footgun. Default mutable arguments are shared across all calls that use the default, so if you ever mutate `env` in place (rather than constructing a new dict with `{**env, k: v}`), you will corrupt the shared default. The code here is safe because it never mutates `env` in place, but be careful when you adapt it.
 
 > **The Problem:** Implement a tiny interpreter for a language with numbers, addition, and let-bindings.
 >
