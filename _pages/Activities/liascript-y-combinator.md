@@ -317,6 +317,8 @@ factorial_default = lambda n, rec=None: (
     if rec else (lambda n2: factorial_default(n2))(n)
 )
 # This is a hack; don't do it. It works but is obscure.
+# Watch out: this function still relies on the name `factorial_default` in its
+# body — it is not truly anonymous. It smuggles a name in through the closure.
 
 # Pattern 2: the "self" trick with a wrapper class
 class Recursive:

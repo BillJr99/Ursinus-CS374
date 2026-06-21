@@ -153,6 +153,8 @@ except Exception as e:
 
 ## 3. Disjunction as Tagged Unions
 
+**Intuition.** A proof of `P ∨ Q` does not require proofs of *both* — you only need to produce evidence for *one* of the two sides and declare which one it is. That is exactly what a tagged union does: `Left(v)` says "I have a P (here it is)" and `Right(v)` says "I have a Q (here it is)." The tag is the declaration; the value is the evidence. To use a disjunction proof (the elimination rule), you must handle both cases — which is why exhaustive `match` statements are mandatory in Haskell and Rust.
+
 A proof of `P ∨ Q` is: *either* a proof of `P` (tagged "left") *or* a proof of `Q` (tagged "right"). In code, this is a tagged union (also called a sum type or `Either`):
 
 ```python

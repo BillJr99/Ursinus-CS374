@@ -53,6 +53,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 # Part I: The Features
 
+> **Intuition:** Each of the four features in this part is presented through the same three-lens template: the *problem* it solves (what was painful before), the *mechanism* (the language construct that solves it), and the *cost* (what the programmer gives up to get the benefit). As you read, keep connecting back to your own interpreter project — several of these features apply directly to the code you have already written.
+
 ## 1. Pattern Matching: Branching on Shape
 
 **The problem.** Code that dissects structured data degenerates into nested ifs and field accesses. **The mechanism.** A `match` tests a value against *patterns* that simultaneously check shape and bind variables; Python (3.10) joined Rust, Scala, and the ML family:

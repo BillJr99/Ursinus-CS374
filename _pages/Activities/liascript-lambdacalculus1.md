@@ -575,6 +575,8 @@ print("They match → alpha-equivalent.")
 
 ## Model 5: Free vs Bound Variables and WHNF
 
+> **Intuition**: WHNF is the "good enough" answer for lazy evaluation. An expression is in WHNF when the outermost position is not a redex — it is either a variable, a lambda, or an application whose function is not a lambda. Haskell stops here rather than reducing everything inside, which is why it can represent infinite lists: the spine of the list is in WHNF (a cons cell whose tail is an unevaluated thunk), and you only reduce the tail when you actually ask for the next element.
+
 **Weak Head Normal Form (WHNF)** is a partial-normal form used by lazy languages (Haskell): an expression is in WHNF when its *outermost* constructor is not a redex, even if subexpressions remain unreduced. This is in contrast to full normal form where *no* redexes remain anywhere.
 
 ```python

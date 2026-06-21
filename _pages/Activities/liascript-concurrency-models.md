@@ -312,6 +312,8 @@ In CSP/Go-style channels, an **unbuffered** channel's send operation blocks unti
 
 ## 4. STM: Atomic Blocks Without Locks
 
+**Intuition.** STM is the "optimistic" approach: let all the chefs work on their steps simultaneously, but at the moment each chef tries to commit their changes, check whether anyone else modified the same ingredient in the meantime. If so, undo the step and try again from scratch. If not, commit atomically. This is exactly how database transactions work, applied to in-memory variables. The key insight is that *conflicts are rare* in most programs, so the cost of occasionally retrying is lower than the cost of acquiring locks for every access. The critical constraint: the transaction body must be *pure* (no side effects like printing or writing to a file), because it may be executed more than once.
+
 **Software Transactional Memory** (Haskell STM, Clojure refs) takes a third approach: allow threads to read and modify shared state, but inside **atomic transactions**. A transaction sees a consistent snapshot of memory; if two transactions conflict (both modified the same variable), one is *retried* automatically. No deadlocks: transactions don't hold locks, they just detect conflicts.
 
 ```python

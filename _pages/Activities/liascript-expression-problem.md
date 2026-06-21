@@ -26,6 +26,13 @@ By the end of this activity, you will be able to:
 - Connect the dispatch-based solution to Haskell typeclasses, Rust traits, and Go interfaces as language-level mechanisms for the same pattern
 - Evaluate a given language feature or design choice by identifying which dimension of the Expression Problem it prioritizes
 
+> **Before You Begin:** This activity assumes you can:
+> - Write Python classes with inheritance and override methods on subclasses
+> - Read and write basic Python `match`/`case` pattern matching (Python 3.10+)
+> - Explain what a decorator (`@something`) does in Python at a high level
+>
+> If any of these feel shaky, review them first.
+
 The **Expression Problem** is one of the most important design tensions in programming language theory. Coined by Philip Wadler in a 1998 mailing list post, it asks a deceptively simple question:
 
 > *Can you add new data types AND new operations to a program without modifying any existing code?*
@@ -52,6 +59,8 @@ In this activity you will move from the concrete problem through several attempt
 ---
 
 ## Model 1 — The Problem: Two Dimensions of Extension
+
+Picture a menu at a restaurant: OOP is like a menu where adding a new dish (new type) only requires writing one new recipe, but if the owner wants to add a nutritional-info column for every dish (new operation), they must revisit every recipe ever written. This model makes that asymmetry concrete in code you can run and modify.
 
 We start with a shape hierarchy — the classic OOP teaching example. Read the code carefully. There are two kinds of things you might want to add to this system: (1) new shapes (data types) and (2) new operations over shapes. Pay attention to which is easy and which is hard.
 

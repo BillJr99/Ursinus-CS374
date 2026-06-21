@@ -328,6 +328,8 @@ linker.link()
 
 3. What is a "duplicate symbol" error, and when does it occur? Give a realistic scenario in which two object files might accidentally define the same symbol name.
 
+> **Watch out!** A common source of duplicate-symbol errors in C is a **function definition placed in a header file** (`.h`) that is included in multiple `.c` files. Each `.c` file compiles the definition into its own `.o`, and the linker finds two copies. The fix is to put only *declarations* (prototypes) in header files and *definitions* in exactly one `.c` file. C's `inline` keyword or `static` modifier can also scope a definition to a single translation unit.
+
 4. **Static linking** copies library code directly into the executable at link time. **Dynamic linking** leaves references unresolved until the program is loaded or run. List one advantage and one disadvantage of each approach. (Think about: executable size, memory usage when multiple programs use the same library, and ease of updating the library.)
 
 ---
