@@ -14,6 +14,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Logic Programming and Prolog
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Explain the logic programming paradigm and contrast declarative knowledge bases with imperative and functional programs
+- Construct Prolog-style facts, rules, and queries and trace how the resolution engine searches for proofs
+- Implement unification over terms with variables and explain how it underpins both Prolog resolution and Hindley-Milner type inference
+- Simulate backtracking search in Python, identifying choice points and the order in which solutions are generated
+- Build a mini-Prolog interpreter that supports facts, rules, conjunctive goals, and variable bindings
+
 The fourth paradigm from the paradigms module has a surprising claim: to compute, simply *declare what is true* and ask questions. The runtime searches for proofs. Prolog, the archetype of logic programming, powers natural language processing, constraint solving, and type inference engines — Hindley-Milner uses the same unification algorithm at its heart. Today we build that engine from scratch. The arc: **facts and queries → unification → resolution → backtracking → a complete mini-Prolog interpreter**.
 
 ---

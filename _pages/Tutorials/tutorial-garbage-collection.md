@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tutorial: Garbage Collection — Memory Management from First Principles
 
+## Learning Goals
+
+By the end of this tutorial, you will have:
+
+- Implemented a simulated heap in Python (a dictionary from address to object) supporting allocation and deallocation
+- Built a working reference-counting collector and demonstrated why it leaks cyclic structures
+- Built a working mark-and-sweep collector with a gray/black worklist and verified it reclaims cycles
+- Built a working Cheney copying collector and verified it compacts the live set into a clean semi-space
+- Chosen and justified a GC strategy for the final project's GC extension based on the tradeoffs of each algorithm
+
 Every interpreter allocates memory for values, closures, and environments — and must eventually reclaim memory that is no longer needed. **Garbage collection** (GC) is automatic memory management: the runtime periodically finds and frees memory that is unreachable from the program's current state. This tutorial builds three GC algorithms from scratch in Python (simulating a heap as a dictionary), explains why each works, and shows where each breaks down. **Prerequisites:** Python interpreter assignment (environments and closures); the course's AST and evaluator.
 
 ---

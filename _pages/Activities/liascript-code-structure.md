@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Code Structure: Expressions and Conditionals
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Distinguish expressions from statements and explain the significance of treating `if` and `let` as expressions rather than statements
+- Implement `let`-binding as an expression form and trace how it extends the environment for the scope of its body
+- Construct a small expression evaluator that handles arithmetic, conditionals, and local variable binding
+- Compare strict (eager) and short-circuit (lazy) evaluation of boolean expressions and identify where each is semantically necessary
+- Analyze how sequencing is encoded as a language construct and explain its relationship to side effects
+
 CS374 — Principles of Programming Languages | Week 7
 
 Reference: PLAI (Programming Languages: Application and Interpretation) Ch. 7

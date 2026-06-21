@@ -11,6 +11,16 @@ link:     https://cdn.jsdelivr.net/chartist.min.css
 
 # Coroutines and Generators: Pausable Computation
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Define coroutines and generators and explain how `yield` captures a continuation to pause and resume computation
+- Trace the execution of a generator function step-by-step, predicting what value each `next()` call produces
+- Implement lazy infinite sequences using generator functions and compare their memory use to eager list-based equivalents
+- Explain how `async`/`await` desugars to a state machine and identify where suspension points occur
+- Extend a simple interpreter to support generator objects with `yield` and `send` semantics
+
 > **Prerequisites:** Python functions and closures; basic continuations from the CPS activity
 > **Goal:** Understand generators as semi-coroutines, how `yield` captures a continuation, how `async/await` desugars to state machines, and how to add generator support to a simple interpreter.
 

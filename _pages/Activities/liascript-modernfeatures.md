@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Modern Language Features
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Apply pattern matching to dissect structured data and explain how exhaustiveness checking improves reliability over chained conditionals
+- Define parametric generics with type variables and identify the variance and constraint issues that arise in practice
+- Explain Rust's ownership and borrowing model and contrast it with garbage collection and manual memory management as approaches to memory safety
+- Describe how `async`/`await` concurrency differs from OS threads and identify the performance tradeoffs of each model
+- Evaluate which modern features are appropriate candidates for inclusion in a language design project and justify the choice using the problem/mechanism/cost framework
+
 Language design did not stop with the features your interpreter implements; it accelerated. Today we survey four ideas that define the current generation (pattern matching, generics, memory safety through ownership, and async concurrency), each through the lenses you have built: what problem it solves, what it costs, and which evaluation criterion it serves. Your project pitches a feature menu next week; today stocks the menu. The arc: **pattern matching $\rightarrow$ generics $\rightarrow$ ownership $\rightarrow$ async $\rightarrow$ choosing for your language**.
 
 ---

@@ -16,6 +16,15 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # From Interpreter to Compiler: Code Generation and Transpilation
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Explain the architectural difference between a tree-walking interpreter, a transpiler, and a bytecode compiler, and identify which pipeline stages each shares and where they diverge
+- Implement a Visitor-pattern AST traversal that emits syntactically correct Python and JavaScript from a Mini-language AST, including correct operator precedence in the output
+- Design and implement a stack-machine instruction set for a simple expression language, write a compiler that emits those instructions from an AST, and trace instruction-by-instruction execution through a virtual machine
+- Run an end-to-end equivalence test confirming that the interpreter, both transpilers, and the stack machine produce identical output for the same Mini-language program
+
 *"The difference between an interpreter and a compiler is not how smart they are about the language — it is when they do their work."*
 
 Your tree-walking interpreter evaluates an AST **at runtime**: it visits each node and immediately computes a value. A **compiler** walks the same AST but, instead of computing values, **emits instructions** — for a virtual machine, a real CPU, or another programming language. A **transpiler** (source-to-source compiler) emits valid code in a different high-level language. All three share the same frontend (lexer, parser, AST builder); they diverge only in what the AST traversal produces.

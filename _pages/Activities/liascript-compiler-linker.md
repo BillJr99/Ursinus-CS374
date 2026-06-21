@@ -15,6 +15,15 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # The Compilation and Linking Process
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Enumerate and describe each stage of the compilation pipeline — preprocessing, parsing, semantic analysis, code generation, assembly, and linking — and identify the input and output artifact of each stage
+- Explain the role of symbol tables and relocation records in the object-file format, and trace how the linker resolves external references across separately compiled modules
+- Distinguish static linking from dynamic linking, and reason about the tradeoffs of each for program startup time, binary size, and library versioning
+- Map the compilation pipeline stages onto your course interpreter project, identifying which stages you have already implemented and which stages a full compiler would add
+
 **CS374: Principles of Programming Languages — Week 9**
 
 **References:** Compilers (Dragon Book) Ch. 2 and Ch. 8

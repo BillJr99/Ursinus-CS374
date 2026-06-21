@@ -16,6 +16,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tutorial: Flex and Bison from Zero to a Working Language
 
+## Learning Goals
+
+By the end of this tutorial, you will have:
+
+- Written a working Flex lexer file (`.l`) that tokenizes arithmetic expressions including integers, floats, identifiers, and operators
+- Written a working Bison grammar file (`.y`) that parses expressions with correct operator precedence and associativity
+- Built and run a complete calculator language that evaluates arithmetic expressions and stores variables
+- Extended the calculator grammar with at least one new construct (e.g., comparison operators or a print statement)
+- Connected the Flex/Bison toolchain to the hand-written lexer and recursive-descent parser you built in earlier assignments
+
 This tutorial builds a complete, running calculator language step by step using **Flex** (fast lexer generator) and **Bison** (parser generator). No prior knowledge of either tool is assumed. By the end you will have:
 
 1. A working `flex` lexer that tokenizes arithmetic expressions

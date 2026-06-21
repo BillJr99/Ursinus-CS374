@@ -11,6 +11,16 @@ link:     https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.
 
 # From Source to Executable: Compiling, Linking, and the ELF Format
 
+## Learning Goals
+
+By the end of this tutorial, you will have:
+
+- Traced a C source file through all four pipeline stages (preprocessor, compiler, assembler, linker) using `gcc -save-temps` and inspected each intermediate artifact
+- Read an ELF binary's section headers with `readelf` and identified the `.text`, `.data`, `.rodata`, and `.bss` sections
+- Explained the difference between static and dynamic linking and predicted which symbols will be unresolved at compile time vs. resolved at load time
+- Contrasted the compiled pipeline with how interpreted languages (Python, JavaScript) execute source code at runtime
+- Applied this knowledge to explain why a bytecode VM sits between a tree-walking interpreter and a native compiler in the execution-strategy spectrum
+
 > **"Every program you run went through a pipeline you've never seen."**
 >
 > When you type `gcc hello.c -o hello`, a remarkable chain of tools transforms text into a binary that the operating system can map directly into memory and execute. This tutorial traces that chain step by step — from C source to ELF binary — and then contrasts it with how interpreted languages (Python, JavaScript) work instead.

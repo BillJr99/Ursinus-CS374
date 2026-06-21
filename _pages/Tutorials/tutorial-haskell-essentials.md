@@ -16,6 +16,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tutorial: Haskell Essentials for the Programming Languages Course
 
+## Learning Goals
+
+By the end of this tutorial, you will have:
+
+- Written and run basic Haskell expressions in GHCi, using `:t` to inspect types and `:l` to load files
+- Defined pure functions using pattern matching, guards, and list comprehensions
+- Implemented common higher-order functions (`map`, `filter`, `foldr`) and understood their types in the Hindley-Milner type system
+- Connected Haskell's lazy evaluation to the normal-order reduction strategy from the lambda calculus module
+- Read and modified a TidalCycles pattern to understand how Haskell's design choices show up in live-coding music code
+
 Haskell is the host language for TidalCycles, the live-coding music system we have been using throughout this course. It is also the language that most clearly embodies the lambda calculus — every Haskell function is a lambda term, the type system is Hindley-Milner, and lazy evaluation is the normal-order reduction strategy made practical. This tutorial gives you enough Haskell to read TidalCycles code, write simple Haskell programs, and understand why Haskell's design choices feel the way they do after our theory modules.
 
 **What you need:**

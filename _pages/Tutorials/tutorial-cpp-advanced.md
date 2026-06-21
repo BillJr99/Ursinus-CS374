@@ -11,6 +11,16 @@ link:     https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css
 
 # Advanced C++: Modern Memory, Templates, and the STL
 
+## Learning Goals
+
+By the end of this tutorial, you will have:
+
+- Identified and fixed the three classic memory bugs (double-free, use-after-free, memory leak) using `valgrind` or AddressSanitizer
+- Replaced raw-pointer ownership patterns with `std::unique_ptr` and `std::shared_ptr` and explained when each is appropriate
+- Written at least one function and one class template, including a template specialization
+- Used STL containers (`vector`, `map`, `unordered_map`) and algorithms (`sort`, `find_if`, `transform`) with lambda expressions
+- Explained how type erasure in `std::function` achieves runtime polymorphism without virtual dispatch
+
 > **Prerequisites:** C++ fundamentals, basic pointers, classes/structs
 > **Goal:** Master modern C++ memory management, generic programming, the STL, and how C++ achieves zero-cost abstractions through templates and type erasure.
 

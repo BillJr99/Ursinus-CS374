@@ -11,6 +11,16 @@ link:     https://cdn.jsdelivr.net/chartist.min.css
 
 # Foreign Function Interfaces: Crossing Language Boundaries
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Explain the C Application Binary Interface (ABI) and identify why it serves as the universal interoperability layer between languages
+- Use Python's `ctypes` and `cffi` to call C library functions, correctly specifying argument types, return types, and memory ownership
+- Identify the challenges FFI introduces — data layout differences, memory ownership, calling conventions, and error handling — and describe how each is addressed
+- Trace the lifecycle of a foreign call from the high-level language through marshaling, native execution, and unmarshaling back
+- Implement a simple FFI extension mechanism in a mini interpreter that allows it to call pre-registered native functions
+
 > **Prerequisites:** Python programming; basic C syntax; familiarity with the interpreter project
 > **Goal:** Understand how languages call into native code — the C ABI, data representation, name mangling, `ctypes`/`cffi` — and implement a simple FFI extension for a mini interpreter.
 

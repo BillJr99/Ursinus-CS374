@@ -11,6 +11,16 @@ link:     https://cdn.jsdelivr.net/chartist.min.css
 
 # Error Handling: From Return Codes to Algebraic Effects
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Compare error-handling strategies (return codes, checked/unchecked exceptions, Option/Maybe, Result/Either) and identify the tradeoffs each makes in static safety, composability, and caller burden
+- Implement the Option and Result types in Python and use them to propagate errors without exceptions
+- Apply monadic chaining (`flatMap`/`bind`) to thread errors through a pipeline without nested conditionals
+- Analyze how a language's error strategy shapes the user experience of writing and reading code in that language
+- Design error handling for a mini interpreter, choosing an appropriate strategy and justifying the choice
+
 > **Prerequisites:** Python programming, familiarity with exceptions, basic type system concepts
 > **Goal:** Compare how different languages approach errors — return codes, checked/unchecked exceptions, Option/Maybe, Result/Either, monadic propagation — and understand how each choice shapes language design and user experience.
 

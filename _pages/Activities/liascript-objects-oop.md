@@ -11,6 +11,15 @@ link:     https://cdn.jsdelivr.net/chartist.min.css
 
 # Objects and OOP: From Closures to Vtables
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Implement an object with encapsulated mutable state using only closures, without any class machinery, and explain why the two approaches are semantically equivalent
+- Describe how a vtable (virtual dispatch table) enables dynamic polymorphism, and trace method resolution for a given class hierarchy by hand
+- Predict Python's method resolution order (MRO) for a multiple-inheritance diamond hierarchy and verify the prediction using `ClassName.__mro__`
+- Compare the OOP models of Python, Java, and C++ across the dimensions of single vs. multiple inheritance, dynamic vs. static dispatch, and interface vs. abstract-class design
+
 > **Prerequisites:** Basic Python classes, functional programming activity
 > **Goal:** See objects as a special case of closures, understand how vtables implement dynamic dispatch, and explore the OOP design space across Python, Java, and C++.
 

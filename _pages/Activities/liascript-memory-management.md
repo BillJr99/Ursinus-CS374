@@ -11,6 +11,15 @@ link:     https://cdn.jsdelivr.net/chartist.min.css
 
 # Memory Management: From Stack Frames to Garbage Collection
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Trace the call stack through a recursive function call, drawing the frame layout (local variables, return address, parent-frame pointer) at each push and pop
+- Distinguish stack allocation from heap allocation, and explain why closures, objects, and long-lived data must live on the heap
+- Describe how CPython's reference-counting collector reclaims objects immediately on zero-reference and how a cycle-detector handles reference cycles that reference counting alone cannot collect
+- Explain how generational garbage collection exploits the generational hypothesis to reduce pause times, and identify the implication for your interpreter's environment and AST-node allocation strategy
+
 > **Prerequisites:** Python programming; familiarity with functions and recursion; basic familiarity with the interpreter project
 > **Goal:** Understand how programs manage memory — call stacks, heap allocation, reference counting, mark-and-sweep GC, Python's generational collector — and what this means for your interpreter implementation.
 

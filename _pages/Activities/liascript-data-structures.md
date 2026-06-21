@@ -15,6 +15,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Data Structures and Generics in Programming Languages
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Distinguish polymorphic, generic, and monomorphic container types and explain when each is appropriate in a statically typed language
+- Implement parametric generic classes in Python using type variables and explain how the type checker verifies them without requiring separate implementations per type
+- Construct algebraic data types (product and sum types) and use pattern matching to exhaustively handle all cases
+- Define recursive data structures (linked lists, binary trees) and implement recursive algorithms over them
+- Compare structural and nominal type compatibility and evaluate how each approach affects code reuse and type safety
+
 Every nontrivial program keeps collections of values — but *which* values, and enforced *how*? This activity walks from Python's fully polymorphic built-in containers through typed generic classes, algebraic data types, recursive structures, and finally the structural-versus-nominal typing divide. The arc: **polymorphic containers → parametric generics → product and sum types → recursive types → structural typing via Protocols**.
 
 ---

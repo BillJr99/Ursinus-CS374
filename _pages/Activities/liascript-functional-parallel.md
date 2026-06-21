@@ -16,6 +16,16 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Parallelism for Free: Functional Programming at Scale
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Explain why pure functions are trivially parallelizable and formally define the independence theorem for `map`
+- Identify race conditions in shared-state concurrent code and contrast them with race-free functional equivalents
+- Implement parallel data processing pipelines in Python using `multiprocessing` and `concurrent.futures`
+- Construct a MapReduce computation by decomposing a problem into independent map phases and a reduction phase
+- Compare the parallelism models of functional languages (Erlang, Haskell) with Python's multiprocessing approach and evaluate their tradeoffs
+
 *"Pure functions are like electricity from nuclear power — you get massive energy with no visible moving parts, and purity is your containment vessel."*
 
 Every processor you will touch for the rest of your career has multiple cores. The modern GPU has thousands of them. **The central promise of functional programming is that pure functions parallelize automatically**: if a function has no side effects and reads no shared state, two calls to it can run concurrently with zero synchronization. No mutexes. No race conditions. No deadlocks. This is not a minor convenience; it is a fundamental shift in how software scales.

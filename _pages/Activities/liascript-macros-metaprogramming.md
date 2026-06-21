@@ -11,6 +11,16 @@ link:     https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.
 
 # Macros and Metaprogramming: Code that Writes Code
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Define macros and explain how they differ from functions by operating on unevaluated syntax rather than values
+- Identify hygiene problems in naive macros and explain how hygienic macro systems prevent variable capture
+- Implement a simple macro expander that transforms AST nodes before evaluation in a mini interpreter
+- Compare macro systems across languages (Lisp, Rust, Julia, Elixir) and evaluate the expressiveness-versus-safety tradeoffs each makes
+- Apply metaprogramming techniques to define new control-flow constructs that cannot be expressed as ordinary functions
+
 > **"Macros are the most powerful feature in Lisp — and the most dangerous."**
 >
 > Languages like Lisp, Rust, Julia, and Elixir give programmers the ability to extend the language itself at compile time. Today you'll discover *why* macros are powerful, *what* hygienic macros solve, and *how* to implement a macro system in Mini.

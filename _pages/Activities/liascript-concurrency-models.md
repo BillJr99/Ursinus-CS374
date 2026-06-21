@@ -15,6 +15,15 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Concurrency Models: Actors, Channels, and Transactions
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Explain why shared mutable state causes data races, and demonstrate a race condition in Python using threads and a shared counter
+- Implement the actor model using Python queues to pass immutable messages between independent workers, and explain how actors eliminate shared state
+- Implement channel-based communication following the CSP model, distinguishing synchronous from buffered channels and explaining rendezvous semantics
+- Compare actors, channels, and software transactional memory (STM) across the dimensions of composability, error handling, and suitability for different concurrency patterns
+
 The Parallelism module showed that pure functions parallelize automatically — but programs also need *concurrency*: multiple activities interleaved in time, coordinating via communication. The language designer's central choice is **what primitive does the language expose for that coordination**? Three answers dominate modern languages: **actors** (Erlang, Akka) exchange immutable messages; **channels** (Go, Occam, CSP) synchronize on named conduits; **transactions** (Haskell STM, Clojure) compose atomic blocks. All three eliminate shared mutable state — but by different means, with different tradeoffs, suitable for different programs. The arc: **the coordination problem → actors → channels/CSP → STM → the π-calculus as foundation**.
 
 ---

@@ -11,6 +11,15 @@ link:     https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.
 
 # Compiler Optimizations: Making Programs Faster
 
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Implement constant folding and dead-code elimination as AST-to-AST rewrite passes, and state the correctness condition that distinguishes valid from invalid optimizations
+- Implement common subexpression elimination (CSE) by identifying redundant computations in an expression and rewriting the AST to share them
+- Implement function inlining as an AST substitution pass, and explain when inlining improves and when it hurts performance
+- Recognize tail calls in recursive functions, apply the tail-call optimization transformation, and explain why it enables constant-stack recursion
+
 > **"The first 90% of the code accounts for the first 90% of the development time. The remaining 10% of the code accounts for the other 90% of the development time."** — Tom Cargill
 >
 > Optimizations speed up programs *without changing their meaning*. Today you will implement five core optimizations: constant folding, dead code elimination, common subexpression elimination, inlining, and tail call optimization. Each operates on the AST or IR — the same data structures you've been building all semester.
