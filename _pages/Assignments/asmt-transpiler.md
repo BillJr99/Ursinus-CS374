@@ -38,9 +38,9 @@ info:
       proficient: The submission includes a README explaining the design decisions for each target language, a table comparing the four execution approaches on the correctness/speed/debuggability axes, and thoughtful answers to the reflection prompts
   readings:
     - rtitle: "Transpilers and Compilers Activity"
-      rlink: "https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/main/_pages/Activities/liascript-transpiler-compiler.md"
+      rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-transpiler-compiler.md"
     - rtitle: "Tutorial: Build an Interpreter"
-      rlink: "https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/main/_pages/Tutorials/tutorial-build-an-interpreter.md"
+      rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md"
 
 tags:
   - transpiler

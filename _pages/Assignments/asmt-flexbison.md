@@ -38,9 +38,9 @@ info:
       proficient: `make` builds from scratch; `make test` runs all test programs and verifies output against expected files; the README explains the language semantics, lists the token types, and gives the full EBNF grammar as implemented
   readings:
     - rtitle: "Tutorial: Flex and Bison (Complete)"
-      rlink: "https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/main/_pages/Tutorials/tutorial-flex-bison-complete.md"
+      rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md"
     - rtitle: "LL/LR Parsing Activity"
-      rlink: "https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/main/_pages/Activities/liascript-ll-lr-comprehensive.md"
+      rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-ll-lr-comprehensive.md"
 
 tags:
   - flex

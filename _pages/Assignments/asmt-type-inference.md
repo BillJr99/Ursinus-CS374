@@ -38,9 +38,9 @@ info:
       proficient: Every type error names both conflicting types, cites the source line and expression context, and suggests what the programmer may have intended (e.g., "expected Int, got Bool in condition of if at line 7")
   readings:
     - rtitle: "Type Systems Activity"
-      rlink: "https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/main/_pages/Activities/liascript-type-systems.md"
+      rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-type-systems.md"
     - rtitle: "Tutorial: Build an Interpreter"
-      rlink: "https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/main/_pages/Tutorials/tutorial-build-an-interpreter.md"
+      rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md"
 
 tags:
   - types

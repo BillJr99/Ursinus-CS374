@@ -4,7 +4,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/main/_pages/Tutorials/tutorial-garbage-collection.md
+comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-garbage-collection.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 

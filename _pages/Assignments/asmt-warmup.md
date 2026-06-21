@@ -32,7 +32,7 @@ info:
       proficient: A complete, signed charter covering role rotation plan (Coordinator/Builder/Evaluator/Scribe), external communication channel and norms, preparation expectations, and a concrete disagreement-resolution mechanism; all four prompts answered in the autobiography; complete transcript; single PDF submitted
   readings:
     - rtitle: "Welcome Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-welcomepl.md"
+      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-welcomepl.md"
     - rtitle: "Thain, Chapter 1"
 
 tags:

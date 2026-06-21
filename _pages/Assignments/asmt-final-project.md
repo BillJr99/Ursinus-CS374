@@ -38,11 +38,11 @@ info:
       proficient: 10-minute presentation covers: motivation (what problem the language solves), key design decisions with tradeoffs, live demo of at least two programs, lessons learned; README is a complete language reference; the team fielded at least two Q&A questions from peers confidently
   readings:
     - rtitle: "Tutorial: Build a Complete Mini Language"
-      rlink: "https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/main/_pages/Tutorials/tutorial-project-language-guide.md"
+      rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-project-language-guide.md"
     - rtitle: "Transpilers and Compilers Activity"
-      rlink: "https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/main/_pages/Activities/liascript-transpiler-compiler.md"
+      rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-transpiler-compiler.md"
     - rtitle: "Type Systems Activity"
-      rlink: "https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/main/_pages/Activities/liascript-type-systems.md"
+      rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-type-systems.md"
 
 tags:
   - final-project
