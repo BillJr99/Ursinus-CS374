@@ -57,11 +57,7 @@ Two states suffice because the machine only needs to remember one bit: the parit
 
 ---
 
-## 2. Simulation: A DFA Is a Dictionary and a Loop
-
----
-
-## Code Cell
+## Model 2: DFA Simulation — A Dictionary and a Loop
 
 ```python
 # DFA as data: states are strings, delta is a dict of dicts.
@@ -77,29 +73,49 @@ EVEN_ONES = {
     },
 }
 
-def run_dfa(machine, s):
-    try:
-        state = machine["start"]
-        for ch in s:
-            if ch not in machine["delta"][state]:
-                return False          # symbol outside the alphabet: reject
-            state = machine["delta"][state][ch]
-        return state in machine["accept"]
-    except Exception as e:
-        print(f"[automata:run_dfa] {e}")
-        import traceback; traceback.print_exc()
-        return False
+def run_dfa(machine, s, trace=False):
+    state = machine["start"]
+    if trace: print(f"  start: {state}")
+    for ch in s:
+        if ch not in machine["delta"].get(state, {}):
+            if trace: print(f"  '{ch}': DEAD (no transition)")
+            return False
+        state = machine["delta"][state][ch]
+        if trace: print(f"  '{ch}' → {state}")
+    accepted = state in machine["accept"]
+    if trace: print(f"  final: {state} → {'ACCEPT' if accepted else 'REJECT'}")
+    return accepted
 
-for s in ["", "1", "11", "1011", "0000", "10101"]:
-    print(f"{s!r:9} -> {run_dfa(EVEN_ONES, s)}")
+# Test the parity DFA
+print("=== Even-ones DFA ===")
+for s in ["", "1", "11", "1011", "0000", "10101", "abc"]:
+    print(f"  {s!r:9} → {run_dfa(EVEN_ONES, s)}")
+
+# Trace one input
+print("\n=== Trace of '1011' ===")
+run_dfa(EVEN_ONES, "1011", trace=True)
+
+# Ends-in-ab DFA (4 states: start, saw_a, saw_ab, neither)
+ENDS_IN_AB_DFA = {
+    "start": "q0",
+    "accept": {"q_ab"},
+    "delta": {
+        "q0":   {"a": "q_a",  "b": "q0"},
+        "q_a":  {"a": "q_a",  "b": "q_ab"},
+        "q_ab": {"a": "q_a",  "b": "q0"},
+    },
+}
+print("\n=== Ends-in-ab DFA ===")
+for s in ["ab", "aab", "abab", "ba", "a", "b", "aabb", ""]:
+    print(f"  {s!r:7} → {run_dfa(ENDS_IN_AB_DFA, s)}")
 ```
-
----
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
-5. The empty string is accepted. Point to the line of code and the part of the formal definition that together make that happen, and decide whether it is correct for "even number of 1s."
+5. The empty string is accepted by `EVEN_ONES`. Point to the line of code and the part of the formal definition that together make that happen, and decide whether it is correct for "even number of 1s."
 6. Encode your ends-in-`ab` DFA from Model 1 in the same dictionary format and test five strings. What was mechanical and what required thought? (That split is the point: the *design* is the thinking; the *runner* is ten lines forever.)
+7. The `ENDS_IN_AB_DFA` has 3 states. If the target were "ends in `abc`", how many states would be needed, and what would each state remember?
 
 ---
 
@@ -124,54 +140,151 @@ An NFA has 4 states. The subset-construction DFA recognizing the same language h
 - (x) 16 states, one per subset of the NFA's states
 - ( ) Unboundedly many states
 
+[[MC]]
+The NFA "ends in ab" has 3 states: start/loop (q0), saw-a (q1), saw-ab (q2). The key non-determinism is at q0 on input 'a': the machine can stay in q0 (still looping) OR move to q1 (guessing the ending starts here). This non-determinism means:
+- ( ) The machine will fail on inputs where multiple paths exist
+- ( ) The machine requires exponential time to simulate
+- (x) The machine accepts if ANY choice of path leads to an accepting state
+- ( ) The machine requires the programmer to specify which path to take
+
 ---
 
-## Code Cell
+## Model 3: NFA Simulation
 
 ```python
 # NFA simulation by tracking the SET of possible states: the subset
 # construction performed lazily, one input symbol at a time.
 
-ENDS_IN_AB = {
-    "start": {"q0"},
-    "accept": {"q2"},
-    "delta": {                      # sets of successor states
-        ("q0", "a"): {"q0", "q1"},  # loop, or guess the ending starts here
-        ("q0", "b"): {"q0"},
-        ("q1", "b"): {"q2"},
+ENDS_IN_AB_NFA = {
+    "start": frozenset({"q0"}),
+    "accept": frozenset({"q2"}),
+    "delta": {                       # sets of successor states
+        ("q0", "a"): frozenset({"q0", "q1"}),  # loop OR guess ending starts
+        ("q0", "b"): frozenset({"q0"}),
+        ("q1", "b"): frozenset({"q2"}),
+        # no transition from q2: it's a dead end (accepting, but no moves)
     },
 }
 
-def run_nfa(machine, s):
-    try:
-        current = set(machine["start"])
-        for ch in s:
-            nxt = set()
-            for state in current:
-                nxt |= machine["delta"].get((state, ch), set())
-            current = nxt
-            if not current:
-                return False
-        return bool(current & machine["accept"])
-    except Exception as e:
-        print(f"[automata:run_nfa] {e}")
-        import traceback; traceback.print_exc()
-        return False
+def run_nfa(machine, s, trace=False):
+    current = set(machine["start"])
+    if trace: print(f"  start: {{{', '.join(sorted(current))}}}")
+    for ch in s:
+        nxt = set()
+        for state in current:
+            nxt |= machine["delta"].get((state, ch), frozenset())
+        current = nxt
+        if trace: print(f"  '{ch}' → {{{', '.join(sorted(current))}}}")
+        if not current:
+            if trace: print(f"  DEAD STATE (all paths exhausted)")
+            return False
+    accepted = bool(current & machine["accept"])
+    if trace: print(f"  → {'ACCEPT' if accepted else 'REJECT'}")
+    return accepted
 
-for s in ["ab", "aab", "abab", "ba", "a", "b", "aabb"]:
-    print(f"{s!r:9} -> {run_nfa(ENDS_IN_AB, s)}")
+print("=== NFA: ends-in-ab ===")
+for s in ["ab", "aab", "abab", "ba", "a", "b", "aabb", ""]:
+    print(f"  {s!r:7} → {run_nfa(ENDS_IN_AB_NFA, s)}")
+
+print("\n=== Trace of 'aab' ===")
+run_nfa(ENDS_IN_AB_NFA, "aab", trace=True)
 ```
-
----
-
-## Model 2: Watching Nondeterminism
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
-7. Trace `aab` by hand, writing the *set* of states after each symbol. Where does the machine "hedge its bets," and which bet pays off?
-8. Compare the NFA's three states with your Day 1 DFA for the same language. Which was easier to design, and which is cheaper to run per input symbol? State the trade in one sentence.
-9. The simulation tracks sets, so it effectively runs the subset construction on the fly. For an NFA with $k$ states, bound the work per input character. Why is this still considered fast?
-10. Sketch (boxes and epsilon arrows, no code) Thompson's construction for the regex `a(b|c)*`. Count states. This sketch is precisely how `re` engines and lexer generators are born.
+8. Trace `aab` by hand, writing the *set* of states after each symbol. Where does the machine "hedge its bets," and which bet pays off?
+9. Compare the NFA's three states with the DFA for the same language. Which was easier to design, and which is cheaper to run per input symbol?
+10. The simulation tracks sets, so it effectively runs the subset construction on the fly. For an NFA with $k$ states, bound the work per input character ($O(k)$ per symbol). Why is this still considered fast?
+
+---
+
+## Model 4: Subset Construction — NFA → DFA
+
+```python
+# Full subset construction: convert an NFA to an equivalent DFA.
+# DFA states = frozensets of NFA states.
+
+def subset_construction(nfa):
+    """Convert NFA to DFA via subset construction."""
+    start = nfa["start"]  # already a frozenset
+    dfa_states = {}       # frozenset → dict of transitions
+    worklist = [start]
+    visited = {start}
+
+    while worklist:
+        current_set = worklist.pop()
+        dfa_states[current_set] = {}
+
+        # Find all symbols that lead somewhere from this set of NFA states
+        alphabet = set()
+        for state in current_set:
+            for (s, ch) in nfa["delta"]:
+                if s in current_set:
+                    alphabet.add(ch)
+
+        for ch in alphabet:
+            # Compute the set of NFA states reachable on this symbol
+            next_set = frozenset(
+                s2 for s1 in current_set
+                for s2 in nfa["delta"].get((s1, ch), frozenset())
+            )
+            if next_set:
+                dfa_states[current_set][ch] = next_set
+                if next_set not in visited:
+                    visited.add(next_set)
+                    worklist.append(next_set)
+
+    # Accepting DFA states: any set containing an NFA accept state
+    dfa_accept = {s for s in dfa_states if s & nfa["accept"]}
+
+    return {"start": start, "accept": dfa_accept, "delta_sets": dfa_states}
+
+ENDS_IN_AB_NFA = {
+    "start": frozenset({"q0"}),
+    "accept": frozenset({"q2"}),
+    "delta": {
+        ("q0", "a"): frozenset({"q0", "q1"}),
+        ("q0", "b"): frozenset({"q0"}),
+        ("q1", "b"): frozenset({"q2"}),
+    },
+}
+
+dfa = subset_construction(ENDS_IN_AB_NFA)
+
+print("=== Subset Construction Result ===")
+print(f"DFA states ({len(dfa['delta_sets'])} total):")
+for state_set, transitions in sorted(dfa['delta_sets'].items(), key=str):
+    is_start  = "→" if state_set == dfa["start"] else " "
+    is_accept = "*" if state_set in dfa["accept"] else " "
+    state_name = "{" + ",".join(sorted(state_set)) + "}"
+    print(f"  {is_start}{is_accept} {state_name}: {dict(sorted((k,'{'+','.join(sorted(v))+'}') for k,v in transitions.items()))}")
+
+# Verify: run strings through the DFA-from-subset-construction
+def run_dfa_subset(dfa, s):
+    state = dfa["start"]
+    for ch in s:
+        state = dfa["delta_sets"].get(state, {}).get(ch)
+        if state is None: return False
+    return state in dfa["accept"]
+
+print("\n=== Verification (NFA vs constructed DFA) ===")
+for s in ["ab", "aab", "abab", "ba", "a", "b", ""]:
+    nfa_result = bool(frozenset(
+        s2 for path_state in ENDS_IN_AB_NFA["start"]
+        for s2 in (ENDS_IN_AB_NFA["delta"].get((path_state, s[-1:]), frozenset()) if s else ENDS_IN_AB_NFA["start"])
+    ) & ENDS_IN_AB_NFA["accept"]) if s else False
+    # Simpler: just use the run_nfa from above
+    dfa_result = run_dfa_subset(dfa, s)
+    print(f"  {s!r:7}: DFA={dfa_result}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+11. How many DFA states did the subset construction produce for the ends-in-ab NFA? Was there exponential blowup? (For this NFA, the answer is no — why not?)
+12. The subset construction creates DFA states that are *sets* of NFA states. In what sense is this DFA tracking "where the NFA might be"?
+13. Sketch Thompson's construction (boxes and epsilon arrows) for the regex `a(b|c)*`. How many states does it produce, and why is an NFA the natural output of a regex compiler rather than a DFA?
 
 ---
 
@@ -183,12 +296,13 @@ for s in ["ab", "aab", "abab", "ba", "a", "b", "aabb"]:
 2. *NFA to DFA by hand.* Apply the subset construction to the ends-in-`ab` NFA, drawing the resulting DFA and confirming it matches your Day 1 design (possibly with renamed states).
 3. *Three notations, one language.* For "identifiers" (letter then letters-or-digits), produce all three artifacts: the regex, an NFA sketch, and a DFA in dictionary form with passing tests. Keep this trio; it is the worked example at the heart of your lexer.
 4. *Equivalence argument.* In a paragraph, explain to a skeptical friend why adding nondeterminism (seemingly a superpower) adds no recognizing power, while adding a stack (the pushdown automaton) genuinely does.
+5. *Thompson's construction.* Implement a mini Thompson's construction that builds an NFA from a regex with only `|`, `*`, and concatenation. Test it on `(a|b)*abb` (the classic example) and verify the NFA accepts the same strings as Python's `re.match(r"(a|b)*abb", s)`.
 
 ---
 
 ## Reflection Prompt
 
-In your notebook: the DFA's whole intelligence is choosing what little to remember (one parity bit, the last two characters). Describe one situation in your own studying or work where deliberately remembering *less*, but the right less, made you more effective.
+In your notebook: the DFA's whole intelligence is choosing what little to remember (one parity bit, the last two characters). Describe one situation in your own studying or work where deliberately remembering *less*, but the right less, made you more effective. Also: the NFA/DFA equivalence says that nondeterminism is "free" at the cost of state explosion. Does this idea appear elsewhere in computer science — a conceptually clean but potentially expensive algorithm that compiles into a deterministic one?
 
 ---
 
@@ -197,3 +311,4 @@ In your notebook: the DFA's whole intelligence is choosing what little to rememb
 - Douglas Thain. *Introduction to Compilers and Language Design*, Chapter 3.
 - Michael Sipser. *Introduction to the Theory of Computation*, Chapter 1.
 - Russ Cox. "Regular Expression Matching Can Be Simple And Fast" (online): Thompson's construction in production.
+- [Automata Tutor](https://automata.cs.ru.nl/) — interactive DFA/NFA design and verification tool.
