@@ -16,6 +16,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # The Lambda Calculus: From Church to Strudel
 
+The lambda calculus is a minimal formal system invented by Alonzo Church in the 1930s — it has only functions, application, and variables, yet it can compute anything a Turing machine can. Understanding lambda calculus is like learning to count using just a single mark on a page: it strips away all complexity to reveal the pure essence of computation. Every feature of every programming language you have used — loops, booleans, numbers, recursion — can be built from this tiny foundation.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -26,7 +28,29 @@ By the end of this activity, you will be able to:
 - Derive the Y combinator from first principles and explain how it achieves recursion without named self-reference
 - Identify where lambda calculus constructs appear in real languages (Python `lambda`, Haskell functions, TidalCycles/Strudel patterns)
 
+> **Before You Begin — Prerequisites**
+>
+> This module assumes you are comfortable with the following ideas. If any feel shaky, spend ten minutes reviewing before proceeding.
+>
+> - **Functions as values**: In Python you can write `f = lambda x: x + 1` and pass `f` to another function. Lambda calculus is built entirely on this idea — every value is a function.
+> - **Substitution**: When you call `f(3)` and `f = lambda x: x * x`, Python replaces every `x` in the body with `3`. Lambda calculus makes this substitution step the *only* rule of computation.
+> - **Recursive reduction**: Evaluating a complex expression means applying substitution repeatedly until no more substitutions are possible. You will perform these steps by hand before relying on any code.
+
 This module develops the **lambda calculus**, the three-rule language from 1936 that is simultaneously the smallest programming language ever designed and the theoretical core of every functional language you use. We move from **syntax $\rightarrow$ substitution and $\beta$-reduction $\rightarrow$ evaluation strategies $\rightarrow$ Church encodings $\rightarrow$ recursion via the Y combinator $\rightarrow$ the calculus alive in modern code**, and we keep one practical thread taut throughout: the live coding languages we have been studying, TidalCycles in Haskell and Strudel in JavaScript, are lambda calculus with costumes on, and by the end of this module you will be able to point to exactly where the costume ends.
+
+---
+
+## Notation at a Glance
+
+If you have never seen lambda calculus notation before, this table maps every symbol you will encounter to a Python equivalent you already know. Return here whenever a symbol looks unfamiliar.
+
+| Lambda Notation | Python Equivalent | Meaning |
+|-----------------|-------------------|---------|
+| `λx.e` | `lambda x: e` | A function taking x, returning e |
+| `(f a)` | `f(a)` | Apply function f to argument a |
+| `[x → a]e` | (substitution) | Replace x with a in e |
+| `λx.λy.e` | `lambda x: lambda y: e` | Curried two-argument function |
+| `f a b` (no parens) | `f(a)(b)` | Left-associative application: `(f a) b` |
 
 ---
 
@@ -58,6 +82,8 @@ print("Environment ready.")
 
 ## 1. Syntax: Three Forms and Nothing Else
 
+> **Intuition**: Before reading the formal grammar, hold this picture: every lambda calculus expression is a tree with exactly three kinds of node — a leaf (variable), a box labeled with a parameter name (abstraction), or a connector joining two sub-expressions (application). There is nothing else. Every program ever written in a functional language is, at its core, just such a tree.
+
 **The entire grammar of the lambda calculus fits on one line.** With $x$ ranging over an infinite supply of variable names, the set of terms $e$ is defined inductively by
 
 $$
@@ -67,6 +93,8 @@ $$
 read as: a term is a **variable**, an **abstraction** (a function of one parameter $x$ with body $e$), or an **application** of one term to another. There are no numbers, no booleans, no `if`, no recursion, and no assignment, and Part II of this module is the demonstration that none of them are missing, because all of them can be built. After our parsing module, you should also notice that this grammar is context-free, recursive through itself in exactly the way our mini-notation grammar was, and one of the exercises asks you to treat it accordingly.
 
 **Two notational conventions keep terms readable.** Application associates to the **left**, so $f\ a\ b$ means $(f\ a)\ b$, and abstraction bodies extend as far **right** as possible, so $\lambda x.\, x\ y$ means $\lambda x.\,(x\ y)$, not $(\lambda x.\, x)\ y$. Misreading these two conventions causes more student errors than every other topic in this module combined, so we pause on them.
+
+> **Watch out! — Lambda functions always take exactly one argument.** `λx.λy.e` is not a two-argument function — it is a one-argument function that *returns* another one-argument function. You must apply it twice to get a result: `(λx.λy.e) a b` first produces `(λy.e[x:=a])`, then produces `e[x:=a][y:=b]`. In Python: `(lambda x: lambda y: x + y)(3)` returns a function, not a number. Applying it again, `(lambda x: lambda y: x + y)(3)(4)`, returns `7`. This one-at-a-time pattern is called **currying** and it is the only way lambda calculus handles multiple arguments.
 
 **Multi-argument functions are nested single-argument functions, and this is currying.** The two-argument function "apply $f$ to $a$" is written
 
@@ -91,6 +119,8 @@ For term 2, state in one sentence why $z$'s status matters to anyone who wants t
 ---
 
 ## 2. Substitution and Beta-Reduction
+
+> **Intuition**: Think of beta-reduction as the act of calling a function. When you write `(lambda x: x * x)(5)` in Python, the interpreter replaces every `x` in the body with `5` and returns `5 * 5`. Lambda calculus formalizes exactly this: the entire model of computation is "find a function applied to an argument, substitute, repeat." The subtlety — and the main source of bugs — is that naive substitution can accidentally capture a variable that should have remained free, changing the meaning of the expression. The formal substitution rules exist solely to prevent that accident.
 
 **Computation in the lambda calculus is one rule: $\beta$-reduction.** Applying an abstraction to an argument substitutes the argument for the parameter throughout the body:
 
@@ -118,6 +148,8 @@ $$
 $$
 
 When you implement substitution in this unit's written assignment, the third case is where every bug will live, and the test suite we provide targets it deliberately.
+
+> **Watch out! — Alpha-renaming preserves meaning; capture destroys it.** `λy.x` and `λw.x` are the *same* function — the parameter name is just a placeholder. But `λy.y` and `λy.x` are *different* functions (identity vs. constant). When you substitute and risk capture, you must rename the binder to a *fresh* name before substituting. Skipping this step is the single most common source of incorrect reductions. A reliable check: after substitution, confirm that no variable that was free in the argument has become bound inside the result.
 
 **A reduction, worked in full.** Consider $(\lambda f.\, \lambda x.\, f\ (f\ x))\ (\lambda y.\, y)$:
 

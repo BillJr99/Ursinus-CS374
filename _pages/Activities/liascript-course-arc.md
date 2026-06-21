@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # The Arc of This Course: From Symbols to Languages
 
+Think of building a programming language the way you would build a house: first you need blueprints (formal specifications — grammars, type rules, reduction rules), then the right materials (language features — lambdas, closures, type environments), and finally the tools to put it all together (implementation — scanners, parsers, interpreters). You cannot move in before the foundation is poured, and you cannot pour the foundation before you understand what you are building. This course follows that same sequence — each unit is load-bearing for the one that follows, and by the end you will have a finished, habitable language of your own design.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -29,6 +31,13 @@ By December, you will have built a working programming language — a language y
 
 The course begins with beauty: lambda calculus, the mathematical theory of computation published by Alonzo Church in 1936 — before computers existed — showing that all of computation can be built from a single idea (functions) and three rules (variables, abstraction, application). From there it moves through theory: grammars that define the shape of legal programs, parsing algorithms (LL, LR, and the tools Flex and Bison) that turn source text into structured data, and type systems that reason about program correctness without running a single line. The course ends with engineering: building a real interpreter, transpiler, or compiler for a language you have designed yourself. The magic is that the theory and the engineering are the same thing at different levels of abstraction — the grammar rules you write in Week 7 become the parser functions you write in Week 10, which become the type-checker you extend in Week 12, which becomes the interpreter you complete in Week 15.
 
+> **Before You Begin:** This activity assumes you can:
+> - Write and call basic Python functions, including functions that take other functions as arguments (higher-order functions)
+> - Read recursive code — a function that calls itself — and trace what it returns for a small input
+> - Describe, in plain English, the difference between syntax (what a program looks like) and semantics (what a program means)
+>
+> If any of these feel shaky, review them first.
+
 ---
 
 ## Directions and Group Roles
@@ -38,6 +47,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 ---
 
 # Part I: The Foundation
+
+Before any real structure can be built, someone has to prove the ground can support it. Lambda calculus is that proof: a mathematician showed in 1936, before electronic computers existed, that a single idea — the function — is sufficient to express every computation. Everything else in this course (types, parsers, interpreters) rests on that foundation.
 
 ## Model 1: Everything Starts Here — Lambda Calculus in 10 Lines
 
@@ -93,11 +104,15 @@ print("\n>>> This is where the course begins.")
 
 > **CTQ 3** Everything here uses only `lambda`. There are no numbers, strings, if-statements, or loops built into Python's lambda syntax. What does this tell you about the power of lambda abstraction?
 
+> **Watch out!** Python's `lambda` keyword is just syntax sugar for defining a function — it is not the same thing as lambda calculus. In Model 1, we are using Python `lambda` as a convenient notation to *simulate* lambda calculus, but the real lambda calculus has no numbers, no `print`, and no Python runtime underneath it. When you see `TRUE = lambda x: lambda y: x`, mentally replace "Python lambda" with "mathematical function abstraction" — the Python is just a vehicle for the idea.
+
 > **CTQ 4** This preview was 30 lines. By Week 3 of this course, you will understand every line. Write one question about something here you do not yet understand. Keep it — it is a learning goal.
 
 ---
 
 # Part II: The Shape of Programs
+
+A blueprint is useless if nobody can read it — it has to follow a standard notation everyone agrees on. Grammars play the same role for programming languages: they are the precise, written-down rules for what a legal program looks like, the same way a blueprint specifies exactly where every wall and door must go. Once you have a grammar written down, a parser can read programs the way a contractor reads blueprints — mechanically and unambiguously.
 
 ## Model 2: Grammars — The Shape of Language
 
@@ -181,11 +196,15 @@ print("Notice: ('+', 3.0, ('*', 4.0, 2.0)) -- multiplication binds tighter!")
 
 > **CTQ 7** The AST for `3 + 4 * 2` is `('+', 3.0, ('*', 4.0, 2.0))` — addition is the ROOT, multiplication is a subtree. Draw this tree. Why does the root being `+` correctly represent that `+` is evaluated LAST?
 
+> **Watch out!** Students often say "the root of the AST is evaluated first," but that is backwards. The root is the *last* thing evaluated — it depends on its children being evaluated first, just as a `+` node cannot add until both its left and right subtrees have been computed. Think of an AST as a recipe: the root is the final dish, and evaluation works from the leaves (ingredients) upward to the root (the finished result).
+
 > **CTQ 8** This parser is about 30 lines. By Week 11, you will write a full parser that handles an entire programming language. What features would you need to add to handle variables, function definitions, and loops?
 
 ---
 
 # Part III: The Contracts of Programs
+
+A building inspector reviews the blueprints before a single beam is cut — they are looking for violations of the building code, not for whether the house will be pretty. A type checker does the same thing for programs: it reads the structure of your code and flags certain classes of errors before the program ever runs. Just as an inspector cannot catch every future problem (they cannot tell you if the paint will fade), a type system has limits — but the errors it does catch are guaranteed, structural, and caught early.
 
 ## Model 3: Types — The Contracts of Programming
 
@@ -272,11 +291,15 @@ for expr, desc in [
 
 > **CTQ 11** `If` requires both branches to have the same type. Why? (Hint: the caller needs to know what type `if-then-else` returns — can it be either `Int` or `Bool` depending on the condition at runtime?)
 
+> **Watch out!** A static type checker runs *before* the program executes — it reasons about types without ever computing a value. This means it cannot catch errors that depend on runtime data, like dividing by a variable that happens to be zero, or accessing an array at an index that is only known when the user types it. Do not confuse "type safe" with "bug free": a well-typed program can still crash or produce wrong answers; it just cannot crash in certain specific structural ways that the type system forbids.
+
 > **CTQ 12** This type checker handles only `Int` and `Bool`. What would you need to add to support variables and functions? (Preview: the answer involves "type environments" and a rule called "unification.")
 
 ---
 
 # Part IV: Running a Language You Designed
+
+Once the blueprints are drawn, the materials are certified, and the inspector has signed off, it is time to actually build. An interpreter is the construction crew: it takes the structured plan (an AST) and turns it into a real, running result. The trickiest part is that functions remember where they were born — like a contractor who carries their own tool belt from job site to job site rather than borrowing whatever tools happen to be at the new location.
 
 ## Model 4: The Interpreter — Running a Language You Designed
 
@@ -375,6 +398,8 @@ print(">>> By Week 15, you will have added YOUR OWN features.")
 ---
 
 # Part V: The Whole Picture
+
+The blueprints, the materials, the inspector, and the construction crew all have to work together in a specific order — you cannot frame walls before the foundation cures. The language implementation pipeline enforces the same discipline: raw source text flows through a scanner, then a parser, then a type checker, then an interpreter, with each stage handing a well-defined data structure to the next. This model shows all four stages in sequence so you can see, for the first time, how everything you have explored today fits into a single chain.
 
 ## Model 5: The Full Pipeline — Scanning → Parsing → Typing → Interpreting
 

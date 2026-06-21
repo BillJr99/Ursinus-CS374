@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Welcome: Why Study Programming Languages?
 
+Every programmer uses languages, but few understand *why* they work the way they do — or how to evaluate a new one quickly. Studying programming language theory is like learning music theory: you can play guitar without it, but understanding harmony, rhythm, and form lets you compose music rather than just repeat what you've heard. This course gives you the composer's toolkit — you'll read languages, compare them, and ultimately build one from scratch.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -26,6 +28,13 @@ By the end of this activity, you will be able to:
 - Classify a given code snippet by the paradigm it primarily represents and justify that classification
 
 By December, your team will have built a programming language of your own: a lexer, a parser, and an interpreter, assembled from components you write one assignment at a time. Today we ask why that journey is worth taking. We move from **what a language is $\rightarrow$ why languages differ $\rightarrow$ the pipeline from text to behavior $\rightarrow$ how this course works**.
+
+> **Before You Begin:** This activity assumes you can:
+> - Write and run a basic Python script (loops, functions, list comprehensions)
+> - Describe what a function call does at a high level — arguments in, return value out
+> - Read a simple regular expression like `\d+` and say what it matches
+>
+> If any of these feel shaky, review them first.
 
 ---
 
@@ -51,6 +60,8 @@ Consider each model below and answer the questions provided. First reflect on th
 **Three payoffs.** First, you become a better programmer in every language, because you see through syntax to the semantics beneath. Second, you become able to *build* languages: configuration formats, query languages, and domain-specific notations are everyday engineering artifacts. Third, you join an intellectual tradition connecting logic, linguistics, and computing, from the lambda calculus of the 1930s to the languages being designed this year.
 
 ---
+
+> **Intuition:** Think of the same recipe written in four different styles — a traditional French cookbook, a quick-reference cheat sheet, a flowchart, and a voice command to a smart speaker. The dish comes out the same, but each style reflects different assumptions about who's cooking and what they already know. The four code snippets below do the same arithmetic, but each reveals a different programming *paradigm* — a different mental model for organizing computation.
 
 ## Model 1: One Idea, Four Notations
 
@@ -121,6 +132,8 @@ print(f"All equal? {total_imp == total_func == total_comp}")
 3. The Scheme-style version is built from three reusable pieces (`filter`, `map`, `reduce`). Identify the analogous pieces hiding inside the Python comprehension.
 4. Propose one computation that would be awkward to express declaratively but easy imperatively. What does that suggest about general-purpose versus domain-specific languages?
 
+> **Watch out!** "Declarative" does not mean "shorter." A SQL query can be more verbose than an equivalent Python loop. Declarative means you describe *what result you want*, not *the steps to produce it*. Don't confuse conciseness with paradigm.
+
 ---
 
 ## 2. From Text to Behavior: The Pipeline
@@ -141,6 +154,8 @@ In the pipeline above, the component whose job is to decide that the characters 
 - ( ) The operating system
 
 ---
+
+> **Intuition:** Imagine a customs officer at an airport breaking your passport down into individual fields — name, date of birth, nationality — before any decision gets made. The lexer does exactly that: it reads a raw stream of characters and groups them into labeled chunks ("this is a number," "this is a variable name") so the later stages never have to squint at raw text again. In this model you'll write a tiny version of that officer.
 
 ## Model 2: Be the Pipeline
 
@@ -180,7 +195,11 @@ for tok in tokens:
 6. The interpreter must compute `price * 2` before adding 3. Where in the pipeline is that ordering decided: the lexer, the parser, or the interpreter? Defend your answer.
 7. Suppose the text were `total = 3 + * 2`. At which stage should the error be caught, and what should a *helpful* error message say?
 
+> **Watch out!** The lexer cannot catch all errors — it only sees one token at a time and has no memory of what came before. `total = 3 + * 2` contains five perfectly valid tokens; the *sequence* is illegal. Only the parser, which knows the grammar rules about how tokens may be combined, can flag that two operators in a row is a syntax error.
+
 ---
+
+> **Intuition:** You've been using Python as a black box — type code in, get output out. In this model you'll open the lid and watch Python process its own source code step by step, the same way a mechanic puts a car on a lift to show you what's happening beneath the hood. Seeing Python's actual tokens, AST, and bytecode demystifies the interpreter and previews exactly what you'll build in your own project.
 
 ## Model 3: Python's Own Pipeline
 
@@ -215,6 +234,8 @@ dis.dis(code)
 8. How many tokens does Python produce for `total = 3 + 2 * 5`? Which token is the operator precedence information *not* encoded in (it appears in the AST instead)?
 9. The AST shows a `BinOp` with `Mult` nested inside `Add`. How does the tree *encode* precedence without any explicit precedence rules?
 10. The bytecode shows `BINARY_OP` instructions. These are the *output* of Python's compiler. What is the input to an interpreter, by contrast?
+
+> **Watch out!** Python is both compiled *and* interpreted: it compiles your source to bytecode (the `.pyc` files), then a virtual machine *interprets* that bytecode. When we say "interpreter" in this course, we mean the tree-walking variety that reads an AST directly — not CPython's bytecode VM. Both are interpreters in spirit; just be clear which level you're describing.
 
 ---
 

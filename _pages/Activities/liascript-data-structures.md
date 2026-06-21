@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Data Structures and Generics in Programming Languages
 
+This activity examines data structures from a language-design perspective — not just how to use them, but how different languages provide, constrain, and reason about them. We will ask: what does a type system *guarantee* about a container, and at what cost? By tracing the same ideas (a stack, a linked list, a union of shapes) through increasingly precise type machinery, you will see how language designers make deliberate trade-offs between flexibility and safety.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -27,6 +29,16 @@ By the end of this activity, you will be able to:
 
 Every nontrivial program keeps collections of values — but *which* values, and enforced *how*? This activity walks from Python's fully polymorphic built-in containers through typed generic classes, algebraic data types, recursive structures, and finally the structural-versus-nominal typing divide. The arc: **polymorphic containers → parametric generics → product and sum types → recursive types → structural typing via Protocols**.
 
+> **Before You Begin — Prerequisites**
+>
+> This activity assumes you are comfortable with:
+>
+> - **Python lists, dicts, and classes** — you can write a class with `__init__`, instance variables, and methods without consulting documentation.
+> - **Immutability** — you understand the difference between a mutable object (one you can change in-place) and an immutable one (one that cannot be changed after creation), and why the distinction matters for reasoning about program state.
+> - **Basic recursion with trees** — you can trace a recursive function that walks a binary tree and identify the base case and the recursive case.
+>
+> If any of these feel shaky, spend 10–15 minutes reviewing them before the activity — each Model builds on the previous one.
+
 ---
 
 ## Directions and Group Roles
@@ -38,6 +50,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 # Part I: Collections and Polymorphism
 
 ## Model 1: Built-in Collections and Polymorphism
+
+Before we impose any type constraints, it helps to see what Python gives us by default: containers that will hold *anything*. A Python `list` does not care whether you put integers, strings, or other lists inside it. This maximum flexibility is convenient, but it shifts every responsibility for correctness to runtime — the language will not warn you if you accidentally mix types in a list that was supposed to be all numbers. As you read this model, ask yourself: what does the programmer gain from Python's permissiveness, and what would a stricter language's type checker catch?
 
 Python's four built-in collection types — `list`, `dict`, `set`, `tuple` — are **polymorphic**: each can hold values of any type, including a mix of types in a single container. A **homogeneous** collection stores one type throughout; a **heterogeneous** collection mixes types. Both are possible in Python, but only homogeneous collections are typical in statically typed languages without generics.
 
@@ -102,7 +116,11 @@ print(f"\npoint = {point},  distance from origin = {(x**2 + y**2)**0.5:.4f}")
 
 ## Model 2: Generics and Parametric Polymorphism
 
+Now we add *one* constraint: a container should hold a single consistent type, and the type checker should enforce that. The key insight is that we want to write the algorithm once — not once for `int` and again for `str` — but still get the safety guarantee. **Parametric polymorphism** is the language-design mechanism that achieves both goals simultaneously. Think of `T` as a blank that gets filled in when someone creates a `Stack[int]` or `Stack[str]`; the algorithm is identical, but the type checker now knows which blank was filled.
+
 **Parametric polymorphism** means a class or function can be *parameterized by a type*: `Stack[int]` and `Stack[str]` are the same algorithm but specialized to different element types. Python's `typing` module provides `TypeVar` and `Generic[T]` to express this. At runtime Python erases the type parameter (**type erasure**), but static checkers like mypy and pyright use it to catch mismatches before execution.
+
+> **Watch out! — Type erasure is not a bug, it is a design choice.** When Python runs your `Stack[int]`, it does not keep a record that the type parameter was `int`; there is simply a `Stack`. This means you cannot write `if T is int:` inside a generic method and expect it to work at runtime. The type annotation exists *only* for the static checker. Languages like C++ take the opposite approach (reification / monomorphization): every instantiation `stack<int>` becomes a distinct compiled type, which enables runtime introspection but increases compile time and binary size. Neither approach is universally better — the choice reflects the language's overall philosophy about when and where to pay costs.
 
 ```python
 from typing import TypeVar, Generic, Optional
@@ -175,6 +193,10 @@ print(f"Both are Stack: {isinstance(int_stack, Stack) and isinstance(str_stack, 
 # Part III: Algebraic Data Types
 
 ## Model 3: Algebraic Data Types — Product and Sum Types
+
+So far our containers have been homogeneous: all elements are the same type. But many real-world values naturally come in distinct shapes — a payment is either a credit card charge *or* a bank transfer *or* a cash payment, never all three at once. **Algebraic data types** let us encode that "one of these shapes" constraint directly in the type, so the type checker can tell us when we have forgotten to handle a case. The word "algebraic" comes from the analogy: combining types with "and" (product) or "or" (sum) mirrors how algebraic expressions combine numbers with multiplication and addition.
+
+> **Watch out! — Sum types encode exclusivity in the type system.** A `Union[Circle, Rectangle, Triangle]` does not mean a value can be all three simultaneously — it means it is *exactly one* of them at any given moment. This exclusivity is what makes exhaustive pattern matching possible: if you handle all three cases and the type system guarantees no fourth case exists, the checker can confirm your function is complete. Languages like Rust (`enum`), Haskell (algebraic data types), and Kotlin (`sealed class`) can enforce this at compile time; Python's `Union` relies on the programmer (and a static checker) to maintain the discipline.
 
 **Algebraic data types** (ADTs) come in two flavors:
 
@@ -256,6 +278,10 @@ for s in shapes:
 # Part IV: Recursive Data Structures
 
 ## Model 4: Recursive Data Structures — A Generic Linked List
+
+Generics and ADTs gave us better ways to describe *what* a container holds. Now we turn to *how the container is structured*. A linked list is perhaps the simplest example of a data structure that is defined in terms of itself: a list is either empty, or it is a value followed by another list. This self-referential definition is not a quirk — it is the natural match between recursive structure and recursive algorithms. As you read the code, notice that the shape of the recursive type mirrors the shape of every recursive function that operates on it.
+
+> **Watch out! — The linked list is the canonical functional data structure because prepending is O(1) without mutation.** To prepend a value, you create one new node pointing to the existing list — the existing list is unchanged. This means two different variables can safely share the same tail without either one affecting the other. In a purely functional language like Haskell or Clojure, this property (called **structural sharing**) is the foundation of efficient **persistent data structures**: instead of copying an entire collection when you "modify" it, you create a new version that shares as much structure as possible with the old one. Python's `list` does not share structure this way — `.insert(0, x)` copies all existing elements — so functional patterns map most naturally onto linked structures, not Python arrays.
 
 A **recursive data type** is one that refers to itself in its own definition: `Node[T]` has a `value: T` and a `next` which is either another `Node[T]` or `None`. This is the canonical example of a **sum type inside a product type**: each node simultaneously holds a value (product) *and* is one of "has a next node" or "is the last node" (sum / `Optional`).
 
@@ -362,6 +388,8 @@ while current is not None:
 # Part V: Structural vs Nominal Typing
 
 ## Model 5: Structural vs Nominal Typing and Protocols
+
+The previous models all concerned what a container *holds*. This final model concerns a different question: how does the type system decide whether one type is *compatible* with another? Two classes that have the same methods but no shared parent — should a function that accepts one also accept the other? The answer depends on whether the language uses **nominal** or **structural** typing, and it has large practical consequences for how libraries are composed and how independently written code can interoperate.
 
 Two philosophies govern whether a type "fits" where another is expected:
 

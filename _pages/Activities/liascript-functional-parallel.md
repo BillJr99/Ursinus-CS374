@@ -16,6 +16,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Parallelism for Free: Functional Programming at Scale
 
+> **Imagine a restaurant kitchen preparing a five-course dinner.** If every chef shares one cutting board, each course must wait for the previous chef to finish — a single-file bottleneck. But if no chef ever touches another chef's equipment, all five courses can be prepared at the same time. Pure functional programming gives you the second kitchen automatically: because each function reads only its own argument and writes nothing shared, every call is its own isolated chef. Two cores can run `f(3)` and `f(7)` simultaneously without a mutex, a lock, or even a conversation. This module shows you exactly how that guarantee works — and how to cash it in.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -25,6 +27,22 @@ By the end of this activity, you will be able to:
 - Implement parallel data processing pipelines in Python using `multiprocessing` and `concurrent.futures`
 - Construct a MapReduce computation by decomposing a problem into independent map phases and a reduction phase
 - Compare the parallelism models of functional languages (Erlang, Haskell) with Python's multiprocessing approach and evaluate their tradeoffs
+
+---
+
+## Before You Begin
+
+Make sure you are comfortable with these concepts before starting. If any feel unfamiliar, spend five minutes reviewing them now.
+
+- **Pure functions:** a function whose output depends only on its arguments and that produces no observable side effects (no global writes, no I/O, no mutation of arguments). You should be able to classify a given Python function as pure or impure.
+- **`map`, `filter`, `reduce`:** the three higher-order functions from week 1. You should be able to read and write simple pipelines using them.
+- **Python threads vs. processes:** `threading` uses OS threads that share memory and are subject to the GIL; `multiprocessing` spawns separate OS processes with no shared memory. Know which module you are looking at.
+- **Lambda expressions:** `lambda x: expr` creates an anonymous function. You should be comfortable with one-liner lambdas passed as arguments.
+- **Big-O notation:** you should be able to say whether an algorithm is O(n), O(n log n), or O(n²), and reason about why.
+
+If you have not seen `functools.reduce` yet, run `help(reduce)` in a Python REPL before the first code block.
+
+---
 
 *"Pure functions are like electricity from nuclear power — you get massive energy with no visible moving parts, and purity is your containment vessel."*
 
@@ -41,6 +59,8 @@ Work in your POGIL team (**Manager, Recorder, Presenter, Reflector**). Individua
 ---
 
 # Part I: The Theory — Why Purity Enables Parallelism
+
+> **Intuition before the math.** Before you read the formal definitions, build the picture in your head: a race condition is what happens when two chefs both reach for the same salt shaker at the same moment — one of them gets an unexpected result. The formal treatment below shows exactly why a pure function is equivalent to giving each chef their own private salt shaker. The math is short; the intuition carries most of the weight.
 
 ## 1. The Race Condition, Formally
 
@@ -82,6 +102,8 @@ print("Pure sum (always correct):", pure_sum)   # always 4950
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out! — The GIL does not save you.** Students often assume Python's Global Interpreter Lock prevents all race conditions. It prevents two Python bytecode instructions from running at the *exact* same CPU cycle, but `total_bad += x` compiles to three bytecodes (LOAD, ADD, STORE), and the GIL can release between any two of them. You can still get the wrong answer. The pure `reduce` sidesteps the entire question.
+
 ### Critical Thinking Questions — *Solo then Group*
 
 1. Run the impure version several times. Does `total_bad` always equal 4950? Why or why not? What specific hardware interleaving causes the discrepancy?
@@ -91,6 +113,8 @@ print("Pure sum (always correct):", pure_sum)   # always 4950
 ---
 
 ## 2. The MapReduce Pattern
+
+> **Intuition.** Think of MapReduce as a two-round election count. In round one, every precinct (a `map` worker) independently tallies its own ballots — no precinct needs to talk to another. In round two, a central office (the `reduce` step) sums the precinct totals. The independence of round one is the purity guarantee; the associativity requirement in round two is the mathematical condition that makes the tree-structured summing of partial totals give the same answer regardless of grouping.
 
 **MapReduce** is the computational pattern that Google used to index the web, and that Hadoop, Spark, and modern cloud pipelines all implement. It has two phases:
 
@@ -151,6 +175,8 @@ for word, count in sorted(word_count.items(), key=lambda x: -x[1])[:10]:
 ---
 
 # Part II: The Practice — Python Multiprocessing
+
+> **Intuition.** Part I proved that pure functions *can* safely run in parallel. Part II shows how Python actually *does* it. The key mental model: `multiprocessing.Pool.map(f, items)` is the same as `list(map(f, items))` — identical interface, identical results — except the work is distributed across OS processes that share no memory. If `f` is pure, you get the speedup for free. If `f` has side effects, you get silent corruption instead.
 
 ## 3. `multiprocessing.Pool.map`: The Parallel Map
 
@@ -223,6 +249,8 @@ print()
 print("compute_heavy is pure: no closures, no shared state → picklable, safe for ProcessPoolExecutor")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+> **Watch out! — Functions must be picklable.** `ProcessPoolExecutor` serializes (pickles) your function and ships it to worker processes. Lambda functions and closures that capture local variables are NOT picklable in Python. If you try to pass a lambda to `ex.map(...)`, you will get a `PicklingError`. Define your worker function at module (top) level, not inside another function, and keep it free of captured mutable state.
 
 ---
 

@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Finite Automata
 
+Think of a turnstile at a subway station. It has exactly two states — **locked** and **unlocked** — and two transitions: inserting a coin moves it from locked to unlocked, and pushing moves it from unlocked back to locked. That tiny machine already captures the essence of a finite automaton: a fixed set of states, arrows triggered by input symbols, and a yes/no verdict at the end. The remarkable fact you will discover today is that this humble model is *exactly* as powerful as every regular expression you have ever written.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -26,6 +28,11 @@ By the end of this activity, you will be able to:
 - Implement a DFA simulator in Python using a transition table (dict of dicts) and connect the automaton model to the operation of a regex-based lexer
 
 A regular expression *describes* a set of strings; a **finite automaton** *recognizes* one, a machine so simple it is just states and arrows, yet exactly as powerful as the regex notation. Over two days we build the machine view: **DFAs $\rightarrow$ NFAs $\rightarrow$ their surprising equivalence $\rightarrow$ simulation in Python**, the theory under your next assignment and the engine inside every lexer, including yours.
+
+> **Before You Begin** — make sure you can:
+> - Describe what a regular expression *denotes* (the set of strings it matches), not just write one
+> - Create and look up values in a Python `dict`, including a dict whose values are themselves dicts
+> - Trace a simple `for` loop by hand, tracking the value of one variable through each iteration
 
 ---
 
@@ -58,6 +65,8 @@ Two states suffice because the machine only needs to remember one bit: the parit
 
 ## Model 1: Trace and Design
 
+Before writing any code, you need to be comfortable *tracing* a DFA by hand — following the arrows one symbol at a time. The parity machine above is the ideal warm-up: it has only two states, so every transition is obvious, yet it handles an infinite set of strings correctly. Once tracing feels mechanical, designing your own DFA becomes a matter of asking "what is the minimum information I need to remember at each step?"
+
 ### Critical Thinking Questions
 
 1. Trace `1011` through the parity DFA, listing the state after each symbol. Accepted or rejected? The Recorder writes the trace.
@@ -68,6 +77,8 @@ Two states suffice because the machine only needs to remember one bit: the parit
 ---
 
 ## Model 2: DFA Simulation — A Dictionary and a Loop
+
+The formal five-tuple maps almost directly onto a Python data structure: states become string keys, the transition function becomes a `dict` of `dict`s, and the entire simulation is a loop that does one dictionary lookup per character. Reading this code, notice that the *logic* never changes — only the data describing the machine does. That separation between the runner and the machine description is exactly the architecture your lexer assignment will use.
 
 ```python
 # DFA as data: states are strings, delta is a dict of dicts.
@@ -143,6 +154,8 @@ $$
 
 with a worst-case exponential blowup in state count ($2^{|Q|}$ subsets) as the price of determinism, a classic time-space-simplicity trade.
 
+> **Watch out!** NFAs and DFAs recognize *exactly the same class of languages* — neither is more powerful. NFAs are simply more *compact to write*: the ends-in-`ab` NFA needs 3 states while the equivalent DFA needs 4. The equivalence is proven by the subset construction, not assumed.
+
 [[MC]]
 An NFA has 4 states. The subset-construction DFA recognizing the same language has at most:
 - ( ) 4 states
@@ -160,6 +173,8 @@ The NFA "ends in ab" has 3 states: start/loop (q0), saw-a (q1), saw-ab (q2). The
 ---
 
 ## Model 3: NFA Simulation
+
+Simulating an NFA does not require any magic or backtracking. Instead of tracking a single current state, the simulator tracks the *set* of all states the NFA could be in right now — every live path, simultaneously. Each input symbol advances every state in that set and unions the results. This is the subset construction running lazily, one character at a time, and it costs at most $O(k)$ work per symbol for a $k$-state NFA.
 
 ```python
 # NFA simulation by tracking the SET of possible states: the subset
@@ -201,6 +216,8 @@ run_nfa(ENDS_IN_AB_NFA, "aab", trace=True)
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** An NFA does not "guess" which path to take — that framing makes it sound like luck is involved. The machine *explores all paths simultaneously*, and it accepts if *any* of them reaches an accepting state. The simulation above makes this concrete: `current` is always a set, never a single lucky choice.
+
 ### Critical Thinking Questions
 
 8. Trace `aab` by hand, writing the *set* of states after each symbol. Where does the machine "hedge its bets," and which bet pays off?
@@ -210,6 +227,8 @@ run_nfa(ENDS_IN_AB_NFA, "aab", trace=True)
 ---
 
 ## Model 4: Subset Construction — NFA → DFA
+
+The subset construction is the key insight that connects NFAs to DFAs. Each DFA state corresponds to a *frozenset* of NFA states — "the set of places the NFA could be after reading this much input." The algorithm simply performs a reachability search over those sets, building the DFA transition table as it goes. Once you see the code, you will notice that Model 3's simulation was already doing this implicitly on every input string.
 
 ```python
 # Full subset construction: convert an NFA to an equivalent DFA.
@@ -295,6 +314,8 @@ for s in ["ab", "aab", "abab", "ba", "a", "b", ""]:
 11. How many DFA states did the subset construction produce for the ends-in-ab NFA? Was there exponential blowup? (For this NFA, the answer is no — why not?)
 12. The subset construction creates DFA states that are *sets* of NFA states. In what sense is this DFA tracking "where the NFA might be"?
 13. Sketch Thompson's construction (boxes and epsilon arrows) for the regex `a(b|c)*`. How many states does it produce, and why is an NFA the natural output of a regex compiler rather than a DFA?
+
+> **Watch out!** The subset construction is the *theoretical* bridge between NFAs and DFAs, but in practice it can produce exponentially many DFA states ($2^{|Q|}$ in the worst case). Real regex engines typically simulate the NFA directly (as in Model 3) to avoid this blowup, while still running in linear time on the input string.
 
 ---
 

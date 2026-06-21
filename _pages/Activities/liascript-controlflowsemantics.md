@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Control Flow Semantics
 
+Think of a program as a choose-your-own-adventure book: every time you reach a decision point, the story branches, and you only read one of the two paths that follow. Control flow semantics are the rules that determine *which* page you turn to next — and critically, whether the unchosen pages are ever glanced at at all. In this activity you will pin down those rules precisely enough to implement them in your own interpreter.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -27,6 +29,13 @@ By the end of this activity, you will be able to:
 
 `if` and `while` look trivial until you must implement them, at which point a swarm of decisions appears: what counts as true? are both branches evaluated? does `and` evaluate its right side when the left already decides? Today we pin down **control flow semantics** for your interpreter assignment, with special attention to **truthiness** and **short-circuit evaluation**, two places where languages quietly disagree. The arc: **selection semantics $\rightarrow$ truthiness $\rightarrow$ short-circuiting $\rightarrow$ iteration and its design questions**.
 
+> **Before You Begin:** This activity assumes you can:
+> - Write and trace basic Python `if`/`elif`/`else` and `while` statements, including nested conditions
+> - Explain what a boolean expression evaluates to and identify common falsy values in Python (`0`, `""`, `[]`, `None`, `False`)
+> - Read a simple recursive Python function and follow what gets returned at each call
+>
+> If any of these feel shaky, review them first.
+
 ---
 
 ## Directions and Group Roles
@@ -37,15 +46,21 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 # Part I: Selection and Truth
 
+Before diving into code, consider what an `if` statement really promises: it will look at a condition, and then read *exactly one* of two possible continuations. That promise turns out to have deep consequences — it is what makes guarded divisions safe, what forces you to define "what counts as true," and what separates `if` from every ordinary function call in your language.
+
 ## 1. The Semantics of If
 
 **Selection evaluates the condition, then exactly one branch.** The "exactly one" is load-bearing: in `if (x != 0) { print 10 / x; } else { print 0; }`, evaluating the untaken branch would divide by zero. Your executor already respects this (the Python `if` inside `execute` chooses *which subtree to walk*), and naming the property matters: `if` is our first **non-strict** construct, one that deliberately does not evaluate all of its parts.
 
 **Truthiness: what may stand as a condition?** Three coherent policies: (a) **booleans only** (Java): `if (count)` is a type error; (b) **everything has a truth value** (Python: zero, empty string, and empty collections are falsy; the rest truthy); (c) **a designated set** (C: zero is false, any nonzero number true). The policy interacts with your type system: a booleans-only language catches `if (x = 5)`-style accidents that permissive languages execute happily.
 
+> **Watch out!** The string `"false"` is *truthy* in Python because it is a non-empty string — its content is irrelevant to the truthiness test. This surprises many beginners who expect the *meaning* of a value to determine its truth. If your language adopts Python-style universal truthiness, make sure your documentation spells this out explicitly.
+
 ---
 
 ## Model 1: The Truthiness Tribunal
+
+Every language designer must answer the question: "What values are allowed to appear as a condition?" Python says almost anything goes — zero and empty collections are false, everything else is true. Java says only actual booleans are allowed. C says zero is false and any nonzero number is true. None of these is obviously "right"; each reflects a different trade-off between convenience and catching bugs at compile time. In this model you will run all three policies side by side so the differences become concrete.
 
 The condition values: `0`, `1`, `-3`, `""`, `"false"`, an empty list, the boolean `false`.
 
@@ -77,6 +92,8 @@ for v in test_values:
 ---
 
 ## Model 2: If Is Non-Strict
+
+It is one thing to say "the untaken branch is not evaluated" and another to *prove* it. In this model a special `Bomb` node plays the role of a branch that would crash the program if it were ever executed. If the interpreter is truly non-strict, the bomb never goes off — and that silence is itself the evidence. Pay close attention to the single line that makes this work: the Python ternary that *chooses which recursive call to make*, rather than making both.
 
 **Prove that if does not evaluate the untaken branch:**
 ```python
@@ -134,6 +151,8 @@ print(f"0 → else: {result3}")  # 2 (0 is falsy)
 
 # Part II: Short-Circuit Evaluation
 
+You have seen that `if` skips one whole branch. Now consider what happens *inside* the condition itself: does evaluating `a and b` always look at both `a` and `b`? In most languages the answer is no — and that "no" is not a performance trick, it is a guarantee programs are written to depend on. This part examines exactly when `and` and `or` are allowed to stop early, and why your interpreter must handle them differently from ordinary binary operators.
+
 ## 2. And/Or That Stop Early
 
 **Short-circuit operators evaluate left to right and stop as soon as the answer is known**: `false and X` never evaluates `X`; `true or X` never evaluates `X`. This is not an optimization but a *semantic guarantee* programs rely on: `if (i < len(a) and a[i] > 0)` is only safe because the bounds check guards the access. Implementing it means `and`/`or` cannot be ordinary `BinOp`s (your `BinOp` case evaluates both children first, post-order); they need their own node and their own evaluation rule.
@@ -144,9 +163,13 @@ $$
 
 (Note the Python-style refinement: returning the deciding *operand* rather than a normalized boolean is itself a design choice; Java normalizes, Python does not.)
 
+> **Watch out!** Short-circuit evaluation is **not universal**. Some languages (notably older Fortran, and certain functional languages with call-by-value semantics) evaluate both operands of `and`/`or` before applying the operator. If you are porting code that relies on short-circuiting as a guard, always check the target language's specification — you cannot assume the right operand is skipped.
+
 ---
 
 ## Model 3: Short-Circuit in Action
+
+The key insight here is that `and` and `or` cannot simply be added to your existing `BinOp` evaluator, because `BinOp` always evaluates both children before doing anything with them. Logical operators need their own node type with their own evaluation rule — one that only reaches for the right child after deciding whether it is necessary. The Bomb-based test makes this difference visible: if the right side were always evaluated, the bomb would explode.
 
 ```python
 # Short-circuit logic as its own node type: the right child is evaluated
@@ -219,6 +242,8 @@ In Python, `x or "default"` returns `"default"` when `x` is falsy. This behavior
 
 ## Model 4: Language Comparison
 
+You now know *that* `and`/`or` short-circuit, but there is a second independent question: *what do they return?* Python returns the actual operand that decided the outcome — not a normalized boolean — which opens up concise idioms like `name or "Anonymous"`. Java always returns `true` or `false`. Both are internally consistent choices; this model lets you see their practical consequences side by side before you commit to one in your own language.
+
 ```python
 # Python's short-circuit with value-preserving semantics
 print("Python 'and' returns operand:")
@@ -256,6 +281,8 @@ print("\nNote: Java 'and'/'or' always return boolean:")
 
 # Part III: Iteration
 
+Loops are where control flow gets its most dramatic power — and its most dangerous failure mode. A `while` loop keeps re-reading the same page of the adventure book as long as the condition holds, and you need to know precisely when the condition is re-checked, whether the body gets a fresh environment each time, and what it means to exit the loop early. These are not cosmetic details; they determine what programs your language can express correctly.
+
 ## 3. While, and the Questions It Raises
 
 Your `While` executor re-evaluates the condition before each pass: definite semantics, easy to implement, and the source of three design questions your team must answer in `SEMANTICS.md`:
@@ -265,6 +292,9 @@ Your `While` executor re-evaluates the condition before each pass: definite sema
 3. Will you offer a counting `for`, and is it core syntax or sugar?
 
 **The break/continue trick — use exception classes:**
+
+> **Watch out!** `break` and `continue` behave differently across languages. In Python, `break` inside a `for`/`while` exits only the *innermost* loop — a `break` nested three loops deep does not escape all three. Some languages (Java, Kotlin) offer labeled breaks to exit an outer loop directly. When implementing these statements in your interpreter, decide up front how deeply nested `break` can reach, and document it: the choice affects what programs are expressible and what complexity the interpreter must track.
+
 ```python
 from dataclasses import dataclass
 from typing import Any, List

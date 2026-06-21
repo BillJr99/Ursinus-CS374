@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Parsing Expressions: Left Factoring, Precedence, and Iteration
 
+Expression parsing is the most common and most tricky part of building any language: without deliberate grammar design, `2 + 3 * 4` can parse as `(2 + 3) * 4 = 20` instead of the correct `2 + (3 * 4) = 14`. The solution — a layered grammar where each precedence level is its own rule — is elegant, but turning that grammar into a top-down parser requires eliminating left recursion, which this module does systematically. Two complementary strategies (recursive descent with tiered functions, and Pratt parsing with numeric binding powers) solve exactly the same problem; understanding both gives you the vocabulary to handle any operator grammar you will encounter in your career.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -27,6 +29,12 @@ By the end of this activity, you will be able to:
 
 This two-day module is the heart of your parser: turning the layered expression grammar (the cure for ambiguity) into running code, with explicit, careful attention to the move students find hardest: rewriting left recursion as the iteration pattern `term { (op) term }` and folding the loop's results into a left-leaning structure. We build it slowly, one operator tier at a time, exactly as your assignment will. The arc: **the ladder restated for descent $\rightarrow$ one tier in code $\rightarrow$ chaining operators in the loop $\rightarrow$ the full ladder with parentheses and unary minus**.
 
+> **Before You Begin** — make sure you are comfortable with:
+>
+> - **Recursive-descent parsing basics**: writing a function per grammar rule, calling `peek()` / `advance()` / `expect()`, and recognizing the shape `rule -> A B C`.
+> - **Operator precedence and associativity**: why `*` binds tighter than `+`, why `7 - 2 - 1` means `(7 - 2) - 1` (left-associative) rather than `7 - (2 - 1)`, and how a layered (unambiguous) grammar encodes both properties.
+> - **Python dataclasses for AST nodes**: the `@dataclass` decorator, field annotations, and constructing nested node objects — you will use these when the assignment upgrades tuples to typed nodes.
+
 ---
 
 ## Directions and Group Roles
@@ -36,6 +44,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 ---
 
 # Part I: The Ladder, Descent-Ready (Day 1)
+
+The unambiguous layered grammar you saw earlier used left recursion (`E -> E + T`) to enforce left-associativity — but a recursive descent parser calling itself on the left immediately spirals into infinite recursion. Part I shows the mechanical fix: replace every left-recursive rule with an equivalent `while` loop, and show that the loop's left-fold behavior preserves exactly the same associativity the recursion would have produced.
 
 ## 1. From Left Recursion to Loops, Tier by Tier
 
@@ -55,9 +65,13 @@ $$
 a - b - c \;\Rightarrow\; \texttt{(("-",("-",a,b),c))} \quad \text{left fold, left lean}
 $$
 
+> **Watch out!** Left recursion (`addsub -> addsub ("+" | "-") muldiv`) is fatal for top-down parsers: a recursive descent function that begins by calling itself will loop infinitely before consuming a single token. You **must** eliminate it — either by rewriting to the loop form shown above or by using a Pratt parser — before attempting a top-down implementation.
+
 ---
 
 ## Model 1: Trace the Loop
+
+This model asks you to simulate the `parse_addsub` loop by hand so you can see exactly where associativity comes from. The key insight is that the running `node` variable acts as a left-accumulator: each new operator wraps the *accumulated result so far* as its left child, producing a left-leaning tree. Changing which side receives the accumulator changes associativity — and therefore the numeric result.
 
 Consider `addsub` parsing the token stream for `7 - 2 - 1`.
 
@@ -131,6 +145,8 @@ def parse_primary(self):
 ---
 
 ## Model 2: Precedence Table (Runnable)
+
+Before writing parser code, it helps to see that "precedence" is just a number: a higher number means "bind tighter" (resolve sooner). This model lets you experiment with two different precedence tables on the same token stream so you can observe concretely how changing one number changes the resulting tree — and therefore the numeric result. Pay attention to the flat-precedence case: it is a useful stress-test for understanding what your parser *actually* does rather than what you think it does.
 
 Different precedence assignments for the same token stream produce completely different trees and values. The model below encodes two precedence tables and a simple "what would this mean?" validator that folds a flat token list according to each table, showing both resulting trees.
 
@@ -221,6 +237,8 @@ show("Standard precedence (left assoc)", PREC_STANDARD, tokens2)
 ---
 
 ## Model 3: Recursive Descent Expression Parser (Runnable)
+
+This model brings everything together into a working parser you can run. The mutual call chain `parse_expr -> parse_addsub -> parse_muldiv -> parse_unary -> parse_primary -> parse_expr` encodes the entire precedence hierarchy: a function only returns to its caller after fully resolving everything at the current or tighter tiers. Notice how parentheses are handled in `parse_primary` with a single call to `parse_expr` — that one line gives parentheses the power to override every precedence level.
 
 A self-contained recursive descent parser for `+`, `-`, `*`, `/` and parentheses. The mutual recursion `expr → addsub → muldiv → unary → primary → … → expr` gives precedence without any table.
 
@@ -330,6 +348,10 @@ for expr in ["2+3*4", "2*3+4", "(2+3)*4", "7-2-1", "-3*2", "1+2+3+4"]:
 ---
 
 ## Model 4: Pratt Parsing (Runnable)
+
+Pratt parsing (also called precedence climbing) is an elegant alternative to the tiered-function approach: instead of encoding precedence by the *depth* of a function chain, it encodes it as a *number* (the binding power) and uses a single loop with a numeric comparison to decide whether to keep consuming. The result is exactly the same AST with far less boilerplate — adding a new operator means adding one entry to the `LBP` table, not writing a new function. Both parsers run on the same test cases so you can confirm they agree.
+
+> **Watch out!** Pratt parsing is an elegant alternative that scales gracefully as your language grows, but it is easy to confuse the two binding-power roles. The **left binding power (lbp)** of an operator is how tightly it pulls in a left operand that has already been parsed; the **right binding power** passed to the recursive `expression()` call controls how tightly the operator claims tokens on its right. For left-associative operators these differ by exactly 1 (or you pass `bp` rather than `bp - 1`); for right-associative operators (like `**`) the right call must use `bp - 1` so a subsequent operator at the same level is allowed to win — see Exercise 1 for the concrete example.
 
 A Pratt parser (precedence climbing) associates a *binding power* with each operator and decides whether to consume the next operator based on numeric comparison — no mutual recursion, no separate function per tier. Both parsers should produce the same AST for `2 + 3 * 4 - 1`.
 
@@ -480,6 +502,10 @@ for t in tests:
 ---
 
 # Part II: Stress and Extend (Day 2)
+
+Day 2 consolidates and extends what you built on Day 1. You will first check your conceptual grip with a targeted multiple-choice question, then push the parser into new territory: right-associative operators, comparison tiers, and function-call syntax. These exercises mirror the exact extensions your project language will need, so treat them as early project work rather than isolated drills.
+
+> **Watch out!** Right-associative operators like `**` (exponentiation) cannot be handled by the `while`-loop (left-fold) pattern — that pattern is inherently left-associative. Instead, use the original right-recursive grammar rule `power -> unary [ "^" power ]` (a single optional recursive call, not a loop), which naturally builds a right-leaning tree. In a Pratt parser the equivalent move is to pass `bp - 1` rather than `bp` as the minimum binding power for the right-hand recursive call.
 
 ## 2. Owning the Pattern
 

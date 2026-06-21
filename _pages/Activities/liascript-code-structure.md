@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Code Structure: Expressions and Conditionals
 
+> **Think about city zoning for a moment.** A well-planned city separates residential neighborhoods from industrial districts from commercial zones — not because mixing them is physically impossible, but because keeping related things together prevents conflicts and makes the city easier to navigate. Programming languages do the same thing with *modules*, *namespaces*, and *packages*. The way a language carves up code into named, bounded units reflects its philosophy about separation of concerns: who owns what, what is visible to whom, and how names from different places coexist without colliding. In this activity, you will explore how expression structure — the building blocks *inside* those units — is designed in functional languages.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -28,6 +30,17 @@ By the end of this activity, you will be able to:
 CS374 — Principles of Programming Languages | Week 7
 
 Reference: PLAI (Programming Languages: Application and Interpretation) Ch. 7
+
+> **Before You Begin**
+>
+> This activity assumes you are comfortable with:
+>
+> - Writing and calling Python functions, including lambda expressions
+> - Basic Python data structures (lists, dicts) and comprehensions
+> - The concept of *scope* — that a variable defined inside a function is not visible outside it
+> - Python's `dataclass` decorator (used in Models 4–5); a quick review: `@dataclass` auto-generates `__init__` from field annotations
+>
+> You do **not** need prior exposure to Scheme or Haskell, though the activity will introduce small snippets of each. If you have never seen Scheme syntax before, note that `(f a b)` means "call function `f` with arguments `a` and `b`" — the function name comes first, inside the parentheses.
 
 ---
 

@@ -11,6 +11,8 @@ link:     https://cdn.jsdelivr.net/chartist.min.css
 
 # Coroutines and Generators: Pausable Computation
 
+> **Opening hook:** Imagine a vending machine. A regular function is like a vending machine that dumps every item it will ever produce onto the floor the moment you press the button — all at once, whether you want them yet or not. A **generator** is a vending machine that produces exactly one item each time you press the button, remembers where it left off, and waits patiently until you press again. The machine's internal state — which slot it was at, how many remain — is frozen between presses. That frozen state is the essence of a coroutine.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -25,6 +27,18 @@ By the end of this activity, you will be able to:
 > **Goal:** Understand generators as semi-coroutines, how `yield` captures a continuation, how `async/await` desugars to state machines, and how to add generator support to a simple interpreter.
 
 **POGIL Roles:** Driver · Recorder · Reporter · Manager
+
+---
+
+> **Before You Begin**
+>
+> This activity assumes you are comfortable with:
+>
+> - Writing and calling Python functions, including closures that capture variables from an enclosing scope
+> - The idea of a **continuation** from the CPS (Continuation-Passing Style) activity — roughly, "the rest of the computation"
+> - Basic Python iteration: `for` loops, `range()`, and what `StopIteration` means
+>
+> If the term "continuation" feels fuzzy, revisit the CPS activity before Model 3. If Python closures feel shaky, review how `def` inside `def` works and what a stack frame contains.
 
 ---
 

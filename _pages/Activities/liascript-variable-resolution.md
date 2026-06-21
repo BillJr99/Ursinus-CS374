@@ -11,6 +11,8 @@ link:     https://cdn.jsdelivr.net/chartist.min.css
 
 # Variable Resolution: From Name to Value
 
+Variable resolution is like looking up a word in a dictionary — you start with the innermost, most-specific dictionary and work outward until you find an entry or run out of dictionaries. In programming languages, each nested function or block is its own dictionary (called a *frame* or *environment*), and the language's scoping rules determine exactly which dictionaries to search and in what order. Mastering these rules lets you read any program with confidence and avoid the subtle bugs that trip up even experienced developers.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -24,11 +26,21 @@ By the end of this activity, you will be able to:
 > **Prerequisites:** Basic programming, functions, variables
 > **Goal:** Understand exactly how a language looks up a variable name — the scope chain, LIFO stack of environments, and why Python/JavaScript/C make different choices.
 
+> **Before You Begin — Prerequisite Checklist**
+>
+> Make sure you are comfortable with the following before diving in:
+>
+> - **Python scope rules (LEGB):** You should know that Python looks for a name in Local, then Enclosing, then Global, then Built-in scope. If this is unfamiliar, review a Python scoping tutorial first.
+> - **Closures:** You should understand that an inner function can "remember" variables from its enclosing function even after that enclosing function has returned. If closures feel mysterious, spend a few minutes with a closure example before continuing.
+> - **Symbol tables:** You should know that a compiler or interpreter keeps a data structure mapping names to their bindings (type, value, memory location). If you have not seen the term before, think of it as the "dictionary" metaphor above — each scope has one.
+
 **POGIL Roles:** Driver · Recorder · Reporter · Manager
 
 ---
 
 ## Model 1: The Name Resolution Problem
+
+**Intuition:** Before studying the formal rules, consider what "resolving a name" means in practice. Imagine you're reading a mystery novel and you encounter the character "Smith." You first check whether "Smith" was just introduced in this chapter (local), then whether a character named "Smith" appeared in an enclosing flashback (enclosing), and finally whether there's a "Smith" from the very beginning of the book (global). Programming languages perform exactly this layered search — the only difference is that different languages define the layers differently. Model 1 shows you three languages doing this search in the same nested structure, so you can see what they agree on and where they diverge.
 
 When the interpreter or compiler sees a name like `x`, it must answer: *which `x`?* Every language has a rule — but the rules differ.
 
@@ -103,6 +115,10 @@ int main() { f(); printf("%d\n", x); return 0; }  /* (C) */
 ---
 
 ## Model 2: The Scope Chain — A LIFO Stack of Frames
+
+**Intuition:** Think of the call stack as a stack of sticky notes on your desk. Each time a function is called, you place a new sticky note on top with that function's local variable names written on it. When you need to look up a name, you read the top note first; if the name is not there, you peek at the note below it, and so on down to the desk surface (the global frame). When the function returns, you throw away the top note. This Last-In-First-Out (LIFO) discipline is why nested functions can see their enclosing function's variables: those variables are on the note just below. Python's LEGB rule is just a precise name for this search order.
+
+> **Watch out!** Free variables in a closure are resolved in the **defining** scope, not the **calling** scope. When `inner` is defined inside `outer`, `inner` captures `outer`'s frame — no matter where `inner` is later called from. If you call the returned closure from an entirely different function, it still uses the scope it was born in.
 
 When a function is called, a new **frame** (environment) is pushed onto the call stack. Name lookup walks the stack from top (innermost) to bottom (global).
 
@@ -207,6 +223,10 @@ print(lookup("y", chain))   # 99   — found in global
 
 ## Model 3: Static (Lexical) vs Dynamic Scope
 
+**Intuition:** Lexical scope and dynamic scope answer the same question — "which frame do I look in next?" — but they use different evidence. Lexical scope uses the *source code* as its map: you look at where the function was written down in the file, and the enclosing text tells you the parent scope. Dynamic scope uses the *call stack* as its map: you look at who called you, and their frame is the parent scope. Most modern languages (Python, JavaScript, Java, C) use lexical scope because it lets you understand a function just by reading it; with dynamic scope, you would need to know the entire call history at runtime to reason about what a variable contains.
+
+> **Watch out!** Python's late binding in closures surprises many students. In a lexically-scoped language, you might expect a closure to capture the *value* of a variable at the moment the closure is created. Python closures instead capture the *variable itself* (a reference to the cell). This means that if the variable changes after the closure is created — for example, in a loop — the closure will see the final value of the variable when it is called, not the value at creation time. CTQ 10 below demonstrates this precisely.
+
 The two historical approaches to scope differ in *when* name resolution happens:
 
 | | Resolved at … | Rule |
@@ -263,6 +283,10 @@ print([f() for f in fns])
 ---
 
 ## Model 4: How C Resolves Variables
+
+**Intuition:** C was designed before closures or garbage collectors, so its scoping model reflects the hardware directly. There is no hidden dictionary-chaining at runtime the way Python does it — C's block scopes live inside a single stack frame, and file-scope variables live in a fixed memory segment decided at compile time. Understanding C's model helps you see what Python and JavaScript are *abstracting over*. The `static` keyword in C is particularly illuminating: it lets a local variable persist across calls (extended lifetime, unchanged scope) or restricts a global to one file (unchanged lifetime, narrowed visibility) — demonstrating that scope and lifetime are genuinely independent concepts.
+
+> **Watch out!** Hoisting in JavaScript is a resolution-time phenomenon, not a runtime one. When the JavaScript engine processes a `var` declaration, it moves (hoists) the *declaration* to the top of the enclosing function scope before any code runs — but the *assignment* stays in place. This means a variable declared with `var` anywhere in a function is technically in scope for the entire function, yet holds `undefined` until the assignment line executes. `let` and `const` fix this with block scope and a Temporal Dead Zone, which is why modern JavaScript style prefers them.
 
 C has four scope levels and two additional concepts (linkage and storage class):
 
@@ -325,6 +349,8 @@ extern int helper_count;   /* declaration only — no new storage */
 
 ## Multiple Choice Review
 
+**Intuition:** These questions test whether you can apply the rules quickly and precisely. For each question, try to answer before reading the options — then check whether your answer matches one of the choices. If it does not, that mismatch reveals a gap worth revisiting in the models above.
+
 **Question 1.** In Python's LEGB rule, if a name is found in the *Enclosing* scope, the search:
 
 - [( )] continues to check the Global scope as well
@@ -342,6 +368,8 @@ extern int helper_count;   /* declaration only — no new storage */
 ---
 
 ## Exercises
+
+**Intuition:** The exercises below ask you to both *use* closures and *simulate* the environment model in code. When you implement `lookup` and `assign` yourself, you are essentially writing the core of an interpreter — which makes the abstract rules feel concrete. Always predict the output before running; the prediction step is where real learning happens.
 
 **Exercise 1.** Write a Python function `make_adder(n)` that returns a closure adding `n` to its argument. Verify it works for `add5 = make_adder(5); print(add5(3))` → `8`.
 

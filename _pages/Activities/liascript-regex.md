@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Regular Expressions
 
+Regular expressions sit at the formal foundation of every programming language: they are the notation that defines what a *token* looks like before a parser ever sees it. Think of a regex as a cookie cutter — it describes a precise shape (a pattern) that can stamp out any number of matching strings from the dough of possible input, without caring what flavor the dough is. Because a single pattern can describe an infinite set of strings (e.g., all valid identifiers), regular expressions give language designers a compact, mathematically grounded way to specify lexical rules.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -29,6 +31,14 @@ The Chomsky hierarchy's bottom rung, regular languages, comes with the most wide
 
 ---
 
+> **Before You Begin** — make sure you are comfortable with the following before diving in:
+>
+> - **Python `re` module basics** — you should know how to import `re` and call `re.search` or `re.match` with a pattern string; if not, skim the [Python `re` HOWTO](https://docs.python.org/3/howto/regex.html) for five minutes.
+> - **Lexers and tokens** — recall that a lexer (scanner) reads source text and groups characters into *tokens* (e.g., an integer literal, an identifier, a keyword). Its job is essentially pattern matching: each token type has a pattern it must fit.
+> - **Finite automata (conceptually)** — you do not need to draw one yet, but you should know that a finite automaton is a machine with a fixed set of states and no unbounded memory. Regular expressions and finite automata turn out to describe exactly the same class of languages — that connection is the bridge to the next module.
+
+---
+
 ## Directions and Group Roles
 
 Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**). Consider each model and question individually first, then discuss with your group. The Recorder posts answers to the Class Activity Questions discussion board; the Presenter reports out areas of disagreement or alternative approaches. After class, respond to the reflective prompt individually in your notebook.
@@ -36,6 +46,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 ---
 
 # Part I: Theory (Day 1)
+
+Every regular expression you will ever write, no matter how elaborate, is built from exactly three primitive ideas. Before reading the formal definitions, convince yourself intuitively: you can glue strings together (concatenation), pick one of several alternatives (alternation), and repeat something zero or more times (Kleene star). That is the entire toolkit — the rest of regex syntax is just abbreviation.
 
 ## 1. Three Operators Build Everything
 
@@ -48,6 +60,10 @@ $$
 plus single characters and the empty string. Everything else in practical regex (character classes, `+`, `?`, ranges) is shorthand: $r^+ = rr^*$, $r? = (r \mid \varepsilon)$, $[abc] = (a \mid b \mid c)$. These three operators generate exactly the regular languages, the same class as Type 3 grammars and (next module) finite automata, three notations for one idea.
 
 ---
+
+Before running any code, practice reading patterns the way a regex engine does: left to right, respecting precedence (star binds tightest, then concatenation, then alternation). The table below asks you to predict what each pattern matches — commit to a prediction first, then verify with the code. Mismatches between prediction and output are your most valuable learning signal.
+
+> **Watch out!** The `*` in a regular expression is the **Kleene star** — it means "zero or more repetitions of the preceding element." It is *not* the glob wildcard you may know from the shell (where `*.py` means "any filename ending in `.py"`). In regex, `.*` means "any character, zero or more times," while a bare `*` with nothing before it is a syntax error.
 
 ## Model 1: Read Before You Write
 
@@ -86,6 +102,8 @@ for pattern, tests in patterns:
 ---
 
 # Part II: Practice (Day 2)
+
+Now that you can read and write the formal operators, the next step is wielding them in real code. Python's `re` module is the standard bridge between theory and practice: it accepts the same notation you have been studying and gives you a handful of functions that cover virtually every text-processing task you will encounter, including building the lexer for your course project.
 
 ## 2. Python's `re` in Five Verbs
 
@@ -126,6 +144,10 @@ for m in re.finditer(r"order", text, flags=re.IGNORECASE):
 7. `finditer` reports start and end offsets. Write two sentences to your future self explaining why a *lexer* needs exactly this capability and not just `findall`.
 
 ---
+
+You have now seen how to match a single pattern; a real lexer must recognize *many* token types in a single pass over the source. The trick is to combine all token patterns into one master alternation and let Python's `finditer` do the scanning. Named groups let each alternative carry a label, so after a match you immediately know which token type fired — exactly the information a lexer needs to emit a token stream.
+
+> **Watch out!** Quantifiers like `*`, `+`, and `?` are **greedy by default**: they consume as many characters as possible while still allowing the overall pattern to match. This is usually what you want in a lexer (match the longest token), but it can surprise you in other contexts. Append `?` to make a quantifier **non-greedy** (reluctant): `.*?` matches as *few* characters as possible. You will see this contrast demonstrated concretely in Model 3 (Greed).
 
 ## Model 3: Named Groups and the Lexer Connection
 
@@ -188,6 +210,10 @@ for tok in lex(src):
 11. The `SKIP` handler tracks newlines to maintain `line` and `line_start`. Why is accurate line/column tracking valuable for a language learner using your language?
 
 ---
+
+This final model has two purposes: to make greedy-versus-reluctant matching concrete so it never surprises you again, and to close the theoretical loop by showing exactly where regular expressions run out of power. Both lessons point to the same underlying cause — a finite automaton has no stack, so it cannot count or remember how deeply it has nested.
+
+> **Watch out!** Regular expressions **cannot match balanced (nested) parentheses** in general — for example, the language $\{(^n)^n \mid n \geq 0\}$ (equal numbers of open and close parens) is context-free, not regular. No matter how clever your regex, there exists a depth $n$ large enough to fool it. When you need to match nested structure, you need a parser built from a context-free grammar — exactly what the next unit covers.
 
 ## 3. Greed, and the Edge of the Regular World
 

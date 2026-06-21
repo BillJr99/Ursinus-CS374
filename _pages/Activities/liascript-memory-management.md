@@ -11,6 +11,10 @@ link:     https://cdn.jsdelivr.net/chartist.min.css
 
 # Memory Management: From Stack Frames to Garbage Collection
 
+> **Opening Hook — The Hotel Room Analogy**
+>
+> Memory management is like running a hotel. Someone must **assign rooms** to arriving guests (allocation), track when guests check out so the rooms can be reused (deallocation), and deal with disasters: double-booking the same room (use-after-free), a room left locked with a guest inside who can never leave (memory leak), and guests who each insist the other should check out first (reference cycles). Every language makes a different design choice about who is responsible for these tasks — the programmer, the compiler, or a background collector — and each choice carries real tradeoffs in performance, safety, and predictability.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -27,9 +31,24 @@ By the end of this activity, you will be able to:
 
 ---
 
+> **Before You Begin — Prerequisite Checklist**
+>
+> Before starting this activity, make sure you can answer yes to each of the following:
+>
+> - [ ] I can write a recursive Python function and explain what happens when it calls itself.
+> - [ ] I know that Python variables hold references (not the values themselves) and that `a = b` does not copy a list.
+> - [ ] I have seen the term "garbage collection" before, even if I cannot yet explain how it works.
+> - [ ] I am working on (or have read the spec for) a tree-walking interpreter in Python.
+>
+> If any box is unchecked, spend five minutes on it before proceeding — the CTQs build on these ideas.
+
+---
+
 # Part I: The Call Stack
 
 ## Model 1: Stack Frames and Recursive Calls
+
+**Intuition.** Picture a stack of cafeteria trays. Every time a function calls another function, a new tray is placed on top. Each tray holds exactly the information that function needs to do its job: its local variables, where to return when done, and a reference back to the tray below. When a function returns, its tray is lifted off and discarded — instantly and automatically. The stack only ever grows and shrinks from the top, which makes it the fastest and simplest memory region in any program. The cost: a tray can only hold items that are needed *during* that one function call and no longer. Anything that needs to outlive the call must live somewhere else — the heap.
 
 Every function call pushes a **frame** onto the call stack. Each frame holds:
 - The function's local variables and parameters
@@ -64,6 +83,8 @@ print(f"Python default recursion limit: {sys.getrecursionlimit()}")
 - Each recursive call creates a new frame; frames stack up during recursion.
 - The stack is **LIFO**: last in, first out. Frames are popped in reverse order of creation.
 - Python's default recursion limit is 1000 frames — exceeding it raises `RecursionError`.
+
+> **Watch out!** A common misconception is that "stack overflow" means you used too much total memory. In reality, Python raises `RecursionError` after just 1000 *nested* calls — even if each frame is tiny. The limit is about *depth*, not total size. Your interpreter will hit this limit if it evaluates deeply recursive programs by making Python function calls for each recursive step.
 
 > **Critical Thinking Questions 1–3**
 

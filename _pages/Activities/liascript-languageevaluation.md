@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Evaluating Languages: Readability, Writability, Reliability
 
+Evaluating a programming language is a lot like evaluating a tool in a workshop: a hammer and a screwdriver are both "correct" tools, but which one you reach for depends entirely on what you are building. No language is universally best; every language embodies a set of deliberate tradeoffs that make it excellent for some tasks and awkward for others. In this activity you will develop a systematic, criteria-driven way to evaluate those tradeoffs so that you can choose languages wisely and design your own language with open eyes.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -24,6 +26,13 @@ By the end of this activity, you will be able to:
 - Analyze code examples to detect orthogonality failures and explain the programmer confusion they produce
 - Compare two languages on at least two evaluation criteria using concrete feature-level evidence rather than personal preference
 - Apply the evaluation framework as a scorecard to justify design decisions for your own language project
+
+> **Before You Begin:** This activity assumes you can:
+> - Describe at least one high-level difference between a statically typed language (e.g., Java) and a dynamically typed language (e.g., Python)
+> - Read and run basic Python code (loops, functions, exceptions, list comprehensions)
+> - Explain in plain English what a runtime error is and how it differs from a compile-time error
+>
+> If any of these feel shaky, review them first.
 
 "Which language is best?" is a bad question; "best *for what*, judged *by what criteria*" is an engineering question. Today we adopt the classical evaluation framework (readability, writability, reliability, and cost) and the design tradeoffs that connect them, because every choice your team makes in December will trade one criterion against another. The arc: **the criteria $\rightarrow$ the design features that drive them $\rightarrow$ tradeoffs in real languages $\rightarrow$ a scorecard for your own design**.
 
@@ -39,6 +48,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 ## 1. Four Lenses
 
+Before diving into definitions, consider why we need multiple lenses at all. When you argue that "Python is better than Java," you are almost certainly weighting one criterion heavily and ignoring others. The four lenses below give you a shared vocabulary so that design debates become precise: instead of "I like Python better," you can say "Python trades static-typing reliability for writability speed, which is the right call for this domain."
+
 **Readability** is the ease with which programs can be read and understood, and it dominates total cost because code is read far more often than written. It is driven by *simplicity* (few constructs, few ways to do one thing), *orthogonality* (a small set of features combinable without special cases), and *syntax design* (meaningful keywords, consistent forms).
 
 **Writability** is the ease of creating programs: *expressivity* (powerful, concise operations like list comprehensions), *abstraction support* (functions, classes, modules), and fit between the language and the problem domain.
@@ -50,6 +61,10 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 ---
 
 ## Model 1: Orthogonality — Combining Features Without Surprises
+
+Imagine a language where every operator works on every type in a consistent, predictable way — no surprise exceptions, no "well, `+` works on strings but `*` only works on strings with integers, not with other strings." That ideal is called orthogonality. In practice, every real language falls short of it somewhere, and the gaps are exactly where programmers make mental-model mistakes. This model makes those gaps visible by running operator experiments directly.
+
+> **Watch out!** Students often conflate orthogonality with "the feature exists." The question is not whether Python supports string repetition (`"ha" * 3`) but whether the same rule applies uniformly everywhere. When you find a case where it does not, that is a special case the programmer must memorize — a direct hit on readability.
 
 **Orthogonality** means that a small set of primitives can be combined uniformly: adding a new feature does not require dozens of special cases for where it *cannot* be used. C is famously non-orthogonal: you can have a pointer to a struct, a pointer to a function, an array of structs — but you cannot pass an array by value, return an array from a function, or use `==` to compare two structs. Python is more orthogonal (everything is an object, `+` works on many types) but still has asymmetries.
 
@@ -124,6 +139,10 @@ except TypeError as e:
 # Part II: Tradeoffs
 
 ## 2. There Is No Free Criterion
+
+Part I gave you four lenses; Part II shows why you cannot maximize all four at once. Every language design decision moves at least one criterion up and at least one criterion down — there is no free lunch. As you read through the examples below, resist the instinct to call one choice "wrong." Instead, ask: "Which criterion did the designer prioritize, and does that match the language's target use case?"
+
+> **Watch out!** It is tempting to conclude "Python is better than C because it has higher reliability." That claim ignores context. For a hard-real-time embedded system where memory layout matters, C's lower abstraction is a feature, not a bug. Criteria scores are always relative to the problem domain, not absolute.
 
 **Reliability versus cost of execution.** Java checks every array index at runtime; C does not. One buys memory safety with cycles; the other buys speed with vulnerability (buffer overflows remain a top security flaw class decades later).
 
@@ -231,6 +250,8 @@ A team adds implicit type coercion to their language so that `"3" + 4` yields `7
 
 ## Model 2: The Billion-Dollar Hindsight
 
+One of the most studied reliability failures in language design history is the null reference — the idea that a variable of any type can silently hold "nothing," and that nothing will only explode when you try to use it, potentially deep inside code far from where the bad value was introduced. This model walks through three different language-design responses to that problem, letting you directly compare the reliability-versus-writability tradeoffs each one makes.
+
 Tony Hoare called the null reference his "billion-dollar mistake" in a 2009 keynote. His argument: the null reference can be assigned to any pointer-typed variable and dereferenced into a crash, yet no type system of the era flagged the dereference as potentially unsafe. The result: null dereferences became one of the most common runtime errors in Java, C, and C++. Languages have responded differently.
 
 ```python
@@ -333,6 +354,10 @@ print("  Design 3 (no null):       max ceremony, compiler-guaranteed safety")
 ---
 
 ## Model 3: Simplicity vs Expressiveness — Counting the Ways
+
+Here is a deceptively simple question: is it good or bad for a language to offer six different ways to sum a list? The answer depends entirely on who is reading the code and what they already know. This model makes that tension concrete by showing all six Python idioms side by side, then connecting them to the competing design philosophies of Python (one obvious way) and Perl (there is more than one way to do it).
+
+> **Watch out!** "More expressive" does not automatically mean "better." Expressiveness raises writability for experienced users but can crush readability for the next person who maintains the code. When you design your own language, expressiveness features are the ones most worth scrutinizing: every new idiom you add is a new pattern every future reader must recognize.
 
 One dimension of readability is the number of ways a language provides to do the same thing. More ways can improve writability (each programmer uses their preferred style) but harm readability (the reader must recognize all styles). The cell below counts several ways to sum a list in Python to make this concrete.
 

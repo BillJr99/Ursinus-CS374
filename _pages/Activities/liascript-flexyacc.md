@@ -16,6 +16,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Scanners and Parsers with Flex and Yacc: Building a Mini-Notation Parser
 
+Flex and Bison are the power tools of language implementation: you describe *what* to recognize — token shapes in a regular expression, grammar rules in BNF — and the framework generates *how* to do it, compiling your specification into a C scanner and an LALR(1) parser without you ever touching a parsing table by hand. This division of labor is the same one used inside production compilers like `gcc` and `clang`: a small, human-readable specification drives a large, machine-generated recognizer. By the end of this module you will have built a working scanner and parser for a real domain-specific language used in live coding music, and you will understand every layer of the pipeline from character stream to abstract syntax tree.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -27,6 +29,14 @@ By the end of this activity, you will be able to:
 - Implement a Flex/Bison parser for a domain-specific language and verify correctness by evaluating the resulting AST against expected musical timing output
 
 This module develops **lexical analysis** and **syntax analysis** by building a real scanner and parser, using **flex** and **yacc** (GNU bison), for the **mini-notation** shared by the live coding music languages **TidalCycles** and **Strudel**. We move from **language classes $\rightarrow$ regular expressions and DFAs $\rightarrow$ context-free grammars $\rightarrow$ LALR(1) parsing $\rightarrow$ abstract syntax trees $\rightarrow$ semantics**, so that by the end of the module a string like `bd [sn sn] hh*2 ~` becomes a tree, and that tree becomes a timeline of musical events you can hear in your head, and verify in code.
+
+---
+
+> **Before You Begin** — this module assumes you are comfortable with:
+>
+> - **Regular expression syntax** — character classes `[a-z]`, quantifiers `*`, `+`, `?`, and alternation `|`; you should be able to read a regex and predict what strings it matches
+> - **BNF grammar notation** — writing productions in the form `A → α | β`, identifying terminals and nonterminals, and tracing a derivation step by step
+> - **Shift-reduce parsing concepts** — you should understand what it means to shift a token onto the stack, reduce a sequence of stack symbols by a grammar rule, and why conflicts arise; review the LR parsing notes from the earlier module if any of this feels shaky
 
 ---
 
@@ -107,6 +117,8 @@ A classmate proposes recognizing the entire mini-notation, including arbitrarily
 
 **Rule priority.** Among rules matching the same longest lexeme, the one listed first in the specification wins. If a keyword rule and an identifier rule both match `if`, listing the keyword first makes it a keyword.
 
+> **Watch out!** Flex rules match the *longest* token first, not the *first* rule in the file. If two rules can both match at the current position, Flex always takes whichever produces the longer lexeme — only if two rules tie on length does rule order (priority) break the tie. A common beginner mistake is writing a keyword rule after an identifier rule and expecting priority to kick in when in fact both rules match the same length, so order matters there; but for rules that match *different* lengths, priority is irrelevant.
+
 **The token set for our subset.** We need names, numbers, the rest symbol, brackets, and three operator characters:
 
 $$
@@ -172,6 +184,8 @@ Notice that whitespace has vanished entirely, and that the scanner has no opinio
 ---
 
 ### Model 1: Python Equivalent of the Flex Scanner
+
+**What you are about to see:** The Flex `.l` file you just read is real C code, but to *run* and *observe* the scanner interactively we will first express the same logic in Python. The two implementations are mechanically identical in behavior — both compile a list of (regex, token-type) pairs into a single combined pattern and return the longest match — but Python lets you execute and modify the scanner right here in the browser without a C compiler. Once you are confident about what the scanner produces, Sections 6–8 return to the C/Bison side where the full pipeline lives.
 
 Flex compiles each rule's regex into an NFA (Thompson's construction), merges all NFAs into one, applies the subset construction to get a single DFA, and walks that DFA character by character. Python's `re` module does exactly the same thing under the hood. Here is the flex scanner above written as Python, so you can run it and inspect every token:
 
@@ -323,6 +337,8 @@ function LR-PARSE(tokens):
 
 ### Model 2: Shift-Reduce Parsing in Python
 
+**What you are about to see:** The pseudocode above describes LR parsing in the abstract; this model makes it concrete by running it step by step for a small arithmetic grammar. You will see the two-stack (state stack + symbol stack) loop in action and read a printed trace of every shift and reduce decision. Pay attention to the moment when the parser chooses to shift `*` rather than reducing an already-complete `+` expression — that single decision is where operator precedence lives in an LR parser, and spotting it in the trace will make the conflict discussion that follows much easier to understand.
+
 Before reading the bison output, run the algorithm yourself on a tiny grammar. The code below simulates a shift-reduce parser for simple arithmetic expressions (`n + n * n`) with an explicit stack and action trace — the same algorithm bison generates for the mini-notation, just with a hand-written action table instead of a generated one.
 
 ```python
@@ -419,6 +435,8 @@ lr_parse(["n", "*", "n", "+", "n"])
 
 **Conflicts are the diagnostic signal.** A **shift/reduce conflict** means some state sees a lookahead for which both shifting and reducing are table-legal; a **reduce/reduce conflict** means two completed productions compete. Our grammar produces neither, but you will manufacture one, deliberately, in a moment, because learning to read conflict reports is the practical skill that separates people who can use parser generators from people who fight them.
 
+> **Watch out!** A shift/reduce conflict almost always signals an **ambiguous grammar** — the same token sequence has two valid parse trees. Bison resolves the conflict silently by defaulting to *shift* (which usually gives the right answer for dangling-else style ambiguities), but it will still print a warning. Never ignore that warning: if your grammar has a conflict you did not anticipate, Bison's silent default resolution may produce parse trees that are subtly wrong and very difficult to debug downstream. Always read the `.output` file and confirm that the chosen resolution matches your intent.
+
 ---
 
 ### Try It: With a Partner
@@ -433,6 +451,8 @@ Run `bison -v mininotation.y`. The diagnostician must, using only bison's stderr
 ---
 
 ## 6. The Yacc Specification: Grammar Plus Semantic Actions
+
+**What you are about to see:** Section 4 gave the grammar as pure BNF; this section adds the second half — the *semantic actions* that fire each time a production is reduced, building up AST nodes from the bottom of the tree to the top. Think of the grammar productions as a recipe ("when you see a `term` followed by `STAR NUMBER`, you have a fast-repeat construct") and the actions as the kitchen instructions that assemble the result ("wrap the term node in a new `N_FAST` node carrying the integer"). After reading the Yacc file, you should be able to mentally simulate one reduction and know exactly which `$$` assignment runs.
 
 **Each production carries an action that builds one AST node.** In yacc actions, `$$` denotes the semantic value of the left-hand side and `$1, $2, \ldots` the values of the right-hand-side symbols in order. The actions below are deliberately uniform: every production either passes a subtree upward or wraps its children in exactly one new node. When actions stay this disciplined, the AST is a faithful image of the derivation, and debugging the parser reduces to printing trees.
 
@@ -600,6 +620,10 @@ int main(void) {
 ---
 
 ## 8. Semantics: From Trees to Time
+
+**What you are about to see:** Everything up to this point — the scanner, the grammar, the AST — was purely *structural*: we recognized and organized the input without deciding what it *means*. This section assigns musical meaning to each AST node type via structural recursion, one equation (and one C `case`) per node type. The key insight is that `SEQ` subdivides time, `FAST` further subdivides each copy, and `GROUP` is completely transparent (it was only needed by the *parser* to capture nesting; once the tree is built, the group brackets have done their job). Work through the equations for `[bd sn]*2` by hand before running the code.
+
+> **Watch out!** It is tempting to put musical interpretation logic *inside* the parser actions themselves — for example, computing event spans directly in the Yacc `%%` section. Resist this: mixing parsing and evaluation collapses the syntax/semantics boundary and makes both sides harder to test, extend, and reason about. The AST exists precisely to give you a clean handoff point. If you ever find yourself computing time spans inside a grammar action, that is a sign to stop and push the logic into the evaluator instead.
 
 **Now, and only now, do we assign meaning.** The denotation of a pattern is a set of **events**, each a sample name paired with a half-open time span $[t_0, t_1) \subseteq [0, 1)$ within the cycle. We define the evaluation function $\mathcal{E}[\![\, n \,]\!](t_0, t_1)$ by structural recursion on the AST, one clause per node type, and this is your first denotational semantics written in C rather than on a whiteboard:
 

@@ -11,6 +11,8 @@ link:     https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.
 
 # Denotational Semantics: Programs as Mathematical Functions
 
+You already know that a program *runs* — but what does it *mean*? Denotational semantics answers that question by mapping every program to a precise mathematical object: a function, a set, or a value in a carefully chosen domain. Think of it like translating a recipe into a mathematical function where the input ingredients map deterministically to the output dish — the function captures the meaning of the recipe independently of any particular cook's technique. This mathematical view lets us prove two programs are equivalent, reason about infinite loops, and understand language features without ever running a single instruction.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -25,6 +27,16 @@ By the end of this activity, you will be able to:
 >
 > Denotational semantics gives us a way to assign a precise mathematical meaning — a *denotation* — to every program, independent of how any computer would execute it. Today you'll see how to define the meaning of a language mathematically, and why this matters for reasoning about programs.
 
+> **Before You Begin — Prerequisites**
+>
+> Make sure you are comfortable with the following before diving in:
+>
+> - **Functions as mathematical mappings**: a function `f : A → B` assigns to each element of `A` exactly one element of `B`. No side effects, no "running" — just a mapping.
+> - **Basic set notation**: `∈` (element of), `→` (function type), `×` (product), and the idea of a domain as a set of values.
+> - **Operational semantics (big-step rules)**: you should have seen rules of the form `⟨e, σ⟩ ⇓ v` that describe how an expression evaluates to a value in an environment. Denotational semantics covers the same ground but with functions instead of rules.
+>
+> If any of these feel shaky, skim your notes from the Operational Semantics activity before continuing.
+
 ## Directions and Roles
 
 Work in groups of 3–4. Rotate roles every 20 minutes.
@@ -36,7 +48,27 @@ Work in groups of 3–4. Rotate roles every 20 minutes.
 
 ---
 
+## Notation Quick Reference
+
+The mathematical notation used in denotational semantics is compact but unfamiliar at first. Use this table as a decoder ring throughout the activity:
+
+| Notation | Meaning |
+|----------|---------|
+| `⟦e⟧ρ` | "The meaning of expression `e` in environment `ρ`" |
+| `ρ[x ↦ v]` | "Environment `ρ` extended with `x` mapping to value `v`" |
+| `⊥` | "Bottom" — the value representing non-termination or no information |
+| `D → D` | The set of all functions from domain `D` to domain `D` |
+| `⊑` | "Approximates" — the information ordering on a domain |
+| `⊔` | Least upper bound (join) of a chain of approximations |
+| `fix(F)` | The least fixed point of function `F` |
+
+---
+
 ## Model 1 — Three Ways to Define a Language
+
+**Intuition.** Before diving into notation, orient yourself: there are three popular frameworks for giving a programming language a formal meaning. Operational semantics says "meaning is how a machine runs the program." Axiomatic semantics says "meaning is what the program guarantees (pre/post-conditions)." Denotational semantics takes a more ambitious stance — it says "meaning is a timeless mathematical object that the program *is*, not just what it *does*." Each view illuminates different properties, and knowing all three lets you pick the right tool for any proof.
+
+> **Watch out!** Denotational semantics is about assigning *mathematical meaning*, not describing *execution steps*. When you write `⟦e₁ + e₂⟧ σ = ⟦e₁⟧ σ + ⟦e₂⟧ σ`, you are defining a mathematical equality between functions — you are not saying which operand evaluates first, or how many machine steps it takes. This is the key philosophical shift from operational semantics.
 
 There are three main styles of formal semantics:
 
@@ -66,6 +98,8 @@ The key property is **compositionality**: the meaning of a compound expression i
 ---
 
 ## Model 2 — A Tiny Language and its Denotations
+
+**Intuition.** The best way to internalize denotational semantics is to work through a concrete, small language. The **Arith** language below has no mutation and no loops — it is a pure expression language. Each expression, given an environment mapping variables to integers, evaluates to exactly one integer. The semantic function `⟦·⟧` formalizes this: it is just a carefully structured recursive definition. Notice that the Python implementation that follows is not merely an interpreter that *approximates* the semantics — structurally, it *is* the semantics, expressed in executable form.
 
 Consider a tiny arithmetic language **Arith** with the grammar:
 
@@ -148,6 +182,10 @@ print(f"if 1 then 42 else 0 = {result2}")  # 42
 ---
 
 ## Model 3 — Adding State: Stores and Commands
+
+**Intuition.** Pure expressions always return a value — they have no side effects. But real programs *change* memory: `x := x + 1` transforms the store. Denotational semantics handles this elegantly by treating each command as a mathematical function from stores to stores. Sequencing `c₁ ; c₂` is then just function composition: first transform the store with `c₁`, then pipe the resulting store into `c₂`. The tough case is loops — because a loop may run zero, one, or arbitrarily many times, we cannot write a finite semantic equation for it. This is where fixed points enter the picture.
+
+> **Watch out!** Fixed points are necessary to give `while` loops a denotational meaning. You cannot write `⟦while e do c⟧` as a simple equation involving only `⟦e⟧` and `⟦c⟧` without some notion of iteration to infinity. The fixed-point operator `fix(F)` captures exactly "the behavior you get if you unroll the loop as many times as needed." If the loop never terminates, the fixed point is `⊥` — no output at all.
 
 The Arith language above is *pure* — no mutation. Now we add imperative features. The key idea: **commands** transform the *store* (memory).
 
@@ -242,6 +280,10 @@ print(f"Final store: {final_store}")
 
 ## Model 4 — Domains and Partial Orders (The Math Behind Denotational Semantics)
 
+**Intuition.** In Models 2 and 3 we hand-waved over a crucial detail: what *is* the domain of values when a program might not terminate? A regular set of integers has no room for "no answer." Domain theory solves this by enriching every set with a special least element `⊥` (bottom) and equipping it with a partial order that measures *how much information* a value carries. The meaning of `while` is then built up as an infinite sequence of approximations — each one handles one more possible iteration depth — and the true meaning is the limit of that sequence. This is the mathematical machinery that makes denotational semantics rigorous.
+
+> **Watch out!** Domain theory exists specifically to handle infinite loops and partial functions. Without it, denotational semantics would be inconsistent: the `while` rule would reference itself with no well-founded base case. The key insight is that the chain `f₀ ⊑ f₁ ⊑ f₂ ⊑ ...` always has a least upper bound in a CPO, so the limit is always well-defined — even when the program diverges (in which case the limit is `⊥`).
+
 Non-termination forces us to be careful. We can't just say "the meaning of a non-terminating program is undefined" — we need a mathematical object `⊥` ("bottom") that represents "no answer."
 
 **Domain**: a set `D` with a partial order `⊑` ("approximates") where:
@@ -318,6 +360,8 @@ print(f"  lfp({{'n': 0}}) = {lfp({'n': 0})}")
 ---
 
 ## Model 5 — Denotational Semantics for Functions
+
+**Intuition.** So far, values have been integers and stores. But what is the denotation of a *function*? Naturally, it should be a mathematical function — a lambda expression `λx.e` in the object language becomes a genuine `λv. ...` in the mathematics. The twist is that values now include functions, so the domain `V` must satisfy `V ≅ ... + (V → V) + ...` — a self-referential equation. This is not a contradiction: Dana Scott showed in the 1970s that such domain equations have solutions using fixed points of domain constructors. Python sidesteps all this theory because its runtime already supports first-class functions and recursion — but understanding the math tells you *why* the implementation works.
 
 Functions are the hardest part. In the denotational semantics of lambda calculus:
 

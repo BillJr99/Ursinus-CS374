@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Derivations, Parse Trees, Ambiguity, and Precedence
 
+Consider the English sentence "I saw the man with the telescope." Did you use the telescope to see him, or did he have the telescope? Both readings are grammatically valid — the sentence is ambiguous. Formal grammars for programming languages can have exactly the same problem: a single expression like `2 + 3 * 4` can fit the grammar in two different ways, producing two different parse trees with two different values. Unlike the telescope sentence, ambiguity in a grammar is silent and dangerous — your parser will just pick one interpretation and quietly give you the wrong answer.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -29,6 +31,16 @@ A grammar that accepts the right strings can still mean the wrong things: if `2 
 
 ---
 
+> **Before You Begin** — make sure you are comfortable with the following ideas before working through the models:
+>
+> - **BNF/EBNF grammar notation**: you can read a rule like `E -> E + T | T` and name its nonterminals, terminals, and alternative productions.
+> - **Parse trees**: you know that a parse tree shows which productions were applied to derive a string, with the start symbol at the root and input tokens as leaves.
+> - **Left vs. right associativity**: you know that `a - b - c` evaluates as `(a - b) - c` in most languages (left-associative), and that `2 ^ 3 ^ 2` evaluates as `2 ^ (3 ^ 2)` in languages where exponentiation is right-associative.
+>
+> If any of these feel shaky, review your grammar notes before continuing.
+
+---
+
 ## Directions and Group Roles
 
 Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**). Consider each model and question individually first, then discuss with your group. The Recorder posts answers to the Class Activity Questions discussion board; the Presenter reports out areas of disagreement or alternative approaches. After class, respond to the reflective prompt individually in your notebook.
@@ -39,6 +51,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 ## 1. From Derivations to Parse Trees
 
+*Intuition: A derivation is a recipe — a sequence of grammar rule applications that turns a start symbol into a string of tokens. A parse tree is that same recipe drawn as a picture, where the cooking order no longer matters. The shape of the tree is what your interpreter will actually execute, so two different trees for the same string mean two different programs hiding in identical source code.*
+
 **A parse tree records a derivation with the order forgotten.** The root is the start symbol; each internal node is a nonterminal whose children are the right-hand side of the production applied to it; the leaves, read left to right, spell the input. A **leftmost derivation** always expands the leftmost nonterminal first; every parse tree corresponds to exactly one leftmost derivation, which is why we can speak of trees and derivations interchangeably.
 
 **The tree is the meaning.** When your interpreter evaluates `2 + 3 * 4`, it will evaluate children before parents; the *shape* of the tree therefore decides whether the answer is 14 or 20. Syntax design is meaning design.
@@ -46,6 +60,10 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 ---
 
 ## Model 1: One String, Two Trees
+
+*Intuition: The grammar `E -> E + E | E * E | num` looks perfectly reasonable at first glance — it says an expression can be a sum, a product, or a number. The problem is that it says nothing about which operation groups first, so a parser following it has equal freedom to build either tree. This model makes that ambiguity concrete by constructing both trees by hand.*
+
+> **Watch out!** An ambiguous grammar produces **multiple valid parse trees for the same input string**. This is not a runtime error or a warning — the grammar and parser will both succeed, and you will get a silently wrong result. Always look for witness strings (inputs with two trees) when you design a grammar.
 
 The naive expression grammar:
 
@@ -66,6 +84,10 @@ E -> E + E | E * E | num
 
 ## 2. Step 1: Separate the Precedence Levels
 
+*Intuition: The fix for ambiguity is to take the precedence rules that lived in your head ("multiply before you add") and bake them into the grammar's structure. Each precedence level gets its own nonterminal, and the nonterminals are chained so that tighter-binding operators always appear deeper in the tree — meaning they always evaluate first.*
+
+> **Watch out!** Fixing ambiguity requires **rewriting the grammar**, not just adding a note to the parser. A parser that reads an ambiguous grammar and "picks the right tree by convention" is fragile — different parser generators may pick differently, and the ambiguity can resurface in edge cases you didn't test.
+
 **The insight: make the grammar's shape mirror the binding strength.** Operators that bind tighter should live *deeper* in the grammar, so they end up *lower* in every tree. We introduce one nonterminal per precedence level. Start with two levels, addition (loose) and multiplication (tight):
 
 ```
@@ -80,6 +102,8 @@ Walk the logic: an `E` is a sum of `T`s; each `T` is a product of `F`s; a parent
 
 ## Model 2: Verify the Cure
 
+*Intuition: The best way to convince yourself the layered grammar actually works is to try to derive the "wrong" tree and fail. If you cannot build a tree where `+` sits below `*`, the grammar has successfully encoded precedence. Work through the leftmost derivation step by step — each expansion will force you down the nonterminal chain in only one valid way.*
+
 ### Critical Thinking Questions
 
 5. Derive `2 + 3 * 4` from the layered grammar (leftmost derivation, every step). Confirm exactly one tree exists and that it evaluates to 14.
@@ -89,6 +113,10 @@ Walk the logic: an `E` is a sum of `T`s; each `T` is a product of `F`s; a parent
 ---
 
 ## 3. Step 2: Associativity Is Direction of Recursion
+
+*Intuition: Once you have separate precedence levels, you still need to decide how a chain of the same operator groups — does `5 - 2 - 1` mean `(5-2)-1 = 2` or `5-(2-1) = 4`? The grammar encodes this entirely through which side the recursion appears on: left recursion means the leftmost operation groups first (left-associativity), and right recursion means the rightmost groups first.*
+
+> **Watch out!** Operator precedence and associativity are **two separate things encoded in two separate grammar properties**. Precedence is controlled by the depth of the nonterminal in the chain (deeper = tighter binding). Associativity is controlled by which side of the production the recursive nonterminal appears on (left side = left-associative). Getting one right does not automatically get the other right.
 
 Look again at `E -> E + T`. The recursion is on the **left**, so `a - b - c` parses as `(a - b) - c`: **left-associative**, which is what subtraction requires (5 - 2 - 1 is 2, not 4). Had we written `E -> T + E`, the same operator would group to the right. Exponentiation conventionally associates right (`2 ^ 3 ^ 2` is `2 ^ (3 ^ 2)` = 512), so its rule should recurse on the right. **Associativity is not an annotation; it is which side the recursion sits on.**
 
@@ -138,6 +166,8 @@ right_assoc = ("-", 5, ("-", 2, 1))      # 5-(2-1) = 4   <- E -> T - E
 ---
 
 ## Model 4: Derivation Tracer (Runnable)
+
+*Intuition: A leftmost derivation and a rightmost derivation of the same string take different paths through the grammar, but they always arrive at the same parse tree. Running the tracer below lets you watch both paths step by step and confirm they converge. Pay attention to how many steps each takes — it turns out they must be equal, and understanding why solidifies your mental model of what a derivation actually is.*
 
 A leftmost derivation always expands the leftmost nonterminal at each step; a rightmost derivation always expands the rightmost one. Watching them side by side makes it concrete that **both derivations produce the same parse tree** even though the step sequences differ.
 
@@ -196,6 +226,8 @@ show_derivation("E", GRAMMAR, "Rightmost")
 ---
 
 ## Model 5: Ambiguity Detector (Runnable)
+
+*Intuition: To prove a grammar is ambiguous, you only need one witness — a single string that has two distinct parse trees. The code below systematically generates all parse trees up to a depth limit for the naive grammar `E -> E + E | id` and checks whether any string gets more than one. For `a + b + c` it finds two, which is the formal proof that the grammar is ambiguous.*
 
 An ambiguous grammar lets the same string be derived via two *different* leftmost derivations, which means two different parse trees. The detector below generates all parse trees up to a size bound for a naive expression grammar and reports strings that have more than one tree.
 
@@ -281,6 +313,8 @@ else:
 
 ## Model 6: Disambiguating by Convention (Runnable)
 
+*Intuition: This model puts the two grammars side by side in runnable code so you can see the concrete difference. The ambiguous grammar allows two distinct tree shapes for `2 + 3 * 4`; the layered grammar produces only one. Tracing the printed tree shapes will make the structural difference between "precedence encoded in grammar" and "precedence enforced externally" tangible.*
+
 The standard cure for expression ambiguity is to stratify the grammar: one nonterminal per precedence level, left recursion on the left for left-associativity. The model below builds parse trees under both the ambiguous and the unambiguous grammar for the same string and shows they differ in shape.
 
 ```python
@@ -359,6 +393,8 @@ print(f"Right-assoc 5-(2-1) = {evaluate(right_assoc)}")  # 4  (wrong for subtrac
 ---
 
 ## Model 3: The Dangling Else
+
+*Intuition: Ambiguity is not limited to arithmetic expressions. Any grammar rule that allows a construct to attach to more than one parent can be ambiguous. The dangling `else` is the most famous example from real language design — virtually every language that has `if/else` has had to make an explicit choice to resolve it.*
 
 Expression ambiguity is not the only kind. Consider:
 

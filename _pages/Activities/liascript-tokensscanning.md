@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tokens and Scanning: Building a Lexer
 
+Before a compiler can understand your program, it has to figure out where one meaningful chunk of text ends and the next one begins — just like a spell-checker must split a sentence into individual words before it can flag any of them as wrong. A **lexer** (also called a scanner) does exactly this: it reads a raw stream of characters and groups them into **tokens**, the smallest named units of meaning (a number, a keyword, an operator). Without this first step, the rest of the compiler has no footing — it would be trying to parse soup.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -26,6 +28,12 @@ By the end of this activity, you will be able to:
 - Construct a token specification (TOKEN_SPEC) for a new language, ordering rules correctly to enforce keyword priority over identifier patterns
 
 Today the theory pays its first concrete dividend: over two days we build a working **lexer**, the first stage of your project pipeline, which converts raw characters into a stream of typed **tokens** using exactly the regular machinery of the past two weeks. The arc: **what a token is $\rightarrow$ the scanning rules (maximal munch, priority) $\rightarrow$ a complete Python lexer $\rightarrow$ error handling and positions**.
+
+> **Before You Begin:** This activity assumes you can:
+> - Write Python classes with __init__ and methods
+> - Use Python's re module for regular expressions at a basic level
+> - Understand what a token is (a named unit of source text like NUMBER or IDENTIFIER)
+> If any of these feel shaky, review them first.
 
 ---
 
@@ -47,6 +55,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 ## Model 1: Be the Lexer
 
+Before writing any code, it helps to play the lexer yourself on a small example. This model asks you to walk through a single line of source text and decide, character by character, where each token begins and ends. The main challenge here is not ambiguity in meaning — it is ambiguity in *boundaries*: should `count2` be one token or two, and should `>=` be one token or two? Working through this by hand makes the rules you will later encode in regex feel inevitable rather than arbitrary.
+
 Tokenize by hand: `count2 = count2 + 12 >= limit`
 
 ### Critical Thinking Questions
@@ -55,6 +65,8 @@ Tokenize by hand: `count2 = count2 + 12 >= limit`
 2. Apply maximal munch to `count2`: why is it one identifier rather than an identifier `count` followed by a number `2`? Which rule decides, and what regex for identifiers makes it so?
 3. `>=` must not become `>` then `=`. Describe the bug a parser would face downstream if the lexer got this wrong, and state the general principle about where to fix errors in a pipeline.
 4. Should the lexer reject `12abc`, or emit `12` then `abc` and let the parser complain? Defend a position; real languages differ, and your project must choose.
+
+> **Watch out!** The maximal munch rule always takes the *longest* possible match at the current position, not the first pattern that matches. This means `>=` is always one token, never two — and `iffy` is always one identifier, never the keyword `if` followed by `fy`. If your hand tokenization ever splits a run of identifier-legal characters mid-stream, you have violated maximal munch.
 
 ---
 
@@ -67,6 +79,10 @@ This lexer is the seed of your assignment and your project: a token specificatio
 ---
 
 ## Code Cell
+
+The lexer below translates the hand-tokenization rules from Model 1 into working Python. The key insight is that by joining all the individual regex patterns into one big alternation with `|`, Python's regex engine does the scanning in a single left-to-right pass — it tries each alternative in order, picks the first one that matches, and moves on. Priority (which pattern wins when two could match) is controlled entirely by the order of entries in `TOKEN_SPEC`.
+
+> **Watch out!** Whitespace is listed in `TOKEN_SPEC` as `SKIP` and is silently consumed. If you forget to include a whitespace pattern, the `MISMATCH` catch-all will fire on every space and your error messages will be buried in noise. Always verify that spaces and tabs are handled before testing with real programs.
 
 ```python  liascript
 import re
@@ -129,16 +145,23 @@ for tok in tokenize(code):
 
 ## Model 2: Read the Machine You Built
 
+Now that the lexer runs, this model asks you to read it as a system — connecting each design decision back to the theory. You already know the code works; the goal here is to understand *why* it is structured the way it is so you can adapt it confidently when the rules change (as they will on your project).
+
 ### Critical Thinking Questions
 
 5. The master pattern joins every token regex with `|` into one alternation. Connect this single move to Thompson's construction from the automata module: what machine, conceptually, does `finditer` run?
 6. Why must `GE` (`>=`) appear before `GT` (`>`) in the spec, given how Python's `re` alternation chooses among same-position matches? Design the two-character experiment that proves the necessity, run it, and report.
 7. Keywords are matched with `\b(if|else|...)\b` *before* `IDENT`. Remove the `\b` anchors mentally: what goes wrong with the identifier `iffy`? Which scanning rule did the anchors enforce?
+
+> **Watch out!** Keywords must always appear *before* the general identifier pattern in your `TOKEN_SPEC`. If `IDENT` comes first, the regex engine will match `if` as an identifier and never reach the KEYWORD rule — because Python's `re` alternation returns the first match, not the longest. Getting this order wrong produces a lexer that accepts `if` as a variable name, breaking every conditional in your language silently.
+
 8. The `MISMATCH` catch-all turns unknown characters into a `SyntaxError` with line and column. Feed the lexer a `$` and verify the message. Why is reporting *position* a kindness worth the bookkeeping?
 
 ---
 
 ## Model 3: Peek/Advance Lexer Interface
+
+The raw `tokenize()` generator works fine for printing, but a parser needs more control: it must be able to look at the next token *before* deciding whether to consume it. This model solves that problem by wrapping the generator in a `Lexer` class that buffers one token. The result is a clean, three-method interface (`peek`, `advance`, `expect`) that the parser will use exclusively — the generator becomes an implementation detail.
 
 A parser never calls `tokenize()` directly. It needs two operations: **peek** — look at the next token without consuming it — and **advance** — consume and return it. A third operation, **expect**, consumes a token and raises an error if its type does not match. The `Lexer` class below wraps the generator and buffers exactly one token to implement these three methods.
 
@@ -255,6 +278,8 @@ print(f"let-binding: {kw.lexeme} {name.lexeme} {eq.lexeme} {val.lexeme}")
 ---
 
 ## Model 4: Real-World Lexer Features — String Literals
+
+The lexer built so far handles numbers, keywords, and operators, but real programs also contain string literals — and strings introduce a new complication: the content inside the quotes can contain almost anything, including characters that normally end a token. This model extends the lexer with a STRING pattern that correctly handles escape sequences, and then confronts what happens when a string is never closed.
 
 Production lexers must handle **string literals** (e.g., `"hello world"`) and **escape sequences** (e.g., `\"`, `\\`, `\n`). The tricky part: a naive `"[^"]*"` pattern breaks on `"say \"hi\""`. The correct pattern uses a negative lookbehind or a two-alternative trick: match either an escaped character or any non-quote, non-backslash character inside the delimiters.
 

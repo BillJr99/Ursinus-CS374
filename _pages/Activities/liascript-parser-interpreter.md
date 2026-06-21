@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Parsing and Interpreting: Putting It All Together
 
+Think of the **parser** as the reader and the **interpreter** as the thinker. Parsing converts raw source text into a structured tree — the Abstract Syntax Tree — by recognizing the grammar of the language, much like a reader turning printed words into sentences. Interpretation then walks that tree and gives it meaning: it decides what each node *does*, computing values, updating variables, and producing output. Keeping these two phases separate is one of the great design principles of language implementation — it lets you swap out the interpreter (for a compiler, a type checker, or an optimizer) without touching the parser.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -30,6 +32,14 @@ By the end of this activity, you will be able to:
 **References:** Compilers (Dragon Book) Ch. 4–5 | PLAI Ch. 15–17
 
 Over the past weeks you have studied grammars, tokens, scanning, recursive descent parsing, and LL/LR table construction. This activity brings those pieces together into a complete pipeline: **source text → tokens → abstract syntax tree → evaluated result**. By the end you will have a working mini-interpreter built from first principles.
+
+> **Before You Begin — Prerequisites**
+>
+> This activity assumes you are comfortable with the following skills. Review the linked material if any feels shaky before proceeding:
+>
+> - **Writing a recursive-descent parser** — translating a BNF/EBNF grammar into a set of mutually recursive functions, one per non-terminal, that consume tokens and return AST nodes.
+> - **Building Python dataclass AST nodes** — defining `@dataclass` classes to represent each syntactic construct (literals, operators, variables, control flow), including nested node references typed with `Any`.
+> - **Writing a tree-walking evaluator function** — a single `evaluate(node, env)` function that dispatches on `isinstance` checks, recursively evaluates children, and returns a Python value.
 
 ---
 
@@ -55,6 +65,8 @@ This is a **POGIL** (Process-Oriented Guided Inquiry Learning) activity. Work in
 ---
 
 ## Model 1: The Complete Pipeline — From Source to Result
+
+Before any parsing or evaluation can happen, the interpreter needs to break raw text into discrete, typed pieces. Imagine reading a math problem aloud: you naturally group characters into numbers, operator symbols, and parentheses before you start reasoning about what they mean. The tokenizer (also called a lexer or scanner) does exactly this — it scans left-to-right and emits a flat list of tokens that later stages can work with cleanly.
 
 A programming language implementation transforms source text through several **stages**. Each stage produces a data structure that the next stage consumes:
 
@@ -136,6 +148,10 @@ for t in tokens:
 ---
 
 ## Model 2: Recursive Descent Parser
+
+A flat list of tokens is like a list of words without punctuation or grammar — you know the vocabulary but not the sentence structure. The parser's job is to impose that structure by grouping tokens according to the grammar rules, producing a tree that encodes both *what* operators appear and *in what order* they should be applied. Each grammar rule becomes a function, and the nesting of those function calls is what gives operator precedence its meaning.
+
+> **Watch out!** The parser and interpreter are **separate phases** — the parser only builds the tree; it never computes values. Mixing evaluation logic into parsing creates "spaghetti" code that is difficult to extend (adding a new feature requires changes scattered across both phases) and impossible to reuse the parser for other purposes like type checking or compilation.
 
 The tokenizer gives us a flat list of tokens. The **parser** imposes grammatical structure by grouping tokens into an **Abstract Syntax Tree (AST)**. A recursive descent parser encodes the grammar directly as a set of mutually recursive functions.
 
@@ -264,6 +280,8 @@ pprint(tree)
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** Never evaluate expressions *during* parsing. It is tempting to compute `3 + 4` the moment `parse_add` recognizes the `+` token, but doing so prevents you from transforming, optimizing, or type-checking the tree before execution. Always return an AST node from the parser and let the evaluator decide when and how to compute values.
+
 **Critical Thinking Questions — Model 2**
 
 1. Why does `parse_add` call `parse_mul` rather than `parse_primary`? Draw the call chain for parsing `3 + 4 * 2` and explain how the tree structure encodes precedence.
@@ -285,6 +303,8 @@ pprint(tree)
 ---
 
 ## Model 3: Tree-Walking Evaluator
+
+With a well-formed AST in hand, evaluation becomes a simple recursive traversal: visit each node, evaluate its children first, then combine the results according to the node's operator or meaning. The other ingredient is the **environment** — a dictionary that maps variable names to their current values and grows as the program executes. Understanding how environments chain together is the key to understanding scope.
 
 The parser produces an AST. The **evaluator** (also called an *interpreter*) walks that tree recursively, computing a result. This is the simplest evaluation strategy: **tree-walking interpretation**.
 
@@ -384,6 +404,8 @@ print(f"x = {env.lookup('x')}")
 ---
 
 ## Model 4: A Complete REPL
+
+The three pipeline stages — tokenize, parse, evaluate — can be chained together and wrapped in a loop to produce an interactive shell. A REPL lets you test your interpreter one expression at a time, immediately seeing how small changes to the language or environment affect results. It is one of the fastest ways to discover bugs in precedence, scoping, or error handling.
 
 A **REPL** (Read-Eval-Print Loop) is an interactive shell that processes one expression or statement at a time. REPLs are invaluable for exploring a language interactively — Python's `>>>` prompt is one example.
 
@@ -487,6 +509,10 @@ for line in session:
 ---
 
 ## Model 5: Error Recovery and Diagnostics
+
+A correct interpreter that produces cryptic error messages is nearly as frustrating as one that crashes silently. Good diagnostics require planning from the very beginning: the tokenizer records line and column numbers, the parser attaches them to AST nodes, and the evaluator propagates them through its exceptions. This model shows how to build that infrastructure so that errors always point the user to exactly the right place in their source.
+
+> **Watch out!** When a parse or evaluation error occurs, **raise a structured exception** — never just print a message to stdout and return `None`. A silent `None` propagates invisibly through the rest of the pipeline, causing a confusing error far from the actual mistake. Structured exceptions carry location information, can be caught and re-raised with additional context, and let the caller (such as a REPL's error handler) decide how to display them.
 
 A correct interpreter is not enough — users need **useful error messages**. The gold standard is to report the line number, the relevant source text, and a pointer to the exact location of the problem, just as modern compilers like Rust or Clang do.
 
@@ -596,6 +622,8 @@ for node, desc in tests:
 ---
 
 ## Model 6: Adding Functions and Closures
+
+Functions are where interpreters become genuinely interesting. The critical insight is that a function definition and a callable function value are two different things: one lives in the AST (a `Lambda` node), the other lives in the runtime (a `Closure` that pairs the function's code with the environment where it was defined). Getting this distinction right is what makes lexical scoping work correctly, including the powerful case of functions that return other functions.
 
 Functions are the most powerful abstraction in programming languages. To implement them correctly, we must distinguish two things:
 

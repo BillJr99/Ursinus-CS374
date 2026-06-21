@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Table-Driven and LR Parsing
 
+Table-driven parsers — LL(1) and LR — replace moment-to-moment grammar reasoning with a lookup. Think of a parsing table like a GPS route precomputed from every intersection: instead of rethinking the best path each time you reach a fork, you simply consult the table and execute the move it prescribes. The table was built once, offline, from the grammar's FIRST and FOLLOW sets; at parse time all the "thinking" has already been done. This makes table-driven parsers fast, systematic, and amenable to machine generation — which is exactly why industrial parser generators emit them.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -24,6 +26,15 @@ By the end of this activity, you will be able to:
 - Identify shift-reduce and reduce-reduce conflicts in an LR grammar and describe the grammar restructuring or precedence declaration needed to resolve each
 - Compare LL(1) and LR(1) parsing strategies on the dimensions of grammar coverage, implementation complexity, and error-message quality
 - Determine which parsing strategy (hand-written descent vs. table-driven generator) is appropriate for a given language design scenario
+
+> **Before You Begin**
+>
+> This activity assumes you can:
+> - Read and write grammars in BNF (Backus-Naur Form), including how `|` separates alternatives and how nonterminals recursively expand
+> - Explain what FIRST and FOLLOW sets are and why they matter for predicting which production to apply
+> - Describe how a recursive-descent parser works — one function per nonterminal, calling itself when it encounters a nonterminal in the production
+>
+> If any of these feel shaky, revisit the recursive-descent and grammar modules before continuing.
 
 Recursive descent is top-down: it predicts what must come next. The industrial-strength alternative works **bottom-up**: an **LR parser** shifts tokens onto a stack and reduces them to nonterminals when it recognizes a completed right-hand side, driven entirely by a precomputed table. Over two days we learn to *read and execute* this machinery by hand, because parser generators (yacc, bison, ANTLR) emit it, error messages reference it, and the left recursion that broke descent is exactly what LR handles natively. The arc: **shift-reduce intuition $\rightarrow$ executing a parse by hand $\rightarrow$ conflicts $\rightarrow$ when to use which technology**.
 
@@ -36,6 +47,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 ---
 
 # Part I: The Shift-Reduce Idea (Day 1)
+
+Recursive descent builds a parse tree from the root downward, predicting what must come next. Shift-reduce parsing does the opposite: it reads tokens left-to-right, stacking them up until it recognizes a completed right-hand side, then collapses that stack into the corresponding nonterminal. The tree grows from the leaves upward, one reduction at a time.
 
 ## 1. Bottom-Up in One Picture
 
@@ -59,6 +72,8 @@ Using the ladder grammar (`E -> E + T | T`, `T -> T * F | F`, `F -> num | ( E )`
 
 ## Model 1: Drive the Machine
 
+The example above walked through `2 + 3` step by step. Now your team will execute the same algorithm on a slightly more complex input and confront a key decision: when two tokens compete for precedence, the lookahead token is what breaks the tie. The table already encodes that decision — your job here is to discover *why* the lookahead is necessary by watching what goes wrong without it.
+
 ### Critical Thinking Questions
 
 1. Execute the shift-reduce parse of `2 * 3 + 4` as a team, producing the full stack-input-action table. The Recorder keeps the official copy; expect 12 to 14 rows.
@@ -66,9 +81,13 @@ Using the ladder grammar (`E -> E + T | T`, `T -> T * F | F`, `F -> num | ( E )`
 3. Identify, in your question 1 table, the exact row where the tree for `2 * 3` finished forming. Bottom-up means the subtree existed before its parent; point to the evidence.
 4. Recursive descent could not run `E -> E + T`; the LR machine prefers it. In one sentence each, say where the "memory of the left context" lives in each technique (the call stack versus the explicit stack).
 
+> **Watch out!** LR parsers read left-to-right but reduce from the right end of the stack — this confuses students about which "direction" they should be thinking. The key is that a reduction always fires on the *top* of the stack (the rightmost symbols currently seen), not on the leftmost. "LR" means Left-to-right scan, Rightmost derivation in reverse — the tree you are building is a rightmost derivation discovered backwards, bottom-up.
+
 ---
 
 # Part II: Conflicts and Choices (Day 2)
+
+A parsing table cell with two entries is a conflict: the grammar gave the parser two equally valid moves at the same point, and it cannot choose without additional information. Conflicts are not crashes — they are diagnostic messages telling you that the grammar (or the language) is ambiguous or requires more lookahead than the parser class provides.
 
 ## 2. When the Table Cannot Decide
 
@@ -81,9 +100,13 @@ A parser generator reports a shift-reduce conflict on the team's grammar at the 
 - (x) Recognize the dangling else ambiguity and either restructure the grammar or accept the tool's default of shifting, documenting the choice
 - ( ) Delete the else construct
 
+> **Watch out!** A conflict in the parsing table — whether LL(1) or LR — means the grammar is not in the class the table was built for. For LL(1) tables specifically, any cell with more than one entry means the grammar is not LL(1) and the table-driven parser is undefined for that grammar. The right response is always to diagnose *why* the conflict arose (ambiguity? left recursion? missing factoring?) rather than picking an entry arbitrarily.
+
 ---
 
 ## Model 2: Technology Selection
+
+Now that you have seen how the machinery works, the practical question is whether to build it yourself or let a generator do it. This is not a trivial decision — the choice affects error messages, grammar expressiveness, and how much work it takes to change the language later. Real-world production compilers have landed on both sides of this debate.
 
 Your project must choose its parsing technology; most teams hand-write recursive descent, and you should know what you are declining.
 
@@ -98,6 +121,8 @@ Your project must choose its parsing technology; most teams hand-write recursive
 # Part III: Runnable Models
 
 ## Model 3: FIRST and FOLLOW Sets
+
+Before you can build a parse table, you need to know two things about every nonterminal: what tokens can start a phrase derived from it (FIRST), and what tokens can legally appear right after it in any sentential form (FOLLOW). The code below computes both sets automatically for a grammar you provide — run it, then use the output to answer the questions that follow.
 
 **FIRST(A)** is the set of terminals that can begin any string derived from A. **FOLLOW(A)** is the set of terminals (and `$`) that can appear immediately after A in some sentential form. Together they power LL(1) table construction: the parse table entry for nonterminal A on lookahead token t is the production to use when t ∈ FIRST(RHS) — or when ε is derivable from RHS and t ∈ FOLLOW(A).
 
@@ -241,9 +266,13 @@ for nt in grammar:
 10. The original left-recursive grammar (`E -> E + T | T`) cannot be used directly for LL(1) parsing. Explain why, in terms of what the parser would have to do on the first token when predicting `E`.
 11. Add a new production `E' -> - T E'` (subtraction) to the grammar dict and re-run. Predict before running: which FIRST set changes, which FOLLOW sets change, and whether an LL(1) conflict arises.
 
+> **Watch out!** When a nonterminal A can derive ε (i.e., ε ∈ FIRST(A)), computing the parse table for any production that contains A requires you to also consult FOLLOW(A) — not just FIRST(A). Students commonly skip this step and then wonder why the table rejects valid inputs. The rule is: if ε ∈ FIRST(α) for production `B -> α`, add that production to `table[B][t]` for every `t ∈ FOLLOW(B)` as well.
+
 ---
 
 ## Model 4: LL(1) Parse Table Construction and Table-Driven Parser
+
+Armed with FIRST and FOLLOW, building the LL(1) table is a purely mechanical process: iterate over every production, look at what tokens can start it, and fill in the corresponding table cells. The table-driven parser then replaces the call stack of recursive descent with an explicit stack and a loop — same logic, different bookkeeping.
 
 With FIRST and FOLLOW sets in hand, the LL(1) parse table is mechanical: for each production `A -> α`, add it to table[A][t] for every `t ∈ FIRST(α) - {ε}`, and for every `t ∈ FOLLOW(A)` if `ε ∈ FIRST(α)`. A conflict (two entries in one cell) means the grammar is not LL(1).
 
@@ -437,6 +466,8 @@ print(f"\nResult: {'ACCEPTED' if accepted else 'REJECTED'}")
 ---
 
 ## Model 5: Shift-Reduce Conflicts Explained
+
+You have seen what a conflict is in the abstract; now see concrete examples. The code below simulates two classic conflict scenarios — the dangling else (shift-reduce) and indistinguishable nonterminals (reduce-reduce) — and shows how declared operator precedence can resolve the first kind without restructuring the grammar.
 
 A **shift-reduce conflict** occurs when the LR parser, in some configuration (stack + lookahead), can either (a) shift the lookahead token onto the stack, or (b) reduce the stack top using a completed production. The canonical example is the **dangling else**, but conflicts arise whenever a grammar is ambiguous or requires more than the available lookahead.
 

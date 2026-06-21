@@ -11,6 +11,8 @@ link:     https://cdn.jsdelivr.net/chartist.min.css
 
 # Objects and OOP: From Closures to Vtables
 
+Think of a TV remote. It has **buttons** — methods you can call (`channel_up()`, `mute()`). It has **internal state** — which channel you're on, the current volume. And it **hides the implementation details** — you don't need to understand infrared encoding to change the channel. That bundle of state + behavior + hidden internals is an object. OOP is a *language design decision* that promotes this pattern to first-class status: the language gives you syntax, dispatch rules, and inheritance machinery specifically built around it. This activity asks: where does that machinery come from, and what trade-offs did the language designers make?
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -27,7 +29,20 @@ By the end of this activity, you will be able to:
 
 ---
 
+> **Before You Begin**
+>
+> This activity builds on two earlier topics:
+>
+> - **Closures and higher-order functions** — you should be comfortable with the idea that a function can capture variables from its enclosing scope and carry them along after the enclosing function returns.
+> - **Basic Python classes** — you should know how to define a class with `__init__`, instance variables (`self.x`), and instance methods.
+>
+> If either of those feels shaky, skim the functional-programming activity before continuing here.
+
+---
+
 ## Model 1: Objects Are Closures
+
+**Intuition.** Before `class` syntax existed in languages like Python and Java, programmers who wanted to bundle state with behavior had exactly one tool: closures. A closure is a function that "closes over" variables in its surrounding scope — those variables persist as long as the closure exists. If you return *multiple* closures that all close over the *same* variable, you have something that behaves exactly like an object: shared private state and a set of operations on it. This model shows the two approaches side-by-side so you can see they are semantically identical — `class` syntax is convenience, not new power.
 
 Before classes existed, programmers built "objects" using closures — a function that captures mutable state and returns a bundle of operations.
 
@@ -83,6 +98,8 @@ print(c.get())   # 10
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** The `count = [start]` list trick is a workaround for Python's scoping rules: plain assignment inside a nested function (`count = count + 1`) creates a *new local* variable rather than updating the enclosing one. Wrapping the value in a list makes the container immutable (you never rebind `count`) while the *contents* are mutable. Python 3 lets you use `nonlocal count` to declare that you mean the enclosing binding — the exercise at the end of this activity asks you to do exactly that.
+
 **Key insight:** `self` is just the *captured environment* — the dict of instance variables. A class is syntactic sugar over a closure that:
 
 1. Collects state into a named record (`self.__dict__`)
@@ -106,6 +123,8 @@ print(c.get())   # 10
 ---
 
 ## Model 2: Python's Object Model
+
+**Intuition.** In Python, "everything is an object" is not a slogan — it is literally true at the implementation level. Every object carries a `__dict__`: a plain Python dictionary mapping attribute names to values. When you write `p.x = 3`, Python is doing `p.__dict__['x'] = 3`. Methods are *not* stored per-instance; they live in the *class's* `__dict__` and are looked up through the class when you access them on an instance. Understanding this lookup chain — instance dict first, then class dict, then base classes — explains virtually every surprising behavior in Python's object model.
 
 Every Python object is backed by a dictionary. Understanding `__dict__` unlocks the whole object model.
 

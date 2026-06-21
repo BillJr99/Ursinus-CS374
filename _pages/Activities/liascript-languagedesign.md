@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Language Design Studio: Sprint 0
 
+Programming languages are not magic handed down from on high — they are deliberate design choices made by people who had a problem to solve. Understanding those choices matters even if you never ship a language of your own, because every time you pick up a new language, reach for a library, or decide how to structure an API, you are making the same tradeoffs language designers make. Think of it like car mechanics: you do not need to rebuild an engine to drive, but a driver who understands what the transmission does makes better decisions on icy roads. This activity puts you in the designer's seat so you can become a more intentional user of every tool in your toolbox.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -26,6 +28,13 @@ By the end of this activity, you will be able to:
 - Compare the consequences of at least two specific syntax design choices (e.g., keyword blocks vs. brace blocks) for both users and implementers
 
 The team project begins today: your team will design and implement **a programming language of your own**, assembling the lexer, parser, AST, environments, and evaluator you each built into one system with an identity, a grammar, and a Demo Day. Today is Sprint 0: identity, scorecard, grammar v0, and a working plan. The arc: **what makes a language yours $\rightarrow$ the design scorecard $\rightarrow$ grammar and node inventory v0 $\rightarrow$ sprint roles and cadence**.
+
+> **Before You Begin:** This activity assumes you can:
+> - Read and write a basic recursive-descent parser and understand how grammar rules map to parsing functions
+> - Explain what an AST node is and how an evaluator walks the tree to produce a result
+> - Describe lexical scoping: what an environment chain is and how variable lookup traverses it
+>
+> If any of these feel shaky, review your lexer/parser/evaluator assignments before continuing — this activity builds directly on that vocabulary.
 
 ---
 
@@ -42,6 +51,8 @@ Every member holds every role at least once before Demo Day; the Scribe records 
 
 ---
 
+When a restaurant opens, the first question is not "what goes on the menu" but "who are we cooking for?" A fine-dining spot and a food truck may serve the same ingredients but make completely different choices about presentation, speed, and price. Your language works the same way: every syntax decision, every feature you include or cut, flows naturally once you have answered "who is this for?" Part I helps you find and commit to that answer before you write a single grammar rule.
+
 # Part I: Identity
 
 ## 1. A Language Is a Point of View
@@ -51,6 +62,8 @@ Every member holds every role at least once before Demo Day; the Scribe records 
 **Constraints (the non-negotiables).** Your language must include: variables with your documented scoping; arithmetic with full precedence; booleans, comparisons, and short-circuit logic; selection and iteration; strings or another non-numeric type; and at least one **distinctive feature** that required real design (functions with closures, pattern slices, a domain-specific statement, a desugared construct). It must be implemented on your own pipeline components, ship with a REPL and a file-runner, and include at least five sample programs.
 
 ---
+
+Imagine two cookbooks with identical recipes but one uses bullet-point steps and the other uses dense paragraphs. The instructions are equivalent, but the experience of following them is completely different. Syntax is your language's "cookbook format" — it does not change what the program means, but it profoundly shapes how easy it is to write, read, and teach. This model puts two syntactically different versions of the same language side by side so you can measure that difference rather than just feel it.
 
 ## Model 1: Syntax Choices Make a Language Feel Like Itself
 
@@ -150,6 +163,8 @@ print("  The right answer depends on the niche. Name your niche first.")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** "Readability" and "writability" sound like opposites but they measure *different audiences*. Readability asks "can a reader (possibly not the author) follow this code quickly?" whereas writability asks "can an author produce correct code quickly?" A language can be highly writable but hard to read — terse symbol-heavy syntax like APL is the classic example. Before answering the questions below, commit your team to which audience your niche prioritizes.
+
 ### Critical Thinking Questions
 
 1. Draft your scorecard: for readability, writability, reliability, and cost (of implementation, your scarcest resource), one sentence on what your language prioritizes and one on what it knowingly sacrifices, *in service of the niche*.
@@ -158,6 +173,8 @@ print("  The right answer depends on the niche. Name your niche first.")
 4. Apply the third lens: pick the two most contested decisions from question 2 and resolve each with an explicit appeal to the scorecard, recording the loser's strongest argument in the decision log. (Decisions with recorded dissent reverse gracefully; decisions by fatigue do not.)
 
 ---
+
+A city planner does not just dream about roads — they produce a blueprint that can be handed to a construction crew. Before your team writes a single line of interpreter code, you need the same thing: a grammar blueprint that can be handed to your parser writer. Part II walks you from a vague language idea to a concrete EBNF grammar and a complete inventory of every AST node your evaluator will need to handle.
 
 # Part II: Grammar v0 and the Node Inventory
 
@@ -168,6 +185,8 @@ print("  The right answer depends on the niche. Name your niche first.")
 **Node inventory.** One table: every AST node, its fields, the parser rule that builds it, and the evaluator rule that consumes it. Empty cells are the sprint backlog, made visible.
 
 **`SEMANTICS.md` v0.** Import every decision your assignments already made you document (truthiness, division by zero, scoping, loop scopes, type strictness), then add the niche feature's semantics in the same style: exhaustive, exampled, no "etc."
+
+Think of this model as a packing checklist before a camping trip. You flip through each category — shelter, food, first aid — and tick off what you are bringing. The grammar skeleton works the same way: flip through each language feature, decide yes or no, and the skeleton generates the grammar rules you need to implement. Features you skip now do not disappear — they become explicit TODOs on your sprint backlog, which is far better than discovering a missing feature on Demo Day.
 
 ## Model 2: Grammar v0 Starter — Feature Checklist
 
@@ -294,6 +313,8 @@ print("  Each True flag = at minimum one new grammar rule + one new AST node.")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** Adding a feature flag to `True` in the skeleton does not implement the feature — it only declares intent. The real cost shows up in two places: (1) every new grammar rule becomes a new parsing function your Builder must write and test, and (2) every new grammar rule introduces at least one new AST node that your Evaluator must handle. Teams commonly underestimate Sprint 1 scope by counting features rather than counting grammar rules plus AST nodes.
+
 ### Critical Thinking Questions
 
 5. Set `functions = True` and run. Count how many new grammar rules appear. Each new rule is a parser function your Builder must write. How does this inform Sprint 1's scope estimate?
@@ -308,6 +329,8 @@ A team's niche is dice-game scripting, and they are debating whether `3d6` shoul
 - ( ) Defer the decision until the final sprint
 
 ---
+
+A hospital keeps a patient chart that tracks every procedure, every medication, every result. Without it, different doctors treating the same patient would have no shared source of truth. Your node inventory is that chart for your interpreter: every AST node your team agrees on becomes a row, and empty cells in the "evaluator method" column show exactly where the implementation is incomplete. This model generates a starter inventory — your job is to fill in the blank rows before Sprint 1 ends.
 
 ## Model 3: Node Inventory — Every Node Mapped
 
@@ -384,11 +407,15 @@ print("  Sprint 2 goal: zero TODOs for functions and your niche feature")
 
 ---
 
+A ship captain does not just know the destination — they know which rocks are in the water. Part III shifts from "what will our language be" to "how will we actually build it without sinking." The sprint plan and risk pre-mortem you produce here are not bureaucracy; they are the navigational chart that keeps your team coordinated when the unexpected happens (and it will).
+
 # Part III: The Plan
 
 ## 3. Sprints to Demo Day
 
 The remaining weeks run in sprints aligned with in-class studio days (see the sprint studio activity for the protocols). Each sprint ends with: a runnable increment, passing tests (the Evaluator demonstrates), updated documents (the Scribe demonstrates), and the role rotation. The standard arc, adjusted to your design's risk: **Sprint 1** merges members' components into one pipeline running the class language; **Sprint 2** implements grammar v0's differences and the distinctive feature's skeleton; **Sprint 3** completes the feature, hardens errors, and builds the sample program suite; the **gallery walk** then triages polish from disclosure for **Demo Day**.
+
+Before NASA launches a rocket, engineers hold a "failure review" — they deliberately imagine every way the mission could go wrong and build mitigations before leaving the launchpad. You have the same tool available right now, before a single line of your language's code is written. A pre-mortem is more honest than optimistic planning because it starts from failure and works backward, which forces the team to name the fears they would otherwise suppress.
 
 ## Model 4: Risk Pre-Mortem — Surface Your Threats Now
 
@@ -439,6 +466,8 @@ for i, goal in enumerate(sprint1_goals, 1):
     print(f"  {i}. {goal}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+> **Watch out!** A risk score of probability × impact tells you *priority order*, not whether to act at all. A low-probability, high-impact risk (score 5) can be more dangerous than a moderate-probability, moderate-impact risk (score 9) if you have no mitigation for it — because when it hits, it will be catastrophic. Always read the impact column alongside the score, especially for anything with impact 5 (Demo Day failure).
 
 ### Critical Thinking Questions
 

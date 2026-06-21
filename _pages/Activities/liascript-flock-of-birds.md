@@ -16,6 +16,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Flock of Birds: Combinatory Logic and the SKI Calculus
 
+Think of combinators as **LEGO bricks for computation**. Each brick does exactly one simple, self-contained thing — snap the identity brick onto the constant brick, snap that onto the compose brick — and from a handful of primitive pieces you can build any computation that any computer can perform. No names, no variables, no environment. Just bricks clicking together.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -25,6 +27,17 @@ By the end of this activity, you will be able to:
 - Implement the standard combinator birds in Python and verify their reduction behavior by execution
 - Explain why S and K together are computationally complete (Schönfinkel's theorem) and connect this to the Church-Turing thesis
 - Derive familiar higher-order functions (function composition, `flip`, `const`, identity) directly from combinator definitions
+
+> **Before You Begin — Prerequisites**
+>
+> This activity assumes you are comfortable with:
+>
+> - **Lambda calculus syntax** — you can read $\lambda x.\ e$ and know that it means "a function that takes $x$ and returns $e$"
+> - **Beta-reduction** — you can apply a lambda term to an argument by substituting the argument for the bound variable
+> - **Currying** — you understand that `lambda a: lambda b: a` is a two-argument function written as two nested one-argument functions
+> - **Python lambdas** — `lambda x: x + 1` is valid Python and returns a callable
+>
+> If any of these feel shaky, review the Lambda Calculus module before continuing. Combinators are built directly on top of that material; every reduction rule here is just beta-reduction with no bound variables.
 
 *"To every combination there corresponds a unique bird."* — Raymond Smullyan, *To Mock a Mockingbird* (1985)
 
@@ -47,6 +60,8 @@ print("Ready to meet the flock.")
 
 ## 1. Notation and Reduction Rules
 
+Before diving into the rules, orient yourself: in the lambda calculus you had *variables*, *abstractions* ($\lambda x.\ e$), and *application*. Combinatory logic throws out variables and abstractions entirely. What remains? Application only — and a small fixed menu of named functions (the "birds") whose behavior is completely captured by simple rewrite rules. Each rule says: "when this bird receives enough arguments, rewrite the whole expression." There is no substitution, no renaming, no environment to thread around. Reduction is pure term rewriting, like rearranging LEGO bricks according to a picture.
+
 **Combinatory terms** are built from:
 
 - **Constants**: the combinators themselves (I, K, S, B, C, W, M, …)
@@ -65,6 +80,10 @@ $$
 $$
 
 Application associates left, so $\mathbf{S}\ a\ b\ c$ means $(((\mathbf{S}\ a)\ b)\ c)$. A **redex** in combinatory logic is any subterm of the form $\mathbf{I}\ a$, $\mathbf{K}\ a\ b$, or $\mathbf{S}\ a\ b\ c$ (and analogously for other combinators). Reduction is confluent, exactly as in the lambda calculus, because the combinators are derived from it.
+
+> **Watch out! — Argument counting**
+>
+> A combinator only fires when it has received *all* of its required arguments. $\mathbf{K}\ a$ is a partially applied function — it is waiting for its second argument and does *not* yet reduce. $\mathbf{S}\ a\ b$ is similarly stuck. Writing $\mathbf{S}\ a\ b\ c$ is what triggers the rule. If you try to reduce a term and nothing fires, check whether every combinator in the term is fully saturated.
 
 **The translation from lambda calculus to combinators** (bracket abstraction) works by structural recursion:
 
@@ -96,6 +115,8 @@ Hint for (3): what does $\mathbf{K}\ a\ (\_)$ do to any second argument?
 
 ## 2. The Identity Bird — **I** (Idiot)
 
+This is the simplest possible LEGO brick: snap it onto anything and that thing comes straight out the other side unchanged. It seems useless in isolation, but it becomes essential as a "do nothing" placeholder when you need a function in a slot that does not actually transform its argument. It also shows up in the derivation of every other combinator from S and K.
+
 $$
 \mathbf{I}\ a = a
 $$
@@ -114,6 +135,8 @@ print(I(I)(42))       # 42  -- identity of identity is still identity
 ---
 
 ## 3. The Kestrel — **K** (Constant)
+
+The Kestrel is the "ignore and keep" brick. You hand it a value, and no matter what else you stack on top, it will always return that original value. This turns out to encode the Boolean *true* in Church encodings — because `if true then x else y` means "take two branches, return the first." Connect to the LEGO analogy: K is a brick with a trap door; everything that enters the second slot falls straight through and disappears.
 
 $$
 \mathbf{K}\ a\ b = a
@@ -139,6 +162,8 @@ print(KI("ignored")("returned"))  # returned -- K(I) behaves as false / second-s
 ---
 
 ## 4. The Bluebird — **B** (Compose)
+
+The Bluebird is the pipeline brick. Snap two bricks together end-to-end: the output of the second feeds into the input of the first. This is Haskell's `.` operator, and it is how real functional programs are built — not by writing big monolithic functions, but by composing small single-purpose ones. Notice that the argument order matters: $\mathbf{B}\ f\ g$ means "do $g$ first, then $f$," which is the standard mathematical right-to-left composition.
 
 $$
 \mathbf{B}\ f\ g\ x = f\ (g\ x)
@@ -169,6 +194,8 @@ print(B_from_SK(add_one)(double)(5))  # 11 -- same as B(add_one)(double)(5)
 ---
 
 ## 5. The Cardinal — **C** (Flip)
+
+The Cardinal is the "swap the inputs" brick. When you have a two-argument function and the arguments are arriving in the wrong order — perhaps you want to partially apply the *second* argument first — the Cardinal flips them for you. Haskell calls this `flip`, and it appears constantly when adapting library functions for use in pipelines and point-free style.
 
 $$
 \mathbf{C}\ f\ a\ b = f\ b\ a

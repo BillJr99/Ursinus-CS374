@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Programming Paradigms
 
+Every program you write reflects a hidden assumption about *what a program fundamentally is*. Programming paradigms are the architectural styles of software: just as the same building function — say, a library — can be expressed as a Gothic cathedral, a glass-and-steel Modernist cube, or a terracotta Art Deco tower, the same computation can be expressed as a sequence of machine commands, a conversation among objects, a composition of mathematical functions, or a declarative set of facts and rules. Each style carries different trade-offs in clarity, scalability, and safety, and the language you design this semester will implicitly commit to one or more of them.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -27,6 +29,13 @@ By the end of this activity, you will be able to:
 
 A **paradigm** is a worldview about what a program *is*: a sequence of commands, a society of objects, a composition of functions, or a set of facts and rules. Today we tour the four major paradigms with the same small problem expressed in each, because your team's language will have to pick a side (or blend several, as most modern languages do). The arc: **imperative $\rightarrow$ object-oriented $\rightarrow$ functional $\rightarrow$ logic $\rightarrow$ multi-paradigm reality**.
 
+> **Before You Begin:** This activity assumes you can:
+> - Write and trace basic Python programs with variables, loops, and conditionals
+> - Define and call functions in Python, including passing functions as arguments
+> - Explain what a class and object are at a high level (instance variables, methods)
+>
+> If any of these feel shaky, review them first before working through the models.
+
 ---
 
 ## Directions and Group Roles
@@ -37,13 +46,19 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 # Part I: The Four Worldviews
 
+> **Watch out!** Paradigms are *not* mutually exclusive categories. A single language can — and most modern languages do — support multiple paradigms simultaneously. When we label a language "object-oriented," we mean that OO is its dominant style, not that you cannot write imperative loops in it.
+
 ## 1. Imperative and Object-Oriented
+
+Think of imperative programming like a step-by-step recipe: "crack two eggs, whisk them, pour into pan, stir until cooked." You specify every action in order, and the state of the dish changes with each step. Object-oriented programming is more like a kitchen brigade — each station (the sauté cook, the pastry chef) owns its own tools and ingredients, responds to requests from the head chef, and hides the messy details of how it does its work.
 
 **Imperative: a program is a sequence of state changes.** The core concepts are variables (named mutable cells), assignment, and control flow (sequencing, selection, iteration). The model matches the machine: memory cells change over time. C is the archetype; most languages contain an imperative heart.
 
 **Object-oriented: a program is a society of objects exchanging messages.** State is *encapsulated* inside objects; behavior travels with the data it governs; **polymorphism** lets the same message mean different things to different receivers. OO answers the imperative paradigm's scaling problem: when everything can mutate everything, large programs become unpredictable, so OO draws fences.
 
 ## 2. Functional and Logic
+
+Functional programming treats a program the way a mathematician treats a formula: `f(g(x))` has one answer for a given `x`, no side effects, and no hidden state. Logic programming goes even further — it is like asking a very smart search engine a question ("who are all the ancestors of Tom?") and letting the engine figure out how to find the answer from the facts you gave it; you never write a loop at all.
 
 **Functional: a program is the composition of functions.** The central commitments are **immutability** (values do not change; new values are produced), **first-class functions** (functions are values that can be passed and returned), and **referential transparency** (an expression can be replaced by its value without changing behavior). Where imperative code says *do this, then that*, functional code says *the answer is this transformation of that*. Scheme, Haskell, and increasingly the cores of Python and Java.
 
@@ -52,6 +67,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 ---
 
 ## Model 1: Same Problem, Four Ways
+
+The best way to feel the difference between paradigms is to solve *exactly* the same problem four ways and notice what each version forces you to think about. As you read each block below, ask yourself: what is mutable here? Who controls the loop? Could I run this twice on different inputs simultaneously without the two runs interfering?
 
 Count the vowels in a string. Run each approach and compare:
 
@@ -92,6 +109,8 @@ print(f"OO count: {vc.count()}")
 print(repr(vc))
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+> **Watch out!** "Pure function" and "function" are not the same thing. A pure function's output depends *only* on its arguments and it causes no side effects (no printing, no file writes, no mutation of shared variables). Python's `print()` is a function, but it is *not* pure — it changes the state of the terminal. Keep this distinction sharp as you read the functional version below.
 
 **Functional — composition of pure functions:**
 ```python
@@ -142,7 +161,11 @@ print(f"Witness list: {answer[:10]}... (length {len(answer)})")
 
 # Part II: Paradigms in the Wild
 
+> **Watch out!** Saying "Python is object-oriented" is like saying "New York is a financial city" — true but incomplete. Python has objects everywhere, *and* supports imperative style, *and* ships functional tools like `map`, `filter`, and `lambda`. When you evaluate a language, look for its *defaults* and its *limits*, not just a single label.
+
 ## 3. Multi-Paradigm Reality
+
+In practice, the clean four-way taxonomy you just explored is a teaching simplification. Real languages are hybrids shaped by history, performance constraints, and the preferences of their designers. As you read this section, think of the paradigm spectrum as a dial rather than four locked boxes — the interesting design question is where a language sets its dial by default, and how far the user can turn it.
 
 **Pure paradigm languages are rare; blends are the norm.** Python is imperative and OO with a functional toolkit (`map`, `filter`, comprehensions, `lambda`). Java added lambdas and streams in 2014; JavaScript mixes prototypal objects with pervasive higher-order functions; Rust is imperative with functional pattern matching and an ownership discipline. The paradigm question for a designer is not *which one* but *which defaults*: what does the language make easy, and what does it make possible?
 
@@ -163,6 +186,8 @@ A program in language X cannot run a function until every argument is known. Lan
 ---
 
 ## Model 2: Classify the Snippets
+
+Each paradigm leaves fingerprints in the code. An assignment like `x := x + 1` screams "named mutable cell" — that's an imperative tell. A colon-dash rule like `ancestor(X,Y) :- parent(X,Y).` has no variables at all in the traditional sense — that's logic. Learning to spot these signals in unfamiliar code is the skill that lets you read any language quickly, even before you know its syntax.
 
 | Snippet | Paradigm signal |
 |---------|-----------------|
@@ -204,6 +229,8 @@ for snippet, hint in snippets:
 ---
 
 ## Model 3: Paradigm Costs and Benefits
+
+Paradigm choice is not just an aesthetic preference — it has measurable consequences for memory use, parallelizability, and readability. The functional generator in this model never materializes a full intermediate list, while the imperative version builds one in memory before summing it. This difference seems trivial at 100 items but matters enormously at 100 million. Keep an eye on the memory numbers printed at the end.
 
 The choice of paradigm shapes what is easy and what is hard. Run this performance comparison:
 
