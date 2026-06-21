@@ -15,6 +15,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # The Lambda Calculus, Part 1: Syntax and Reduction
 
+Lambda calculus was invented by Alonzo Church in the 1930s to answer a fundamental question: what does it mean to *compute*? Church showed that two symbols — λ (for "function") and · (for "apply") — are sufficient to compute anything that is computable. Every programming language you have ever used, including Python, is secretly a lambda calculus with extra syntax. By the end of this activity, you will have seen Python's entire evaluation model in eight lines of math.
+
 Beneath Scheme, beneath Python's `lambda`, beneath every functional language, sits a formal system from 1936 with **three forms of expression and one rule of computation**: Alonzo Church's **lambda calculus**, in which functions are the only thing that exists, and computing means substituting arguments into bodies. Today we learn to read it and to reduce expressions **by hand**, the way Church did, because by-hand reduction is the only way the system becomes real. The arc: **the three forms $\rightarrow$ free and bound variables $\rightarrow$ beta reduction by hand $\rightarrow$ alpha renaming when names collide**.
 
 ---
@@ -27,6 +29,21 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 # Part I: The Whole Language
 
+## Notation Bridge: Lambda Calculus vs. Python
+
+Before we dive into the formal rules, here is a translation table. Every lambda calculus expression you will encounter today has a direct Python equivalent. Keep this table handy — whenever a lambda expression looks unfamiliar, find its Python mirror here.
+
+| Lambda Calculus | Python | Meaning |
+|---|---|---|
+| `λx.x` | `lambda x: x` | identity function |
+| `λx.λy.x` | `lambda x: lambda y: x` | constant function (returns first arg) |
+| `(λx.x+1) 5` | `(lambda x: x+1)(5)` | function application |
+| `λf.λx.f (f x)` | `lambda f: lambda x: f(f(x))` | apply-twice |
+
+> **Note for beginners**: In Python, `lambda x: x` is a function with no name that takes one argument `x` and returns `x`. Lambda calculus is the same idea, just written with a λ symbol and a dot instead of a colon. The table above maps every symbol one-to-one.
+
+---
+
 ## 1. Three Forms
 
 A lambda expression is exactly one of:
@@ -36,6 +53,8 @@ e ::= x \;\mid\; (\lambda x.\, e) \;\mid\; (e_1\; e_2)
 $$
 
 a **variable**; an **abstraction** (a function of one parameter $x$ with body $e$, written `λx.e`); or an **application** ($e_1$ applied to $e_2$). That is the entire grammar; there are no numbers, no booleans, no operators (Part 2 builds them all *from functions*). Conventions: application associates left ($f\,a\,b$ means $((f\,a)\,b)$), the body of a λ extends as far right as possible, and multi-parameter functions are nested single-parameter ones: $\lambda x y. e$ abbreviates $\lambda x. (\lambda y. e)$, the trick called **currying**, after Haskell Curry.
+
+> **Watch out**: `λx.λy.x` is a function that takes `x`, then returns *a function* that takes `y`, then returns `x`. You have to apply it TWICE to get a value out. This is called "currying" — named after Haskell Curry. In Python: `(lambda x: lambda y: x)(3)(99)` returns `3`. Calling `(lambda x: lambda y: x)(3)` alone gives you back a function, not a value.
 
 **Bound and free.** In $\lambda x.\, x\, y$: the $x$ in the body is **bound** by the λ; $y$ is **free** (it refers to something outside). Binding here is your scope module's lexical scoping, in its original mathematical form: a λ is a binder, its body is the scope.
 
@@ -64,7 +83,43 @@ $$
 
 read "$e$ with every *free* occurrence of $x$ replaced by $a$." A **redex** is any subexpression of that shape; an expression with no redexes is in **normal form**: the answer. Reduce stepwise, one redex at a time, drawing an arrow per step.
 
-Worked example, fully spelled out:
+> **Watch out**: β-reduction is purely syntactic substitution. `(λx.x*x) (2+3)` does NOT compute `2+3` first — it substitutes the unevaluated expression `(2+3)` for `x`, giving `(2+3)*(2+3)`. Whether arguments are evaluated before substitution (eager) or after (lazy) is the call-by-value vs call-by-name distinction. Python uses call-by-value (eager), so Python would compute `5` first and then substitute. Pure lambda calculus by default uses call-by-name (lazy).
+
+### Worked Example 1: Identity Function
+
+$$
+(\lambda x.\, x)\; z
+$$
+
+Step by step:
+
+```
+(λx.x) z
+→β  [x := z] x      # substitute z for every free x in the body
+→β  z               # the body was just x, now replaced by z
+```
+
+Result: `z`. The identity function returns its argument unchanged.
+
+### Worked Example 2: Constant Function (K Combinator)
+
+$$
+(\lambda x. \lambda y.\, x)\; A\; B
+$$
+
+Step by step (remember: application is left-associative, so this is $(((\lambda x. \lambda y. x)\; A)\; B)$):
+
+```
+(λx.λy.x) A B
+→β  [x := A] (λy.x)   B    # substitute A for x in body (λy.x)
+→β  (λy.A) B               # after substitution, body is (λy.A)
+→β  [y := B] A             # substitute B for y in body A
+→β  A                      # y never appeared in body, so B is discarded
+```
+
+Result: `A`. This function selects its first argument and ignores its second.
+
+Fully spelled out in math notation:
 
 $$
 (\lambda x. \lambda y.\, x)\; A\; B
@@ -73,6 +128,24 @@ $$
 $$
 
 Step 1 substituted $A$ for $x$ in $\lambda y. x$; the $y$-abstraction remained, now constant; step 2 applied it to $B$, which was discarded because $y$ never occurs in the body. The function selected its first argument: behavior, from substitution alone.
+
+### Worked Example 3: Apply-Twice
+
+$$
+(\lambda f. \lambda x.\, f\,(f\, x))\; g\; a
+$$
+
+Step by step:
+
+```
+(λf.λx. f(f x)) g a
+→β  [f := g] (λx. f(f x))   a   # substitute g for f in body
+→β  (λx. g(g x)) a              # body now has g in place of f
+→β  [x := a] g(g x)             # substitute a for x in body
+→β  g(g a)                      # x replaced by a in both places
+```
+
+Result: `g(g a)`. This applies `g` twice to `a` — exactly what `twice(g)(a)` does in Python.
 
 ---
 
@@ -96,6 +169,26 @@ $$
 $$
 
 The result correctly returns the *free* $y$, whatever it refers to outside. Capture is the shadowing bug from your scope module, in formal dress, and alpha renaming is the formal version of "pick a fresh local name."
+
+> **Watch out**: Variable capture is a subtle bug. When you substitute a value that contains a free variable `y` into a body that binds `y`, the `y` in your value would accidentally become bound by the inner lambda. The fix — alpha renaming — is just like how Python avoids variable shadowing bugs: pick a fresh name for the inner binder that does not collide with anything free in the argument.
+
+### Step-by-step capture example (WRONG, then RIGHT):
+
+**Wrong (capture):**
+```
+(λx.λy.x) y
+→β  [x := y] (λy.x)    # naively substitute y for x
+→β  λy.y               # WRONG: the free y is now captured by λy!
+```
+This says "a function that ignores its argument and returns ... its argument." That is the identity function, not the constant function. We changed the meaning!
+
+**Right (alpha-rename first):**
+```
+(λx.λy.x) y
+=α  (λx.λz.x) y        # rename bound y to fresh z (safe because z is not free in argument)
+→β  [x := y] (λz.x)    # now substitute y for x
+→β  λz.y               # correct: a function that ignores z and returns the free y
+```
 
 [[MC]]
 The reduction $(\lambda x. \lambda y.\, x\, y)\; y \rightarrow \lambda y.\, y\, y$ is wrong because:
@@ -243,6 +336,91 @@ print("Free vars in (λx.λy. x):", free_vars(lam('x', lam('y', var('x')))))
 10. When does the tracer print an alpha-rename message? Trace the capture example by hand first, then run to verify. Identify the exact variable that was at risk of capture and explain why the renamed variable avoids it.
 11. The `free_vars` function returns a set. Why is it a *set* rather than a list, and how does `free_vars` influence the substitution decision inside `subst`?
 12. The `step` function applies the **outermost** redex first (normal order). How would the output change for the "apply g twice" example if you instead always reduced the **innermost** redex (applicative order)? Which order does Python use when evaluating function calls?
+
+---
+
+## Model 3b: Interactive Reduction Simulator
+
+The simulator below lets you construct any lambda expression using the `Var`, `Lam`, and `App` building blocks, then watch each substitution step. Use it to check your hand reductions from Model 2. Build the expression you want, call `normalize(...)`, and compare to your whiteboard work.
+
+```python
+# A simple substitution-based reducer for lambda calculus
+# Represents: Var(name), Lam(param, body), App(fun, arg)
+
+from dataclasses import dataclass
+from typing import Any
+
+@dataclass
+class Var:
+    name: str
+    def __str__(self): return self.name
+
+@dataclass
+class Lam:
+    param: str
+    body: Any
+    def __str__(self): return f"(λ{self.param}.{self.body})"
+
+@dataclass
+class App:
+    fun: Any
+    arg: Any
+    def __str__(self): return f"({self.fun} {self.arg})"
+
+def subst(expr, var, value):
+    """Substitute value for var in expr (capture-avoiding for Var only)."""
+    if isinstance(expr, Var):
+        return value if expr.name == var else expr
+    if isinstance(expr, Lam):
+        if expr.param == var:  # bound variable shadows
+            return expr
+        return Lam(expr.param, subst(expr.body, var, value))
+    if isinstance(expr, App):
+        return App(subst(expr.fun, var, value), subst(expr.arg, var, value))
+
+def reduce_one(expr, depth=0):
+    """Try one beta-reduction step. Return (new_expr, True) if reduced."""
+    if isinstance(expr, App):
+        if isinstance(expr.fun, Lam):
+            # Beta reduction: (λx.body) arg → [x:=arg] body
+            result = subst(expr.fun.body, expr.fun.param, expr.arg)
+            print(f"  →β {result}")
+            return result, True
+        # Try reducing inside
+        new_fun, r1 = reduce_one(expr.fun)
+        if r1: return App(new_fun, expr.arg), True
+        new_arg, r2 = reduce_one(expr.arg)
+        if r2: return App(expr.fun, new_arg), True
+    return expr, False
+
+def normalize(expr, limit=20):
+    """Reduce to normal form, printing each step."""
+    print(f"  {expr}")
+    for _ in range(limit):
+        expr, reduced = reduce_one(expr)
+        if not reduced:
+            print(f"  = {expr} (normal form)")
+            return expr
+    print("  ... (did not terminate)")
+    return expr
+
+# Identity: (λx.x) 5
+print("Identity: (λx.x) 5")
+normalize(App(Lam("x", Var("x")), Var("5")))
+
+# Constant: (λx.λy.x) a b
+print("\nConstant: ((λx.λy.x) a) b")
+normalize(App(App(Lam("x", Lam("y", Var("x"))), Var("a")), Var("b")))
+
+# Self-application: (λx.x x) (λx.x)
+print("\nSelf-apply identity to identity: (λx.x x)(λy.y)")
+normalize(App(Lam("x", App(Var("x"), Var("x"))), Lam("y", Var("y"))))
+
+# Apply-twice: (λf.λx.f(f x)) g a
+print("\nApply-twice: (λf.λx.f(f x)) g a")
+normalize(App(App(Lam("f", Lam("x", App(Var("f"), App(Var("f"), Var("x"))))), Var("g")), Var("a")))
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
