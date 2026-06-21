@@ -14,6 +14,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Gradual Typing: Between Static and Dynamic
 
+Static typing catches errors at compile time but demands up-front annotations for every value; dynamic typing runs without annotations but lets bugs hide until runtime. Gradual typing is the pragmatic middle ground — like a building code that mandates inspections only in the load-bearing walls while leaving interior decoration to the owner's discretion. Languages such as TypeScript, mypy-annotated Python, and Typed Racket all make this bet, and the theory behind it is surprisingly deep.
+
 ## Learning Goals
 
 By the end of this activity, you will be able to:
@@ -23,6 +25,13 @@ By the end of this activity, you will be able to:
 - Implement a bidirectional type checker that accepts gradually-typed programs and inserts runtime casts at typed/untyped boundaries
 - Analyze blame assignment at static/dynamic boundaries and determine which component (caller or callee) is responsible for a cast failure
 - Evaluate the correctness guarantees a gradually-typed language can and cannot provide compared to fully static or fully dynamic typing
+
+> **Before You Begin:** This activity assumes you can:
+> - Explain the difference between static and dynamic typing with a concrete example in at least one language
+> - Read and write basic Python type annotations (`int`, `str`, `List[int]`, `Optional[str]`)
+> - Trace through a simple recursive Python function and predict its output
+>
+> If any of these feel shaky, review them first.
 
 Real-world languages rarely commit fully to either end of the static/dynamic spectrum. TypeScript adds optional types to JavaScript. mypy adds optional types to Python. Dart, Hack (PHP), and Typed Racket all make the same bet: let programmers annotate where they care about correctness, leave the rest unchecked, and insert runtime guards at the boundaries. The theory behind this approach — **gradual typing** — was formalized by Siek and Taha in 2006. It is not simply "some types, sometimes." It is a precise design with a formal consistency relation, a blame calculus for tracking contract violations, and deep consequences for what your language can and cannot guarantee.
 
@@ -39,6 +48,8 @@ Each model builds on the last. Do not skip ahead.
 ---
 
 ## Model 1: Python's Dynamic Types in Action
+
+Before you can appreciate the value of types, you need to feel the pain of their absence. This model shows Python at its most flexible — a single function serving wildly different argument types — and at its most hazardous, where the error only surfaces deep at runtime. Keep track of when you first know something has gone wrong versus when the program tells you.
 
 Python is dynamically typed: there are no type annotations required, and the interpreter never checks types until it actually tries an operation. The same function can receive an `int`, a `str`, or a `list` — and it will cheerfully proceed with whichever it gets. This flexibility is genuinely useful. It is also the source of some of the hardest-to-find bugs in large codebases.
 
@@ -66,6 +77,8 @@ print("Program continues after the try/except")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** `double("ha")` succeeds because `+` on strings means concatenation, not addition. Python does not check intent — it checks capability. The function works for strings, lists, and integers for completely different reasons. This is duck typing in action, and it can make unit tests deceptively quiet.
+
 ### Critical Thinking Questions
 
 **CTQ 1.** Which call to `double` do you think the programmer intended when they wrote the function? What clue in the function body suggests one interpretation over another?
@@ -87,6 +100,8 @@ print("Program continues after the try/except")
 ---
 
 ## Model 2: Type Annotations — Python's Optional Types (mypy-style)
+
+Type annotations in Python are like sticky notes on a whiteboard: they communicate intent clearly to anyone reading the code, but the whiteboard does not enforce them — a different tool (mypy, pyright) must play that enforcement role. This model introduces the annotation vocabulary and forces you to notice the key surprise: Python runs annotated code with zero enforcement at runtime.
 
 Python 3.5 introduced **type hints** via PEP 484. They are syntactically legal in the language, stored in `__annotations__`, and available to external tools — but Python itself **ignores them completely at runtime**. The enforcement is delegated to an optional static checker such as `mypy`. This is the essential design choice of gradual typing: annotation is voluntary, checking is opt-in, and the runtime is unchanged.
 
@@ -126,6 +141,8 @@ print(f"Sneaked through: {type(result)}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** Python type annotations are **not** enforced at runtime. `add_one("hello")` runs without any error — Python simply ignores the `: int` annotation. Only an external tool like `mypy` would flag it. Students often expect annotations to act like Java's compile-time checks; they do not.
+
 ### Critical Thinking Questions
 
 **CTQ 5.** `Optional[int]` is shorthand for `Union[int, None]` — the value might be `None`. What does `first([])` return, and is that consistent with its declared return type `Optional[int]`? What does `first([1, 2, 3])` return?
@@ -147,6 +164,8 @@ print(f"Sneaked through: {type(result)}")
 ---
 
 ## Model 3: Building a Mini Type Checker with the Consistency Relation
+
+Ordinary type equality is strict: `Int` equals `Int` and nothing else. The consistency relation relaxes this by introducing a wildcard type `Any` that is compatible with everything — like a universal adapter that fits any socket. The catch is that this wildcard breaks transitivity, and that gap between what the static checker accepts and what can succeed at runtime is exactly where runtime failures live.
 
 At the heart of gradual typing is a relation called **consistency** (written `~`). It differs from ordinary type equality. Two types are consistent if they could be the same type at runtime: `Int ~ Int` (trivially), `Any ~ Int` (a dynamic value might be an `Int`), `Int ~ Any` (an `Int` is compatible with an unknown type). But `Int ~ Str` is **false** — no runtime value is both an integer and a string.
 
@@ -242,6 +261,8 @@ except TypeError as e:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+> **Watch out!** Consistency is **not** the same as subtyping. `Any` is consistent with `Int`, but `Any` is not a subtype of `Int`. Subtyping is a containment relationship; consistency is a compatibility relationship. Conflating them leads to incorrect reasoning about what the type checker actually accepts.
+
 ### Critical Thinking Questions
 
 **CTQ 9.** `DYN = "Any"` represents an unannotated binding. What does `consistent(DYN, INT)` return, and why? Trace through the `consistent` function body to verify your answer.
@@ -263,6 +284,8 @@ except TypeError as e:
 ---
 
 ## Model 4: The Blame Calculus — Who Gets the Error?
+
+When two parties sign a contract, a violation needs to be traced back to whoever broke it — not to some innocent bystander in the middle. The blame calculus does exactly this for type boundaries: it tags each boundary with a label so that when a runtime cast fails, the error message names the site that made the broken promise rather than the function body that happened to discover the problem.
 
 When a gradually-typed program fails at runtime — because a `DYN` value turned out to be the wrong type at a typed boundary — the system needs to say **which boundary** was violated. This is the **blame calculus** (Wadler and Findler, 2009). Without blame, a runtime failure deep inside a library could be misleadingly attributed to the library itself, when the real problem is that the caller passed an untyped value that violated the library's contract.
 
@@ -341,6 +364,10 @@ except RuntimeError as e:
 ---
 
 ## Model 5: Adding Gradual Typing to Your Language
+
+This model is a direct bridge to your course interpreter project. The key new idea is `runtime_check`: a small function called at every typed boundary that either lets a value pass or raises an error with useful blame information. Annotated bindings are checked; unannotated ones are not. Everything else in the interpreter stays the same.
+
+> **Watch out!** The `runtime_check` for a typed function parameter fires at **application time**, not at lambda definition time. The lambda itself is just a closure; the check happens when the function is called with a specific argument. Students sometimes expect the check at the point the `Lam` is evaluated — it is not.
 
 The final model wires everything together: a small interpreter that supports **both typed and untyped bindings**. Annotated `let` bindings and annotated lambda parameters have their types **checked at runtime** when the value crosses the annotated boundary. Unannotated bindings pass through freely. This is the core mechanism of a gradually-typed interpreter — the static checker (Model 3) accepts programs that mix typed and untyped code; this interpreter enforces the typed parts at runtime.
 

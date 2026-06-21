@@ -597,7 +597,7 @@ But be careful: only eliminate if the binding expression is pure!
 
 ### Exercise 4 — Optimization Pipeline (25 min)
 Combine multiple passes into a pipeline:
-```python
+```python  liascript
 def optimize(node):
     node = fold_and_propagate(node, {})
     node = eliminate_dead_code(node, collect_live_vars(node))

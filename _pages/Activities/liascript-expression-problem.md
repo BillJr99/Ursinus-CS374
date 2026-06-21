@@ -338,6 +338,8 @@ Notice what did NOT happen: adding `Triangle` did not require opening any existi
 
 ## Model 5 — Implications for Language Design: The Mini Interpreter
 
+Compiler writers face the Expression Problem in its most acute form: every new language feature is a new AST node type, and every analysis pass is a new operation. Without a principled solution, adding a feature forces you to touch every analysis pass and adding a pass forces you to touch every node type. This model shows how `singledispatch` scales to a realistic interpreter setting where both dimensions grow simultaneously.
+
 The Expression Problem is not just about shapes — it appears in its most important form in **language interpreters and compilers**. An interpreter has two dimensions that grow simultaneously:
 
 - **AST node types**: `Num`, `Add`, `If`, `Lambda`, `App`, `Let`, `Var`, `Seq`, ...

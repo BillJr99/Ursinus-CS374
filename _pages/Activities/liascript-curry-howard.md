@@ -113,7 +113,7 @@ The *elimination rules* say: from a proof of `P ∧ Q`, you can extract a proof 
 
 ## Code Cell: Products as Conjunction
 
-```python
+```python  liascript
 try:
     from typing import Tuple, TypeVar, Callable
 
@@ -157,7 +157,7 @@ except Exception as e:
 
 A proof of `P ∨ Q` is: *either* a proof of `P` (tagged "left") *or* a proof of `Q` (tagged "right"). In code, this is a tagged union (also called a sum type or `Either`):
 
-```python
+```python  liascript
 # A simple Either (sum type) in Python
 class Left:
     def __init__(self, value): self.value = value
@@ -175,7 +175,7 @@ The *elimination rule* for `∨` says: to prove `C` from `P ∨ Q`, prove `C` fr
 
 ## Code Cell: Sums as Disjunction
 
-```python
+```python  liascript
 try:
     class Left:
         def __init__(self, value): self.value = value
@@ -251,7 +251,7 @@ Negation `¬P` is defined as `P → ⊥`: to disprove `P`, show that assuming `P
 
 ## Code Cell: Absurdity
 
-```python
+```python  liascript
 try:
     # In Python we simulate the empty type via an exception that can never succeed
     class Empty:
@@ -326,7 +326,7 @@ Writing a well-typed term in a dependent language IS writing a proof. The type c
 
 ## Code Cell: Simulating Dependent Types in Python
 
-```python
+```python  liascript
 try:
     # Python cannot express dependent types natively, but we can simulate
     # by encoding the "proof" as a runtime check that mypy can partially verify.
@@ -421,7 +421,7 @@ Return to the table from Part I. By now you should be able to fill in the progra
 
 ## Code Cell: The Full Dictionary in Python
 
-```python
+```python  liascript
 try:
     # The entire Curry-Howard dictionary illustrated in one cell
 
