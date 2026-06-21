@@ -259,6 +259,8 @@ for l in lines:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+ > **Watch out!** Guard clauses (`if x1 == x2` after the pattern) are evaluated **in order, top to bottom** — Python tries the first arm whose pattern structurally matches, then checks its guard. If the guard fails, Python moves on to the *next arm*, it does **not** re-try the same arm. This means arm order matters: a `case _:` wildcard placed before a guarded arm will swallow all remaining cases.
+
 **CTQs**
 
 > **CTQ 4.1** What does "nested pattern matching" mean? Give a one-sentence description of what `case Line(start=Point(x=0, y=0), ...)` does.
@@ -268,6 +270,8 @@ for l in lines:
 > **CTQ 4.3** Why are product types called "product" types? If `Point` has `x ∈ ℝ` and `y ∈ ℝ`, how many distinct `Point` values are there?
 
 ---
+
+Model 5 combines everything: sum types can refer to *themselves*, producing recursive structures like trees. An expression tree is the canonical example — `Add(Mul(Num(2), Num(3)), Num(1))` represents `(2*3)+1`. The evaluator is a single `match` over the four node variants, each of which recursively evaluates its children, and the whole thing terminates because every recursive call is on a *strictly smaller* subtree.
 
 ## Model 5 — Recursive Types: Trees and Expressions
 
@@ -341,6 +345,51 @@ print(f"d/dx({pretty(x_sq)}) = {pretty(d_x_sq)}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
+**Step-by-Step Trace: `eval_expr(Mul(Num(2), Add(Num(3), Neg(Num(4)))))`**
+
+This traces evaluation of the expression `2 * (3 + (-4))` built as `Mul(Num(2), Add(Num(3), Neg(Num(4))))`.
+
+```
+Call: eval_expr( Mul(Num(2), Add(Num(3), Neg(Num(4)))) )
+  ├─ Pattern tried: Num(value=n)          → FAILS  (node is Mul, not Num)
+  ├─ Pattern tried: Add(left=l, right=r)  → FAILS  (node is Mul, not Add)
+  ├─ Pattern tried: Mul(left=l, right=r)  → MATCHES
+  │     Bindings created: l = Num(2),  r = Add(Num(3), Neg(Num(4)))
+  │
+  │   Recurse left:  eval_expr( Num(2) )
+  │     ├─ Pattern: Num(value=n)   → MATCHES
+  │     │     Binding: n = 2
+  │     └─ Returns: 2
+  │
+  │   Recurse right: eval_expr( Add(Num(3), Neg(Num(4))) )
+  │     ├─ Pattern: Num(value=n)          → FAILS
+  │     ├─ Pattern: Add(left=l, right=r)  → MATCHES
+  │     │     Bindings: l = Num(3),  r = Neg(Num(4))
+  │     │
+  │     │   Recurse left:  eval_expr( Num(3) )
+  │     │     ├─ Pattern: Num(value=n)  → MATCHES, n = 3
+  │     │     └─ Returns: 3
+  │     │
+  │     │   Recurse right: eval_expr( Neg(Num(4)) )
+  │     │     ├─ Pattern: Num(value=n)          → FAILS
+  │     │     ├─ Pattern: Add(left=l, right=r)  → FAILS
+  │     │     ├─ Pattern: Mul(left=l, right=r)  → FAILS
+  │     │     ├─ Pattern: Neg(operand=o)        → MATCHES
+  │     │     │     Binding: o = Num(4)
+  │     │     │   Recurse: eval_expr( Num(4) )  → n = 4, returns 4
+  │     │     └─ Returns: -4
+  │     │
+  │     └─ Returns: 3 + (-4) = -1
+  │
+  └─ Returns: 2 * (-1) = -2
+```
+
+Key observations from this trace:
+- Each `match` arm is tried **in order**; only the *first* matching arm fires.
+- Each arm **creates bindings** (`l`, `r`, `n`, `o`) for the sub-expressions it destructures.
+- Recursion terminates because every recursive call is on a strictly *smaller* subtree — `Num` is the base case with no children.
+- The total work is proportional to the *number of nodes* in the tree.
+
 **CTQs**
 
 > **CTQ 5.1** The derivative of `x²` by the product rule is `x*1 + 1*x` (before simplification). Is `pretty(d_x_sq)` what you expected? What simplification step is missing?
@@ -350,6 +399,8 @@ print(f"d/dx({pretty(x_sq)}) = {pretty(d_x_sq)}")
 > **CTQ 5.3** The `diff` function is an example of a "structural recursion." What invariant guarantees that it terminates?
 
 ---
+
+Model 6 builds on `Option` to add *error messages*: a `Result` type is either `Ok(value)` (success) or `Err(message)` (failure with an explanation). The key insight is that you can chain multiple fallible operations into a pipeline — `bind_result` acts as the connector — and errors automatically short-circuit the rest of the chain without any `if` checks or `try/except` blocks.
 
 ## Model 6 — Result Types: Railway-Oriented Programming
 

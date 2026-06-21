@@ -117,6 +117,7 @@ Model 2 is where recursion becomes your only loop. Every pattern you know from P
 
 5. Trace `(sum '(1 2 3))` by hand, writing every call and return. Where does the addition for `1` actually happen: on the way down or the way back up?
 6. Write `(my-filter pred lst)` following the `my-map` template; predict its output on `(my-filter odd? '(1 2 3 4 5))` and verify. Which line differs structurally from `my-map`?
+
 > **Watch out!** Forgetting the quote `'` before a list literal is the single most common Scheme beginner error. Writing `(1 2 3)` tells Scheme: "call the function named `1` with arguments `2` and `3`." Since `1` is not a function, you get an error like `application: not a procedure`. Always write `'(1 2 3)` when you mean a list of data, not a function call.
 
 7. The quote in `'(1 2 3)` says "data, do not evaluate." Predict the difference between `(1 2 3)` and `'(1 2 3)` at the prompt; verify; explain the error message in terms of the One Syntax Rule.
@@ -148,7 +149,7 @@ Model 3 explores one of the most practically important differences between Schem
 
 The cell below demonstrates both a naive (non-tail) factorial and a tail-recursive accumulator version in Python, counting stack frames to make the difference concrete.
 
-```python
+```python  liascript
 import sys
 
 def fact_naive(n):
@@ -228,7 +229,7 @@ Scheme's **local binding forms** give names to intermediate values. They differ 
 
 The Python simulation below models each form's scoping rule explicitly so you can observe the difference.
 
-```python
+```python  liascript
 # Simulate Scheme's let / let* / letrec scoping rules in Python
 
 def demo_let():
@@ -321,7 +322,7 @@ Model 5 brings together everything: now that you know how Scheme evaluates expre
 
 **Quasiquoting** (`\`` backtick) is a templating mechanism: the entire form is treated as data (like `'`), *except* that subexpressions preceded by `,` (unquote) or `,@` (unquote-splicing) are evaluated. This is the foundation of Scheme macros and a powerful list-construction tool.
 
-```python
+```python  liascript
 # We cannot run Racket here, so we simulate quasiquoting semantics in Python
 # to make the evaluation rules concrete.
 

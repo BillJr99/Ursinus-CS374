@@ -225,7 +225,57 @@ except Exception as e:
 
 ---
 
+**Intuition:** A derivation tree is not something you *invent* — it is something you *discover* by asking, for each sub-expression, which rule applies and what its premises require. Start at the root (the whole expression), work downward through sub-expressions, and bottom out at axioms (leaves with no premises). The tree proves that the expression evaluates to the stated value.
+
+> **Watch out!** Inference rules are not proofs you construct freely — they are rules you *apply*. A rule fires only when its premises are all derivable. You cannot choose to skip a premise or apply a rule "partially." If you cannot derive every premise of a rule, that rule does not apply for that expression. This is different from writing a proof by assumption — here, every step must be grounded in an axiom or a previously derived judgment.
+
 ## Model 1: Building Derivation Trees
+
+### Worked Example: Derivation Tree for `(λx. x) 5`
+
+This traces the complete big-step derivation for applying the identity function to 5, in an empty environment `{}`.
+
+**Goal:** show `⟨(λx. x) 5, {}⟩ ⇓ 5`
+
+We need to apply rule `[App]`, whose three premises are:
+1. Evaluate the function expression `λx. x` in `{}`
+2. Evaluate the argument `5` in `{}`
+3. Evaluate the body in the extended closure environment
+
+**Premise 1 — evaluate the function:** By `[Lam]` (an axiom):
+
+```
+─────────────────────────────────────── [Lam]
+⟨λx. x, {}⟩ ⇓ ⟨λx. x, {}⟩   (a closure)
+```
+
+**Premise 2 — evaluate the argument:** By `[Num]` (an axiom):
+
+```
+─────────────────── [Num]
+⟨5, {}⟩ ⇓ 5
+```
+
+**Premise 3 — evaluate the body in the extended environment:** The closure environment is `{}`, extended with `x ↦ 5`, giving `{x ↦ 5}`. The body is `x`. By `[Var]`:
+
+```
+{x ↦ 5}(x) = 5
+─────────────────────────── [Var]
+⟨x, {x ↦ 5}⟩ ⇓ 5
+```
+
+**Putting it all together with `[App]`:**
+
+```
+──────────────────────────── [Lam]    ─────────────── [Num]    ─────────────────────────── [Var]
+⟨λx. x, {}⟩ ⇓ ⟨λx. x, {}⟩          ⟨5, {}⟩ ⇓ 5             ⟨x, {x ↦ 5}⟩ ⇓ 5
+─────────────────────────────────────────────────────────────────────────────────────────── [App]
+⟨(λx. x) 5, {}⟩ ⇓ 5
+```
+
+The three leaves (axioms) are at the top; the root conclusion is at the bottom. Every step cites its rule name in brackets.
+
+> **Watch out!** Notice that `[App]` uses the closure's captured environment `{}` (called `σ'` in the rule) to extend for the function body — **not** the call-site environment. For this simple example they happen to be the same (`{}`), but if the function had been defined inside a `let` binding that added variables, `σ'` would include those variables and the call-site environment would not. This asymmetry is exactly what enforces lexical (static) scoping.
 
 ### Critical Thinking Questions
 
@@ -240,6 +290,8 @@ except Exception as e:
 ---
 
 # Part III: Small-Step (Structural) Semantics
+
+**Intuition:** Rather than jumping straight from expression to final value, small-step semantics describes one tiny reduction at a time — like watching a computation frame-by-frame in a debugger. Each step rewrites the expression slightly closer to a value. The rules specify not just *what* to reduce, but also *which* sub-expression to reduce first, which is what gives the language a well-defined evaluation order.
 
 ## 3. One Step at a Time
 
@@ -393,6 +445,10 @@ except Exception as e:
 
 ---
 
+**Intuition:** In small-step derivations you are writing a *sequence* of configurations, not a tree. Each line shows one application of one rule, turning the current configuration into the next. The sequence ends when the expression is a value (normal form) or gets stuck. Compare this to the derivation tree from Model 1 — the tree captures the entire computation at once, while the sequence shows one reduction at a time.
+
+> **Watch out!** Big-step and small-step semantics for the *same* language should agree on the *final value* for any terminating program, but they are not the same relation. Big-step says nothing about intermediate states. Small-step says nothing about the final value in one step — you must follow the whole sequence. Students often confuse "the two styles agree" with "they are interchangeable" — they are not: they serve different purposes and are used to prove different properties.
+
 ## Model 2: Small-Step Derivations
 
 ### Critical Thinking Questions
@@ -411,6 +467,8 @@ except Exception as e:
 ---
 
 # Part IV: Type Rules and Type Safety
+
+**Intuition:** Type rules look exactly like evaluation rules — same inference-rule notation, same tree-building process — but instead of asking "what value does this expression produce?" they ask "what *type* does this expression have?" The payoff is the type safety theorem: if you can build a type derivation for a program, the program is guaranteed never to get stuck at runtime with a type mismatch.
 
 ## 4. Types as Proof Obligations
 
@@ -545,6 +603,8 @@ except Exception as e:
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
+
+**Intuition:** Type safety is often stated as two lemmas — *progress* (a well-typed expression is either a value or can take a step) and *preservation* (if a well-typed expression takes a step, the result is still well-typed at the same type). Together they guarantee that well-typed programs never get stuck. As you work through the questions below, try to state each argument as one of these two lemmas.
 
 ## Model 3: Types and Safety
 
