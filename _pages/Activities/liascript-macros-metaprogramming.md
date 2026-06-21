@@ -424,6 +424,7 @@ cond_macro = syntax_rules('cond', [
      lambda test, expr, rest: ('if', test, expr, ('call', ('var', 'cond'), rest)))
 ])
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 Test it on: `(cond ((x > 0) (print "pos")) (else (print "non-pos")))`.
 

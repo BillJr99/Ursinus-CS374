@@ -135,6 +135,7 @@ class Parser:
 #     except SyntaxError as e:
 #         print(source, "-> SyntaxError:", e)
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -370,7 +371,7 @@ import pprint
 ast = Parser(src).parse_program()
 pprint.pprint(ast)
 ```
-@LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "OK"`, `python3 main.py`)
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -506,7 +507,7 @@ for prog in broken_programs:
         print(f"Input: {prog!r} -> no errors")
     print()
 ```
-@LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "OK"`, `python3 main.py`)
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -597,7 +598,7 @@ for src in ["1 + 2", "1 + 2 + 3", "1 + 2 + 3 + 4"]:
 # ('+', ('+', ('num', 1), ('num', 2)), ('num', 3))
 # Note the left-leaning structure: (1+2) computed first, as left-assoc demands.
 ```
-@LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "OK"`, `python3 main.py`)
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 

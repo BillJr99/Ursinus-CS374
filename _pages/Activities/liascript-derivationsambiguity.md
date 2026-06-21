@@ -123,6 +123,7 @@ print("ambiguous alternative:", evaluate(tree_wrong))     # 20
 left_assoc  = ("-", ("-", 5, 2), 1)      # (5-2)-1 = 2   <- E -> E - T
 right_assoc = ("-", 5, ("-", 2, 1))      # 5-(2-1) = 4   <- E -> T - E
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -130,7 +131,7 @@ right_assoc = ("-", 5, ("-", 2, 1))      # 5-(2-1) = 4   <- E -> T - E
 
 A leftmost derivation always expands the leftmost nonterminal at each step; a rightmost derivation always expands the rightmost one. Watching them side by side makes it concrete that **both derivations produce the same parse tree** even though the step sequences differ.
 
-```python   @LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "ok"`, `python3 main.py`)
+```python
 # Model 4: Leftmost and rightmost derivation tracer for simple CFGs
 
 GRAMMAR = {
@@ -174,6 +175,7 @@ def show_derivation(start, grammar, label):
 show_derivation("E", GRAMMAR, "Leftmost")
 show_derivation("E", GRAMMAR, "Rightmost")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -187,7 +189,7 @@ show_derivation("E", GRAMMAR, "Rightmost")
 
 An ambiguous grammar lets the same string be derived via two *different* leftmost derivations, which means two different parse trees. The detector below generates all parse trees up to a size bound for a naive expression grammar and reports strings that have more than one tree.
 
-```python   @LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "ok"`, `python3 main.py`)
+```python
 # Model 5: Find two distinct parse trees for a + b + c under an ambiguous grammar
 # Grammar: E -> E + E | id
 # We represent trees as nested tuples for easy comparison.
@@ -257,6 +259,7 @@ if len(found) >= 2:
 else:
     print("Only one tree found (grammar may be unambiguous for this input).")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -270,7 +273,7 @@ else:
 
 The standard cure for expression ambiguity is to stratify the grammar: one nonterminal per precedence level, left recursion on the left for left-associativity. The model below builds parse trees under both the ambiguous and the unambiguous grammar for the same string and shows they differ in shape.
 
-```python   @LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "ok"`, `python3 main.py`)
+```python
 # Model 6: Compare trees from ambiguous vs. unambiguous (layered) grammar
 
 def leaf(v):   return {"op": None, "val": v,  "left": None, "right": None}
@@ -335,6 +338,7 @@ right_assoc = node("-", leaf(5), node("-", leaf(2), leaf(1)))
 print(f"Left-assoc  (5-2)-1 = {evaluate(left_assoc)}")   # 2  (correct)
 print(f"Right-assoc 5-(2-1) = {evaluate(right_assoc)}")  # 4  (wrong for subtraction)
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 

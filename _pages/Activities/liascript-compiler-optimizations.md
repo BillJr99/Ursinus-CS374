@@ -567,6 +567,7 @@ def optimize(node):
     node = fold_and_propagate(node, {})  # run again after inlining!
     return node
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 Test the pipeline on a program that contains all four optimization opportunities. Show before and after.
 
 ### Exercise 5 — Mini TCO (30 min, harder)

@@ -960,6 +960,7 @@ It evaluates each test in order; the first truthy test causes its associated exp
 # (cond ((< 3 0) 'neg) ((= 3 0) 'zero) (else 'pos))
 # Expected: 'pos'
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 Write the complete working implementation and verify it handles the test case above, plus a case where the first clause matches and the others are never evaluated.
 

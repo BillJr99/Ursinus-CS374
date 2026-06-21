@@ -50,6 +50,7 @@ def fact_direct(n):
 # Call it:
 # fact_direct(5) => 120
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 **CPS Style** — every function takes an extra argument `k` (the continuation):
 
@@ -63,6 +64,7 @@ def fact_cps(n, k):
 # Call it with the identity continuation:
 # fact_cps(5, lambda x: x)  => 120 (returned from identity)
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 **Key insight:** In the direct style, the Python call stack implicitly records "we still need to multiply by `n` after the recursive call returns." In the CPS version, that pending work is made *explicit* as a closure: `lambda result: k(n * result)`. The continuation **is** the stack frame. When there are no more stack frames to push because all pending work lives in closures, every call is a tail call.
 
@@ -113,7 +115,7 @@ except Exception as e:
     print("[cps:factorial] Error:", e)
     traceback.print_exc()
 ```
-@LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "OK"`, `python3 main.py`)
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions — Part I
 
@@ -254,7 +256,7 @@ except Exception as e:
     print("[cps:fibonacci] Error:", e)
     traceback.print_exc()
 ```
-@LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "OK"`, `python3 main.py`)
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Multiple Choice: CPS Form for `add(mul(2, 3), 4)`
 
@@ -397,7 +399,7 @@ except Exception as e:
     print("[cps:exceptions] Error:", e)
     traceback.print_exc()
 ```
-@LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "OK"`, `python3 main.py`)
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions — Part III
 
@@ -468,6 +470,7 @@ fetch_user(42, lambda user:
     fetch_posts(user, lambda posts:
         print("Got posts:", posts)))
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 This **is** CPS. `on_done` is the continuation. Nesting callbacks is manually writing the CPS transform.
 
@@ -479,6 +482,7 @@ async def get_user_posts():
     posts = await fetch_posts(user)  # fetch_posts_cps(user, lambda posts: ...)
     print("Got posts:", posts)
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 The `await` keyword *is* the continuation application. The compiler desugars `x = await expr; body` into `expr_cps(lambda x: body_cps(...))`. Python generates a state machine (a `coroutine` object) that is exactly a heap-allocated continuation.
 
@@ -490,6 +494,7 @@ def my_gen():
     yield 2        # "call my caller's continuation with 2, then wait"
     yield 3        # "call my caller's continuation with 3, then wait"
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 Each `yield` is a `k(value)` call where `k` is "send the value to whoever is iterating over me, then resume when they call next()."
 
@@ -576,7 +581,7 @@ except Exception as e:
     print("[cps:async] Error:", e)
     traceback.print_exc()
 ```
-@LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "OK"`, `python3 main.py`)
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions — Part IV
 
@@ -752,7 +757,7 @@ except Exception as e:
     print("[cps:trampoline] Error:", e)
     traceback.print_exc()
 ```
-@LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "OK"`, `python3 main.py`)
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions — Part V
 
@@ -851,7 +856,7 @@ except Exception as e:
     print("[cps:map] Error:", e)
     traceback.print_exc()
 ```
-@LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "OK"`, `python3 main.py`)
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 **Exercise 1 Questions:**
 
@@ -948,7 +953,7 @@ except Exception as e:
     print("[cps:interpreter] Error:", e)
     traceback.print_exc()
 ```
-@LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "OK"`, `python3 main.py`)
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 **Exercise 2 Questions:**
 
@@ -1046,7 +1051,7 @@ except Exception as e:
     print("[cps:callcc] Error:", e)
     traceback.print_exc()
 ```
-@LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "OK"`, `python3 main.py`)
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 **Exercise 3 Questions:**
 
@@ -1169,7 +1174,7 @@ except Exception as e:
     print("[cps:generator] Error:", e)
     traceback.print_exc()
 ```
-@LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "OK"`, `python3 main.py`)
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 **Exercise 4 Questions:**
 

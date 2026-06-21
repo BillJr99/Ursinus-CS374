@@ -116,6 +116,7 @@ def parse_primary(self):
     raise SyntaxError(f"expected an expression, found "
                       f"{tok.lexeme!r} at line {tok.line}" if tok else "end of input")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -123,7 +124,7 @@ def parse_primary(self):
 
 Different precedence assignments for the same token stream produce completely different trees and values. The model below encodes two precedence tables and a simple "what would this mean?" validator that folds a flat token list according to each table, showing both resulting trees.
 
-```python   @LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "ok"`, `python3 main.py`)
+```python
 # Model 2: Two precedence tables, one token stream — two different meanings.
 # We use a minimal Pratt-style fold (no full parser) just to show the shape.
 
@@ -198,6 +199,7 @@ print(f"Token stream: {' '.join(tokens2)}")
 print()
 show("Standard precedence (left assoc)", PREC_STANDARD, tokens2)
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -212,7 +214,7 @@ show("Standard precedence (left assoc)", PREC_STANDARD, tokens2)
 
 A self-contained recursive descent parser for `+`, `-`, `*`, `/` and parentheses. The mutual recursion `expr → addsub → muldiv → unary → primary → … → expr` gives precedence without any table.
 
-```python   @LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "ok"`, `python3 main.py`)
+```python
 # Model 3: Complete recursive-descent expression parser (stand-alone)
 # Tokens are produced by a tiny hand-written tokeniser.
 
@@ -307,6 +309,7 @@ def parse(src):
 for expr in ["2+3*4", "2*3+4", "(2+3)*4", "7-2-1", "-3*2", "1+2+3+4"]:
     print(f"  {expr!r:18} -> {parse(expr)}")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -320,7 +323,7 @@ for expr in ["2+3*4", "2*3+4", "(2+3)*4", "7-2-1", "-3*2", "1+2+3+4"]:
 
 A Pratt parser (precedence climbing) associates a *binding power* with each operator and decides whether to consume the next operator based on numeric comparison — no mutual recursion, no separate function per tier. Both parsers should produce the same AST for `2 + 3 * 4 - 1`.
 
-```python   @LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "ok"`, `python3 main.py`)
+```python
 # Model 4: Pratt parser (precedence climbing) and comparison with recursive descent
 
 import re
@@ -456,6 +459,7 @@ for t in tests:
     match = "==" if pr == rd else "!="
     print(f"{t!r:<18} {str(pr):<35} {match} {rd}")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 

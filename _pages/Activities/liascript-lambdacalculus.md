@@ -40,6 +40,7 @@ self_apply_arg = lambda f: f(f)
 print("identity(42) =", identity(42))
 print("Environment ready.")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -210,6 +211,7 @@ print("three        ->", to_int(three))            # expect 3
 print("mul 3 2      ->", to_int(mul(three)(two)))  # expect 6
 print("if true a b  ->", iff(true)("a")("b"))      # expect a
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -238,6 +240,7 @@ fact_step = lambda self: lambda n: 1 if n == 0 else n * self(n - 1)
 factorial = Z(fact_step)
 print("factorial(6) =", factorial(6))   # expect 720
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -373,7 +376,7 @@ twice  = Lam("f", Lam("x", App(Var("f"), App(Var("f"), Var("x")))))
 print("=== twice identity ===")
 reduce(App(twice, identity))
 ```
-@LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "OK"`, `python3 main.py`)
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -430,7 +433,7 @@ print("=== iszero ===")
 for num, name in [(zero,"zero"),(one,"one"),(two,"two")]:
     print(f"  iszero({name}) = {iszero(num)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "OK"`, `python3 main.py`)
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -530,7 +533,7 @@ for n1, t1, n2, t2, expected in tests:
     status = "PASS" if result == expected else "FAIL"
     print(f"  [{status}] alpha_equiv({n1}, {n2}) = {result}  (expected {expected})")
 ```
-@LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "OK"`, `python3 main.py`)
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 

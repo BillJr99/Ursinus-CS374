@@ -126,6 +126,7 @@ def derivable(target, start="S", max_steps=12):
 for s in ["ab", "aabb", "aaabbb", "aab", "ba", "abab"]:
     print(f"{s:8} -> {derivable(s)}")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -140,7 +141,7 @@ for s in ["ab", "aabb", "aaabbb", "aab", "ba", "abab"]:
 
 A grammar can be represented as a Python `dict` mapping each nonterminal to a list of right-hand sides (each RHS is itself a list of symbols). The breadth-first derivation checker below tests membership for short strings. Run it and observe which strings are in the language.
 
-```python   @LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "ok"`, `python3 main.py`)
+```python
 # Model 3: CFG as a Python dict + membership checker
 # Grammar: arithmetic over single-digit numbers with + and *
 # E -> E + T | T
@@ -192,6 +193,7 @@ tests = ["2+3", "2*3", "1+2*3", "2++3", "2+", "+2", "9*8*7"]
 for s in tests:
     print(f"  {s!r:12} in L(G)? {derivable(s, GRAMMAR)}")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -205,7 +207,7 @@ for s in tests:
 
 Before converting a grammar to recursive descent we need to know which nonterminals are directly left-recursive. A nonterminal $A$ is directly left-recursive if it has a production $A \rightarrow A\,\alpha$ for some $\alpha$.
 
-```python   @LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "ok"`, `python3 main.py`)
+```python
 # Model 4: Detecting direct left recursion in a grammar dict
 
 def find_left_recursive(grammar):
@@ -254,6 +256,7 @@ report("Left-recursive arithmetic", grammar_lr)
 report("Right-recursive (LL) arithmetic", grammar_rr)
 report("Balanced parentheses", grammar_bp)
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -267,7 +270,7 @@ report("Balanced parentheses", grammar_bp)
 
 A parse tree is a nested dictionary `{"node": label, "children": [...]}`. Building one by hand for `2 + 3 * 4` under the layered grammar and pretty-printing it shows directly that the `*` subtree is nested *inside* the `+` subtree — operator precedence made structurally explicit.
 
-```python   @LIA.eval(`["main.py"]`, `python3 -m py_compile main.py && echo "ok"`, `python3 main.py`)
+```python
 # Model 5: Parse trees as nested dicts + pretty printer
 
 def leaf(val):
@@ -338,6 +341,7 @@ right_tree = tree("-", leaf(7), tree("-", leaf(2), leaf(1)))
 print(f"Left-assoc  (7-2)-1 = {evaluate(left_tree)}")   # 2
 print(f"Right-assoc 7-(2-1) = {evaluate(right_tree)}")  # 6
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 

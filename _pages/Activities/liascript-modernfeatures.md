@@ -50,6 +50,7 @@ def describe(node):
 
 print(describe(("+", ("num", 2), ("neg", ("num", 3)))))
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 **The cost and the criterion.** A new syntactic form (readability spent up front, repaid in every dissection), and questions of exhaustiveness: ML-family compilers *prove* you handled every case, a reliability win your `evaluate`'s if-chain never gets. Notice the example: pattern matching is practically purpose-built for tree walks like yours.
 

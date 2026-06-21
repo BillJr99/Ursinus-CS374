@@ -236,6 +236,7 @@ def double(x: int) -> int:
 result: str = double(5)   # error: Incompatible types in assignment
                           # (expression has type "int", variable has type "str")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 > **Critical Thinking Questions 10–11**
 

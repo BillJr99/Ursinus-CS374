@@ -246,6 +246,7 @@ Dynamic scope makes it easy to pass implicit parameters through deep call chains
 fns = [lambda: i for i in range(3)]
 print([f() for f in fns])
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 [[___ your answer here ___]]
 
