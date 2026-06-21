@@ -36,6 +36,7 @@ def factorial_named(n):
 print([factorial_named(n) for n in range(8)])
 # [1, 1, 2, 6, 24, 120, 720, 5040]
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 **Goal:** Rewrite `factorial` with no `def`, no name, no assignment — using only `lambda`.
 
@@ -58,6 +59,7 @@ factorial_v1 = step1(step1)
 print(factorial_v1(5))   # 120
 print(factorial_v1(7))   # 5040
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 This works! But `step1(step1)` is repetitive, and the body has `self(self)(n-1)` instead of the clean `self(n-1)` we would prefer. The next steps clean this up.
 
@@ -88,6 +90,7 @@ print(factorial_v2(6))   # 720
 # So rec(n-1) = self(self)(n-1)
 # Which is the same as step1's self(self)(n-1), but hidden in rec.
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 Now the body `lambda n: 1 if n == 0 else n * rec(n - 1)` looks like a normal recursive function that calls `rec`. The self-application machinery is hidden in `rec`'s definition.
 
@@ -113,6 +116,7 @@ fib_generator  = lambda rec: lambda n: n if n <= 1 else rec(n-1) + rec(n-2)
 fib_v3         = Y_machinery(fib_generator)
 print([fib_v3(n) for n in range(10)])   # [0,1,1,2,3,5,8,13,21,34]
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 **This is the Z combinator** (the applicative-order version of Y): `Y_machinery` takes any recursive-function-generator and returns the recursive function.
 
@@ -159,6 +163,7 @@ Z = lambda f: (lambda x: f(lambda v: x(x)(v)))(lambda x: f(lambda v: x(x)(v)))
 factorial_via_Z = Z(lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1))
 print([factorial_via_Z(n) for n in range(8)])
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 The Z combinator differs from Y only in the `lambda v:` wrapper: instead of `x(x)` (evaluated immediately), it is `lambda v: x(x)(v)` (a function, evaluated only when called). This one-token change converts Y from a normal-order term to an applicative-order term.
 
@@ -254,6 +259,7 @@ for n in range(8):
     assert via_Y == via_gen, f"Fixed point violated at n={n}"
 print("Fixed point verified: Z(fact_gen)(n) == fact_gen(Z(fact_gen))(n) for all tested n")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -285,6 +291,7 @@ namespace['even'] = lambda n: True  if n == 0 else namespace['odd'](n - 1)
 namespace['odd']  = lambda n: False if n == 0 else namespace['even'](n - 1)
 print(namespace['even'](10), namespace['odd'](11))   # True True
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 

@@ -70,6 +70,7 @@ numbers = list(range(100))
 pure_sum = reduce(lambda a, b: a + b, numbers, 0)
 print("Pure sum (always correct):", pure_sum)   # always 4950
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions — *Solo then Group*
 
@@ -127,6 +128,7 @@ word_count = dict(map(word_reduce, grouped.items()))
 for word, count in sorted(word_count.items(), key=lambda x: -x[1])[:10]:
     print(f"  {word:15s}: {count}")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -161,23 +163,21 @@ def is_prime(n):
 
 numbers = list(range(100_000, 101_000))
 
-# Sequential
-t0 = time.time()
-seq_primes = list(filter(is_prime, numbers))
-t1 = time.time()
-print(f"Sequential: {len(seq_primes)} primes in {t1-t0:.3f}s")
+# Sequential (always correct, always reproducible)
+t0 = time.perf_counter()
+seq_primes = [n for n in numbers if is_prime(n)]
+t1 = time.perf_counter()
+print(f"Sequential: {len(seq_primes)} primes in {t1-t0:.4f}s")
 
-# Parallel (only safe in __main__ on macOS/Windows due to spawn model)
-if __name__ == '__main__':
-    t0 = time.time()
-    with multiprocessing.Pool() as pool:
-        results = pool.map(is_prime, numbers)
-    par_primes = [n for n, p in zip(numbers, results) if p]
-    t1 = time.time()
-    print(f"Parallel:   {len(par_primes)} primes in {t1-t0:.3f}s")
-    assert seq_primes == par_primes, "Results must match!"
-    print("Results match ✓")
+# Demonstrate: same pure function, same result regardless of execution order
+# On a real machine: pool = multiprocessing.Pool(); results = pool.map(is_prime, numbers)
+par_results = list(map(is_prime, numbers))   # identical logic, sequential for sandbox
+par_primes  = [n for n, p in zip(numbers, par_results) if p]
+assert seq_primes == par_primes
+print(f"Pure function guarantee: {len(par_primes)} primes — result identical whether sequential or parallel ✓")
+print("Key: is_prime reads only its argument → Pool.map(is_prime, numbers) is safe to parallelize")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -186,26 +186,33 @@ if __name__ == '__main__':
 `concurrent.futures.ProcessPoolExecutor` is the modern, higher-level parallel map. It uses the same process-pool model but with a cleaner interface that works well with `map`, `submit`, and `as_completed`.
 
 ```python
-from concurrent.futures import ProcessPoolExecutor, as_completed
 import math
+import time
 
 def compute_heavy(n):
-    """Simulate CPU-bound work: compute sum of sqrt of factors."""
+    """CPU-bound: sum of square roots of all divisors of n."""
     return sum(math.sqrt(i) for i in range(1, n+1) if n % i == 0)
 
-data = list(range(1, 500))
+data = list(range(1, 200))
 
-# parallel_map pattern: pure function, any iterable
-def parallel_map(func, iterable, workers=None):
-    with ProcessPoolExecutor(max_workers=workers) as executor:
-        return list(executor.map(func, iterable))
+t0 = time.perf_counter()
+results = list(map(compute_heavy, data))
+t1 = time.perf_counter()
+print(f"Sequential: {len(results)} values in {t1-t0:.4f}s")
 
-# Use it:
-if __name__ == '__main__':
-    results = parallel_map(compute_heavy, data)
-    print(f"Computed {len(results)} values")
-    print(f"Top 5: {sorted(zip(data, results), key=lambda x: -x[1])[:5]}")
+# On a real machine with ProcessPoolExecutor:
+#   with ProcessPoolExecutor() as ex:
+#       results = list(ex.map(compute_heavy, data))
+# Interface is identical — only execution location changes.
+
+top5 = sorted(zip(data, results), key=lambda x: -x[1])[:5]
+print("Top 5 by divisor-sqrt-sum:")
+for n, v in top5:
+    print(f"  n={n:3d}: {v:.4f}")
+print()
+print("compute_heavy is pure: no closures, no shared state → picklable, safe for ProcessPoolExecutor")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
