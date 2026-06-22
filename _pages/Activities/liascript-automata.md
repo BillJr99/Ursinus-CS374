@@ -331,6 +331,233 @@ for s in ["ab", "aab", "abab", "ba", "a", "b", ""]:
 
 ---
 
+# Part IV: Formal Language Theory in Practice — Adapted Examples
+
+These three models adapt Python programs from *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE). Each is rewritten to fit the dict representation used above; the ideas are Allison's and the code is adapted for CS374.
+
+---
+
+## Model 5: Ends-With-b — A Concrete DFA Runner
+
+The "ends-with-b" DFA has exactly two states: *not-ending-in-b* (start) and *just-saw-b* (accepting). Its transition table is small enough to verify by hand before running, making it ideal for building confidence in DFA tracing. The runner below is the same function as Model 2 applied to a new machine description — the runner never changes, only the data does.
+
+> *Adapted from [`end_with_b.py`](https://github.com/chuckallison/foundations-of-computing/blob/main/code/end_with_b.py) in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
+
+```python
+# DFA: strings over {a, b} that end with 'b'.
+# State 0: start / "last char was not b"
+# State 1: "last char was b"  ← accepting
+# Adapted from Allison, Figure 2-1.
+
+ENDS_WITH_B = {
+    "start":  0,
+    "accept": {1},
+    "delta": {
+        0: {"a": 0, "b": 1},
+        1: {"a": 0, "b": 1},
+    },
+}
+
+def run_dfa(machine, s, trace=False):
+    state = machine["start"]
+    if trace: print(f"  start: {state}")
+    for ch in s:
+        row = machine["delta"].get(state, {})
+        if ch not in row:
+            if trace: print(f"  '{ch}': DEAD STATE")
+            return False
+        state = row[ch]
+        if trace: print(f"  '{ch}' → {state}")
+    ok = state in machine["accept"]
+    if trace: print(f"  final: {state} → {'ACCEPT' if ok else 'REJECT'}")
+    return ok
+
+tests = [("b",True),("ab",True),("ba",False),("abb",True),
+         ("bba",False),("",False),("aaab",True),("abba",False)]
+print("=== Ends-with-b DFA ===")
+all_pass = True
+for s, expected in tests:
+    got = run_dfa(ENDS_WITH_B, s)
+    ok  = (got == expected)
+    all_pass = all_pass and ok
+    print(f"  {'PASS' if ok else 'FAIL'}  {s!r:8} → {got}")
+print(f"\nAll {len(tests)} tests passed: {all_pass}")
+print("\n=== Trace of 'aab' ===")
+run_dfa(ENDS_WITH_B, "aab", trace=True)
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+**CTQ M5.1** If you changed `"accept": {1}` to `"accept": {0, 1}`, which new strings would now be accepted? Explain by tracing through `run_dfa` on the empty string `""`.
+
+**CTQ M5.2** Extend this machine to accept strings ending in `"bb"`. How many states do you need, and what does each state remember about the last two characters?
+
+---
+
+## Model 6: Is the Language Empty? — DFS Reachability
+
+A fundamental question about any finite automaton: *does it accept anything at all?* If no accepting state is reachable from the start state, the language is empty. This is a graph-reachability question solved by DFS: treat the NFA's transition graph as a directed graph and search for any accepting node, stopping as soon as one is found.
+
+> *Adapted from [`empty.py`](https://github.com/chuckallison/foundations-of-computing/blob/main/code/empty.py) in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
+
+```python
+# Is the language of an NFA empty?
+# Empty iff no accepting state is reachable from the start state.
+# Algorithm: DFS treating the transition graph as a directed graph.
+# Adapted from Allison, Figure 2-9.
+
+def language_is_empty(nfa):
+    """Return True if no accepting state is reachable from start."""
+    graph = {}
+    for (src, _sym), dests in nfa["delta"].items():
+        graph.setdefault(src, set()).update(dests)
+
+    visited, stack = set(), list(nfa["start"])
+    while stack:
+        node = stack.pop()
+        if node in visited:
+            continue
+        visited.add(node)
+        if node in nfa["accept"]:
+            return False     # accepting state found: NOT empty
+        for neighbor in graph.get(node, set()):
+            if neighbor not in visited:
+                stack.append(neighbor)
+    return True              # no accepting state reachable: IS empty
+
+# Test 1: ends-in-ab NFA — language is NOT empty
+ENDS_IN_AB = {
+    "start":  frozenset({"q0"}),
+    "accept": frozenset({"q2"}),
+    "delta": {
+        ("q0","a"): frozenset({"q0","q1"}),
+        ("q0","b"): frozenset({"q0"}),
+        ("q1","b"): frozenset({"q2"}),
+    },
+}
+# Test 2: accepting state is unreachable — language IS empty
+DEAD_ACCEPT = {
+    "start":  frozenset({"s0"}),
+    "accept": frozenset({"s2"}),
+    "delta":  {("s0","a"): frozenset({"s1"})},
+}
+# Test 3: start state IS an accepting state — language contains the empty string
+ACCEPTS_EPSILON = {
+    "start":  frozenset({"q0"}),
+    "accept": frozenset({"q0"}),
+    "delta":  {},
+}
+print(f"ends-in-ab empty?      {language_is_empty(ENDS_IN_AB)}")
+print(f"dead-accept empty?     {language_is_empty(DEAD_ACCEPT)}")
+print(f"accepts-epsilon empty? {language_is_empty(ACCEPTS_EPSILON)}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+**CTQ M6.1** The DFS ignores *which symbol* labels each transition — it treats the NFA as a plain directed graph. Why is this correct for the emptiness question? What would need to change if we also wanted to find a *witness string* (the shortest string accepted)?
+
+**CTQ M6.2** Replace the DFS stack with a `collections.deque` (BFS). Does the emptiness answer change? What does change, and when would BFS be preferable for finding a witness string?
+
+**CTQ M6.3** Construct an NFA with 10 states whose language is empty. Describe its structure in one sentence — what makes every accepting state unreachable?
+
+---
+
+## Model 7: Binary Addition as a Carry-State Machine
+
+Can a finite automaton *compute*? Yes — if it produces output on each transition rather than only a yes/no verdict at the end. This is a **Mealy machine**. Binary addition is the perfect case: the carry from one column is exactly one bit of state, so a 2-state machine handles addition of any length. Each step reads a pair of bits, outputs a sum bit, and transitions to the next carry state — $n$ steps for two $n$-bit numbers.
+
+> *Adapted from [`binadd.py`](https://github.com/chuckallison/foundations-of-computing/blob/main/code/binadd.py) in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
+
+```python
+# Binary addition via a 2-state carry automaton (Mealy machine).
+# State  = carry-in bit (0 or 1).
+# Input  = pair of bits from each operand, least-significant bit first.
+# Output = sum bit for this position.
+# Adapted from Allison, Figure 2-42.
+
+def binary_add(x: int, y: int) -> int:
+    def to_lsb(n):
+        if n == 0: return [0]
+        bits = []
+        while n:
+            bits.append(n & 1)
+            n >>= 1
+        return bits   # least-significant bit first
+
+    a, b = to_lsb(x), to_lsb(y)
+    length = max(len(a), len(b))
+    a += [0] * (length - len(a))
+    b += [0] * (length - len(b))
+
+    carry = 0       # machine state
+    result_bits = []
+    for ba, bb in zip(a, b):
+        total = ba + bb + carry
+        result_bits.append(total % 2)   # output bit
+        carry = total // 2              # next state
+    if carry:
+        result_bits.append(1)
+
+    return sum(bit * (2**i) for i, bit in enumerate(result_bits))
+
+print("=== Carry-state binary adder ===")
+pairs = [(0,0),(1,0),(3,5),(7,1),(13,9),(255,1),(100,156)]
+all_pass = True
+for x, y in pairs:
+    got = binary_add(x, y)
+    ok  = (got == x + y)
+    all_pass = all_pass and ok
+    print(f"  {'PASS' if ok else 'FAIL'}  {x:3} + {y:3} = {got:4}  (expected {x+y})")
+print(f"\nAll tests passed: {all_pass}")
+
+print("\n=== Carry-state trace: 13 + 9 ===")
+a_bits = [1,0,1,1]; b_bits = [1,0,0,1]; carry = 0
+for i,(ba,bb) in enumerate(zip(a_bits, b_bits)):
+    total = ba + bb + carry
+    out   = total % 2; carry = total // 2
+    print(f"  col {i}: ({ba}+{bb}+carry_in={carry-(total//2-carry)}) → sum_bit={out}, carry_out={carry}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+**CTQ M7.1** The `carry` variable is the machine's only state and takes exactly two values. Draw the Mealy machine: two nodes (labeled 0 and 1) with arrows labeled `(bit_a, bit_b) / sum_bit`. How many arrows does the complete diagram have?
+
+**CTQ M7.2** The machine handles numbers of any length using exactly 2 states. What would change — in the *number of states*, not the implementation — if you extended the machine to base-10 addition?
+
+**CTQ M7.3** The machine processes bits least-significant first, which is natural for carry propagation. Redesign it to process most-significant first. What additional data structure do you need, and why?
+
+---
+
+## Practice — Allison Readings 2.1 and 2.2
+
+[[MC]]
+A DFA accepting binary strings representing multiples of 3 needs at minimum:
+- (x) 3 states — one per remainder mod 3
+- ( ) 4 states
+- ( ) 2 states (even/odd)
+- ( ) Infinitely many states (since there are infinitely many multiples of 3)
+
+[[MC]]
+Which of the following languages has NO finite automaton that recognizes it?
+- ( ) Strings over {a,b} with an even number of `a`s
+- ( ) Strings over {a,b} ending with `bb`
+- (x) Strings over {a,b} with equal numbers of `a`s and `b`s
+- ( ) Strings over {a,b} not containing `aa` as a substring
+
+[[MC]]
+An NFA with 5 states is converted to a DFA via the subset construction. The DFA has at most:
+- ( ) 5 states
+- ( ) 10 states
+- (x) 32 states — one per subset of the 5 NFA states
+- ( ) 25 states
+
+1. *Divisibility DFA.* Draw a DFA over $\{0,1\}$ that accepts binary numbers divisible by 3. Label each state with the remainder it represents. Verify on: `0` (0), `11` (3), `110` (6), `101` (5).
+
+2. *Substring DFA.* Construct a DFA over $\{a,b\}$ that accepts strings containing both `aa` and `bb` as substrings. How many states? Label each with which combination (neither, only-aa, only-bb, both) it tracks.
+
+3. *NFA for union.* Draw an NFA for "strings over $\{a,b\}$ containing `ab` or `ba`." Use nondeterminism to keep the state count low, then implement it in the dict format from Model 3 and test on `ab`, `ba`, `aaa`, `bbb`, `abba`.
+
+4. *Subset construction by hand.* Apply the subset construction to: states $\{0,1,2\}$, start $\{0\}$, accept $\{2\}$, $\delta(0,a)=\{0,1\}$, $\delta(0,b)=\{0\}$, $\delta(1,b)=\{2\}$. List all DFA states (as subsets) and their transitions. How many DFA states result?
+
+---
+
 ## Reflection Prompt
 
 In your notebook: the DFA's whole intelligence is choosing what little to remember (one parity bit, the last two characters). Describe one situation in your own studying or work where deliberately remembering *less*, but the right less, made you more effective. Also: the NFA/DFA equivalence says that nondeterminism is "free" at the cost of state explosion. Does this idea appear elsewhere in computer science — a conceptually clean but potentially expensive algorithm that compiles into a deterministic one?

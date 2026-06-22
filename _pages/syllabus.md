@@ -142,6 +142,11 @@ textbooks:
   link: https://www3.nd.edu/~dthain/compilerbook/
   isrequired: true
   freelyavailable: https://www3.nd.edu/~dthain/compilerbook/compilerbook.pdf
+- title: "Foundations of Computing: An Accessible Introduction to Formal Languages"
+  authors: "Chuck Allison"
+  link: "https://www.amazon.com/dp/0578944170"
+  isrequired: true
+  freelyavailable: "https://leanpub.com/foundationsofcomputing"
 - title: "Programming Languages: Application and Interpretation"
   authors: "Shriram Krishnamurthi"
   link: "https://www.plai.org/"
@@ -217,6 +222,7 @@ schedule:
     rubricpath: "_pages/Assignments/asmt-warmup.md"
   readings:
   - rtitle: "Thain, Chapter 1"
+  - rtitle: "Allison, Ch. 1: Introduction — Formal Languages and Finite State Machines"
   - rtitle: "The Arc of This Course: From Symbols to Languages (Day 1 preview)"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-course-arc.md"
 - week: "0"
@@ -234,10 +240,15 @@ schedule:
   date: "1"
   title: "Syntax and BNF/EBNF"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-syntaxbnf.md"
+  readings:
+  - rtitle: "Allison, Ch. 6 §6.1: Context-Free Grammars and Derivations"
 - week: "2"
   date: "0"
   title: "Grammars and the Chomsky Hierarchy"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-grammars.md"
+  readings:
+  - rtitle: "Allison, Ch. 9 §9.3: The Chomsky Hierarchy"
+  - rtitle: "Allison, Ch. 6 §6.1: Context-Free Grammars and Derivations"
   deliverables:
   - dtitle: "Warmup Assignment Due"
     dlink: "Assignments/Warmup"
@@ -247,6 +258,8 @@ schedule:
   date: "1"
   title: "Derivations, Parse Trees, Ambiguity, and Precedence"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-derivationsambiguity.md"
+  readings:
+  - rtitle: "Allison, Ch. 6 §6.2: Derivation Trees and Ambiguous Grammars (Operator Precedence and Associativity)"
   deliverables:
   - dtitle: "Programming Assignment: Regular Expressions Handed Out"
     dlink: "Assignments/Regex"
@@ -256,14 +269,21 @@ schedule:
   date: "0"
   title: "Regular Expressions"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-regex.md"
+  readings:
+  - rtitle: "Allison, Ch. 3 §3.1–3.2: Regular Expressions and Their Equivalence to Finite Automata"
 - week: "3"
   date: "1"
   title: "Finite Automata: DFAs, NFAs, and Equivalence"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-automata.md"
+  readings:
+  - rtitle: "Allison, Ch. 2 §2.1–2.2: Deterministic and Non-Deterministic Finite Automata"
+  - rtitle: "Allison, Ch. 4 §4.2: Decision Algorithms (Is the Language Empty?)"
 - week: "4"
   date: "0"
   title: "Tokens and Scanning: Building a Lexer"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-tokensscanning.md"
+  readings:
+  - rtitle: "Allison, Ch. 2 §2.4: Machines with Output — Lexical Analysis"
   deliverables:
   - dtitle: "Programming Assignment: Regular Expressions Due"
     dlink: "Assignments/Regex"
@@ -295,6 +315,7 @@ schedule:
   title: "Abstract Syntax Trees"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-ast.md"
   readings:
+  - rtitle: "Allison, Ch. 6 §6.2: Expression Trees, Operator Precedence, and Associativity"
   - rtitle: "Optional: Expression-Oriented Code Structure"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-code-structure.md"
   - rtitle: "Optional: Transpilers, Compilers, and Code Generation"
@@ -304,6 +325,8 @@ schedule:
   title: "Table-Driven and LR Parsing"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-parsertable.md"
   readings:
+  - rtitle: "Allison, Ch. 5: Pushdown Automata — Adding a Stack to Finite Automata"
+  - rtitle: "Allison, Ch. 6 §6.3: Equivalence of PDAs and Context-Free Grammars"
   - rtitle: "Optional: Parser Generators with Flex and Yacc (C-based)"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-flexyacc.md"
   - rtitle: "Interactive: PLY Lexer and Parser in Python"
@@ -317,6 +340,7 @@ schedule:
   title: "Tree-Walking Interpretation: Evaluating the AST"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-interpretation.md"
   readings:
+  - rtitle: "Allison, Ch. 6 §6.1–6.2: Context-Free Grammars, Derivation Trees, and Expression Trees"
   - rtitle: "Optional: Tokenizer → Parser → Evaluator Pipeline Walkthrough"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-parser-interpreter.md"
   - rtitle: "Optional: Operational Semantics (Big-Step and Small-Step)"
@@ -352,6 +376,7 @@ schedule:
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-type-system-deep.md"
   - rtitle: "Optional: Hindley-Milner Type Inference (POGIL)"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-type-inference-activity.md"
+  - rtitle: "Optional: Allison, Ch. 10 §10.1: The Halting Problem — Why Some Questions About Programs Are Undecidable"
   - rtitle: "Optional: Data Structures and Generic Types"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-data-structures.md"
   deliverables:
@@ -390,6 +415,7 @@ schedule:
   title: "Lambda Calculus I: Syntax and Beta Reduction"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-lambdacalculus1.md"
   readings:
+  - rtitle: "Optional: Allison, Ch. 8: Turing Machines and the Church-Turing Thesis"
   - rtitle: "Optional: A Flock of Functions (Combinators and Church Encodings)"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-flock-of-birds.md"
   - rtitle: "Optional: Pattern Matching and Algebraic Data Types"
@@ -438,8 +464,6 @@ schedule:
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-objects-oop.md"
   - rtitle: "Optional: Macros and Metaprogramming"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-macros-metaprogramming.md"
-  - rtitle: "Optional: Module Systems and Libraries"
-    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-libraries.md"
   deliverables:
   - dtitle: "Programming Assignment: Functional Programming Due"
     dlink: "Assignments/Functional"

@@ -642,6 +642,144 @@ Run `import ast; print(ast.dump(ast.parse("2 + 3 * 4")))` in Python. Compare Pyt
 
 ---
 
+# Part V: Expression Trees in Practice — Adapted Examples
+
+These models adapt code from *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE). The adapted example rewrites Allison's binary-tree traversal as a typed `ExprNode` dataclass, connecting preorder/inorder/postorder traversal directly to prefix/infix/postfix notation — the same connection your parser and evaluator rely on.
+
+---
+
+## Model 6: Prefix, Infix, and Postfix — Three Views of One Tree
+
+An expression tree encodes *both* the values *and* the operator order, but different traversal orders produce different notation styles:
+- **Preorder** (root → left → right): prefix / Polish notation — operator comes first
+- **Inorder** (left → root → right): infix — operator is between operands (needs parentheses for unambiguity)
+- **Postorder** (left → right → root): postfix / reverse Polish — operator comes last, used by stack machines
+
+Understanding this connection makes the AST concrete: it is not just a compiler data structure; it is a *notation* for expressions, and different tree walks serialize it differently.
+
+> *Adapted from [`polish.py`](https://github.com/chuckallison/foundations-of-computing/blob/main/code/polish.py) in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
+
+```python
+from dataclasses import dataclass
+from typing import Optional
+
+@dataclass
+class ExprNode:
+    """A node in an expression tree.
+    Leaf nodes (numbers/variables) have op=None and no children.
+    Internal nodes (operators) have op set and left/right children."""
+    value: str                        # number, variable name, or operator
+    left:  Optional['ExprNode'] = None
+    right: Optional['ExprNode'] = None
+
+    def is_leaf(self):
+        return self.left is None and self.right is None
+
+def to_prefix(node: ExprNode) -> str:
+    """Preorder traversal → prefix (Polish) notation."""
+    if node.is_leaf():
+        return node.value
+    return f"{node.value} {to_prefix(node.left)} {to_prefix(node.right)}"
+
+def to_infix(node: ExprNode) -> str:
+    """Inorder traversal → infix notation (with parentheses for clarity)."""
+    if node.is_leaf():
+        return node.value
+    return f"({to_infix(node.left)} {node.value} {to_infix(node.right)})"
+
+def to_postfix(node: ExprNode) -> str:
+    """Postorder traversal → postfix (Reverse Polish) notation."""
+    if node.is_leaf():
+        return node.value
+    return f"{to_postfix(node.left)} {to_postfix(node.right)} {node.value}"
+
+def eval_tree(node: ExprNode) -> float:
+    """Evaluate an expression tree bottom-up (postorder)."""
+    if node.is_leaf():
+        return float(node.value)
+    left_val  = eval_tree(node.left)
+    right_val = eval_tree(node.right)
+    ops = {'+': left_val + right_val, '-': left_val - right_val,
+           '*': left_val * right_val, '/': left_val / right_val}
+    return ops[node.value]
+
+# Build the tree for  (1 + 2) * 3
+#        *
+#       / \
+#      +   3
+#     / \
+#    1   2
+tree1 = ExprNode('*',
+            ExprNode('+', ExprNode('1'), ExprNode('2')),
+            ExprNode('3'))
+
+# Build the tree for  1 + 2 * 3   (multiplication binds tighter → * is deeper)
+#      +
+#     / \
+#    1   *
+#       / \
+#      2   3
+tree2 = ExprNode('+',
+            ExprNode('1'),
+            ExprNode('*', ExprNode('2'), ExprNode('3')))
+
+for label, tree, expected_val in [
+    ("(1 + 2) * 3", tree1, 9.0),
+    ("1 + 2 * 3",   tree2, 7.0),
+]:
+    print(f"=== {label} ===")
+    print(f"  prefix:  {to_prefix(tree)}")
+    print(f"  infix:   {to_infix(tree)}")
+    print(f"  postfix: {to_postfix(tree)}")
+    val = eval_tree(tree)
+    print(f"  value:   {val}  ({'OK' if val == expected_val else 'WRONG'})")
+    print()
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+**CTQ M6.1** The two trees above represent the same tokens in a different order — `(1+2)*3` vs `1+2*3`. What physical property of the tree (depth, root label, or shape) encodes operator precedence? Trace `eval_tree(tree2)` step by step to confirm that multiplication is evaluated before addition.
+
+**CTQ M6.2** Postfix notation is used by stack machines (RPN calculators, the JVM bytecode verifier). Write a `eval_postfix(tokens: list[str]) -> float` function that evaluates a postfix expression using only a stack. Verify it gives the same result as `eval_tree` for both trees above.
+
+**CTQ M6.3** The `to_infix` function adds parentheses around every subexpression. This is safe but verbose — `((1 + 2) * 3)` has more parentheses than needed. Modify `to_infix` to include parentheses only where necessary (i.e., only when a child's operator has lower precedence than the parent's). Test on `1 + 2 * 3` to confirm it produces `1 + 2 * 3` not `(1 + (2 * 3))`.
+
+---
+
+## Practice — Allison Readings 6.1 and 6.2
+
+[[MC]]
+A postorder traversal of an expression tree visits nodes in which order?
+- ( ) Root, then left subtree, then right subtree
+- ( ) Left subtree, then root, then right subtree
+- (x) Left subtree, then right subtree, then root
+- ( ) Right subtree, then left subtree, then root
+
+[[MC]]
+The postfix expression `3 4 + 5 *` evaluates to:
+- ( ) 23
+- (x) 35
+- ( ) 17
+- ( ) 32
+
+[[MC]]
+In an expression tree for `a + b * c`, the root node contains:
+- ( ) `a`
+- ( ) `*`
+- (x) `+`
+- ( ) `b`
+
+1. *Tree construction.* Build `ExprNode` trees for: (a) `2 + 3 * 4`, (b) `(2 + 3) * 4`, (c) `a - b + c` (left-associative). For each, print all three notations and the numeric value (using `a=2, b=3, c=4`).
+
+2. *Postfix evaluator.* Implement `eval_postfix(tokens)` using a stack: push numbers, and on each operator pop two operands, apply the operation, and push the result. Verify it matches `eval_tree` for both trees in Model 6.
+
+3. *Parse prefix.* Write `from_prefix(tokens: list[str]) -> ExprNode` that reconstructs a tree from a prefix token list (recursively: if the next token is an operator, read two subtrees; otherwise it's a leaf). Test it by doing the round-trip `from_prefix(to_prefix(tree).split()) == tree` for both trees in Model 6.
+
+4. *Depth and balance.* Write `tree_depth(node)` and `count_leaves(node)`. For a perfectly balanced binary tree of depth $d$, what is the relationship between `count_leaves` and $d$? Verify with a tree of depth 3.
+
+5. *AST for your language.* Using the `ExprNode` structure as a template, design node classes for all constructs in your team's language (not just arithmetic). Draw the tree for a `while` loop with a compound body. What fields does each node type need?
+
+---
+
 ## Reflection Prompt
 
 The AST is the third representation of the same program (characters → tokens → tree), each one closer to meaning and farther from what the programmer typed. What is gained and what is honestly lost at each translation? The tree is now the interface between the front end (lexer, parser) and the back end (evaluator, optimizer, compiler): what does this separation buy you as a language implementer?

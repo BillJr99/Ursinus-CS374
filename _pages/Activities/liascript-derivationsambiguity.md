@@ -424,6 +424,49 @@ The string `if A then if B then other else other` has two trees: the `else` can 
 
 ---
 
+## Practice — Allison, Ch. 6 §6.1–6.2: Derivation Trees and Ambiguous Grammars
+
+> *Exercises adapted from topics covered in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
+
+[[MC]]
+A grammar is ambiguous if:
+- ( ) It has more than one nonterminal
+- ( ) Some of its rules are left-recursive
+- (x) Some string in the language has two or more distinct parse trees
+- ( ) It generates an infinite language
+
+[[MC]]
+Left-recursion in a grammar rule causes a problem for:
+- ( ) LR parsers
+- (x) LL (recursive-descent) parsers
+- ( ) Both equally
+- ( ) Neither (left-recursion is handled by both parser types)
+
+[[MC]]
+The "dangling else" ambiguity occurs because:
+- ( ) The `else` keyword is reserved in most languages
+- ( ) `if` and `else` have the same precedence
+- (x) The grammar does not specify which `if` an `else` belongs to when they are nested
+- ( ) The parser cannot distinguish `if` from `else` tokens
+
+1. *Derivation tree practice.* For the unambiguous ladder grammar (expr → term { ("+"|"-") term }, term → factor { ("*"|"/") factor }, factor → NUMBER | "(" expr ")"), draw the unique derivation tree for `3 - 1 - 1`. Show both the tree and the bottom-up evaluation order.
+
+2. *Leftmost vs. rightmost derivation.* Using the grammar `S → S + S | id`, give both the leftmost and the rightmost derivation for `id + id + id`. Show that this grammar has more than two parse trees for this string.
+
+3. *Eliminate ambiguity.* The following grammar for `if/else` is ambiguous:
+   ```
+   stmt → "if" expr "then" stmt
+         | "if" expr "then" stmt "else" stmt
+         | OTHER
+   ```
+   Write an unambiguous version that implements the "nearest enclosing if" convention (each `else` matches the most recent unmatched `if`). Demonstrate on `if e1 then if e2 then s1 else s2`.
+
+4. *Associativity in parse trees.* Show that the grammar `E → E - E | NUMBER` produces two parse trees for `5 - 3 - 1`. Modify the grammar to enforce left-associativity and draw the single parse tree that results.
+
+5. *EBNF to BNF.* Convert the EBNF rule `expr → term { ("+" | "-") term }` to standard BNF (no `{...}` or `[...]`). How does the BNF version encode left-associativity? Compare the derivation trees produced by both versions for `1 + 2 + 3`.
+
+---
+
 ## Reflection Prompt
 
 In your notebook: precedence conventions are pure social agreement; mathematics worked fine before PEMDAS was standardized. What does today suggest about how much of "correctness" in computing is convention, and who gets to set it? Connect to one convention your team will set unilaterally in December.

@@ -620,6 +620,49 @@ The ideas in this activity connect directly to the next several topics in this c
 
 ---
 
+## Practice — Allison, Ch. 4 / Reading 4.2: Context-Free Languages
+
+These exercises cover context-free grammars and the Chomsky hierarchy, drawn from Allison, Ch. 4 §4.2 and Ch. 6 §6.1.
+
+> *Exercises adapted from topics covered in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
+
+[[MC]]
+Which of the following languages is context-free but NOT regular?
+- ( ) Strings over {a,b} ending in `bb`
+- ( ) Strings over {a,b} with an even number of `a`s
+- (x) Strings of the form a^n b^n (equal numbers of a's then b's)
+- ( ) The empty language
+
+[[MC]]
+In a context-free grammar, a production rule:
+- ( ) Maps a pair of nonterminals to a terminal
+- (x) Maps a single nonterminal to a string of terminals and/or nonterminals
+- ( ) Must have exactly two alternatives
+- ( ) Cannot contain the empty string (epsilon)
+
+[[MC]]
+A derivation tree (parse tree) for a grammar:
+- ( ) Shows only the terminals, in left-to-right order
+- (x) Shows the nonterminals used at each step, with the final string as its leaves
+- ( ) Is always a binary tree
+- ( ) Is unique for every string in the language
+
+1. *Write a CFG.* Write a context-free grammar (in BNF) for the language of properly nested parentheses: `()`, `(())`, `()()`, `((()))`, etc. Show a derivation tree for `(()())`.
+
+2. *Write a CFG for expressions.* Write a CFG for arithmetic expressions with `+`, `*`, numbers, and parentheses that is **unambiguous** and correctly encodes that `*` binds tighter than `+`. Show the unique parse tree for `2 + 3 * 4`.
+
+3. *Identify the hierarchy level.* For each language below, identify the *lowest* level of the Chomsky hierarchy that recognizes it (regular, context-free, context-sensitive, or recursively enumerable) and justify your answer:
+   - (a) Binary strings ending in `0`
+   - (b) Strings of the form $a^n b^n$
+   - (c) Strings of the form $a^n b^n c^n$
+   - (d) All Python programs that terminate
+
+4. *Ambiguity.* Show that the grammar `S → S + S | S * S | id` is ambiguous by giving two different parse trees for `id + id * id`. Then write an unambiguous grammar for the same language.
+
+5. *Chomsky Normal Form.* Convert the grammar `S → aSb | ε` to Chomsky Normal Form (CNF), where every rule is either `A → BC` or `A → a`. What does this reveal about the structure of $a^n b^n$?
+
+---
+
 ## Reflection Prompt
 
 In your notebook: the hierarchy says more expressive power costs more recognition machinery. Where else in computing (or in life) have you met this pattern — that the price of saying more is needing more memory to listen? Give two concrete examples from different domains.

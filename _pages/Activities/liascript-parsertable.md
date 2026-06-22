@@ -598,6 +598,55 @@ for ctype, cause, example, fix in conflicts:
 
 ---
 
+## Practice — Allison, Ch. 5: Pushdown Automata (Readings 5.1 and 5.2)
+
+These exercises cover pushdown automata (PDAs) and their relationship to context-free grammars. PDAs are the theoretical model underlying LR and LL parsers; understanding them deepens your intuition for shift-reduce parsing.
+
+> *Exercises adapted from topics covered in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
+
+[[MC]]
+A pushdown automaton (PDA) differs from a finite automaton primarily because:
+- ( ) It reads input from right to left
+- ( ) It has more than one start state
+- (x) It has access to an unbounded stack in addition to finite states
+- ( ) It can move without reading input (epsilon transitions only)
+
+[[MC]]
+The language a^n b^n (equal numbers of a's then b's) is recognized by a PDA because:
+- ( ) It is a regular language, recognizable by any finite automaton
+- (x) The PDA pushes 'a's onto the stack and pops one for each 'b', checking balance
+- ( ) The PDA uses its states (not the stack) to count the a's
+- ( ) The stack stores the entire input before processing begins
+
+[[MC]]
+The connection between PDAs and context-free grammars is:
+- ( ) Every PDA can be converted to a regular expression
+- ( ) PDAs recognize only a subset of context-free languages
+- (x) PDAs and CFGs recognize exactly the same class of languages (the context-free languages)
+- ( ) CFGs are strictly more powerful than PDAs
+
+[[MC]]
+In an LR(0) shift-reduce parser, the stack corresponds to:
+- ( ) The remaining unconsumed input
+- (x) The portion of the input already read, organized as a pushdown automaton's stack contents
+- ( ) The set of all parse trees built so far
+- ( ) The lookahead buffer
+
+1. *PDA design.* Design a PDA (state diagram or transition table) that accepts the language $\{a^n b^n \mid n \geq 0\}$. Your PDA should: push `a` onto the stack on input `a`, pop one stack symbol for each `b`, and accept by empty stack. Trace it on `aabb` and `aaabbb`.
+
+2. *PDA for balanced parentheses.* Design a PDA for the language of properly nested parentheses (e.g., `()`, `(())`, `(()())`). Trace it on `(())` and on the malformed input `(()`.
+
+3. *PDA to CFG.* The language $\{ww^R \mid w \in \{a,b\}^*\}$ (strings that are palindromes) is context-free. Write a CFG for it, then describe how a PDA would recognize it. What is the key operation the PDA performs at the midpoint?
+
+4. *Shift-reduce as PDA.* A shift-reduce parser is a PDA in disguise. For the simple grammar `E → E + T | T` and `T → id`, trace the shift-reduce actions on input `id + id`:
+   - List each action (SHIFT or REDUCE) and the stack contents after each step
+   - Identify the two "PDA states" (reading input vs. reducing)
+   - Explain what is pushed and popped at each reduction step
+
+5. *Grammar to PDA.* Given a context-free grammar, there is a standard algorithm to construct a PDA that recognizes the same language (the "top-down PDA"). Apply it to the grammar `S → aSb | ε`. Write out the PDA's transition rules and trace it on `aabb`.
+
+---
+
 ## Reflection Prompt
 
 In your notebook: the LR table is compiled knowledge, decisions made once, ahead of time, then executed mindlessly and fast, while your descent parser decides everything live. Where in your own work do you prefer compiled-ahead decisions (checklists, routines) versus live judgment, and what does each cost?

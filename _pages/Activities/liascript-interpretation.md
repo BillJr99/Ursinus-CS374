@@ -466,6 +466,153 @@ print(f"\nFinal environment: {env}")
 
 ---
 
+# Part III: Tree Traversal — Why Post-Order, Not Breadth-First
+
+## Model 4: BFS vs DFS — Why Evaluators Use Post-Order
+
+When you evaluate an AST, you always use *depth-first, post-order* traversal: left child first, right child next, then the current node. But why not breadth-first search? After all, BFS is the "level-by-level" traversal, and it seems simpler. This model shows both traversals on the same tree and makes the answer concrete: evaluating a node requires its children's *values*, which are only available after the children have been fully evaluated. BFS visits children of a node before it visits their children's children — it cannot satisfy the "children before parent" requirement of evaluation.
+
+> *Adapted from [`bfs.py`](https://github.com/chuckallison/foundations-of-computing/blob/main/code/bfs.py) in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
+
+```python
+from dataclasses import dataclass, field
+from typing import Optional, Any
+from collections import deque
+
+@dataclass
+class TreeNode:
+    label: str
+    children: list = field(default_factory=list)
+
+def bfs_traversal(root: TreeNode) -> list[str]:
+    """Breadth-first (level-by-level) traversal."""
+    if root is None:
+        return []
+    result = []
+    queue = deque([root])
+    while queue:
+        node = queue.popleft()
+        result.append(node.label)
+        for child in node.children:
+            queue.append(child)
+    return result
+
+def dfs_postorder(root: TreeNode) -> list[str]:
+    """Depth-first, post-order traversal: children before parent."""
+    if root is None:
+        return []
+    result = []
+    for child in root.children:
+        result.extend(dfs_postorder(child))
+    result.append(root.label)   # parent LAST
+    return result
+
+def dfs_preorder(root: TreeNode) -> list[str]:
+    """Depth-first, pre-order traversal: parent before children."""
+    if root is None:
+        return []
+    result = [root.label]       # parent FIRST
+    for child in root.children:
+        result.extend(dfs_preorder(child))
+    return result
+
+# Expression tree for  (1 + 2) * 3
+#       *
+#      / \
+#     +   3
+#    / \
+#   1   2
+# Represented as a general tree (each internal node has a list of children):
+expr_tree = TreeNode('*', [
+    TreeNode('+', [
+        TreeNode('1'),
+        TreeNode('2'),
+    ]),
+    TreeNode('3'),
+])
+
+bfs_order   = bfs_traversal(expr_tree)
+post_order  = dfs_postorder(expr_tree)
+pre_order   = dfs_preorder(expr_tree)
+
+print("=== (1 + 2) * 3 ===")
+print(f"  BFS order:       {' '.join(bfs_order)}")
+print(f"  DFS pre-order:   {' '.join(pre_order)}")
+print(f"  DFS post-order:  {' '.join(post_order)}")
+
+print()
+print("Why post-order works for evaluation:")
+print("  Post-order visits '1' then '2' then '+', so when we")
+print("  process '+' both operand values are already known.")
+print()
+print("Why BFS does NOT work for evaluation:")
+print("  BFS visits '*' before '+' (at level 0 before level 1),")
+print("  but to evaluate '*' we need the VALUE of '+' first.")
+
+# Simulate evaluation with post-order
+def eval_postorder(root: TreeNode) -> float:
+    """Evaluate an expression tree using post-order recursion."""
+    if not root.children:            # leaf node
+        return float(root.label)
+    child_vals = [eval_postorder(c) for c in root.children]
+    ops = {'+': sum(child_vals), '-': child_vals[0] - child_vals[1],
+           '*': child_vals[0] * child_vals[1], '/': child_vals[0] / child_vals[1]}
+    return ops[root.label]
+
+print(f"\nEvaluated result: {eval_postorder(expr_tree)}  (expected 9.0)")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+**CTQ M4.1** The BFS order for `(1 + 2) * 3` is `* + 3 1 2`. Explain precisely why you *cannot* evaluate the tree by processing nodes in this order. Which node in the BFS order is visited before its children's values are available?
+
+**CTQ M4.2** Post-order guarantees that every node is processed *after all its descendants*. Is this property true of DFS pre-order as well? Give a concrete example of a case where pre-order evaluation fails for the same reason BFS fails.
+
+**CTQ M4.3** The `eval_postorder` function uses recursion — but the call stack is implicit. Rewrite it iteratively using an explicit stack, producing the same result. What is the relationship between the recursive call stack and the explicit stack you used?
+
+---
+
+## Practice — Allison Reading 6.3
+
+[[MC]]
+An evaluator that processes an AST uses which traversal order?
+- ( ) Breadth-first (level by level)
+- ( ) Pre-order (root before children)
+- (x) Post-order (children before root)
+- ( ) In-order (left child, root, right child)
+
+[[MC]]
+A pretty-printer that prints operators *between* their operands uses which traversal?
+- ( ) Post-order
+- ( ) Pre-order
+- (x) In-order (with parentheses)
+- ( ) Breadth-first
+
+[[MC]]
+The BFS traversal of the tree for `(1 + 2) * 3` visits nodes in order:
+- ( ) `1 2 + 3 *`
+- ( ) `* + 3 1 2`
+- (x) `* + 3 1 2` — root first, then level 1, then leaves
+- ( ) `1 + 2 * 3`
+
+1. *Three traversals.* Build the expression tree for `a * b + c * d` (where `+` is the root). Write out all three traversal orders by hand, then verify with code.
+
+2. *BFS on a program AST.* Consider the AST for:
+   ```
+   while (x > 0) {
+       x = x - 1;
+       print x;
+   }
+   ```
+   Draw the tree. Then list the nodes in BFS order and in post-order. Explain why the evaluator *must* use post-order for the body and cannot use BFS.
+
+3. *Iterative post-order.* Rewrite `eval_postorder` using an explicit stack (no recursion). Test it on both trees from Model 4 and Model 6 (of the AST activity).
+
+4. *Tree statistics.* Write `max_depth(root)` and `node_count(root)` as tree walks. For the BFS traversal of a complete binary tree of depth 4, how many nodes are at level 3? Verify with code.
+
+5. *Interpreter extension.* In your interpreter's `evaluate` function, add a `depth` counter that increments on each recursive call and prints the current depth at each node. Run it on a deeply nested expression like `((((1 + 2) + 3) + 4) + 5)`. What is the maximum depth, and how does it relate to the number of operators?
+
+---
+
 ## Reflection Prompt
 
 In your notebook: you have now run a program in a language whose every component you understand, with no magic remaining between the characters and the answer. How does that change how you regard the languages you use daily? Which stage of the pipeline surprised you most, and what magic do you now most want to dispel next (type checking? closures? garbage collection?)?

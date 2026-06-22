@@ -69,6 +69,167 @@ $$
 
 ---
 
+## Model 0: Building an Expression Grammar — Step by Step
+
+Before writing any parser code, you need a *correct grammar* to implement. This model builds one from scratch, showing each pitfall and its cure. By the end, you will have the "ladder grammar" your parser implements — and you will understand *why* it has the form it does.
+
+### Step 1 — Naive Grammar (Ambiguous)
+
+Start with the most natural expression grammar:
+
+```
+expr → expr "+" expr
+      | expr "-" expr
+      | expr "*" expr
+      | expr "/" expr
+      | "(" expr ")"
+      | NUMBER
+```
+
+This grammar describes the right *language* (all arithmetic expressions), but it is **ambiguous**: the string `2 + 3 * 4` has two parse trees — one where `+` is the root and one where `*` is the root. The grammar says nothing about precedence, so a parser built from it will make arbitrary choices.
+
+### Step 2 — Enforcing Precedence (Hierarchy of Nonterminals)
+
+The fix is to use *separate nonterminals for each precedence level*. Lower-precedence operators go higher in the grammar (closer to `expr`), higher-precedence operators go deeper:
+
+```
+expr    → term   { ("+" | "-") term   }     # lowest precedence
+term    → factor { ("*" | "/") factor }     # higher precedence
+factor  → "-" factor | primary              # unary (right-associative)
+primary → NUMBER | "(" expr ")"
+```
+
+The `{ ... }` notation (EBNF) means zero or more repetitions. Now `2 + 3 * 4` has only one parse tree: `term` processes `3 * 4` before `expr` processes the `+`, encoding precedence structurally.
+
+### Step 3 — From EBNF to a While Loop
+
+The EBNF `{ ("+" | "-") term }` translates directly into Python:
+
+```python
+def parse_expr(lexer):
+    node = parse_term(lexer)              # parse first term
+    while lexer.peek().type in ("PLUS", "MINUS"):
+        op  = lexer.advance().value       # consume the operator
+        right = parse_term(lexer)         # parse next term
+        node = (op, node, right)          # fold left: build left-leaning tree
+    return node
+```
+
+This is **left-associative by construction**: the existing `node` always becomes the *left* child of the new `BinOp`, so `7 - 2 - 1` parses as `(7 - 2) - 1` (correct) rather than `7 - (2 - 1)` (wrong).
+
+### Step 4 — Why Not Left-Recursive Rules?
+
+A natural alternative is a left-recursive grammar rule:
+
+```
+expr → expr "+" term | term       # left-recursive
+```
+
+This encodes left-associativity in the grammar itself. But a recursive-descent parser would loop forever on this rule: `parse_expr` would immediately call `parse_expr` again without consuming any input. **Left-recursive grammars cannot be parsed by LL(k) parsers.** The while-loop pattern is the LL equivalent — it produces the same *tree shape* without the infinite loop.
+
+> **Watch out!** Left recursion and left associativity are different things. Left recursion is a property of a grammar rule; left associativity is a property of the *tree* that rule produces. The while-loop pattern achieves left associativity without left recursion.
+
+### Step 5 — The Final EBNF Grammar
+
+```ebnf
+program  → statement* EOF
+statement→ "let" IDENT "=" expr ";"
+          | "print" expr ";"
+          | "while" "(" expr ")" "{" statement* "}"
+          | "if" "(" expr ")" "{" statement* "}" [ "else" "{" statement* "}" ]
+          | IDENT "=" expr ";"
+expr     → term   { ("+" | "-") term   }
+term     → factor { ("*" | "/") factor }
+factor   → "-" factor | primary
+primary  → NUMBER | FLOAT | STRING | "true" | "false"
+          | IDENT | "(" expr ")"
+```
+
+Every `{ ... }` in the EBNF becomes a `while` loop; every `[ ... ]` becomes an `if`; every `|` in a rule becomes an `if/elif` chain. The grammar *is* the code.
+
+```python
+# Demonstration: the while-loop pattern produces left-associative trees.
+# We use tuples (op, left, right) as lightweight AST nodes.
+
+def lex(src):
+    """Minimal tokenizer: returns list of (type, value) pairs."""
+    import re
+    tokens = []
+    for m in re.finditer(r'\d+(\.\d+)?|[+\-*/()]|\S+', src):
+        s = m.group()
+        if re.fullmatch(r'\d+', s):       tokens.append(('NUM', s))
+        elif re.fullmatch(r'\d+\.\d+', s): tokens.append(('NUM', s))
+        elif s in '+-*/()':               tokens.append((s, s))
+        else:                              tokens.append(('IDENT', s))
+    tokens.append(('EOF', ''))
+    return tokens
+
+class Parser:
+    def __init__(self, src):
+        self.tokens = lex(src)
+        self.pos = 0
+
+    def peek(self):
+        return self.tokens[self.pos]
+
+    def advance(self):
+        tok = self.tokens[self.pos]
+        self.pos += 1
+        return tok
+
+    def parse_expr(self):
+        node = self.parse_term()
+        while self.peek()[0] in ('+', '-'):
+            op = self.advance()[1]
+            right = self.parse_term()
+            node = (op, node, right)   # left fold
+        return node
+
+    def parse_term(self):
+        node = self.parse_primary()
+        while self.peek()[0] in ('*', '/'):
+            op = self.advance()[1]
+            right = self.parse_primary()
+            node = (op, node, right)   # left fold
+        return node
+
+    def parse_primary(self):
+        tok = self.peek()
+        if tok[0] == '(':
+            self.advance()             # consume '('
+            node = self.parse_expr()
+            self.advance()             # consume ')'
+            return node
+        return ('NUM', self.advance()[1])
+
+def show_tree(node, indent=0):
+    prefix = "  " * indent
+    if isinstance(node, tuple) and len(node) == 3:
+        print(f"{prefix}({node[0]})")
+        show_tree(node[1], indent+1)
+        show_tree(node[2], indent+1)
+    else:
+        print(f"{prefix}{node[1]}")
+
+expressions = ["2 + 3 * 4", "(2 + 3) * 4", "7 - 2 - 1", "1 + 2 + 3 + 4"]
+for src in expressions:
+    tree = Parser(src).parse_expr()
+    print(f"=== {src} ===")
+    show_tree(tree)
+    print()
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+**CTQ 0.1** Run the parser on `7 - 2 - 1`. The tree should be `(-, (-, 7, 2), 1)`, which evaluates to `4`. If the tree were `(-, 7, (-, 2, 1))` instead, what value would it produce? Which is "correct" for subtraction, and what does this tell you about the importance of left-associativity?
+
+**CTQ 0.2** The grammar has `factor → "-" factor` (unary minus, right-recursive). This rule *is* right-recursive, but it doesn't cause infinite loops in a recursive-descent parser. Why not?
+
+**CTQ 0.3** Add a `parse_factor` method that handles unary negation: if the current token is `-`, consume it and recursively call `parse_factor`; otherwise call `parse_primary`. Test on `-3`, `--3`, and `-(2 + 3)`.
+
+---
+
 ## Model 1: Trace the Loop
 
 This model asks you to simulate the `parse_addsub` loop by hand so you can see exactly where associativity comes from. The key insight is that the running `node` variable acts as a left-accumulator: each new operator wraps the *accumulated result so far* as its left child, producing a left-leaning tree. Changing which side receives the accumulator changes associativity — and therefore the numeric result.

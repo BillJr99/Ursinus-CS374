@@ -534,6 +534,140 @@ A student writes `inner.define("x", 99)` when they meant to update the outer sco
 
 ---
 
+# Part III.5: Variable Storage — A Step-by-Step Trace
+
+## Model 5: Dictionary-Based Environment — Walking Through Every Operation
+
+Before wiring the `Environment` class into your interpreter, it helps to trace every environment operation on a concrete program. This model runs a small program step by step, printing the state of every dictionary at each moment. The goal: after this trace, you should be able to predict the environment chain's exact contents at any point in any program — without running it.
+
+**The program we will trace:**
+
+```
+let total = 0;
+let n = 5;
+{
+    let i = 1;
+    total = total + i;       # prints: total=1 after first iteration
+}
+print total;
+```
+
+The environment at each key moment:
+
+```
+After "let total = 0":    global: {total: 0}
+After "let n = 5":        global: {total: 0, n: 5}
+Enter inner block:         global: {total: 0, n: 5}  ← inner: {}
+After "let i = 1":        global: {total: 0, n: 5}  ← inner: {i: 1}
+After "total = total + i": global: {total: 1, n: 5}  ← inner: {i: 1}
+Exit inner block:          global: {total: 1, n: 5}  (inner discarded)
+```
+
+```python
+class Environment:
+    """A chain of dictionaries implementing lexical scope."""
+
+    def __init__(self, parent=None, name="?"):
+        self.vars   = {}
+        self.parent = parent
+        self.name   = name    # for display only
+
+    def define(self, name, value):
+        """Create a new binding in the CURRENT scope."""
+        self.vars[name] = value
+
+    def lookup(self, name):
+        """Walk the chain outward to find a binding."""
+        if name in self.vars:
+            return self.vars[name]
+        if self.parent is not None:
+            return self.parent.lookup(name)
+        raise NameError(f"undefined variable '{name}'")
+
+    def assign(self, name, value):
+        """Update an EXISTING binding, wherever in the chain it lives."""
+        if name in self.vars:
+            self.vars[name] = value
+            return
+        if self.parent is not None:
+            self.parent.assign(name, value)
+            return
+        raise NameError(f"cannot assign to undefined variable '{name}'")
+
+    def __repr__(self):
+        parts = [f"{self.name}:{self.vars}"]
+        if self.parent:
+            parts.append(repr(self.parent))
+        return " ← ".join(parts)
+
+def trace_program():
+    print("=== Step-by-step environment trace ===\n")
+
+    # Step 1: create global environment
+    glob = Environment(name="global")
+    print(f"Start:                  {glob}\n")
+
+    # Step 2: let total = 0
+    glob.define("total", 0)
+    print(f"After 'let total = 0':  {glob}\n")
+
+    # Step 3: let n = 5
+    glob.define("n", 5)
+    print(f"After 'let n = 5':      {glob}\n")
+
+    # Step 4: enter inner block
+    inner = Environment(parent=glob, name="inner")
+    print(f"Enter block:            {inner}\n")
+
+    # Step 5: let i = 1
+    inner.define("i", 1)
+    print(f"After 'let i = 1':      {inner}\n")
+
+    # Step 6: total = total + i  (lookup total and i, assign to total)
+    new_total = glob.lookup("total") + inner.lookup("i")
+    glob.assign("total", new_total)
+    print(f"After 'total = total+i': {inner}\n")
+
+    # Step 7: exit inner block (discard inner)
+    print(f"Exit block:             {glob}\n")
+
+    # Step 8: print total
+    result = glob.lookup("total")
+    print(f"print total → {result}\n")
+
+    # Step 9: demonstrate NameError after block exits
+    try:
+        glob.lookup("i")
+    except NameError as e:
+        print(f"lookup 'i' after block: {e}  (correct: 'i' is gone)\n")
+
+trace_program()
+
+# Demonstrate shadowing
+print("=== Shadowing demonstration ===\n")
+outer = Environment(name="outer")
+outer.define("x", 10)
+inner2 = Environment(parent=outer, name="inner")
+inner2.define("x", 99)   # shadows outer x
+print(f"Inner lookup 'x': {inner2.lookup('x')}  (should be 99)")
+print(f"Outer lookup 'x': {outer.lookup('x')}   (should be 10)")
+inner2.assign("x", 42)   # assigns to inner x (not outer)
+print(f"After inner assign x=42:")
+print(f"  inner x: {inner2.vars['x']}  (should be 42)")
+print(f"  outer x: {outer.vars['x']}   (should be 10 — unchanged)")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+**CTQ 5.1** In Step 6 of the trace (`total = total + i`), the lookup for `total` walks to the global environment, but the assign also updates the global. Walk through the `assign` method call by call to show exactly why `inner.assign("total", 1)` updates `glob.vars["total"]` rather than creating a new `inner.vars["total"]`.
+
+**CTQ 5.2** The `__repr__` method prints the chain as `inner:{...} ← global:{...}`. After Step 6, what does the full chain print? Write it out before running the code and confirm.
+
+**CTQ 5.3** Change `inner2.assign("x", 42)` to `inner2.define("x", 42)`. What would `inner2.lookup("x")` and `outer.lookup("x")` return? Explain the difference between `define` and `assign` in one sentence.
+
+---
+
 # Part IV: Wiring It into the Interpreter (Day 2)
 
 ## 3. Exercises
