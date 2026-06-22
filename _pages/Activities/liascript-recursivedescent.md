@@ -332,6 +332,150 @@ A teammate's `parse_expr` overflows the call stack instantly on any input. Witho
 
 ---
 
+## Practice — Parser Tracing: Hand-Simulate a Descent Parser
+
+These exercises build confidence in the grammar-to-code mapping and the call structure of a recursive descent parser by hand-simulating the exact sequence of function calls and token consumption. They prepare you for the parser assignment by showing the execution you will later trace in a debugger.
+
+> *Exercises adapted from the recursive descent parsing technique covered in standard compiler texts, including Douglas Thain's *Introduction to Compilers and Language Design* (Chapter 4).*
+
+[[MC]]
+A recursive descent parser for `expr → term { '+' term }` will call `parse_term()` how many times for input `1 + 2 + 3`?
+- ( ) Once (parse_term is called one time total)
+- ( ) Twice (once per `+` operator)
+- (x) Three times (one for each number in the sum)
+- ( ) Unboundedly many (until end of input)
+
+[[MC]]
+When parsing a statement like `if ( cond ) stmt`, the parser's call sequence is:
+- ( ) `parse_if_stmt()` → `parse_cond()` → `parse_stmt()`
+- ( ) `parse_stmt()` → `parse_cond()` → `parse_if_stmt()`
+- (x) `parse_stmt()` calls `parse_if_stmt()` when it sees `if` at the start; `parse_if_stmt()` then calls `parse_cond()` and `parse_stmt()` for its sub-parts
+- ( ) All three functions are called in parallel by the lexer
+
+1. **Hand-trace a parser call stack (simple grammar).**
+   
+   Grammar:
+   ```
+   expr → term { '+' term }
+   term → INT
+   ```
+   
+   Input tokens: `1 + 2`
+   
+   Trace the call stack step by step:
+   ```
+   call parse_expr()
+     pos=0, peek()='1'
+     call parse_term()
+       consume INT('1')
+       pos=1, return 1
+     pos=1, peek()='+' → loop condition true
+     consume '+'
+     pos=2, peek()='2'
+     call parse_term()
+       consume INT('2')
+       pos=3, return 3
+     pos=3, peek()=EOF → loop condition false
+     return tree for (1 + 2)
+   ```
+   
+   Draw the call stack diagram: show which function called which, and in what order tokens were consumed.
+
+2. **Hand-trace a parser with nested alternatives (statement parser).**
+   
+   Grammar:
+   ```
+   stmt → 'print' expr | 'let' IDENT '=' expr
+   expr → INT
+   ```
+   
+   Input: `let x = 42`
+   
+   Trace:
+   - `parse_stmt()` is called
+   - `peek()` is `'let'` → checks first alternative ('print') — fails because lookahead is 'let' not 'print'
+   - Checks second alternative ('let') — succeeds because lookahead matches
+   - Calls the path for 'let IDENT = expr'
+   - Show which function made which token consumption decision
+   - Final tree structure (as a tuple or object)
+
+3. **Hand-trace a parser with repetition (zero times).**
+   
+   Grammar:
+   ```
+   stmt_list → { stmt }
+   stmt → 'print' expr
+   expr → INT
+   ```
+   
+   Input: empty (just EOF)
+   
+   Question: Does `parse_stmt_list()` on empty input:
+   - Return an empty list (the `{ }` allows zero statements)?
+   - Raise an error (at least one statement required)?
+   
+   Trace through a while loop implementation:
+   ```python
+   def parse_stmt_list(pos):
+       stmts = []
+       while pos < len(tokens) and tokens[pos].type == 'PRINT':
+           new_pos = parse_stmt(tokens, pos)
+           stmts.append(new_pos[0])
+           pos = new_pos[1]
+       return stmts, pos
+   ```
+   
+   Show: how the loop's condition prevents any calls to `parse_stmt()` when input is empty, and what is returned.
+
+4. **Understand left-recursion failure (by hand).**
+   
+   **Bad grammar** (left-recursive):
+   ```
+   expr → expr '+' term | term
+   ```
+   
+   **Corresponding (broken) code:**
+   ```python
+   def parse_expr(pos):
+       expr_node = parse_expr(pos)  # BUG: call parse_expr immediately, before consuming anything
+       ...
+   ```
+   
+   Trace what happens when you call `parse_expr(0)` on input `1`:
+   - `parse_expr(0)` calls `parse_expr(0)` (recursion with no progress)
+   - This recurses infinitely
+   
+   Now show the **fixed grammar** (using a while loop):
+   ```
+   expr → term { '+' term }
+   ```
+   
+   Trace the same input `1`:
+   - `parse_expr(0)` calls `parse_term(0)`
+   - Token consumed; the while loop condition checks for `+` → not found
+   - Loop exits and returns
+   
+   Explain: why does the fixed version consume a token before recursing, avoiding infinite recursion?
+
+5. **Integration trace: full statement parse.**
+   
+   Grammar:
+   ```
+   program → stmt*
+   stmt → 'let' IDENT '=' expr ';'
+   expr → INT { '+' INT }
+   ```
+   
+   Input: `let x = 1 + 2 ;`
+   
+   Produce a full execution trace showing:
+   - Every function call (in order)
+   - Every token consumed (and the position after)
+   - The resulting AST tree (as nested tuples or objects)
+   - Annotations explaining *why* each function was called (e.g., "called because stmt starts with 'let'")
+
+---
+
 ## Reflection Prompt
 
 In your notebook: recursive descent works because the code's shape *is* the grammar's shape, a rare case of documentation that cannot drift from implementation. Where else have you seen (or wished for) structure and description fused this way?

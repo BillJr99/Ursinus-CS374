@@ -468,6 +468,104 @@ The exercises below ask you to write grammars from scratch, which is harder than
 
 ---
 
+## Practice — Allison, Ch. 4: Hand-Traced Grammar Recognition
+
+These exercises build confidence in the mapping between notation and code by writing small recognizer functions from grammar rules and tracing them on sample inputs. They directly support the recursive-descent parser assignment (Week 4).
+
+> *Exercises adapted from topics covered in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
+
+[[MC]]
+In a recognizer function for `IDENT "=" expr`, if the input is `x = 2 + 3`, which of the following matches?
+- ( ) The entire string is one IDENT
+- (x) IDENT matches `x`, literal `=` matches `=`, IDENT for `expr` would attempt to match `2` (and fail because `2` is not an identifier)
+- ( ) The rule accepts any input as long as the characters `=` appears somewhere
+- ( ) IDENT, `=`, and expr all must match *exactly once* each, in any order
+
+[[MC]]
+For the grammar rule `expr → term { ('+' | '-') term }`, the { ... } repetition becomes a `while` loop in code. The loop continues as long as:
+- ( ) There are more tokens
+- (x) The next token is `+` or `-` (i.e., matches one of the alternatives inside the braces)
+- ( ) The parser has consumed at least one term
+- ( ) End of input is not reached
+
+1. **Write a recognizer from a grammar rule.**
+   Grammar: `identifier → LETTER { LETTER | DIGIT | '_' }`
+   Write a Python function `recognize_identifier(tokens, pos)` that:
+   - Checks if `tokens[pos]` is a LETTER
+   - Loops while `tokens[pos+i]` is a LETTER, DIGIT, or underscore
+   - Returns the position after the last valid character (or None if the first character is not a LETTER)
+   
+   Test: `recognize_identifier(['x','1','2','_'], 0)` should return 4 (consumed all).
+   Test: `recognize_identifier(['1','2','x'], 0)` should return None (first token not a LETTER).
+
+2. **Trace a recognizer on input.**
+   Grammar: `list → INT { ',' INT }`
+   Function (provided):
+   ```python
+   def recognize_list(tokens, pos):
+       if pos >= len(tokens) or tokens[pos] != 'INT':
+           return None
+       pos += 1
+       while pos < len(tokens) and tokens[pos] == ',':
+           if pos + 1 >= len(tokens) or tokens[pos + 1] != 'INT':
+               return pos   # trailing comma error: stop here
+           pos += 2
+       return pos
+   ```
+   
+   Trace on input `['INT', ',', 'INT', ',', 'INT']`:
+   - Initial: `pos = 0`, first token is INT → advance to `pos = 1`
+   - Loop iteration 1: token at `pos=1` is `,` → advance to `pos=2`, check `pos+1=3` is INT → advance to `pos=3`
+   - Loop iteration 2: token at `pos=3` is `,` → advance to `pos=4`, check `pos+1=5` is beyond bounds → return 4
+   - Result: recognizer returns 4, but there are 5 tokens. Explain: why does it stop early?
+
+3. **Implement optional groups.**
+   Grammar: `declaration → 'let' IDENT [ '=' expr ]` (where `[ ]` means optional)
+   
+   Write `recognize_declaration(tokens, pos)` that:
+   - Expects `let` at current position
+   - Expects IDENT next
+   - Checks if the next token is `=`; if yes, expects an expr after it; if no, stops (expr is optional)
+   
+   Test on: `['let', 'x']` (should return 2, no `=` found)
+   Test on: `['let', 'x', '=', 'INT']` (should return 4, `=` and expr found)
+
+4. **Precedence via rule nesting.**
+   Grammar:
+   ```
+   expr → term { '+' term }
+   term → factor { '*' factor }
+   factor → INT | '(' expr ')'
+   ```
+   
+   Write all three recognizer functions. Trace on input `['INT', '+', 'INT', '*', 'INT']`:
+   - Call `recognize_expr` at position 0
+   - Inside: calls `recognize_term` → calls `recognize_factor` → consumes INT at 0 → returns 1
+   - Loop in expr: token at 1 is `+` → loop body calls `recognize_term` again → which eventually consumes tokens 2-4 (INT * INT)
+   - Final result: which function recognized the entire input, and did the tree reflect correct precedence (multiplication before addition)?
+
+5. **Error position reporting.**
+   Grammar: `statement → 'print' expr ';'`
+   
+   Function:
+   ```python
+   def recognize_statement(tokens, pos):
+       if pos >= len(tokens) or tokens[pos] != 'print':
+           return (None, pos)
+       pos += 1
+       new_pos = recognize_expr(tokens, pos)
+       if new_pos is None:
+           return (None, pos)   # error: return position where expr failed
+       if new_pos >= len(tokens) or tokens[new_pos] != ';':
+           return (None, new_pos)  # error: return position where semicolon missing
+       return (new_pos + 1, None)
+   ```
+   
+   Input: `['print', 'IDENT', 'PLUS']` (missing semicolon)
+   Trace: why does the function return `(None, 3)` rather than `(None, 2)`? How would you improve the error message to say "expected `;` at position 3" rather than just returning position 3?
+
+---
+
 ## Reflection Prompt
 
 In your notebook: BNF was introduced in 1959 to define ALGOL and remains in every language manual today. Why do you think this one notation outlived nearly everything else from that era? What property would a replacement need?

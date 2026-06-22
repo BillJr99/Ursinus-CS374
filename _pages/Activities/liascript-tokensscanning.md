@@ -391,6 +391,60 @@ The parser asks the lexer for the next token and receives `Token(NUMBER, "12", 4
 
 ---
 
+## Practice — Allison, Ch. 2 §2.4: Hand-Traced Tokenization
+
+These exercises build confidence in the maximal-munch rule and token ordering by tokenizing real programs on paper before writing code. They connect the formal lexer model to the practical parsing pipeline.
+
+> *Exercises adapted from topics covered in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
+
+[[MC]]
+The lexer applies patterns in order, using maximal munch. For the input `x>=5`, if `IDENT` is listed before `GE` (`>=`) in TOKEN_SPEC, the result is:
+- ( ) `IDENT("x"), GE, INT(5)` — the lexer is smart enough to lookahead and reorder
+- (x) `IDENT("x"), GT, EQ, INT(5)` — `>=` is never recognized because `IDENT` greedily consumed `x`
+- ( ) Undefined behavior; the order doesn't matter
+- ( ) A `LexError` because ambiguous input
+
+[[MC]]
+Maximal munch means the lexer matches the longest possible token. For input `<=`, if both `LT` (`<`) and `LE` (`<=`) are valid patterns:
+- ( ) The lexer tries `LT` first and succeeds immediately
+- (x) The lexer finds both `LT` and `LE` as possibilities and chooses `LE` (the longer match)
+- ( ) The lexer raises an ambiguity error
+- ( ) It depends on which is listed first in TOKEN_SPEC
+
+1. **Tokenize by hand (maximal munch rules).**
+   - Input: `x>=5+2`
+   - Rules (in order): `IDENT` matches `[a-z]+`, `GE` matches `>=`, `PLUS` matches `+`, `INT` matches `\d+`
+   - Trace through the lexer: at each position, which pattern matches? Show the token stream produced.
+   - Verify: does `>=` get tokenized as one `GE` token or two (`GT, EQ`)? Why?
+
+2. **Operator ordering matters.**
+   - Suppose TOKEN_SPEC lists `EQEQ` (`==`) AFTER `EQ` (`=`). Input: `x==5`
+   - Tokenize by hand using this bad ordering. What goes wrong?
+   - Now reorder TOKEN_SPEC to list `EQEQ` BEFORE `EQ`, and re-tokenize. Show the correct stream.
+   - Conclusion: explain in two sentences why longer operators must come first.
+
+3. **String literals with escapes.**
+   - Input: `"hello\nworld"`
+   - Your STRING pattern is `"(?:[^"\\]|\\.)*"`. Trace through each character:
+     - Position 0: `"` — starts the string
+     - Position 1–5: `hello` — match `[^"\\]` (not quote or backslash)
+     - Position 6–7: `\n` — match `\\.` (backslash followed by any char)
+     - Position 8–12: `world` — match `[^"\\]` again
+     - Position 13: `"` — end the string
+   - Confirm: the entire 14-character string is one STRING token, not broken up.
+
+4. **Identifying token breaks.**
+   - Input: `let x = 42;`
+   - Tokenize by hand with TOKEN_SPEC: `LET`, `IDENT`, `EQ`, `INT`, `SEMICOLON`, `WHITESPACE` (skip)
+   - At each position, show which pattern matches and mark token boundaries. Verify: `42` is one INT token, not two separate characters.
+
+5. **Why comments are deleted, not tokenized.**
+   - Input: `x = 1 # this is a comment`
+   - Tokenize, showing: (a) the tokens produced (without the comment), (b) why the lexer never produces a COMMENT token (it matches and skips).
+   - Connect to Model 2 (the skipping logic): if a token's type is "COMMENT" or "WHITESPACE", the lexer silently discards it. Why is this the right design?
+
+---
+
 ## Reflection Prompt
 
 In your notebook: the lexer absorbs whitespace and comments so later stages never see them. What is the analogous role on a human team (the person whose filtering work is invisible exactly when done well), and what does the analogy suggest about how such work should be valued?

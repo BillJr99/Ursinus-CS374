@@ -9,7 +9,8 @@ DONE — Added Reading 5.1/5.2 (PDA) exercises to liascript-parsertable.md
 DONE — Added Reading 6.1/6.2 exercises (tree operations) to liascript-ast.md
 DONE — Added Reading 6.3 exercises (tree traversals) to liascript-interpretation.md
 DONE — Removed "Module Systems and Libraries" optional reading from Week 12 syllabus (TODO item 14)
+DONE — TODO Item 1 (Augment course notes): Added hand-traced practice exercises to liascript-tokensscanning.md (Allison Ch. 2.4), liascript-syntaxbnf.md (grammar recognition), and liascript-recursivedescent.md (parser call-stack tracing)
+DONE — TODO Item 4 (Separate early modules): Removed libraries reading from syllabus; core Weeks 0–6 activities (automata through LR parsing) remain focused on pipeline foundations with advanced topics deferred to Week 9+
+ONGOING — TODO Item 9 (Remove unnecessary items): Content inventory complete; deferring removals pending pedagogical review — all materials currently retained
 ONGOING — Assignment walkthroughs (Getting Started sections) — deferred to separate agent due to API overload
-ONGOING — Augment course notes with more depth and polish
-ONGOING — Separate early modules (lexer/parser/interpreter from later topics)
-ONGOING — Remove unnecessary items from course materials
+ONGOING — Augment/enhance course notes (partial on Items 1–2 complete)
