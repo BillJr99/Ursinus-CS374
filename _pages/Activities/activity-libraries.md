@@ -5,9 +5,6 @@ title: "CS374: Programming Language Principles - Static and Dynamic Linked Libra
 
 
 info: 
-  additional_reading:
-    - title: "Dynamic System Library Example"
-      link: "https://repl.it/@BillJr99/DynamicMallocLibrary"
   goals: 
     - To describe the linker process
     - To differentiate between static and dynamic libraries, particularly with respect to their advantages and disadvantages
@@ -25,3 +22,7 @@ tags:
   
 ---
 
+
+## Example Library
+
+<iframe height="500px" width="100%" src="https://www.billmongan.com/Ursinus-CS374/assets/code-viewer.html?zip=https%3A%2F%2Fraw.githubusercontent.com%2FBillJr99%2FUrsinus-CS374%2Fgh-pages%2Ffiles%2Freplit%2FDynamicMallocLibrary.zip&title=Dynamic%20System%20Library%20Example" scrolling="yes" frameborder="no" allowfullscreen="true" sandbox="allow-scripts allow-same-origin"></iframe>
