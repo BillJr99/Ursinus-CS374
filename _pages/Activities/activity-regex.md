@@ -39,11 +39,13 @@ info:
   additional_reading:
     - title: "Regex Parser Online"
       link: "https://regex101.com/"  
-    - title: "Regex Groups"
-      link: "https://repl.it/@BillJr99/RegExGroups"
       
 tags:
   - regex
   
 ---
 
+
+## Regex Groups Example
+
+<iframe height="500px" width="100%" src="https://www.billmongan.com/Ursinus-CS374/assets/code-viewer.html?zip=https%3A%2F%2Fraw.githubusercontent.com%2FBillJr99%2FUrsinus-CS374%2Fgh-pages%2Ffiles%2Freplit%2FRegExGroups.zip&title=Regex%20Groups" scrolling="yes" frameborder="no" allowfullscreen="true" sandbox="allow-scripts allow-same-origin"></iframe>
