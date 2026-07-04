@@ -55,11 +55,11 @@ The music track follows the same shape as the classic track: two preparatory act
 
 1. **[Music Languages and Live Coding](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-musiclanguages.md)** (activity) — meet TidalCycles and Strudel as *language designs*: embedded versus external DSLs, a formal model of patterns, and the timed-event semantics the rest of the track builds on.
 2. **[Flex and Yacc](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-flexyacc.md)** (activity) — build a working flex/yacc pipeline for a subset of the mini-notation in class.
-3. **[Programming Assignment: A Mini-Notation Parser with Flex and Yacc](asmt-mininotationparser.md)** — grow the in-class subset toward the real language: alternation, Euclidean rhythms, and polymeter, validated against the Strudel reference implementation (or against printed event lists alone).
-4. **[Written Assignment: The Lambda Calculus By Hand and In Code](asmt-lambdacalculus.md)** — paper derivations and a capture-avoiding interpreter, each auditing the other; connects the calculus to the host languages of Tidal and Strudel.
-5. **[Assignment: A Flock of Functions — Combinatory Logic in Code](asmt-flock-of-birds.md)** — the calculus stripped to combinators: hand reductions, a term reducer, and bracket abstraction.
-6. **[Assignment: Massively Parallel Data Processing with Pure Functions](asmt-parallel-functional.md)** — purity buys parallelism: a complete MapReduce pipeline, measured and analyzed against Amdahl's Law.
-7. **[Project: Design and Implement Your Own Live Coding Language](../Projects/proj-livecodinglanguage.md)** (capstone) — design, specify, build, and perform with a small live-coding language of your own; the alternative to the [Team Language Project](../Projects/proj-teamlanguage.md). The closing "performance" may be a live edit-and-rerun session over printed event output — rendered sound is optional here as everywhere on the track.
+3. **[Programming Assignment: A Mini-Notation Parser with Flex and Yacc](/Assignments/MiniNotationParser)** — grow the in-class subset toward the real language: alternation, Euclidean rhythms, and polymeter, validated against the Strudel reference implementation (or against printed event lists alone).
+4. **[Written Assignment: The Lambda Calculus By Hand and In Code](/Assignments/LambdaCalculus)** — paper derivations and a capture-avoiding interpreter, each auditing the other; connects the calculus to the host languages of Tidal and Strudel.
+5. **[Assignment: A Flock of Functions — Combinatory Logic in Code](/Assignments/FlockOfBirds)** — the calculus stripped to combinators: hand reductions, a term reducer, and bracket abstraction.
+6. **[Assignment: Massively Parallel Data Processing with Pure Functions](/Assignments/ParallelFunctional)** — purity buys parallelism: a complete MapReduce pipeline, measured and analyzed against Amdahl's Law.
+7. **[Project: Design and Implement Your Own Live Coding Language](/Projects/LiveCodingLanguage)** (capstone) — design, specify, build, and perform with a small live-coding language of your own; the alternative to the [Team Language Project](/Projects/TeamLanguage). The closing "performance" may be a live edit-and-rerun session over printed event output — rendered sound is optional here as everywhere on the track.
 
 ---
 
@@ -69,11 +69,11 @@ The table below maps each music-track deliverable to the classic-track deliverab
 
 | Music-track deliverable | Classic-track deliverable it can substitute for |
 | --- | --- |
-| [A Mini-Notation Parser with Flex and Yacc](asmt-mininotationparser.md) | [The Parser and AST](asmt-parser.md) |
-| [The Lambda Calculus By Hand and In Code](asmt-lambdacalculus.md) | [Continuations and call/cc](asmt-continuations.md) — choose this row *or* the next, not both |
-| [A Flock of Functions](asmt-flock-of-birds.md) | [Continuations and call/cc](asmt-continuations.md) — the row not chosen above counts as enrichment |
-| [Massively Parallel Data Processing with Pure Functions](asmt-parallel-functional.md) | [Functional Programming](asmt-functional.md) |
-| [Design and Implement Your Own Live Coding Language](../Projects/proj-livecodinglanguage.md) | [Team Language Project](../Projects/proj-teamlanguage.md) |
+| [A Mini-Notation Parser with Flex and Yacc](/Assignments/MiniNotationParser) | [The Parser and AST](/Assignments/Parser) |
+| [The Lambda Calculus By Hand and In Code](/Assignments/LambdaCalculus) | [Continuations and call/cc](/Assignments/Continuations) — choose this row *or* the next, not both |
+| [A Flock of Functions](/Assignments/FlockOfBirds) | [Continuations and call/cc](/Assignments/Continuations) — the row not chosen above counts as enrichment |
+| [Massively Parallel Data Processing with Pure Functions](/Assignments/ParallelFunctional) | [Functional Programming](/Assignments/Functional) |
+| [Design and Implement Your Own Live Coding Language](/Projects/LiveCodingLanguage) | [Team Language Project](/Projects/TeamLanguage) |
 
 The two activities (Music Languages and Live Coding; Flex and Yacc) are preparation, not substitutions — they play the same role the optional readings do on the classic schedule.
 

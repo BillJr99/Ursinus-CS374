@@ -23,7 +23,7 @@ info:
       description: "Recursive Descent Parser (Goals 2–3: implement a recursive descent parser with the full precedence ladder and correct associativity)"
       preemerging: The parser fails to run or fails most provided programs due to major structural errors
       beginning: The parser runs but fails on several test programs — e.g., it cannot parse nested constructs, or associativity is wrong at one or more tiers
-      progressing: The parser passes the provided test programs but fails on edge cases — e.g., it left-associates `and`/`or` instead of right-associating, or it crashes on certain valid inputs
+      progressing: The parser passes the provided test programs but fails on edge cases — e.g., it right-associates `and`/`or` instead of left-associating as the grammar specifies, or it crashes on certain valid inputs
       proficient: A correct parser passes all provided and hidden test programs with correct precedence and associativity at every tier; parenthesized subexpressions, nested blocks, and if-else chains parse correctly; and the parser is built by importing the Lexer unchanged — demonstrating that Goals 2 and 3 are met end-to-end
     - weight: 30
       description: "AST Design, Tooling, and Error Reporting (Goals 4–5: produce a dataclass AST with pretty-printer/unparser, and report errors with positions)"

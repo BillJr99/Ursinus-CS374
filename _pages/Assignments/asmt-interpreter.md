@@ -419,6 +419,7 @@ Five programs are provided whose outputs depend on your semantics decisions. Run
 
 Submit a ZIP containing:
 - `interpreter.py` — the evaluator, Environment class, and error hierarchy (importing `lexer.py` and `parser.py` unchanged; note any fixes)
+- `mylang.py` — the entry point: file runner and REPL (Part 3)
 - `SEMANTICS.md` — the language semantics document
 - `test_interpreter.py` — test suite with the shadowing program, the bomb test, all error-class tests, and the differential programs
 - `repl_transcript.txt` — the REPL session showing each error class and recovery
