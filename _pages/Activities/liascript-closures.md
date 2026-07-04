@@ -45,6 +45,25 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 ---
 
+## Key Concepts
+
+Before diving in, here is a plain-English glossary of the terms this activity uses. Return to this table whenever a term feels slippery.
+
+| Term | Plain-English meaning | Why it matters |
+|------|-----------------------|----------------|
+| **Closure** | A function bundled with the environment where it was defined | The mechanism that lets a function remember variables after their scope ends |
+| **First-class function** | A function treated as an ordinary value: stored, passed, returned | Without this, closures never arise; with it, they are unavoidable |
+| **Defining environment** | The scope chain in effect at the moment a function is created | This is what the closure captures — never the caller's environment |
+| **Capture by reference** | The closure holds a pointer to the *binding*, not a snapshot of the value | Explains why closures see later changes — and the loop-variable trap |
+| **Lexical (static) scope** | Names resolve where the function was *written* in the source | The rule Python, JavaScript, and Scheme use; implemented by one parent-pointer choice |
+| **Dynamic scope** | Names resolve in whoever *called* the function | The historical alternative; a contrast that shows what lexical scope buys |
+| **Environment diagram** | Boxes for scopes, arrows for parent and capture pointers | The picture that makes every closure question answerable |
+| **Loop-variable trap** | All closures made in a loop share one binding, so all see its final value | The most famous closure bug in Python and JavaScript alike |
+| **Factory function** | A function whose every call creates a fresh scope and returns a closure over it | The standard fix for the trap, and the pattern behind `make_adder` |
+| **Mutable cell / `nonlocal`** | The way an inner function assigns into a captured binding | How closures hold changing *state*, not just constants |
+
+---
+
 # Part I: The Problem and the Mechanism
 
 Imagine hiring a contractor who was trained in your workshop. After the workshop closes, the contractor still knows all its tools and rules — they carry that knowledge with them wherever they go. In the same way, a function defined inside another function "remembers" the variables from its birth environment even after the enclosing function has returned. This section shows the classic `make_adder` example that demonstrates why this behavior is necessary and useful.
@@ -355,6 +374,106 @@ print(f"fact(10) = {global_env.lookup('fact')(10)}")
 
 ---
 
+Every closure question becomes answerable the moment you draw the boxes. Here we take the classic **counter factory** — the "hello world" of stateful closures — and draw every environment box and arrow it creates, then verify the picture by peeking at Python's actual closure cells.
+
+## Model 4: The Counter Factory, Drawn as Environment Boxes
+
+**Worked example.** Trace this program by hand before running anything:
+
+```python
+def make_counter():
+    count = 0
+    def increment():
+        nonlocal count
+        count += 1
+        return count
+    return increment
+
+c1 = make_counter()   # call #1
+c2 = make_counter()   # call #2
+c1(); c1(); c2()
+```
+
+Step by step:
+
+1. **Call #1 to `make_counter`** creates environment box **E1** (parent: global) holding `count = 0`.
+2. The `def increment` inside that call creates **closure A** = ⟨code of `increment`, E1⟩, which is returned and bound to `c1`. `make_counter` has returned, but E1 survives — closure A still points to it (lifetime follows reachability).
+3. **Call #2** repeats the story with a *fresh* box **E2** and **closure B**, bound to `c2`.
+4. **`c1()`** creates a call frame whose parent is **E1** (the captured environment, not the caller's!). `nonlocal count` makes `count += 1` an *assignment into E1*: E1's count becomes 1. The second `c1()` makes it 2.
+5. **`c2()`** assigns into **E2**: its count becomes 1. E1 is untouched.
+
+The final picture:
+
+```
+                +---------------------------+
+                | global                    |
+                |   make_counter -> <fn>    |
+                |   c1 -> closure A         |
+                |   c2 -> closure B         |
+                +---------------------------+
+                     ^                ^
+             parent  |                |  parent
+        +-----------------+    +-----------------+
+        | E1 (call #1)    |    | E2 (call #2)    |
+        |   count = 2     |    |   count = 1     |
+        +-----------------+    +-----------------+
+                 ^                      ^
+        captured |             captured |
+        closure A = <increment, E1>   closure B = <increment, E2>
+             (bound to c1)                 (bound to c2)
+```
+
+And the same history as a table:
+
+| Action | E1's `count` | E2's `count` | Return value |
+|--------|--------------|--------------|--------------|
+| `c1 = make_counter()` | 0 | — | closure A |
+| `c2 = make_counter()` | 0 | 0 | closure B |
+| `c1()` | 1 | 0 | 1 |
+| `c1()` | 2 | 0 | 2 |
+| `c2()` | 2 | 1 | 1 |
+
+```python  liascript
+def make_counter():
+    count = 0
+    def increment():
+        nonlocal count
+        count += 1
+        return count
+    return increment
+
+c1 = make_counter()
+c2 = make_counter()
+
+print(c1(), c1())     # 1 2  — both assignments land in E1
+print(c2())           # 1    — E2 is a separate box
+
+# Verify the boxes are real: Python exposes them as closure "cells"
+print("c1's captured count:", c1.__closure__[0].cell_contents)   # 2
+print("c2's captured count:", c2.__closure__[0].cell_contents)   # 1
+print("same box?", c1.__closure__[0] is c2.__closure__[0])       # False — E1 is not E2
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+[[MC]]
+After `c1 = make_counter()`, `c2 = make_counter()`, then `c1(); c1(); c2()`, the returned values are 1, 2, 1 because:
+- ( ) Each call to `c1` creates a fresh environment with `count = 0`
+- (x) Each *call to `make_counter`* created its own environment box, so `c1` and `c2` increment different `count` bindings
+- ( ) Python copies the value of `count` into each closure at definition time
+- ( ) `c2` reset the shared counter
+
+**Critical Thinking Questions (CTQs)**
+
+> **CTQ 5.1** The diagram shows two separate boxes, E1 and E2, each holding its own `count`. What single fact about *when* environment boxes are created explains why `c1` and `c2` never interfere?
+
+> **CTQ 5.2** `make_counter` returned long ago, yet the table shows E1's `count` still changing. Using the phrase "lifetime follows reachability," name exactly what is keeping E1 alive, and predict what would have to happen for Python to reclaim it.
+
+> **CTQ 5.3** `nonlocal count` makes `count += 1` an **assign** into E1 rather than a **define** of a new local. Connect this to the environments module: without `nonlocal`, which operation would `count += 1` attempt, and why does it fail here? (Delete the `nonlocal` line in the cell and read the error.)
+
+> **CTQ 5.4** Redraw the boxes for the `make_counter` of Model 1, which returns *two* closures (`increment` and `reset`). How many E-boxes does one call create, and which arrows in your drawing explain why the pair shares state?
+
+---
+
 # Part III: The Loop-Variable Trap
 
 The loop-variable trap is one of the most famous beginner bugs in Python and JavaScript alike. Imagine handing every worker in a factory floor the *same* whiteboard marker and telling them to write down the current job number. By the time they all pick up the marker to write, the job number has moved on to the last value — they all write the same thing. This is exactly what happens when closures in a loop all capture the same variable binding instead of their own private copy.
@@ -392,13 +511,91 @@ print("Fix 2 (factory):", [f() for f in fns_fixed2])   # [0, 1, 2]
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **CTQ 5.1** All three lambdas captured the same `i` binding. After the loop, what is `i`? Why do all three lambdas return 2?
+> **CTQ 6.1** All three lambdas captured the same `i` binding. After the loop, what is `i`? Why do all three lambdas return 2?
 
-> **CTQ 5.2** Fix 1 uses `lambda i=i: i`. The outer `i` (the default argument value) is evaluated at *definition time*, capturing the current value. Why does this work, while the capture in the original version doesn't?
+> **CTQ 6.2** Fix 1 uses `lambda i=i: i`. The outer `i` (the default argument value) is evaluated at *definition time*, capturing the current value. Why does this work, while the capture in the original version doesn't?
 
-> **CTQ 5.3** Fix 2 uses a factory function `make_fn(i)` that creates a new scope. Draw the environment diagram showing why each returned lambda has a *different* captured environment.
+> **CTQ 6.3** Fix 2 uses a factory function `make_fn(i)` that creates a new scope. Draw the environment diagram showing why each returned lambda has a *different* captured environment.
 
-> **CTQ 5.4** JavaScript's historic `var` scoping caused the same bug; `let` was introduced to fix it. How does `let` create "per-iteration" scope? Why can't `var` do this?
+> **CTQ 6.4** JavaScript's historic `var` scoping caused the same bug; `let` was introduced to fix it. How does `let` create "per-iteration" scope? Why can't `var` do this?
+
+---
+
+The code above showed the trap and two fixes; now draw it. The broken and fixed versions differ by exactly one thing — how many environment boxes exist — and the box diagram makes the bug visible at a glance.
+
+## Model 5: The Loop Trap, Drawn as Boxes
+
+**Broken:** `fns = [lambda: i for i in range(3)]`. The comprehension runs in a single scope, so there is exactly **one** box holding `i`, and every lambda's capture arrow points at it:
+
+```
+        +----------------------------+
+        | comprehension scope        |
+        |   i = 2   (final value)    |
+        +----------------------------+
+             ^         ^         ^
+             |         |         |
+           lam0      lam1      lam2
+   three closures, ONE shared box: all see i = 2 at call time
+```
+
+**Fixed (factory):** `fns = [make_fn(i) for i in range(3)]`. Each *call* to `make_fn` creates a fresh box, and each lambda captures its own:
+
+```
+   +-----------+   +-----------+   +-----------+
+   | E0: i = 0 |   | E1: i = 1 |   | E2: i = 2 |
+   +-----------+   +-----------+   +-----------+
+        ^               ^               ^
+        |               |               |
+      lam0            lam1            lam2
+   three closures, three boxes: one binding per closure
+```
+
+The broken version's history as a timeline — the trap is a *timing* bug, because capture is by reference and the calls happen after the last write:
+
+| Loop step | Shared box's `i` | Closures created so far | What each would return *if called now* |
+|-----------|------------------|-------------------------|----------------------------------------|
+| iteration 0 | 0 | lam0 | lam0 → 0 |
+| iteration 1 | 1 | lam0, lam1 | both → 1 |
+| iteration 2 | 2 | lam0, lam1, lam2 | all → 2 |
+| after the loop (calls happen here) | 2 | all three | **all → 2** |
+
+```python  liascript
+# Evidence for the diagrams: inspect the closure cells directly
+broken = [lambda: i for i in range(3)]
+print("broken results:", [f() for f in broken])
+print("one shared box?",
+      broken[0].__closure__[0] is broken[1].__closure__[0] is broken[2].__closure__[0])
+
+def make_fn(i):
+    return lambda: i
+
+fixed = [make_fn(i) for i in range(3)]
+print("\nfixed results:", [f() for f in fixed])
+print("distinct boxes?",
+      fixed[0].__closure__[0] is not fixed[1].__closure__[0])
+print("each box's contents:", [f.__closure__[0].cell_contents for f in fixed])
+
+# Fix 1 (default argument) is different again: no closure at all
+fix1 = [lambda i=i: i for i in range(3)]
+print("\nfix1 results:", [f() for f in fix1])
+print("fix1 closures:", [f.__closure__ for f in fix1])   # [None, None, None]
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+[[MC]]
+`fns = [lambda: i for i in range(3)]` yields functions that all return 2, and `fns[0].__closure__[0] is fns[1].__closure__[0]` prints `True`. Together these show:
+- ( ) The lambdas were compiled to the same code object, which forces one result
+- (x) All three closures captured the very same binding (cell) for `i`, whose final value is 2
+- ( ) Python evaluates lambda bodies eagerly at definition time
+- ( ) The list comprehension copied the last lambda three times
+
+**Critical Thinking Questions (CTQs)**
+
+> **CTQ 7.1** Which single line of the cell's output is direct evidence for the "three arrows, one box" picture? Which line is evidence for "three boxes"?
+
+> **CTQ 7.2** In the fixed diagram, what act creates each new box: the `lambda` *definition*, or the *call* to `make_fn`? Justify your answer with the environment-creation rule from Part II (`eval_call` builds a new environment per call).
+
+> **CTQ 7.3** Fix 1's lambdas report `__closure__ = None` — they are not closures at all. Where does each one's `i` live instead, and why does that location make capture unnecessary?
 
 ---
 
@@ -460,11 +657,11 @@ print(f"Closure counter: {clo_counter['value']()}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **CTQ 6.1** In the closure-based counter, `count` is a shared mutable cell. In the object-based counter, `self._count` is a field. What is the structural difference? What is the conceptual difference?
+> **CTQ 8.1** In the closure-based counter, `count` is a shared mutable cell. In the object-based counter, `self._count` is a field. What is the structural difference? What is the conceptual difference?
 
-> **CTQ 6.2** The closure counter uses a list `[start]` to work around Python's scoping rules for `nonlocal`. Rewrite it using `nonlocal count` (Python 3) instead of a list. Why is `nonlocal` cleaner?
+> **CTQ 8.2** The closure counter uses a list `[start]` to work around Python's scoping rules for `nonlocal`. Rewrite it using `nonlocal count` (Python 3) instead of a list. Why is `nonlocal` cleaner?
 
-> **CTQ 6.3** Languages like OCaml and Haskell have closures but no classes. Languages like Java (pre-lambda) have classes but no closures (lambdas are objects). From what you now know about the implementation of each, argue: which is more fundamental?
+> **CTQ 8.3** Languages like OCaml and Haskell have closures but no classes. Languages like Java (pre-lambda) have classes but no closures (lambdas are objects). From what you now know about the implementation of each, argue: which is more fundamental?
 
 ---
 

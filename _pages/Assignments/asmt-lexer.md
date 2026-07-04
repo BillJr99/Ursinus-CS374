@@ -46,6 +46,59 @@ This assignment turns the class tokenizer into a **component**: the first perman
 
 ---
 
+## Purpose, Task, and Criteria
+
+**Purpose:** This assignment builds the skills of specifying a complete token grammar as ordered regular-expression rules, hardening a prototype into a reusable component with a stable `peek`/`advance`/`expect` interface, and reporting errors with precise positions in both fail-fast and collect-all modes. Every compiler, interpreter, linter, formatter, and syntax highlighter you have ever used begins with exactly this component, and the discipline it teaches — designing an interface that a downstream consumer imports unchanged — is the everyday work of professional software engineering. This Lexer is the first permanent piece of your language pipeline: the Parser assignment imports it as-is, and your team project ships it.
+
+**Task:** Work through the three numbered Parts below in order: the ordered token specification and baseline generator (Part 1), the Lexer class with its lookahead interface, string escapes, and JSON configurability (Part 2), and error handling with positions plus the full test suite (Part 3). Test after every Step before moving on — a subtle Part 1 bug is much cheaper to find now than from inside the parser.
+
+**Criteria:** Your work is graded against the rubric at the top of this page (30/40/30 points across the three Parts). What a strong submission looks like:
+
+- The token spec tokenizes every maximal-munch trap correctly — `iffy` is one identifier, `<=` is one `LE` — and the ordering rationale is written down in the readme, not just implied by the list.
+- `peek` is idempotent, `peek`/`advance`/`expect` return an EOF token forever at end of input, and the module imports with no side effects — the parser can rely on the contract without reading your source.
+- Every `LexError` carries line, column, and offending text; collect-all mode reports every error in one pass; and `test_output.txt` shows the whole suite passing, including the five deliberate error programs.
+
+---
+
+## Getting Started
+
+### Environment and Setup
+
+You need Python 3.10+ (`python --version` — record it in your readme) and the standard library only (`re`, `json`, `dataclasses`). This assignment grows the class tokenizer — and the `finditer` mini lexer you built in the Regex assignment — into a component. Start from whichever of those you trust more, and create the deliverable files up front:
+
+```
+lexer.py             # the Lexer module
+token_spec.json      # default token specification (Step 2d)
+token_spec_alt.json  # alternate dialect (Step 2d)
+test_lexer.py        # the test suite
+```
+
+### Your First 30 Minutes
+
+Define the `Token` dataclass from Step 1b and a `TOKEN_SPEC` with just six rules — `WHITESPACE`, `LET`, `IDENT`, `EQ`, `INT`, `SEMICOLON` — then write the `tokenize` generator from Step 1c and run it on the worked example:
+
+```python
+for tok in tokenize("let x = 42;"):
+    print(tok)
+```
+
+Compare your output against the six-token listing in Step 1c, including line and column numbers. Then feed it `lets x = 42;` and confirm `lets` comes out as a single `IDENT` — if it comes out as `LET` + `IDENT("s")`, your keyword pattern is missing its boundary check, and it is far better to learn that now with six rules than later with twenty-nine.
+
+### Suggested Pacing
+
+This assignment is handed out on Tuesday of week 5 and due on Thursday of week 7. The pacing below leaves the final class day for polish rather than panic:
+
+| Checkpoint | You should have |
+|------------|----------------|
+| Week 5 (Tue) — assigned | `Token` dataclass and a six-rule `tokenize` generator working |
+| Week 5 (Thu) | Part 1 complete: full `TOKEN_SPEC` passing all maximal-munch cases |
+| Week 6 (Tue) | Steps 2a–2b: `Lexer` class with `peek`/`advance`/`expect`; both consumption patterns agree |
+| Week 6 (Thu) | Steps 2c–2d: string escapes and JSON configuration (both dialects) |
+| Week 7 (Tue) | Part 3 error modes with precise positions; test suite largely written |
+| Week 7 (Thu) — due | Full test suite passing; readme written; ZIP assembled and submitted |
+
+---
+
 ## Part 1: Token Specification (30 points)
 
 ### Why Order Matters

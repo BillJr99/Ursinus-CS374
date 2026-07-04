@@ -51,6 +51,63 @@ This assignment builds the second permanent component of your pipeline: a recurs
 
 ---
 
+## Purpose, Task, and Criteria
+
+**Purpose:** This assignment builds the skills of writing a formal EBNF grammar, implementing a recursive descent parser with a full precedence ladder and correct associativity, and designing an AST of dataclasses with a pretty-printer, an unparser, and positioned error messages. Recursive descent is not a museum piece — it is how most production compilers (including those for several major languages) parse source code, and the same technique powers linters, formatters, configuration readers, and the language servers behind your IDE's autocomplete. This parser is the second permanent component of your pipeline: it imports your Lexer unchanged, and the Interpreter assignment and your team project import it unchanged in turn.
+
+**Task:** Work through the three numbered Parts below in order: the EBNF grammar (Part 1), the recursive descent parser built tier by tier atop your Lexer (Part 2), and the AST tooling with round-trip verification and error reporting (Part 3). Write the grammar before any parser code — it is the contract everything else is checked against.
+
+**Criteria:** Your work is graded against the rubric at the top of this page (30/40/30 points across the three Parts). What a strong submission looks like:
+
+- The grammar and the parser agree exactly: every precedence tier is its own non-terminal, associativity is enforced by structure, and the dangling-else policy is stated in the readme rather than left implicit.
+- The precedence tests from Step 2b pass with the exact tree shapes shown — `8 / 4 / 2` left-associates, `2 + 3 * 4` binds the multiplication tighter — and the Lexer is imported unchanged.
+- The round-trip property `parse(unparse(parse(s)))` is verified programmatically across the whole test suite, and every `ParseError` names the expected token, the found token, and its line and column.
+
+---
+
+## Getting Started
+
+### Environment and Setup
+
+You need Python 3.10+ and your completed Lexer. Copy your `lexer.py` and `token_spec.json` into the project directory and import the Lexer unchanged — if you discover a lexer bug while parsing, fix it and note the fix in your readme. Create the deliverable files up front:
+
+```
+lexer.py         # from the Lexer assignment, unchanged
+parser.py        # the recursive descent parser
+ast_nodes.py     # node dataclasses, pretty-printer, unparser
+test_parser.py   # the test suite
+```
+
+Confirm the import works before writing any parser code: `python -c "from lexer import Lexer; print(Lexer('let x = 1;').peek())"` should print a `LET` token.
+
+### Your First 30 Minutes
+
+Draft the expression tiers of your grammar on paper (Part 1 gives you the ladder), then implement just the bottom rung. Copy the `Num` and `Var` dataclasses from Step 2a into `ast_nodes.py`, and write `parse_primary()` in `parser.py`:
+
+```python
+from lexer import Lexer
+from ast_nodes import Num
+
+lexer = Lexer("42")
+print(parse_primary(lexer))   # Num(value=42, line=1)
+```
+
+When `parse_primary` returns a `Num` for `42`, a `Var` for `x`, and raises `ParseError` for `;`, you have the pattern every other tier repeats: look at `lexer.peek()`, decide, consume with `lexer.advance()` or `lexer.expect()`, return a node. Each tier of the ladder is one more function built on this move.
+
+### Suggested Pacing
+
+This assignment is handed out on Thursday of week 7 and due on Tuesday of week 9. Build tier by tier and keep the tests green as you go:
+
+| Checkpoint | You should have |
+|------------|----------------|
+| Week 7 (Thu) — assigned | Grammar drafted (Part 1); `parse_primary` and `parse_unary` working |
+| Week 8 (Tue) | Expression ladder complete through `parse_expr` with passing tree-shape tests (Step 2b) |
+| Week 8 (Thu) | Statements, blocks, and the worked `while` example parsing (Steps 2c–2d) |
+| Weekend | Pretty-printer and unparser working (Steps 3a–3b) |
+| Week 9 (Tue) — due | Round-trip verification and error reports complete; readme and ZIP submitted |
+
+---
+
 ## Part 1: EBNF Grammar (30 points)
 
 ### Writing the Grammar

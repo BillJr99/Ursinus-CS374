@@ -53,6 +53,63 @@ In this assignment you will build fluency with regular expressions in four scaff
 
 ---
 
+## Purpose, Task, and Criteria
+
+**Purpose:** This assignment builds a working command of regular expressions — writing and testing pattern libraries, building a `finditer`-based mini lexer, and applying both to realistic data-extraction tasks — along with the vocabulary (greedy vs. lazy, anchors, capture groups) to reason about *why* a pattern behaves the way it does. These are among the most transferable skills in the course: professionals reach for regular expressions daily in log triage, editor and IDE search-and-replace, input validation, and data cleaning. The mini lexer you build in Part 2 is also a direct preview of the Lexer assignment, and the limits question in Part 4 explains where regular expressions stop and the rest of your language pipeline begins.
+
+**Task:** Work through the four numbered Parts below in order: the pattern library (Part 1), the `finditer` mini lexer (Part 2), the text transformer and log parser (Part 3), and the pattern analysis writeup (Part 4). Each part is independently tested, and later parts reuse patterns from earlier ones.
+
+**Criteria:** Your work is graded against the rubric at the top of this page, with each Part worth 25 points. What a strong submission looks like:
+
+- Every pattern is a raw string, passes all of its `check()` calls (at least three positive and two negative cases each), and survives the hidden test inputs — no unanchored patterns that permit partial matches.
+- The mini lexer uses a single compiled alternation with named groups, tokenizes `iffy` as an identifier rather than `IF` + `ffy`, and reports unrecognized characters with their position.
+- The analysis answers cite concrete examples from *your own* patterns and code — not generic restatements of the course notes — and the limits paragraph correctly names the Chomsky level and pipeline component that handle balanced nesting.
+
+---
+
+## Getting Started
+
+### Environment and Setup
+
+You need Python 3.10+ (`python --version` to confirm) and nothing else — `re` and `json` are in the standard library. Create the files you will submit up front, so each part has a home:
+
+```
+patterns.py      # Part 1
+mini_lexer.py    # Part 2
+transformer.py   # Part 3a-3b
+log_parser.py    # Part 3c
+config.json      # Part 3c configuration
+readme.md        # Part 4 answers
+```
+
+### Your First 30 Minutes
+
+Copy the `check()` harness from Part 1 into `patterns.py`, then write and test exactly one pattern — P1, `COURSE_CODE`:
+
+```python
+COURSE_CODE = r"[A-Z]{2,4}-?\d{3}"
+
+check("COURSE_CODE", COURSE_CODE,
+      should_match=["CS374", "MATH111", "BIO-101"],
+      should_not_match=["cs374", "CS3741"])
+```
+
+Run `python patterns.py` and confirm you see a `PASS` line. Then break it on purpose: remove the `-?` and rerun to watch `check()` report the failure. That edit-run-read-failure loop is the whole workflow for Part 1 — once it works for one pattern, the remaining nine are repetitions of the same cycle.
+
+### Suggested Pacing
+
+This assignment is handed out on Thursday of week 2 and due on Tuesday of week 4:
+
+| Checkpoint | You should have |
+|------------|----------------|
+| Week 2 (Thu) — assigned | `check()` harness working; patterns P1–P3 passing |
+| Week 3 (Tue) | Part 1 complete: all ten patterns with test cases |
+| Week 3 (Thu) | Part 2 complete: mini lexer passing the ordering table |
+| Weekend | Part 3 complete: transformer and log parser producing the sample output |
+| Week 4 (Tue) — due | Part 4 analysis written; deliverables assembled and submitted |
+
+---
+
 ## Part 1: Pattern Library (25 points)
 
 ### The check() Harness

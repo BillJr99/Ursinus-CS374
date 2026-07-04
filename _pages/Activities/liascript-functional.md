@@ -45,6 +45,25 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 ---
 
+## Key Concepts
+
+Before diving in, here is a plain-English glossary of the terms this activity uses. Return to this table whenever a term feels slippery.
+
+| Term | Plain-English meaning | Why it matters |
+|------|-----------------------|----------------|
+| **Pure function** | Output depends only on inputs; nothing outside the function changes | Pure functions can be tested, cached, substituted, and parallelized fearlessly |
+| **Side effect** | Anything a function does besides return a value — mutating, printing, reading globals | Side effects are exactly what purity forbids; spotting them is a skill |
+| **Immutability** | Never modify existing data; build new data instead | Removes an entire class of "who changed my list?" bugs |
+| **Referential transparency** | A call can be replaced by its result anywhere without changing behavior | The formal payoff of purity; the license for safe refactoring |
+| **`map`** | Transform every element of a list with a function | Replaces the "loop that builds a new list" pattern |
+| **`filter`** | Keep only the elements that satisfy a test | Replaces the "loop with an `if` inside" pattern |
+| **`reduce` (fold)** | Collapse a whole list into one value with a two-argument function | Replaces the "loop with an accumulator variable" pattern |
+| **Higher-order function** | A function that takes functions as arguments or returns one | The mechanism behind combinators, decorators, and callbacks |
+| **Lambda** | A small anonymous function written inline | Lets you hand behavior to `map`/`filter`/`reduce` without naming it |
+| **Currying / partial application** | Supplying a function's arguments one at a time to build specialized functions from general ones | Turns general tools into custom ones; central to Haskell and the lambda calculus ahead |
+
+---
+
 # Part I: Purity
 
 ## 1. Functions Like Mathematics Meant
@@ -217,6 +236,75 @@ print(f"generator sum: {sum(gen)}")
 
 ---
 
+Before moving on to higher-order functions, pause and run one pipeline entirely *by hand*. If you can produce every intermediate list on paper, `map`/`filter`/`reduce` stop being magic incantations and become bookkeeping you happen not to write yourself.
+
+## Model 3: Tracing a Map–Filter–Reduce Pipeline by Hand
+
+**Worked example.** Trace the scores pipeline from Section 2, one stage at a time:
+
+```
+scores    [88, 92, 54, 71, 67, 95, 49, 83]
+   |  map: s -> min(s + 5, 100)          (curve, capped at 100)
+curved    [93, 97, 59, 76, 72, 100, 54, 88]
+   |  filter: s >= 70                    (keep passing scores)
+passing   [93, 97, 76, 72, 100, 88]
+   |  reduce: (acc, s) -> acc + s, seed 0
+total     526                            mean = 526 / 6 = 87.7
+```
+
+The same computation element by element — note how the two failing scores are *transformed* by `map` but *discarded* by `filter`, so they never reach `reduce`:
+
+| Element | After `map` (`min(s+5, 100)`) | Passes `>= 70`? | Running total in `reduce` |
+|---------|-------------------------------|-----------------|---------------------------|
+| 88 | 93 | yes | 0 + 93 = 93 |
+| 92 | 97 | yes | 93 + 97 = 190 |
+| 54 | 59 | no | 190 (unchanged) |
+| 71 | 76 | yes | 190 + 76 = 266 |
+| 67 | 72 | yes | 266 + 72 = 338 |
+| 95 | 100 | yes | 338 + 100 = 438 |
+| 49 | 54 | no | 438 (unchanged) |
+| 83 | 88 | yes | 438 + 88 = 526 |
+
+Run the cell to see the machine agree with your paper trace, fold step by fold step:
+
+```python  liascript
+from functools import reduce
+
+scores = [88, 92, 54, 71, 67, 95, 49, 83]
+
+curved = list(map(lambda s: min(s + 5, 100), scores))
+print(f"after map:    {curved}")
+
+passing = list(filter(lambda s: s >= 70, curved))
+print(f"after filter: {passing}")
+
+def traced_add(acc, s):
+    print(f"    fold step: acc={acc:3} + {s:3} -> {acc + s}")
+    return acc + s
+
+print("reduce, step by step:")
+total = reduce(traced_add, passing, 0)
+print(f"total = {total}, mean = {total / len(passing):.1f}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+[[MC]]
+In the pipeline trace, the score 54 becomes 59 after the map stage and then vanishes. Which statement is accurate?
+- ( ) `map` removed it because it was below 70
+- (x) `map` transformed it (54 → 59) and `filter` discarded it because 59 < 70
+- ( ) `reduce` skipped it while folding
+- ( ) It was removed before the map stage ran
+
+**Critical Thinking Questions (CTQs)**
+
+> **CTQ 3.1** Recompute the running-total column yourself to confirm 526. Which two original scores never reach `reduce`, and which stage eliminated each one?
+
+> **CTQ 3.2** The stage diagram materializes two whole intermediate lists (`curved`, `passing`) because the code calls `list(...)`. In the one-expression pipeline from Section 2 (no `list` calls), do those intermediate lists ever exist in memory? Connect your answer to the laziness you observed in CTQ 2.5.
+
+> **CTQ 3.3** The running-total column is exactly the accumulator variable from an imperative loop — yet nothing here is mutated. Where does the "updated" accumulator live on each fold step instead? And is `reduce` with `traced_add` still pure? (Careful: `traced_add` prints.)
+
+---
+
 # Part III: Higher-Order Functions
 
 You have already passed functions as arguments — every time you called `map(lambda x: x*2, data)` you handed a function to another function. Part III asks: what if a function could also *return* a new function? Think of it like a factory: instead of building one widget, the factory builds a machine that builds widgets. `make_adder(5)` is that factory — call it once and you get back a custom addition function, ready to use anywhere.
@@ -263,6 +351,81 @@ print(f"add5 twice applied to 0: {add5_twice(0)}")   # 10
     [( )] Avoids mutation
     [(x)] Both consumes functions as arguments and produces a function as its result
     [( )] Runs in logarithmic time
+
+---
+
+A composed pipeline like `clean` reads as a single gesture, but the machine executes it one function at a time. Tracing a composition call by call — writing down each intermediate value — is the fastest way to convince yourself that data really does flow left to right through `pipeline`, and right to left through `compose`.
+
+## Model 4: Composition, Traced One Call at a Time
+
+**Worked example.** Trace `clean("  Hello World  ")` where `clean = pipeline(str.strip, str.lower, lambda s: s.replace(' ', '_'))`. Since `pipeline` folds with `lambda v, f: f(v)`, the string threads through the functions in order:
+
+| Step | Function applied | Input value | Output value |
+|------|------------------|-------------|--------------|
+| start | — | `"  Hello World  "` | — |
+| 1 | `str.strip` | `"  Hello World  "` | `"Hello World"` |
+| 2 | `str.lower` | `"Hello World"` | `"hello world"` |
+| 3 | `s.replace(' ', '_')` | `"hello world"` | `"hello_world"` |
+
+As a flow diagram — and contrast with `compose`, which runs right to left:
+
+```
+pipeline:  x --> [strip] --> [lower] --> [replace ' '->'_'] --> "hello_world"
+compose:   compose(f, g)(x) = f(g(x))    -- g runs FIRST, then f
+```
+
+The cell below wraps each stage so it narrates itself, then swaps the first and last stages to show that composition order is part of the meaning:
+
+```python  liascript
+from functools import reduce
+
+def pipeline(*fns):
+    return lambda x: reduce(lambda v, f: f(v), fns, x)
+
+def traced(name, f):
+    """Wrap f so each application narrates itself."""
+    def wrapper(x):
+        result = f(x)
+        print(f"  {name:22} {x!r:22} -> {result!r}")
+        return result
+    return wrapper
+
+clean = pipeline(
+    traced("str.strip", str.strip),
+    traced("str.lower", str.lower),
+    traced("replace ' ' -> '_'", lambda s: s.replace(' ', '_')),
+)
+
+print("clean('  Hello World  '):")
+print(f"result: {clean('  Hello World  ')!r}")
+
+# Order matters: replace first, and the edge spaces get underscored
+messy = pipeline(
+    traced("replace ' ' -> '_'", lambda s: s.replace(' ', '_')),
+    traced("str.strip", str.strip),
+    traced("str.lower", str.lower),
+)
+print("\nsame three functions, different order:")
+print(f"result: {messy('  Hello World  ')!r}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+Notice that `traced` is itself a higher-order function: it consumes a function and returns a new one with the same behavior plus narration — the same shape as `twice` and `compose`.
+
+[[MC]]
+`compose(f, g)` returns `lambda x: f(g(x))`. Evaluating `compose(str.lower, str.strip)("  ABC  ")` therefore:
+- ( ) Applies `lower` first, then `strip`
+- (x) Applies `strip` first (it is innermost), then `lower`
+- ( ) Applies both simultaneously
+- ( ) Raises an error because strings are immutable
+
+**Critical Thinking Questions (CTQs)**
+
+> **CTQ 4.1** Each stage's output becomes the next stage's input. What requirement connects the *return type* of one stage to the *parameter type* of the next? The swapped `messy` pipeline still ran without error — did it satisfy your requirement, and is "runs without error" the same as "correct"?
+
+> **CTQ 4.2** Unroll `pipeline(f, g, h)(x)` by hand using the left-fold formula from CTQ 2.2 to show it computes `h(g(f(x)))`. Then unroll `compose(f, g)(x)`. Which order do you find easier to read, and why might data-pipeline libraries prefer left-to-right?
+
+> **CTQ 4.3** `pipeline` is implemented with `reduce` — but folding over a list of *functions* rather than numbers. In the trace table, what plays the role of the accumulator, and what is its value after step 2?
 
 ---
 
@@ -314,9 +477,9 @@ print(f"process({data}) = {process(data)}")   # sum of elements > 0 after subtra
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **CTQ 3.1** `map_with(lambda x: x * 2)` returns a function. How is this different from `map(lambda x: x * 2, data)`? When is the list transformer version more useful?
+> **CTQ 4.4** `map_with(lambda x: x * 2)` returns a function. How is this different from `map(lambda x: x * 2, data)`? When is the list transformer version more useful?
 
-> **CTQ 3.2** Haskell functions are automatically curried — `f x y` is always `(f x) y`. What advantage does automatic currying give you for composing functions?
+> **CTQ 4.5** Haskell functions are automatically curried — `f x y` is always `(f x) y`. What advantage does automatic currying give you for composing functions?
 
 ---
 

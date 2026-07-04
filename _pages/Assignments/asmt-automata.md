@@ -54,6 +54,62 @@ In this assignment you will build the machines beneath your lexer: general simul
 
 ---
 
+## Purpose, Task, and Criteria
+
+**Purpose:** This assignment builds the ability to implement general DFA and NFA simulators driven by machine definitions loaded as data, to design automata for specified languages, and to carry out the two classic constructions — subset construction and Thompson's construction — by hand and verify them by simulation. Finite automata are the execution model beneath every lexer generator (the tools behind `flex`, `re2`, and the regex engines in your editor all compile patterns to automata), and they appear throughout industry in network protocol validators, hardware controllers, and model checking. Completing this assignment means you will know exactly what machine your Lexer is secretly running.
+
+**Task:** Work through the four numbered Parts below in order: the DFA simulator and design portfolio (Part 1), the NFA simulator with epsilon-closure and its portfolio (Part 2), the hand-executed subset construction verified programmatically (Part 3), and Thompson's construction for a regex (Part 4). Parts 3 and 4 reuse the simulators from Parts 1 and 2, so get those solid first.
+
+**Criteria:** Your work is graded against the rubric at the top of this page, with each Part worth 25 points. What a strong submission looks like:
+
+- Both simulators handle the deliberate edge cases — the empty string, out-of-alphabet symbols, and epsilon cycles — and every designed machine is annotated with one sentence per state explaining what it "remembers."
+- The subset-construction table is complete in the writeup, and a test run shows the NFA and its derived DFA agreeing on every string in the test suite.
+- Thompson's construction is shown fragment by fragment with labeled states, and the final NFA passes all eight verification strings by simulation, not by inspection.
+
+---
+
+## Getting Started
+
+### Environment and Setup
+
+You need Python 3.10+ and the standard library only (`json` for machine files, `argparse` if you like for the CLI). Create the layout from the Deliverables section up front:
+
+```
+simulator.py       # loader, run_dfa, run_nfa, CLI
+machines/          # one JSON file per machine
+tests/             # test runner and output logs
+writeup.md         # construction tables and reflection
+```
+
+### Your First 30 Minutes
+
+Do not start with the simulator — start with a machine. Copy the two-state parity machine JSON from Part 1 into `machines/even_ones.json`, then write the smallest possible `run_dfa`:
+
+```python
+import json, sys
+
+machine = json.load(open("machines/even_ones.json"))
+state = machine["start"]
+for symbol in sys.argv[1]:
+    state = machine["delta"][state][symbol]
+print("accept" if state in machine["accept"] else "reject")
+```
+
+Run `python simulator.py 0110` (accept) and `python simulator.py 101` (reject), matching the traces shown in Part 1. Once this ten-line core works, Steps 1a and 1b are a matter of wrapping it in validation, error handling, and `--trace` — you already know the heart of it is right.
+
+### Suggested Pacing
+
+This assignment is handed out on Tuesday of week 4 and due on Tuesday of week 5 — a one-week turnaround, so start the day it is assigned:
+
+| Checkpoint | You should have |
+|------------|----------------|
+| Week 4 (Tue) — assigned | Loader/validator and DFA simulator working (Steps 1a–1b); DFA 1 designed |
+| Week 4 (Thu) | Part 1 portfolio complete; epsilon-closure and NFA simulator working (Steps 2a–2b) |
+| Weekend | Part 2 portfolio complete; Part 3 subset construction table and verified DFA |
+| Week 5 (Tue) — due | Part 4 Thompson's construction verified; writeup assembled and submitted |
+
+---
+
 ## Part 1: DFA Design and Simulation (25 points)
 
 ### Machine Format

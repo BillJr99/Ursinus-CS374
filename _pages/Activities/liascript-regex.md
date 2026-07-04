@@ -45,6 +45,25 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 ---
 
+## Key Concepts
+
+Before diving in, here is a plain-English glossary of the terms this activity uses. Return to this table whenever a term feels slippery.
+
+| Term | Plain-English meaning | Why it matters |
+|------|-----------------------|----------------|
+| **Regular expression** | A compact pattern that describes a whole *set* of strings at once | It is the specification language for every token type in your lexer |
+| **Concatenation** | Gluing patterns side by side: "this, then that" | The invisible default operator; most of any pattern is concatenation |
+| **Alternation (`\|`)** | "Either this or that" | Lets one pattern cover several spellings, like `if\|else\|while` |
+| **Kleene star (`*`)** | "Zero or more repeats of the thing just before me" | The only source of infinity in a regex; identifiers of any length need it |
+| **Character class (`[0-9]`, `\d`)** | "Any one character from this menu" | Abbreviates long alternations and keeps patterns readable |
+| **Anchor (`^`, `$`, `\b`)** | Matches a *position* (start, end, word edge), not a character | Stops a match from beginning or ending mid-word |
+| **Capture group `(...)`** | Parentheses that *remember* the text they matched | How you extract data from text rather than merely detect it |
+| **Greedy quantifier** | Takes as many characters as it can, giving some back only when forced | Explains most "my regex matched too much" surprises |
+| **Backtracking** | The engine undoes a choice and tries the next alternative | How the engine actually searches — and why some patterns are slow |
+| **Token** | The smallest meaningful chunk of source code (a number, a name, an operator) | The lexer's output; each token type is defined by one regex |
+
+---
+
 # Part I: Theory (Day 1)
 
 Every regular expression you will ever write, no matter how elaborate, is built from exactly three primitive ideas. Before reading the formal definitions, convince yourself intuitively: you can glue strings together (concatenation), pick one of several alternatives (alternation), and repeat something zero or more times (Kleene star). That is the entire toolkit — the rest of regex syntax is just abbreviation.
@@ -145,6 +164,65 @@ for m in re.finditer(r"order", text, flags=re.IGNORECASE):
 
 ---
 
+Matching is not always a single left-to-right sweep. Whenever the pattern offers a choice — a star deciding how many repetitions to take, or an alternation deciding which branch to try — the engine makes the greedy choice first and *remembers the decision point*. If the rest of the pattern later fails, the engine **backtracks**: it returns to the most recent decision, tries the next alternative, and pushes forward again. Watching one backtracking match in slow motion demystifies greedy behavior now and prepares you for the automata view in the next module.
+
+> **Watch out!** Backtracking is invisible when a match succeeds quickly, but it is still happening. On pathological patterns (nested quantifiers like `(a+)+` against input that *almost* matches), the number of decision points explodes and matching can take exponential time — so-called *catastrophic backtracking*. Knowing where decisions accumulate is how you avoid writing such patterns.
+
+## Model 2: Watching the Engine Backtrack
+
+**Worked example.** Match the pattern `a*ab` against the string `"aaab"` using `re.fullmatch`. Read the pattern as: "any number of `a`s, then one more `a`, then a `b`." The greedy `a*` first swallows every `a` it can — one too many, as it turns out.
+
+| Step | `a*` currently holds | Rest of pattern needs | Rest of input is | Outcome |
+|------|----------------------|-----------------------|------------------|---------|
+| 1 | `"aaa"` (greedy maximum) | `ab` | `"b"` | `a` vs `b` fails → **backtrack** |
+| 2 | `"aa"` (gave one back) | `ab` | `"ab"` | `ab` = `ab` → **MATCH** |
+
+Two attempts, one backtrack. Now trace the same pattern against `"ab"` yourself before running the cell: `a*` first holds `"a"`, the rest of the pattern needs `ab` but only `"b"` remains — fail; backtrack so `a*` holds `""`, the rest of the input is `"ab"` — match on the second attempt again.
+
+Run the cell below: it implements this specific pattern as an explicit search that narrates every decision, then confirms each verdict against Python's real engine.
+
+```python
+import re
+
+def trace_a_star_ab(s):
+    """Match a*ab against ALL of s, narrating each backtracking step."""
+    max_a = 0
+    while max_a < len(s) and s[max_a] == "a":
+        max_a += 1                    # the longest run of a's available to a*
+    for k in range(max_a, -1, -1):    # greedy: try the LONGEST take first
+        rest = s[k:]
+        print(f"  a* holds {'a'*k!r:8} rest of input = {rest!r:8}", end=" ")
+        if rest == "ab":
+            print("-> literal 'ab' fits: MATCH")
+            return True
+        print("-> literal 'ab' does not fit: backtrack (give back one 'a')")
+    print("  no choices left: overall FAILURE")
+    return False
+
+for s in ["aaab", "ab", "b", "aaa"]:
+    print(f"Pattern a*ab vs {s!r}:")
+    mine = trace_a_star_ab(s)
+    real = bool(re.fullmatch(r"a*ab", s))
+    print(f"  re.fullmatch agrees: {real == mine} (engine says {'MATCH' if real else 'no match'})\n")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+[[MC]]
+Matching `a*ab` against `"aaab"`, the engine's first attempt lets `a*` consume all three `a`s, and the rest of the pattern then fails. What happens next?
+- ( ) The engine reports failure immediately
+- ( ) The engine restarts with the reluctant interpretation of `*`
+- (x) The engine backtracks: `a*` gives back one character and the rest of the pattern is retried from there
+- ( ) The engine raises an exception because the pattern is ambiguous
+
+### Critical Thinking Questions
+
+8. In the trace for `"aaab"`, how many characters does `a*` hold on its *first* attempt, and why that many? State the general rule the engine follows when a greedy quantifier has a choice.
+9. Count the attempts for `"aaab"`, `"ab"`, and `"aaa"` from the trace output. Which input forced the most work, and what property of that input caused it?
+10. `a*ab` describes exactly the same set of strings as `a+b`. Verify this claim with `re.fullmatch` on all four test inputs, then explain why the second pattern never needs to backtrack on these inputs.
+11. A pattern like `(a+)+b` against a long string of `a`s with **no** `b` can take exponential time. Using the decision-point idea from this model, explain in two or three sentences where all those decisions come from.
+
+---
+
 You have now seen how to match a single pattern; a real lexer must recognize *many* token types in a single pass over the source. The trick is to combine all token patterns into one master alternation and let Python's `finditer` do the scanning. Named groups let each alternative carry a label, so after a match you immediately know which token type fired — exactly the information a lexer needs to emit a token stream.
 
 > **Watch out!** Quantifiers like `*`, `+`, and `?` are **greedy by default**: they consume as many characters as possible while still allowing the overall pattern to match. This is usually what you want in a lexer (match the longest token), but it can surprise you in other contexts. Append `?` to make a quantifier **non-greedy** (reluctant): `.*?` matches as *few* characters as possible. You will see this contrast demonstrated concretely in Model 3 (Greed).
@@ -204,10 +282,91 @@ for tok in lex(src):
 
 ### Critical Thinking Questions
 
-8. The master pattern joins all specs with `|`. Why must multi-character operators like `>=` appear before single-character `>`? What happens to `>=` if you swap their order?
-9. The `KEYWORD` pattern uses `\b` word boundaries. What would happen to the identifier `iffy` if keywords were matched without `\b`?
-10. The `ERROR` catch-all `.` matches any single character not matched by earlier patterns. Why is this the *last* pattern rather than the first? What role does it play in error reporting?
-11. The `SKIP` handler tracks newlines to maintain `line` and `line_start`. Why is accurate line/column tracking valuable for a language learner using your language?
+12. The master pattern joins all specs with `|`. Why must multi-character operators like `>=` appear before single-character `>`? What happens to `>=` if you swap their order?
+13. The `KEYWORD` pattern uses `\b` word boundaries. What would happen to the identifier `iffy` if keywords were matched without `\b`?
+14. The `ERROR` catch-all `.` matches any single character not matched by earlier patterns. Why is this the *last* pattern rather than the first? What role does it play in error reporting?
+15. The `SKIP` handler tracks newlines to maintain `line` and `line_start`. Why is accurate line/column tracking valuable for a language learner using your language?
+
+---
+
+Capture groups are what turn a regex from a yes/no detector into a *parser of flat records*: each group carves out one field of the matched text, and named groups label the fields. Nothing exercises this like log triage — the daily chore of turning thousands of text lines into structured data you can count, filter, and sort.
+
+## Model 4: Log Triage — A Capture-Group Walkthrough
+
+**Worked example.** Take one log line and the triage pattern:
+
+```
+line:    2026-09-18 08:10:22 WARN disk usage 91%
+pattern: (?P<date>\d{4}-\d{2}-\d{2}) (?P<time>\d{2}:\d{2}:\d{2}) (?P<level>[A-Z]+) (?P<msg>.*)
+```
+
+The engine walks left to right, and each group records the *span* of text it consumed. Character positions (0-indexed):
+
+```
+2026-09-18 08:10:22 WARN disk usage 91%
+0.........1.........2.........3........
+└──date──┘ └─time─┘ └lv┘ └─────msg────┘
+```
+
+| Group | Sub-pattern | Text captured | Span (start, end) |
+|-------|-------------|---------------|-------------------|
+| `date` | `\d{4}-\d{2}-\d{2}` | `2026-09-18` | (0, 10) |
+| `time` | `\d{2}:\d{2}:\d{2}` | `08:10:22` | (11, 19) |
+| `level` | `[A-Z]+` | `WARN` | (20, 24) |
+| `msg` | `.*` | `disk usage 91%` | (25, 39) |
+
+Two details deserve attention. First, `[A-Z]+` is greedy, yet it stops cleanly after `WARN`: the next character is a space, which is not in the class `[A-Z]`, so the quantifier has nothing more it is *allowed* to take — the class boundary does the work, and no backtracking is needed. Second, `.*` in `msg` is also greedy and *does* swallow spaces, running to the end of the line (`.` matches every character except newline).
+
+```python
+import re
+from collections import Counter
+
+LOG = """\
+2026-09-18 08:10:22 WARN disk usage 91%
+2026-09-18 08:10:41 INFO backup started
+2026-09-18 08:12:03 ERROR backup failed: disk full
+2026-09-18 08:12:04 WARN retrying backup
+2026-09-18 08:15:59 ERROR backup failed: disk full
+2026-09-18 08:16:10 INFO alert emailed to admin
+"""
+
+PATTERN = re.compile(
+    r"(?P<date>\d{4}-\d{2}-\d{2}) (?P<time>\d{2}:\d{2}:\d{2}) "
+    r"(?P<level>[A-Z]+) (?P<msg>.*)")
+
+records = []
+for m in PATTERN.finditer(LOG):
+    records.append(m.groupdict())
+    if len(records) == 1:
+        # show the spans for the first line, matching the walkthrough table
+        for g in ("date", "time", "level", "msg"):
+            print(f"  {g:5} = {m.group(g)!r:20} span {m.span(g)}")
+
+print("\nTriage report:")
+counts = Counter(r["level"] for r in records)
+for level, n in counts.most_common():
+    print(f"  {level:5} x{n}")
+
+print("\nAll ERROR messages:")
+for r in records:
+    if r["level"] == "ERROR":
+        print(f"  {r['time']}  {r['msg']}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+[[MC]]
+In `(?P<level>[A-Z]+) (?P<msg>.*)`, the `level` group stops at the end of `WARN` because:
+- ( ) `+` is reluctant by default
+- (x) The next character is a space, which is not in `[A-Z]`, so the greedy `+` has nothing more it is allowed to consume
+- ( ) Named groups match at most four characters
+- ( ) The `msg` group claimed the space first
+
+### Critical Thinking Questions
+
+16. Both `[A-Z]+` and `.*` are greedy, yet one stops at a space and the other swallows spaces to the end of the line. State the rule that predicts where any greedy quantifier stops.
+17. Suppose a rogue line reads `2026-09-18 08:13:00 warning disk usage 92%` (lowercase level). Trace the pattern against it: which group's sub-pattern fails first, and what does `finditer` do with the line as a whole? Propose the smallest pattern change that would accept both spellings.
+18. `m.span(g)` gives each field's exact offsets, and `m.groupdict()` gives a dictionary per line. In two sentences, relate this to your lexer: what plays the role of the token types here, and what plays the role of the token stream?
+19. The `msg` group's `.*` would happily match an *empty* message (`.*` matches zero characters). Is that a bug or a feature for log triage? If your team decides empty messages are invalid, what one-character change enforces the decision?
 
 ---
 
@@ -267,8 +426,8 @@ The pattern `r"\b(?:if|else|while)\b"` uses `(?:...)` (non-capturing group) rath
 
 ### Critical Thinking Questions
 
-12. The greedy `<.*>` matches from the first `<` to the *last* `>`. Why does the regex engine extend the match to the last `>`? Describe the backtracking process.
-13. The reluctant `<.*?>` finds each tag separately. Which is more useful for parsing HTML, and which is more useful for a lexer that needs to match string literals like `"hello"`?
+20. The greedy `<.*>` matches from the first `<` to the *last* `>`. Why does the regex engine extend the match to the last `>`? Describe the backtracking process, using the decision-point vocabulary from Model 2.
+21. The reluctant `<.*?>` finds each tag separately. Which is more useful for parsing HTML, and which is more useful for a lexer that needs to match string literals like `"hello"`?
 
 ---
 

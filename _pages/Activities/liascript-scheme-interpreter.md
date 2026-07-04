@@ -1087,6 +1087,8 @@ Answer these questions individually in your course notebook after completing the
 
 # Further Reading
 
+- **Runnable example archive** — [SchemeInterpreter.zip](/files/replit/SchemeInterpreter.zip): a complete reference implementation of this activity's evaluator, worth exploring after you have attempted the activity yourself.
+
 - **SICP Chapter 4** — Abelson & Sussman, *Structure and Interpretation of Computer Programs*, 2nd ed. The original metacircular evaluator. MIT Press open access: [https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf)
 
 - **"The Art of the Interpreter"** — Guy Steele & Gerald Sussman (1978). The foundational paper on meta-circular evaluation, environments, and the relationship between interpreters and compilers. [MIT AI Memo 452.](https://dspace.mit.edu/handle/1721.1/6094)

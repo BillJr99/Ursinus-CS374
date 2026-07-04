@@ -694,4 +694,4 @@ In your notebook: Church built this system in 1936 to study what "computable" me
 - Raul Rojas. "A Tutorial Introduction to the Lambda Calculus" (online): short and gentle.
 - Henk Barendregt and Erik Barendsen. "Introduction to Lambda Calculus" (online notes), for the formal substitution definition.
 - Gabriel Lebec. "Lambda as JS, or A Flock of Functions" (talk and slides), which Part 2 follows: https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript
-- **Lambda Py** — run the calculus interactively in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html — experiment with the reductions from today's module without installing anything.
+- **Lambda-Py / pycombinator** — combinators and Church encodings in Python; run the calculus interactively in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html — experiment with the reductions from today's module without installing anything.
