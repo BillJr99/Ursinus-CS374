@@ -4,7 +4,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-paradigms.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-paradigms.md
+comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-paradigms.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-paradigms.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -15,7 +15,26 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Programming Paradigms
 
+Every program you write reflects a hidden assumption about *what a program fundamentally is*. Programming paradigms are the architectural styles of software: just as the same building function — say, a library — can be expressed as a Gothic cathedral, a glass-and-steel Modernist cube, or a terracotta Art Deco tower, the same computation can be expressed as a sequence of machine commands, a conversation among objects, a composition of mathematical functions, or a declarative set of facts and rules. Each style carries different trade-offs in clarity, scalability, and safety, and the language you design this semester will implicitly commit to one or more of them.
+
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Define the four major programming paradigms (imperative, object-oriented, functional, logic) and identify the core computational model of each
+- Implement the same algorithm in at least two distinct paradigms and compare the resulting code for readability and expressiveness
+- Explain the concept of immutability and referential transparency as used in functional programming
+- Identify which paradigm(s) a given language or code fragment primarily employs and justify that identification
+- Analyze how a multi-paradigm language blends features from multiple paradigms and describe the trade-offs involved
+
 A **paradigm** is a worldview about what a program *is*: a sequence of commands, a society of objects, a composition of functions, or a set of facts and rules. Today we tour the four major paradigms with the same small problem expressed in each, because your team's language will have to pick a side (or blend several, as most modern languages do). The arc: **imperative $\rightarrow$ object-oriented $\rightarrow$ functional $\rightarrow$ logic $\rightarrow$ multi-paradigm reality**.
+
+> **Before You Begin:** This activity assumes you can:
+> - Write and trace basic Python programs with variables, loops, and conditionals
+> - Define and call functions in Python, including passing functions as arguments
+> - Explain what a class and object are at a high level (instance variables, methods)
+>
+> If any of these feel shaky, review them first before working through the models.
 
 ---
 
@@ -27,13 +46,19 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 # Part I: The Four Worldviews
 
+> **Watch out!** Paradigms are *not* mutually exclusive categories. A single language can — and most modern languages do — support multiple paradigms simultaneously. When we label a language "object-oriented," we mean that OO is its dominant style, not that you cannot write imperative loops in it.
+
 ## 1. Imperative and Object-Oriented
+
+Think of imperative programming like a step-by-step recipe: "crack two eggs, whisk them, pour into pan, stir until cooked." You specify every action in order, and the state of the dish changes with each step. Object-oriented programming is more like a kitchen brigade — each station (the sauté cook, the pastry chef) owns its own tools and ingredients, responds to requests from the head chef, and hides the messy details of how it does its work.
 
 **Imperative: a program is a sequence of state changes.** The core concepts are variables (named mutable cells), assignment, and control flow (sequencing, selection, iteration). The model matches the machine: memory cells change over time. C is the archetype; most languages contain an imperative heart.
 
 **Object-oriented: a program is a society of objects exchanging messages.** State is *encapsulated* inside objects; behavior travels with the data it governs; **polymorphism** lets the same message mean different things to different receivers. OO answers the imperative paradigm's scaling problem: when everything can mutate everything, large programs become unpredictable, so OO draws fences.
 
 ## 2. Functional and Logic
+
+Functional programming treats a program the way a mathematician treats a formula: `f(g(x))` has one answer for a given `x`, no side effects, and no hidden state. Logic programming goes even further — it is like asking a very smart search engine a question ("who are all the ancestors of Tom?") and letting the engine figure out how to find the answer from the facts you gave it; you never write a loop at all.
 
 **Functional: a program is the composition of functions.** The central commitments are **immutability** (values do not change; new values are produced), **first-class functions** (functions are values that can be passed and returned), and **referential transparency** (an expression can be replaced by its value without changing behavior). Where imperative code says *do this, then that*, functional code says *the answer is this transformation of that*. Scheme, Haskell, and increasingly the cores of Python and Java.
 
@@ -43,48 +68,104 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 ## Model 1: Same Problem, Four Ways
 
-Count the vowels in a string.
+The best way to feel the difference between paradigms is to solve *exactly* the same problem four ways and notice what each version forces you to think about. As you read each block below, ask yourself: what is mutable here? Who controls the loop? Could I run this twice on different inputs simultaneously without the two runs interfering?
 
-```
-# Imperative (Python)
+Count the vowels in a string. Run each approach and compare:
+
+**Imperative — explicit state mutation:**
+```python
+s = "programming languages are fascinating"
+
 count = 0
 for ch in s:
     if ch in "aeiou":
         count = count + 1
-```
 
+print(f"Imperative count: {count}")
 ```
-# Object-oriented (Python)
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+**Object-oriented — encapsulated state:**
+```python
+s = "programming languages are fascinating"
+
 class VowelCounter:
-    def __init__(self, text): self.text = text
+    VOWELS = set("aeiou")
+
+    def __init__(self, text):
+        self.text = text
+        self._count = None  # lazy computation
+
     def count(self):
-        return sum(1 for ch in self.text if ch in "aeiou")
-```
+        if self._count is None:
+            self._count = sum(1 for ch in self.text if ch in self.VOWELS)
+        return self._count
 
-```
-;; Functional (Scheme)
-(length (filter (lambda (ch) (member ch '(#\a #\e #\i #\o #\u)))
-                (string->list s)))
-```
+    def __repr__(self):
+        return f"VowelCounter({self.text!r}, count={self.count()})"
 
+vc = VowelCounter(s)
+print(f"OO count: {vc.count()}")
+print(repr(vc))
 ```
-% Logic (Prolog, sketch)
-vowel(a). vowel(e). vowel(i). vowel(o). vowel(u).
-count_vowels(S, N) :- include(vowel, S, Vs), length(Vs, N).
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+> **Watch out!** "Pure function" and "function" are not the same thing. A pure function's output depends *only* on its arguments and it causes no side effects (no printing, no file writes, no mutation of shared variables). Python's `print()` is a function, but it is *not* pure — it changes the state of the terminal. Keep this distinction sharp as you read the functional version below.
+
+**Functional — composition of pure functions:**
+```python
+from functools import reduce
+
+s = "programming languages are fascinating"
+
+# No variables mutated; each step is a pure function
+is_vowel  = lambda ch: ch in "aeiou"
+to_one    = lambda _: 1
+add       = lambda a, b: a + b
+
+count = reduce(add, map(to_one, filter(is_vowel, s)), 0)
+print(f"Functional count: {count}")
+
+# Even more compact with sum + generator:
+count2 = sum(1 for ch in s if ch in "aeiou")
+print(f"Comprehension count: {count2}")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+**Logic-style — simulate Prolog with constraint search:**
+```python
+# Python simulation of logic-style declarative counting
+s = "programming languages are fascinating"
+
+# "Facts" — vowel membership
+vowels = {"a", "e", "i", "o", "u"}
+
+# "Rule" — count is cardinality of {ch | ch in s AND vowel(ch)}
+count = len({i: ch for i, ch in enumerate(s) if ch in vowels})
+print(f"Logic-style count: {count}")
+
+# More Prolog-like: unification via list comprehension
+answer = [ch for ch in s if ch in vowels]
+print(f"Witness list: {answer[:10]}... (length {len(answer)})")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
 1. Identify the mutable state in each version (there may be none). Which versions could safely run on two halves of the string in parallel and add the results, and why?
-2. The OO version wraps the same logic in a class. Name one situation where that wrapping pays for itself, and one where it is ceremony.
-3. In the Prolog sketch, where is the loop? What does its absence tell you about who owns control flow in logic programming?
+2. The OO version wraps the same logic in a class with lazy computation. Name one situation where that wrapping pays for itself, and one where it is ceremony without benefit.
+3. In the logic-style version, where is the loop? What does its absence tell you about who owns control flow in a declarative style?
 4. Your team's language project must choose: mutable variables or immutable bindings (or both). List one implementation consequence of each choice for the *interpreter* you will build.
 
 ---
 
 # Part II: Paradigms in the Wild
 
+> **Watch out!** Saying "Python is object-oriented" is like saying "New York is a financial city" — true but incomplete. Python has objects everywhere, *and* supports imperative style, *and* ships functional tools like `map`, `filter`, and `lambda`. When you evaluate a language, look for its *defaults* and its *limits*, not just a single label.
+
 ## 3. Multi-Paradigm Reality
+
+In practice, the clean four-way taxonomy you just explored is a teaching simplification. Real languages are hybrids shaped by history, performance constraints, and the preferences of their designers. As you read this section, think of the paradigm spectrum as a dial rather than four locked boxes — the interesting design question is where a language sets its dial by default, and how far the user can turn it.
 
 **Pure paradigm languages are rare; blends are the norm.** Python is imperative and OO with a functional toolkit (`map`, `filter`, comprehensions, `lambda`). Java added lambdas and streams in 2014; JavaScript mixes prototypal objects with pervasive higher-order functions; Rust is imperative with functional pattern matching and an ownership discipline. The paradigm question for a designer is not *which one* but *which defaults*: what does the language make easy, and what does it make possible?
 
@@ -95,9 +176,18 @@ A language guarantees that no value can ever be modified after creation and that
 - (x) The functional paradigm
 - ( ) The logic paradigm
 
+[[MC]]
+A program in language X cannot run a function until every argument is known. Language Y can pass a function as a value and call it later. The property that distinguishes Y from X is:
+- ( ) Dynamic typing
+- ( ) Object orientation
+- (x) First-class functions
+- ( ) Static scoping
+
 ---
 
 ## Model 2: Classify the Snippets
+
+Each paradigm leaves fingerprints in the code. An assignment like `x := x + 1` screams "named mutable cell" — that's an imperative tell. A colon-dash rule like `ancestor(X,Y) :- parent(X,Y).` has no variables at all in the traditional sense — that's logic. Learning to spot these signals in unfamiliar code is the skill that lets you read any language quickly, even before you know its syntax.
 
 | Snippet | Paradigm signal |
 |---------|-----------------|
@@ -106,11 +196,81 @@ A language guarantees that no value can ever be modified after creation and that
 | `(reduce + 0 prices)` | ? |
 | `sibling(X,Y) :- parent(P,X), parent(P,Y).` | ? |
 
+**Paradigm Detective — run this and read the clues:**
+```python
+snippets = [
+    ("account.deposit(50)",                      "sends a message to an object"),
+    ("x := x + 1",                              "named cell changes over time"),
+    ("(reduce + 0 prices)",                      "function applied to function applied to list"),
+    ("sibling(X,Y) :- parent(P,X), parent(P,Y)", "rule: X and Y share a parent"),
+]
+
+paradigm_hints = {
+    "sends a message to an object":         "Object-Oriented",
+    "named cell changes over time":         "Imperative",
+    "function applied to function applied": "Functional",
+    "rule: X and Y share a parent":         "Logic/Declarative",
+}
+
+for snippet, hint in snippets:
+    for key, paradigm in paradigm_hints.items():
+        if key in hint:
+            print(f"  [{paradigm:20}] {snippet}")
+            break
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
 ### Critical Thinking Questions
 
 5. Classify each snippet and name the *single feature* that gave it away.
 6. `account.deposit(50)` mutates state *and* sends a message to an object. Is OO a kind of imperative programming with better manners, or something fundamentally different? Take a team position.
 7. Modern Python lets you write all four rows' ideas (the fourth via libraries). Does multi-paradigm flexibility help or hurt the *reader* of a program? Connect to tomorrow's topic, language evaluation criteria.
+
+---
+
+## Model 3: Paradigm Costs and Benefits
+
+Paradigm choice is not just an aesthetic preference — it has measurable consequences for memory use, parallelizability, and readability. The functional generator in this model never materializes a full intermediate list, while the imperative version builds one in memory before summing it. This difference seems trivial at 100 items but matters enormously at 100 million. Keep an eye on the memory numbers printed at the end.
+
+The choice of paradigm shapes what is easy and what is hard. Run this performance comparison:
+
+```python
+import time
+
+data = list(range(1, 100001))
+target = lambda x: x % 2 == 0
+
+# Imperative
+t0 = time.perf_counter()
+result_imp = []
+for x in data:
+    if target(x):
+        result_imp.append(x * x)
+total_imp = sum(result_imp)
+t1 = time.perf_counter()
+
+# Functional (generator — lazy, low memory)
+t2 = time.perf_counter()
+total_func = sum(x*x for x in data if target(x))
+t3 = time.perf_counter()
+
+print(f"Imperative:  {total_imp}  ({(t1-t0)*1000:.2f} ms)")
+print(f"Functional:  {total_func}  ({(t3-t2)*1000:.2f} ms)")
+print(f"Same result? {total_imp == total_func}")
+
+# Key observation: functional version never builds an intermediate list
+import sys
+imp_list_size = sys.getsizeof(result_imp)
+print(f"Imperative list size in memory: {imp_list_size} bytes")
+print(f"Functional generator: no intermediate list (lazy evaluation)")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+8. The functional version uses a generator expression. What does "lazy evaluation" mean in this context, and why does it save memory?
+9. For a list of 100,000 elements, which approach do you expect to be faster? Run it and report your findings.
+10. If you wanted to parallelize this computation across 4 CPU cores, which style (imperative or functional) is easier to split safely? Why?
 
 ---
 
@@ -121,12 +281,14 @@ A language guarantees that no value can ever be modified after creation and that
 1. *Paradigm translation.* Take the imperative vowel counter and rewrite it functionally in Python using `filter` and `len` with no assignment statements. Verify both produce identical results on three inputs.
 2. *Blend audit.* Pick one language a teammate knows well and list which paradigm supplies its defaults and which paradigms are available on request, with one feature as evidence each.
 3. *Design straw poll.* As a team, record a provisional decision for your future language: primary paradigm, mutability default, and whether functions are first-class. You may change it later; the exercise is having reasons now.
+4. *Referential transparency test.* Write a Python function that violates referential transparency (its output depends on something other than its arguments). Then write a pure version. Explain what changed and why the pure version is easier to test.
+5. *Paradigm mashup.* Write a Python program that uses all four paradigm styles to solve the same problem (filter even numbers, square them, sum). Use: imperative loop, class with method, `filter`/`map`/`reduce`, and a set comprehension. Show all four produce the same answer.
 
 ---
 
 ## Reflection Prompt
 
-In your notebook: which paradigm fits the way *you* naturally think about problems, and which feels most foreign? Describe one problem from another course (mathematics, biology, economics) and which paradigm would express it most directly.
+In your notebook: which paradigm fits the way *you* naturally think about problems, and which feels most foreign? Describe one problem from another course (mathematics, biology, economics) and which paradigm would express it most directly. Then: now that you have seen the cost/benefit tradeoffs, does your answer change when the problem needs to scale to millions of items?
 
 ---
 
@@ -135,3 +297,4 @@ In your notebook: which paradigm fits the way *you* naturally think about proble
 - Douglas Thain. *Introduction to Compilers and Language Design*, Chapter 1.
 - Peter Van Roy. "Programming Paradigms for Dummies: What Every Programmer Should Know" (2009, online). A famous map of the paradigm space.
 - Shriram Krishnamurthi. *PLAI*, early chapters on the functional core.
+- Rich Hickey. "Simple Made Easy" (Strange Loop 2011, YouTube). A functional programming designer's case for immutability.

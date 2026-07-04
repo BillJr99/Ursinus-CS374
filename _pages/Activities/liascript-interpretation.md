@@ -4,7 +4,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-interpretation.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-interpretation.md
+comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-interpretation.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-interpretation.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -15,7 +15,29 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tree-Walking Interpretation
 
+You have a lexer that turns characters into tokens and a parser that turns tokens into trees. Now comes the payoff: the **evaluator** turns those trees into *values* — it is the part that actually *runs* your program. Think of it as a universal translator: given any sentence in the source language (an AST node), it produces the meaning (a Python value) directly, by asking the same question recursively of every sub-sentence. After today, no magic remains between source code and output.
+
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Implement a recursive tree-walking evaluator and trace its post-order execution on a given AST
+- Evaluate arithmetic, boolean, and comparison expressions by dispatching on AST node type and combining child values
+- Explain the semantics of assignment, print, while, and if statements as implemented in the evaluator, including how control flow is handled
+- Identify and resolve the semantic design decisions embedded in an evaluator (short-circuit evaluation, type coercion, division semantics)
+- Integrate a lexer, parser, and evaluator into a functioning REPL and trace the complete pipeline from source string to printed output
+
 The pipeline completes its first full circuit: this two-day module builds the **evaluator**, the recursive tree walk that turns ASTs into values, upgrading your pretty-printer's skeleton into an interpreter. With lexer, parser, and evaluator joined, you will run a program in a language that exists because you built it. The arc: **evaluation as recursion $\rightarrow$ the evaluator in code $\rightarrow$ semantics decisions hiding in plain sight $\rightarrow$ the REPL**.
+
+---
+
+> **Before You Begin:** This activity assumes you can:
+> - Write recursive Python functions that call themselves on sub-parts of a data structure (tree recursion)
+> - Define and instantiate Python `dataclass` types (`@dataclass`, field access with `node.field`)
+> - Read and modify a Python dictionary (`env["x"] = 5`, `env.get("x")`, `"x" in env`)
+> - Understand what a post-order tree traversal means (children processed before their parent)
+>
+> If any of these feel shaky, review them first.
 
 ---
 
@@ -26,6 +48,8 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 ---
 
 # Part I: Evaluation Is a Fold over the Tree (Day 1)
+
+The central idea of Part I is deceptively simple: **the value of any expression is computed entirely from the values of its sub-expressions.** A number node is its own value; an addition node evaluates both children and adds the results. This recursive definition is both the formal semantics of the language and the literal shape of the code you will write.
 
 ## 1. The Recursive Definition of Meaning
 
@@ -40,58 +64,175 @@ and so on for every node class: evaluate children first (post-order, exactly as 
 
 ---
 
-## Code Cell
+**Model 1 preview:** This model shows the minimal but complete core of a tree-walking evaluator. It handles numbers, variables, unary negation, and the four arithmetic operators. The key insight is that every case follows the same pattern — inspect the node type, recursively evaluate any children, then combine. Notice that the environment (`env`) is passed into every call so that variable lookups always reflect current state.
+
+## Model 1: The Evaluator — Build it from Scratch
+
+This is the complete evaluator. Every line is consequential. Read it, trace it, then run it:
 
 ```python
-# The evaluator: one dispatch per node class, post-order recursion.
-# Uses the Node classes from the AST module; Var lookup arrives properly
-# in the environments module, so today variables live in one plain dict.
+from dataclasses import dataclass, field
+from typing import Any, Optional
 
+# ─── AST Node Definitions ───────────────────────────────────────────────────
+@dataclass
+class Num:
+    value: float
+
+@dataclass
+class Var:
+    name: str
+
+@dataclass
+class UnaryOp:
+    op: str
+    operand: Any
+
+@dataclass
+class BinOp:
+    op: str
+    left: Any
+    right: Any
+
+# ─── The Evaluator ──────────────────────────────────────────────────────────
 def evaluate(node, env):
-    try:
-        if isinstance(node, Num):
-            return node.value
-        if isinstance(node, Var):
-            if node.name not in env:
-                raise NameError(f"undefined variable {node.name!r}")
-            return env[node.name]
-        if isinstance(node, UnaryOp):
-            val = evaluate(node.operand, env)
-            return -val if node.op == "-" else val
-        if isinstance(node, BinOp):
-            left = evaluate(node.left, env)      # children first:
-            right = evaluate(node.right, env)    # post-order traversal
-            if node.op == "+": return left + right
-            if node.op == "-": return left - right
-            if node.op == "*": return left * right
-            if node.op == "/":
-                if right == 0:
-                    raise ZeroDivisionError("division by zero in your language")
-                return left / right
-            raise ValueError(f"unknown operator {node.op!r}")
-        raise TypeError(f"cannot evaluate node {node!r}")
-    except (NameError, ZeroDivisionError, ValueError, TypeError):
-        raise
-    except Exception as e:
-        print(f"[interp:evaluate] {e}")
-        import traceback; traceback.print_exc()
-        raise
+    if isinstance(node, Num):
+        return node.value
+    if isinstance(node, Var):
+        if node.name not in env:
+            raise NameError(f"undefined variable {node.name!r}")
+        return env[node.name]
+    if isinstance(node, UnaryOp):
+        val = evaluate(node.operand, env)
+        return -val if node.op == "-" else val
+    if isinstance(node, BinOp):
+        left  = evaluate(node.left, env)   # children first: post-order
+        right = evaluate(node.right, env)
+        if node.op == "+": return left + right
+        if node.op == "-": return left - right
+        if node.op == "*": return left * right
+        if node.op == "/":
+            if right == 0:
+                raise ZeroDivisionError("division by zero in your language")
+            return left / right
+        if node.op == "**": return left ** right
+        raise ValueError(f"unknown operator {node.op!r}")
+    raise TypeError(f"cannot evaluate {node!r}")
 
-env = {"price": 5.0}
-tree = BinOp("+", Num(3), BinOp("*", Var("price"), Num(2)))   # 3 + price * 2
-print(evaluate(tree, env))    # 13.0
+# ─── Test ────────────────────────────────────────────────────────────────────
+env = {"price": 5.0, "qty": 3}
+
+# 3 + price * 2   (tree encodes precedence: * is deeper)
+tree = BinOp("+", Num(3), BinOp("*", Var("price"), Num(2)))
+print(f"3 + price*2 = {evaluate(tree, env)}")   # 13.0
+
+# price * qty - 1
+tree2 = BinOp("-", BinOp("*", Var("price"), Var("qty")), Num(1))
+print(f"price*qty-1 = {evaluate(tree2, env)}")  # 14.0
+
+# -(price + 1)
+tree3 = UnaryOp("-", BinOp("+", Var("price"), Num(1)))
+print(f"-(price+1) = {evaluate(tree3, env)}")   # -6.0
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+**Step-by-step worked example — tracing `(+ 1 (* 2 3))`**
+
+Suppose the AST is `BinOp("+", Num(1), BinOp("*", Num(2), Num(3)))` and `env = {}`.
+
+```
+evaluate( BinOp("+", Num(1), BinOp("*", Num(2), Num(3))), env )
+  │ It's a BinOp("+"), so evaluate children first (post-order):
+  ├─ evaluate( Num(1), env )
+  │    It's a Num → return 1                              ← left = 1
+  └─ evaluate( BinOp("*", Num(2), Num(3)), env )
+       │ It's a BinOp("*"), evaluate children:
+       ├─ evaluate( Num(2), env ) → return 2             ← left = 2
+       └─ evaluate( Num(3), env ) → return 3             ← right = 3
+       2 * 3 = 6 → return 6                              ← right = 6
+  1 + 6 = 7 → return 7
 ```
 
----
+**Key observations:** (1) Multiplication finishes entirely before addition sees any result. (2) The environment is threaded through every call but never consulted for `Num` nodes. (3) Operator precedence was *already encoded* in the tree structure by the parser — the evaluator never re-derives it.
 
-## Model 1: The Moment of Meaning
+> **Watch out!** Students often try to evaluate the operator before the children (pre-order) by writing `result = node.op` and then recursing. That will fail: you need the children's *values* before you can apply the operator. Evaluation is always post-order for expressions.
 
 ### Critical Thinking Questions
 
-1. Trace `evaluate` on the tree above, writing every call with its arguments and return value, in order. Where in your trace does the multiplication happen relative to the addition, and which week's design decision (which module) put it there?
+1. Trace `evaluate` on `3 + price * 2`, writing every call with its arguments and return value in order. Where in your trace does the multiplication happen relative to the addition, and which week's design decision (which module) put it there?
 2. The evaluator never consults precedence, parentheses, or the grammar. State precisely where precedence "went," and why this separation of concerns is the architecture lesson of the whole pipeline.
-3. We chose to make division by zero an error with a custom message. List two other behaviors your team could have chosen (return infinity, return zero) and one language that made each choice. Record your project's decision.
-4. Compare `evaluate` and `pretty` line by line. Write the general recipe: to add a new *consumer* of the AST (a type checker, an optimizer, a compiler), what do you write and what do you never touch?
+3. We chose to make division by zero raise an error with a custom message. List two other behaviors your team could have chosen (return infinity, return zero) and one language that makes each choice. Record your project's decision.
+4. Compare `evaluate` and a tree pretty-printer line by line. Write the general recipe: to add a new *consumer* of the AST (a type checker, an optimizer, a compiler), what do you write and what do you never touch?
+
+---
+
+**Model 2 preview:** Model 1 was correct but silent. This model adds instrumented tracing so you can *see* the call tree printed as `evaluate` runs. It is the same recursion wearing a lab coat — each call announces itself before recursing and reports its result when it returns. Studying this output is the fastest way to build the mental model you need before writing evaluators for richer node types.
+
+## Model 2: Tracing Evaluation Step by Step
+
+Instrumented evaluator that shows the call tree:
+
+```python
+from dataclasses import dataclass
+from typing import Any
+
+@dataclass
+class Num:
+    value: float
+@dataclass
+class Var:
+    name: str
+@dataclass
+class BinOp:
+    op: str
+    left: Any
+    right: Any
+
+_depth = 0
+
+def evaluate_traced(node, env):
+    global _depth
+    indent = "  " * _depth
+    _depth += 1
+    result = _eval_inner(node, env, indent)
+    _depth -= 1
+    return result
+
+def _eval_inner(node, env, indent):
+    if isinstance(node, Num):
+        print(f"{indent}Num({node.value}) → {node.value}")
+        return node.value
+    if isinstance(node, Var):
+        val = env[node.name]
+        print(f"{indent}Var({node.name!r}) → {val}  [lookup in env]")
+        return val
+    if isinstance(node, BinOp):
+        print(f"{indent}BinOp({node.op!r}) — evaluating children...")
+        left  = evaluate_traced(node.left, env)
+        right = evaluate_traced(node.right, env)
+        ops = {"+": lambda a,b: a+b, "-": lambda a,b: a-b,
+               "*": lambda a,b: a*b, "/": lambda a,b: a/b}
+        result = ops[node.op](left, right)
+        print(f"{indent}BinOp({node.op!r}): {left} {node.op} {right} = {result}")
+        return result
+
+env = {"x": 4.0}
+# 2 * x + 1
+tree = BinOp("+", BinOp("*", Num(2), Var("x")), Num(1))
+print("Evaluating: 2 * x + 1  where x=4")
+print()
+result = evaluate_traced(tree, env)
+print(f"\nFinal result: {result}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+5. The trace shows post-order evaluation: both children are evaluated *before* the parent combines them. Name one language feature that would break this order (hint: short-circuit evaluation of `and`/`or`).
+6. How would you modify the tracer to also print the *depth* of recursion? What would that depth correspond to in terms of the tree's structure?
+7. If a `BinOp` node is at depth 3 in the trace, how deep is the tree at that point? Does depth in the call stack correspond exactly to depth in the AST?
+
+> **Watch out!** The global `_depth` counter works here because Python is single-threaded and evaluation is deterministic, but it is fragile: if `evaluate_traced` ever raises an exception mid-recursion, `_depth` is left in a wrong state and all future indentation will be off. In production tracing code, use a `try/finally` block to ensure `_depth -= 1` always runs.
 
 ---
 
@@ -110,7 +251,7 @@ def execute(stmt, env):
     While(c, body)    -> while truthy(evaluate(c, env)): execute(body, env)
 ```
 
-Notice `truthy`: your language must decide what counts as true (only a boolean? any nonzero number? an empty string?), a semantics decision with daily consequences, and notice that `While` contains a *Python* `while`: a tree-walker borrows the host language's control flow, which is both its charm and its performance ceiling.
+Notice `truthy`: your language must decide what counts as true (only a boolean? any nonzero number? an empty string?), a semantics decision with daily consequences.
 
 [[MC]]
 In a tree-walking interpreter, executing the program's `while` loop one million times will re-walk the loop body's subtree one million times. The principal cost this design accepts, relative to compilation, is:
@@ -121,25 +262,197 @@ In a tree-walking interpreter, executing the program's `while` loop one million 
 
 ---
 
-## Model 2: The First Run
+**Model 3 preview:** Where expressions *return* values, statements *change the world* — they update the environment, produce output, or repeat a block. This model introduces `execute`, a sibling function to `evaluate` that handles the statement layer. The single most important design rule here is that `execute` must always pass the *same* `env` dictionary through every recursive call so that assignments made inside a loop body are visible after the loop ends.
 
-Wire the full pipeline: `tokenize` (scanning module) into `Parser` (descent and expressions modules) producing AST nodes (AST module) into `execute`. Run, as a team:
+> **Watch out!** A common mistake is for `execute` to return `None` (implicitly) for every branch, and then have a caller accidentally use that `None` as if it were a language value — for example, printing the result of `execute(Print(...), env)` instead of the result already printed inside `execute`. Statements produce *effects*, not values; callers of `execute` should never inspect its return value.
 
+## Model 3: Complete Statement Executor
+
+```python
+from dataclasses import dataclass, field
+from typing import Any, List, Optional
+
+# ─── AST nodes ────────────────────────────────────────────────────────────────
+@dataclass
+class Num:     value: float
+@dataclass
+class Var:     name: str
+@dataclass
+class BinOp:   op: str; left: Any; right: Any
+@dataclass
+class Assign:  name: str; expr: Any
+@dataclass
+class Print:   expr: Any
+@dataclass
+class Block:   stmts: List[Any]
+@dataclass
+class If:      cond: Any; then_: Any; else_: Any = None
+@dataclass
+class While:   cond: Any; body: Any
+
+# ─── Evaluator ────────────────────────────────────────────────────────────────
+def evaluate(node, env):
+    if isinstance(node, Num):   return node.value
+    if isinstance(node, Var):
+        if node.name not in env: raise NameError(f"undefined: {node.name!r}")
+        return env[node.name]
+    if isinstance(node, BinOp):
+        L, R = evaluate(node.left, env), evaluate(node.right, env)
+        return {"+": L+R, "-": L-R, "*": L*R, "/": L/R,
+                ">": L>R, "<": L<R, ">=": L>=R, "<=": L<=R,
+                "==": L==R, "!=": L!=R}[node.op]
+    raise TypeError(f"unknown expr node: {node!r}")
+
+def truthy(val):
+    if isinstance(val, bool): return val
+    if isinstance(val, (int, float)): return val != 0
+    return val is not None
+
+# ─── Executor ────────────────────────────────────────────────────────────────
+def execute(stmt, env):
+    if isinstance(stmt, Assign):
+        env[stmt.name] = evaluate(stmt.expr, env)
+    elif isinstance(stmt, Print):
+        print(evaluate(stmt.expr, env))
+    elif isinstance(stmt, Block):
+        for s in stmt.stmts:
+            execute(s, env)
+    elif isinstance(stmt, If):
+        cond = evaluate(stmt.cond, env)
+        if truthy(cond):
+            execute(stmt.then_, env)
+        elif stmt.else_ is not None:
+            execute(stmt.else_, env)
+    elif isinstance(stmt, While):
+        while truthy(evaluate(stmt.cond, env)):
+            execute(stmt.body, env)
+    else:
+        raise TypeError(f"unknown stmt node: {stmt!r}")
+
+# ─── Test: n = 5; total = 0; while n > 0: total += n; n -= 1; print total ───
+env = {}
+program = Block([
+    Assign("n",     Num(5)),
+    Assign("total", Num(0)),
+    While(BinOp(">", Var("n"), Num(0)),
+          Block([
+              Assign("total", BinOp("+", Var("total"), Var("n"))),
+              Assign("n",     BinOp("-", Var("n"),     Num(1))),
+          ])),
+    Print(Var("total")),        # should print 15
+])
+execute(program, env)
+print(f"env after: {env}")     # n=0, total=15
 ```
-let n = 5;
-let total = 0;
-while (n > 0) {
-    total = total + n;
-    n = n - 1;
-}
-print total;
-```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
-5. Predict the output before running; then run. If they differ, the bug hunt order is lexer, parser tree (use `pretty`!), evaluator: justify that order in one sentence about where each kind of symptom originates.
-6. Print the environment after execution. Should `n` still exist after the loop? Defend your language's answer; both choices are defensible and your project must document one.
-7. Add a deliberate bug for a teammate to find: change one character anywhere in the pipeline. Time the hunt with and without `pretty` available. What did the tree printer buy?
+8. Predict the output before running; then run. If they differ, the bug hunt order is: lexer → parser tree (use pretty-printer!) → evaluator. Why that order?
+9. Print the environment after execution. Should `n` still exist after the loop? Defend your language's answer; both choices are defensible.
+10. Add a `truthy(0.0)` call and a `truthy(None)` call to the test. What do they return? How does your `truthy` definition match Python's? Where do they differ?
+
+---
+
+**Model 4 preview:** The REPL (Read-Eval-Print Loop) is what makes your language *feel* like a language. It chains the entire pipeline — tokenize, parse, evaluate — inside a loop that persists a single `env` across lines, so earlier assignments are visible in later ones. This model uses a simulated REPL (a list of inputs instead of real keyboard input) so it can run non-interactively here, but the architecture is identical to what you would wire up with Python's `input()`.
+
+> **Watch out!** Because the REPL's `env` dictionary persists across lines, a variable assigned on line 1 is still live on line 100. This means the *order* in which the user types lines matters, and re-running the REPL from scratch will start with an empty environment. Students sometimes expect the REPL to behave like a script (isolated, top-to-bottom) rather than a stateful session. They are different execution models, and it is worth being explicit in your language documentation about which one your REPL provides.
+
+## Model 4: The REPL — Your Language Goes Interactive
+
+```python
+from dataclasses import dataclass
+from typing import Any
+import re
+
+# Minimal tokenizer → parser → evaluator pipeline for the REPL
+@dataclass
+class Num:  value: float
+@dataclass
+class Var:  name: str
+@dataclass
+class BinOp: op: str; left: Any; right: Any
+@dataclass
+class Assign: name: str; expr: Any
+
+def tokenize(src):
+    return re.findall(r"\d+\.?\d*|[A-Za-z_]\w*|[=+\-*/()]|;", src)
+
+def parse_expr(tokens, pos):
+    lhs, pos = parse_term(tokens, pos)
+    while pos < len(tokens) and tokens[pos] in ("+", "-"):
+        op, pos = tokens[pos], pos+1
+        rhs, pos = parse_term(tokens, pos)
+        lhs = BinOp(op, lhs, rhs)
+    return lhs, pos
+
+def parse_term(tokens, pos):
+    lhs, pos = parse_primary(tokens, pos)
+    while pos < len(tokens) and tokens[pos] in ("*", "/"):
+        op, pos = tokens[pos], pos+1
+        rhs, pos = parse_primary(tokens, pos)
+        lhs = BinOp(op, lhs, rhs)
+    return lhs, pos
+
+def parse_primary(tokens, pos):
+    tok = tokens[pos]
+    if tok == "(":
+        expr, pos = parse_expr(tokens, pos+1)
+        assert tokens[pos] == ")", "expected ')'"
+        return expr, pos+1
+    if re.match(r"\d", tok):
+        return Num(float(tok)), pos+1
+    return Var(tok), pos+1
+
+def parse(src):
+    tokens = tokenize(src.strip().rstrip(";"))
+    if len(tokens) >= 2 and re.match(r"[A-Za-z_]", tokens[0]) and tokens[1] == "=":
+        expr, _ = parse_expr(tokens, 2)
+        return Assign(tokens[0], expr)
+    expr, _ = parse_expr(tokens, 0)
+    return expr
+
+def evaluate(node, env):
+    if isinstance(node, Num):    return node.value
+    if isinstance(node, Var):    return env.get(node.name, 0.0)
+    if isinstance(node, Assign):
+        val = evaluate(node.expr, env)
+        env[node.name] = val
+        return val
+    if isinstance(node, BinOp):
+        L, R = evaluate(node.left, env), evaluate(node.right, env)
+        return {"+": L+R, "-": L-R, "*": L*R, "/": L/R}[node.op]
+
+# ─── Simulate a REPL session ────────────────────────────────────────────────
+env = {}
+repl_input = [
+    "x = 10",
+    "y = 3",
+    "x * y + 2",
+    "z = (x - y) * 4",
+    "z",
+]
+
+print("Mini-REPL session:")
+for line in repl_input:
+    try:
+        result = evaluate(parse(line), env)
+        print(f"  >>> {line}")
+        if not line.strip().startswith(tuple("abcdefghijklmnopqrstuvwxyz") + ("x","y","z")) or "=" in line:
+            pass
+        print(f"  {result}")
+    except Exception as e:
+        print(f"  Error: {e}")
+
+print(f"\nFinal environment: {env}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+11. A real REPL must handle errors without dying: if the user types `1/0` or `undefined_var`, the REPL should print an error and continue. Wrap the inner call in a `try/except` and identify the *three error classes* you must catch (one per stage: lex, parse, eval).
+12. The REPL above has a persistent `env` dictionary. If a user types `x = 10` and then `x = 20`, what should happen? Should the language allow rebinding?
+13. REPLs for functional languages (Haskell's `ghci`, Scheme's REPL) do not allow mutation. How would you implement a purely functional REPL where each "assignment" introduces a new immutable binding rather than updating an old one?
 
 ---
 
@@ -149,12 +462,160 @@ print total;
 2. *The REPL.* Write the read-evaluate-print loop: prompt, read a line, tokenize, parse, execute against a persistent environment, repeat, catching and printing every error class without dying. Your language now has an interactive shell; transcript required.
 3. *Error taxonomy.* Construct one program each that fails in the lexer, the parser, and the evaluator. Verify each error message names its stage and location; improve the worst one.
 4. *Semantics memo.* Document three semantics decisions your team made today (truthiness, division by zero, loop variable persistence) in a `SEMANTICS.md` your project will grow all semester.
+5. *Interpreter speedup.* Modify the `While` executor to count the number of times the loop body executes. Then add a "step limit" parameter that raises a `RuntimeError` if the loop exceeds 10,000 iterations. This protects against infinite loops in student-written programs. Show it triggering on `while 1 > 0: print 1`.
+
+---
+
+# Part III: Tree Traversal — Why Post-Order, Not Breadth-First
+
+## Model 4: BFS vs DFS — Why Evaluators Use Post-Order
+
+When you evaluate an AST, you always use *depth-first, post-order* traversal: left child first, right child next, then the current node. But why not breadth-first search? After all, BFS is the "level-by-level" traversal, and it seems simpler. This model shows both traversals on the same tree and makes the answer concrete: evaluating a node requires its children's *values*, which are only available after the children have been fully evaluated. BFS visits children of a node before it visits their children's children — it cannot satisfy the "children before parent" requirement of evaluation.
+
+> *Adapted from [`bfs.py`](https://github.com/chuckallison/foundations-of-computing/blob/main/code/bfs.py) in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
+
+```python
+from dataclasses import dataclass, field
+from typing import Optional, Any
+from collections import deque
+
+@dataclass
+class TreeNode:
+    label: str
+    children: list = field(default_factory=list)
+
+def bfs_traversal(root: TreeNode) -> list[str]:
+    """Breadth-first (level-by-level) traversal."""
+    if root is None:
+        return []
+    result = []
+    queue = deque([root])
+    while queue:
+        node = queue.popleft()
+        result.append(node.label)
+        for child in node.children:
+            queue.append(child)
+    return result
+
+def dfs_postorder(root: TreeNode) -> list[str]:
+    """Depth-first, post-order traversal: children before parent."""
+    if root is None:
+        return []
+    result = []
+    for child in root.children:
+        result.extend(dfs_postorder(child))
+    result.append(root.label)   # parent LAST
+    return result
+
+def dfs_preorder(root: TreeNode) -> list[str]:
+    """Depth-first, pre-order traversal: parent before children."""
+    if root is None:
+        return []
+    result = [root.label]       # parent FIRST
+    for child in root.children:
+        result.extend(dfs_preorder(child))
+    return result
+
+# Expression tree for  (1 + 2) * 3
+#       *
+#      / \
+#     +   3
+#    / \
+#   1   2
+# Represented as a general tree (each internal node has a list of children):
+expr_tree = TreeNode('*', [
+    TreeNode('+', [
+        TreeNode('1'),
+        TreeNode('2'),
+    ]),
+    TreeNode('3'),
+])
+
+bfs_order   = bfs_traversal(expr_tree)
+post_order  = dfs_postorder(expr_tree)
+pre_order   = dfs_preorder(expr_tree)
+
+print("=== (1 + 2) * 3 ===")
+print(f"  BFS order:       {' '.join(bfs_order)}")
+print(f"  DFS pre-order:   {' '.join(pre_order)}")
+print(f"  DFS post-order:  {' '.join(post_order)}")
+
+print()
+print("Why post-order works for evaluation:")
+print("  Post-order visits '1' then '2' then '+', so when we")
+print("  process '+' both operand values are already known.")
+print()
+print("Why BFS does NOT work for evaluation:")
+print("  BFS visits '*' before '+' (at level 0 before level 1),")
+print("  but to evaluate '*' we need the VALUE of '+' first.")
+
+# Simulate evaluation with post-order
+def eval_postorder(root: TreeNode) -> float:
+    """Evaluate an expression tree using post-order recursion."""
+    if not root.children:            # leaf node
+        return float(root.label)
+    child_vals = [eval_postorder(c) for c in root.children]
+    ops = {'+': sum(child_vals), '-': child_vals[0] - child_vals[1],
+           '*': child_vals[0] * child_vals[1], '/': child_vals[0] / child_vals[1]}
+    return ops[root.label]
+
+print(f"\nEvaluated result: {eval_postorder(expr_tree)}  (expected 9.0)")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+**CTQ M4.1** The BFS order for `(1 + 2) * 3` is `* + 3 1 2`. Explain precisely why you *cannot* evaluate the tree by processing nodes in this order. Which node in the BFS order is visited before its children's values are available?
+
+**CTQ M4.2** Post-order guarantees that every node is processed *after all its descendants*. Is this property true of DFS pre-order as well? Give a concrete example of a case where pre-order evaluation fails for the same reason BFS fails.
+
+**CTQ M4.3** The `eval_postorder` function uses recursion — but the call stack is implicit. Rewrite it iteratively using an explicit stack, producing the same result. What is the relationship between the recursive call stack and the explicit stack you used?
+
+---
+
+## Practice — Allison Reading 6.3
+
+[[MC]]
+An evaluator that processes an AST uses which traversal order?
+- ( ) Breadth-first (level by level)
+- ( ) Pre-order (root before children)
+- (x) Post-order (children before root)
+- ( ) In-order (left child, root, right child)
+
+[[MC]]
+A pretty-printer that prints operators *between* their operands uses which traversal?
+- ( ) Post-order
+- ( ) Pre-order
+- (x) In-order (with parentheses)
+- ( ) Breadth-first
+
+[[MC]]
+The BFS traversal of the tree for `(1 + 2) * 3` visits nodes in order:
+- ( ) `1 2 + 3 *`
+- ( ) `* + 3 1 2`
+- (x) `* + 3 1 2` — root first, then level 1, then leaves
+- ( ) `1 + 2 * 3`
+
+1. *Three traversals.* Build the expression tree for `a * b + c * d` (where `+` is the root). Write out all three traversal orders by hand, then verify with code.
+
+2. *BFS on a program AST.* Consider the AST for:
+   ```
+   while (x > 0) {
+       x = x - 1;
+       print x;
+   }
+   ```
+   Draw the tree. Then list the nodes in BFS order and in post-order. Explain why the evaluator *must* use post-order for the body and cannot use BFS.
+
+3. *Iterative post-order.* Rewrite `eval_postorder` using an explicit stack (no recursion). Test it on both trees from Model 4 and Model 6 (of the AST activity).
+
+4. *Tree statistics.* Write `max_depth(root)` and `node_count(root)` as tree walks. For the BFS traversal of a complete binary tree of depth 4, how many nodes are at level 3? Verify with code.
+
+5. *Interpreter extension.* In your interpreter's `evaluate` function, add a `depth` counter that increments on each recursive call and prints the current depth at each node. Run it on a deeply nested expression like `((((1 + 2) + 3) + 4) + 5)`. What is the maximum depth, and how does it relate to the number of operators?
 
 ---
 
 ## Reflection Prompt
 
-In your notebook: you have now run a program in a language whose every component you understand, with no magic remaining between the characters and the answer. How does that change how you regard the languages you use daily, and what magic do you now most want to dispel next?
+In your notebook: you have now run a program in a language whose every component you understand, with no magic remaining between the characters and the answer. How does that change how you regard the languages you use daily? Which stage of the pipeline surprised you most, and what magic do you now most want to dispel next (type checking? closures? garbage collection?)?
 
 ---
 
@@ -163,3 +624,4 @@ In your notebook: you have now run a program in a language whose every component
 - Douglas Thain. *Introduction to Compilers and Language Design*, Chapter 5 and interpretation notes.
 - Robert Nystrom. *Crafting Interpreters*, "Evaluating Expressions" and "Statements and State" (online): our exact path, expanded.
 - Shriram Krishnamurthi. *PLAI*, the interpreter chapters, for the denotational view.
+- Python's `ast.NodeVisitor` — the standard library's version of the visitor pattern you just wrote by hand.

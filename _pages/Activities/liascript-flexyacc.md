@@ -16,7 +16,27 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Scanners and Parsers with Flex and Yacc: Building a Mini-Notation Parser
 
+Flex and Bison are the power tools of language implementation: you describe *what* to recognize — token shapes in a regular expression, grammar rules in BNF — and the framework generates *how* to do it, compiling your specification into a C scanner and an LALR(1) parser without you ever touching a parsing table by hand. This division of labor is the same one used inside production compilers like `gcc` and `clang`: a small, human-readable specification drives a large, machine-generated recognizer. By the end of this module you will have built a working scanner and parser for a real domain-specific language used in live coding music, and you will understand every layer of the pipeline from character stream to abstract syntax tree.
+
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Write Flex lexer rules using regular expressions and explain how the tool compiles them into a DFA for token recognition
+- Write Yacc/Bison grammar productions and semantic actions that construct an AST from recognized tokens
+- Explain the two-stage pipeline (character stream → tokens → AST) and justify why each stage requires a different class of automaton
+- Define the mini-notation grammar for sequences, groups, repetition, and rests, and trace the parse of a sample pattern string
+- Implement a Flex/Bison parser for a domain-specific language and verify correctness by evaluating the resulting AST against expected musical timing output
+
 This module develops **lexical analysis** and **syntax analysis** by building a real scanner and parser, using **flex** and **yacc** (GNU bison), for the **mini-notation** shared by the live coding music languages **TidalCycles** and **Strudel**. We move from **language classes $\rightarrow$ regular expressions and DFAs $\rightarrow$ context-free grammars $\rightarrow$ LALR(1) parsing $\rightarrow$ abstract syntax trees $\rightarrow$ semantics**, so that by the end of the module a string like `bd [sn sn] hh*2 ~` becomes a tree, and that tree becomes a timeline of musical events you can hear in your head, and verify in code.
+
+---
+
+> **Before You Begin** — this module assumes you are comfortable with:
+>
+> - **Regular expression syntax** — character classes `[a-z]`, quantifiers `*`, `+`, `?`, and alternation `|`; you should be able to read a regex and predict what strings it matches
+> - **BNF grammar notation** — writing productions in the form `A → α | β`, identifying terminals and nonterminals, and tracing a derivation step by step
+> - **Shift-reduce parsing concepts** — you should understand what it means to shift a token onto the stack, reduce a sequence of stack symbols by a grammar rule, and why conflicts arise; review the LR parsing notes from the earlier module if any of this feels shaky
 
 ---
 
@@ -97,6 +117,8 @@ A classmate proposes recognizing the entire mini-notation, including arbitrarily
 
 **Rule priority.** Among rules matching the same longest lexeme, the one listed first in the specification wins. If a keyword rule and an identifier rule both match `if`, listing the keyword first makes it a keyword.
 
+> **Watch out!** Flex rules match the *longest* token first, not the *first* rule in the file. If two rules can both match at the current position, Flex always takes whichever produces the longer lexeme — only if two rules tie on length does rule order (priority) break the tie. A common beginner mistake is writing a keyword rule after an identifier rule and expecting priority to kick in when in fact both rules match the same length, so order matters there; but for rules that match *different* lengths, priority is irrelevant.
+
 **The token set for our subset.** We need names, numbers, the rest symbol, brackets, and three operator characters:
 
 $$
@@ -158,6 +180,61 @@ Before reading further, predict the token stream that this scanner emits for the
 | `~` | `REST` | (none) |
 
 Notice that whitespace has vanished entirely, and that the scanner has no opinion about whether `]` was ever preceded by a matching `[`. Balance is the parser's problem.
+
+---
+
+### Model 1: Python Equivalent of the Flex Scanner
+
+**What you are about to see:** The Flex `.l` file you just read is real C code, but to *run* and *observe* the scanner interactively we will first express the same logic in Python. The two implementations are mechanically identical in behavior — both compile a list of (regex, token-type) pairs into a single combined pattern and return the longest match — but Python lets you execute and modify the scanner right here in the browser without a C compiler. Once you are confident about what the scanner produces, Sections 6–8 return to the C/Bison side where the full pipeline lives.
+
+Flex compiles each rule's regex into an NFA (Thompson's construction), merges all NFAs into one, applies the subset construction to get a single DFA, and walks that DFA character by character. Python's `re` module does exactly the same thing under the hood. Here is the flex scanner above written as Python, so you can run it and inspect every token:
+
+```python
+import re
+
+# Same token spec as mininotation.l, in order.
+# Rule priority: FIRST match in the list wins among equal-length matches.
+# Maximal munch: re always takes the longest match.
+TOKEN_SPEC = [
+    ("WORD",   r"[a-zA-Z][a-zA-Z0-9]*"),
+    ("NUMBER", r"[0-9]+"),
+    ("REST",   r"~"),
+    ("LBRACK", r"\["),
+    ("RBRACK", r"\]"),
+    ("STAR",   r"\*"),
+    ("SLASH",  r"/"),
+    ("QMARK",  r"\?"),
+    ("WS",     r"[ \t\r\n]+"),
+    ("ERROR",  r"."),
+]
+
+MASTER = re.compile("|".join(f"(?P<{name}>{pat})" for name, pat in TOKEN_SPEC))
+
+def scan(source):
+    tokens = []
+    for m in MASTER.finditer(source):
+        kind, lexeme = m.lastgroup, m.group()
+        if kind == "WS":
+            continue          # discard whitespace, just like the flex rule
+        if kind == "ERROR":
+            raise SyntaxError(f"unexpected: {lexeme!r}")
+        tokens.append((kind, lexeme))
+    return tokens
+
+for src in ["bd sn hh", "bd [sn sn]*2 ~", "hh*4 ~ hh*4 ~", "[bd [sn sn]]/2"]:
+    toks = scan(src)
+    print(f"{src!r}")
+    for kind, lex in toks:
+        print(f"  ({kind}, {lex!r})")
+    print()
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions — *Solo*
+
+- The `ERROR` catch-all `.` appears last. What happens if you move it to the top of `TOKEN_SPEC`? Try predicting, then test by swapping its position.
+- Maximal munch: what does the scanner produce for the input `bd2`? Is `bd2` one token or two? Which rule consumes it, and why?
+- This Python scanner and the flex scanner produce identical token streams for the same input. What *implementation* is different between them (hint: flex builds a C DFA at compile time), and why does that matter for production use?
 
 ---
 
@@ -258,9 +335,107 @@ function LR-PARSE(tokens):
             report syntax error at a
 ```
 
+### Model 2: Shift-Reduce Parsing in Python
+
+**What you are about to see:** The pseudocode above describes LR parsing in the abstract; this model makes it concrete by running it step by step for a small arithmetic grammar. You will see the two-stack (state stack + symbol stack) loop in action and read a printed trace of every shift and reduce decision. Pay attention to the moment when the parser chooses to shift `*` rather than reducing an already-complete `+` expression — that single decision is where operator precedence lives in an LR parser, and spotting it in the trace will make the conflict discussion that follows much easier to understand.
+
+Before reading the bison output, run the algorithm yourself on a tiny grammar. The code below simulates a shift-reduce parser for simple arithmetic expressions (`n + n * n`) with an explicit stack and action trace — the same algorithm bison generates for the mini-notation, just with a hand-written action table instead of a generated one.
+
+```python
+# Shift-reduce parser trace for: E → E+T | T,  T → T*F | F,  F → n
+# ACTION table and GOTO table are encoded as dicts (state, symbol) → action.
+# Actions: ("shift", next_state), ("reduce", rule), "accept", "error"
+
+# Grammar rules: name → (symbols_to_pop, nonterminal_to_push)
+RULES = {
+    "E→E+T": (3, "E"),  # pop E, +, T  → push E
+    "E→T":   (1, "E"),
+    "T→T*F": (3, "T"),
+    "T→F":   (1, "T"),
+    "F→n":   (1, "F"),
+}
+
+# Minimal LR(0) action table for this grammar (hand-constructed, state 0-11)
+ACTION = {
+    (0,"n"):  ("shift",5),  (0,"("):  ("shift",4),
+    (1,"+"):  ("shift",6),  (1,"$"):  "accept",
+    (2,"+"):  ("reduce","E→T"), (2,"*"): ("shift",7), (2,"$"): ("reduce","E→T"),
+    (3,"+"):  ("reduce","T→F"), (3,"*"): ("reduce","T→F"), (3,"$"): ("reduce","T→F"),
+    (4,"n"):  ("shift",5),  (4,"("):  ("shift",4),
+    (5,"+"):  ("reduce","F→n"), (5,"*"): ("reduce","F→n"), (5,"$"): ("reduce","F→n"),
+    (6,"n"):  ("shift",5),  (6,"("):  ("shift",4),
+    (7,"n"):  ("shift",5),  (7,"("):  ("shift",4),
+    (8,"+"):  ("shift",6),  (8,")"):  ("shift",11),
+    (9,"+"):  ("reduce","E→E+T"), (9,"*"): ("shift",7),
+              (9,")"): ("reduce","E→E+T"), (9,"$"): ("reduce","E→E+T"),
+    (10,"+"): ("reduce","T→T*F"), (10,"*"): ("reduce","T→T*F"),
+              (10,")"): ("reduce","T→T*F"), (10,"$"): ("reduce","T→T*F"),
+    (11,"+"): ("reduce","F→(E)"), (11,"*"): ("reduce","F→(E)"),
+              (11,")"): ("reduce","F→(E)"), (11,"$"): ("reduce","F→(E)"),
+}
+GOTO = {
+    (0,"E"):1, (0,"T"):2, (0,"F"):3,
+    (4,"E"):8, (4,"T"):2, (4,"F"):3,
+    (6,"T"):9, (6,"F"):3,
+    (7,"F"):10,
+}
+
+def lr_parse(tokens):
+    tokens = tokens + ["$"]
+    stack = [0]        # state stack
+    sym_stack = []     # symbol stack (for display)
+    pos = 0
+
+    print(f"{'Stack':35} {'Remaining':18} Action")
+    print("-" * 75)
+
+    while True:
+        state = stack[-1]
+        tok   = tokens[pos]
+        disp_stack = " ".join(str(x) for x in sym_stack) or "⊥"
+        disp_rest  = " ".join(tokens[pos:])
+        action = ACTION.get((state, tok), "error")
+
+        if action == "accept":
+            print(f"{disp_stack:35} {disp_rest:18} ACCEPT ✓")
+            return
+        elif action == "error":
+            print(f"{disp_stack:35} {disp_rest:18} ERROR at {tok!r}")
+            return
+        elif action[0] == "shift":
+            _, next_state = action
+            print(f"{disp_stack:35} {disp_rest:18} SHIFT  {tok} → state {next_state}")
+            sym_stack.append(tok); stack.append(next_state); pos += 1
+        elif action[0] == "reduce":
+            rule = action[1]
+            pop_n, lhs = RULES[rule]
+            for _ in range(pop_n): sym_stack.pop(); stack.pop()
+            top = stack[-1]
+            goto_state = GOTO[(top, lhs)]
+            sym_stack.append(lhs); stack.append(goto_state)
+            print(f"{disp_stack:35} {disp_rest:18} REDUCE {rule}")
+
+print("=== n + n * n (right operand tighter) ===")
+lr_parse(["n", "+", "n", "*", "n"])
+print()
+print("=== n * n + n (left operand tighter) ===")
+lr_parse(["n", "*", "n", "+", "n"])
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions — *Pairs*
+
+- In the first trace (`n + n * n`), at what point does the parser shift `*` instead of reducing the first `n + n`? What state and lookahead determine this decision?
+- In the RULES table, `"E→E+T": (3, "E")` pops 3 symbols. What are those 3 symbols, and why does popping them from the stack correspond to "recognizing a complete E+T"?
+- If you added `"E→E+E"` to the grammar (making addition left-recursive in a second way), which `ACTION` table entry would conflict with an existing one? This is a shift/reduce conflict — identify the state and the competing actions.
+
+---
+
 **LALR(1) is LR(1) with merged states.** Full LR(1) tables distinguish states by lookahead and grow large; LALR(1) merges LR(1) states that share the same item cores, keeping the table compact at the cost of accepting a slightly smaller family of grammars. Our mini-notation grammar is comfortably LALR(1): you can verify with `bison -v mininotation.y`, which writes the full automaton, every state and item set, to `mininotation.output`. Reading that file once, slowly, will teach you more about LR parsing than any lecture, and we will do exactly that in the partner activity below.
 
 **Conflicts are the diagnostic signal.** A **shift/reduce conflict** means some state sees a lookahead for which both shifting and reducing are table-legal; a **reduce/reduce conflict** means two completed productions compete. Our grammar produces neither, but you will manufacture one, deliberately, in a moment, because learning to read conflict reports is the practical skill that separates people who can use parser generators from people who fight them.
+
+> **Watch out!** A shift/reduce conflict almost always signals an **ambiguous grammar** — the same token sequence has two valid parse trees. Bison resolves the conflict silently by defaulting to *shift* (which usually gives the right answer for dangling-else style ambiguities), but it will still print a warning. Never ignore that warning: if your grammar has a conflict you did not anticipate, Bison's silent default resolution may produce parse trees that are subtly wrong and very difficult to debug downstream. Always read the `.output` file and confirm that the chosen resolution matches your intent.
 
 ---
 
@@ -276,6 +451,8 @@ Run `bison -v mininotation.y`. The diagnostician must, using only bison's stderr
 ---
 
 ## 6. The Yacc Specification: Grammar Plus Semantic Actions
+
+**What you are about to see:** Section 4 gave the grammar as pure BNF; this section adds the second half — the *semantic actions* that fire each time a production is reduced, building up AST nodes from the bottom of the tree to the top. Think of the grammar productions as a recipe ("when you see a `term` followed by `STAR NUMBER`, you have a fast-repeat construct") and the actions as the kitchen instructions that assemble the result ("wrap the term node in a new `N_FAST` node carrying the integer"). After reading the Yacc file, you should be able to mentally simulate one reduction and know exactly which `$$` assignment runs.
 
 **Each production carries an action that builds one AST node.** In yacc actions, `$$` denotes the semantic value of the left-hand side and `$1, $2, \ldots` the values of the right-hand-side symbols in order. The actions below are deliberately uniform: every production either passes a subtree upward or wraps its children in exactly one new node. When actions stay this disciplined, the AST is a faithful image of the derivation, and debugging the parser reduces to printing trees.
 
@@ -443,6 +620,10 @@ int main(void) {
 ---
 
 ## 8. Semantics: From Trees to Time
+
+**What you are about to see:** Everything up to this point — the scanner, the grammar, the AST — was purely *structural*: we recognized and organized the input without deciding what it *means*. This section assigns musical meaning to each AST node type via structural recursion, one equation (and one C `case`) per node type. The key insight is that `SEQ` subdivides time, `FAST` further subdivides each copy, and `GROUP` is completely transparent (it was only needed by the *parser* to capture nesting; once the tree is built, the group brackets have done their job). Work through the equations for `[bd sn]*2` by hand before running the code.
+
+> **Watch out!** It is tempting to put musical interpretation logic *inside* the parser actions themselves — for example, computing event spans directly in the Yacc `%%` section. Resist this: mixing parsing and evaluation collapses the syntax/semantics boundary and makes both sides harder to test, extend, and reason about. The AST exists precisely to give you a clean handoff point. If you ever find yourself computing time spans inside a grammar action, that is a sign to stop and push the logic into the evaluator instead.
 
 **Now, and only now, do we assign meaning.** The denotation of a pattern is a set of **events**, each a sample name paired with a half-open time span $[t_0, t_1) \subseteq [0, 1)$ within the cycle. We define the evaluation function $\mathcal{E}[\![\, n \,]\!](t_0, t_1)$ by structural recursion on the AST, one clause per node type, and this is your first denotational semantics written in C rather than on a whiteboard:
 

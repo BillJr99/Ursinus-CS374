@@ -4,7 +4,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-welcomepl.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-welcomepl.md
+comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-welcomepl.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-welcomepl.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -15,7 +15,26 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Welcome: Why Study Programming Languages?
 
+Every programmer uses languages, but few understand *why* they work the way they do — or how to evaluate a new one quickly. Studying programming language theory is like learning music theory: you can play guitar without it, but understanding harmony, rhythm, and form lets you compose music rather than just repeat what you've heard. This course gives you the composer's toolkit — you'll read languages, compare them, and ultimately build one from scratch.
+
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Identify the three parties involved in every programming language (author, machine, and reader) and explain the role each plays
+- Compare at least three distinct programming languages by describing the specific design choices that differentiate their syntax and semantics
+- Trace the pipeline from source text to program behavior, naming each stage and its input/output
+- Explain the trade-offs a language designer faces among expressiveness, safety, and machine efficiency
+- Classify a given code snippet by the paradigm it primarily represents and justify that classification
+
 By December, your team will have built a programming language of your own: a lexer, a parser, and an interpreter, assembled from components you write one assignment at a time. Today we ask why that journey is worth taking. We move from **what a language is $\rightarrow$ why languages differ $\rightarrow$ the pipeline from text to behavior $\rightarrow$ how this course works**.
+
+> **Before You Begin:** This activity assumes you can:
+> - Write and run a basic Python script (loops, functions, list comprehensions)
+> - Describe what a function call does at a high level — arguments in, return value out
+> - Read a simple regular expression like `\d+` and say what it matches
+>
+> If any of these feel shaky, review them first.
 
 ---
 
@@ -42,37 +61,78 @@ Consider each model below and answer the questions provided. First reflect on th
 
 ---
 
+> **Intuition:** Think of the same recipe written in four different styles — a traditional French cookbook, a quick-reference cheat sheet, a flowchart, and a voice command to a smart speaker. The dish comes out the same, but each style reflects different assumptions about who's cooking and what they already know. The four code snippets below do the same arithmetic, but each reveals a different programming *paradigm* — a different mental model for organizing computation.
+
 ## Model 1: One Idea, Four Notations
 
-The same computation, summing the squares of the even numbers in a list, in four languages:
+The same computation — summing the squares of the even numbers in a list — in four notations:
 
-```
-# Python
+**Python (imperative/functional blend):**
+```python
+nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 total = sum(x*x for x in nums if x % 2 == 0)
+print(total)  # 220
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-```
-// Java (classic style)
-int total = 0;
-for (int x : nums) { if (x % 2 == 0) { total += x * x; } }
-```
+**Python OO style:**
+```python
+nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-```
-;; Scheme
-(apply + (map (lambda (x) (* x x)) (filter even? nums)))
-```
+class VowelCounter:  # reusing class structure for illustration
+    def __init__(self, data): self.data = data
+    def sum_even_squares(self):
+        return sum(x*x for x in self.data if x % 2 == 0)
 
+vc = VowelCounter(nums)
+print(vc.sum_even_squares())  # 220
 ```
--- SQL
-SELECT SUM(x * x) FROM nums WHERE x % 2 = 0;
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+**Scheme-style functional (Python simulation):**
+```python
+from functools import reduce
+
+nums = list(range(1, 11))
+even = list(filter(lambda x: x % 2 == 0, nums))
+squared = list(map(lambda x: x * x, even))
+total = reduce(lambda a, b: a + b, squared, 0)
+print(total)  # 220
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+**All four approaches — same answer, different mental models:**
+```python
+nums = list(range(1, 11))
+
+# Imperative: explicit state
+total_imp = 0
+for x in nums:
+    if x % 2 == 0:
+        total_imp += x * x
+
+# Functional: composition
+from functools import reduce
+total_func = reduce(lambda a,b: a+b, map(lambda x: x*x, filter(lambda x: x%2==0, nums)), 0)
+
+# Comprehension: declarative
+total_comp = sum(x*x for x in nums if x % 2 == 0)
+
+print(f"Imperative: {total_imp}")
+print(f"Functional: {total_func}")
+print(f"Comprehension: {total_comp}")
+print(f"All equal? {total_imp == total_func == total_comp}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
 1. For each version, identify what the *programmer* must keep track of (loop counters, intermediate state, nothing?). Which version says *what* to compute and which says *how*?
 2. Rank the four for readability by a newcomer, and separately for your own confidence that each is correct. Did the rankings differ? Why might they?
-3. The Scheme version is built from three reusable pieces (`filter`, `map`, `apply +`). Identify the analogous pieces hiding inside the Python version's syntax.
-4. Propose one computation that would be awkward in SQL but easy in Python. What does that suggest about general-purpose versus domain-specific languages?
+3. The Scheme-style version is built from three reusable pieces (`filter`, `map`, `reduce`). Identify the analogous pieces hiding inside the Python comprehension.
+4. Propose one computation that would be awkward to express declaratively but easy imperatively. What does that suggest about general-purpose versus domain-specific languages?
+
+> **Watch out!** "Declarative" does not mean "shorter." A SQL query can be more verbose than an equivalent Python loop. Declarative means you describe *what result you want*, not *the steps to produce it*. Don't confuse conciseness with paradigm.
 
 ---
 
@@ -95,15 +155,87 @@ In the pipeline above, the component whose job is to decide that the characters 
 
 ---
 
+> **Intuition:** Imagine a customs officer at an airport breaking your passport down into individual fields — name, date of birth, nationality — before any decision gets made. The lexer does exactly that: it reads a raw stream of characters and groups them into labeled chunks ("this is a number," "this is a variable name") so the later stages never have to squint at raw text again. In this model you'll write a tiny version of that officer.
+
 ## Model 2: Be the Pipeline
 
 Consider the source text: `total = 3 + price * 2`
 
+**A minimal Python tokenizer — watch the pipeline live:**
+```python
+import re
+
+source = "total = 3 + price * 2"
+
+# A simple token spec: (type, pattern)
+TOKEN_SPEC = [
+    ("NUMBER",  r"\d+(\.\d*)?"),
+    ("IDENT",   r"[A-Za-z_]\w*"),
+    ("ASSIGN",  r"="),
+    ("PLUS",    r"\+"),
+    ("STAR",    r"\*"),
+    ("WS",      r"\s+"),
+]
+
+master = "|".join(f"(?P<{name}>{pat})" for name, pat in TOKEN_SPEC)
+tokens = []
+for m in re.finditer(master, source):
+    kind = m.lastgroup
+    if kind != "WS":
+        tokens.append((kind, m.group()))
+
+for tok in tokens:
+    print(tok)
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
 ### Critical Thinking Questions
 
-5. As a team, list the tokens a lexer should produce, in order. How many are there? Did anyone's count differ, and over what (whitespace? the `=`?)?
-6. The interpreter must compute `price * 2` before adding 3. Where in the pipeline is that ordering decided: the lexer, the parser, or the interpreter? Defend your answer; we will test it in week 3.
+5. As a team, list the tokens the lexer produced. How many are there? Did anyone's count differ?
+6. The interpreter must compute `price * 2` before adding 3. Where in the pipeline is that ordering decided: the lexer, the parser, or the interpreter? Defend your answer.
 7. Suppose the text were `total = 3 + * 2`. At which stage should the error be caught, and what should a *helpful* error message say?
+
+> **Watch out!** The lexer cannot catch all errors — it only sees one token at a time and has no memory of what came before. `total = 3 + * 2` contains five perfectly valid tokens; the *sequence* is illegal. Only the parser, which knows the grammar rules about how tokens may be combined, can flag that two operators in a row is a syntax error.
+
+---
+
+> **Intuition:** You've been using Python as a black box — type code in, get output out. In this model you'll open the lid and watch Python process its own source code step by step, the same way a mechanic puts a car on a lift to show you what's happening beneath the hood. Seeing Python's actual tokens, AST, and bytecode demystifies the interpreter and previews exactly what you'll build in your own project.
+
+## Model 3: Python's Own Pipeline
+
+Python itself uses the same pipeline. You can inspect every stage:
+
+```python
+import ast, dis, tokenize, io
+
+source = "total = 3 + 2 * 5"
+
+# Stage 1: Tokens
+print("=== TOKENS ===")
+tokens = list(tokenize.generate_tokens(io.StringIO(source).readline))
+for tok in tokens:
+    if tok.type not in (tokenize.NL, tokenize.NEWLINE, tokenize.ENDMARKER):
+        print(f"  {tokenize.tok_name[tok.type]:10} {tok.string!r}")
+
+# Stage 2: AST
+print("\n=== AST ===")
+tree = ast.parse(source)
+print(ast.dump(tree, indent=2))
+
+# Stage 3: Bytecode (compiled)
+print("\n=== BYTECODE ===")
+code = compile(source, "<string>", "exec")
+dis.dis(code)
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+8. How many tokens does Python produce for `total = 3 + 2 * 5`? Which token is the operator precedence information *not* encoded in (it appears in the AST instead)?
+9. The AST shows a `BinOp` with `Mult` nested inside `Add`. How does the tree *encode* precedence without any explicit precedence rules?
+10. The bytecode shows `BINARY_OP` instructions. These are the *output* of Python's compiler. What is the input to an interpreter, by contrast?
+
+> **Watch out!** Python is both compiled *and* interpreted: it compiles your source to bytecode (the `.pyc` files), then a virtual machine *interprets* that bytecode. When we say "interpreter" in this course, we mean the tree-walking variety that reads an AST directly — not CPython's bytecode VM. Both are interpreters in spirit; just be clear which level you're describing.
 
 ---
 
@@ -117,13 +249,15 @@ The first half of the semester builds your skills bottom-up through scaffolded i
 
 1. *Language autobiography.* List every programming language and notation (count spreadsheets and regex!) you have used. For each, one sentence: what was it good at?
 2. *Notation hunt.* Find one notation in daily life that has a syntax and a semantics but is not usually called a programming language (music notation, knitting patterns, chess notation). The Presenter shares the team's best example.
-3. *Team charter.* Draft your team's working agreement: role rotation, communication, preparation norms, and disagreement resolution. The Recorder posts it.
+3. *Tokenizer extension.* Extend the minimal tokenizer above to also recognize `(`, `)`, `-`, `/`, and floating-point numbers like `3.14`. Test it on `result = (a - 3.14) / b`. How many tokens does it produce?
+4. *Pipeline trace.* Manually trace the three stages of the pipeline for the expression `2 * (x + 1)`: list tokens, draw the parse tree, and show the evaluation order.
+5. *Team charter.* Draft your team's working agreement: role rotation, communication, preparation norms, and disagreement resolution. The Recorder posts it.
 
 ---
 
 ## Reflection Prompt
 
-In your notebook: describe one moment when a programming language fought you, when the thing you wanted to say was hard to express. Knowing you will design a language this semester, what would you change to make that moment easier?
+In your notebook: describe one moment when a programming language fought you — when the thing you wanted to say was hard to express. Knowing you will design a language this semester, what would you change to make that moment easier? And after seeing Python's own tokens/AST/bytecode pipeline, does Python feel more or less like magic to you?
 
 ---
 
@@ -132,3 +266,4 @@ In your notebook: describe one moment when a programming language fought you, wh
 - Douglas Thain. *Introduction to Compilers and Language Design* (2nd ed.), Chapter 1. Our pipeline, named and framed.
 - Shriram Krishnamurthi. *Programming Languages: Application and Interpretation* (online). The interpreter-first philosophy we follow.
 - Robert Nystrom. *Crafting Interpreters* (online), "A Map of the Territory."
+- The `ast` module docs: `help(ast)` in Python shows every node type you'll encounter.

@@ -16,6 +16,25 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Languages for Live Coding Music: Strudel and TidalCycles
 
+Music is time made audible, and writing a language for music means designing a language whose fundamental data type is time itself. TidalCycles and Strudel make that design choice explicit: a pattern is literally a function that takes a time interval and returns the events scheduled within it. Studying these languages is studying DSL design at its most honest — every syntax decision is traceable to a constraint from live performance, and every semantic choice flows from the mathematics of cyclic time.
+
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Distinguish embedded DSLs from external DSLs and explain the design tradeoffs that led TidalCycles and Strudel to use a hybrid of both
+- Identify how live coding's domain requirements (conciseness, modifiability at runtime, declarative time, recoverable errors) drive specific language design decisions
+- Define the denotational model of a pattern as a function from time to values and trace how combinators compose patterns algebraically
+- Analyze the mini-notation grammar of Strudel/TidalCycles and explain how parsing it requires a separate external language within the host language
+- Evaluate how DSL design choices generalize beyond music to configuration languages, query builders, and infrastructure description languages
+
+> **Before You Begin:** This activity assumes you can:
+> - Explain what a domain-specific language (DSL) is and give one example distinct from TidalCycles
+> - Read and write Python functions that return other functions (closures)
+> - Describe what a recursive descent parser does at a high level
+>
+> If any of these feel shaky, review them first.
+
 This module introduces **domain-specific languages (DSLs)** through two living, performing specimens: **TidalCycles**, a pattern language embedded in Haskell, and **Strudel**, its JavaScript-hosted sibling that runs in any browser. We move from **the live coding problem domain $\rightarrow$ embedded versus external DSL design $\rightarrow$ a formal model of patterns as functions of time $\rightarrow$ combinators and their algebraic laws $\rightarrow$ hands-on performance**, and in doing so we assemble the conceptual vocabulary, syntax versus semantics, host language leverage, denotation, and equational reasoning, that the rest of this unit will exercise when we build a parser for these languages ourselves.
 
 ---
@@ -43,6 +62,8 @@ console.log("Environment ready.");
 # Part I: The Problem Domain and Two Language Designs
 
 ## 1. Live Coding as a Language Design Problem
+
+Before studying the technical architecture, read the performance constraints as a requirements document. A live coding environment is like a cockpit instrument panel being redesigned mid-flight: every design choice must either support the pilot while flying or not require them to land. Keep these constraints in mind as you encounter each language feature — each one is answering a specific requirement from this list.
 
 **Live coding is the practice of writing and rewriting a running program as a public performance.** A performer projects their editor, the audience watches the code change, and the music changes with it. This domain imposes unusual and instructive requirements on a programming language, and reading those requirements as a language designer would is our first exercise in this module. The program must be **concise**, because every keystroke happens on stage; it must be **modifiable while running**, because stopping the program stops the music; it must be **declarative about time**, because the performer thinks in cycles and beats rather than in callbacks and timestamps; and its errors must be **recoverable**, because a syntax error during a performance should not produce silence.
 
@@ -99,59 +120,143 @@ $$
 \{\ (\texttt{bd},\ 0,\ \tfrac{1}{2}),\quad (\texttt{sn},\ \tfrac{1}{2},\ 1)\ \}
 $$
 
-Query the same pattern on $[1, 2)$ and you receive the same shape shifted by one cycle, because the pattern is cycle-periodic unless an operator says otherwise. We will implement precisely this query function, in C, against our own parser's AST in the next module, and the displayed set above is the test case you should carry with you.
+Query the same pattern on $[1, 2)$ and you receive the same shape shifted by one cycle, because the pattern is cycle-periodic unless an operator says otherwise. We will implement precisely this query function, in Python against our own parser's AST in the next module, and the displayed set above is the test case you should carry with you.
 
 ---
 
-## Code Cell
+## Model 1: Pattern-as-Function in Python
 
-```javascript
-// A miniature, self-contained model of "pattern as function of time."
-// pure(v) is the pattern of one event per cycle; seq(...) subdivides.
-// Compare each function against the math in Section 3.
+The central insight is that a pattern is not a list — it is a function. This means patterns are naturally infinite (you can query any future cycle), composable (functions compose), and pure (transforming a pattern produces a new pattern without mutating the old one). This model translates that mathematical abstraction directly into Python using closures. Notice that `pure`, `seq`, `fast`, and the others all return functions, not data.
 
-const pure = (v) => (b, e) => {
-  const events = [];
-  for (let c = Math.floor(b); c < e; c++) {
-    if (c >= b) events.push({ value: v, begin: c, end: c + 1 });
-  }
-  return events;
-};
+> **Watch out!** `pure("bd")` returns a function, not a string. You must call the returned function with a time span — e.g., `pure("bd")(0, 1)` — to get actual events. Forgetting the second call and printing the function object itself is a very common first mistake.
 
-const seq = (...pats) => (b, e) => {
-  const n = pats.length;
-  const events = [];
-  for (let c = Math.floor(b); c < e; c++) {
-    pats.forEach((p, i) => {
-      // Child i owns [c + i/n, c + (i+1)/n); query it scaled into place.
-      p(0, 1).forEach((ev) =>
-        events.push({
-          value: ev.value,
-          begin: c + (i + ev.begin) / n,
-          end:   c + (i + ev.end) / n,
-        })
-      );
-    });
-  }
-  return events;
-};
+The cell below implements the core pattern model in Python: `pure`, `seq`, `fast`, `slow`, `rev`, and `stack` (polyrhythm). This is not audio — it is the mathematical substrate under the audio. Every event is a `(value, begin, end)` tuple; every function that returns a pattern returns a *function* from `(begin, end)` to a list of events.
 
-const pat = seq(pure("bd"), pure("sn"));
-console.log(pat(0, 1));  // expect bd on [0, 0.5), sn on [0.5, 1)
-console.log(pat(1, 2));  // expect the same shape, one cycle later
+```python
+from fractions import Fraction
+
+# An event is (value, begin: Fraction, end: Fraction)
+def event(v, b, e):
+    return (v, Fraction(b), Fraction(e))
+
+def pure(v):
+    """A pattern that emits v once per cycle, occupying the whole cycle."""
+    def query(b, e):
+        b, e = Fraction(b), Fraction(e)
+        events = []
+        c = int(b) if b == int(b) else int(b)
+        while c < e:
+            if Fraction(c) >= b or c == int(b):
+                events.append(event(v, max(b, Fraction(c)), min(e, Fraction(c+1))))
+            c += 1
+        return events
+    return query
+
+def seq(*pats):
+    """Divide one cycle evenly among the given patterns."""
+    n = len(pats)
+    def query(b, e):
+        b, e = Fraction(b), Fraction(e)
+        result = []
+        for cycle_start in range(int(b), int(e) + 1):
+            for i, p in enumerate(pats):
+                slot_b = Fraction(cycle_start) + Fraction(i, n)
+                slot_e = Fraction(cycle_start) + Fraction(i + 1, n)
+                if slot_e <= b or slot_b >= e:
+                    continue
+                # Query sub-pattern in [0,1), then scale into slot
+                sub_events = p(0, 1)
+                for (v, sb, se) in sub_events:
+                    eb = slot_b + sb / n * n   # scale back
+                    ee = slot_b + se / n * n
+                    eb = slot_b + sb * Fraction(1, n) * n
+                    ee = slot_b + se * Fraction(1, n) * n
+                    # Correct: slot occupies 1/n of a cycle; sub spans are in [0,1]
+                    abs_b = slot_b + sb * Fraction(1, n)
+                    abs_e = slot_b + se * Fraction(1, n)
+                    if abs_e > b and abs_b < e:
+                        result.append(event(v, max(abs_b, b), min(abs_e, e)))
+        return result
+    return query
+
+def fast(n, pat):
+    """Compress n cycles of pat into one cycle."""
+    n = Fraction(n)
+    def query(b, e):
+        return [(v, sb / n, se / n) for (v, sb, se) in pat(b * n, e * n)]
+    return query
+
+def slow(n, pat):
+    """Stretch pat across n cycles."""
+    n = Fraction(n)
+    def query(b, e):
+        return [(v, sb * n, se * n) for (v, sb, se) in pat(b / n, e / n)]
+    return query
+
+def rev(pat):
+    """Reverse the events within each cycle."""
+    def query(b, e):
+        b, e = Fraction(b), Fraction(e)
+        result = []
+        for (v, sb, se) in pat(b, e):
+            # Mirror within its containing cycle
+            cycle = int(sb)
+            new_b = Fraction(cycle + 1) - se + Fraction(cycle)
+            new_e = Fraction(cycle + 1) - sb + Fraction(cycle)
+            result.append(event(v, new_b, new_e))
+        return result
+    return query
+
+def stack(*pats):
+    """Play patterns simultaneously (polyrhythm)."""
+    def query(b, e):
+        result = []
+        for p in pats:
+            result.extend(p(b, e))
+        return sorted(result, key=lambda ev: ev[1])
+    return query
+
+# ── Tests ─────────────────────────────────────────────────────────────────────
+
+def fmt(events):
+    return [(v, float(b), float(e)) for v, b, e in events]
+
+def show(name, events):
+    print(f"  {name}")
+    for v, b, e in sorted(events, key=lambda x: x[1]):
+        bar = "  " + "─" * int(b * 32) + "▮" * max(1, int((e - b) * 32)) + "─" * (32 - int(e * 32))
+        print(f"    ({v!r:<6} {float(b):.4f}–{float(e):.4f}){bar}")
+
+print("=== Query: pure('bd') on [0,1) ===")
+show("pure('bd')", pure("bd")(0, 1))
+
+print()
+print("=== Query: seq(pure('bd'), pure('sn')) on [0,1) ===")
+p = seq(pure("bd"), pure("sn"))
+show("seq bd sn", p(0, 1))
+
+print()
+print("=== Query: seq bd sn on [1,2) (should be same shape +1 cycle) ===")
+show("seq bd sn [1,2)", p(1, 2))
+
+print()
+print("=== Query: fast(2, seq('bd','sn')) — double speed ===")
+fast_p = fast(2, seq(pure("bd"), pure("sn")))
+show("fast 2 (seq bd sn)", fast_p(0, 1))
+
+print()
+print("=== Query: stack(pure('bd'), pure('hh')) — polyrhythm ===")
+poly = stack(pure("bd"), pure("hh"))
+show("stack bd hh", poly(0, 1))
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
----
+### Critical Thinking Questions
 
-### Try It: Individually
-
-Before running anything at strudel.cc, predict on paper the event set for one cycle of each pattern below, writing each answer in the set notation of Section 3. Then open strudel.cc, enter each pattern inside `sound("...")`, press play, and check your prediction against the highlighted spans in the editor.
-
-1. `bd sn hh sn`
-2. `bd [sn sn sn]`
-3. `[bd bd] [sn [hh hh]]`
-
-Record any prediction you got wrong and, in one sentence, which rule you had misapplied. Bring that sentence to class; the wrong answers are the curriculum.
+1. `pure("bd")` returns a *function*, not a list. What property of this design allows patterns to be infinite (spanning any number of cycles) while consuming constant memory?
+2. Trace `seq(pure("bd"), pure("sn"))(0, 1)` by hand: what fraction of the cycle does each event occupy? Confirm against the cell output.
+3. `fast(2, p)` replays `p` twice per cycle by querying `p(2b, 2e)`. What query would `slow(3, p)` send to `p`? Write the implementation using the same technique.
+4. The `rev` combinator mirrors events within each cycle. Write the algebraic law `rev(rev(p)) = p` in terms of the query function, then test it on `seq(pure("bd"), pure("sn"))` by running both and confirming the events match.
 
 ---
 
@@ -180,6 +285,133 @@ In `every 4 (fast 2) $ sound "bd sn"`, the Haskell type checker accepts `fast 2`
 
 ---
 
+## Model 2: Algebraic Laws — Testing Equational Reasoning
+
+Algebraic laws let you reason about programs without running them — you can replace one expression with an equivalent one just as you would in algebra. But laws need to be tested too, because implementations can be buggy even if the intended semantics are correct. This model treats the laws as runnable tests and deliberately checks a law that fails, because understanding why something is not a law is as illuminating as knowing why something is.
+
+> **Watch out!** Floating-point comparison will silently fail for these tests. All arithmetic here uses Python's `Fraction` type for exact rational arithmetic. If you adapt this code and use `float` instead of `Fraction`, `events_equal` may return `False` for a correct implementation due to rounding.
+
+The algebraic laws are not decoration; they are executable contracts. The cell below verifies three laws by running both sides on the same input and comparing event streams.
+
+```python
+from fractions import Fraction
+
+# Re-use the pattern model from Model 1 (abbreviated here)
+def event(v, b, e): return (v, Fraction(b), Fraction(e))
+
+def pure(v):
+    def query(b, e):
+        b, e = Fraction(b), Fraction(e)
+        result = []
+        for c in range(int(b), int(e)+1):
+            cb, ce = Fraction(c), Fraction(c+1)
+            if cb < e and ce > b:
+                result.append(event(v, max(b, cb), min(e, ce)))
+        return result
+    return query
+
+def seq(*pats):
+    n = len(pats)
+    def query(b, e):
+        b, e = Fraction(b), Fraction(e)
+        result = []
+        for c in range(int(b), int(e)+1):
+            for i, p in enumerate(pats):
+                sb = Fraction(c) + Fraction(i, n)
+                se = Fraction(c) + Fraction(i+1, n)
+                if se <= b or sb >= e: continue
+                for (v, eb, ee) in p(0, 1):
+                    abs_b = sb + eb * Fraction(1, n)
+                    abs_e = sb + ee * Fraction(1, n)
+                    if abs_e > b and abs_b < e:
+                        result.append(event(v, max(abs_b, b), min(abs_e, e)))
+        return result
+    return query
+
+def fast(n, pat):
+    n = Fraction(n)
+    def query(b, e):
+        return [(v, Fraction(sb)/n, Fraction(se)/n) for (v, sb, se) in pat(b*n, e*n)]
+    return query
+
+def slow(n, pat):
+    n = Fraction(n)
+    def query(b, e):
+        return [(v, Fraction(sb)*n, Fraction(se)*n) for (v, sb, se) in pat(b/n, e/n)]
+    return query
+
+def rev(pat):
+    def query(b, e):
+        b, e = Fraction(b), Fraction(e)
+        result = []
+        for (v, sb, se) in pat(b, e):
+            c = int(sb)
+            result.append(event(v, Fraction(c+1) - se + Fraction(c),
+                                    Fraction(c+1) - sb + Fraction(c)))
+        return result
+    return query
+
+def events_equal(e1, e2):
+    key = lambda ev: (ev[0], float(ev[1]), float(ev[2]))
+    return sorted(e1, key=key) == sorted(e2, key=key)
+
+p = seq(pure("bd"), pure("sn"), pure("hh"))
+SPAN = (0, 2)  # test over two cycles
+
+print("=== Testing Algebraic Laws ===")
+print()
+
+# Law 1: fast m (fast n p) = fast (m*n) p
+m, n = 2, 3
+lhs = fast(m, fast(n, p))(*SPAN)
+rhs = fast(m * n, p)(*SPAN)
+ok = events_equal(lhs, rhs)
+print(f"Law 1: fast({m}) (fast({n}) p)  =  fast({m*n}) p    {'✓' if ok else '✗ FAIL'}")
+if not ok:
+    print(f"  LHS events: {len(lhs)}  RHS events: {len(rhs)}")
+
+# Law 2: rev (rev p) = p
+lhs2 = rev(rev(p))(*SPAN)
+rhs2 = p(*SPAN)
+ok2 = events_equal(lhs2, rhs2)
+print(f"Law 2: rev(rev(p))  =  p                   {'✓' if ok2 else '✗ FAIL'}")
+
+# Law 3: fast n (slow n p) = p
+n3 = 3
+lhs3 = fast(n3, slow(n3, p))(*SPAN)
+rhs3 = p(*SPAN)
+ok3 = events_equal(lhs3, rhs3)
+print(f"Law 3: fast({n3})(slow({n3})(p))  =  p           {'✓' if ok3 else '✗ FAIL'}")
+
+# Law 4 (commutativity of fast and slow?): does fast 2 (slow 3 p) = slow 3 (fast 2 p)?
+lhs4 = fast(2, slow(3, p))(*SPAN)
+rhs4 = slow(3, fast(2, p))(*SPAN)
+ok4 = events_equal(lhs4, rhs4)
+print(f"Law 4: fast(2)(slow(3)(p)) = slow(3)(fast(2)(p))  {'✓' if ok4 else '✗ NOT a law'}")
+
+print()
+print("Note: Law 4 being FALSE means fast and slow do not commute in general.")
+print("This is a real constraint on what optimizations a Tidal compiler can do.")
+print()
+
+# Show a concrete non-law as a counterexample
+print("=== Counterexample for Law 4 ===")
+def show_ev(events):
+    return [(v, float(b), float(e)) for v, b, e in sorted(events, key=lambda x: x[1])]
+
+print("fast(2)(slow(3)(p)) [0,1):", show_ev(fast(2, slow(3, p))(0, 1)))
+print("slow(3)(fast(2)(p)) [0,1):", show_ev(slow(3, fast(2, p))(0, 1)))
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+5. Law 3 says `fast n (slow n p) = p`. The test runs over a span of 2 cycles, not just 1. Why does testing over multiple cycles give a stronger guarantee than testing over exactly one cycle?
+6. Law 4 fails — `fast` and `slow` do not commute. This means a compiler *cannot* swap their order as an optimization. Where in your CS coursework have you seen "X does not commute with Y" limit optimizations? (String concatenation? Matrix multiplication?)
+7. The laws are tested empirically (by running the functions). What is one way the test could pass despite a buggy implementation? What would a *proof* require that a test cannot provide?
+
+---
+
 ### Try It: With a Partner
 
 Pair up at one machine on strudel.cc, alternating **performer** and **predictor** roles per item. The predictor writes down the expected sound or event structure before the performer presses play. Start from `sound("bd sn hh sn")` and apply, cumulatively:
@@ -192,6 +424,164 @@ After item 3, jointly test one algebraic law from this section empirically: pick
 
 ---
 
+## Model 3: Mini-Notation Grammar — The External Language Inside
+
+The string `"bd sn [hh hh]"` is opaque to JavaScript and Haskell alike — their parsers see it as just a string. Inside that string lives a second language with its own lexer, grammar rules, and semantics. This is the external-DSL-within-an-embedded-DSL architecture that makes Tidal and Strudel a hybrid. This model implements that inner parser from scratch, giving you the full picture from character stream to event list.
+
+The mini-notation (`"bd sn [hh hh]"`) is an external DSL embedded in a string. It deserves a grammar of its own, because it *is* a language: tokens, grammar rules, and semantics. The cell below implements a mini-notation lexer and recursive descent parser that produces the same event structure as the formal model.
+
+```python
+import re
+from fractions import Fraction
+
+# ── Mini-notation tokens ──────────────────────────────────────────────────────
+TOKEN_SPEC = [
+    ("LBRACKET", r"\["),
+    ("RBRACKET", r"\]"),
+    ("LANGLE",   r"<"),
+    ("RANGLE",   r">"),
+    ("STAR",     r"\*"),
+    ("SLASH",    r"/"),
+    ("AT",       r"@"),
+    ("BANG",     r"!"),
+    ("NUMBER",   r"\d+(?:\.\d+)?"),
+    ("ATOM",     r"[A-Za-z_~][A-Za-z0-9_~\-\.]*"),
+    ("SPACE",    r"[ \t]+"),
+]
+MASTER = re.compile("|".join(f"(?P<{n}>{p})" for n, p in TOKEN_SPEC))
+
+def tokenize(src):
+    return [(m.lastgroup, m.group()) for m in MASTER.finditer(src)
+            if m.lastgroup != "SPACE"]
+
+# ── AST nodes ─────────────────────────────────────────────────────────────────
+class Atom:
+    def __init__(self, value): self.value = value
+    def __repr__(self): return f"Atom({self.value!r})"
+
+class Seq:
+    def __init__(self, children): self.children = children
+    def __repr__(self): return f"Seq({self.children!r})"
+
+class Group:
+    def __init__(self, children): self.children = children
+    def __repr__(self): return f"Group({self.children!r})"
+
+class Fast:
+    def __init__(self, pat, factor): self.pat = pat; self.factor = factor
+    def __repr__(self): return f"Fast({self.pat!r}, {self.factor!r})"
+
+# ── Recursive descent parser ──────────────────────────────────────────────────
+class MiniParser:
+    def __init__(self, tokens):
+        self.tokens = tokens
+        self.pos = 0
+
+    def peek(self):
+        return self.tokens[self.pos] if self.pos < len(self.tokens) else ("EOF", "")
+
+    def advance(self):
+        t = self.peek()
+        self.pos += 1
+        return t
+
+    def parse(self):
+        items = self.parse_seq()
+        return Seq(items)
+
+    def parse_seq(self):
+        items = []
+        while self.peek()[0] not in ("EOF", "RBRACKET", "RANGLE"):
+            items.append(self.parse_item())
+        return items
+
+    def parse_item(self):
+        kind, val = self.peek()
+        if kind == "LBRACKET":
+            self.advance()
+            children = self.parse_seq()
+            if self.peek()[0] == "RBRACKET":
+                self.advance()
+            node = Group(children)
+        else:
+            self.advance()
+            node = Atom(val)
+        # Handle *factor
+        if self.peek()[0] == "STAR":
+            self.advance()
+            _, factor = self.advance()
+            node = Fast(node, float(factor))
+        return node
+
+def parse_mini(src):
+    tokens = tokenize(src)
+    return MiniParser(tokens).parse()
+
+# ── Semantics: AST → event list ───────────────────────────────────────────────
+def eval_mini(node, b=0, e=1):
+    b, e = Fraction(b), Fraction(e)
+    span = e - b
+    if isinstance(node, Atom):
+        return [(node.value, b, e)]
+    elif isinstance(node, Fast):
+        factor = Fraction(node.factor)
+        raw = eval_mini(node.pat, 0, 1)
+        result = []
+        for _ in range(int(factor)):
+            pass  # fast: query the child multiple times in the same span
+        # Compress: each repetition fits in span/factor
+        sub_span = span / factor
+        all_events = []
+        for rep in range(int(factor)):
+            offset = b + rep * sub_span
+            for (v, sb, se) in eval_mini(node.pat, 0, 1):
+                all_events.append((v, offset + sb * sub_span, offset + se * sub_span))
+        return all_events
+    elif isinstance(node, (Seq, Group)):
+        children = node.children
+        n = len(children)
+        if n == 0: return []
+        child_span = span / n
+        result = []
+        for i, child in enumerate(children):
+            cb = b + i * child_span
+            ce = cb + child_span
+            result.extend(eval_mini(child, cb, ce))
+        return result
+    return []
+
+# ── Tests ─────────────────────────────────────────────────────────────────────
+test_cases = [
+    ("bd sn",            2, 0, 1),   # 2 events, each 1/2 cycle
+    ("bd sn hh sn",      4, 0, 1),   # 4 events, each 1/4 cycle
+    ("bd [sn sn]",       3, 0, 1),   # bd=1/2, sn=1/4, sn=1/4
+    ("bd sn*2 hh",       4, 0, 1),   # bd=1/3, sn=1/6, sn=1/6, hh=1/3
+]
+
+print("=== Mini-Notation Parser ===")
+for src, expected_count, b, e in test_cases:
+    ast = parse_mini(src)
+    events = eval_mini(ast, b, e)
+    ok = len(events) == expected_count
+    print(f"  {src!r:<20} → {len(events)} events  ({'✓' if ok else f'✗ expected {expected_count}'})")
+    for v, sb, se in sorted(events, key=lambda x: x[1]):
+        print(f"       ({v!r:<8} {float(sb):.4f}–{float(se):.4f})")
+
+print()
+print("=== AST for 'bd [sn hh] sn' ===")
+print(parse_mini("bd [sn hh] sn"))
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+8. The mini-notation parser is a hand-written recursive descent parser. Identify the grammar rule that `parse_seq` implements and the rule that `parse_item` implements. Write both rules in EBNF.
+9. `Group` subdivides its children within the group's span, while `Seq` distributes children across the whole span. What is the semantic difference between `"bd sn hh"` and `"[bd sn] hh"` in event timing?
+10. `Fast` multiplies the number of events by repeating the sub-pattern. Extend the parser and evaluator to support `/n` (slow: stretch across n slots). Write the `Slow` node and its `eval_mini` case.
+11. The mini-notation is an external DSL embedded in a string. Name one advantage and one disadvantage of embedding it in a string rather than giving it first-class syntax (e.g., `bd sn [hh hh]` without quotes).
+
+---
+
 # Part III: Synthesis & Practice
 
 ## 5. Exercises
@@ -199,10 +589,11 @@ After item 3, jointly test one algebraic law from this section empirically: pick
 Exercises 1 through 3 are individual; exercises 4 and 5 are partner exercises, and at least one partner exercise should be completed before our parser-construction module, which builds directly on this vocabulary.
 
 1. *Query by hand.* For the pattern `[bd sn]*2 hh`, compute the complete event set for the span $[0,1)$ using the formal rules of Section 3, showing the span arithmetic at each subdivision. Verify at strudel.cc and report both your derivation and the verification.
-2. *A law with a proof sketch.* Using the function-of-time model from the Code Cell in Section 3, argue in a short paragraph (with the relevant span arithmetic) why `fast m (fast n p) = fast (m*n) p` holds. Identify one assumption your argument needs.
+2. *A law with a proof sketch.* Using the function-of-time model from Model 1, argue in a short paragraph (with the relevant span arithmetic) why `fast m (fast n p) = fast (m*n) p` holds. Identify one assumption your argument needs.
 3. *Host idiom translation.* Translate `every 3 (slow 2) $ sound "bd [sn sn]"` into Strudel's JavaScript idiom, run it, and report the event structure for cycles 0 through 3, indicating on which cycles the transformation fired.
 4. *Partner: design archaeology.* With a partner, find one mini-notation feature in the Strudel documentation that we did not cover (candidates include `,` stacking, `!` replication, or `@` elongation). One partner writes its informal semantics in the style of Section 3's displayed math; the other constructs two strudel.cc examples that confirm or refute that semantics. Report both artifacts and any revision the experiments forced.
 5. *Partner: the embedding boundary.* Each partner independently lists three things in a Strudel program that the JavaScript parser handles and three that the mini-notation parser handles, then reconcile your lists. Report the reconciled lists and one boundary case where you initially disagreed.
+6. *Mini-notation extension.* Add support for `!` (repeat: `bd!3` = `bd bd bd`) to the Python mini-notation parser and evaluator. Write two positive test cases and one negative test case, run them, and explain how `!` differs from `*` in event distribution.
 
 ---
 

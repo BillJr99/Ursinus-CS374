@@ -5,7 +5,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/main/_pages/Activities/liascript-lambdacalculus.md or locally if deployed via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/main/_pages/Activities/liascript-lambdacalculus.md
+comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-lambdacalculus.md or locally if deployed via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-lambdacalculus.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -16,7 +16,41 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # The Lambda Calculus: From Church to Strudel
 
+The lambda calculus is a minimal formal system invented by Alonzo Church in the 1930s — it has only functions, application, and variables, yet it can compute anything a Turing machine can. Understanding lambda calculus is like learning to count using just a single mark on a page: it strips away all complexity to reveal the pure essence of computation. Every feature of every programming language you have used — loops, booleans, numbers, recursion — can be built from this tiny foundation.
+
+## Learning Goals
+
+By the end of this activity, you will be able to:
+
+- Parse and fully parenthesize lambda calculus expressions using the three syntactic forms (variable, abstraction, application), correctly applying left-associativity and maximal-body conventions
+- Perform beta reduction step by step, applying capture-avoiding substitution and alpha-renaming when variable capture would otherwise occur
+- Construct Church encodings for booleans and natural numbers from pure lambda terms, and verify them by hand reduction
+- Derive the Y combinator from first principles and explain how it achieves recursion without named self-reference
+- Identify where lambda calculus constructs appear in real languages (Python `lambda`, Haskell functions, TidalCycles/Strudel patterns)
+
+> **Before You Begin — Prerequisites**
+>
+> This module assumes you are comfortable with the following ideas. If any feel shaky, spend ten minutes reviewing before proceeding.
+>
+> - **Functions as values**: In Python you can write `f = lambda x: x + 1` and pass `f` to another function. Lambda calculus is built entirely on this idea — every value is a function.
+> - **Substitution**: When you call `f(3)` and `f = lambda x: x * x`, Python replaces every `x` in the body with `3`. Lambda calculus makes this substitution step the *only* rule of computation.
+> - **Recursive reduction**: Evaluating a complex expression means applying substitution repeatedly until no more substitutions are possible. You will perform these steps by hand before relying on any code.
+
 This module develops the **lambda calculus**, the three-rule language from 1936 that is simultaneously the smallest programming language ever designed and the theoretical core of every functional language you use. We move from **syntax $\rightarrow$ substitution and $\beta$-reduction $\rightarrow$ evaluation strategies $\rightarrow$ Church encodings $\rightarrow$ recursion via the Y combinator $\rightarrow$ the calculus alive in modern code**, and we keep one practical thread taut throughout: the live coding languages we have been studying, TidalCycles in Haskell and Strudel in JavaScript, are lambda calculus with costumes on, and by the end of this module you will be able to point to exactly where the costume ends.
+
+---
+
+## Notation at a Glance
+
+If you have never seen lambda calculus notation before, this table maps every symbol you will encounter to a Python equivalent you already know. Return here whenever a symbol looks unfamiliar.
+
+| Lambda Notation | Python Equivalent | Meaning |
+|-----------------|-------------------|---------|
+| `λx.e` | `lambda x: e` | A function taking x, returning e |
+| `(f a)` | `f(a)` | Apply function f to argument a |
+| `[x → a]e` | (substitution) | Replace x with a in e |
+| `λx.λy.e` | `lambda x: lambda y: e` | Curried two-argument function |
+| `f a b` (no parens) | `f(a)(b)` | Left-associative application: `(f a) b` |
 
 ---
 
@@ -40,12 +74,15 @@ self_apply_arg = lambda f: f(f)
 print("identity(42) =", identity(42))
 print("Environment ready.")
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
 # Part I: The Calculus Itself
 
 ## 1. Syntax: Three Forms and Nothing Else
+
+> **Intuition**: Before reading the formal grammar, hold this picture: every lambda calculus expression is a tree with exactly three kinds of node — a leaf (variable), a box labeled with a parameter name (abstraction), or a connector joining two sub-expressions (application). There is nothing else. Every program ever written in a functional language is, at its core, just such a tree.
 
 **The entire grammar of the lambda calculus fits on one line.** With $x$ ranging over an infinite supply of variable names, the set of terms $e$ is defined inductively by
 
@@ -56,6 +93,8 @@ $$
 read as: a term is a **variable**, an **abstraction** (a function of one parameter $x$ with body $e$), or an **application** of one term to another. There are no numbers, no booleans, no `if`, no recursion, and no assignment, and Part II of this module is the demonstration that none of them are missing, because all of them can be built. After our parsing module, you should also notice that this grammar is context-free, recursive through itself in exactly the way our mini-notation grammar was, and one of the exercises asks you to treat it accordingly.
 
 **Two notational conventions keep terms readable.** Application associates to the **left**, so $f\ a\ b$ means $(f\ a)\ b$, and abstraction bodies extend as far **right** as possible, so $\lambda x.\, x\ y$ means $\lambda x.\,(x\ y)$, not $(\lambda x.\, x)\ y$. Misreading these two conventions causes more student errors than every other topic in this module combined, so we pause on them.
+
+> **Watch out! — Lambda functions always take exactly one argument.** `λx.λy.e` is not a two-argument function — it is a one-argument function that *returns* another one-argument function. You must apply it twice to get a result: `(λx.λy.e) a b` first produces `(λy.e[x:=a])`, then produces `e[x:=a][y:=b]`. In Python: `(lambda x: lambda y: x + y)(3)` returns a function, not a number. Applying it again, `(lambda x: lambda y: x + y)(3)(4)`, returns `7`. This one-at-a-time pattern is called **currying** and it is the only way lambda calculus handles multiple arguments.
 
 **Multi-argument functions are nested single-argument functions, and this is currying.** The two-argument function "apply $f$ to $a$" is written
 
@@ -80,6 +119,8 @@ For term 2, state in one sentence why $z$'s status matters to anyone who wants t
 ---
 
 ## 2. Substitution and Beta-Reduction
+
+> **Intuition**: Think of beta-reduction as the act of calling a function. When you write `(lambda x: x * x)(5)` in Python, the interpreter replaces every `x` in the body with `5` and returns `5 * 5`. Lambda calculus formalizes exactly this: the entire model of computation is "find a function applied to an argument, substitute, repeat." The subtlety — and the main source of bugs — is that naive substitution can accidentally capture a variable that should have remained free, changing the meaning of the expression. The formal substitution rules exist solely to prevent that accident.
 
 **Computation in the lambda calculus is one rule: $\beta$-reduction.** Applying an abstraction to an argument substitutes the argument for the parameter throughout the body:
 
@@ -108,6 +149,8 @@ $$
 
 When you implement substitution in this unit's written assignment, the third case is where every bug will live, and the test suite we provide targets it deliberately.
 
+> **Watch out! — Alpha-renaming preserves meaning; capture destroys it.** `λy.x` and `λw.x` are the *same* function — the parameter name is just a placeholder. But `λy.y` and `λy.x` are *different* functions (identity vs. constant). When you substitute and risk capture, you must rename the binder to a *fresh* name before substituting. Skipping this step is the single most common source of incorrect reductions. A reliable check: after substitution, confirm that no variable that was free in the argument has become bound inside the result.
+
 **A reduction, worked in full.** Consider $(\lambda f.\, \lambda x.\, f\ (f\ x))\ (\lambda y.\, y)$:
 
 $$
@@ -131,6 +174,8 @@ Reducing $(\lambda x.\, \lambda y.\, x)\ y$ requires care. Which result is corre
 ---
 
 ## 3. Evaluation Strategies and Confluence
+
+> **Intuition**: When an expression contains more than one possible substitution step, you have a choice of which to perform first. Think of simplifying the arithmetic expression `(2 + 3) * (1 + 4)`: you could add the left pair first, the right pair first, or multiply first (if you knew the partial results). The two main strategies — normal order (outermost first, like lazy evaluation) and applicative order (innermost first, like Python) — can differ in whether they terminate, but the Church-Rosser theorem guarantees that if both reach a final answer, the answers are identical. The order of reduction matters for termination but not for the result if it terminates.
 
 **When a term contains several redexes, a strategy chooses which to reduce first, and the choice has consequences.** **Normal-order** reduction always reduces the leftmost, outermost redex, deferring argument evaluation; **applicative-order** reduces arguments first, as C, Java, Python, and JavaScript do. The strategies can differ in termination. Let $\Omega = (\lambda x.\, x\ x)(\lambda x.\, x\ x)$, the canonical infinite loop, which reduces only to itself, and consider
 
@@ -157,6 +202,8 @@ Compare transcripts: confirm that you reached the same normal form, and record w
 # Part II: Building a Language from Nothing
 
 ## 4. Church Encodings: Booleans and Numerals
+
+> **Intuition**: The lambda calculus has no built-in numbers or booleans — only functions. Church's insight was that a datum *is* the operation you perform on it. A boolean's only job is to pick one of two alternatives, so let it *be* a chooser function. A natural number's only job is to apply something n times, so let it *be* a "repeat n times" function. Once you accept this, `true` and `false` and `0` and `1` are not magic — they are just particular functions, and you can derive them yourself from scratch with no memorization.
 
 **Data can be encoded as the functions that consume it.** A boolean's only job is to choose between two alternatives, so let the boolean **be** the chooser:
 
@@ -210,10 +257,13 @@ print("three        ->", to_int(three))            # expect 3
 print("mul 3 2      ->", to_int(mul(three)(two)))  # expect 6
 print("if true a b  ->", iff(true)("a")("b"))      # expect a
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
 ## 5. Recursion Without Names: The Y Combinator
+
+> **Intuition**: In Python you write `def factorial(n): return 1 if n == 0 else n * factorial(n-1)` — the function refers to itself by name. But in pure lambda calculus there are no names, only anonymous functions. The trick is to write a function that *receives itself as an argument*, and then find a combinator (the Y combinator) that automatically feeds a function to itself. This is not a hack — it is a precise mathematical construction, and understanding it unlocks why functional languages can do recursion without special built-in machinery.
 
 **The calculus has no recursion because definitions have no names to call.** A factorial cannot refer to "factorial." The escape is to write a function that receives **itself** as an argument, then to find a term that performs that self-feeding automatically. The **Y combinator**,
 
@@ -222,6 +272,8 @@ Y = \lambda f.\, (\lambda x.\, f\ (x\ x))\ (\lambda x.\, f\ (x\ x))
 $$
 
 satisfies the fixed-point equation $Y\ g \;=\; g\ (Y\ g)$ for every $g$, which a two-line $\beta$-reduction confirms and which is precisely the unfolding a recursive call performs. In an applicative-order language the unfolding runs away, so strict languages use the eta-delayed variant $Z = \lambda f. (\lambda x. f (\lambda v. x\, x\, v))(\lambda x. f (\lambda v. x\, x\, v))$; the code cell below uses $Z$ so that Python can execute it.
+
+> **Watch out! — The Y combinator diverges under applicative order.** If you try to run the pure Y combinator in Python, it will loop forever, because Python evaluates arguments before passing them (applicative order). The Z combinator wraps the self-application in an extra `lambda v: ...`, which delays the recursive unfolding until the base case is actually checked. This is the same reason Haskell can handle infinite data structures while Python cannot: lazy (normal-order) evaluation delays computation until a value is demanded.
 
 ---
 
@@ -238,6 +290,7 @@ fact_step = lambda self: lambda n: 1 if n == 0 else n * self(n - 1)
 factorial = Z(fact_step)
 print("factorial(6) =", factorial(6))   # expect 720
 ```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 
@@ -270,9 +323,286 @@ Exercises 1 through 3 are individual; exercises 4 and 5 are partner exercises, a
 
 ---
 
+# Part IV: Runnable Models
+
+## Model 6: Beta Reduction Stepper
+
+> **Intuition**: This model makes the abstract substitution rule concrete. Rather than tracking steps on paper, you will watch the reducer print each intermediate term. Pay attention to: (1) which subexpression is chosen as the redex at each step, (2) when and why alpha-renaming fires, and (3) how the `fresh` function selects a name that will not cause capture. Read each printed line as one application of the $\beta$-reduction rule.
+
+Instead of reducing on paper, this model implements a step-by-step beta reducer that shows each intermediate term. Terms are represented as Python objects (a small data structure), and the stepper prints one reduction at a time until a normal form is reached or a step limit is hit.
+
+```python
+# Beta-reduction stepper using an explicit term representation.
+# Terms: Var(name), Lam(param, body), App(func, arg)
+
+from dataclasses import dataclass, field
+from typing import Union
+import itertools
+
+_counter = itertools.count()
+
+@dataclass
+class Var:
+    name: str
+    def __repr__(self): return self.name
+
+@dataclass
+class Lam:
+    param: str
+    body: "Term"
+    def __repr__(self): return f"(λ{self.param}.{self.body})"
+
+@dataclass
+class App:
+    func: "Term"
+    arg: "Term"
+    def __repr__(self): return f"({self.func} {self.arg})"
+
+Term = Union[Var, Lam, App]
+
+def free_vars(t: Term) -> set:
+    if isinstance(t, Var): return {t.name}
+    if isinstance(t, Lam): return free_vars(t.body) - {t.param}
+    return free_vars(t.func) | free_vars(t.arg)
+
+def fresh(avoid: set) -> str:
+    for letter in "abcdefghijklmnopqrstuvwxyz":
+        if letter not in avoid: return letter
+    # fallback: numbered variables
+    n = next(_counter); return f"v{n}"
+
+def subst(t: Term, var: str, val: Term) -> Term:
+    """Capture-avoiding substitution: t[var := val]."""
+    if isinstance(t, Var):
+        return val if t.name == var else t
+    if isinstance(t, Lam):
+        if t.param == var:          # bound variable shadows; stop here
+            return t
+        fv = free_vars(val)
+        if t.param in fv:           # would capture; rename first
+            w = fresh(fv | free_vars(t.body) | {var})
+            renamed_body = subst(t.body, t.param, Var(w))
+            return Lam(w, subst(renamed_body, var, val))
+        return Lam(t.param, subst(t.body, var, val))
+    # App
+    return App(subst(t.func, var, val), subst(t.arg, var, val))
+
+def step(t: Term):
+    """Return (reduced_term, True) if a beta step was taken, else (t, False)."""
+    if isinstance(t, App):
+        if isinstance(t.func, Lam):     # beta redex at top level
+            return subst(t.func.body, t.func.param, t.arg), True
+        # Try to reduce func first (normal order: leftmost-outermost)
+        reduced, fired = step(t.func)
+        if fired: return App(reduced, t.arg), True
+        reduced, fired = step(t.arg)
+        if fired: return App(t.func, reduced), True
+    if isinstance(t, Lam):
+        reduced, fired = step(t.body)
+        if fired: return Lam(t.param, reduced), True
+    return t, False
+
+def reduce(t: Term, limit: int = 20):
+    print(f"  start : {t}")
+    for i in range(limit):
+        t2, fired = step(t)
+        if not fired:
+            print(f"  → normal form reached after {i} step(s)")
+            return t2
+        print(f"  step {i+1}: {t2}")
+        t = t2
+    print(f"  (stopped after {limit} steps — may diverge)")
+    return t
+
+# ── Demo terms ────────────────────────────────────────────────────────────────
+
+identity = Lam("x", Var("x"))
+const    = Lam("x", Lam("y", Var("x")))
+
+print("=== (λx.x) 42-analogue: identity applied to const ===")
+reduce(App(identity, const))
+
+print()
+# (λf.λx. f (f x)) (λy. y)  — "twice" applied to identity
+twice  = Lam("f", Lam("x", App(Var("f"), App(Var("f"), Var("x")))))
+print("=== twice identity ===")
+reduce(App(twice, identity))
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+21. The `step` function first tries to fire a redex at the **top level** of an `App`, then recurses left, then right. This implements leftmost-outermost (normal-order) reduction. Modify the call order to get **applicative-order**: reduce the argument *before* applying the function. What changes in the `step` code, and what would happen if you fed `Omega` under applicative order?
+22. Trace `step` manually for `(λf.λx. f (f x)) (λy.y)`. After the first call to `step`, what is the returned term? After the second call? Confirm the final result matches the pen-and-paper reduction from Section 2.
+23. The `fresh` helper searches lowercase letters to avoid capture. Why is generating a truly *fresh* name more than a naming preference — what semantic property of the term breaks if the same name is reused?
+
+---
+
+## Model 7: Church Numerals
+
+> **Intuition**: Before running this code, try to predict what `church_to_int(two)` will return by tracing `two(lambda k: k+1)(0)` by hand. `two` is `lambda f: lambda x: f(f(x))`, so `two(lambda k: k+1)(0)` applies "add one" twice to zero: `0 → 1 → 2`. This trace is not just a check — it *is* the definition of what the numeral `two` means. Every Church numeral is a "loop counter" in disguise.
+
+Church numerals exist in the lambda calculus as pure functions, but Python's `lambda` executes them directly, letting us verify arithmetic identities like `add(two)(three) == five` by checking `church_to_int` on both sides.
+
+```python
+# Church numerals: zero, succ, add, mult — all as Python lambdas.
+# church_to_int is only a display device; it is not part of the encoding.
+
+zero  = lambda f: lambda x: x
+succ  = lambda n: lambda f: lambda x: f(n(f)(x))
+add   = lambda m: lambda n: lambda f: lambda x: m(f)(n(f)(x))
+mult  = lambda m: lambda n: lambda f: m(n(f))
+exp   = lambda m: lambda n: n(m)   # Church exponentiation: m^n
+
+church_to_int = lambda n: n(lambda k: k + 1)(0)
+
+# Build the first several numerals via succ
+one   = succ(zero)
+two   = succ(one)
+three = succ(two)
+four  = succ(three)
+five  = succ(four)
+
+print("=== Basic numerals ===")
+for name, num in [("zero",zero),("one",one),("two",two),("three",three)]:
+    print(f"  {name} -> {church_to_int(num)}")
+
+print()
+print("=== Arithmetic ===")
+print(f"  add(two)(three)  = {church_to_int(add(two)(three))}")    # 5
+print(f"  mult(two)(three) = {church_to_int(mult(two)(three))}")   # 6
+print(f"  exp(two)(three)  = {church_to_int(exp(two)(three))}")    # 8  (2^3)
+
+# Verify add(two)(three) == five
+assert church_to_int(add(two)(three)) == 5, "arithmetic failed!"
+assert church_to_int(mult(two)(three)) == 6, "multiplication failed!"
+assert church_to_int(exp(two)(three)) == 8, "exponentiation failed!"
+print()
+print("All assertions passed.")
+
+# ── Bonus: Church booleans and iszero ────────────────────────────────────────
+iszero = lambda n: n(lambda _: False)(True)
+print()
+print("=== iszero ===")
+for num, name in [(zero,"zero"),(one,"one"),(two,"two")]:
+    print(f"  iszero({name}) = {iszero(num)}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+24. `church_to_int` is defined as `lambda n: n(lambda k: k+1)(0)`. Unpack this: what does `n` receive as its first argument `f`, and what as its second argument `x`? Why does this produce the integer value of the Church numeral? Trace `church_to_int(two)` step by step.
+25. `mult(two)(three)` is implemented as `lambda f: two(three(f))`. Explain this in English: `three(f)` is "apply `f` three times"; `two(three(f))` does what? How does this mirror the mathematical definition $m \times n$ as "apply $f$ a total of $m \times n$ times"?
+26. The `exp` encoding `lambda m: lambda n: n(m)` looks surprisingly simple. Verify by hand that `exp(two)(three)` produces `eight`. (Hint: `three(two)` means "apply `two` three times, starting from `f`".)
+27. Define `pred` (predecessor) in Python using the Church numeral representation. This is famously tricky — look up the "pair trick" (Kleene's predecessor). Implement it and verify `church_to_int(pred(three)) == 2`.
+
+---
+
+## Model 8: Alpha Equivalence
+
+> **Intuition**: `λx.x` and `λy.y` are both the identity function — the name of the parameter does not matter, only its *role* (return whatever argument you receive). De Bruijn indices make this precise by replacing each bound variable with a number representing how many lambdas you have to step out to reach its binder. If two terms produce identical de Bruijn representations, they are alpha-equivalent. Notice that *free* variables must keep their original names, because two expressions that mention different free variables are genuinely different in meaning, not just notational variants.
+
+Two lambda terms are **alpha-equivalent** if they differ only in the names of their bound variables. `λx.x` and `λy.y` are the same function; only the label changed. This model implements a canonical renaming (de Bruijn–style index assignment) so that alpha-equivalent terms produce identical canonical forms, then uses that to check equivalence.
+
+```python
+# Alpha equivalence via canonical renaming.
+# Strategy: replace each bound variable with a positional index
+# (depth from binding lambda), eliminating names for bound vars entirely.
+# Free variables keep their names.
+
+from dataclasses import dataclass
+from typing import Union
+
+# Reuse the term dataclasses from Model 6
+@dataclass
+class Var:
+    name: str
+    def __repr__(self): return self.name
+
+@dataclass
+class Lam:
+    param: str
+    body: "Term"
+    def __repr__(self): return f"(λ{self.param}.{self.body})"
+
+@dataclass
+class App:
+    func: "Term"
+    arg: "Term"
+    def __repr__(self): return f"({self.func} {self.arg})"
+
+Term = Union[Var, Lam, App]
+
+def canonicalize(t: Term, env: dict = None) -> str:
+    """Return a canonical string where bound variables are replaced by
+    their de Bruijn depth index.  Free variables keep their original names."""
+    if env is None:
+        env = {}
+    if isinstance(t, Var):
+        if t.name in env:
+            return f"#{env[t.name]}"     # bound: use depth index
+        return t.name                    # free: keep name
+    if isinstance(t, Lam):
+        depth = len(env)
+        new_env = {**env, t.param: depth}
+        return f"(λ#{depth}.{canonicalize(t.body, new_env)})"
+    # App
+    return f"({canonicalize(t.func, env)} {canonicalize(t.arg, env)})"
+
+def alpha_equiv(t1: Term, t2: Term) -> bool:
+    return canonicalize(t1) == canonicalize(t2)
+
+# ── Build terms ───────────────────────────────────────────────────────────────
+
+lam_x_x = Lam("x", Var("x"))          # λx.x
+lam_y_y = Lam("y", Var("y"))          # λy.y
+lam_z_z = Lam("z", Var("z"))          # λz.z
+lam_x_y = Lam("x", Var("y"))          # λx.y  (y is FREE here)
+lam_y_x = Lam("y", Var("x"))          # λy.x  (x is FREE here)
+
+# λx.λy.x  vs  λa.λb.a  (both are Church TRUE / K combinator)
+true1 = Lam("x", Lam("y", Var("x")))
+true2 = Lam("a", Lam("b", Var("a")))
+
+# λx.λy.y  vs  λa.λb.b  (both are Church FALSE)
+false1 = Lam("x", Lam("y", Var("y")))
+false2 = Lam("a", Lam("b", Var("b")))
+
+print("=== Canonical forms ===")
+for name, t in [("λx.x", lam_x_x), ("λy.y", lam_y_y), ("λz.z", lam_z_z),
+                ("λx.y", lam_x_y), ("λy.x", lam_y_x)]:
+    print(f"  {name:8} -> {canonicalize(t)}")
+
+print()
+print("=== Alpha equivalence checks ===")
+tests = [
+    ("λx.x",    lam_x_x, "λy.y",    lam_y_y, True),
+    ("λx.x",    lam_x_x, "λz.z",    lam_z_z, True),
+    ("λx.y",    lam_x_y, "λz.y",    Lam("z", Var("y")), True),
+    ("λx.y",    lam_x_y, "λy.x",    lam_y_x, False),  # different free vars
+    ("true1",   true1,   "true2",   true2,   True),
+    ("false1",  false1,  "false2",  false2,  True),
+    ("true1",   true1,   "false1",  false1,  False),
+]
+for n1, t1, n2, t2, expected in tests:
+    result = alpha_equiv(t1, t2)
+    status = "PASS" if result == expected else "FAIL"
+    print(f"  [{status}] alpha_equiv({n1}, {n2}) = {result}  (expected {expected})")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+28. `λx.y` and `λz.y` are alpha-equivalent because `y` is **free** in both and the bound variable name is irrelevant. But `λx.y` and `λy.x` are **not** alpha-equivalent. Explain why: what is `y`'s status in the first term and `x`'s status in the second?
+29. The canonical form uses depth indices for bound variables. What is the canonical form of `λx.λy.x`? What about `λa.λb.b`? Verify your answers match the test cases above and explain why the depth index correctly distinguishes the two terms.
+30. Alpha equivalence is the "cheapest" notion of equivalence for lambda terms. Two stronger notions are **beta equivalence** (reduce both to normal form and compare) and **eta equivalence** (`λx.f x` ≡ `f` when `x` not free in `f`). Give an example where two terms are beta-equivalent but the canonical form check would say they are different. Why is this not a bug in the alpha-checker?
+
+---
+
 ## 8. Further Reading
 
 - Pierce, Benjamin C. *Types and Programming Languages* (MIT Press, 2002). Chapter 5 is the standard modern treatment of the untyped calculus, including the substitution definition used here.
+- **Lambda Py interactive notebook** — run the calculus directly in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html — an excellent companion to the code cells in this module.
 - Church, Alonzo. "An Unsolvable Problem of Elementary Number Theory." *American Journal of Mathematics* 58 (1936). The original; read the first pages for the historical voice.
 - Barendregt, Henk. *The Lambda Calculus: Its Syntax and Semantics* (North-Holland, 1984). The encyclopedic reference, for depth beyond this course.
 - Hudak, Paul, John Hughes, Simon Peyton Jones, and Philip Wadler. "A History of Haskell: Being Lazy with Class." *HOPL III* (2007). How the calculus, lazy evaluation, and Church-Rosser shaped the language that hosts TidalCycles.
