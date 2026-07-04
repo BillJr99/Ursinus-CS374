@@ -44,6 +44,24 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 ---
 
+## Key Concepts
+
+Before diving in, here is a plain-English glossary of the terms this activity uses. Return to this table whenever a term feels slippery.
+
+| Term | Plain-English meaning | Why it matters |
+|------|-----------------------|----------------|
+| **Type** | A label on a value that says which operations are licensed for it | The whole activity is about who checks these licenses, and when |
+| **Type error** | An operation applied to a value outside its license, like `"hi" * {}` | The failure every type system exists to catch — early or late |
+| **Static typing** | Checking happens *before* the program runs | Catches errors on every path, including paths your tests never exercise |
+| **Dynamic typing** | Checking happens at the instant each operation executes | Maximum flexibility; errors surface only when the bad line actually runs |
+| **Strong typing** | The language refuses to silently mix incompatible types | Broken promises stop the program instead of flowing onward as wrong values |
+| **Weak typing** | The language silently converts operands so the operation can proceed | The source of `"5" - 1 == 4` surprises; convenience purchased with silence |
+| **Coercion** | An implicit, automatic type conversion the programmer never asked for | The defining behavior of weak typing; contrast with explicit conversion |
+| **Type inference** | The checker deduces types from values and context, with no annotations written | Static safety without annotation ceremony — Rust, Haskell, TypeScript |
+| **Type environment** | A mapping from variable names to their (inferred or declared) types | The checker's version of your interpreter's environment: names to types, not values |
+
+---
+
 # Part I: The Axes
 
 ## 1. Two Independent Questions
@@ -197,6 +215,98 @@ A language that deduces `n: int` from `let n = 5` without requiring the programm
 
 ---
 
+**Intuition for Model 2:** A dynamically typed interpreter never checks anything in advance — every check rides along with evaluation itself. Picture evaluation as water flowing up from the leaves of the AST: values form at the literals, meet at each operator, and *at each meeting point* the bouncer from Section 2 checks the pair before combining them. This model slows that flow down to one step at a time so you can see exactly when each check fires — and, just as important, what has already irrevocably happened by the time a check fails.
+
+## Model 2: Tracing the Runtime Checker on a Compound Expression
+
+**Worked example.** Trace the interpreter evaluating `(3.0 + 4.0) < (2.0 * 6.0)`. Evaluation is bottom-up (innermost first), so the checks fire in this order:
+
+| Step | Node evaluated | Left value : type | Right value : type | Check performed | Result |
+|------|----------------|-------------------|--------------------|-----------------|--------|
+| 1 | `3.0 + 4.0` | `3.0` : number | `4.0` : number | `+` licensed for number, number | `7.0` |
+| 2 | `2.0 * 6.0` | `2.0` : number | `6.0` : number | `*` licensed for number, number | `12.0` |
+| 3 | `7.0 < 12.0` | `7.0` : number | `12.0` : number | `<` requires same type — OK | `True` |
+
+Three checks, three passes, one final value. Now the same trace for `(3.0 + 4.0) < ("total: " + 12.0)`:
+
+| Step | Node evaluated | Left value : type | Right value : type | Check performed | Result |
+|------|----------------|-------------------|--------------------|-----------------|--------|
+| 1 | `3.0 + 4.0` | `3.0` : number | `4.0` : number | `+` licensed | `7.0` |
+| 2 | `"total: " + 12.0` | `"total: "` : string | `12.0` : number | `+` **not** licensed for string, number | **TypeError** |
+| 3 | `... < ...` | — | — | never reached | — |
+
+Step 1 completed *before* the error: its work is done and cannot be undone. The `<` at step 3 never runs at all. That is dynamic checking in one picture: checks are interleaved with execution, so an error stops the program mid-flight rather than before takeoff.
+
+```python
+def type_name(v):
+    return {bool: "bool", float: "number", str: "string"}.get(type(v), type(v).__name__)
+
+STEP = 0
+
+def evaluate(node):
+    """Evaluate a tuple-AST bottom-up, narrating every type check."""
+    global STEP
+    kind = node[0]
+    if kind == "lit":
+        return node[1]
+    op, left_node, right_node = node
+    left  = evaluate(left_node)     # innermost first:
+    right = evaluate(right_node)    # children are fully evaluated before we check
+    STEP += 1
+    print(f"  step {STEP}: {left!r} {op} {right!r}  "
+          f"[{type_name(left)} {op} {type_name(right)}]", end="  ")
+    if op in "+-*/":
+        if isinstance(left, float) and isinstance(right, float):
+            result = {"+": left + right, "-": left - right,
+                      "*": left * right, "/": left / right}[op]
+            print(f"check OK -> {result!r}")
+            return result
+        if op == "+" and isinstance(left, str) and isinstance(right, str):
+            print(f"check OK -> {(left + right)!r}")
+            return left + right
+        print("check FAILS")
+        raise TypeError(f"operator {op!r} not defined for "
+                        f"{type_name(left)} and {type_name(right)}")
+    if op == "<":
+        if type(left) is not type(right):
+            print("check FAILS")
+            raise TypeError(f"cannot compare {type_name(left)} with {type_name(right)}")
+        print(f"check OK -> {left < right}")
+        return left < right
+    raise ValueError(f"unknown operator {op!r}")
+
+good = ("<", ("+", ("lit", 3.0), ("lit", 4.0)),
+             ("*", ("lit", 2.0), ("lit", 6.0)))
+bad  = ("<", ("+", ("lit", 3.0), ("lit", 4.0)),
+             ("+", ("lit", "total: "), ("lit", 12.0)))
+
+print("=== (3.0 + 4.0) < (2.0 * 6.0) ===")
+print("final value:", evaluate(good))
+
+print("\n=== (3.0 + 4.0) < ('total: ' + 12.0) ===")
+STEP = 0
+try:
+    evaluate(bad)
+except TypeError as e:
+    print(f"stopped by TypeError: {e}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+[[MC]]
+An interpreter with dynamic (runtime) checking evaluates `(3.0 + 4.0) < ("a" + 1.0)`. When is the type error for `"a" + 1.0` detected?
+- ( ) Before execution begins
+- ( ) When the `<` comparison runs
+- (x) At the moment the `+` on `"a"` and `1.0` is evaluated — after `3.0 + 4.0` has already computed
+- ( ) Never; dynamic languages coerce automatically
+
+### Critical Thinking Questions
+
+8. The trace shows the checks firing in steps 1, 2, 3 — the same order as evaluation. State the general rule: in a dynamically typed interpreter, when does the check for an operator fire, relative to the evaluation of that operator's operands?
+9. In the failing trace, step 1 finished before the TypeError at step 2. Suppose step 1 had been `print("charging card...")` instead of an addition. What does this tell you about *where in a program's lifetime* you would prefer type errors to fire, and which typing discipline delivers that?
+10. Redo the failing trace as a *static* checker would perform it, before execution: rewrite the table with types only, no values. Which columns disappear, and which check still fails?
+
+---
+
 **Intuition for Model 3:** Type inference is the party trick where the compiler figures out every variable's type from context alone — you write `let a = 2` and the checker deduces `a: int` without you saying so. Mechanically, it is just a tree walk: visit each node, compute what type it must produce, and propagate that information upward. When two branches disagree on type (e.g., adding an `int` to a `str`), the checker reports an error *at that node* — which may feel far from the actual mistake if the mistake was made pages earlier.
 
 ## Model 3: Type Inference by Hand
@@ -309,9 +419,89 @@ Notice that the error is reported at the `add` node (step 3), but the root cause
 
 ### Critical Thinking Questions
 
-8. The inference trace shows `let a: int`, `let b: int`, `let c: bool`. These are determined entirely from the *values* (literals), with no type annotations written. Is this static or dynamic typing? Explain.
-9. When inference encounters `a + "hello"`, it reports the error at the `add` expression. But the *root cause* is that `a` was given an int value. How far is the reported error from the root cause, and what does this say about inference error message quality?
-10. What would need to change to support `let a = 2; let b = a + 3.0;`? (Hint: numeric type widening — `int + float → float`.) Modify the `infer` function to allow this.
+11. The inference trace shows `let a: int`, `let b: int`, `let c: bool`. These are determined entirely from the *values* (literals), with no type annotations written. Is this static or dynamic typing? Explain.
+12. When inference encounters `a + "hello"`, it reports the error at the `add` expression. But the *root cause* is that `a` was given an int value. How far is the reported error from the root cause, and what does this say about inference error message quality?
+13. What would need to change to support `let a = 2; let b = a + 3.0;`? (Hint: numeric type widening — `int + float → float`.) Modify the `infer` function to allow this.
+
+---
+
+**Intuition for Model 4:** Weak typing's danger is not crashes — it is the *absence* of crashes. When a language coerces instead of refusing, a type mistake does not stop the program; it flows onward disguised as a plausible-looking value, and the first symptom appears far from the cause, often outside the program entirely. This model performs a postmortem on one such incident, step by step, with the strong-typing alternative traced alongside for contrast.
+
+## Model 4: A Type-Error Postmortem
+
+**The incident.** A checkout system written in a weakly typed language reads a price from a web form. Form fields always arrive as *strings* — and nobody converted. Here is the program:
+
+```
+subtotal = "19.99"                       # from the form: a STRING, not a number
+shipping = 5.00
+total    = (subtotal + shipping) * 1.06  # add shipping, then 6% tax
+```
+
+The intended arithmetic: `(19.99 + 5.00) * 1.06 = 24.99 * 1.06 = 26.49`. What the weak language actually computes, step by step:
+
+| Step | Expression | What a weak language does | Value after | What a strong language does |
+|------|-----------|----------------------------|-------------|------------------------------|
+| 1 | `subtotal = "19.99"` | stores the string | `"19.99"` (string) | the same — the mistake is still latent |
+| 2 | `subtotal + 5.00` | coerces `5.00` → `"5"`, then *concatenates* | `"19.995"` (string) | **TypeError: cannot add string and number** — stops here |
+| 3 | `"19.995" * 1.06` | coerces `"19.995"` → `19.995`, then multiplies | `21.1947` (number) | never reached |
+| 4 | charge the customer | charges `$21.19` with no error anywhere | wrong by `$5.30` | bug reported at step 2, with a line number |
+
+Note the direction flip: at step 2 the `+` coerced the *number toward the string*, but at step 3 the `*` coerced the *string toward the number*. The same pair of types flowed in opposite directions depending on the operator — that inconsistency, not any single conversion, is what makes weak typing treacherous. And notice what is missing from the weak column: any error, at any step. The only symptom is money.
+
+```python
+# Simulate both typing disciplines on the same buggy program.
+
+def to_js_str(v):
+    if isinstance(v, float) and v == int(v):
+        return str(int(v))          # 5.0 renders as "5", as in JavaScript
+    return str(v)
+
+def weak_add(a, b):
+    """JavaScript-style +: if either side is a string, concatenate."""
+    if isinstance(a, str) or isinstance(b, str):
+        return to_js_str(a) + to_js_str(b)
+    return a + b
+
+def weak_mul(a, b):
+    """JavaScript-style *: coerce both sides toward number."""
+    return float(a) * float(b)
+
+def strong_add(a, b):
+    if type(a) is not type(b):
+        raise TypeError(f"cannot add {type(a).__name__} and {type(b).__name__}")
+    return a + b
+
+subtotal = "19.99"       # the latent mistake: a string from the form
+shipping = 5.00
+
+print("=== Weak mode: no errors, wrong money ===")
+step2 = weak_add(subtotal, shipping)
+print(f"  step 2: {subtotal!r} + {shipping!r} -> {step2!r}")
+step3 = weak_mul(step2, 1.06)
+print(f"  step 3: {step2!r} * 1.06 -> {step3!r}")
+print(f"  charged: ${step3:.2f}   (intended: ${(19.99 + 5.00) * 1.06:.2f})")
+
+print("\n=== Strong mode: stops at the mistake ===")
+try:
+    strong_add(subtotal, shipping)
+except TypeError as e:
+    print(f"  step 2: TypeError: {e}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+[[MC]]
+In a weakly typed language, `"19.99" + 5.0` yields `"19.995"` and `"19.995" * 1.06` yields `21.1947`. The deepest design problem this postmortem illustrates is:
+- ( ) Floating-point rounding error
+- ( ) The slowness of string operations
+- (x) Silent coercion lets a type mistake flow through the program as plausible-looking wrong values instead of stopping with an error
+- ( ) Strings cannot represent decimal numbers
+
+### Critical Thinking Questions
+
+14. Walk the postmortem table: at which step did the *type* first go wrong, and at which step did the *money* first go wrong? Why is it significant that these are different steps?
+15. Step 2 coerced number → string, but step 3 coerced string → number. Write the coercion rule a language designer would have to publish to justify both choices at once. Does the result sound principled or accidental?
+16. The weak-mode run produces no error at any point; the bug would surface only as customer complaints. Name two other places in the software pipeline (besides the language's type system) where this bug could have been caught, and what each catch would cost compared to a step-2 TypeError.
+17. For your project language: which, if any, of these coercions will you allow? Record the decision in `SEMANTICS.md`, citing this postmortem as evidence for or against.
 
 ---
 

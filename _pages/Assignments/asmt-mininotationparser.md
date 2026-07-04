@@ -1,6 +1,6 @@
 ---
 layout: assignment
-permalink: Assignments/MiniNotationParser
+permalink: /Assignments/MiniNotationParser
 title: "Programming Assignment: A Mini-Notation Parser with Flex and Yacc"
 
 info:

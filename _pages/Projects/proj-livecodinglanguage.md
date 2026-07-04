@@ -1,6 +1,6 @@
 ---
 layout: assignment
-permalink: Projects/LiveCodingLanguage
+permalink: /Projects/LiveCodingLanguage
 title: "Project: Design and Implement Your Own Live Coding Language"
 
 info:
@@ -48,7 +48,7 @@ info:
       preemerging: The report is missing or perfunctory.
       beginning: The report describes what was built without evaluating the design.
       progressing: The report evaluates the design honestly against its specification, documenting what changed between Stage 1 and the final artifact and why.
-      proficient: The report includes a substantive postmortem: which specification decisions survived contact with implementation and performance, which did not, a candid account of the hardest defect with its diagnosis trail, and a concrete redesign the author would make in a version 2.
+      proficient: "The report includes a substantive postmortem: which specification decisions survived contact with implementation and performance, which did not, a candid account of the hardest defect with its diagnosis trail, and a concrete redesign the author would make in a version 2."
 
 tags:
   - final-project

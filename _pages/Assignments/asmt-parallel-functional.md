@@ -1,6 +1,6 @@
 ---
 layout: assignment
-permalink: Assignments/ParallelFunctional
+permalink: /Assignments/ParallelFunctional
 title: "Assignment: Massively Parallel Data Processing with Pure Functions"
 
 info:
@@ -33,7 +33,7 @@ info:
       preemerging: No timing data or analysis is present.
       beginning: Sequential and parallel times are measured but no speedup ratio is computed or discussed.
       progressing: Speedup ratios are computed for the map phase; a scaling experiment uses 1, 2, 4, and 8 (or max available) workers; results are tabulated.
-      proficient: Speedup and efficiency (speedup / workers) are computed and plotted or tabulated for all worker counts; Amdahl's Law is applied: the serial fraction f is estimated from measured data; the theoretical maximum speedup is computed and compared to measured results; discrepancies are explained (serialization overhead, process spawn cost, GIL considerations, OS scheduling).
+      proficient: "Speedup and efficiency (speedup / workers) are computed and plotted or tabulated for all worker counts; Amdahl's Law is applied: the serial fraction f is estimated from measured data; the theoretical maximum speedup is computed and compared to measured results; discrepancies are explained (serialization overhead, process spawn cost, GIL considerations, OS scheduling)."
     - weight: 20
       description: Tree-Reduce and Full Pipeline
       preemerging: Only the map phase is implemented; the reduce phase is sequential.

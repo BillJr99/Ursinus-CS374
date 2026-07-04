@@ -56,6 +56,65 @@ This assignment exercises the functional paradigm in Python: pure functions, hig
 
 ---
 
+## Purpose, Task, and Criteria
+
+**Purpose:** This assignment builds fluency in the functional paradigm: writing pure and higher-order functions with `map`, `filter`, `reduce`, and recursion; defining recursive data structures with generic map and fold operations; building closures and function factories; and implementing lazy sequences with generators. These are not academic exercises — map/filter/reduce is the programming model of data pipelines from pandas to Spark, closures power callbacks and Python decorators, and lazy generators are how production code streams data too large for memory. The paradigm itself is a design option you will weigh when your team designs its own language features.
+
+**Task:** Work through the four numbered Parts below in order: pure functions and combinators (Part 1), recursive trees and linked lists (Part 2), closures and factories (Part 3), and lazy generators (Part 4). The parts are more independent than in the pipeline assignments, but Part 2 reuses `my_reduce` from Part 1, and Part 4's pipeline mirrors Part 1's combinators in lazy form.
+
+**Criteria:** Your work is graded against the rubric at the top of this page, with each Part worth 25 points. What a strong submission looks like:
+
+- Solution bodies contain no loops and no assignment statements where the directions forbid them — the constraint is honored in every function, not just most.
+- Operations are generic: `tree_fold` takes a combining function rather than hardcoding addition, `memoize` caches any hashable arguments, and `my_map`/`my_reduce` are property-tested against the built-ins.
+- The infinite generators are demonstrated without hanging (via `take`), and the writeup's closure diagram and strict-vs-lazy analysis explain *why*, not just *what*.
+
+---
+
+## Getting Started
+
+### Environment and Setup
+
+You need Python 3.10+ and the standard library only — `functools` (for `reduce`), `dataclasses`, and `typing`. Create the deliverable files up front so each part has a home:
+
+```
+higher_order.py           # Part 1
+recursive_structures.py   # Part 2
+closures.py               # Part 3
+generators.py             # Part 4
+test_functional.py        # assertions for all four parts
+```
+
+### Your First 30 Minutes
+
+Write `total_length` from Step 1a — it exercises the whole Part 1 toolkit in one line of thinking: `filter` to keep words longer than three letters, `map` to turn words into lengths, `reduce` (or `sum`) to combine them.
+
+```python
+from functools import reduce
+
+# total_length: list[str] -> int
+def total_length(words):
+    return reduce(lambda acc, n: acc + n,
+                  map(len, filter(lambda w: len(w) > 3, words)),
+                  0)
+
+assert total_length(["hi", "hello", "world", "it"]) == 10
+```
+
+Notice what is *absent*: no loop, no accumulator variable, no assignment. If you catch yourself reaching for `total = 0` and a `for` loop, that instinct is exactly what this assignment retrains — restate the problem as a chain of transformations instead.
+
+### Suggested Pacing
+
+This assignment is handed out on Thursday of week 11 and due on Thursday of week 12 — a one-week turnaround, so treat each part as a single sitting:
+
+| Checkpoint | You should have |
+|------------|----------------|
+| Week 11 (Thu) — assigned | Part 1 complete: combinators, `compose`, and property-tested `my_map`/`my_reduce` |
+| Weekend | Part 2 complete: tree and linked-list operations with edge-case tests |
+| Week 12 (Tue) | Part 3 complete: all five closure factories including the `memoize` decorator |
+| Week 12 (Thu) — due | Part 4 complete: lazy pipeline and timing comparison; writeup and ZIP submitted |
+
+---
+
 ## Part 1: Pure Functions and Higher-Order Functions (25 points)
 
 **The constraints for this entire part:** no `for` loops, no `while` loops, no assignment statements (no `=`) inside solution function bodies. You may use `map`, `filter`, `functools.reduce`, `lambda`, and recursion. You may use `return`.

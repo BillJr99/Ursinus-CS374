@@ -35,7 +35,7 @@ info:
       preemerging: No Makefile; tests are missing; submission is incomplete
       beginning: A Makefile exists but does not correctly chain Flex and Bison; a test exists
       progressing: The Makefile builds correctly from scratch with `make`; tests cover major cases
-      proficient: `make` builds from scratch; `make test` runs all test programs and verifies output against expected files; the README explains the language semantics, lists the token types, and gives the full EBNF grammar as implemented
+      proficient: "`make` builds from scratch; `make test` runs all test programs and verifies output against expected files; the README explains the language semantics, lists the token types, and gives the full EBNF grammar as implemented"
   readings:
     - rtitle: "Tutorial: Flex and Bison (Complete)"
       rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md"

@@ -35,7 +35,7 @@ info:
       preemerging: No presentation or writeup
       beginning: A presentation exists but the design rationale and extension feature are not explained clearly
       progressing: The presentation covers design, implementation, and demo with minor time management issues; the README is mostly complete
-      proficient: 10-minute presentation covers: motivation (what problem the language solves), key design decisions with tradeoffs, live demo of at least two programs, lessons learned; README is a complete language reference; the team fielded at least two Q&A questions from peers confidently
+      proficient: "10-minute presentation covers: motivation (what problem the language solves), key design decisions with tradeoffs, live demo of at least two programs, lessons learned; README is a complete language reference; the team fielded at least two Q&A questions from peers confidently"
   readings:
     - rtitle: "Tutorial: Build a Complete Mini Language"
       rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-project-language-guide.md"

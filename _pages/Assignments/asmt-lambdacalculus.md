@@ -1,6 +1,6 @@
 ---
 layout: assignment
-permalink: Assignments/LambdaCalculus
+permalink: /Assignments/LambdaCalculus
 title: "Written Assignment: The Lambda Calculus By Hand and In Code"
 
 info:
@@ -26,7 +26,7 @@ info:
       preemerging: Derivations are absent, or steps are skipped so that the work cannot be audited.
       beginning: Most reductions reach correct results, but redexes are not identified per step or capture situations are mishandled.
       progressing: All derivations are correct, one reduction per line, with the contracted redex marked and alpha-conversions shown explicitly where required.
-      proficient: Derivations are correct and annotated: each capture-avoidance renaming is justified by naming the free variable that would have been captured, strategy choices are stated, and the writeup notes where Church-Rosser guarantees the result is strategy-independent.
+      proficient: "Derivations are correct and annotated: each capture-avoidance renaming is justified by naming the free variable that would have been captured, strategy choices are stated, and the writeup notes where Church-Rosser guarantees the result is strategy-independent."
     - weight: 30
       description: Interpreter Implementation
       preemerging: The interpreter does not run or cannot reduce simple terms.

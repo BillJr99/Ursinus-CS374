@@ -36,7 +36,7 @@ info:
       preemerging: Errors are unhandled Python exceptions with no stage identification
       beginning: Errors are caught but the stage (lexical vs. syntax vs. runtime) is not identified, or the position is absent
       progressing: Most error classes are caught with stage and position, but one class (e.g., type errors) is missing position or stage identification
-      proficient: Every error class — LexError, ParseError, NameError, TypeError, ZeroDivisionError — is caught at the appropriate stage and reported with a message of the form "Stage error at line L, col C: description"; SEMANTICS.md includes one example program that triggers each error class with the expected message shown — demonstrating Goal 5 by providing a complete semantics reference
+      proficient: "Every error class — LexError, ParseError, NameError, TypeError, ZeroDivisionError — is caught at the appropriate stage and reported with a message of the form \"Stage error at line L, col C: description\"; SEMANTICS.md includes one example program that triggers each error class with the expected message shown — demonstrating Goal 5 by providing a complete semantics reference"
   readings:
     - rtitle: "Tree-Walking Interpretation Activity"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-interpretation.md"
@@ -53,6 +53,64 @@ tags:
 ---
 
 This assignment completes your pipeline: a tree-walking evaluator that runs programs in your language, with real scopes, real types, a REPL, and semantic documentation. This is the component your team project extends — the semantics documentation is as important a deliverable as the code. Build in the scaffolded order below; each part depends on the previous.
+
+---
+
+## Purpose, Task, and Criteria
+
+**Purpose:** This assignment builds the skills of implementing a tree-walking evaluator with strong dynamic typing, modeling nested scopes with an `Environment` class that distinguishes definition from assignment, building a REPL and file runner that recover from every error class, and documenting language semantics precisely enough that code and documentation can be checked against each other. Tree-walking interpreters are everywhere in practice — template engines, query planners, configuration languages, and the reference implementations of many production languages all evaluate ASTs exactly this way — and "write down the semantics, then make the implementation agree" is how real language teams work. This is the capstone component of your pipeline: it imports your Lexer and Parser unchanged, and it is the interpreter your team project extends.
+
+**Task:** Work through the four numbered Parts below in order: the AST node dataclasses and visitor dispatch (Part 1), the tree-walking evaluator with environments, short-circuit logic, and break/continue (Part 2 — the largest part), the REPL and file runner (Part 3), and the stage-identified error hierarchy with `SEMANTICS.md` (Part 4). Part 2 is where the difficulty lives; the pacing below deliberately spreads it across a full week.
+
+**Criteria:** Your work is graded against the rubric at the top of this page (25/35/20/20 points across the four Parts). What a strong submission looks like:
+
+- The shadowing program prints `51` then `2`, the bomb test `true or (1 / 0)` runs without error, and both behaviors are asserted in the test suite rather than checked by hand.
+- The REPL keeps one persistent environment across inputs and returns to the prompt after every error class — the transcript proves it.
+- Every error message reads `Stage error at line L, col C: description`, and every semantics decision in `SEMANTICS.md` is backed by a program whose actual output matches the documented output.
+
+---
+
+## Getting Started
+
+### Environment and Setup
+
+You need Python 3.10+ plus your completed Lexer and Parser. Copy `lexer.py`, `parser.py`, `ast_nodes.py`, and `token_spec.json` into the project directory and import them unchanged (note any bug fixes in your readme). Create the deliverable files up front:
+
+```
+interpreter.py        # evaluator, Environment, error hierarchy
+mylang.py             # entry point: file runner and REPL (Part 3)
+SEMANTICS.md          # the semantics document (Part 4)
+test_interpreter.py   # the test suite
+```
+
+Confirm the pipeline is connected before evaluating anything: `python -c "from parser import parse; print(parse('print 1 + 2;'))"` should print a `Program` tree.
+
+### Your First 30 Minutes
+
+Do exactly what Step 1b's worked example asks — build the dispatch skeleton before any evaluation logic. Copy the node dataclasses from Step 1a (reconciling them with your parser's existing nodes), then write the `Interpreter` class with an `eval_node` that has one branch per node type, each raising `NotImplementedError`:
+
+```python
+interp = Interpreter()
+try:
+    interp.eval_node(Num(42))
+except NotImplementedError:
+    print("dispatch reached the Num branch")   # good — the wiring works
+```
+
+Then fill in just the `Num` branch (`return node.value`) and the `Print` branch, and run `print 42;` end to end through your lexer, parser, and evaluator. Seeing one statement flow through the entire pipeline on day one turns the rest of Part 2 into filling in branches one at a time.
+
+### Suggested Pacing
+
+This assignment is handed out on Tuesday of week 9 and due on Thursday of week 11. It is the longest assignment in the pipeline, and Part 2 is its steepest section — the schedule below climbs it in small steps rather than one leap:
+
+| Checkpoint | You should have |
+|------------|----------------|
+| Week 9 (Tue) — assigned | Part 1 complete: all node dataclasses and the dispatch skeleton (Steps 1a–1b) |
+| Week 9 (Thu) | Expression evaluation and short-circuit logic with the bomb test passing (Steps 2a–2b) |
+| Week 10 (Tue) | `Environment` and statement evaluation; shadowing program prints `51` then `2` (Step 2c) |
+| Week 10 (Thu) | Break/continue signals and the file runner with staged errors (Step 2d, Step 3a) |
+| Week 11 (Tue) | REPL with persistent environment and recovery; error hierarchy in place (Step 3b, Step 4a) |
+| Week 11 (Thu) — due | `SEMANTICS.md`, differential programs, REPL transcript; ZIP submitted (Steps 4b–4c) |
 
 ---
 
@@ -361,6 +419,7 @@ Five programs are provided whose outputs depend on your semantics decisions. Run
 
 Submit a ZIP containing:
 - `interpreter.py` — the evaluator, Environment class, and error hierarchy (importing `lexer.py` and `parser.py` unchanged; note any fixes)
+- `mylang.py` — the entry point: file runner and REPL (Part 3)
 - `SEMANTICS.md` — the language semantics document
 - `test_interpreter.py` — test suite with the shadowing program, the bomb test, all error-class tests, and the differential programs
 - `repl_transcript.txt` — the REPL session showing each error class and recovery

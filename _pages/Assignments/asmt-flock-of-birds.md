@@ -1,6 +1,6 @@
 ---
 layout: assignment
-permalink: Assignments/FlockOfBirds
+permalink: /Assignments/FlockOfBirds
 title: "Assignment: A Flock of Functions — Combinatory Logic in Code"
 
 info:
