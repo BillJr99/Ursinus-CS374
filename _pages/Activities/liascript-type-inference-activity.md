@@ -159,6 +159,7 @@ The algorithm builds up a substitution incrementally as it gathers constraints. 
 > **Watch out!** `compose_subst` order matters: `compose(s1, s2)` applies s2 first, then s1. This is the function-composition convention — just like `(f ∘ g)(x) = f(g(x))` means g runs first. When composing `s1` on top of `s2`, we must apply `s1` to all of `s2`'s values so that earlier bindings are refined by later discoveries.
 
 ```python  liascript
+{% raw %}
 # Substitution: dict mapping type variable names to types
 # e.g., {"a": Int, "b": Bool} means 'a := Int, 'b := Bool
 
@@ -226,6 +227,7 @@ print(f"Apply composed to 'c: {apply_subst(composed, TVar('c'))}")  # should be 
 identity_subst = {"a": TVar("a")}
 t2 = TFun(TVar("a"), Int)
 print(f"\nApply identity subst to 'a -> Int: {apply_subst(identity_subst, t2)}")
+{% endraw %}
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 

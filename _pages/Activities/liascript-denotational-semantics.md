@@ -305,6 +305,7 @@ f₂ = F(F(⊥))   (0, 1, or 2 iterations)
 ```
 
 ```python  liascript
+{% raw %}
 # Simulate the chain approximation of while-loop semantics
 # Each approximation f_k handles at most k iterations
 
@@ -346,6 +347,7 @@ def while_lfp(e_fn, c_fn):
 lfp = while_lfp(condition, body)
 print(f"  lfp({{'n': 3}}) = {lfp({'n': 3})}")
 print(f"  lfp({{'n': 0}}) = {lfp({'n': 0})}")
+{% endraw %}
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 

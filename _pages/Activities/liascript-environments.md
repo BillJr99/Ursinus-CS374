@@ -178,6 +178,7 @@ The **critical distinction**: `define` always writes to `self.vars` without chec
 Run the cell below to see all four operations interact. **Before running**, predict: what will each `print` output?
 
 ```python  liascript
+{% raw %}
 try:
     class Environment:
         def __init__(self, parent=None):
@@ -224,6 +225,7 @@ try:
     print(f"\nEnvironment chain: {inner}")
 except Exception as e:
     print(f"[error] {e}")
+{% endraw %}
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 

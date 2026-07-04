@@ -467,6 +467,7 @@ Manually building and pushing the image every time you tag a release is tedious.
 Create the file `.github/workflows/docker-publish.yml` in your repository:
 
 ```yaml
+{% raw %}
 name: Publish Docker Image
 
 on:
@@ -504,6 +505,7 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.tag }}
+{% endraw %}
 ```
 
 To publish a new release, bump your version in `pyproject.toml`, commit, tag, and push:
@@ -517,7 +519,7 @@ git push origin main --tags
 
 GitHub Actions will detect the `v0.2.0` tag, build the Docker image, and push `ghcr.io/yourname/mylang:v0.2.0` and `ghcr.io/yourname/mylang:latest` automatically. No manual `docker build` or `docker push` needed.
 
-The `${{ secrets.GITHUB_TOKEN }}` is automatically available in every Actions workflow — you do not need to create it manually. It has `write:packages` permission because the workflow declares `packages: write`.
+{% raw %}The `${{ secrets.GITHUB_TOKEN }}` is automatically available in every Actions workflow{% endraw %} — you do not need to create it manually. It has `write:packages` permission because the workflow declares `packages: write`.
 
 ---
 

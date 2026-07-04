@@ -177,6 +177,7 @@ The NFA "ends in ab" has 3 states: start/loop (q0), saw-a (q1), saw-ab (q2). The
 Simulating an NFA does not require any magic or backtracking. Instead of tracking a single current state, the simulator tracks the *set* of all states the NFA could be in right now — every live path, simultaneously. Each input symbol advances every state in that set and unions the results. This is the subset construction running lazily, one character at a time, and it costs at most $O(k)$ work per symbol for a $k$-state NFA.
 
 ```python
+{% raw %}
 # NFA simulation by tracking the SET of possible states: the subset
 # construction performed lazily, one input symbol at a time.
 
@@ -213,6 +214,7 @@ for s in ["ab", "aab", "abab", "ba", "a", "b", "aabb", ""]:
 
 print("\n=== Trace of 'aab' ===")
 run_nfa(ENDS_IN_AB_NFA, "aab", trace=True)
+{% endraw %}
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 

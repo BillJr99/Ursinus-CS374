@@ -127,6 +127,7 @@ Before you can build a parse table, you need to know two things about every nont
 **FIRST(A)** is the set of terminals that can begin any string derived from A. **FOLLOW(A)** is the set of terminals (and `$`) that can appear immediately after A in some sentential form. Together they power LL(1) table construction: the parse table entry for nonterminal A on lookahead token t is the production to use when t ∈ FIRST(RHS) — or when ε is derivable from RHS and t ∈ FOLLOW(A).
 
 ```python
+{% raw %}
 # Compute FIRST and FOLLOW sets for a context-free grammar.
 # Grammar is represented as a dict: NT -> list of productions (lists of symbols).
 # Use '' (empty string) to represent epsilon.
@@ -256,6 +257,7 @@ print("FOLLOW sets:")
 for nt in grammar:
     symbols = sorted(follow[nt])
     print(f"  FOLLOW({nt:<4}) = {{ {', '.join(symbols)} }}")
+{% endraw %}
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 

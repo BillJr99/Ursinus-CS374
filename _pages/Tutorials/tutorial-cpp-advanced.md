@@ -1184,6 +1184,7 @@ except Exception as e:
 ### Model 7.1 — Structured Bindings and `std::optional`
 
 ```cpp
+{% raw %}
 #include <iostream>
 #include <map>
 #include <optional>
@@ -1233,6 +1234,7 @@ void optional_demo() {
     auto user = find_user(42);
     if (user) std::cout << "user: " << *user << "\n";
 }
+{% endraw %}
 ```
 
 ---
