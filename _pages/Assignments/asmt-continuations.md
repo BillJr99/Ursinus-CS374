@@ -5,6 +5,10 @@ title: "CS374: Principles of Programming Languages - Continuations and call/cc"
 
 info:
   coursenum: CS374
+  purpose: "To transform your tree-walking interpreter into continuation-passing style and add first-class call/cc, then re-derive break, exceptions, and generators from continuations alone — seeing why call/cc is called the mother of all control structures."
+  tilt:
+    task: "Convert the interpreter to CPS with a trampoline, implement call/cc as a first-class feature, and use continuations to build non-local exit, exceptions, and generators, backed by a test suite and writeup."
+    criteria: "Assessed on a correct CPS transform, a working call/cc with escaping continuations, three continuation-based control-flow applications, and a thorough test suite, each part worth 25 points; see the rubric below for the full breakdown."
   points: 100
   goals:
     - To transform a tree-walking interpreter to continuation-passing style (CPS)

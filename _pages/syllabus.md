@@ -247,6 +247,8 @@ schedule:
   title: "Grammars and the Chomsky Hierarchy"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-grammars.md"
   readings:
+  - rtitle: "Reading Exercise / Discussion: attempt the Syntax, BNF/EBNF, and Grammars exercises before class"
+    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Participation/ReadingExercises"
   - rtitle: "Allison, Ch. 9 §9.3: The Chomsky Hierarchy"
   - rtitle: "Allison, Ch. 6 §6.1: Context-Free Grammars and Derivations"
   deliverables:
@@ -270,6 +272,8 @@ schedule:
   title: "Regular Expressions"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-regex.md"
   readings:
+  - rtitle: "Reading Exercise / Discussion: attempt the Regular Expressions and Finite Automata exercises before class"
+    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Participation/ReadingExercises"
   - rtitle: "Allison, Ch. 3 §3.1–3.2: Regular Expressions and Their Equivalence to Finite Automata"
 - week: "3"
   date: "1"
@@ -283,6 +287,8 @@ schedule:
   title: "Tokens and Scanning: Building a Lexer"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-tokensscanning.md"
   readings:
+  - rtitle: "Reading Exercise / Discussion: attempt the Tokens and Scanning exercises before class"
+    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Participation/ReadingExercises"
   - rtitle: "Allison, Ch. 2 §2.4: Machines with Output — Lexical Analysis"
   deliverables:
   - dtitle: "Programming Assignment: Regular Expressions Due"
@@ -343,6 +349,8 @@ schedule:
   title: "Tree-Walking Interpretation: Evaluating the AST"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-interpretation.md"
   readings:
+  - rtitle: "Reading Exercise / Discussion: attempt the Tree-Walking Interpretation, Binding, and Scope exercises before class"
+    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Participation/ReadingExercises"
   - rtitle: "Allison, Ch. 6 §6.1–6.2: Context-Free Grammars, Derivation Trees, and Expression Trees"
   - rtitle: "Optional: Tokenizer → Parser → Evaluator Pipeline Walkthrough"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-parser-interpreter.md"
@@ -429,6 +437,8 @@ schedule:
   title: "Lambda Calculus I: Syntax and Beta Reduction"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-lambdacalculus1.md"
   readings:
+  - rtitle: "Reading Exercise / Discussion: attempt the Lambda Calculus exercises before class"
+    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Participation/ReadingExercises"
   - rtitle: "Optional: Allison, Ch. 8: Turing Machines and the Church-Turing Thesis"
   - rtitle: "Optional: A Flock of Functions (Combinators and Church Encodings)"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-flock-of-birds.md"
@@ -560,3 +570,41 @@ schedule:
     points: "100"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
 ---
+
+This semester is a build: by December, your team will have designed and implemented a programming language of your own, assembled one assignment at a time. The sections below explain how the pieces fit together — how the course is designed to give you choices, how to read an assignment, how to prepare for each class, and how the day-to-day work of participating is valued and evaluated. Read them once now, and return to the participation and preparation guides throughout the term.
+
+## How This Course Works: Choice and Universal Design
+
+This course is built on the principle that there is more than one good path through it, and that you should have real say over yours. The choices are deliberate, in the spirit of Universal Design for Learning — multiple ways to engage with the material and multiple ways to demonstrate what you have learned — and none of them is the "remedial" path.
+
+- **A capstone you shape.** The Team Language Project is yours to design; a compelling original language is always welcome, and the final project's extension menu lets you go deep where your interest lies rather than following a single fixed spec.
+- **The Music and Live-Coding Track.** If you would rather build a language for making music than a general-purpose one, the [Music and Live-Coding Track](Assignments/MusicTrack) offers a complete parallel path, with an equivalence table mapping each deliverable to its classic counterpart and a text-events-only route that never requires audio. Decide by the project kickoff.
+- **Optional depth, everywhere.** The schedule is full of optional activities, tutorials, and assignments — continuations, parser combinators, type inference, garbage collection, bytecode VMs, and more. These are invitations, not obligations: follow the ones that pull you and leave the rest, and tell me when one of them becomes the thing you want to go further with.
+
+If a path you want is not on the menu, propose it. The point of the choices is to let you build the language, and the fluency, that you actually care about.
+
+## How Assignments Are Structured: Purpose, Task, and Criteria
+
+Every assignment in this course is written to be transparent about three things, so that you are never guessing about what is being asked or how it will be judged:
+
+- **Purpose** — *why* the assignment exists and what capability it builds toward. The work is never busywork; each piece is a stage of the language you are building or a skill that stage depends on.
+- **Task** — *what* you will actually do, broken into concrete steps.
+- **Criteria** — *how* your work will be evaluated. Every graded assignment carries a rubric with four levels (pre-emerging, beginning, progressing, proficient) so you can see exactly what proficient work looks like before you start — and can use the rubric to assess your own draft.
+
+When you open an assignment, read the Purpose first: it tells you what the assignment is really for, which is the fastest way to make good decisions when the task gets ambiguous. Every assignment also closes by asking you to reflect — what you did, what fought you, how long it took, and what grade you would give yourself against the criteria. That reflection is part of the work, not an afterthought.
+
+## Preparing for Each Class
+
+Our class meetings are hands-on POGIL sessions: you work in your standing team through activities that build the concepts and the code, not lectures you passively receive. That means class works best when you arrive ready, and "ready" is a routine you can run rather than a matter of luck. The **[Preparing for Each Class](Participation/PreparingForClass)** guide lays out that routine: how to read a technical section in passes, how to attempt the reading exercises before class, and how to arrive with a question or a stuck point that the session can resolve. Bringing that prepared question is itself the accountability check that the reading happened — and it is usually where the best discussion starts.
+
+## Class Activities and Participation (15%)
+
+This is a course you do, not one you watch, and this component values the daily work of showing up prepared and contributing to the shared build. It is assessed against the rubric on the **[Preparing for Each Class](Participation/PreparingForClass)** guide, across four dimensions: **preparation** (you have done the reading and attempted the exercises), **contribution** (you engage in your POGIL team and in whole-class discussion), **collaboration** (you take your rotating team role seriously and help your teammates succeed), and **reflection** (your activity and assignment reflections show genuine engagement).
+
+Participation takes more than one form, by design. In the in-class activities your team rotates the POGIL roles — **Manager, Recorder, Presenter, and Reflector** — so that on different days you facilitate, capture the group's thinking, report out, or step back and synthesize. In the project phase your team rotates a second set of roles — **Coordinator, Builder, Evaluator, and Scribe**. Speaking up in whole-class discussion counts; so does posting your team's answer to the class discussion board, asking a sharp question, or helping a teammate past a bug. If the spoken room is hard for you, the written and role-based channels are real ways to earn this component — talk with me early and we will find the path that fits.
+
+From time to time the class agenda sets aside time for **reading exercises and discussion**: a short problem tied to the reading — write a grammar rule, trace a tokenizer, evaluate a language-design tradeoff — that you attempt beforehand and we work through together. These are marked on the schedule and drawn from the **[Reading Exercises](Participation/ReadingExercises)** bank.
+
+## Reflection Notebook (10%)
+
+Programming language theory rewards reflection: the same idea returns in new clothes — a grammar becomes a parser becomes an AST becomes an evaluator — and the students who notice the pattern go furthest. Your **[Reflection Notebook](Participation/ReflectionNotebook)** is where you make that noticing visible. It collects your responses to the reflection prompt that closes each class activity and each assignment, anchored by the Language Autobiography you write in the warmup and revisit at semester's end. It is reviewed at midterm and at the end of the term; the guide explains what to keep in it and how it is evaluated.

@@ -5,6 +5,10 @@ title: "CS374: Principles of Programming Languages - The Transpiler"
 
 info:
   coursenum: CS374
+  purpose: "To add new back ends to your language's front end — Python and JavaScript transpilers plus a stack-machine bytecode compiler and VM — and weigh the tradeoffs among interpretation, transpilation, and compilation."
+  tilt:
+    task: "Using the Visitor pattern, transpile Mini ASTs to runnable Python and JavaScript, compile them to stack-machine bytecode with a VM, and verify all four back ends produce identical output."
+    criteria: "Assessed on correct Visitor-based transpilers, a working bytecode compiler and stack machine, cross-backend equivalence testing, and a comparative writeup, weighted 40/30/20/10; see the rubric below for the full breakdown."
   points: 100
   goals:
     - To implement the Visitor pattern for AST traversal and code generation

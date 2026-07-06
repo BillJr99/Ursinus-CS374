@@ -5,6 +5,10 @@ title: "CS374: Principles of Programming Languages - The Interpreter"
 
 info:
   coursenum: CS374
+  purpose: "To complete your language pipeline with a tree-walking evaluator — nested scopes, strong dynamic typing, a REPL, and a precise semantics document — the capstone component your team project extends."
+  tilt:
+    task: "Define AST node dataclasses with visitor dispatch, build a tree-walking evaluator with environments and short-circuit logic, add a REPL and file runner, and document every rule in SEMANTICS.md with a staged error hierarchy."
+    criteria: "Assessed on a correct evaluator with well-behaved scopes and short-circuit logic, a recoverable REPL and file runner, and stage-identified errors matched by SEMANTICS.md, weighted 25/35/20/20 across the four parts; see the rubric below for the full breakdown."
   points: 100
   goals:
     - To define a complete set of AST node dataclasses covering every language construct
@@ -53,20 +57,6 @@ tags:
 ---
 
 This assignment completes your pipeline: a tree-walking evaluator that runs programs in your language, with real scopes, real types, a REPL, and semantic documentation. This is the component your team project extends — the semantics documentation is as important a deliverable as the code. Build in the scaffolded order below; each part depends on the previous.
-
----
-
-## Purpose, Task, and Criteria
-
-**Purpose:** This assignment builds the skills of implementing a tree-walking evaluator with strong dynamic typing, modeling nested scopes with an `Environment` class that distinguishes definition from assignment, building a REPL and file runner that recover from every error class, and documenting language semantics precisely enough that code and documentation can be checked against each other. Tree-walking interpreters are everywhere in practice — template engines, query planners, configuration languages, and the reference implementations of many production languages all evaluate ASTs exactly this way — and "write down the semantics, then make the implementation agree" is how real language teams work. This is the capstone component of your pipeline: it imports your Lexer and Parser unchanged, and it is the interpreter your team project extends.
-
-**Task:** Work through the four numbered Parts below in order: the AST node dataclasses and visitor dispatch (Part 1), the tree-walking evaluator with environments, short-circuit logic, and break/continue (Part 2 — the largest part), the REPL and file runner (Part 3), and the stage-identified error hierarchy with `SEMANTICS.md` (Part 4). Part 2 is where the difficulty lives; the pacing below deliberately spreads it across a full week.
-
-**Criteria:** Your work is graded against the rubric at the top of this page (25/35/20/20 points across the four Parts). What a strong submission looks like:
-
-- The shadowing program prints `51` then `2`, the bomb test `true or (1 / 0)` runs without error, and both behaviors are asserted in the test suite rather than checked by hand.
-- The REPL keeps one persistent environment across inputs and returns to the prompt after every error class — the transcript proves it.
-- Every error message reads `Stage error at line L, col C: description`, and every semantics decision in `SEMANTICS.md` is backed by a program whose actual output matches the documented output.
 
 ---
 

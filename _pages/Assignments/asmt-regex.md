@@ -5,6 +5,10 @@ title: "CS374: Principles of Programming Languages - Regular Expressions"
 
 info:
   coursenum: CS374
+  purpose: "To build a working command of regular expressions — writing tested pattern libraries, a finditer-based mini lexer, and realistic data extraction — plus the vocabulary to reason about why a pattern behaves the way it does."
+  tilt:
+    task: "Work through four scaffolded parts: a ten-pattern library, a re.finditer mini lexer, a regex text transformer and log parser, and a written analysis of regex limits."
+    criteria: "Assessed on the correctness of your patterns, mini lexer, and log parser and the depth of your greedy/lazy, anchors, and Chomsky-limits analysis, each part worth 25 points; see the rubric below for the full breakdown."
   points: 100
   goals:
     - To write and test a library of regular expressions for real-world data patterns
@@ -50,20 +54,6 @@ tags:
 ---
 
 In this assignment you will build fluency with regular expressions in four scaffolded parts, ending with a realistic log-extraction task. Use raw strings (`r"..."`) throughout. Each part is independently tested; do not skip ahead. The assignment concludes with a theoretical limits question that you must answer in your writeup.
-
----
-
-## Purpose, Task, and Criteria
-
-**Purpose:** This assignment builds a working command of regular expressions — writing and testing pattern libraries, building a `finditer`-based mini lexer, and applying both to realistic data-extraction tasks — along with the vocabulary (greedy vs. lazy, anchors, capture groups) to reason about *why* a pattern behaves the way it does. These are among the most transferable skills in the course: professionals reach for regular expressions daily in log triage, editor and IDE search-and-replace, input validation, and data cleaning. The mini lexer you build in Part 2 is also a direct preview of the Lexer assignment, and the limits question in Part 4 explains where regular expressions stop and the rest of your language pipeline begins.
-
-**Task:** Work through the four numbered Parts below in order: the pattern library (Part 1), the `finditer` mini lexer (Part 2), the text transformer and log parser (Part 3), and the pattern analysis writeup (Part 4). Each part is independently tested, and later parts reuse patterns from earlier ones.
-
-**Criteria:** Your work is graded against the rubric at the top of this page, with each Part worth 25 points. What a strong submission looks like:
-
-- Every pattern is a raw string, passes all of its `check()` calls (at least three positive and two negative cases each), and survives the hidden test inputs — no unanchored patterns that permit partial matches.
-- The mini lexer uses a single compiled alternation with named groups, tokenizes `iffy` as an identifier rather than `IF` + `ffy`, and reports unrecognized characters with their position.
-- The analysis answers cite concrete examples from *your own* patterns and code — not generic restatements of the course notes — and the limits paragraph correctly names the Chomsky level and pipeline component that handle balanced nesting.
 
 ---
 

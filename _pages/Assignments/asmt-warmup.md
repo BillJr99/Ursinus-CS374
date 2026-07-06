@@ -5,6 +5,10 @@ title: "CS374: Principles of Programming Languages - Warmup"
 
 info:
   coursenum: CS374
+  purpose: "To confirm your Python toolchain and capture a baseline of your relationship with languages before the build begins."
+  tilt:
+    task: "Verify your environment with the starter script, write a short Language Autobiography, and charter your team."
+    criteria: "Assessed on a verified environment, a specific and reflective autobiography, and a complete signed charter; see the rubric below for the full breakdown."
   points: 25
   goals:
     - To verify a working Python development environment for the semester's build

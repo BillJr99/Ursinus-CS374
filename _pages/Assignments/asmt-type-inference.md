@@ -5,6 +5,10 @@ title: "CS374: Principles of Programming Languages - Type Inference"
 
 info:
   coursenum: CS374
+  purpose: "To implement Hindley-Milner type inference over your Mini language — unification, Algorithm W, and let-polymorphism — the same machinery that lets Haskell, OCaml, and Rust deduce types without annotations."
+  tilt:
+    task: "Implement Robinson's unification with the occurs check, Algorithm W over the Mini AST, let-generalization and instantiation, and position-tagged type error messages."
+    criteria: "Assessed on correct unification, principal-type inference via Algorithm W, sound let-polymorphism, and clear positioned type errors, weighted 30/35/20/15; see the rubric below for the full breakdown."
   points: 100
   goals:
     - To implement Robinson's unification algorithm with the occurs check

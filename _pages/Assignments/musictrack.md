@@ -5,6 +5,10 @@ title: "CS374: Principles of Programming Languages - Choose Your Track: Music & 
 
 info:
   coursenum: CS374
+  purpose: "To let you meet the second-half course outcomes through a coherent music and live-coding language track, with the substitution rules made explicit so the choice is transparent."
+  tilt:
+    task: "Read the track arc, skim the linked deliverables, and decide with your instructor — classic track, music track, or a mix — no later than the week 11 team project handout."
+    criteria: "Nothing is submitted; you have met the page's goals when you can name each music-track deliverable and its classic counterpart and have confirmed your intended substitutions with your instructor."
   points: 0
   goals:
     - "Understand what the music and live-coding track is, which deliverables it comprises, and how they parallel the classic track"
@@ -36,16 +40,6 @@ Every deliverable in this course exercises the same core outcomes: specifying a 
 In the spirit of Universal Design for Learning, this track is a deliberate choice of **engagement** (a problem domain that may hold your attention differently than a general-purpose toy language does) and of **expression** (your capstone demonstration can be a short live-coded performance rather than a REPL walkthrough — or a REPL walkthrough of timed event output, if you prefer). Neither track is the "easy" one, and neither is remedial: they are two routes over the same mountain, graded against the same kinds of rubrics.
 
 **Accessibility note, stated up front:** the music materials are built around a semantics that maps programs to *timed event structures* — lists of `(value, begin, end)` events you can read, print, diff, and test as plain text. Every activity, assignment, and the capstone project on this track supports a **text-events-only path**: sound rendering is always optional, and no deliverable requires you to produce, hear, or evaluate audio. If audio is not accessible or not appealing to you, the track is fully available through its textual semantics.
-
----
-
-## The TILT View
-
-**Purpose.** To let you meet the course outcomes of the second half — parsing with generator tools, semantics, the lambda calculus, functional programming, and language design — through a coherent sequence built around music and live-coding languages, and to make the substitution rules explicit so the choice is transparent.
-
-**Task.** Read the track arc below, skim the linked deliverables, and decide — with your instructor — whether to take the classic track, the music track, or a mix. Declare your choice no later than the week 11 team project handout.
-
-**Criteria.** There is nothing to submit for this page. You have met its goals when you can (1) name the music-track deliverables and their classic counterparts, (2) state which substitutions you intend to propose, and (3) confirm that plan with your instructor before the decision point. Use this as a self-checklist rather than a rubric.
 
 ---
 

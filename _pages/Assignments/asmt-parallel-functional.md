@@ -13,6 +13,9 @@ info:
     - "Design pure functions for a real dataset of meaningful size."
     - "Connect the functional programming model to distributed computing architectures."
   purpose: "The promise of functional programming is that purity buys you parallelism for free. This assignment cashes that promise on a real dataset: you will implement a complete MapReduce pipeline, parallelize it across all available CPU cores, measure how it scales, and confront the practical limits (serialization overhead, non-parallelizable reduce phases) that constrain real distributed systems. The goal is not just to make a program faster — it is to experience, in a grounded and quantified way, why the design choice of purity has engineering consequences at scale."
+  tilt:
+    task: "Build a complete MapReduce pipeline over a real corpus — a pure map parallelized with multiprocessing and a tree-reduce — measure its speedup against Amdahl's Law, and repeat on a second domain of your choice."
+    criteria: "Assessed on a correct pure parallel map, rigorous speedup and Amdahl's Law analysis, a parallel tree-reduce, and a second-domain pipeline with clear documentation; see the rubric below for the full breakdown."
   tasks:
     - "Implement a pure map function for text analysis on a corpus of at least 10,000 lines."
     - "Implement a parallel map using Python's multiprocessing.Pool."

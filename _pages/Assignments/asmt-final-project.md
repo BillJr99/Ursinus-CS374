@@ -5,6 +5,10 @@ title: "CS374: Principles of Programming Languages - Final Project: Design Your 
 
 info:
   coursenum: CS374
+  purpose: "To synthesize the whole course — scanning, parsing, ASTs, evaluation, scoping, and types — into one original, complete language that reflects deliberate design choices you can run, demo, and defend."
+  tilt:
+    task: "Design and implement a complete language with a full lexer, parser, AST, and evaluator, add at least one extension feature from the menu, and document and present it with a tested sample suite."
+    criteria: "Assessed on the completeness of your language specification, implementation correctness, testing including the extension feature, and your presentation and writeup, weighted 30/40/20/10; see the rubric below for the full breakdown."
   points: 200
   goals:
     - To synthesize all course concepts (scanning, parsing, ASTs, evaluation, scoping, type systems) into a single working language implementation
