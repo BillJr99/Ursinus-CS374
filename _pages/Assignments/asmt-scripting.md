@@ -5,6 +5,10 @@ title: "CS374: Principles of Programming Languages - Shell Scripting"
 
 info:
   coursenum: CS374
+  purpose: "To develop fluency in shell scripting as a paradigm — composing Unix programs through pipes, redirection, and text tools that treat the OS itself as a callable library."
+  tilt:
+    task: "Write Bash scripts across four parts: number and array utilities with validation, pipelines and I/O redirection, text processing with grep/sed/awk, and a composed, portable, shellcheck-clean script suite."
+    criteria: "Assessed on correct control flow and quoting, working pipelines, accurate grep/sed/awk processing, and well-composed portable scripts, each part worth 25 points; see the rubric below for the full breakdown."
   points: 100
   goals:
     - To write correct shell scripts using variables, conditionals, loops, and functions

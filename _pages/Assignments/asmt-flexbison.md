@@ -5,6 +5,10 @@ title: "CS374: Principles of Programming Languages - Flex and Bison"
 
 info:
   coursenum: CS374
+  purpose: "To build a small but complete language, Calc, with the industrial tools Flex and Bison — a scanner, a precedence-correct grammar, an AST, and a tree-walking evaluator in C with variables, functions, and recursion."
+  tilt:
+    task: "Write a Flex scanner and a conflict-free Bison grammar for Calc, build a tagged-union AST and tree-walking evaluator in C with a scoped symbol table, and drive it all from a Makefile with tests."
+    criteria: "Assessed on a complete scanner, a precedence- and associativity-correct grammar with no unresolved conflicts, a correct AST evaluator with scoping, and a reproducible build and test suite; see the rubric below for the full breakdown."
   points: 100
   goals:
     - To implement a scanner with Flex that handles all token types including strings, comments, and numeric literals

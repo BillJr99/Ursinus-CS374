@@ -5,6 +5,10 @@ title: "CS374: Principles of Programming Languages - Finite Automata Simulator"
 
 info:
   coursenum: CS374
+  purpose: "To implement general DFA and NFA simulators driven by machine definitions loaded as data, design automata for specified languages, and carry out the subset and Thompson's constructions by hand — the execution model beneath every lexer."
+  tilt:
+    task: "Build DFA and NFA simulators that read machines from JSON, design a portfolio of machines, then hand-execute the subset construction and Thompson's construction and verify each by simulation."
+    criteria: "Assessed on correct simulators that handle the deliberate edge cases, annotated machine designs, and hand constructions verified by simulation rather than inspection, each part worth 25 points; see the rubric below for the full breakdown."
   points: 100
   goals:
     - To implement general DFA and NFA simulators over machine definitions loaded from JSON
@@ -51,20 +55,6 @@ tags:
 ---
 
 In this assignment you will build the machines beneath your lexer: general simulators for DFAs and NFAs that read machine definitions as data, plus a design portfolio of machines you create, a hand-executed subset construction, and a Thompson's construction NFA. Build in the small scaffolded steps below; each step has its own tests. The point is not just that the code works — it is that you understand *why* it works, which the design portfolio and writeup capture.
-
----
-
-## Purpose, Task, and Criteria
-
-**Purpose:** This assignment builds the ability to implement general DFA and NFA simulators driven by machine definitions loaded as data, to design automata for specified languages, and to carry out the two classic constructions — subset construction and Thompson's construction — by hand and verify them by simulation. Finite automata are the execution model beneath every lexer generator (the tools behind `flex`, `re2`, and the regex engines in your editor all compile patterns to automata), and they appear throughout industry in network protocol validators, hardware controllers, and model checking. Completing this assignment means you will know exactly what machine your Lexer is secretly running.
-
-**Task:** Work through the four numbered Parts below in order: the DFA simulator and design portfolio (Part 1), the NFA simulator with epsilon-closure and its portfolio (Part 2), the hand-executed subset construction verified programmatically (Part 3), and Thompson's construction for a regex (Part 4). Parts 3 and 4 reuse the simulators from Parts 1 and 2, so get those solid first.
-
-**Criteria:** Your work is graded against the rubric at the top of this page, with each Part worth 25 points. What a strong submission looks like:
-
-- Both simulators handle the deliberate edge cases — the empty string, out-of-alphabet symbols, and epsilon cycles — and every designed machine is annotated with one sentence per state explaining what it "remembers."
-- The subset-construction table is complete in the writeup, and a test run shows the NFA and its derived DFA agreeing on every string in the test suite.
-- Thompson's construction is shown fragment by fragment with labeled states, and the final NFA passes all eight verification strings by simulation, not by inspection.
 
 ---
 

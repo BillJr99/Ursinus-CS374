@@ -13,6 +13,9 @@ info:
     - "Verify by-hand derivations mechanically against the interpreter."
     - "Connect the calculus to its working incarnations in Haskell, JavaScript, and the live coding languages studied in this unit."
   purpose: "The lambda calculus rewards being computed by hand and being computed by machine, and the two activities check one another. In this assignment you will do both: produce careful paper derivations, build an interpreter whose substitution function is provably careful about capture, and use each artifact to audit the other."
+  tilt:
+    task: "Produce auditable by-hand lambda derivations, implement a capture-avoiding interpreter with normal- and applicative-order strategies and Church encodings, and cross-verify each derivation against the interpreter."
+    criteria: "Assessed on correct annotated derivations, a capture-avoiding interpreter that passes the adversarial tests, verified Church encodings, and the reconciliation of hand and machine; see the rubric below for the full breakdown."
   tasks:
     - "Complete the by-hand derivation problems, one numbered reduction step per line."
     - "Implement an AST, capture-avoiding substitution, and normal-order reduction in Python."

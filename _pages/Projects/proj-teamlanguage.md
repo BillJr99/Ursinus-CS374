@@ -5,6 +5,10 @@ title: "CS374: Principles of Programming Languages - Final Project: A Language o
 
 info:
   coursenum: CS374
+  purpose: "To design, build, document, and perform a programming language of your own — assembled from the semester's lexer, parser, AST, environment, and evaluator components — proving they were reusable components that snap together and grow."
+  tilt:
+    task: "In rotating-role team sprints, integrate your components into one pipeline, add a distinctive feature, and ship a REPL, file-runner, samples, tests, and SEMANTICS.md, then present the language at Demo Day."
+    criteria: "Assessed on language design and documentation, implementation correctness and integration, testing, reproducibility, and the Demo Day presentation, weighted 30/25/20/13/12; see the rubric below for the full breakdown."
   points: 100
   goals:
     - To design a programming language with a niche, a documented grammar, and exhaustive semantics

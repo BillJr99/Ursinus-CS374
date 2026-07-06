@@ -5,6 +5,10 @@ title: "CS374: Principles of Programming Languages - Libraries and Modules"
 
 info:
   coursenum: CS374
+  purpose: "To understand how languages implement libraries and modules — the mechanisms that let programs grow beyond a single file — from Python packages and dynamic loading to namespaces and a toy interpreter's own module system."
+  tilt:
+    task: "Build a structured Python package with a clean public API, a dynamic importlib plugin loader, a set of namespace and LEGB analyses, and an import system for a mini interpreter."
+    criteria: "Assessed on a well-encapsulated package, a validating plugin loader, correct namespace analyses, and a working interpreter module system, each part worth 25 points; see the rubric below for the full breakdown."
   points: 100
   goals:
     - To create well-structured Python packages with proper public APIs using __all__ and __init__.py

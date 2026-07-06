@@ -5,6 +5,10 @@ title: "CS374: Principles of Programming Languages - Functional Programming"
 
 info:
   coursenum: CS374
+  purpose: "To build fluency in the functional paradigm — pure and higher-order functions, recursive data structures with generic fold, closures, and lazy generators — as a design option your team will weigh for its own language."
+  tilt:
+    task: "Work through four parts: pure functions and combinators, recursive trees and linked lists with generic map/fold, closures and function factories, and lazy generator pipelines."
+    criteria: "Assessed on honoring the no-loop and no-assignment constraints, genuinely generic tree and list operations, and infinite generators demonstrated without hanging, each part worth 25 points; see the rubric below for the full breakdown."
   points: 100
   goals:
     - To write pure functions and higher-order functions in Python using map, filter, reduce, and recursion without loops or assignment
@@ -53,20 +57,6 @@ tags:
 ---
 
 This assignment exercises the functional paradigm in Python: pure functions, higher-order combinators, recursive data structures, closures, and lazy generators. The constraints are the content — where the directions say no loops and no assignment statements within the solution logic, the constraint is teaching you the paradigm shift from imperative to functional thinking.
-
----
-
-## Purpose, Task, and Criteria
-
-**Purpose:** This assignment builds fluency in the functional paradigm: writing pure and higher-order functions with `map`, `filter`, `reduce`, and recursion; defining recursive data structures with generic map and fold operations; building closures and function factories; and implementing lazy sequences with generators. These are not academic exercises — map/filter/reduce is the programming model of data pipelines from pandas to Spark, closures power callbacks and Python decorators, and lazy generators are how production code streams data too large for memory. The paradigm itself is a design option you will weigh when your team designs its own language features.
-
-**Task:** Work through the four numbered Parts below in order: pure functions and combinators (Part 1), recursive trees and linked lists (Part 2), closures and factories (Part 3), and lazy generators (Part 4). The parts are more independent than in the pipeline assignments, but Part 2 reuses `my_reduce` from Part 1, and Part 4's pipeline mirrors Part 1's combinators in lazy form.
-
-**Criteria:** Your work is graded against the rubric at the top of this page, with each Part worth 25 points. What a strong submission looks like:
-
-- Solution bodies contain no loops and no assignment statements where the directions forbid them — the constraint is honored in every function, not just most.
-- Operations are generic: `tree_fold` takes a combining function rather than hardcoding addition, `memoize` caches any hashable arguments, and `my_map`/`my_reduce` are property-tested against the built-ins.
-- The infinite generators are demonstrated without hanging (via `take`), and the writeup's closure diagram and strict-vs-lazy analysis explain *why*, not just *what*.
 
 ---
 

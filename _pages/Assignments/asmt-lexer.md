@@ -5,6 +5,10 @@ title: "CS374: Principles of Programming Languages - The Lexer"
 
 info:
   coursenum: CS374
+  purpose: "To turn the class tokenizer into the first permanent component of your language pipeline — a reusable Lexer with a stable peek/advance/expect interface that the Parser and team project import unchanged."
+  tilt:
+    task: "Specify an ordered token grammar, build a reusable Lexer class with peek/advance/expect, string escapes, and JSON configuration, then add positioned error reporting and a full test suite."
+    criteria: "Assessed on a correctly ordered token spec, an idempotent side-effect-free Lexer interface, and precise error reporting with a full test suite, weighted 30/40/30 across the three parts; see the rubric below for the full breakdown."
   points: 100
   goals:
     - To specify a complete token grammar for the project language using ordered regular-expression rules
@@ -43,20 +47,6 @@ tags:
 ---
 
 This assignment turns the class tokenizer into a **component**: the first permanent piece of your language pipeline. The parser assignment imports it unchanged; your team project ships it. Every design decision you make here propagates forward, so document your interface carefully. Build in the scaffolded steps below; test after each step before moving on.
-
----
-
-## Purpose, Task, and Criteria
-
-**Purpose:** This assignment builds the skills of specifying a complete token grammar as ordered regular-expression rules, hardening a prototype into a reusable component with a stable `peek`/`advance`/`expect` interface, and reporting errors with precise positions in both fail-fast and collect-all modes. Every compiler, interpreter, linter, formatter, and syntax highlighter you have ever used begins with exactly this component, and the discipline it teaches — designing an interface that a downstream consumer imports unchanged — is the everyday work of professional software engineering. This Lexer is the first permanent piece of your language pipeline: the Parser assignment imports it as-is, and your team project ships it.
-
-**Task:** Work through the three numbered Parts below in order: the ordered token specification and baseline generator (Part 1), the Lexer class with its lookahead interface, string escapes, and JSON configurability (Part 2), and error handling with positions plus the full test suite (Part 3). Test after every Step before moving on — a subtle Part 1 bug is much cheaper to find now than from inside the parser.
-
-**Criteria:** Your work is graded against the rubric at the top of this page (30/40/30 points across the three Parts). What a strong submission looks like:
-
-- The token spec tokenizes every maximal-munch trap correctly — `iffy` is one identifier, `<=` is one `LE` — and the ordering rationale is written down in the readme, not just implied by the list.
-- `peek` is idempotent, `peek`/`advance`/`expect` return an EOF token forever at end of input, and the module imports with no side effects — the parser can rely on the contract without reading your source.
-- Every `LexError` carries line, column, and offending text; collect-all mode reports every error in one pass; and `test_output.txt` shows the whole suite passing, including the five deliberate error programs.
 
 ---
 

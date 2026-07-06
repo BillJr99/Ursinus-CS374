@@ -13,6 +13,9 @@ info:
     - "Connect combinatory logic to point-free programming style in Python and Haskell."
     - "Appreciate the philosophical significance of Turing-complete computation with zero variables."
   purpose: "The combinatory calculus strips the lambda calculus down to its barest bones: no variables, no binding, no substitution, only application and a small fixed set of primitive combinators. This assignment asks you to work within that constraint — deriving familiar functions from first principles, reducing terms by hand, and building a machine that reduces them for you. The constraint is the point: when you can only use application and the birds, you are forced to see function composition, argument passing, and currying as the only tools available, and that discipline reshapes how you think about higher-order programming."
+  tilt:
+    task: "Reduce combinator expressions by hand, build a Python SKI (plus B, C, W, M) term reducer, write five point-free functions and a bracket-abstraction translator, and answer analysis questions linking combinators to modern programming."
+    criteria: "Assessed on correct rule-annotated hand reductions, a working combinator reducer, point-free implementations, and a verified bracket-abstraction translator; see the rubric below for the full breakdown."
   tasks:
     - "Perform hand reductions of combinator expressions, one rule per step."
     - "Derive B, C, and W from S and K using bracket abstraction."

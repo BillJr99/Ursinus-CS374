@@ -13,6 +13,9 @@ info:
     - "Validate the implementation against the specification with a documented test suite."
     - "Present and perform with the language, demonstrating it live and reflecting on its design under use."
   purpose: "Throughout this unit you have studied a language (the mini-notation), parsed it, given it a semantics, and met the calculus beneath its host languages. The project closes the loop: you will design a small live coding language of your own, specify it precisely, build it with the flex/yacc pipeline, and perform with it. The deliverable is not only a working artifact but a defensible set of design decisions."
+  tilt:
+    task: "Design your own small live-coding language, write its grammar and denotational semantics, implement the full flex/yacc pipeline and evaluator, and demonstrate it live in a short performance."
+    criteria: "Assessed across four stages on the precision of your specification, implementation quality, semantics correctness, and the live demonstration and postmortem report; see the rubric below for the full breakdown."
   tasks:
     - "Stage 1: Language design document with grammar and semantic sketch."
     - "Stage 2: Working lexer and parser producing printed ASTs, with the bison automaton report."

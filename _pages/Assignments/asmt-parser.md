@@ -5,6 +5,10 @@ title: "CS374: Principles of Programming Languages - The Parser and AST"
 
 info:
   coursenum: CS374
+  purpose: "To build the second permanent component of your pipeline — a recursive descent parser that turns your Lexer's tokens into an AST — while mastering formal grammars, precedence, and associativity."
+  tilt:
+    task: "Write a formal EBNF grammar, implement a recursive descent parser tier by tier atop your Lexer, and build an AST with a pretty-printer, unparser, round-trip verification, and positioned error reporting."
+    criteria: "Assessed on a grammar that matches the parser exactly, correct precedence and associativity at every tier, and programmatic round-trip verification with positioned errors, weighted 30/40/30 across the three parts; see the rubric below for the full breakdown."
   points: 100
   goals:
     - To write a formal EBNF grammar for the project language covering expressions, statements, and programs
@@ -48,20 +52,6 @@ tags:
 ---
 
 This assignment builds the second permanent component of your pipeline: a recursive descent parser that consumes your Lexer's tokens and produces an AST of node dataclasses. Build tier by tier, testing each before adding the next. The grammar you write first is the specification; the parser is the implementation of that specification — they must agree exactly.
-
----
-
-## Purpose, Task, and Criteria
-
-**Purpose:** This assignment builds the skills of writing a formal EBNF grammar, implementing a recursive descent parser with a full precedence ladder and correct associativity, and designing an AST of dataclasses with a pretty-printer, an unparser, and positioned error messages. Recursive descent is not a museum piece — it is how most production compilers (including those for several major languages) parse source code, and the same technique powers linters, formatters, configuration readers, and the language servers behind your IDE's autocomplete. This parser is the second permanent component of your pipeline: it imports your Lexer unchanged, and the Interpreter assignment and your team project import it unchanged in turn.
-
-**Task:** Work through the three numbered Parts below in order: the EBNF grammar (Part 1), the recursive descent parser built tier by tier atop your Lexer (Part 2), and the AST tooling with round-trip verification and error reporting (Part 3). Write the grammar before any parser code — it is the contract everything else is checked against.
-
-**Criteria:** Your work is graded against the rubric at the top of this page (30/40/30 points across the three Parts). What a strong submission looks like:
-
-- The grammar and the parser agree exactly: every precedence tier is its own non-terminal, associativity is enforced by structure, and the dangling-else policy is stated in the readme rather than left implicit.
-- The precedence tests from Step 2b pass with the exact tree shapes shown — `8 / 4 / 2` left-associates, `2 + 3 * 4` binds the multiplication tighter — and the Lexer is imported unchanged.
-- The round-trip property `parse(unparse(parse(s)))` is verified programmatically across the whole test suite, and every `ParseError` names the expected token, the found token, and its line and column.
 
 ---
 

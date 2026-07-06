@@ -15,6 +15,9 @@ info:
     - "Validate an independent implementation against a production reference implementation (Strudel)."
     - "Reflect on language design tradeoffs revealed by extending a real DSL."
   purpose: "In class we built a working flex/yacc pipeline for a subset of the TidalCycles/Strudel mini-notation. In this assignment you will grow that subset toward the real language, extending the lexer, the grammar, the AST, and the evaluator in concert, and validating your semantics against the reference implementation at strudel.cc."
+  tilt:
+    task: "Extend a flex/bison mini-notation pipeline — lexer, LALR(1) grammar, AST, and evaluator — with alternation, Euclidean rhythms, and polymeter, then validate the timed-event output against the Strudel reference."
+    criteria: "Assessed on a conflict-free grammar and lexer, clean AST design, evaluator semantics matching the equations, and documented validation against strudel.cc; see the rubric below for the full breakdown."
   tasks:
     - "Complete the scaffolded SLOW and DEGRADE evaluator cases from the in-class module."
     - "Extend the lexer and grammar with alternation <a b c>, verifying zero conflicts."
