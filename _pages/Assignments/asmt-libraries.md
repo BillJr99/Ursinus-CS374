@@ -44,7 +44,7 @@ info:
 
   readings:
     - rtitle: "Libraries Activity"
-      rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-libraries.md"
+      rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-languagedesign.md"
     - rtitle: "Python Import System Documentation"
       rlink: "https://docs.python.org/3/reference/import.html"
     - rtitle: "PLAI Ch. 10 — Recursion and Modules"

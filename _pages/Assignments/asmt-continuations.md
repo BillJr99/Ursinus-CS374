@@ -44,7 +44,7 @@ info:
 
   readings:
     - rtitle: "Continuations and call/cc Activity"
-      rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-call-cc.md"
+      rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-lambdacalculus2.md"
     - rtitle: "Structure and Interpretation of Computer Programs — Chapter 3"
       rlink: "https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/index.html"
     - rtitle: "Continuation-Passing Style (Wikipedia)"

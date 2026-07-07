@@ -16,9 +16,9 @@ info:
     - "Know that every music-track deliverable supports a text-events-only path, so no audio production or playback is ever required"
   readings:
     - rtitle: "Music Languages and Live Coding Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-musiclanguages.md"
+      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-languagedesign.md"
     - rtitle: "Flex and Yacc Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-flexyacc.md"
+      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-parsertable.md"
 
 tags:
   - music
@@ -47,8 +47,8 @@ In the spirit of Universal Design for Learning, this track is a deliberate choic
 
 The music track follows the same shape as the classic track: two preparatory activities, a parser assignment with generator tools, a theory unit on the calculus beneath it all, a functional programming assignment that cashes theory into performance, and a capstone language project.
 
-1. **[Music Languages and Live Coding](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-musiclanguages.md)** (activity) — meet TidalCycles and Strudel as *language designs*: embedded versus external DSLs, a formal model of patterns, and the timed-event semantics the rest of the track builds on.
-2. **[Flex and Yacc](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-flexyacc.md)** (activity) — build a working flex/yacc pipeline for a subset of the mini-notation in class.
+1. **[Music Languages and Live Coding](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-languagedesign.md)** (activity) — meet TidalCycles and Strudel as *language designs*: embedded versus external DSLs, a formal model of patterns, and the timed-event semantics the rest of the track builds on.
+2. **[Flex and Yacc](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-parsertable.md)** (activity) — build a working flex/yacc pipeline for a subset of the mini-notation in class.
 3. **[Programming Assignment: A Mini-Notation Parser with Flex and Yacc](/Assignments/MiniNotationParser)** — grow the in-class subset toward the real language: alternation, Euclidean rhythms, and polymeter, validated against the Strudel reference implementation (or against printed event lists alone).
 4. **[Written Assignment: The Lambda Calculus By Hand and In Code](/Assignments/LambdaCalculus)** — paper derivations and a capture-avoiding interpreter, each auditing the other; connects the calculus to the host languages of Tidal and Strudel.
 5. **[Assignment: A Flock of Functions — Combinatory Logic in Code](/Assignments/FlockOfBirds)** — the calculus stripped to combinators: hand reductions, a term reducer, and bracket abstraction.

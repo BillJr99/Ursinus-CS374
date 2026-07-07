@@ -44,7 +44,7 @@ info:
     - rtitle: "Tutorial: Flex and Bison (Complete)"
       rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md"
     - rtitle: "LL/LR Parsing Activity"
-      rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-ll-lr-comprehensive.md"
+      rlink: "https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-parsertable.md"
 
 tags:
   - flex
