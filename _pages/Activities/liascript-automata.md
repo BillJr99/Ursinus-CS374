@@ -1,4 +1,3 @@
-# Finite Automata
 <!--
 author:   William Mongan
 language: en

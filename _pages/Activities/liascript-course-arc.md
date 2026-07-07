@@ -1,4 +1,3 @@
-# The Arc of This Course: From Symbols to Languages
 <!--
 author:   William Mongan
 language: en

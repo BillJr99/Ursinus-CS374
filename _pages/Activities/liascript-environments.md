@@ -1,4 +1,3 @@
-# Environments: Implementing Scope
 <!--
 author:   William Mongan
 language: en

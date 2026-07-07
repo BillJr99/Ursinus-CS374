@@ -1,5 +1,3 @@
-# Tutorial: Haskell Essentials for the Programming Languages Course
-
 <!--
 author:   William Mongan
 language: en

@@ -1,5 +1,3 @@
-# Tutorial: Implementing a Lambda Calculus Reducer
-
 <!--
 author:   William Mongan
 language: en

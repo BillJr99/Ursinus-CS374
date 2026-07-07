@@ -1,4 +1,3 @@
-# Welcome: Why Study Programming Languages?
 <!--
 author:   William Mongan
 language: en

@@ -1,5 +1,3 @@
-# Tutorial: Build a Complete Interpreter in Python — Step by Step
-
 <!--
 author:   William Mongan
 language: en

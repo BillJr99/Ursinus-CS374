@@ -1,4 +1,3 @@
-# Tokens and Scanning: Building a Lexer
 <!--
 author:   William Mongan
 language: en

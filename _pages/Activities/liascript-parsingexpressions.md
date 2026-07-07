@@ -1,4 +1,3 @@
-# Parsing Expressions: Left Factoring, Precedence, and Iteration
 <!--
 author:   William Mongan
 language: en

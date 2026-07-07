@@ -1,5 +1,3 @@
-# Tutorial: Flex and Bison from Zero to a Working Language
-
 <!--
 author:   William Mongan
 language: en

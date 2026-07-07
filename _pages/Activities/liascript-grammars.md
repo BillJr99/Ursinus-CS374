@@ -1,4 +1,3 @@
-# Grammars and the Chomsky Hierarchy
 <!--
 author:   William Mongan
 language: en

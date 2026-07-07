@@ -1,4 +1,3 @@
-# Regular Expressions
 <!--
 author:   William Mongan
 language: en

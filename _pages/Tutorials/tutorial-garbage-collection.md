@@ -1,4 +1,3 @@
-# Tutorial: Garbage Collection — Memory Management from First Principles
 <!--
 author:   William Mongan
 language: en

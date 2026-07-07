@@ -1,4 +1,3 @@
-# Tutorial: Parser Combinators — Parsers as First-Class Values
 <!--
 author:   William Mongan
 language: en

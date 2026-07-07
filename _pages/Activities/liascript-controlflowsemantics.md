@@ -1,4 +1,3 @@
-# Control Flow Semantics
 <!--
 author:   William Mongan
 language: en

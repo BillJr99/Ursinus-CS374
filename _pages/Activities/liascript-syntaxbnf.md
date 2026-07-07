@@ -1,4 +1,3 @@
-# Syntax and BNF/EBNF
 <!--
 author:   William Mongan
 language: en

@@ -1,5 +1,3 @@
-# Tutorial: Building a Bytecode VM for Mini
-
 <!--
 author:   CS374 Course Staff
 email:    

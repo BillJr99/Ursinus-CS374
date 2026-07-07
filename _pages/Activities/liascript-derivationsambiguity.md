@@ -1,4 +1,3 @@
-# Derivations, Parse Trees, Ambiguity, and Precedence
 <!--
 author:   William Mongan
 language: en

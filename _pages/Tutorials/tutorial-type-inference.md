@@ -1,4 +1,3 @@
-# Tutorial: Implementing Hindley-Milner Type Inference
 <!--
 author:   William Mongan
 language: en

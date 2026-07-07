@@ -1,4 +1,3 @@
-# Interactive Lexing and Parsing with PLY (Python Lex-Yacc)
 <!--
 author:   William Mongan
 language: en
@@ -12,6 +11,8 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
         https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap
 
 -->
+
+# Interactive Lexing and Parsing with PLY (Python Lex-Yacc)
 
 PLY (Python Lex-Yacc) is Flex and Bison reimplemented in pure Python: you write the same declarative grammar rules and get the same LALR(1) parsing power, but without a C toolchain, a build step, or generated `.c` files to manage. Think of it as Flex/Bison with Python as the host language — the concepts translate one-to-one, and every rule you write here has a direct counterpart in a `.l` or `.y` file. That makes PLY ideal for rapid prototyping in this course: you can explore a grammar idea, run it instantly in the browser, and see the token stream or AST before committing to a full C-based toolchain.
 
@@ -898,6 +899,6 @@ PLY uses the same LALR(1) algorithm as Bison, but expressed entirely in Python u
 - PLY Documentation: https://www.dabeaz.com/ply/ply.html
 - Flex Manual: https://westes.github.io/flex/manual/
 - Bison Manual: https://www.gnu.org/software/bison/manual/
-- This course's companion activity: Scanners and Parsers with Flex and Yacc (see `liascript-flexyacc.md`)
+- This course's companion activity: Scanners and Parsers with Flex and Yacc (see `liascript-parsertable.md`)
 - Compilers: Principles, Techniques, and Tools (Dragon Book), Chapter 4: Syntax Analysis
 - Modern Compiler Implementation in ML/Java/C (Appel), Chapter 3: Parsing

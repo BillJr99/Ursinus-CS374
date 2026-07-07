@@ -1,4 +1,3 @@
-# Programming Paradigms
 <!--
 author:   William Mongan
 language: en
