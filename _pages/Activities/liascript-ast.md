@@ -793,6 +793,13 @@ The AST is the third representation of the same program (characters → tokens �
 - **Douglas Thain. "Introduction to Compilers and Language Design"** — Chapter 5
 - **"Engineering a Compiler"** — Cooper & Torczon, Chapter 5: AST construction in a real compiler
 
+## Going Deeper (Optional Appendices)
+
+The core lesson above stands on its own. The optional deep dives below expand on it — read whichever interest you:
+
+- Code Structure: Expressions and Conditionals
+- From Interpreter to Compiler: Code Generation and Transpilation
+
 ## Going Deeper: Code Structure: Expressions and Conditionals
 
 > **Think about city zoning for a moment.** A well-planned city separates residential neighborhoods from industrial districts from commercial zones — not because mixing them is physically impossible, but because keeping related things together prevents conflicts and makes the city easier to navigate. Programming languages do the same thing with *modules*, *namespaces*, and *packages*. The way a language carves up code into named, bounded units reflects its philosophy about separation of concerns: who owns what, what is visible to whom, and how names from different places coexist without colliding. In this activity, you will explore how expression structure — the building blocks *inside* those units — is designed in functional languages.

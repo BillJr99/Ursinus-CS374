@@ -695,6 +695,13 @@ In your notebook: Church built this system in 1936 to study what "computable" me
 - Gabriel Lebec. "Lambda as JS, or A Flock of Functions" (talk and slides), which Part 2 follows: https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript
 - **Lambda-Py / pycombinator** — combinators and Church encodings in Python; run the calculus interactively in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html — experiment with the reductions from today's module without installing anything.
 
+## Going Deeper (Optional Appendices)
+
+The core lesson above stands on its own. The optional deep dives below expand on it — read whichever interest you:
+
+- Flock of Birds: Combinatory Logic and the SKI Calculus
+- Algebraic Data Types and Pattern Matching
+
 ## Going Deeper: Flock of Birds: Combinatory Logic and the SKI Calculus
 
 Think of combinators as **LEGO bricks for computation**. Each brick does exactly one simple, self-contained thing — snap the identity brick onto the constant brick, snap that onto the compose brick — and from a handful of primitive pieces you can build any computation that any computer can perform. No names, no variables, no environment. Just bricks clicking together.

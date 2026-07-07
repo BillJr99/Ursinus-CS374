@@ -625,6 +625,13 @@ In your notebook: you have now run a program in a language whose every component
 - Shriram Krishnamurthi. *PLAI*, the interpreter chapters, for the denotational view.
 - Python's `ast.NodeVisitor` — the standard library's version of the visitor pattern you just wrote by hand.
 
+## Going Deeper (Optional Appendices)
+
+The core lesson above stands on its own. The optional deep dives below expand on it — read whichever interest you:
+
+- Parsing and Interpreting: Putting It All Together
+- Operational Semantics: Specifying Languages with Inference Rules
+
 ## Going Deeper: Parsing and Interpreting: Putting It All Together
 
 Think of the **parser** as the reader and the **interpreter** as the thinker. Parsing converts raw source text into a structured tree — the Abstract Syntax Tree — by recognizing the grammar of the language, much like a reader turning printed words into sentences. Interpretation then walks that tree and gives it meaning: it decides what each node *does*, computing values, updating variables, and producing output. Keeping these two phases separate is one of the great design principles of language implementation — it lets you swap out the interpreter (for a compiler, a type checker, or an optimizer) without touching the parser.

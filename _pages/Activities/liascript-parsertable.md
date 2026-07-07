@@ -660,6 +660,14 @@ In your notebook: the LR table is compiled knowledge, decisions made once, ahead
 - Aho, Lam, Sethi, Ullman. *Compilers*, sections 4.5 through 4.7, for table construction we executed but did not build.
 - Donald Knuth. "On the Translation of Languages from Left to Right." (1965). Where LR was born.
 
+## Going Deeper (Optional Appendices)
+
+The core lesson above stands on its own. The optional deep dives below expand on it — read whichever interest you:
+
+- Scanners and Parsers with Flex and Yacc: Building a Mini-Notation Parser
+- LL and LR Parsing: Tables, Conflicts, and How Yacc Works
+- The Compilation and Linking Process
+
 ## Going Deeper: Scanners and Parsers with Flex and Yacc: Building a Mini-Notation Parser
 
 Flex and Bison are the power tools of language implementation: you describe *what* to recognize — token shapes in a regular expression, grammar rules in BNF — and the framework generates *how* to do it, compiling your specification into a C scanner and an LALR(1) parser without you ever touching a parsing table by hand. This division of labor is the same one used inside production compilers like `gcc` and `clang`: a small, human-readable specification drives a large, machine-generated recognizer. By the end of this module you will have built a working scanner and parser for a real domain-specific language used in live coding music, and you will understand every layer of the pipeline from character stream to abstract syntax tree.

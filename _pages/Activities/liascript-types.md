@@ -531,6 +531,16 @@ In your notebook: strong typing refuses to guess what you meant; weak typing gue
 
 ---
 
+## Going Deeper (Optional Appendices)
+
+The core lesson above stands on its own. The optional deep dives below expand on it — read whichever interest you:
+
+- Type Systems: From Annotations to Inference
+- Type Systems: From Weak to Strong, Static to Dynamic
+- Type Inference: How Does the Compiler Know the Types?
+- Data Structures and Generics in Programming Languages
+- Gradual Typing: Between Static and Dynamic
+
 ## Going Deeper: Type Systems: From Annotations to Inference
 
 > **Opening Hook:** A type checker is like a proofreader who catches grammatical errors before the article is published. The proofreader does not verify that your argument is logically sound or that your facts are accurate — but it *does* systematically catch every subject-verb disagreement, every dangling modifier, every mismatched quote. A type system does the same thing for code: it does not prove your program is *correct*, but it proves, automatically and exhaustively, that it is free of an entire class of structural errors — before the program runs once.

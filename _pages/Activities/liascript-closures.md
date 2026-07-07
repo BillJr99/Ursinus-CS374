@@ -699,6 +699,13 @@ A closure carries its context everywhere, so it always means what it meant at ho
 - **Python `__closure__`** — CPython exposes closures via `fn.__closure__`: introspect live closures
 - **JavaScript `let` vs `var`** — MDN: the real-world consequence of the loop-variable trap at ecosystem scale
 
+## Going Deeper (Optional Appendices)
+
+The core lesson above stands on its own. The optional deep dives below expand on it — read whichever interest you:
+
+- Coroutines and Generators: Pausable Computation
+- Error Handling: From Return Codes to Algebraic Effects
+
 ## Going Deeper: Coroutines and Generators: Pausable Computation
 
 > **Opening hook:** Imagine a vending machine. A regular function is like a vending machine that dumps every item it will ever produce onto the floor the moment you press the button — all at once, whether you want them yet or not. A **generator** is a vending machine that produces exactly one item each time you press the button, remembers where it left off, and waits patiently until you press again. The machine's internal state — which slot it was at, how many remain — is frozen between presses. That frozen state is the essence of a coroutine.

@@ -382,6 +382,12 @@ In your notebook: shadowing lets inner code reuse a name without consulting oute
 - Robert Sebesta. *Concepts of Programming Languages*, the names/binding/scope chapter (any edition).
 - Python docs: [Execution model — naming and binding](https://docs.python.org/3/reference/executionmodel.html)
 
+## Going Deeper (Optional Appendices)
+
+The core lesson above stands on its own. The optional deep dives below expand on it — read whichever interest you:
+
+- Variable Resolution: From Name to Value
+
 ## Going Deeper: Variable Resolution: From Name to Value
 
 Variable resolution is like looking up a word in a dictionary — you start with the innermost, most-specific dictionary and work outward until you find an entry or run out of dictionaries. In programming languages, each nested function or block is its own dictionary (called a *frame* or *environment*), and the language's scoping rules determine exactly which dictionaries to search and in what order. Mastering these rules lets you read any program with confidence and avoid the subtle bugs that trip up even experienced developers.

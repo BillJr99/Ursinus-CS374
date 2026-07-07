@@ -467,6 +467,12 @@ In your notebook: recall the language feature that most confused you as a beginn
 - Python PEP 20 — "The Zen of Python": `import this` in any Python interpreter.
 - Gary Bernhardt. "Wat" (talk, 2012, online): four minutes of coercion comedy with a serious lesson.
 
+## Going Deeper (Optional Appendices)
+
+The core lesson above stands on its own. The optional deep dives below expand on it — read whichever interest you:
+
+- Logic Programming and Prolog
+
 ## Going Deeper: Logic Programming and Prolog
 
 > Think of logic programming like hiring a detective. You hand the detective a stack of witness statements (facts) and a set of inference rules ("if A saw B, and B was at the scene, then A was near the scene"). You don't tell the detective *how* to investigate — you just ask "who could have done it?" and the detective searches through all combinations of the facts and rules to find every answer that fits. Logic programming works the same way: you declare what is true, and the runtime finds all the conclusions that follow.

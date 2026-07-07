@@ -420,6 +420,14 @@ In your notebook: numbers, booleans, pairs, and conditionals all dissolved into 
 - Raymond Smullyan. *To Mock a Mockingbird* (1985): the combinator birds.
 - Raul Rojas. "A Tutorial Introduction to the Lambda Calculus" (online), sections on encodings.
 
+## Going Deeper (Optional Appendices)
+
+The core lesson above stands on its own. The optional deep dives below expand on it — read whichever interest you:
+
+- The Y Combinator: Self-Reference Without Names
+- Call with Current Continuation: Capturing the Future
+- The Curry-Howard Correspondence: Programs Are Proofs
+
 ## Going Deeper: The Y Combinator: Self-Reference Without Names
 
 Imagine a self-playing record: the groove that plays the current note also contains the instruction to move to the next note. The record does not need to consult an external playlist — the mechanism for advancing is baked into every moment of the playback. The Y combinator works the same way: the code that produces the next recursive call is folded directly into each call site, with no external name, no registry, no environment entry needed.

@@ -449,6 +449,12 @@ In your notebook: Scheme deletes nearly all syntax and gains the ability to trea
 - The Racket Guide, chapters 1 through 4: https://docs.racket-lang.org/guide/
 - Paul Graham. "The Roots of Lisp" (online essay): eval in a page.
 
+## Going Deeper (Optional Appendices)
+
+The core lesson above stands on its own. The optional deep dives below expand on it — read whichever interest you:
+
+- The Metacircular Evaluator: Scheme in Python
+
 ## Going Deeper: The Metacircular Evaluator: Scheme in Python
 
 An interpreter written in the very language it interprets sounds like a paradox, but it is actually one of the most clarifying ideas in computer science — it proves that the language's evaluation rules are self-consistent and complete. Think of it like a dictionary that defines every word using other words in the same dictionary: the circularity is a feature, not a bug, because it shows the system is closed. Building this evaluator in Python forces every semantic choice to become explicit code, revealing the machinery that your own course interpreter already contains.

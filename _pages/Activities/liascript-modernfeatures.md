@@ -488,6 +488,14 @@ In your notebook: every feature today moved some check or transformation to an e
 - PEP 634 through 636 (Python structural pattern matching), especially 636, the tutorial.
 - Bob Nystrom. "What Color is Your Function?" (online essay), the async critique, vividly argued.
 
+## Going Deeper (Optional Appendices)
+
+The core lesson above stands on its own. The optional deep dives below expand on it — read whichever interest you:
+
+- Objects and OOP: From Closures to Vtables
+- Macros and Metaprogramming: Code that Writes Code
+- The Expression Problem
+
 ## Going Deeper: Objects and OOP: From Closures to Vtables
 
 Think of a TV remote. It has **buttons** — methods you can call (`channel_up()`, `mute()`). It has **internal state** — which channel you're on, the current volume. And it **hides the implementation details** — you don't need to understand infrared encoding to change the channel. That bundle of state + behavior + hidden internals is an object. OOP is a *language design decision* that promotes this pattern to first-class status: the language gives you syntax, dispatch rules, and inheritance machinery specifically built around it. This activity asks: where does that machinery come from, and what trade-offs did the language designers make?

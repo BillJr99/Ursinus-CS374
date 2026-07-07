@@ -699,6 +699,15 @@ Purity forbids a function from leaving traces on the world — which makes it tr
 - **Haskell Tour** — for seeing what pure FP looks like at full scale: https://www.haskell.org/tutorial/
 - **"Structure and Interpretation of Computer Programs"** — online at https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf
 
+## Going Deeper (Optional Appendices)
+
+The core lesson above stands on its own. The optional deep dives below expand on it — read whichever interest you:
+
+- Continuation-Passing Style: Control Flow as First-Class Values
+- Parallelism for Free: Functional Programming at Scale
+- Monads: Programmable Semicolons
+- Lazy Evaluation and Infinite Structures
+
 ## Going Deeper: Continuation-Passing Style: Control Flow as First-Class Values
 
 #### Learning Goals

@@ -508,6 +508,19 @@ In your notebook: you have criticized languages all semester; today you became a
 
 ---
 
+## Going Deeper (Optional Appendices)
+
+The core lesson above stands on its own. The optional deep dives below expand on it — read whichever interest you:
+
+- Languages for Live Coding Music: Strudel and TidalCycles
+- A Gallery of Programming Languages: Same Problem, Different Minds
+- Memory Management: From Stack Frames to Garbage Collection
+- Concurrency Models: Actors, Channels, and Transactions
+- Foreign Function Interfaces: Crossing Language Boundaries
+- Denotational Semantics: Programs as Mathematical Functions
+- Compiler Optimizations: Making Programs Faster
+- Libraries and Modules in Programming Languages
+
 ## Going Deeper: Languages for Live Coding Music: Strudel and TidalCycles
 
 Music is time made audible, and writing a language for music means designing a language whose fundamental data type is time itself. TidalCycles and Strudel make that design choice explicit: a pattern is literally a function that takes a time interval and returns the events scheduled within it. Studying these languages is studying DSL design at its most honest — every syntax decision is traceable to a constraint from live performance, and every semantic choice flows from the mathematics of cyclic time.
