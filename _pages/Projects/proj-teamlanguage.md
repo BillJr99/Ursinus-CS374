@@ -62,6 +62,10 @@ info:
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-sprintstudio.md"
     - rtitle: "Music and Live-Coding Track Guide (for Direction B: deliverable equivalence table and the text-events-only route)"
       rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/MusicTrack"
+    - rtitle: "Make-a-Lisp (mal) — incremental scaffold with a built-in test harness (Direction A option)"
+      rlink: "https://github.com/kanaka/mal"
+    - rtitle: "A Syntax Highlighter for Your Language with tree-sitter (Extensions Menu)"
+      rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/SyntaxHighlighter"
 
 tags:
   - final-project
@@ -106,6 +110,8 @@ Every team declares one of two directions in its proposal. Both are the same pro
 ### Direction A: A General-Purpose or Domain Language of Your Design
 
 The default framing above: design a language with a niche of your choosing (a recipe DSL, a query language over in-memory lists, a turtle-graphics language, a logic language, a constraint language, or a compelling original idea), implement the required scope end to end from your semester components, and add a distinctive feature that serves the niche. Everything in the stage descriptions below applies as written.
+
+> **Scaffold option — Make-a-Lisp (mal).** If your team's niche is a Lisp-shaped or expression-oriented language, you may build on the **[Make-a-Lisp (mal)](https://github.com/kanaka/mal)** process as your scaffold instead of starting the front end from scratch. mal is an eleven-step incremental path to a working Lisp, and — the reason it is worth knowing about — it ships a **shared test harness** (`runtest.py` against per-step `.mal` test files) that becomes a free, rigorous regression suite for your language as you build. You still own the design: you must give the language a real niche and distinctive feature of your own (mal out of the box is a generic Lisp, which is not by itself a distinctive feature), document your semantics, and integrate your team's components — but mal's staged tests and reference structure can carry the routine reader/eval/print plumbing so your sprint time goes to the parts that make your language *yours*. Cite mal in your proposal if you adopt it, and note which steps you used.
 
 ### Direction B: A Music / Live-Coding Language
 
@@ -168,6 +174,10 @@ On the packaging side, structure your *implementation* as a proper package with 
 ### Scripting and Automation Targets
 
 Make your language a good citizen of the shell: a file-runner that composes in pipelines (reads stdin, writes stdout, sends errors to stderr), meaningful exit codes on success and each error class, and a scripts-as-tests harness — a driver that runs your whole sample suite, checks exit codes, prints a pass/fail line per program, and exits non-zero if anything failed. Ship the driver and any helper scripts shellcheck-clean and portable (no GNU-only flags without a fallback), with a README explaining how to run the suite. If your language's niche *is* automation — a build language, a text-processing language, a task-runner DSL — this extension deepens into the niche itself: demonstrate your language orchestrating real programs through pipes and redirection.
+
+### Editor Support: Syntax Highlighting (and an Optional Diagnostic)
+
+Give your language real editor support so an audience *sees* it is a language: a [tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammar for your syntax (its precedence annotations mirror the ladder you already wrote) plus a `highlights.scm` query, or — the lower-friction route — a TextMate grammar wrapped in a minimal VS Code extension. Scope this small: keyword/number/operator/string coloring is a complete extension. The "wow" upgrade is one live **diagnostic** — pipe your interpreter's positioned error output (`line L, col C: message`, which your pipeline already emits) into VS Code's diagnostics API so a bad program shows a red squiggle at the right spot. Demonstrate on a sample program at Demo Day, and include a README line showing how a grader installs the extension. The [Syntax Highlighter tutorial](/Tutorials/SyntaxHighlighter) is the step-by-step companion.
 
 ---
 

@@ -15,6 +15,7 @@ info:
     - To implement a recursive descent parser for expressions and statements atop the Lexer component
     - To build the full precedence ladder with correct associativity, parentheses, and unary minus
     - To produce an abstract syntax tree of node dataclasses with a pretty-printer and an unparser
+    - To verify the round-trip law with property-based testing (Hypothesis), using a recursive AST generator and an automatically shrunk counterexample
     - To report syntax errors with positions, expected tokens, and found tokens
   rubric:
     - weight: 30
@@ -33,8 +34,8 @@ info:
       description: "AST Design, Tooling, and Error Reporting (Goals 4–5: produce a dataclass AST with pretty-printer/unparser, and report errors with positions)"
       preemerging: No AST node classes exist, or the tree structure does not reflect the program's meaning
       beginning: Node classes exist but the pretty-printer or unparser is missing, or error messages lack positions
-      progressing: Node classes, pretty-printer, and unparser work for most constructs; errors include positions; but the round-trip property is not verified programmatically
-      proficient: Node dataclasses (or tagged-union nodes) cover every construct with documented fields; the pretty-printer renders nested structure clearly; the unparser inserts parentheses only where the tree shape requires them; the round-trip property parse(unparse(parse(s))) is verified across the full test suite; every error states what was expected, what was found, and the line and column — demonstrating that the AST is a complete, self-documenting artifact. (In the Mini-Notation direction, the timed-event evaluator and the Strudel validation table stand in for the unparser and round-trip verification, and are assessed equivalently.)
+      progressing: Node classes, pretty-printer, and unparser work for most constructs; errors include positions; but the round-trip property is verified only on fixed examples, not with a property-based generator
+      proficient: Node dataclasses (or tagged-union nodes) cover every construct with documented fields; the pretty-printer renders nested structure clearly; the unparser inserts parentheses only where the tree shape requires them; the round-trip property parse(unparse(parse(s))) is verified across the full test suite **and** with a Hypothesis recursive-AST generator, with one shrunk counterexample reported (or a reasoned all-clear with the generator shown); every error states what was expected, what was found, and the line and column — demonstrating that the AST is a complete, self-documenting artifact. (In the Mini-Notation direction, the timed-event evaluator and the Strudel validation table stand in for the unparser and fixed-example round-trip, with the generator applied to the pattern AST, and are assessed equivalently.)
   readings:
     - rtitle: "Recursive Descent Activity"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-recursivedescent.md"
@@ -42,12 +43,18 @@ info:
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-parsingexpressions.md"
     - rtitle: "Abstract Syntax Trees Activity"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-ast.md"
+    - rtitle: "Property-Based Testing Your Language with Hypothesis (Tutorial)"
+      rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PropertyBasedTesting"
+    - rtitle: "Hypothesis Documentation"
+      rlink: "https://hypothesis.readthedocs.io/"
 
 tags:
   - parser
   - ast
   - languages
   - pipeline
+  - testing
+  - property-based-testing
 
 ---
 
@@ -362,6 +369,40 @@ Run the five provided broken programs and five programs you write yourself throu
 4. Mismatched parenthesis: `print (1 + 2;`
 5. Assignment without `let`: `= 5;` (bare equals)
 
+### Step 3e: Property-Based Testing with Hypothesis
+
+Your fixed test suite in Step 3c checks the round-trip law on the handful of programs *you thought to write*. The interesting bugs live in the programs you did not think of — a unary minus applied to a parenthesized subtraction, an operator at exactly the precedence boundary, a deeply right-nested chain. **[Property-based testing](https://hypothesis.readthedocs.io/)** finds those for you: instead of writing examples, you write a *generator* of random ASTs and assert that the law holds for **all** of them; when it fails, Hypothesis automatically **shrinks** the counterexample to the smallest tree that still breaks it.
+
+This is a required step. It replaces the busywork of hand-enumerating more round-trip cases with a generator that enumerates them for you — the same verification effort, far more coverage. The full walkthrough is in the [Property-Based Testing tutorial](/Tutorials/PropertyBasedTesting).
+
+1. **Install Hypothesis:** `uv add hypothesis` (or `pip install hypothesis`).
+2. **Write an AST generator** using `hypothesis.strategies.recursive`, so that trees can nest to arbitrary depth. Sketch:
+
+   ```python
+   from hypothesis import given, strategies as st
+
+   # leaves: numbers and simple identifiers
+   leaves = st.one_of(
+       st.integers(min_value=0, max_value=999).map(Num),
+       st.sampled_from(["x", "y", "z"]).map(Var),
+   )
+   # recursive: binary operators over sub-expressions
+   exprs = st.recursive(
+       leaves,
+       lambda kids: st.builds(BinOp,
+           st.sampled_from(["+", "-", "*", "/"]), kids, kids),
+       max_leaves=25,
+   )
+
+   @given(exprs)
+   def test_round_trip(tree):
+       assert parse(unparse(tree)) == tree   # structural equality on your AST
+   ```
+3. **Run it** (`pytest` discovers `@given` tests automatically). When it fails — and on a first parser it usually will — Hypothesis prints the minimal failing tree. Fix the bug (commonly a missing parenthesization rule in `unparse`, or a precedence/associativity error in `parse`), and re-run until it passes.
+4. **Report one shrunk counterexample you fixed** in your `readme.md`: the minimal tree Hypothesis found, the one-sentence root cause, and the fix. This is the deliverable — evidence that the property found a real bug your fixed tests missed (or a reasoned statement of why your parser was already correct, with the generator shown).
+
+> **Note for Direction B (Mini-Notation):** apply the same idea to your pattern AST — generate random nestings of sequences, alternations, and Euclidean rhythms, and assert your tree printer round-trips (or that re-parsing your printed form yields the same event list). The reference-validation table stands in for the fixed-example half; the Hypothesis generator stands in for this half.
+
 ---
 
 ## Direction A: Generator Toolchain (Bison or PLY)
@@ -421,9 +462,9 @@ Two useful resources for this direction: Levine's *flex & bison* (O'Reilly, 2009
 Submit a ZIP containing:
 - `parser.py` — the parser module (importing `lexer.py` unchanged; note any lexer bug fixes)
 - `ast_nodes.py` — all node dataclasses, the pretty-printer, and the unparser
-- `test_parser.py` — the test suite including round-trip verification and error tests
-- `test_output.txt` — test run output (all tests passing)
-- `readme.md` — approximately one page including: the complete EBNF grammar, the dangling-else policy, and the round-trip verification strategy
+- `test_parser.py` — the test suite including fixed-example round-trip verification, the Hypothesis property-based round-trip test with its AST generator, and error tests
+- `test_output.txt` — test run output (all tests passing, including the Hypothesis test)
+- `readme.md` — approximately one page including: the complete EBNF grammar, the dangling-else policy, the round-trip verification strategy, and the one shrunk Hypothesis counterexample you fixed (or a reasoned all-clear with the generator shown)
 
 Ensure reproducibility by listing your Python version.
 

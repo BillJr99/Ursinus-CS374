@@ -12,6 +12,7 @@ info:
   points: 25
   goals:
     - To verify a working Python development environment for the semester's build
+    - To demonstrate baseline command-line, git, and Python-environment fluency by navigating a shell, committing to a repository, and creating a reproducible environment with uv
     - To reflect on your language background as a baseline for the course
     - To form and charter your semester team
     - To run the provided starter script that exercises the libraries used throughout the semester
@@ -20,8 +21,8 @@ info:
       description: Environment Setup and Verification
       preemerging: Little or no evidence that the environment was attempted
       beginning: Some components verified, but the transcript is missing or incomplete, or only one or two of the three verification steps are completed
-      progressing: Python environment verified with a complete transcript including version information; the starter script ran but with a minor failure (missing library, wrong Python version) documented with a hypothesis and fix attempt
-      proficient: Python 3.10 or later verified; the starter script produces the expected banner; editor/IDE identified; all three verification steps produce transcript evidence; any failure is documented with error text, hypothesis, and resolution
+      progressing: Python environment verified with a complete transcript including version information; the starter script ran but with a minor failure (missing library, wrong Python version) documented with a hypothesis and fix attempt, or the command-line and git checkpoint is incomplete
+      proficient: Python 3.10 or later verified; the starter script produces the expected banner; editor/IDE identified; all three verification steps produce transcript evidence; the command-line and git checkpoint (Part 1.5) is complete, showing shell navigation and search, a git commit pushed to a remote, and a uv environment; any failure is documented with error text, hypothesis, and resolution
     - weight: 40
       description: Language Autobiography
       preemerging: The autobiography is missing or does not address any of the four prompts
@@ -38,6 +39,10 @@ info:
     - rtitle: "Welcome Activity"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-welcomepl.md"
     - rtitle: "Thain, Chapter 1"
+    - rtitle: "uv — the Python environment manager we standardize on (Part 1.5)"
+      rlink: "https://docs.astral.sh/uv/"
+    - rtitle: "Shell Skills for Language Development (Tutorial)"
+      rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ShellForLanguageDev"
 
 tags:
   - intro
@@ -155,6 +160,31 @@ Recommended editors: VS Code (with Python extension), PyCharm Community Edition,
 
 ---
 
+## Part 1.5: Command-Line and Git Checkpoint
+
+You will build one language across six assignments, each importing the previous stage's component *unchanged*, all from the terminal and all under version control. This checkpoint confirms those underlying tools work before the pipeline depends on them. You do not need to be a shell expert — you need to navigate, version your work, and create a reproducible environment. The **Command-Line Survival** links below (and the [Shell Skills for Language Development](/Tutorials/ShellForLanguageDev) tutorial) fill any gaps.
+
+Complete each step and capture the terminal output:
+
+1. **Navigate and search.** Create a course directory, enter it, list it, and run one search: `mkdir -p ~/cs374 && cd ~/cs374 && pwd && ls -la`, then use `grep -n` (or `rg`) to find a token in a file and paste the command. Searching text is the daily reality of lexer and parser work — the same regular expressions you will use in the Regex assignment. ([regex101](https://regex101.com/) is your friend there.)
+2. **Version control.** Create a git repository, commit a file, and push to a remote (your GitHub Classroom repo or a throwaway GitHub repo): `git init`; add a file; `git add`; `git commit -m "first commit"`; `git remote add origin <url>`; `git push -u origin main`. Paste `git log --oneline`. Your team will live in git during the capstone, so start now.
+3. **Reproducible Python with uv.** Install [uv](https://docs.astral.sh/uv/), the fast modern Python environment manager we standardize on this term, and create a project environment: `uv venv`, then `uv run python --version`, then `uv add pytest` (you will write test suites all semester). Paste the output. (If you cannot install uv, fall back to `python -m venv` + `pip`, and note the fallback in your submission.)
+
+### Command-Line Survival — reference (use as needed)
+
+- [tldr pages](https://tldr.sh/) — example-first cheat sheets (`tldr grep`).
+- [explainshell](https://explainshell.com/) — annotates any command line flag by flag.
+- [ShellCheck](https://www.shellcheck.net/) — lints shell scripts (you will use it in the project's scripting-targets extension).
+- [regex101](https://regex101.com/) — interactive regex tester, directly useful for the Regex and Lexer assignments.
+
+### Part 1.5 Checklist
+
+- [ ] A shell transcript showing directory creation, navigation, and a `grep`/`rg` search
+- [ ] A `git log --oneline` transcript showing at least one commit pushed to a remote
+- [ ] A `uv` (or documented fallback) transcript creating an environment and adding `pytest`
+
+---
+
 ## Part 2: Language Autobiography
 
 The purpose of this section is to capture your relationship with programming languages at the start of the course, as a baseline you will revisit in your final report. Write approximately one page (400–600 words), addressing all four prompts below.
@@ -199,8 +229,9 @@ All members sign the charter (typed names suffice).
 
 Submit a **single PDF** (preferred) or Markdown file containing:
 1. The verification transcript for all three environment steps.
-2. The language autobiography (all four prompts, approximately one page).
-3. The team charter (all four topics, all signatures).
+2. The command-line and git checkpoint transcript (Part 1.5: navigation/search, git commit/push, uv environment).
+3. The language autobiography (all four prompts, approximately one page).
+4. The team charter (all four topics, all signatures).
 
 One charter per team is fine; include it in each member's individual submission.
 

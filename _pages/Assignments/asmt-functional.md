@@ -13,7 +13,7 @@ info:
   goals:
     - To write pure functions and higher-order functions in Python using map, filter, reduce, and recursion without loops or assignment
     - To implement recursive data structures including trees and linked lists with map and fold operations
-    - To take the functional paradigm to depth along one self-chosen direction — closures and lazy generators, continuation-passing style and call/cc, Church encodings, combinatory logic, or parallel functional programming
+    - To take the paradigm shift to depth along one self-chosen direction — closures and lazy generators, continuation-passing style and call/cc, Church encodings, combinatory logic, parallel functional programming, or declarative logic programming in Prolog
   rubric:
     - weight: 25
       description: "Core — Pure Functions and Higher-Order Functions (Goal 1: write pure functions and higher-order functions using map, filter, reduce, and recursion without loops or assignment)"
@@ -28,9 +28,9 @@ info:
       progressing: All structures and operations are implemented correctly for the provided test cases, but the functions are not generic — e.g., tree_fold is hardcoded to addition rather than taking a combining function
       proficient: Both the binary tree and the linked-list structures are defined as dataclasses; tree_map, tree_fold, list_map, and list_fold all take a function argument and work for any operation — demonstrating Goal 2; flatten and depth are implemented in terms of fold; and all operations are tested with at least four inputs including edge cases (empty list, single-node tree)
     - weight: 50
-      description: "Direction Depth (Goal 3: carry your chosen direction — closures and lazy generators, CPS and call/cc, Church encodings, combinatory logic, or parallel functional programming — to its stated depth)"
-      preemerging: "The direction work is absent, or does not use the direction's defining mechanism — e.g., factories that use global state instead of closures, a CPS interpreter whose cases return values directly instead of calling k, encodings that are never reduced, a reducer that cannot contract a single redex, or a \"parallel\" map that is sequential"
-      beginning: "The direction's defining mechanism is present but one or more of its required components is incorrect or missing — e.g., generators that materialize the whole sequence before yielding, continuations threaded incorrectly through compound expressions, substitution that captures variables on the adversarial tests, combinator rules misapplied, or parallel results never verified against the sequential baseline"
+      description: "Direction Depth (Goal 3: carry your chosen direction — closures and lazy generators, CPS and call/cc, Church encodings, combinatory logic, parallel functional programming, or declarative logic programming in Prolog — to its stated depth)"
+      preemerging: "The direction work is absent, or does not use the direction's defining mechanism — e.g., factories that use global state instead of closures, a CPS interpreter whose cases return values directly instead of calling k, encodings that are never reduced, a reducer that cannot contract a single redex, a \"parallel\" map that is sequential, or Prolog clauses that never rely on unification/backtracking (e.g., only ground facts, no rules)"
+      beginning: "The direction's defining mechanism is present but one or more of its required components is incorrect or missing — e.g., generators that materialize the whole sequence before yielding, continuations threaded incorrectly through compound expressions, substitution that captures variables on the adversarial tests, combinator rules misapplied, parallel results never verified against the sequential baseline, or Prolog solutions that solve some curated problems but omit the bidirectional-relation demonstration or the backtracking enumeration"
       progressing: All of the direction's required components work correctly for the provided cases, but items on the direction's depth checklist are incomplete — the demonstrations, measurements, or analyses that turn a working artifact into an argued one
       proficient: Every item on the chosen direction's depth checklist is met, all required components work on provided and edge cases, and the writeup connects the direction back to the core — stating precisely what Parts 1 and 2's pure-function and fold disciplines contributed to the direction work — demonstrating Goal 3 at full depth
   readings:
@@ -40,6 +40,12 @@ info:
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-scheme.md"
     - rtitle: "Lambda Calculus Part 2 Activity"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-lambdacalculus2.md"
+    - rtitle: "The Power of Prolog (Markus Triska) — Direction F"
+      rlink: "https://www.metalevel.at/prolog"
+    - rtitle: "SWISH — SWI-Prolog in the Browser (Direction F)"
+      rlink: "https://swish.swi-prolog.org/"
+    - rtitle: "Prolog in the Browser with SWISH (Tutorial)"
+      rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/Prolog"
 
 tags:
   - functional
@@ -50,6 +56,8 @@ tags:
   - lambda-calculus
   - combinators
   - parallelism
+  - logic-programming
+  - prolog
 
 ---
 
@@ -66,6 +74,7 @@ This is one assignment with one deliverable and one rubric. Parts 1 and 2 below 
 - **[Direction C: Church Encodings](#direction-c-church-encodings)** — the untyped lambda calculus in code: capture-avoiding substitution, normal-order reduction, and data (booleans, numerals, pairs) represented as pure behavior.
 - **[Direction D: Combinatory Logic — A Flock of Birds](#direction-d-combinatory-logic--a-flock-of-birds)** — computation with no variables at all: a reducer for the S, K, I (and friends) combinators, point-free programming, and the bracket-abstraction translation from lambda terms.
 - **[Direction E: Parallel Functional Programming](#direction-e-parallel-functional-programming)** — purity buys parallelism: a MapReduce pipeline over a real corpus, measured and analyzed against Amdahl's Law. This is the Functional stop on the [music and live-coding path](/Assignments/MusicTrack).
+- **[Direction F: Declarative Logic Programming in Prolog](#direction-f-declarative-logic-programming-in-prolog)** — a genuinely different paradigm: you describe *relations that hold* and let a search engine (unification + backtracking) find the answers, including running the same relation "backwards." Zero install via the browser. The natural direction if you want to feel the widest possible contrast with the interpreter you just built.
 
 Every direction is worth the same 50 points, graded on the same direction-depth rubric row, and ends in the same deliverable shape: working code, tests, and a writeup section that connects the direction back to the core. Choose by interest — none is the "easy" one.
 
@@ -544,13 +553,56 @@ From your measured data, estimate $f$ (using $f \approx \frac{1/S_{\text{max}} -
 
 ---
 
+## Direction F: Declarative Logic Programming in Prolog
+
+*File: `logic.pl` (your Prolog source), plus `logic_session.md` (queries and results). No Python for this direction.*
+
+Every other direction in this assignment — and the entire pipeline before it — is a story about *evaluation*: you write an expression, a machine reduces it to a value. Logic programming tells a different story. In **Prolog** you state *relations that hold* — facts and rules — and then pose a **query**; the engine searches for all the ways to make the query true, using **unification** (the same two-way pattern-matching your parser's AST equality hinted at) and **backtracking**. There is no "call and return." A relation like `append/3` can *concatenate* two lists, *split* a list every possible way, or *check* membership — the same clause, run in any direction. This is the widest paradigm contrast the course offers, and it directly motivates the microKanren-style relational ideas and the unification you met in the type-checking direction of the Interpreter.
+
+You will work entirely in the browser with **[SWISH](https://swish.swi-prolog.org/)** (SWI-Prolog online) — nothing to install. Read the opening chapters of **[The Power of Prolog](https://www.metalevel.at/prolog)** (Markus Triska's free, modern text) for facts/rules/queries, lists, and how backtracking works, before you start.
+
+### F.1: Relational thinking — facts, rules, and queries
+
+Warm up by defining a tiny knowledge base (family relations are traditional: `parent/2` facts, then `grandparent/2`, `sibling/2`, `ancestor/2` rules). In `logic_session.md`, show at least: one query with a single answer, one query that yields *multiple* answers on backtracking (press `;` in SWISH), and one recursive rule (`ancestor/2`) with a query that requires several backtracking steps. Explain in one or two sentences what "the engine searches for a proof" means here versus "the evaluator computes a value" in your interpreter.
+
+### F.2: A curated set of the Ninety-Nine Prolog Problems
+
+Solve the following **representative** problems from the classic [Ninety-Nine Prolog Problems](https://www.metalevel.at/prolog/99) list — chosen to span list recursion, structural recursion, arithmetic, logic, and constraint search (this is a deliberately small, meaningful slice, not the full ninety-nine):
+
+1. **P01 — `my_last(X, List)`**: the last element of a list (basic list recursion).
+2. **P05 — `rev(List, Reversed)`**: reverse a list (accumulator recursion).
+3. **P07 — `my_flatten(List, Flat)`**: flatten a nested list structure (recursion over term structure).
+4. **P31 — `is_prime(N)`**: primality (arithmetic and the `\+`/negation-as-failure you should explain).
+5. **P46 — `table(A, B, Expr)`**: print the truth table of a logical expression in `A` and `B` (logic connectives as relations).
+6. **P90 — `queens(Qs)`**: place eight non-attacking queens (backtracking search — the payoff problem, where the declarative style shines).
+
+For each, include the clause(s) in `logic.pl` and, in `logic_session.md`, the query you ran with its answer(s). Where a problem admits multiple solutions (P90), show that Prolog enumerates them on backtracking and count how many exist.
+
+### F.3: Run it backwards (the bidirectional relation)
+
+Pick one relation you wrote (or `append/3`) and demonstrate it used in **at least two modes**: e.g., `append([1,2],[3],Xs)` (concatenate) *and* `append(Xs, Ys, [1,2,3])` (enumerate every split). Explain, in your writeup, why a Python function *cannot* be run backwards like this, and what property of Prolog (unification over logic variables, not evaluation of expressions) makes it possible. This is the single most important idea in the direction.
+
+### F.4: Unification and backtracking vs. your interpreter's environments
+
+Close with a short written comparison (this is required, and it is what ties the direction back to the pipeline): your interpreter's `Environment` maps names to *values* by assignment, one direction only, and evaluation never "undoes" a binding. Prolog's unification binds logic variables to *terms* two-directionally, and backtracking **un-binds** them when a branch fails. In one paragraph, contrast (a) binding-by-assignment vs. binding-by-unification, and (b) your evaluator's single forward pass vs. Prolog's search-with-backtracking. If you took the type-checking direction of the Interpreter, connect this explicitly to the unification in your type inferencer — it is the *same* algorithm doing a different job.
+
+### Direction F depth checklist
+
+- The warm-up knowledge base demonstrates a single-answer query, a multi-answer (backtracking) query, and a recursive rule, with the proof-search-vs-evaluation distinction stated.
+- All six curated problems (P01, P05, P07, P31, P46, P90) are solved with correct clauses and shown queries/answers; P90's multiple solutions are enumerated and counted; negation-as-failure in P31 is explained.
+- One relation is demonstrated running in at least two modes, with a written explanation of why unification (not evaluation) makes bidirectionality possible.
+- The F.4 comparison contrasts assignment-binding vs. unification-binding and forward evaluation vs. backtracking search, connecting to the interpreter (and, if applicable, to HM type-inference unification).
+- `logic.pl` loads cleanly in SWISH and `logic_session.md` records every query and its output.
+
+---
+
 ## Deliverables
 
 Submit a ZIP containing:
 - `higher_order.py` — Part 1 (pure functions and combinators)
 - `recursive_structures.py` — Part 2 (tree and linked-list operations)
-- Your direction's file(s), as named in its section
-- `test_functional.py` — all tests for the core and your direction, with assertions
+- Your direction's file(s), as named in its section (Direction F submits `logic.pl` and `logic_session.md` instead of Python direction files)
+- `test_functional.py` — all tests for the core and your direction, with assertions (Direction F's queries and expected answers live in `logic_session.md`; the core Part 1/Part 2 tests are still required)
 - `test_output.txt` — output of running the test file (all tests passing)
 - `readme.md` — approximately one page naming your chosen direction, containing every writeup item on its depth checklist, and closing with two or three sentences connecting the direction back to the core
 

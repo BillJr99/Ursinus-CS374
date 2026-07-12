@@ -6,13 +6,16 @@ title: "CS374: Tutorials Shelf"
 
 # The Tutorials Shelf
 
-These tutorials are the course's self-serve depth: worked paths, toolchain guides, and companions to the assignments and the Team Language Project. None of them is required — they are invitations. Interactive tutorials open in the LiaScript viewer; guide pages open on this site.
+These tutorials are the course's self-serve depth: worked paths, toolchain guides, and companions to the assignments and the Team Language Project. Most are invitations rather than requirements; a few (marked *anchors required work*) are the reference behind a required assignment step or reading, and the assignment itself always contains the full instructions. Interactive tutorials open in the LiaScript viewer; guide pages open on this site.
 
 ## Companions to the Assignments
 
 - [Parser Combinators — Parsers as First-Class Values](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-parser-combinators.md) *(interactive)* — companion to Recursive Descent Parsing
 - [Build an Interpreter](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md) *(interactive)* — start-to-finish companion for the Tree-Walking Interpreter assignment
 - [Type Inference — Implementing Hindley-Milner](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-type-inference.md) *(interactive)* — companion to the Interpreter assignment's type-checking direction
+- [Property-Based Testing Your Language with Hypothesis](PropertyBasedTesting) — *anchors required work* — companion to the Parser (Step 3e) and Interpreter (Step 2e) property-based-testing requirements
+- [Typing Disciplines — Strong vs. Weak, Static vs. Dynamic, and Gradual Typing](TypingDisciplines) — *anchors required work* — required reading for the Type Systems unit
+- [Prolog in the Browser with SWISH](Prolog) — companion to the Functional assignment's Logic Programming direction (Direction F)
 - [Haskell Essentials](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-haskell-essentials.md) *(interactive)* — companion to the Functional Programming unit
 - [Build a Lambda Calculus Reducer](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md) *(interactive)* — companion to the Lambda Calculus unit
 - [Flex and Bison, Complete](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md) *(interactive)* — companion to the generator-toolchain directions of the Lexer and Parser assignments
@@ -20,6 +23,7 @@ These tutorials are the course's self-serve depth: worked paths, toolchain guide
 ## Companions to the Team Language Project
 
 - [The Project Language Guide](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-project-language-guide.md) *(interactive)* — a complete worked path for the team project
+- [A Syntax Highlighter for Your Language with tree-sitter](SyntaxHighlighter) — an editor-support extension (tree-sitter grammar + VS Code highlighting, optional diagnostic) with big Demo-Day payoff
 - [CI and TDD for Interpreters](CITDDForInterpreters) — test suites, GitHub Actions, and coverage for your language
 - [Shell Skills for Language Development](ShellForLanguageDev) — run, test, and debug confidently from the command line
 - [Publishing Your Language — pip, npm, and Docker](PublishingYourLanguage) — release hardening and distribution
