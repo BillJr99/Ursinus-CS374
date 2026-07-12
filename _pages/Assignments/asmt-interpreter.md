@@ -7,15 +7,15 @@ info:
   coursenum: CS374
   purpose: "To complete your language pipeline with a tree-walking evaluator — nested scopes, strong dynamic typing, a REPL, and a precise semantics document — the capstone component your team project extends."
   tilt:
-    task: "Define AST node dataclasses with visitor dispatch, build a tree-walking evaluator with environments and short-circuit logic, add a REPL and file runner, and document every rule in SEMANTICS.md with a staged error hierarchy."
-    criteria: "Assessed on a correct evaluator with well-behaved scopes and short-circuit logic, a recoverable REPL and file runner, and stage-identified errors matched by SEMANTICS.md, weighted 25/35/20/20 across the four parts; see the rubric below for the full breakdown."
+    task: "Define AST node dataclasses with visitor dispatch, build a tree-walking evaluator with environments and short-circuit logic, add a REPL and file runner, and complete Part 4 in your choice of direction — a staged dynamic error hierarchy documented in SEMANTICS.md, or a static type checker with Hindley-Milner-style inference."
+    criteria: "Assessed on a correct evaluator with well-behaved scopes and short-circuit logic, a recoverable REPL and file runner, and a complete Part 4 in your chosen direction — stage-identified errors matched by SEMANTICS.md, or a sound static type checker with positioned type errors — weighted 25/35/20/20 across the four parts; the Part 4 rubric applies equivalently to either direction. See the rubric below for the full breakdown."
   points: 100
   goals:
     - To define a complete set of AST node dataclasses covering every language construct
     - To implement a tree-walking evaluator over the AST with strong dynamic typing
     - To implement nested scopes with an Environment class distinguishing definition from assignment
     - To build a REPL and file-runner with stage-identified error messages
-    - To document the language semantics exhaustively with a SEMANTICS.md file
+    - To make the language's semantics precise — by documenting the dynamic rules exhaustively in SEMANTICS.md, or by enforcing them statically with a Hindley-Milner-style type checker, in your choice of direction
   rubric:
     - weight: 25
       description: "AST Node Dataclasses (Goal 1: define a complete set of AST node dataclasses covering every language construct)"
@@ -36,11 +36,11 @@ info:
       progressing: Both exist and survive most errors, but one error class (e.g., type errors) still crashes the REPL, or the file runner does not identify the stage in its error messages
       proficient: Both the REPL and file runner work — the REPL maintains a persistent environment across inputs and recovers from all error classes, the file runner identifies stage and position in every error message, and a transcript demonstrates each error class and recovery — demonstrating Goal 4 end-to-end
     - weight: 20
-      description: "Error Messages with Stage Identification and SEMANTICS.md (Goal 5: document language semantics exhaustively with one triggering example per error class)"
-      preemerging: Errors are unhandled Python exceptions with no stage identification
-      beginning: Errors are caught but the stage (lexical vs. syntax vs. runtime) is not identified, or the position is absent
-      progressing: Most error classes are caught with stage and position, but one class (e.g., type errors) is missing position or stage identification
-      proficient: "Every error class — LexError, ParseError, NameError, TypeError, ZeroDivisionError — is caught at the appropriate stage and reported with a message of the form \"Stage error at line L, col C: description\"; SEMANTICS.md includes one example program that triggers each error class with the expected message shown — demonstrating Goal 5 by providing a complete semantics reference"
+      description: "Part 4, in the chosen direction — Error Messages with Stage Identification and SEMANTICS.md, or Static Type Checking (Goal 5: make the language's semantics precise, either by documenting the dynamic rules exhaustively or by enforcing them statically before evaluation)"
+      preemerging: "Dynamic-errors direction: errors are unhandled Python exceptions with no stage identification. Typing direction: no checker exists, or unification fails on basic cases"
+      beginning: "Dynamic-errors direction: errors are caught but the stage (lexical vs. syntax vs. runtime) is not identified, or the position is absent. Typing direction: unification handles trivial cases but the checker fails on function application or let, or type errors carry no position"
+      progressing: "Dynamic-errors direction: most error classes are caught with stage and position, but one class (e.g., type errors) is missing position or stage identification. Typing direction: the checker infers correct types for most programs with a defect in one case (e.g., a missing occurs check, or an incorrect constraint for one operator), and most type errors are positioned"
+      proficient: "Dynamic-errors direction: every error class — LexError, ParseError, NameError, TypeError, ZeroDivisionError — is caught at the appropriate stage and reported with a message of the form \"Stage error at line L, col C: description\"; SEMANTICS.md includes one example program that triggers each error class with the expected message shown. Typing direction: unification (with the occurs check) and Algorithm-W-style inference are correct for every construct the checker covers; the checker runs as its own stage before evaluation; every type error names both conflicting types with line and context; and TYPES.md states the typing rule per construct with one accepted and one rejected program each — either way demonstrating Goal 5 by providing a complete semantics reference"
   readings:
     - rtitle: "Tree-Walking Interpretation Activity"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-interpretation.md"
@@ -364,7 +364,14 @@ Lexical error at line 1, col 1: unexpected character '@'
 
 ---
 
-## Part 4: Error Messages with Stage Identification (20 points)
+## Part 4: Making the Semantics Precise (20 points) — Choose Your Direction
+
+Parts 1–3 give your language a working evaluator. Part 4 makes its semantics *precise*, in your choice of **direction** — one Part 4, one deliverable, the same 20-point rubric row applied equivalently:
+
+- **Staged dynamic errors and SEMANTICS.md (the core direction).** Build the language-level error hierarchy and document every semantic rule, as scaffolded in Steps 4a–4c below.
+- **Static type checking (Hindley-Milner-style inference).** Instead of documenting what happens when a type error reaches the evaluator, catch it *before evaluation ever begins*, the way Haskell, OCaml, and Rust do. This direction substitutes Steps 4b and 4c (SEMANTICS.md and the differential programs) with the type checker described in the **[typing direction](#part-4-direction-static-type-checking-hindley-milner-style-inference)** section; Step 4a's error hierarchy is still required, since lexical, syntax, and name errors still need staged reporting, and your file runner gains a fourth stage label (`Type error`). The total remains 100 points.
+
+Whichever direction you choose, the underlying goal is the same: for every construct in your language, there is exactly one written answer to "what does this mean, and what happens when it is misused?" — and your implementation agrees with it.
 
 ### Step 4a: Error Class Hierarchy
 
@@ -405,6 +412,48 @@ Five programs are provided whose outputs depend on your semantics decisions. Run
 
 ---
 
+## Part 4 Direction: Static Type Checking (Hindley-Milner-Style Inference)
+
+This direction replaces Steps 4b–4c with a static type checker that runs as its own pipeline stage — after parsing, before evaluation — and rejects ill-typed programs without running them. It is the same machinery (unification and Algorithm-W-style inference) that lets Haskell, OCaml, and Rust deduce types without annotations, scoped here to your language's constructs.
+
+### Background
+
+A **type** is a type variable `α, β, ...` (unknown, to be solved), a type constant (`Num`, `Bool`, `Str`), or — if your checker covers functions — a function type `τ₁ → τ₂`. A **substitution** maps type variables to types. **Unification** of two types finds the most general substitution that makes them equal, or fails — and that failure *is* the type error. The inference algorithm walks the AST, generating fresh type variables constrained by each node's structure and unifying to solve.
+
+### T.1 — Type terms, substitution, and unification (`types.py`)
+
+Define frozen dataclasses `TVar(name)`, `TCon(name)` (and `TFun(param, ret)` if covering functions), with `apply(subst, typ)` and `free_vars(typ)` helpers. Implement `unify(t1, t2, subst) -> subst`:
+
+1. Apply the current substitution to both types; if they are now identical, return the substitution unchanged.
+2. If one is a type variable `α` not occurring in the other, extend the substitution with `{α: other}`. The **occurs check** — refusing to bind `α` to a type containing `α` — is what prevents infinite types; raise a `LangTypeError` naming both types if it fires.
+3. Recurse componentwise on matching constructors; otherwise raise a `LangTypeError` naming both conflicting types.
+
+Test at minimum: `unify(TVar("a"), TNum)` binds `a`; unifying `TNum` with `TBool` raises; and an occurs-check case raises.
+
+### T.2 — Inference over your AST (`typecheck.py`)
+
+Implement `infer(node, type_env, subst) -> (subst, type)` with one case per node type your evaluator handles: literals return their constant type; `Var` looks up the type environment (undefined names remain `LangNameError`s); arithmetic operators unify both operands with `Num` and return `Num`; comparisons return `Bool`; `LogicOp` and `not` unify with `Bool`; `If` and `While` conditions must be `Bool` (note that this is *stricter* than your dynamic truthiness rule — see the reflection prompt); `Let` extends the type environment; `Assign` unifies the new value's type with the variable's existing type; `Block` checks its statements in a child type environment mirroring your `Environment` scoping. Thread the substitution through every case.
+
+Wire it into `mylang.py` as a stage: `python mylang.py --typed program.ml` (or make it the default — document your choice) lexes, parses, **type-checks**, and only then evaluates. The stage label `Type error` joins the staged-error format of Part 3: `Type error at line L: <message>`.
+
+### T.3 — Positioned type errors
+
+Every type error must name both conflicting types, cite the source line, and give a short context, in the spirit of:
+
+```
+Type error at line 7: condition of 'if' must be Bool, got Num
+Type error at line 12: '+' requires Num operands, got Str and Num
+Type error at line 5: cannot unify Num with Bool (from assignment to 'result')
+```
+
+### T.4 — TYPES.md and test programs
+
+In place of SEMANTICS.md, write `TYPES.md`: one section per construct stating its typing rule in prose (or inference-rule notation), with one program the checker accepts and one it rejects, showing the exact error message. Include at least five test programs total: three that the checker rejects with distinct positioned errors, and two that pass the checker and then run correctly — demonstrating that well-typed programs still evaluate as before.
+
+**Depth (part of "proficient"):** if your language grows function values in the team project — or if you simply want the full Milner experience — implement **let-polymorphism**: generalize a let-bound name's type over the type variables not free in the environment, and instantiate fresh copies at each use, so a polymorphic identity function can be applied to both a `Num` and a `Bool` in the same scope. Self-application (`f(f)`) must still be rejected — no finite type satisfies it, and your occurs check is what says so.
+
+---
+
 ## Deliverables
 
 Submit a ZIP containing:
@@ -414,6 +463,8 @@ Submit a ZIP containing:
 - `test_interpreter.py` — test suite with the shadowing program, the bomb test, all error-class tests, and the differential programs
 - `repl_transcript.txt` — the REPL session showing each error class and recovery
 - `readme.md` — approximately one page connecting the interpreter to the pipeline and the team project
+
+**Typing direction:** substitute `types.py`, `typecheck.py`, and `TYPES.md` (with its accepted/rejected test programs) for `SEMANTICS.md` and the differential programs; everything else on the list is unchanged, and the REPL transcript additionally demonstrates one positioned type error.
 
 Ensure reproducibility by listing your Python version.
 
@@ -426,7 +477,7 @@ Ensure reproducibility by listing your Python version.
 | Part 1: AST Node Dataclasses | 25 |
 | Part 2: Tree-Walking Evaluator | 35 |
 | Part 3: REPL and File Runner | 20 |
-| Part 4: Error Messages and SEMANTICS.md | 20 |
+| Part 4 (chosen direction): Error Messages and SEMANTICS.md, or Static Type Checking | 20 |
 | **Total** | **100** |
 
 ---
@@ -435,6 +486,7 @@ Ensure reproducibility by listing your Python version.
 
 - Which semantics decision did you change after testing revealed a consequence you had not foreseen?
 - Point to the exact line in your `Environment` class that makes your language statically (lexically) scoped rather than dynamically scoped.
+- Typing direction only: your dynamic truthiness rule accepts `while 1 { ... }`, but your type checker demands a `Bool` condition. Where else did the static discipline reject a program your evaluator would have happily run, and which behavior do you consider correct for your language?
 - The `BreakSignal`/`ContinueSignal` pattern uses exceptions for control flow — a technique the course calls "signal exceptions." What property of exceptions makes them well suited for this, and what would you use instead if exceptions were not available?
 - If collaboration with a buddy was permitted, did you work with a buddy on this assignment? If so, who? If not, do you certify that this submission represents your own original work? Please identify any and all portions of your submission that were not originally written by you.
 - Approximately how many hours it took you to finish this assignment (I will not judge you for this at all — I am simply using it to gauge if the assignments are too easy or hard)?
