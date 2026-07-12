@@ -47,6 +47,8 @@ tags:
 
 The purpose of this warmup is to confirm your tools before the build begins, to capture your current relationship with programming languages as a baseline you will revisit at semester end, and to launch your team with an explicit charter.
 
+One pointer before you begin: several assignments this semester offer **directions** — equivalent ways of meeting the same deliverable — and some of those directions build toward live-coded music. If making a language that makes music appeals to you, skim the [Music and Live-Coding guide](/Assignments/MusicTrack) this week. Directions are chosen assignment-by-assignment later, inside each assignment; nothing is committed now.
+
 ---
 
 ## Part 1: Environment Verification

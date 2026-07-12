@@ -1745,7 +1745,7 @@ Design a syntax extension for Mini that supports pattern matching. Write:
 
 2. Pattern matching checks all cases — in what sense is this "exhaustive"? Python's `match` is not exhaustive by default; Haskell and Rust give warnings/errors. What are the implications for large codebases?
 
-3. How does this connect to the final project? Which extension option (from `asmt-final-project.md`) does ADT pattern matching map to? What would you need to add to Mini to support it?
+3. How does this connect to the final project? Which extension option (from the [Team Language Project's Extensions Menu](https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage)) does ADT pattern matching map to? What would you need to add to Mini to support it?
 
 ---
 

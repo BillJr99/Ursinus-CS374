@@ -230,6 +230,8 @@ schedule:
   - rtitle: "Allison, Ch. 1: Introduction — Formal Languages and Finite State Machines"
   - rtitle: "The Arc of This Course: From Symbols to Languages (Day 1 preview)"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-course-arc.md"
+  - rtitle: "The Music and Live-Coding Directions: several assignments and the team project offer a music-programming direction — skim the guide now if that pulls you (nothing to decide yet)"
+    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/MusicTrack"
 - week: "0"
   date: "1"
   title: "Programming Paradigms"
@@ -242,6 +244,9 @@ schedule:
   - dtitle: "Warmup Assignment Due"
     dlink: "Assignments/Warmup"
     points: "10"
+  readings:
+  - rtitle: "Reading Exercise / Discussion: attempt the Evaluating Languages and Paradigms exercises before class"
+    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Participation/ReadingExercises"
 - week: "1"
   date: "1"
   title: "Syntax and BNF/EBNF"
@@ -267,6 +272,8 @@ schedule:
   title: "Derivations, Parse Trees, Ambiguity, and Precedence"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-derivationsambiguity.md"
   readings:
+  - rtitle: "Reading Exercise / Discussion: attempt the Derivations, Parse Trees, Ambiguity, and Precedence exercises before class"
+    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Participation/ReadingExercises"
   - rtitle: "Allison, Ch. 6 §6.2: Derivation Trees and Ambiguous Grammars (Operator Precedence and Associativity)"
   deliverables:
   - dtitle: "Programming Assignment: Regular Expressions Handed Out"
@@ -310,12 +317,18 @@ schedule:
   title: "Recursive Descent Parsing: From Grammar to Code"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-recursivedescent.md"
   readings:
-  - rtitle: "Optional Tutorial: Parser Combinators — Parsers as First-Class Values"
+  - rtitle: "Reading Exercise / Discussion: attempt the Recursive Descent Parsing exercises before class"
+    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Participation/ReadingExercises"
+  - rtitle: "Supplemental Tutorial: Parser Combinators — Parsers as First-Class Values"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-parser-combinators.md"
 - week: "5"
   date: "0"
   title: "Parsing Expressions: Left Factoring, Precedence, and Chained Operators"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-parsingexpressions.md"
+- week: "5"
+  date: "1"
+  title: "Abstract Syntax Trees"
+  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-ast.md"
   deliverables:
   - dtitle: "Programming Assignment: Automata Due"
     dlink: "Assignments/Automata"
@@ -325,11 +338,9 @@ schedule:
     dlink: "Assignments/Lexer"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-lexer.md"
-- week: "5"
-  date: "1"
-  title: "Abstract Syntax Trees"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-ast.md"
   readings:
+  - rtitle: "Reading Exercise / Discussion: attempt the Abstract Syntax Trees exercises before class"
+    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Participation/ReadingExercises"
   - rtitle: "Allison, Ch. 6 §6.2: Expression Trees, Operator Precedence, and Associativity"
 - week: "6"
   date: "0"
@@ -366,15 +377,17 @@ schedule:
   title: "Environments and Variable Storage"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-environments.md"
   readings:
-  - rtitle: "Optional Tutorial: Build an Interpreter (start-to-finish companion for the upcoming assignment)"
+  - rtitle: "Supplemental Tutorial: Build an Interpreter (start-to-finish companion for the upcoming assignment)"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md"
 - week: "9"
   date: "0"
   title: "Type Systems"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-types.md"
   readings:
-  - rtitle: "Optional: Allison, Ch. 10 §10.1: The Halting Problem — Why Some Questions About Programs Are Undecidable"
-  - rtitle: "Optional Tutorial: Type Inference — Implementing Hindley-Milner"
+  - rtitle: "Reading Exercise / Discussion: attempt the Type Systems exercises before class"
+    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Participation/ReadingExercises"
+  - rtitle: "Going Deeper: Allison, Ch. 10 §10.1: The Halting Problem — Why Some Questions About Programs Are Undecidable"
+  - rtitle: "Supplemental Tutorial: Type Inference — Implementing Hindley-Milner"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-type-inference.md"
   deliverables:
   - dtitle: "Programming Assignment: Parser and AST Due"
@@ -394,7 +407,9 @@ schedule:
   title: "Functional Programming and Higher-Order Functions"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-functional.md"
   readings:
-  - rtitle: "Optional Tutorial: Haskell Essentials"
+  - rtitle: "Reading Exercise / Discussion: attempt the Functional Programming and Higher-Order Functions exercises before class"
+    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Participation/ReadingExercises"
+  - rtitle: "Supplemental Tutorial: Haskell Essentials"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-haskell-essentials.md"
 - week: "10"
   date: "1"
@@ -404,18 +419,23 @@ schedule:
   date: "0"
   title: "Lambda Calculus I: Syntax and Beta Reduction"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-lambdacalculus1.md"
+  deliverables:
+  - dtitle: "Programming Assignment: Functional Programming Handed Out"
+    dlink: "Assignments/Functional"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-functional.md"
   readings:
   - rtitle: "Reading Exercise / Discussion: attempt the Lambda Calculus exercises before class"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Participation/ReadingExercises"
-  - rtitle: "Optional: Allison, Ch. 8: Turing Machines and the Church-Turing Thesis"
-  - rtitle: "Optional Tutorial: Build a Lambda Calculus Reducer"
+  - rtitle: "Going Deeper: Allison, Ch. 8: Turing Machines and the Church-Turing Thesis"
+  - rtitle: "Supplemental Tutorial: Build a Lambda Calculus Reducer"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md"
 - week: "11"
   date: "1"
   title: "Lambda Calculus II: Church Encodings and Combinators"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-lambdacalculus2.md"
   readings:
-  - rtitle: "Choose Your Track: Music and Live-Coding Language Track (alternative capstone guide; decide by the team project kickoff)"
+  - rtitle: "The Music and Live-Coding Directions: how to take your remaining assignments and the team project in a musical direction (commit to a project direction by the kickoff)"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/MusicTrack"
   deliverables:
   - dtitle: "Programming Assignment: Tree-Walking Interpreter Due"
@@ -426,10 +446,6 @@ schedule:
     dlink: "Projects/TeamLanguage"
     points: "100"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
-  - dtitle: "Programming Assignment: Functional Programming Handed Out"
-    dlink: "Assignments/Functional"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-functional.md"
 - week: "12"
   date: "0"
   title: "Closures and First-Class Functions"
@@ -443,60 +459,55 @@ schedule:
     dlink: "Assignments/Functional"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-functional.md"
-  - dtitle: "Programming Assignment: Continuations and call/cc Handed Out"
-    dlink: "Assignments/Continuations"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-continuations.md"
 - week: "13"
   date: "0"
   title: "Language Design Workshop: Project Kickoff (Sprint 0)"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-languagedesign.md"
+  deliverables:
+  - dtitle: "Team Language Project: Proposal Due (Sprint 0, presented in class)"
+    dlink: "Projects/TeamLanguage"
+    points: "25"
+    rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
-  - rtitle: "Choose Your Track: Music and Live-Coding Language Track (guide and equivalence table)"
+  - rtitle: "The Music and Live-Coding Directions: guide and equivalence map — teams commit to a project direction today"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/MusicTrack"
-  - rtitle: "Optional Tutorial: Build a Bytecode VM"
+  - rtitle: "Supplemental Tutorial: Build a Bytecode VM"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md"
-  - rtitle: "Optional Tutorial: Garbage Collection — Implementing Memory Management"
-    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-garbage-collection.md"
-  - rtitle: "Optional Tutorial: Compiling and Linking — From Source to Executable"
-    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-compiling-linking.md"
-  - rtitle: "Optional Assignment: Libraries and Packaging (project resource)"
-    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Libraries"
-  - rtitle: "Optional Assignment: Scripting (project resource: if your language targets automation)"
-    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Scripting"
-  - rtitle: "Optional Tutorial: Advanced C++ for Language Implementers"
-    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-cpp-advanced.md"
+  - rtitle: "Project Extensions Menu: libraries and packaging, scripting and automation targets, transpilation, and more (see the Team Language Project page)"
+    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage"
 - week: "14"
   date: "0"
   title: "Sprint Studio: Sprints 1-2 and Gallery Walk: Peer Review of Team Languages"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-sprintstudio.md"
   readings:
-  - rtitle: "Optional Tutorial: CI and TDD for Interpreters"
+  - rtitle: "Supplemental Tutorial: CI and TDD for Interpreters"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CITDDForInterpreters"
-  - rtitle: "Optional Tutorial: The Project Language Guide (a complete worked path for the team project)"
+  - rtitle: "Supplemental Tutorial: The Project Language Guide (a complete worked path for the team project)"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-project-language-guide.md"
-  - rtitle: "Optional Tutorial: Shell Skills for Language Development"
+  - rtitle: "Supplemental Tutorial: Shell Skills for Language Development"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ShellForLanguageDev"
+  - rtitle: "Supplemental Tutorial: Garbage Collection — Implementing Memory Management"
+    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-garbage-collection.md"
+  - rtitle: "Supplemental Tutorial: Compiling and Linking — From Source to Executable"
+    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-compiling-linking.md"
 - week: "14"
   date: "1"
   title: "Sprint Studio: Sprint 3 and Release Hardening"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-sprintstudio.md"
-  deliverables:
-  - dtitle: "Programming Assignment: Continuations and call/cc Due (optional)"
-    dlink: "Assignments/Continuations"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-continuations.md"
   readings:
-  - rtitle: "Optional Tutorial: Publishing Your Language — pip, npm, and Docker"
+  - rtitle: "Supplemental Tutorial: Publishing Your Language — pip, npm, and Docker"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PublishingYourLanguage"
+  - rtitle: "Supplemental Tutorial: Advanced C++ for Language Implementers"
+    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-cpp-advanced.md"
 - week: "15"
   date: "0"
   title: "Demo Day: Team Language Presentations (Class Switch Day: follows a Thursday schedule)"
   deliverables:
-  - dtitle: "Team Language Project Due"
+  - dtitle: "Team Language Project Due and Demo Day Presentations"
     dlink: "Projects/TeamLanguage"
-    points: "100"
+    points: "75"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
+
 ---
 
 This semester is a build: by December, your team will have designed and implemented a programming language of your own, assembled one assignment at a time. The sections below explain how the pieces fit together — how the course is designed to give you choices, how to read an assignment, how to prepare for each class, and how the day-to-day work of participating is valued and evaluated. Read them once now, and return to the participation and preparation guides throughout the term.
@@ -506,8 +517,8 @@ This semester is a build: by December, your team will have designed and implemen
 This course is built on the principle that there is more than one good path through it, and that you should have real say over yours. The choices are deliberate, in the spirit of Universal Design for Learning — multiple ways to engage with the material and multiple ways to demonstrate what you have learned — and none of them is the "remedial" path.
 
 - **A capstone you shape.** The Team Language Project is yours to design; a compelling original language is always welcome, and the final project's extension menu lets you go deep where your interest lies rather than following a single fixed spec.
-- **The Music and Live-Coding Track.** If you would rather build a language for making music than a general-purpose one, the [Music and Live-Coding Track](Assignments/MusicTrack) offers a complete parallel path, with an equivalence table mapping each deliverable to its classic counterpart and a text-events-only route that never requires audio. Decide by the project kickoff.
-- **Optional depth, everywhere.** The schedule is full of optional activities, tutorials, and assignments — continuations, parser combinators, type inference, garbage collection, bytecode VMs, and more. These are invitations, not obligations: follow the ones that pull you and leave the rest, and tell me when one of them becomes the thing you want to go further with.
+- **The Music and Live-Coding Directions.** If you would rather build toward making music than a general-purpose language, several assignments (the Parser and Functional Programming among them) and the Team Language Project each offer a music direction inside the same required deliverable — the [Music and Live-Coding guide](Assignments/MusicTrack) maps the whole path, including a text-events-only route that never requires audio. Choose direction by direction as each assignment arrives; teams commit to a project direction at the kickoff.
+- **Depth inside every assignment, and supplemental depth everywhere.** Each programming assignment offers **directions** you choose inside it — a generator-toolchain lexer, a music-notation parser, a type checker for your interpreter, continuations or Church encodings in the functional assignment — so nothing on the schedule is optional, but every deliverable has room for your interests. Beyond the assignments, the schedule carries supplemental activities and tutorials (parser combinators, garbage collection, bytecode VMs, and more; browse the [Tutorials shelf](Tutorials/)): invitations, not obligations. Tell me when one of them becomes the thing you want to go further with.
 
 If a path you want is not on the menu, propose it. The point of the choices is to let you build the language, and the fluency, that you actually care about.
 
@@ -520,6 +531,8 @@ Every assignment in this course is written to be transparent about three things,
 - **Criteria** — *how* your work will be evaluated. Every graded assignment carries a rubric with four levels (pre-emerging, beginning, progressing, proficient) so you can see exactly what proficient work looks like before you start — and can use the rubric to assess your own draft.
 
 When you open an assignment, read the Purpose first: it tells you what the assignment is really for, which is the fastest way to make good decisions when the task gets ambiguous. Every assignment also closes by asking you to reflect — what you did, what fought you, how long it took, and what grade you would give yourself against the criteria. That reflection is part of the work, not an afterthought.
+
+A note on grade categories: the **Overview** (25 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the six programming assignments — Regular Expressions, Automata, Lexer, Parser, Interpreter, and Functional Programming — make up the **Programming Assignments** category. **There is no midterm or final exam**: Demo Day on the last class meeting (Tuesday, December 8) is the course's terminal event, and no work is accepted after it.
 
 ## Preparing for Each Class
 
