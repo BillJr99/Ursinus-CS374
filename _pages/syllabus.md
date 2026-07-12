@@ -445,6 +445,8 @@ schedule:
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Participation/ReadingExercises"
   - rtitle: "Note: the Functional assignment includes a Logic Programming direction (Direction F) in Prolog — if the declarative paradigm appeals to you, skim the Prolog tutorial and The Power of Prolog"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/Prolog"
+  - rtitle: "Note: the Functional assignment also includes an open-source contribution direction (Direction G) — mal, Strudel/TidalCycles, tree-sitter, or SWI-Prolog docs; instructor scope approval is required within the first week"
+    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Functional"
   - rtitle: "Going Deeper: Allison, Ch. 8: Turing Machines and the Church-Turing Thesis"
   - rtitle: "Supplemental Tutorial: Build a Lambda Calculus Reducer"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md"
@@ -498,6 +500,8 @@ schedule:
   title: "Sprint Studio: Sprints 1-2 and Gallery Walk: Peer Review of Team Languages"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-sprintstudio.md"
   readings:
+  - rtitle: "Demo Day Guide: External Guests and Technical Interview Practice (the cross-team mock-interview rehearsal happens in this week's studios, credited as participation)"
+    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/DemoDayGuide"
   - rtitle: "Supplemental Tutorial: CI and TDD for Interpreters"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CITDDForInterpreters"
   - rtitle: "Supplemental Tutorial: The Project Language Guide (a complete worked path for the team project)"
@@ -513,6 +517,8 @@ schedule:
   title: "Sprint Studio: Sprint 3 and Release Hardening"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-sprintstudio.md"
   readings:
+  - rtitle: "ShipIt Guide: Repo Hygiene, README, Packaging, and Your Portfolio (required self-check before Demo Day; scored within the project's Documentation and Reproducibility dimension)"
+    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/ShipIt"
   - rtitle: "Supplemental Tutorial: Publishing Your Language — pip, npm, and Docker"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PublishingYourLanguage"
   - rtitle: "Supplemental Tutorial: Advanced C++ for Language Implementers"
@@ -520,6 +526,9 @@ schedule:
 - week: "15"
   date: "0"
   title: "Demo Day: Team Language Presentations (Class Switch Day: follows a Thursday schedule)"
+  readings:
+  - rtitle: "Demo Day Guide: who is in the room (alumni, industry guests, and faculty, as available) and how to talk to them"
+    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/DemoDayGuide"
   deliverables:
   - dtitle: "Team Language Project Due and Demo Day Presentations"
     dlink: "Projects/TeamLanguage"
@@ -562,7 +571,7 @@ This is a course you do, not one you watch, and this component values the daily 
 
 Participation takes more than one form, by design. In the in-class activities your team rotates the POGIL roles — **Manager, Recorder, Presenter, and Reflector** — so that on different days you facilitate, capture the group's thinking, report out, or step back and synthesize. In the project phase your team rotates a second set of roles — **Coordinator, Builder, Evaluator, and Scribe**. Speaking up in whole-class discussion counts; so does posting your team's answer to the class discussion board, asking a sharp question, or helping a teammate past a bug. If the spoken room is hard for you, the written and role-based channels are real ways to earn this component — talk with me early and we will find the path that fits.
 
-From time to time the class agenda sets aside time for **reading exercises and discussion**: a short problem tied to the reading — write a grammar rule, trace a tokenizer, evaluate a language-design tradeoff — that you attempt beforehand and we work through together. These are marked on the schedule and drawn from the **[Reading Exercises](Participation/ReadingExercises)** bank.
+From time to time the class agenda sets aside time for **reading exercises and discussion**: a short problem tied to the reading — write a grammar rule, trace a tokenizer, evaluate a language-design tradeoff — that you attempt beforehand and we work through together. These are marked on the schedule and drawn from the **[Reading Exercises](Participation/ReadingExercises)** bank. The Week 14 **mock-interview rehearsal** — practicing an interview-style explanation of your own interpreter and language with a partner from another team — counts here too; see the [Demo Day Guide](Assignments/DemoDayGuide).
 
 ## Reflection Notebook (10%)
 

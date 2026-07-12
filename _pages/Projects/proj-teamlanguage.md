@@ -47,8 +47,8 @@ info:
       description: Documentation and Reproducibility
       preemerging: The repository cannot be run by a stranger
       beginning: Setup works but documentation is thin or stale
-      progressing: A stranger can run the REPL and samples from the readme, with minor gaps
-      proficient: A fresh clone runs the REPL, file-runner, and all samples in under three minutes following the readme, the language reference document teaches the language to a newcomer with examples, dependencies and versions are pinned, and setup was tested by the teammate who did not write it
+      progressing: A stranger can run the REPL and samples from the readme, with minor gaps, and the ShipIt self-check was attempted with gaps remaining (e.g., a private repo, a missing license, or no portfolio link)
+      proficient: A fresh clone runs the REPL, file-runner, and all samples in under three minutes following the readme, the language reference document teaches the language to a newcomer with examples, dependencies and versions are pinned, and setup was tested by the teammate who did not write it; and the repository passes the ShipIt self-check — public, with a license, a recruiter-legible readme (what, install, first program in thirty seconds) crediting each member's contribution, and either packaged for installation (pip, npm, or Docker) or linked with a project story from each member's portfolio or GitHub profile
     - weight: 10
       description: Demo Day Presentation
       preemerging: The presentation is missing or no demonstration occurs
@@ -66,6 +66,10 @@ info:
       rlink: "https://github.com/kanaka/mal"
     - rtitle: "A Syntax Highlighter for Your Language with tree-sitter (Extensions Menu)"
       rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/SyntaxHighlighter"
+    - rtitle: "ShipIt Guide: Repo Hygiene, README, Packaging, and Your Portfolio (required self-check before Demo Day)"
+      rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/ShipIt"
+    - rtitle: "Demo Day Guide: External Guests and Technical Interview Practice"
+      rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/DemoDayGuide"
 
 tags:
   - final-project
@@ -179,6 +183,10 @@ Make your language a good citizen of the shell: a file-runner that composes in p
 
 Give your language real editor support so an audience *sees* it is a language: a [tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammar for your syntax (its precedence annotations mirror the ladder you already wrote) plus a `highlights.scm` query, or — the lower-friction route — a TextMate grammar wrapped in a minimal VS Code extension. Scope this small: keyword/number/operator/string coloring is a complete extension. The "wow" upgrade is one live **diagnostic** — pipe your interpreter's positioned error output (`line L, col C: message`, which your pipeline already emits) into VS Code's diagnostics API so a bad program shows a red squiggle at the right spot. Demonstrate on a sample program at Demo Day, and include a README line showing how a grader installs the extension. The [Syntax Highlighter tutorial](/Tutorials/SyntaxHighlighter) is the step-by-step companion.
 
+### Contribute Upstream: An Open-Source Contribution
+
+Instead of (or alongside) extending your own language, contribute to an existing open-source ecosystem your project touches: a pattern or transformation function in [Strudel](https://github.com/tidalcycles/strudel)/TidalCycles (a natural fit for Direction B teams), a [tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammar improvement (pairs with the Editor Support extension), a step port or test-suite improvement in [Make-a-Lisp (mal)](https://github.com/kanaka/mal), or documentation and worked examples for [SWI-Prolog](https://www.swi-prolog.org/). This counts like any other extension — credited through the existing rubric dimensions — when the issue you are addressing is scoped in your proposal, the pull request is submitted with tests and documentation following the upstream project's contributing guidelines, and the maintainer exchange is documented in your report. A merged PR is ideal but **not required** — a substantive review exchange is what is credited, because maintainer response times are outside your control. A real contribution reviewed by a real maintainer is a portfolio line few graduates have.
+
 ---
 
 ## Stage 1: Proposal (due Tuesday, November 24, at the Sprint 0 kickoff — 25 points)
@@ -215,6 +223,8 @@ A 12-minute presentation plus questions:
 
 Every teammate speaks. The audience (your classmates) will write one Strength and one Question card per language; responding to your cards is part of the report.
 
+Demo Day is **external-facing**: alumni, industry guests, and faculty from other departments may join the audience and Q&A, as available — your grade never depends on who attends. Prepare with the [Demo Day Guide](/Assignments/DemoDayGuide); the Week 14 studios include a cross-team mock-interview rehearsal, credited as class participation.
+
 There is no final exam. Demo Day and the final submission fall on the last class meeting, and **no work is accepted after the last class**.
 
 ---
@@ -222,7 +232,7 @@ There is no final exam. Demo Day and the final submission fall on the last class
 ## Stage 4: Final Submission (Demo Day, Tuesday, December 8 — 75 points, together with the presentation)
 
 **Deliverables:**
-1. **The repository**: the integrated implementation, REPL and file-runner, test suite, sample programs with expected outputs, all configuration in JSON, located exception handling throughout, and a readme tested by the teammate who did not write it. Ensure reproducibility by fixing random seeds where applicable and listing software version information. (Direction B: the timed-event test fixtures and, if you used bison, the automaton report ride along here.)
+1. **The repository**: the integrated implementation, REPL and file-runner, test suite, sample programs with expected outputs, all configuration in JSON, located exception handling throughout, and a readme tested by the teammate who did not write it. Ensure reproducibility by fixing random seeds where applicable and listing software version information. The repository is public and recruiter-legible: run the [ShipIt self-check](/Assignments/ShipIt) before Demo Day — it is scored within the Documentation and Reproducibility dimension. (Direction B: the timed-event test fixtures and, if you used bison, the automaton report ride along here.)
 2. **The language reference** (approximately four pages): teach your language to a newcomer with examples for every construct, the full grammar, the distinctive feature's guide, and a section per adopted extension.
 3. **`SEMANTICS.md`**, final and verified against the implementation by the differential programs (Direction B: the semantic equations, revised to match the implemented language, with a change log from the proposal).
 4. **The report** (approximately four pages): the design story with the decision log's three most contested calls, the integration experience (what snapped together, what did not, and why), the evaluation summary, limitations (your disclose bucket, verbatim), responses to your Demo Day cards, and individual contribution statements covering the rotation. (Direction B: include the performance postmortem — what performing revealed that the test suite could not — and, if you rendered audio, the translation-layer section.)
