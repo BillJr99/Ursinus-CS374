@@ -10,6 +10,8 @@ info:
   course_title: "Principles of Programming Languages"
   credit_hours: "4 Semester Hours"
   course_homepage: "https://www.billmongan.com/Ursinus-CS374-Fall2026/"
+  teamshelproom: "https://teams.microsoft.com/l/team/19%3AraoRrj75t_Hao34_QVtu1F2Cg6czbvuGhzWdQz7VbRc1%40thread.tacv2/conversations?groupId=6abc67f1-e0c8-4245-9795-e27108d7af8f&tenantId=921f1c03-8689-4e60-a722-f5ea581e00fe"
+  class_notebook: "https://ursinuscollege365-my.sharepoint.com/personal/wmongan_ursinus_edu/Documents/Class Notebooks/CS374 Fall 2026"
   ical: files/CS374.ics
   course_prerequisites: "CS174 with a grade of C- or higher."
   course_start_date: "2026/08/24"
@@ -216,10 +218,13 @@ schedule:
   title: "Welcome: Why Study Programming Languages?"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-welcomepl.md"
   deliverables:
+  - dtitle: "Overview Assignment Handed Out"
+    dlink: "Assignments/Overview"
+    points: "25"
+    rubricpath: "_pages/Assignments/asmt-overview.md"
   - dtitle: "Warmup Assignment Handed Out"
     dlink: "Assignments/Warmup"
-    points: "25"
-    rubricpath: "_pages/Assignments/asmt-warmup.md"
+    points: "10"
   readings:
   - rtitle: "Thain, Chapter 1"
   - rtitle: "Allison, Ch. 1: Introduction — Formal Languages and Finite State Machines"
@@ -233,6 +238,10 @@ schedule:
   date: "0"
   title: "Evaluating Languages: Readability, Writability, Reliability"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-languageevaluation.md"
+  deliverables:
+  - dtitle: "Warmup Assignment Due"
+    dlink: "Assignments/Warmup"
+    points: "10"
 - week: "1"
   date: "1"
   title: "Syntax and BNF/EBNF"
@@ -249,10 +258,10 @@ schedule:
   - rtitle: "Allison, Ch. 9 §9.3: The Chomsky Hierarchy"
   - rtitle: "Allison, Ch. 6 §6.1: Context-Free Grammars and Derivations"
   deliverables:
-  - dtitle: "Warmup Assignment Due"
-    dlink: "Assignments/Warmup"
+  - dtitle: "Overview Assignment Due"
+    dlink: "Assignments/Overview"
     points: "25"
-    rubricpath: "_pages/Assignments/asmt-warmup.md"
+    rubricpath: "_pages/Assignments/asmt-overview.md"
 - week: "2"
   date: "1"
   title: "Derivations, Parse Trees, Ambiguity, and Precedence"
@@ -526,4 +535,4 @@ From time to time the class agenda sets aside time for **reading exercises and d
 
 ## Reflection Notebook (10%)
 
-Programming language theory rewards reflection: the same idea returns in new clothes — a grammar becomes a parser becomes an AST becomes an evaluator — and the students who notice the pattern go furthest. Your **[Reflection Notebook](Participation/ReflectionNotebook)** is where you make that noticing visible. It collects your responses to the reflection prompt that closes each class activity and each assignment, anchored by the Language Autobiography you write in the warmup and revisit at semester's end. It is reviewed at midterm and at the end of the term; the guide explains what to keep in it and how it is evaluated.
+Programming language theory rewards reflection: the same idea returns in new clothes — a grammar becomes a parser becomes an AST becomes an evaluator — and the students who notice the pattern go furthest. Your **[Reflection Notebook](Participation/ReflectionNotebook)** is where you make that noticing visible. It collects your responses to the reflection prompt that closes each class activity and each assignment, anchored by the Language Autobiography you write in the Overview assignment and revisit at semester's end. It is reviewed at midterm and at the end of the term; the guide explains what to keep in it and how it is evaluated.

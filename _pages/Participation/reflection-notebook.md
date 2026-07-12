@@ -32,7 +32,7 @@ The notebook has one job: to turn the reflecting you are already asked to do —
 
 ## The Baseline: Your Language Autobiography
 
-Your notebook has a natural starting point and a natural end. In the [Warmup]({{ site.baseurl }}/Assignments/Warmup) you write a Language Autobiography — your history with languages, a moment a language fought you, a moment of elegance, and an open question you hope the course answers. That is your baseline. At the end of the term you will return to it: revisit your open question, and write what you now know that you did not in week one. The distance between those two entries is the clearest measure of what the course did.
+Your notebook has a natural starting point and a natural end. In the [Overview]({{ site.baseurl }}/Assignments/Overview) you write a Language Autobiography — your history with languages, a moment a language fought you, a moment of elegance, and an open question you hope the course answers. That is your baseline. At the end of the term you will return to it: revisit your open question, and write what you now know that you did not in week one. The distance between those two entries is the clearest measure of what the course did.
 
 ## Format and Cadence
 
@@ -53,4 +53,4 @@ An entry that says "I thought parsing and evaluation were the same thing until t
 
 - [Preparing for Each Class]({{ site.baseurl }}/Participation/PreparingForClass) — the routine and the participation rubric.
 - [Reading Exercises]({{ site.baseurl }}/Participation/ReadingExercises) — a steady source of notebook material.
-- [Warmup Assignment]({{ site.baseurl }}/Assignments/Warmup) — the Language Autobiography baseline.
+- [Overview Assignment]({{ site.baseurl }}/Assignments/Overview) — the Language Autobiography baseline.

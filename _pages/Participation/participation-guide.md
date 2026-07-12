@@ -70,4 +70,4 @@ Your own account of your growth is part of this grade, and the self-assessment i
 
 - [Reading Exercises]({{ site.baseurl }}/Participation/ReadingExercises) — the reading-linked exercise bank you draw on when preparing.
 - [Reflection Notebook]({{ site.baseurl }}/Participation/ReflectionNotebook) — what to keep in your notebook and how it is evaluated.
-- [Warmup Assignment]({{ site.baseurl }}/Assignments/Warmup) — the Language Autobiography that anchors your semester-long reflection.
+- [Overview Assignment]({{ site.baseurl }}/Assignments/Overview) — the Language Autobiography that anchors your semester-long reflection.
