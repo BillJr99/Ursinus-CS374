@@ -478,6 +478,7 @@ In place of SEMANTICS.md, write `TYPES.md`: one section per construct stating it
 ---
 
 ## Part 4 Direction: A Contrasting Execution Model — the Intcode VM
+{: #part-4-direction-a-contrasting-execution-model-the-intcode-vm}
 
 ### Background
 
