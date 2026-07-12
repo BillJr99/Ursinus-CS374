@@ -7,13 +7,13 @@ info:
   coursenum: CS374
   purpose: "To build fluency in the functional paradigm — pure and higher-order functions and recursive structures with fold as the shared core, then one self-chosen direction that takes the paradigm deeper — as a design option your team will weigh for its own language."
   tilt:
-    task: "Complete the two core parts — pure functions with higher-order combinators, and recursive structures with generic fold — then choose ONE direction and carry it to depth: closures and lazy generators, CPS and call/cc, Church encodings, combinatory logic, or parallel functional programming."
-    criteria: "Assessed on honoring the no-loop and no-assignment constraints and genuinely generic tree and list operations in the core (25 points each), and on carrying your chosen direction to its stated depth (50 points); the direction-depth rubric applies equivalently to all five directions. See the rubric below for the full breakdown."
+    task: "Complete the two core parts — pure functions with higher-order combinators, and recursive structures with generic fold — then choose ONE direction and carry it to depth: closures and lazy generators, CPS and call/cc, Church encodings, combinatory logic, parallel functional programming, declarative logic programming in Prolog, or a scoped open-source contribution to a functional-language ecosystem."
+    criteria: "Assessed on honoring the no-loop and no-assignment constraints and genuinely generic tree and list operations in the core (25 points each), and on carrying your chosen direction to its stated depth (50 points); the direction-depth rubric applies equivalently to all directions. See the rubric below for the full breakdown."
   points: 100
   goals:
     - To write pure functions and higher-order functions in Python using map, filter, reduce, and recursion without loops or assignment
     - To implement recursive data structures including trees and linked lists with map and fold operations
-    - To take the paradigm shift to depth along one self-chosen direction — closures and lazy generators, continuation-passing style and call/cc, Church encodings, combinatory logic, parallel functional programming, or declarative logic programming in Prolog
+    - To take the paradigm shift to depth along one self-chosen direction — closures and lazy generators, continuation-passing style and call/cc, Church encodings, combinatory logic, parallel functional programming, declarative logic programming in Prolog, or a scoped open-source contribution to a functional-language ecosystem
   rubric:
     - weight: 25
       description: "Core — Pure Functions and Higher-Order Functions (Goal 1: write pure functions and higher-order functions using map, filter, reduce, and recursion without loops or assignment)"
@@ -28,9 +28,9 @@ info:
       progressing: All structures and operations are implemented correctly for the provided test cases, but the functions are not generic — e.g., tree_fold is hardcoded to addition rather than taking a combining function
       proficient: Both the binary tree and the linked-list structures are defined as dataclasses; tree_map, tree_fold, list_map, and list_fold all take a function argument and work for any operation — demonstrating Goal 2; flatten and depth are implemented in terms of fold; and all operations are tested with at least four inputs including edge cases (empty list, single-node tree)
     - weight: 50
-      description: "Direction Depth (Goal 3: carry your chosen direction — closures and lazy generators, CPS and call/cc, Church encodings, combinatory logic, parallel functional programming, or declarative logic programming in Prolog — to its stated depth)"
-      preemerging: "The direction work is absent, or does not use the direction's defining mechanism — e.g., factories that use global state instead of closures, a CPS interpreter whose cases return values directly instead of calling k, encodings that are never reduced, a reducer that cannot contract a single redex, a \"parallel\" map that is sequential, or Prolog clauses that never rely on unification/backtracking (e.g., only ground facts, no rules)"
-      beginning: "The direction's defining mechanism is present but one or more of its required components is incorrect or missing — e.g., generators that materialize the whole sequence before yielding, continuations threaded incorrectly through compound expressions, substitution that captures variables on the adversarial tests, combinator rules misapplied, parallel results never verified against the sequential baseline, or Prolog solutions that solve some curated problems but omit the bidirectional-relation demonstration or the backtracking enumeration"
+      description: "Direction Depth (Goal 3: carry your chosen direction — closures and lazy generators, CPS and call/cc, Church encodings, combinatory logic, parallel functional programming, declarative logic programming in Prolog, or a scoped open-source contribution to a language ecosystem — to its stated depth)"
+      preemerging: "The direction work is absent, or does not use the direction's defining mechanism — e.g., factories that use global state instead of closures, a CPS interpreter whose cases return values directly instead of calling k, encodings that are never reduced, a reducer that cannot contract a single redex, a \"parallel\" map that is sequential, Prolog clauses that never rely on unification/backtracking (e.g., only ground facts, no rules), or an open-source \"contribution\" with no functional-paradigm substance (a typo fix or formatting-only change)"
+      beginning: "The direction's defining mechanism is present but one or more of its required components is incorrect or missing — e.g., generators that materialize the whole sequence before yielding, continuations threaded incorrectly through compound expressions, substitution that captures variables on the adversarial tests, combinator rules misapplied, parallel results never verified against the sequential baseline, Prolog solutions that solve some curated problems but omit the bidirectional-relation demonstration or the backtracking enumeration, or an open-source contribution submitted without tests or documentation, or with no maintainer exchange (or documented attempt) recorded"
       progressing: All of the direction's required components work correctly for the provided cases, but items on the direction's depth checklist are incomplete — the demonstrations, measurements, or analyses that turn a working artifact into an argued one
       proficient: Every item on the chosen direction's depth checklist is met, all required components work on provided and edge cases, and the writeup connects the direction back to the core — stating precisely what Parts 1 and 2's pure-function and fold disciplines contributed to the direction work — demonstrating Goal 3 at full depth
   readings:
@@ -46,6 +46,12 @@ info:
       rlink: "https://swish.swi-prolog.org/"
     - rtitle: "Prolog in the Browser with SWISH (Tutorial)"
       rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/Prolog"
+    - rtitle: "Make-a-Lisp (mal) — Direction G target"
+      rlink: "https://github.com/kanaka/mal"
+    - rtitle: "Strudel (TidalCycles) — Direction G target"
+      rlink: "https://github.com/tidalcycles/strudel"
+    - rtitle: "tree-sitter — Direction G target"
+      rlink: "https://tree-sitter.github.io/tree-sitter/"
 
 tags:
   - functional
@@ -58,6 +64,7 @@ tags:
   - parallelism
   - logic-programming
   - prolog
+  - open-source
 
 ---
 
@@ -75,6 +82,7 @@ This is one assignment with one deliverable and one rubric. Parts 1 and 2 below 
 - **[Direction D: Combinatory Logic — A Flock of Birds](#direction-d-combinatory-logic--a-flock-of-birds)** — computation with no variables at all: a reducer for the S, K, I (and friends) combinators, point-free programming, and the bracket-abstraction translation from lambda terms.
 - **[Direction E: Parallel Functional Programming](#direction-e-parallel-functional-programming)** — purity buys parallelism: a MapReduce pipeline over a real corpus, measured and analyzed against Amdahl's Law. This is the Functional stop on the [music and live-coding path](/Assignments/MusicTrack).
 - **[Direction F: Declarative Logic Programming in Prolog](#direction-f-declarative-logic-programming-in-prolog)** — a genuinely different paradigm: you describe *relations that hold* and let a search engine (unification + backtracking) find the answers, including running the same relation "backwards." Zero install via the browser. The natural direction if you want to feel the widest possible contrast with the interpreter you just built.
+- **[Direction G: Contribute to an Open-Source Language Ecosystem](#direction-g-contribute-to-an-open-source-language-ecosystem)** — take the paradigm public: a scoped, functional-paradigm-relevant contribution to a real open-source project — [mal (Make-a-Lisp)](https://github.com/kanaka/mal) (a step port increment or test-harness improvement), [Strudel](https://github.com/tidalcycles/strudel)/TidalCycles (a pattern or transformation function — the open-source stop on the [music path](/Assignments/MusicTrack)), a [tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammar, or [SWI-Prolog](https://www.swi-prolog.org/) documentation and worked examples (pairs naturally with Direction F's material) — submitted as a real pull request with tests and documentation. **Requires instructor scope approval within the first week of the assignment.**
 
 Every direction is worth the same 50 points, graded on the same direction-depth rubric row, and ends in the same deliverable shape: working code, tests, and a writeup section that connects the direction back to the core. Choose by interest — none is the "easy" one.
 
@@ -596,13 +604,54 @@ Close with a short written comparison (this is required, and it is what ties the
 
 ---
 
+## Direction G: Contribute to an Open-Source Language Ecosystem
+
+*Files: `contribution.md` (the contribution log described below), plus a link to your public pull request. Scope approval from the instructor is required within the first week of the assignment.*
+
+Every other direction builds something new inside the course; this one takes the paradigm into a codebase that predates you and will outlive the semester. You will find a scoped, functional-paradigm-relevant piece of work in a real open-source language ecosystem, specify it with a failing test before you write the fix — the same failing-test-as-specification discipline the whole course runs on — and carry it through a public pull request and a maintainer exchange. The paradigm content is the same as the other directions (pure transformations, recursion over structure, functions as values); the added content is the professional practice around it, and the result is a portfolio line few undergraduates have: *my code was reviewed by the maintainers of a real project.*
+
+**Choosing a target.** Approved ecosystems, with the kind of contribution that fits each:
+
+- **[mal — Make-a-Lisp](https://github.com/kanaka/mal)**: an increment to a step implementation in a language of your choice, or an improvement to the shared test harness — mal's whole structure is fold-and-recursion over expression trees, the paradigm at full strength.
+- **[Strudel](https://github.com/tidalcycles/strudel) / TidalCycles**: a pattern or transformation function — pattern combinators *are* higher-order functions over timed event structures. This is the open-source stop on the [music and live-coding path](/Assignments/MusicTrack).
+- **[tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammars**: a grammar fix or improvement with its test cases — structural recursion over syntax, adjacent to everything you built this semester.
+- **[SWI-Prolog](https://www.swi-prolog.org/)**: documentation with worked examples, or test cases for library predicates — pairs naturally with Direction F's material, and documentation contributions are how most successful open-source careers start.
+
+Something else you care about is negotiable — bring it to the scope-approval conversation. What is *not* negotiable: the work must have functional-paradigm substance (a typo fix or formatting change does not qualify), and it must be small enough to finish. One well-scoped, well-tested contribution beats an ambitious abandoned one.
+
+### G.1: Issue selection and scope approval (first week)
+
+Find your target: a triaged open issue, a gap in the documentation, a missing test, or a small feature request with maintainer interest. In `contribution.md`, record: the issue or gap (with links), why it is *functional-paradigm* work (which core ideas from Parts 1–2 it exercises), and your one-sentence minimum viable scope. **Bring this to the instructor for approval within the first week** — the approval exists to protect you from scope that cannot land in the assignment window.
+
+### G.2: Specification first
+
+Before writing the fix, write the specification the way this course always does: a failing test that demonstrates the issue (or, for documentation work, the worked example that does not yet exist and the checklist it must satisfy). Commit or record it in its original form in `contribution.md`. If the project's own test suite has conventions, follow them — reading a mature project's test conventions is part of the learning here.
+
+### G.3: The contribution
+
+Do the work on a fork, following the upstream project's `CONTRIBUTING` guidelines to the letter (branch naming, commit style, changelog entries — whatever they ask). Your pull request must include tests and documentation for what it changes. Keep the diff as small as the fix allows: maintainers review diffs, and a disciplined diff is a professional courtesy they notice.
+
+### G.4: The exchange
+
+Submit the pull request and engage with what comes back: respond to review comments, make requested changes, and record the exchange in `contribution.md`. **A merge is ideal but not required** — maintainer response times are outside your control, and the graded work is yours, not theirs. If no maintainer responds within a week of submission, document the attempt and perform a written **self-review** against the project's own contributing standards: what would a maintainer flag, and why?
+
+### Direction G depth checklist
+
+- The scope was approved by the instructor within the first week, and `contribution.md` records the issue, its functional-paradigm substance, and the minimum viable scope.
+- Specification-first evidence exists: the failing test (or documentation checklist) is preserved in its original form, dated before the fix.
+- The pull request is public, linked, and includes tests and documentation, following the upstream project's contributing guidelines.
+- The maintainer exchange is documented — or, if none occurred within a week, the attempt is documented and a written self-review against the project's standards stands in its place.
+- The writeup connects the contribution back to the core: which of Parts 1–2's pure-function and fold disciplines the upstream code exercises, with specific examples from the code you touched.
+
+---
+
 ## Deliverables
 
 Submit a ZIP containing:
 - `higher_order.py` — Part 1 (pure functions and combinators)
 - `recursive_structures.py` — Part 2 (tree and linked-list operations)
-- Your direction's file(s), as named in its section (Direction F submits `logic.pl` and `logic_session.md` instead of Python direction files)
-- `test_functional.py` — all tests for the core and your direction, with assertions (Direction F's queries and expected answers live in `logic_session.md`; the core Part 1/Part 2 tests are still required)
+- Your direction's file(s), as named in its section (Direction F submits `logic.pl` and `logic_session.md` instead of Python direction files; Direction G submits `contribution.md` with the public pull request link)
+- `test_functional.py` — all tests for the core and your direction, with assertions (Direction F's queries and expected answers live in `logic_session.md`; Direction G's tests live in the upstream pull request, linked from `contribution.md`; the core Part 1/Part 2 tests are still required)
 - `test_output.txt` — output of running the test file (all tests passing)
 - `readme.md` — approximately one page naming your chosen direction, containing every writeup item on its depth checklist, and closing with two or three sentences connecting the direction back to the core
 
@@ -626,6 +675,6 @@ Ensure reproducibility by listing your Python version (and, for Direction E, you
 - Which constraint (no loops, or no assignment) changed your thinking more, and what did it force you to see?
 - In Part 2, both `tree_depth` and `tree_flatten` were implemented in terms of `tree_fold`. What does this tell you about the relationship between fold and other recursive operations?
 - Why did you choose the direction you chose — and now that you have finished it, which *other* direction do you most wish you had time for, and what do you suspect it would have taught you?
-- Every direction is the same paradigm at a different altitude: closures capture environments, continuations capture control, Church encodings capture data, combinators capture composition, and parallelism captures the payoff of purity. State, in your own words, the single idea all five share.
+- Every direction is the same paradigm at a different altitude: closures capture environments, continuations capture control, Church encodings capture data, combinators capture composition, parallelism captures the payoff of purity, logic programming captures relations instead of functions, and an upstream contribution captures the paradigm living in real code. State, in your own words, the single idea they all share.
 - If collaboration with a buddy was permitted, did you work with a buddy on this assignment? If so, who? If not, do you certify that this submission represents your own original work? Please identify any and all portions of your submission that were not originally written by you.
 - Approximately how many hours it took you to finish this assignment (I will not judge you for this at all — I am simply using it to gauge if the assignments are too easy or hard)?

@@ -27,6 +27,8 @@ These tutorials are the course's self-serve depth: worked paths, toolchain guide
 - [CI and TDD for Interpreters](CITDDForInterpreters) — test suites, GitHub Actions, and coverage for your language
 - [Shell Skills for Language Development](ShellForLanguageDev) — run, test, and debug confidently from the command line
 - [Publishing Your Language — pip, npm, and Docker](PublishingYourLanguage) — release hardening and distribution
+- [ShipIt: Repo Hygiene, README, Packaging, and Your Portfolio](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/ShipIt) — *anchors required work* — the self-check scored within the project's Documentation and Reproducibility dimension
+- [Demo Day Guide: External Guests and Technical Interview Practice](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/DemoDayGuide) — presenting to guests, and the Week 14 mock-interview rehearsal
 - [Build a Bytecode VM](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md) *(interactive)* — a compilation-target extension for ambitious teams
 - [Garbage Collection — Implementing Memory Management](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-garbage-collection.md) *(interactive)* — a runtime extension for the project
 - [Compiling and Linking — From Source to Executable](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-compiling-linking.md) *(interactive)* — what happens below your interpreter
