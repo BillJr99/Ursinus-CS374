@@ -473,7 +473,6 @@ schedule:
     dlink: "Projects/TeamLanguage"
     points: "100"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
-  readings:
 - week: "10"
   date: "0"
   title: "Functional Programming and Higher-Order Functions"
@@ -519,7 +518,6 @@ schedule:
   date: "1"
   title: "Lambda Calculus II: Church Encodings and Combinators"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-lambdacalculus2.md"
-  readings:
   deliverables:
   - dtitle: "Lab: Type Checker Starter Due"
     dlink: "Assignments/TypeCheckerLab"
