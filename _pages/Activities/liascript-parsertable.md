@@ -35,7 +35,7 @@ By the end of this activity, you will be able to:
 >
 > If any of these feel shaky, revisit the recursive-descent and grammar modules before continuing.
 
-Recursive descent is top-down: it predicts what must come next. The industrial-strength alternative works **bottom-up**: an **LR parser** shifts tokens onto a stack and reduces them to nonterminals when it recognizes a completed right-hand side, driven entirely by a precomputed table. Over two days we learn to *read and execute* this machinery by hand, because parser generators (yacc, bison, ANTLR) emit it, error messages reference it, and the left recursion that broke descent is exactly what LR handles natively. The arc: **shift-reduce intuition $\rightarrow$ executing a parse by hand $\rightarrow$ conflicts $\rightarrow$ when to use which technology**.
+The recursive descent of the *Recursive Descent Parsing* and *Parsing Expressions* activities is top-down: it predicts what must come next. The industrial-strength alternative works **bottom-up**: an **LR parser** shifts tokens onto a stack and reduces them to nonterminals when it recognizes a completed right-hand side, driven entirely by a precomputed table. In a single class session we learn to *read and execute* this machinery by hand, because parser generators (yacc, bison, ANTLR) emit it, error messages reference it, and the left recursion that broke descent is exactly what LR handles natively. The arc: **shift-reduce intuition $\rightarrow$ executing a parse by hand $\rightarrow$ conflicts $\rightarrow$ when to use which technology**.
 
 ---
 
@@ -66,6 +66,17 @@ Using the ladder grammar (`E -> E + T | T`, `T -> T * F | F`, `F -> num | ( E )`
 | `E + 3` | `$` | reduce `F -> num`, then `T -> F` |
 | `E + T` | `$` | reduce `E -> E + T` |
 | `E` | `$` | **accept** |
+
+Check your reading of the table before moving on:
+
+[[MC]]
+In the trace above, the single token `2` is reduced through `F -> num`, `T -> F`, and `E -> T` *before* the `+` is shifted. What makes those three reductions necessary?
+- ( ) An LR parser must alternate one shift with one reduce
+- (x) The production that will eventually consume the `+` is `E -> E + T`, which requires an `E` (not a bare `num`) on the stack to the left of the `+`
+- ( ) The token `2` is ambiguous until it has been reduced
+- ( ) Reductions shrink the stack so it cannot overflow
+
+In the second-to-last row, the stack `E + T` with input `$` is reduced using the production `E -> E +` [[T]] — after which the stack holds only the start symbol and the parser accepts.
 
 ---
 
@@ -108,6 +119,13 @@ A parser generator reports a shift-reduce conflict on the team's grammar at the 
 Now that you have seen how the machinery works, the practical question is whether to build it yourself or let a generator do it. This is not a trivial decision — the choice affects error messages, grammar expressiveness, and how much work it takes to change the language later. Real-world production compilers have landed on both sides of this debate.
 
 Your project must choose its parsing technology; most teams hand-write recursive descent, and you should know what you are declining.
+
+[[MC]]
+Your project grammar contains the left-recursive list rule `args -> args "," expr | expr`. Which statement about the two technologies is correct?
+- ( ) Both require rewriting the rule before they can parse it
+- (x) A generated LR parser handles the rule as written; a hand-written recursive descent parser requires rewriting it as `args -> expr { "," expr }`
+- ( ) Recursive descent handles it as written; LR requires the rewrite
+- ( ) Neither technology can parse comma-separated lists
 
 ### Critical Thinking Questions
 
@@ -669,8 +687,12 @@ In your notebook: the LR table is compiled knowledge, decisions made once, ahead
 
 The deep-dive appendices that used to follow this activity now live on the Tutorials shelf:
 
-> **Going further:** the material that used to live here — installing Flex and Bison, the complete `.l`/`.y` mini-notation walkthrough, LR(0) item-set construction, and how Yacc builds and resolves its parse tables — is covered in depth in the dedicated tutorial: [Flex and Bison from Zero to a Working Language](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md). The ready-to-build mini-notation scaffold now lives in the course examples at [files/examples/mininote/](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/examples/mininote/). Explore them when your project or curiosity calls for it.
+> **Going further:** the Flex/Yacc material that used to live here is covered in depth in the dedicated tutorial: [Flex and Bison from Zero to a Working Language](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md) — installing Flex and Bison, a complete `.l`/`.y` walkthrough of a calculator language with variables, and an appendix on LR(0) item-set construction and how Yacc builds and resolves its parse tables. The ready-to-build mini-notation scaffold lives in the course examples at [files/examples/mininote/](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/examples/mininote/). Explore them when your project or curiosity calls for it.
 
 > **Going further:** the material that used to live here — compiling expressions to bytecode and executing them on a stack machine — is covered in depth in the dedicated tutorial: [Building a Bytecode VM for Mini](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md). Explore it when your project or curiosity calls for it.
 
 > **Going further:** the material that used to live here — object files, symbol tables, static and dynamic linking, loaders, and the path from source to executable — is covered in depth in the dedicated tutorial: [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-compiling-linking.md). Explore it when your project or curiosity calls for it.
+
+---
+
+Up next: the *Tree-Walking Interpretation* activity finally gives parsed programs their meaning — the front end is complete.

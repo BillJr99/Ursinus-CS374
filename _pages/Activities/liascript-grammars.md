@@ -26,7 +26,7 @@ By the end of this activity, you will be able to:
 
 > **Before You Begin — Prerequisite Check**
 >
-> This activity assumes you are comfortable with BNF syntax from the previous activity: you can read a rule like `expr ::= expr "+" term | term`, you know what "nonterminal" and "terminal" mean, and you have seen at least one derivation step. If any of those concepts are fuzzy, re-read your notes from the BNF activity before proceeding.
+> This activity assumes you are comfortable with BNF syntax from the *Syntax and BNF/EBNF* activity: you can read a rule like `expr ::= expr "+" term | term`, you know what "nonterminal" and "terminal" mean, and you have seen at least one derivation step. If any of those concepts are fuzzy, re-read your notes from that activity before proceeding.
 
 ---
 
@@ -123,7 +123,7 @@ There is no way to produce exactly two `a`s and one `b` under this grammar.
 
 ## 2. Where Programming Languages Live
 
-**Tokens are regular; structure is context-free; meaning is neither.** Identifiers, numbers, and keywords have regular shape, so lexers are built from finite automata (next week's topic). Nesting (balanced braces, expressions inside expressions) requires counting, so parsers use context-free grammars and a stack. And some rules, famously "every variable must be declared before use," are not context-free at all; real compilers enforce them in a separate **semantic analysis** pass over the tree rather than burdening the grammar. The pipeline of your project is the hierarchy made architecture.
+**Tokens are regular; structure is context-free; meaning is neither.** Identifiers, numbers, and keywords have regular shape, so lexers are built from finite automata (the *Finite Automata* activity's topic). Nesting (balanced braces, expressions inside expressions) requires counting, so parsers use context-free grammars and a stack. And some rules, famously "every variable must be declared before use," are not context-free at all; real compilers enforce them in a separate **semantic analysis** pass over the tree rather than burdening the grammar. The pipeline of your project is the hierarchy made architecture.
 
 [[MC]]
 A language requires that every `begin` token be matched by a later `end`, with arbitrary nesting. The weakest grammar class that can express this requirement is:
@@ -675,3 +675,7 @@ In your notebook: the hierarchy says more expressive power costs more recognitio
 - Michael Sipser. *Introduction to the Theory of Computation*, Chapters 1 and 2, for proofs we waved at.
 - [The JSON Grammar](https://www.json.org/json-en.html) — a real, readable CFG in under 15 minutes.
 - [The Python Reference Grammar](https://docs.python.org/3/reference/grammar.html) — PEG variant; compare to what you wrote in Model 2.
+
+---
+
+Up next: the *Derivations, Parse Trees, Ambiguity, and Precedence* activity puts these grammars to work generating — and mis-generating — programs.

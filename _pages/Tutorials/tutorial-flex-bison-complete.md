@@ -558,3 +558,240 @@ Each addition requires: (1) updating the lexer rules, (2) updating the grammar, 
 - The Flex manual: `info flex` or online. Covers start conditions, multiple input files, `%option`, and C++ lexers.
 - Johnson, Stephen C. "Yacc: Yet Another Compiler-Compiler." Bell Labs, 1975. The original yacc paper; still readable and historically illuminating.
 - Aho, Lam, Sethi, Ullman. *Compilers* (Dragon Book), Chapter 4 — the theory behind what flex/bison generate.
+
+---
+
+# Appendix: How Bison Builds Its Tables — LR(0) Items and the Canonical Collection
+
+This appendix is the theory behind the `--report=all` output you met in Part 7 and behind the generator-toolchain directions of the Lexer and Parser assignments: how Bison turns your grammar into the ACTION and GOTO tables that drive `yyparse`.
+
+## A.1 How Yacc Parses: LR Items, States, and the LALR(1) Idea
+
+**Yacc builds a shift-reduce parser driven by a finite automaton over grammar items.** An **LR(0) item** is a production with a dot marking parsing progress, such as
+
+$$
+\texttt{expr} \rightarrow \texttt{expr} \cdot \texttt{'*'}\ \texttt{expr}
+$$
+
+which reads "we have parsed the left operand and will accept this production if `'*'` and another `expr` come next." The parser generator closes sets of items into **states**, connects them with transitions on grammar symbols, and emits two tables: an **action** table (shift, reduce, accept, or error, indexed by state and lookahead token) and a **goto** table (next state after a reduction). At run time the parser is breathtakingly simple, which is the point: a loop, a stack, and table lookups, running in $O(n)$ time and using stack space proportional to the deepest nesting in the input.
+
+### Pseudocode
+
+```
+function LR-PARSE(tokens):
+    push state 0
+    a = first token
+    loop:
+        s = state on top of stack
+        if ACTION[s, a] = shift t:
+            push a, push state t
+            a = next token
+        else if ACTION[s, a] = reduce (A -> beta):
+            pop 2 * |beta| entries
+            t = state now on top
+            push A, push GOTO[t, A]
+            (run the semantic action for A -> beta here)
+        else if ACTION[s, a] = accept:
+            return the finished parse
+        else:
+            report syntax error at a
+```
+
+## A.2 A Shift-Reduce Parse You Can Watch
+
+**What you are about to see:** The pseudocode above describes LR parsing in the abstract; this model makes it concrete by running it step by step for a small arithmetic grammar. You will see the two-stack (state stack + symbol stack) loop in action and read a printed trace of every shift and reduce decision. Pay attention to the moment when the parser chooses to shift `*` rather than reducing an already-complete `+` expression — that single decision is where operator precedence lives in an LR parser, and spotting it in the trace will make the conflict discussion that follows much easier to understand.
+
+Before reading the bison output, run the algorithm yourself on a tiny grammar. The code below simulates a shift-reduce parser for simple arithmetic expressions (`n + n * n`) with an explicit stack and action trace — the same algorithm bison generates for the calculator, just with a hand-written action table instead of a generated one.
+
+```python
+# Shift-reduce parser trace for: E → E+T | T,  T → T*F | F,  F → (E) | n
+# ACTION table and GOTO table are encoded as dicts (state, symbol) → action.
+# Actions: ("shift", next_state), ("reduce", rule), "accept", "error"
+
+# Grammar rules: name → (symbols_to_pop, nonterminal_to_push)
+RULES = {
+    "E→E+T": (3, "E"),  # pop E, +, T  → push E
+    "E→T":   (1, "E"),
+    "T→T*F": (3, "T"),
+    "T→F":   (1, "T"),
+    "F→n":   (1, "F"),
+    "F→(E)": (3, "F"),  # pop (, E, )  → push F
+}
+
+# Minimal LR(0) action table for this grammar (hand-constructed, state 0-11)
+ACTION = {
+    (0,"n"):  ("shift",5),  (0,"("):  ("shift",4),
+    (1,"+"):  ("shift",6),  (1,"$"):  "accept",
+    (2,"+"):  ("reduce","E→T"), (2,"*"): ("shift",7), (2,"$"): ("reduce","E→T"),
+    (3,"+"):  ("reduce","T→F"), (3,"*"): ("reduce","T→F"), (3,"$"): ("reduce","T→F"),
+    (4,"n"):  ("shift",5),  (4,"("):  ("shift",4),
+    (5,"+"):  ("reduce","F→n"), (5,"*"): ("reduce","F→n"), (5,"$"): ("reduce","F→n"),
+    (6,"n"):  ("shift",5),  (6,"("):  ("shift",4),
+    (7,"n"):  ("shift",5),  (7,"("):  ("shift",4),
+    (8,"+"):  ("shift",6),  (8,")"):  ("shift",11),
+    (9,"+"):  ("reduce","E→E+T"), (9,"*"): ("shift",7),
+              (9,")"): ("reduce","E→E+T"), (9,"$"): ("reduce","E→E+T"),
+    (10,"+"): ("reduce","T→T*F"), (10,"*"): ("reduce","T→T*F"),
+              (10,")"): ("reduce","T→T*F"), (10,"$"): ("reduce","T→T*F"),
+    (11,"+"): ("reduce","F→(E)"), (11,"*"): ("reduce","F→(E)"),
+              (11,")"): ("reduce","F→(E)"), (11,"$"): ("reduce","F→(E)"),
+}
+GOTO = {
+    (0,"E"):1, (0,"T"):2, (0,"F"):3,
+    (4,"E"):8, (4,"T"):2, (4,"F"):3,
+    (6,"T"):9, (6,"F"):3,
+    (7,"F"):10,
+}
+
+def lr_parse(tokens):
+    tokens = tokens + ["$"]
+    stack = [0]        # state stack
+    sym_stack = []     # symbol stack (for display)
+    pos = 0
+
+    print(f"{'Stack':35} {'Remaining':18} Action")
+    print("-" * 75)
+
+    while True:
+        state = stack[-1]
+        tok   = tokens[pos]
+        disp_stack = " ".join(str(x) for x in sym_stack) or "⊥"
+        disp_rest  = " ".join(tokens[pos:])
+        action = ACTION.get((state, tok), "error")
+
+        if action == "accept":
+            print(f"{disp_stack:35} {disp_rest:18} ACCEPT ✓")
+            return
+        elif action == "error":
+            print(f"{disp_stack:35} {disp_rest:18} ERROR at {tok!r}")
+            return
+        elif action[0] == "shift":
+            _, next_state = action
+            print(f"{disp_stack:35} {disp_rest:18} SHIFT  {tok} → state {next_state}")
+            sym_stack.append(tok); stack.append(next_state); pos += 1
+        elif action[0] == "reduce":
+            rule = action[1]
+            pop_n, lhs = RULES[rule]
+            for _ in range(pop_n): sym_stack.pop(); stack.pop()
+            top = stack[-1]
+            goto_state = GOTO[(top, lhs)]
+            sym_stack.append(lhs); stack.append(goto_state)
+            print(f"{disp_stack:35} {disp_rest:18} REDUCE {rule}")
+
+print("=== n + n * n (right operand tighter) ===")
+lr_parse(["n", "+", "n", "*", "n"])
+print()
+print("=== n * n + n (left operand tighter) ===")
+lr_parse(["n", "*", "n", "+", "n"])
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Questions to Consider
+
+- In the first trace (`n + n * n`), at what point does the parser shift `*` instead of reducing the first `n + n`? What state and lookahead determine this decision?
+- In the RULES table, `"E→E+T": (3, "E")` pops 3 symbols. What are those 3 symbols, and why does popping them from the stack correspond to "recognizing a complete E+T"?
+- If you added `"E→E+E"` to the grammar (making addition left-recursive in a second way), which `ACTION` table entry would conflict with an existing one? This is a shift/reduce conflict — identify the state and the competing actions.
+
+---
+
+**LALR(1) is LR(1) with merged states.** Full LR(1) tables distinguish states by lookahead and grow large; LALR(1) merges LR(1) states that share the same item cores, keeping the table compact at the cost of accepting a slightly smaller family of grammars. The calculator grammar from Part 3 builds cleanly under LALR(1): the grammar is deliberately ambiguous (`expr '+' expr` and friends), but every conflict is resolved by the `%left`/`%right` precedence declarations. You can verify with `bison -v calc.y`, which writes the full automaton, every state and item set, to `calc.output` — the same report `--report=all` produces in Part 7.1. Reading that file once, slowly, will teach you more about LR parsing than any lecture, and the experiment below has you do exactly that.
+
+**Conflicts are the diagnostic signal.** A **shift/reduce conflict** means some state sees a lookahead for which both shifting and reducing are table-legal; a **reduce/reduce conflict** means two completed productions compete. (Part 7.1 covers Bison's default resolution — shift — and how to inspect conflicts with `--report=all`.) The calculator grammar produces no unresolved conflicts, but you will manufacture one, deliberately, in a moment, because learning to read conflict reports is the practical skill that separates people who can use parser generators from people who fight them.
+
+> **Watch out!** Bison resolves shift/reduce conflicts silently by defaulting to *shift*, but it still prints a warning. Never ignore that warning: if your grammar has a conflict you did not anticipate, the silent default resolution may produce parse trees that are subtly wrong and very difficult to debug downstream. Always read the `.output` file and confirm that the chosen resolution matches your intent.
+
+---
+
+### Try It: Manufacture a Conflict
+
+Make exactly one of the following edits to `calc.y` from Part 3, then rebuild with `bison -v calc.y`:
+
+1. Comment out the `%left '+' '-'` and `%left '*' '/'` precedence declarations.
+2. Add a redundant second copy of the production `expr : '(' expr ')'`.
+
+Using only bison's stderr output and the `.output` file, identify which conflict type each edit produces (shift/reduce or reduce/reduce), and point to the state and item set where it arises. Record the state number and one sentence of explanation, then undo the edit and confirm the conflicts disappear.
+
+---
+
+## A.3 LR(0) Items and the Canonical Collection
+
+An LR(0) item is a production with a bookmark (the dot) that says "I have seen this much of the right-hand side so far." The set of all possible bookmarked states the parser could be in, connected by transitions, forms a finite automaton — the "canonical collection." Understanding this automaton is the key to understanding what shift-reduce conflicts mean and why some grammars are hard to parse.
+
+Two item positions matter most:
+
+$$
+E' \to E\ \bullet \qquad \text{(E has been seen; we might reduce)}
+$$
+$$
+E' \to \bullet\ E \qquad \text{(we are about to see E)}
+$$
+
+The **closure** of a set of items: if $[A \to \alpha \bullet B \beta]$ is in the set and $B \to \gamma$ is a production, add $[B \to \bullet \gamma]$.
+
+The **goto** function: $\mathrm{goto}(I, X)$ = closure of all items in $I$ where the dot is advanced over $X$.
+
+> **Watch out!** The closure operation adds items for every production of each nonterminal that appears after a dot — including transitively. A single starting item can generate a large closure. Students often compute closure for only the directly referenced nonterminal and miss the transitive additions.
+
+```python
+# LR(0) item construction for a simpler grammar: S' -> S, S -> ( S ) | x
+simple_grammar = {
+    "S'": [["S"]],
+    "S":  [["(", "S", ")"], ["x"]],
+}
+
+def closure(items, grammar):
+    result = set(items)
+    changed = True
+    while changed:
+        changed = False
+        for (nt, prod, dot) in list(result):
+            if dot < len(prod):
+                sym = prod[dot]
+                if sym in grammar:
+                    for p in grammar[sym]:
+                        item = (sym, tuple(p), 0)
+                        if item not in result:
+                            result.add(item)
+                            changed = True
+    return frozenset(result)
+
+def goto_set(items, sym, grammar):
+    advanced = set()
+    for (nt, prod, dot) in items:
+        if dot < len(prod) and prod[dot] == sym:
+            advanced.add((nt, prod, dot + 1))
+    return closure(advanced, grammar) if advanced else frozenset()
+
+# Build all item sets
+start_item = ("S'", tuple(simple_grammar["S'"][0]), 0)
+start_set  = closure({start_item}, simple_grammar)
+states     = [start_set]
+state_map  = {start_set: 0}
+transitions= {}
+
+to_process = [start_set]
+all_syms   = list(simple_grammar.keys()) + ['(', ')', 'x']
+
+while to_process:
+    current = to_process.pop()
+    s_id    = state_map[current]
+    for sym in all_syms:
+        g = goto_set(current, sym, simple_grammar)
+        if g:
+            if g not in state_map:
+                state_map[g] = len(states)
+                states.append(g)
+                to_process.append(g)
+            transitions[(s_id, sym)] = state_map[g]
+
+print(f"LR(0) automaton: {len(states)} states")
+for sid, items in enumerate(states):
+    print(f"\nState {sid}:")
+    for nt, prod, dot in sorted(items):
+        before = " ".join(prod[:dot])
+        after  = " ".join(prod[dot:])
+        print(f"  {nt} -> {before} . {after}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+The ACTION and GOTO tables Bison emits are read straight off this automaton: transitions on terminals become shift entries, transitions on nonterminals become goto entries, and any state containing a dot-at-the-end item becomes a reduce — with the LALR(1) lookahead sets deciding *which* lookahead tokens trigger each reduction. When two of those rules claim the same table cell, you get exactly the shift/reduce and reduce/reduce conflicts described in Part 7.1 and manufactured in the experiment above.

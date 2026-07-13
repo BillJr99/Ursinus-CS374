@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Finite Automata
 
-Think of a turnstile at a subway station. It has exactly two states — **locked** and **unlocked** — and two transitions: inserting a coin moves it from locked to unlocked, and pushing moves it from unlocked back to locked. That tiny machine already captures the essence of a finite automaton: a fixed set of states, arrows triggered by input symbols, and a yes/no verdict at the end. The remarkable fact you will discover today is that this humble model is *exactly* as powerful as every regular expression you have ever written.
+Think of a turnstile at a subway station. It has exactly two states — **locked** and **unlocked** — and two transitions: inserting a coin moves it from locked to unlocked, and pushing moves it from unlocked back to locked. That tiny machine already captures the essence of a finite automaton: a fixed set of states, arrows triggered by input symbols, and a yes/no verdict at the end. The remarkable fact you will discover today is that this humble model is *exactly* as powerful as every pattern you wrote in the *Regular Expressions* activity.
 
 ## Learning Goals
 
@@ -571,3 +571,7 @@ In your notebook: the DFA's whole intelligence is choosing what little to rememb
 - Michael Sipser. *Introduction to the Theory of Computation*, Chapter 1.
 - Russ Cox. "Regular Expression Matching Can Be Simple And Fast" (online): Thompson's construction in production.
 - [Automata Tutor](https://automata.cs.ru.nl/) — interactive DFA/NFA design and verification tool.
+
+---
+
+Up next: the *Tokens and Scanning* activity turns this machinery into a working lexer — and these constructions are the heart of the Automata assignment.

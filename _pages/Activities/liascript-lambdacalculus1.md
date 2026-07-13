@@ -36,7 +36,7 @@ By the end of this activity, you will be able to:
 
 Lambda calculus was invented by Alonzo Church in the 1930s to answer a fundamental question: what does it mean to *compute*? Church showed that two symbols — λ (for "function") and · (for "apply") — are sufficient to compute anything that is computable. Every programming language you have ever used, including Python, is secretly a lambda calculus with extra syntax. By the end of this activity, you will have seen Python's entire evaluation model in eight lines of math.
 
-Beneath Scheme, beneath Python's `lambda`, beneath every functional language, sits a formal system from 1936 with **three forms of expression and one rule of computation**: Alonzo Church's **lambda calculus**, in which functions are the only thing that exists, and computing means substituting arguments into bodies. Today we learn to read it and to reduce expressions **by hand**, the way Church did, because by-hand reduction is the only way the system becomes real. The arc: **the three forms $\rightarrow$ free and bound variables $\rightarrow$ beta reduction by hand $\rightarrow$ alpha renaming when names collide**.
+Beneath the Scheme of *Scheme: Code as Data*, beneath Python's `lambda`, beneath every functional language, sits a formal system from 1936 with **three forms of expression and one rule of computation**: Alonzo Church's **lambda calculus**, in which functions are the only thing that exists, and computing means substituting arguments into bodies. Today we learn to read it and to reduce expressions **by hand**, the way Church did, because by-hand reduction is the only way the system becomes real. The arc: **the three forms $\rightarrow$ free and bound variables $\rightarrow$ beta reduction by hand $\rightarrow$ alpha renaming when names collide**.
 
 ---
 
@@ -193,7 +193,7 @@ Result: `g(g a)`. This applies `g` twice to `a` — exactly what `twice(g)(a)` d
 ### Critical Thinking Questions
 
 5. Reduce, one arrow per step, all the way to normal form: (a) $(\lambda x.\, x)\, z$; (b) $(\lambda x.\, x\, x)(\lambda y.\, y)$; (c) $(\lambda x. \lambda y.\, y)\; A\; B$ (compare with the worked example: what does *this* function select?); (d) $(\lambda f. \lambda x.\, f\, (f\, x))\; g\; a$.
-6. Expression (d)'s result applies $g$ twice. You wrote `twice(f)` in Python last week; write the lambda calculus term and the Python side by side. Which is which?
+6. Expression (d)'s result applies $g$ twice. You wrote `twice(f)` in Python in the *Functional Programming* activity; write the lambda calculus term and the Python side by side. Which is which?
 7. Now reduce $(\lambda x.\, x\, x)(\lambda x.\, x\, x)$, the famous **Omega**. Perform two steps. What do you notice, and what does Omega prove about whether every expression has a normal form?
 8. In (d) you had a choice of which redex to reduce first at one point. Try the other order; does the normal form change? (The Church-Rosser theorem says it cannot; you have just collected one data point.)
 
@@ -704,6 +704,10 @@ In your notebook: Church built this system in 1936 to study what "computable" me
 
 The core lesson above stands on its own. The deep-dive appendices that used to follow it now live elsewhere:
 
-> **Going further:** the material that used to live here — combinatory logic and the SKI calculus: the "flock of birds" (S, K, I, B, C, W and friends), deriving B and C from S and K, bracket abstraction, and point-free programming — is covered in depth in the dedicated tutorial: [Implementing a Lambda Calculus Reducer](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md). **Direction D of the Functional assignment builds on this material.** Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here — combinatory logic and the SKI calculus: the "flock of birds" (S, K, I, B, C, W and friends), deriving B and C from S and K, bracket abstraction, and point-free programming — is covered in depth as the advanced "Combinatory Logic and the SKI Calculus" section of the dedicated tutorial: [Implementing a Lambda Calculus Reducer](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md). **Direction D of the Functional assignment builds on this material.** Explore it when your project or curiosity calls for it.
 
-> **Going further:** the material that used to live here — algebraic data types and pattern matching (safe lookups, Maybe-style values, matching on nested structures, symbolic differentiation over an expression tree) — is covered in depth in the Modern Language Features activity (pattern matching, in class) and the dedicated guide: [Typing Disciplines — Strong vs. Weak, Static vs. Dynamic, and Gradual Typing](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypingDisciplines) (product and sum types). Explore them when your project or curiosity calls for it.
+> **Going further:** the material that used to live here — algebraic data types and pattern matching — is covered in the Modern Language Features activity (pattern matching, including matching on nested structures, in class) and the dedicated guide: [Typing Disciplines — Strong vs. Weak, Static vs. Dynamic, and Gradual Typing](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypingDisciplines) (product and sum types). The specific worked ADT examples from the old appendix — safe lookups, Maybe-style values, and symbolic differentiation over an expression tree — make a good self-study exercise. Explore them when your project or curiosity calls for it.
+
+---
+
+Up next: *The Lambda Calculus, Part 2* builds booleans, numbers, and arithmetic from nothing but these functions — the Church encodings at the heart of the Functional assignment's Direction C.

@@ -33,7 +33,7 @@ By the end of this activity, you will be able to:
 >
 > If any of these feel shaky, review them first.
 
-Your interpreter happily computes `5 / 0`'s error, but what should it do with `"hello" * true`? A **type system** is a language's machinery for classifying values and rejecting senseless combinations, and the design axes (static or dynamic, strong or weak, declared or inferred) are among the most consequential your team will choose. The arc: **what types are for $\rightarrow$ the two axes $\rightarrow$ inference $\rightarrow$ adding type errors to your interpreter**.
+Your interpreter — now equipped with the environments of *Environments and Variable Storage* — happily computes `5 / 0`'s error, but what should it do with `"hello" * true`? A **type system** is a language's machinery for classifying values and rejecting senseless combinations, and the design axes (static or dynamic, strong or weak, declared or inferred) are among the most consequential your team will choose. The arc: **what types are for $\rightarrow$ the two axes $\rightarrow$ inference $\rightarrow$ adding type errors to your interpreter**.
 
 ---
 
@@ -135,7 +135,7 @@ print(categorize(200))    # fine
 ### Critical Thinking Questions
 
 1. Fill the grid and name a plausible language for each row.
-2. Row 3's behavior (coercion) maximizes which evaluation criterion from week 2, and damages which? Cite the `"5" + 1` versus `"5" - 1` asymmetry in JavaScript as evidence.
+2. Row 3's behavior (coercion) maximizes which criterion from the *Evaluating Languages* activity, and damages which? Cite the `"5" + 1` versus `"5" - 1` asymmetry in JavaScript as evidence.
 3. Row 4 shows inference: the checker deduced `n`'s type from `5`. Sketch how it would propagate types through `let m = n + 1; let s = m + "!"` and where it would report the error. Whose line gets blamed?
 4. Testing exercises only the paths you run; static checking covers all paths. Construct a two-branch program where dynamic typing hides a type error from a test suite that achieves 100% line coverage on the happy branch — then explain why coverage did not save you.
 
@@ -540,4 +540,8 @@ The core lesson above stands on its own. The deep-dive appendices that used to f
 
 > **Going further:** the material that used to live here — Robinson unification, substitutions and the occurs check, Algorithm W, Hindley-Milner type inference, and let-polymorphism — is covered in depth in the dedicated tutorial: [Implementing Hindley-Milner Type Inference](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-type-inference.md). Explore it when your project or curiosity calls for it.
 
-> **Going further:** the material that used to live here — the static/dynamic and strong/weak axes in depth, Python annotations and `mypy`, type erasure, product and sum types, structural vs. nominal typing, and gradual typing with blame and contracts — is covered in depth in the dedicated guide: [Typing Disciplines — Strong vs. Weak, Static vs. Dynamic, and Gradual Typing](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypingDisciplines). Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here — the static/dynamic and strong/weak axes in depth, Python annotations and `mypy`, type erasure, product and sum types, structural vs. nominal typing, and gradual typing with the consistency relation and blame — is covered in depth in the dedicated guide: [Typing Disciplines — Strong vs. Weak, Static vs. Dynamic, and Gradual Typing](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypingDisciplines). Explore it when your project or curiosity calls for it.
+
+---
+
+Up next: the *Control Flow and Statement Semantics* activity pins down which code runs — and the Interpreter assignment's type-checking direction builds on today's axes.

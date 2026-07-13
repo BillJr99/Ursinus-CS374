@@ -26,7 +26,7 @@ By the end of this activity, you will be able to:
 - Use currying and partial application to build specialized functions from general ones
 - Implement recursive solutions to iterative problems without using mutable state or assignment
 
-Unit 3 turns from building languages to inhabiting one paradigm deeply. We practice **functional programming** in Python — `lambda`, `map`, `filter`, `reduce` — with the discipline of **purity** and **immutability**, because the functional toolkit is both a daily professional skill (data pipelines, modern Java/JavaScript/Rust) and the bridge to Scheme and the lambda calculus ahead.
+With the interpreter core complete through *Control Flow Semantics*, the course turns from building languages to inhabiting one paradigm deeply. We practice **functional programming** in Python — `lambda`, `map`, `filter`, `reduce` — with the discipline of **purity** and **immutability**, because the functional toolkit is both a daily professional skill (data pipelines, modern Java/JavaScript/Rust) and the bridge to Scheme and the lambda calculus ahead.
 
 Arc: **purity and why it pays → the big three combinators → higher-order thinking → currying and partial application → recursion without loops**
 
@@ -41,7 +41,7 @@ Arc: **purity and why it pays → the big three combinators → higher-order thi
 
 ## Directions and Group Roles
 
-Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**). Consider each model and question individually first, then discuss with your group.
+Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**). Consider each model and question individually first, then discuss with your group. The Recorder posts answers to the Class Activity Questions discussion board; the Presenter reports out areas of disagreement or alternative approaches.
 
 ---
 
@@ -204,7 +204,7 @@ print(f"max score: {max_score}")
 
 Python gives you two roads to the same destination: the `map`/`filter` combinators you just saw, and *list comprehensions*, which borrow syntax from mathematical set-builder notation. Model 2 puts them side by side so you can see that they produce identical results while looking quite different. Understanding both is practical — you will encounter both in real Python codebases — and comparing them deepens your intuition for what "transforming a collection" really means.
 
-> **Watch out!** Immutability does not mean "constant." In Python, writing `x = 5` creates a variable that you could reassign tomorrow. True immutability in functional programming means that once a data structure is built you never modify it — instead you build a new one. Python's `tuple` is immutable; a `list` is not. When you call `pure_double` above, `original` stays unchanged not because Python enforces it, but because the function was *written* to build a new list. Nothing stops you from writing an impure version — discipline and code review do.
+> **Watch out!** Immutability does not mean "constant." In Python, writing `x = 5` creates a variable that you could reassign at any time. True immutability in functional programming means that once a data structure is built you never modify it — instead you build a new one. Python's `tuple` is immutable; a `list` is not. When you call `pure_double` above, `original` stays unchanged not because Python enforces it, but because the function was *written* to build a new list. Nothing stops you from writing an impure version — discipline and code review do.
 
 ## Model 2: Comprehensions vs. Combinators
 
@@ -708,8 +708,12 @@ Purity forbids a function from leaving traces on the world — which makes it tr
 
 The core lesson above stands on its own. The deep-dive appendices that used to follow it now live on the Tutorials shelf:
 
-> **Going further:** the material that used to live here — the Maybe, List, and IO monads, the monad laws, do-notation, thunks, lazy evaluation, and infinite streams — is covered in depth in the dedicated tutorial: [Haskell Essentials for the Programming Languages Course](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-haskell-essentials.md). Explore it when your project or curiosity calls for it.
+> **Going further:** [Haskell Essentials for the Programming Languages Course](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-haskell-essentials.md) covers the Haskell fundamentals behind this unit — functions, pattern matching, algebraic data types, and higher-order style. The monads material that used to live here — the Maybe, List, and IO monads, the monad laws, do-notation, thunks, and infinite streams — is not covered in the course materials; explore it independently (keywords: "monad laws," "do-notation," "thunks and lazy evaluation," "infinite streams Haskell"). Direction A of the Functional assignment covers lazy sequences and generators in Python.
 
 > **Going further:** the material that used to live here — treating parsers themselves as composable higher-order functions — is covered in depth in the dedicated tutorial: [Parser Combinators — Parsers as First-Class Values](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-parser-combinators.md). Explore it when your project or curiosity calls for it.
 
 > **Going further:** the continuation-passing style unit and the MapReduce/parallel-functional-programming unit that used to live here now live where they are assessed. **Directions B and E of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Functional) build on this material — read the tutorial pointer sections there before choosing those directions.**
+
+---
+
+Up next: the *Scheme: Code as Data* activity visits the language where this paradigm is native — and everything here is the core of the Functional assignment.

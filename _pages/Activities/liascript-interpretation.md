@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tree-Walking Interpretation
 
-You have a lexer that turns characters into tokens and a parser that turns tokens into trees. Now comes the payoff: the **evaluator** turns those trees into *values* — it is the part that actually *runs* your program. Think of it as a universal translator: given any sentence in the source language (an AST node), it produces the meaning (a Python value) directly, by asking the same question recursively of every sub-sentence. After today, no magic remains between source code and output.
+You have a lexer (*Tokens and Scanning*) that turns characters into tokens and a parser (*Recursive Descent Parsing*) that turns tokens into trees. Now comes the payoff: the **evaluator** turns those trees into *values* — it is the part that actually *runs* your program. Think of it as a universal translator: given any sentence in the source language (an AST node), it produces the meaning (a Python value) directly, by asking the same question recursively of every sub-sentence. After today, no magic remains between source code and output.
 
 ## Learning Goals
 
@@ -565,11 +565,11 @@ print(f"\nEvaluated result: {eval_postorder(expr_tree)}  (expected 9.0)")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-**CTQ M4.1** The BFS order for `(1 + 2) * 3` is `* + 3 1 2`. Explain precisely why you *cannot* evaluate the tree by processing nodes in this order. Which node in the BFS order is visited before its children's values are available?
+**CTQ M5.1** The BFS order for `(1 + 2) * 3` is `* + 3 1 2`. Explain precisely why you *cannot* evaluate the tree by processing nodes in this order. Which node in the BFS order is visited before its children's values are available?
 
-**CTQ M4.2** Post-order guarantees that every node is processed *after all its descendants*. Is this property true of DFS pre-order as well? Give a concrete example of a case where pre-order evaluation fails for the same reason BFS fails.
+**CTQ M5.2** Post-order guarantees that every node is processed *after all its descendants*. Is this property true of DFS pre-order as well? Give a concrete example of a case where pre-order evaluation fails for the same reason BFS fails.
 
-**CTQ M4.3** The `eval_postorder` function uses recursion — but the call stack is implicit. Rewrite it iteratively using an explicit stack, producing the same result. What is the relationship between the recursive call stack and the explicit stack you used?
+**CTQ M5.3** The `eval_postorder` function uses recursion — but the call stack is implicit. Rewrite it iteratively using an explicit stack, producing the same result. What is the relationship between the recursive call stack and the explicit stack you used?
 
 ---
 
@@ -637,3 +637,7 @@ The core lesson above stands on its own. The deep-dive appendices that used to f
 > **Going further:** the material that used to live here — the standalone start-to-finish pipeline (tokenizer, parser, evaluator, statement executor, error reporting, closures, and a complete REPL, assembled as one program) — is covered in depth in the dedicated tutorial: [Build a Complete Interpreter in Python — Step by Step](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md), the complete start-to-finish companion for the Interpreter assignment. Explore it when your project or curiosity calls for it.
 
 > **Going further:** the operational-semantics appendix (specifying languages with inference rules: judgments, big-step and small-step rules, and derivation trees) is now a self-study topic — search "big-step operational semantics" or start with Chapter 3 of Benjamin Pierce's *Types and Programming Languages* when curiosity calls for it.
+
+---
+
+Up next: the *Binding and Scope* activity confronts the first crack in this evaluator — one flat dictionary of variables — and together they anchor the Interpreter assignment.

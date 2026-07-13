@@ -20,7 +20,7 @@ Think of building a programming language the way you would build a house: first 
 
 By the end of this activity, you will be able to:
 
-- Trace the arc from lambda calculus through grammars, parsing, type systems, and interpreter construction, and explain how each stage builds on the previous
+- Trace the arc from evaluating languages through grammars, parsing, and interpreter construction to the functional lens of lambda calculus, and explain how each stage builds on the previous
 - Encode Church booleans, Church numerals, and basic arithmetic in pure lambda calculus, demonstrating that computation requires no primitives beyond functions
 - Identify the three phases of a language implementation pipeline (lexing, parsing, evaluation) and describe the data structure each phase produces
 - Explain why the theoretical machinery of this course (grammar rules, type judgments, reduction rules) and the engineering artifacts (parsers, type checkers, interpreters) are the same ideas at different levels of abstraction
@@ -28,7 +28,7 @@ By the end of this activity, you will be able to:
 
 By December, you will have built a working programming language — a language you designed, with syntax you chose, with semantics you defined, that runs real programs. Today, on the first day, we will preview every major idea you will need to get there, condensed into 90 minutes of exploration. You will not understand everything today — that is the point. These are the questions this course answers.
 
-The course begins with beauty: lambda calculus, the mathematical theory of computation published by Alonzo Church in 1936 — before computers existed — showing that all of computation can be built from a single idea (functions) and three rules (variables, abstraction, application). From there it moves through theory: grammars that define the shape of legal programs, parsing algorithms (LL, LR, and the tools Flex and Bison) that turn source text into structured data, and type systems that reason about program correctness without running a single line. The course ends with engineering: building a real interpreter, transpiler, or compiler for a language you have designed yourself. The magic is that the theory and the engineering are the same thing at different levels of abstraction — the grammar rules you write in Week 7 become the parser functions you write in Week 10, which become the type-checker you extend in Week 12, which becomes the interpreter you complete in Week 15.
+The course's arc runs in five movements. First: what languages *are* and how to judge them (*Programming Paradigms*, *Evaluating Languages*). Then the front end: grammars, regular expressions, automata, lexing, abstract syntax trees, and parsing — the machinery that turns source text into structured data. Then giving programs meaning: tree-walking interpretation, binding and scope, environments, type systems, and control flow. Then the functional lens: functional programming, Scheme, and the lambda calculus — the mathematical theory of computation published by Alonzo Church in 1936, before computers existed, showing that all of computation can be built from a single idea (functions) and three rules (variables, abstraction, application). And finally, your language: the design workshop, the build sprints, and Demo Day, where you present a real interpreter for a language you designed yourself. The magic is that the theory and the engineering are the same thing at different levels of abstraction — the grammar rules of the syntax unit become the parser functions of the parsing unit, which feed the evaluator of the interpretation unit, which your type checker, your extensions, and finally your team's own language build upon.
 
 > **Before You Begin:** This activity assumes you can:
 > - Write and call basic Python functions, including functions that take other functions as arguments (higher-order functions)
@@ -47,9 +47,9 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 # Part I: The Foundation
 
-Before any real structure can be built, someone has to prove the ground can support it. Lambda calculus is that proof: a mathematician showed in 1936, before electronic computers existed, that a single idea — the function — is sufficient to express every computation. Everything else in this course (types, parsers, interpreters) rests on that foundation.
+Before any real structure can be built, someone has to prove the ground can support it. Lambda calculus is that proof: a mathematician showed in 1936, before electronic computers existed, that a single idea — the function — is sufficient to express every computation. Everything else in this course (types, parsers, interpreters) rests on that foundation — and although you will not study it properly until the *Lambda Calculus* activities late in the semester, it deserves the first taste today.
 
-## Model 1: Everything Starts Here — Lambda Calculus in 10 Lines
+## Model 1: The Deep Foundation — Lambda Calculus in 10 Lines
 
 Lambda calculus is the theory of computation from 1936. It has **three rules**: a variable is an expression; `lambda x. E` is a function; and `E1 E2` is applying `E1` to `E2`. That is the entire language. No numbers. No booleans. No loops. No `if`. Yet it is computationally universal — anything a modern computer can compute, lambda calculus can compute. The code below shows this: we build booleans, natural numbers, arithmetic, and even recursion entirely from `lambda`.
 
@@ -91,7 +91,7 @@ factorial_logic = lambda self: lambda n: 1 if n <= 0 else n * self(n-1)
 factorial = Y(factorial_logic)
 print(f"\nY combinator factorial(5) = {factorial(5)}")
 
-print("\n>>> This is where the course begins.")
+print("\n>>> This is the deep foundation the whole course builds toward.")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
@@ -105,7 +105,7 @@ print("\n>>> This is where the course begins.")
 
 > **Watch out!** Python's `lambda` keyword is just syntax sugar for defining a function — it is not the same thing as lambda calculus. In Model 1, we are using Python `lambda` as a convenient notation to *simulate* lambda calculus, but the real lambda calculus has no numbers, no `print`, and no Python runtime underneath it. When you see `TRUE = lambda x: lambda y: x`, mentally replace "Python lambda" with "mathematical function abstraction" — the Python is just a vehicle for the idea.
 
-> **CTQ 4** This preview was 30 lines. By Week 3 of this course, you will understand every line. Write one question about something here you do not yet understand. Keep it — it is a learning goal.
+> **CTQ 4** This preview was 30 lines. By the time we reach the *Lambda Calculus* activities, you will understand every line. Write one question about something here you do not yet understand. Keep it — it is a learning goal.
 
 ---
 
@@ -115,7 +115,7 @@ A blueprint is useless if nobody can read it — it has to follow a standard not
 
 ## Model 2: Grammars — The Shape of Language
 
-A grammar defines what strings are **legal programs**. It is a set of recursive rules — a formal description of syntax. The grammar below defines arithmetic expressions, and the parser is a direct translation of the grammar into code: each grammar rule becomes a function. This connection between grammars and parsers is the core insight of Weeks 10–14.
+A grammar defines what strings are **legal programs**. It is a set of recursive rules — a formal description of syntax. The grammar below defines arithmetic expressions, and the parser is a direct translation of the grammar into code: each grammar rule becomes a function. This connection between grammars and parsers is the core insight of the front-end unit, from *Syntax and BNF/EBNF* through *Recursive Descent Parsing*.
 
 ```python  liascript
 import re
@@ -197,7 +197,7 @@ print("Notice: ('+', 3.0, ('*', 4.0, 2.0)) -- multiplication binds tighter!")
 
 > **Watch out!** Students often say "the root of the AST is evaluated first," but that is backwards. The root is the *last* thing evaluated — it depends on its children being evaluated first, just as a `+` node cannot add until both its left and right subtrees have been computed. Think of an AST as a recipe: the root is the final dish, and evaluation works from the leaves (ingredients) upward to the root (the finished result).
 
-> **CTQ 8** This parser is about 30 lines. By Week 11, you will write a full parser that handles an entire programming language. What features would you need to add to handle variables, function definitions, and loops?
+> **CTQ 8** This parser is about 30 lines. By the *Recursive Descent Parsing* activity, you will write a full parser that handles an entire programming language. What features would you need to add to handle variables, function definitions, and loops?
 
 ---
 
@@ -207,7 +207,7 @@ A building inspector reviews the blueprints before a single beam is cut — they
 
 ## Model 3: Types — The Contracts of Programming
 
-A type system prevents entire classes of errors by reasoning about programs **before they run**. The code below is a tiny type checker for a small expression language. It walks the AST and either confirms the program is well-typed or reports a type error — without executing a single expression. This previews Weeks 6–9.
+A type system prevents entire classes of errors by reasoning about programs **before they run**. The code below is a tiny type checker for a small expression language. It walks the AST and either confirms the program is well-typed or reports a type error — without executing a single expression. This previews the *Type Systems* activity and the Interpreter assignment's type-checking direction.
 
 ```python  liascript
 from dataclasses import dataclass
@@ -302,7 +302,7 @@ Once the blueprints are drawn, the materials are certified, and the inspector ha
 
 ## Model 4: The Interpreter — Running a Language You Designed
 
-An interpreter evaluates an AST directly. The one below handles variables, arithmetic, conditionals, lambda functions, function application, and let-bindings — the core of a real functional language. The key insight is **closures**: when a function is created, it captures the environment at the point of creation, not the environment at the point of call. This is the destination of Weeks 11–15.
+An interpreter evaluates an AST directly. The one below handles variables, arithmetic, conditionals, lambda functions, function application, and let-bindings — the core of a real functional language. The key insight is **closures**: when a function is created, it captures the environment at the point of creation, not the environment at the point of call. This is the destination of the interpretation unit — *Tree-Walking Interpretation* through *Closures and First-Class Functions* — and of the Interpreter assignment.
 
 ```python  liascript
 from dataclasses import dataclass, field
@@ -379,8 +379,8 @@ print(f"let x=10 in let f=lambda y. x+y in f(7) = {interp(prog, global_env)}")
 cond_prog = If(BinOp('>', Num(5), Num(3)), Num(100), Num(0))
 print(f"if 5>3 then 100 else 0 = {interp(cond_prog, global_env)}")
 
-print("\n>>> By Week 12, you will have built this interpreter from scratch.")
-print(">>> By Week 15, you will have added YOUR OWN features.")
+print("\n>>> By the end of the interpretation unit, you will have built this interpreter from scratch.")
+print(">>> By Demo Day, you will have added YOUR OWN features.")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
@@ -498,9 +498,17 @@ print(f"           -> {int(result)}")
 
 print("\n" + "="*50)
 print("COURSE ROADMAP:")
-print("  Weeks 1-4:  Functional programming + lambda calculus  (Model 1)")
-print("  Weeks 5-8:  Types + grammars + scanning              (Models 2-3)")
-print("  Weeks 9-15: Parsing + interpreting + YOUR language   (Models 4-5)")
+print("  First:   what languages are + how to judge them")
+print("           (paradigms, evaluation)")
+print("  Then:    the front end -- grammars, regex, automata,")
+print("           lexing, ASTs, parsing          (Models 2, 4)")
+print("  Then:    giving programs meaning -- interpretation,")
+print("           scope, environments, types,")
+print("           control flow                   (Models 3, 5)")
+print("  Then:    the functional lens -- functional programming,")
+print("           Scheme, lambda calculus        (Model 1)")
+print("  Finally: YOUR language -- design workshop, sprints,")
+print("           Demo Day")
 print("="*50)
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
@@ -586,7 +594,7 @@ If an optimizer replaces the first with the second (constant folding), how much 
 
 # Reflection
 
-> You have just seen the entire arc of the course in one session. Looking back at the four Models — lambda calculus, grammars, type systems, interpreters — and forward to your final project: **what kind of language do you want to build?** What syntax would you use? What features matter most to you? What would make someone WANT to use a language you designed? Write a paragraph. Keep it — you will return to it in Week 15 and see how your thinking has changed.
+> You have just seen the entire arc of the course in one session. Looking back at the four Models — lambda calculus, grammars, type systems, interpreters — and forward to your final project: **what kind of language do you want to build?** What syntax would you use? What features matter most to you? What would make someone WANT to use a language you designed? Write a paragraph. Keep it — you will return to it as Demo Day approaches and see how your thinking has changed.
 
 ---
 
@@ -596,8 +604,12 @@ If an optimizer replaces the first with the second (constant folding), how much 
 
 - *Programming Languages: Application and Interpretation* (Shriram Krishnamurthi) — the PLAI textbook used in this course; builds an interpreter incrementally from first principles, exactly as we will.
 
-- Gabriel Lebec, "Lambda as JS, or A Flock of Functions" — https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript — a direct visual preview of Weeks 2–4; Church encodings in JavaScript with beautiful diagrams.
+- Gabriel Lebec, "Lambda as JS, or A Flock of Functions" — https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript — a direct visual preview of the lambda-calculus unit; Church encodings in JavaScript with beautiful diagrams.
 
-- *Types and Programming Languages* (Pierce) — the graduate-level type theory text; Chapters 3–10 align with Weeks 6–9 of this course. Challenging but rewarding.
+- *Types and Programming Languages* (Pierce) — the graduate-level type theory text; Chapters 3–10 align with this course's type-systems unit. Challenging but rewarding.
 
 - Peter Norvig, "Lispy" — a Scheme interpreter in Python in 90 lines: http://norvig.com/lispy.html — if you finish the exercises early, read this; it is a compressed version of the entire second half of this course.
+
+---
+
+This preview accompanies *Welcome: Why Study Programming Languages?* — the journey itself begins there, with *Programming Paradigms* as the first stop after it.

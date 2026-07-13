@@ -40,7 +40,7 @@ By the end of this activity, you will be able to:
 
 ---
 
-Language design did not stop with the features your interpreter implements; it accelerated. Today we survey four ideas that define the current generation (pattern matching, generics, memory safety through ownership, and async concurrency), each through the lenses you have built: what problem it solves, what it costs, and which evaluation criterion it serves. Your project pitches a feature menu next week; today stocks the menu. The arc: **pattern matching $\rightarrow$ generics $\rightarrow$ ownership $\rightarrow$ async $\rightarrow$ choosing for your language**.
+Language design did not stop with the features your interpreter implements; it accelerated — and the closures you just built in *Closures and First-Class Functions* are the mechanism beneath several of today's features. Today we survey four ideas that define the current generation (pattern matching, generics, memory safety through ownership, and async concurrency), each through the lenses you have built: what problem it solves, what it costs, and which evaluation criterion it serves. Your team committed to a language niche at the *Language Design Workshop* kickoff; today restocks its feature menu for the sprints ahead. The arc: **pattern matching $\rightarrow$ generics $\rightarrow$ ownership $\rightarrow$ async $\rightarrow$ choosing for your language**.
 
 ---
 
@@ -500,3 +500,7 @@ The core lesson above stands on its own. The deep-dive appendices that used to f
 > **Going further:** the material that used to live here — macros and metaprogramming: C-style textual macros and their double-evaluation hazards, quasiquotation, and hygienic expansion — is now project material: the **Macros or Hygienic Quoting** entry in the [Team Language Project's Extensions Menu](https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage) specifies exactly what a credited macro extension must do, and [Building the Mini Language: A Complete Guide](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-project-language-guide.md) provides the interpreter foundation to build it on. Explore it when your project or curiosity calls for it.
 
 > **Going further:** two former appendices are now self-study topics. *Objects and OOP from closures to vtables* — method resolution order (MRO) and the diamond problem, abstract base classes, and how vtables implement dynamic dispatch — is a rich afternoon with the Python data-model docs; search "C3 linearization," "Python MRO," and "abstract base class." *The expression problem* — why adding new node types is easy in OOP but adding new operations is easy in functional style, and never both — is the classic design tension behind your evaluator; search "expression problem Wadler" and revisit it when your team debates visitor vs. match.
+
+---
+
+Up next: the *Sprint Studio and Gallery Walk* sessions turn this menu into working features in your team's language, on the road to Demo Day.

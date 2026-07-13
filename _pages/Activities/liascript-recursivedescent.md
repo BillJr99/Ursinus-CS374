@@ -24,7 +24,7 @@ By the end of this activity, you will be able to:
 - Construct a working recursive descent parser for a statement-level grammar including assignments, conditionals, and while loops
 - Produce informative error messages by detecting and reporting unexpected tokens at each parsing decision point
 
-The parser is where the grammar becomes a program, and **recursive descent** is the technique that makes the translation nearly mechanical: **one function per nonterminal**, where each function's body mirrors its production's right-hand side. Over two days we learn the mapping, meet its one famous landmine (left recursion), and parse real statements. The arc: **the grammar-to-code mapping $\rightarrow$ a working statement parser $\rightarrow$ left recursion and lookahead $\rightarrow$ error messages worth reading**.
+The parser is where the grammar becomes a program, and **recursive descent** is the technique that makes the translation nearly mechanical: **one function per nonterminal**, where each function's body mirrors its production's right-hand side. Over two days we learn the mapping, meet its one famous landmine (left recursion), and parse real statements. The arc: **the grammar-to-code mapping $\rightarrow$ a working statement parser $\rightarrow$ left recursion and lookahead $\rightarrow$ error messages worth reading**. In the *Abstract Syntax Trees* activity you designed the trees a parser should build; today you build the machine that produces them.
 
 ---
 
@@ -276,7 +276,7 @@ for source in ["print 42;", "let x = 7;", "let x 7;"]:
 
 > **CTQ 2.4** Annotate each parser method with the production it implements (the comments start you off). Where does the sequence rule become consecutive calls? Where does alternation become an `if`?
 
-> **CTQ 2.5** The parser returns tuples like `("let", "x", ("num", 7.0))`. You have been told the parser builds a tree; where is the tree? Identify the nesting, two modules early.
+> **CTQ 2.5** The parser returns tuples like `("let", "x", ("num", 7.0))`. You have been told the parser builds a tree; where is the tree? Identify the nesting, and connect these tuples back to the node shapes from the *Abstract Syntax Trees* activity.
 
 > **CTQ 2.6** Run the failing case `let x 7;` and read the error. Which `expect` fired, and does the message satisfy your 2 AM standard from CTQ 1.2? Improve one message.
 
@@ -476,13 +476,7 @@ When parsing a statement like `if ( cond ) stmt`, the parser's call sequence is:
 
 ---
 
-## Reflection Prompt
-
-In your notebook: recursive descent works because the code's shape *is* the grammar's shape, a rare case of documentation that cannot drift from implementation. Where else have you seen (or wished for) structure and description fused this way?
-
----
-
-# Part III: Runnable Models
+# Part III: Runnable Models (Day 2, continued)
 
 ## Model 3: Complete Recursive Descent Parser
 
@@ -684,249 +678,7 @@ pprint.pprint(ast)
 
 ---
 
-## Model 4: Error Recovery
-
-> **Good parser errors are a form of respect for the programmer.** A generic "parse error" at the wrong line makes debugging miserable. A good error includes:
->
-> - The **line number and column number** — so the programmer can jump directly to the problem
-> - **What token was seen** — the actual bad input
-> - **What was expected instead** — what would have made it valid
->
-> Example: `SyntaxError at line 3, column 7: expected ')' but got '+'`
->
-> Beyond good messages, a **recovering** parser can continue after an error by skipping to a known-good boundary (a semicolon or closing brace) and resuming. This lets one run of the parser report multiple errors instead of stopping at the first one.
-
-> **Intuition:** The recovering parser below uses a `try/except` loop in `parse_program`. When a statement parse fails, instead of crashing, it catches the `ParseError`, records the message, and calls `synchronize()` to skip forward to the next semicolon or closing brace. This way, if a 100-line program has 3 syntax errors, you see all 3 at once instead of having to fix-and-rerun three separate times.
-
-```python  liascript
-# Error-recovering parser shell.  Paste into the Model 3 Parser class
-# (or run standalone: it re-tokenizes a broken program).
-
-import re
-
-TOKEN_RE = re.compile(
-    r'(?P<FLOAT>\d+\.\d*|\.\d+)|'
-    r'(?P<NUMBER>\d+)|'
-    r'(?P<KEYWORD>if|while|print)\b|'
-    r'(?P<IDENT>[A-Za-z_]\w*)|'
-    r'(?P<LBRACE>\{)|(?P<RBRACE>\})|'
-    r'(?P<LPAREN>\()|(?P<RPAREN>\))|'
-    r'(?P<SEMI>;)|'
-    r'(?P<ASSIGN>=)|'
-    r'(?P<ADDOP>[+\-])|'
-    r'(?P<MULOP>[*/])|'
-    r'(?P<WS>\s+)'
-)
-
-class Token:
-    def __init__(self, type_, lexeme, line, col):
-        self.type = type_; self.lexeme = lexeme
-        self.line = line; self.col = col
-    def __repr__(self): return f"Token({self.type}, {self.lexeme!r}, {self.line}:{self.col})"
-
-def tokenize(src):
-    tokens, line, line_start = [], 1, 0
-    for m in TOKEN_RE.finditer(src):
-        kind = m.lastgroup
-        col = m.start() - line_start + 1
-        if kind == "WS":
-            for ch in m.group():
-                if ch == "\n":
-                    line += 1; line_start = m.start() + m.group().index(ch) + 1
-            continue
-        tokens.append(Token(kind, m.group(), line, col))
-    tokens.append(Token("EOF", "", line, 0))
-    return tokens
-
-class ParseError(Exception):
-    pass
-
-class RecoveringParser:
-    SYNC_TOKENS = {"SEMI", "RBRACE", "EOF"}
-
-    def __init__(self, src):
-        self.tokens = tokenize(src)
-        self.pos = 0
-        self.errors = []
-
-    def peek(self):
-        return self.tokens[self.pos]
-
-    def advance(self):
-        tok = self.peek()
-        if tok.type != "EOF": self.pos += 1
-        return tok
-
-    def expect(self, ttype, lexeme=None):
-        tok = self.peek()
-        match_type = tok.type == ttype
-        match_lex  = (lexeme is None) or (tok.lexeme == lexeme)
-        if match_type and match_lex:
-            return self.advance()
-        want = f"'{lexeme}'" if lexeme else ttype
-        got  = f"'{tok.lexeme}'" if tok.lexeme else "end of input"
-        msg = (f"line {tok.line}, col {tok.col}: "
-               f"expected {want}, got {got} ({tok.type})")
-        self.errors.append(msg)
-        raise ParseError(msg)
-
-    def synchronize(self):
-        """Skip tokens until a likely statement boundary."""
-        while self.peek().type not in self.SYNC_TOKENS:
-            self.advance()
-        if self.peek().type == "SEMI":
-            self.advance()   # consume the semicolon
-
-    def parse_assign(self):
-        name = self.expect("IDENT").lexeme
-        self.expect("ASSIGN")           # will error if missing
-        # ... (rest of expression parsing omitted for brevity)
-        self.expect("SEMI")
-        return ("assign", name)
-
-    def parse_program(self):
-        stmts = []
-        while self.peek().type != "EOF":
-            try:
-                tok = self.peek()
-                if tok.type == "IDENT":
-                    stmts.append(self.parse_assign())
-                else:
-                    self.errors.append(
-                        f"line {tok.line}, col {tok.col}: "
-                        f"unexpected token '{tok.lexeme}' ({tok.type})"
-                    )
-                    self.advance()
-            except ParseError:
-                self.synchronize()
-        return stmts
-
-# ── Test broken programs ──────────────────────────────────────────────────────
-
-broken_programs = [
-    "x = 5\ny = 3;",          # missing semicolon after first statement
-    "x  5;",                  # missing '='
-    "print 2 + ;",            # missing operand
-]
-
-for prog in broken_programs:
-    p = RecoveringParser(prog)
-    p.parse_program()
-    if p.errors:
-        print(f"Input: {prog!r}")
-        for e in p.errors: print(" ", e)
-    else:
-        print(f"Input: {prog!r} -> no errors")
-    print()
-```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
-
-### Critical Thinking Questions
-
-> **CTQ 4.15** The error message format is `line {line}, col {col}: expected '{want}', got '{got}' ({type})`. Which three pieces of information are most useful for a programmer staring at the broken file at 2 AM? Rank them and justify your ranking.
-
-> **CTQ 4.16** `synchronize` skips to the next `SEMI`, `RBRACE`, or `EOF`. What class of errors will this strategy miss (i.e., never catch), and what class might it report twice? Give a concrete example of each.
-
-> **CTQ 4.17** Change `broken_programs[0]` to `"x = 5 y = 3;"` (no newline, missing semicolon mid-line). Predict the exact error message before running, then verify. What does this reveal about how the parser's location tracking handles implicit line continuation?
-
----
-
-## Model 5: Left Recursion Elimination
-
-> **Intuition:** This model shows the crash in action, then the fix. The `BrokenParser` translates `E → E + T | T` literally: `parse_E` calls `parse_E` as its first action, before looking at any token. Python runs out of call stack space almost immediately. The `FixedParser` uses the EBNF loop form `E → T { '+' T }`, which starts by consuming a `T` (making progress!) before looping. Both parsers build the same left-associative tree — the loop is just the stack-safe equivalent of left recursion.
-
-This model shows the transformation in code: first a **broken** parser that uses a left-recursive rule and overflows the stack, then the **repaired** version using a loop, and finally a verification that both produce the same left-leaning tree shape.
-
-```python  liascript
-# Left recursion demo and elimination.
-# Grammar A (left-recursive, BROKEN for recursive descent):
-#   E -> E "+" T | T
-# Grammar B (repaired with EBNF, safe for recursive descent):
-#   E -> T { "+" T }
-
-import sys
-sys.setrecursionlimit(50)    # expose the crash quickly; lower than default
-
-# ── Minimal token stream ─────────────────────────────────────────────────────
-
-def lex(src):
-    tokens = []
-    for ch in src.split():
-        if ch.lstrip('-').isdigit():
-            tokens.append(("NUM", int(ch)))
-        elif ch == '+':
-            tokens.append(("PLUS", '+'))
-        else:
-            tokens.append(("IDENT", ch))
-    tokens.append(("EOF", None))
-    return tokens
-
-class SimpleParser:
-    def __init__(self, src):
-        self.tokens = lex(src); self.pos = 0
-    def peek(self): return self.tokens[self.pos]
-    def advance(self):
-        t = self.peek()
-        if t[0] != "EOF": self.pos += 1
-        return t
-    def parse_T(self):
-        t = self.advance()
-        return ("num", t[1])
-
-# ── Version A: left-recursive (will crash) ──────────────────────────────────
-
-class BrokenParser(SimpleParser):
-    def parse_E(self):
-        # E -> E "+" T | T   (left-recursive: calls itself before any input)
-        left = self.parse_E()             # <-- infinite recursion here
-        if self.peek()[0] == "PLUS":
-            self.advance()
-            right = self.parse_T()
-            return ("+", left, right)
-        return left
-
-# ── Version B: repaired with EBNF loop ──────────────────────────────────────
-
-class FixedParser(SimpleParser):
-    def parse_E(self):
-        # E -> T { "+" T }   (no left recursion; builds the same left-leaning tree)
-        node = self.parse_T()
-        while self.peek()[0] == "PLUS":
-            self.advance()
-            node = ("+", node, self.parse_T())   # fold left as we go
-        return node
-
-# ── Demonstrate ──────────────────────────────────────────────────────────────
-
-print("=== Broken parser (expect RecursionError) ===")
-try:
-    BrokenParser("1 + 2 + 3").parse_E()
-except RecursionError as e:
-    print("RecursionError: left-recursive parse_E() called itself before consuming input")
-
-print()
-print("=== Fixed parser (EBNF loop) ===")
-for src in ["1 + 2", "1 + 2 + 3", "1 + 2 + 3 + 4"]:
-    tree = FixedParser(src).parse_E()
-    print(f"  {src!r:18} -> {tree}")
-
-# Expected tree for "1 + 2 + 3":
-# ('+', ('+', ('num', 1), ('num', 2)), ('num', 3))
-# Note the left-leaning structure: (1+2) computed first, as left-assoc demands.
-```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
-
-### Critical Thinking Questions
-
-> **CTQ 5.18** The repaired parser builds `('+', ('+', ('num', 1), ('num', 2)), ('num', 3))` for `1 + 2 + 3`. Draw this tree. Which subtree corresponds to "1 + 2" and which to the final `+ 3`? How does the tree structure encode left-associativity?
-
-> **CTQ 5.19** The same transformation applies to right-recursive grammars like `E -> T "**" E | T` (right-associative exponentiation). Rewrite it in EBNF. Should the loop fold left or right to preserve right-associativity? Show the tree for `2 ** 3 ** 4`.
-
-> **CTQ 5.20** `sys.setrecursionlimit(50)` makes the crash happen on a short input. What would happen without this limit if the input had 100 `+` operators? Relate this to why grammar designers avoid left recursion rather than just increasing the recursion limit.
-
----
-
-## Model 6: Mini Calculator Language — Lexer, Parser, and Evaluator Together
+## Model 4: Mini Calculator Language — Lexer, Parser, and Evaluator Together
 
 > **Intuition:** This is the payoff. The calculator language has only five kinds of tokens — numbers, `+`, `*`, `(`, `)` — and three grammar rules. Yet it is already a complete language implementation: the lexer breaks input into tokens, the parser turns tokens into an AST, and the evaluator walks the AST to compute the answer. Everything you need to build a language for your final project follows this same three-layer pattern, just with more rules.
 >
@@ -1128,13 +880,22 @@ print("meaning * is evaluated first -- this is how precedence is encoded in the 
 
 ### Critical Thinking Questions
 
-> **CTQ 6.21** The evaluator uses `evaluate(left)` and `evaluate(right)` recursively. What is the base case that stops the recursion? What happens if you have a deeply nested expression like `((((1 + 2))))`?
+> **CTQ 4.15** The evaluator uses `evaluate(left)` and `evaluate(right)` recursively. What is the base case that stops the recursion? What happens if you have a deeply nested expression like `((((1 + 2))))`?
 
-> **CTQ 6.22** The grammar has two levels (`expr` and `term`) to encode that `*` binds tighter than `+`. Add a third level `power` for `**` (exponentiation, right-associative) with the highest precedence. Write the grammar rule and the `parse_power` function. Should the loop fold left or right?
+> **CTQ 4.16** The grammar has two levels (`expr` and `term`) to encode that `*` binds tighter than `+`. Add a third level `power` for `**` (exponentiation, right-associative) with the highest precedence. Write the grammar rule and the `parse_power` function. Should the loop fold left or right?
 
-> **CTQ 6.23** The test case `"2 + 3 * 4"` returns `14.0`, not `20.0`. Trace the call sequence starting from `parse_expr()` and show exactly which functions are called and in what order. At which point does the parser "decide" that `3 * 4` groups together before `2 +`?
+> **CTQ 4.17** The test case `"2 + 3 * 4"` returns `14.0`, not `20.0`. Trace the call sequence starting from `parse_expr()` and show exactly which functions are called and in what order. At which point does the parser "decide" that `3 * 4` groups together before `2 +`?
 
-> **CTQ 6.24** Extend the evaluator to support variables: add a `let x = expr` statement form (semicolon-terminated), a `dict` called `env`, and a `("var", name)` node type that looks up `name` in `env`. Show the extended grammar, the new parser function, and the new evaluator case.
+> **CTQ 4.18** Extend the evaluator to support variables: add a `let x = expr` statement form (semicolon-terminated), a `dict` called `env`, and a `("var", name)` node type that looks up `name` in `env`. Show the extended grammar, the new parser function, and the new evaluator case.
+
+---
+
+---
+**🛑 In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+
+## Going Deeper (Optional Pointers)
+
+> **Going further:** the extra complete parsers that used to live here are best replaced by one polished pipeline: the dedicated tutorial [Build an Interpreter](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md) contains a complete recursive-descent parser (Stage 3) wired into a lexer and evaluator. The error-*recovering* parser that reports several syntax errors in one run by synchronizing at statement boundaries is a self-study topic — keywords: "panic-mode error recovery," "synchronization points," and the "Synchronizing a recursive descent parser" section of *Crafting Interpreters* — and makes a strong Parser-assignment stretch goal.
 
 ---
 
@@ -1143,3 +904,13 @@ print("meaning * is evaluated first -- this is how precedence is encoded in the 
 - Douglas Thain. *Introduction to Compilers and Language Design*, Chapter 4.
 - Robert Nystrom. *Crafting Interpreters*, "Parsing Expressions" (online).
 - Wirth, Niklaus. *Compiler Construction* (online), the classic minimalist treatment.
+
+---
+
+## Reflection Prompt
+
+In your notebook: recursive descent works because the code's shape *is* the grammar's shape, a rare case of documentation that cannot drift from implementation. Where else have you seen (or wished for) structure and description fused this way?
+
+---
+
+**Up next:** the *Parsing Expressions* activity turns this same machinery loose on the full operator-precedence ladder; together, the statement parser from today and the expression parser you build there form the core of the Parser assignment.

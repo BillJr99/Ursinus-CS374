@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Programming Paradigms
 
-Every program you write reflects a hidden assumption about *what a program fundamentally is*. Programming paradigms are the architectural styles of software: just as the same building function — say, a library — can be expressed as a Gothic cathedral, a glass-and-steel Modernist cube, or a terracotta Art Deco tower, the same computation can be expressed as a sequence of machine commands, a conversation among objects, a composition of mathematical functions, or a declarative set of facts and rules. Each style carries different trade-offs in clarity, scalability, and safety, and the language you design this semester will implicitly commit to one or more of them.
+Every program you write reflects a hidden assumption about *what a program fundamentally is*. Programming paradigms are the architectural styles of software: just as the same building function — say, a library — can be expressed as a Gothic cathedral, a glass-and-steel Modernist cube, or a terracotta Art Deco tower, the same computation can be expressed as a sequence of machine commands, a conversation among objects, a composition of mathematical functions, or a declarative set of facts and rules. Each style carries different trade-offs in clarity, scalability, and safety, and the language you design this semester will implicitly commit to one or more of them. Picking up the map from *Welcome: Why Study Programming Languages?*, today we tour those styles systematically.
 
 ## Learning Goals
 
@@ -223,7 +223,7 @@ for snippet, hint in snippets:
 
 5. Classify each snippet and name the *single feature* that gave it away.
 6. `account.deposit(50)` mutates state *and* sends a message to an object. Is OO a kind of imperative programming with better manners, or something fundamentally different? Take a team position.
-7. Modern Python lets you write all four rows' ideas (the fourth via libraries). Does multi-paradigm flexibility help or hurt the *reader* of a program? Connect to tomorrow's topic, language evaluation criteria.
+7. Modern Python lets you write all four rows' ideas (the fourth via libraries). Does multi-paradigm flexibility help or hurt the *reader* of a program? Connect to the *Evaluating Languages* activity's topic, language evaluation criteria.
 
 ---
 
@@ -297,3 +297,7 @@ In your notebook: which paradigm fits the way *you* naturally think about proble
 - Peter Van Roy. "Programming Paradigms for Dummies: What Every Programmer Should Know" (2009, online). A famous map of the paradigm space.
 - Shriram Krishnamurthi. *PLAI*, early chapters on the functional core.
 - Rich Hickey. "Simple Made Easy" (Strange Loop 2011, YouTube). A functional programming designer's case for immutability.
+
+---
+
+Up next: the *Evaluating Languages* activity turns these worldviews into criteria you can argue with — and the Warmup assignment puts them into practice.

@@ -40,7 +40,7 @@ By the end of this activity, you will be able to:
 | `f(a, b)` | `(f a b)` | Every call looks the same; no special infix operators |
 | `lambda x: x * 2` | `(lambda (x) (* x 2))` | Anonymous functions use the same `(operator operands)` shape |
 
-Today we study a language as an *artifact*: **Scheme** (we use its Racket dialect), a tiny functional language whose syntax is so uniform that programs and data share one shape, the parenthesized list. Scheme matters to this course twice over: it is functional programming distilled to essentials, and its **s-expression** syntax makes the lexer-parser machinery you built almost disappear, a designed contrast your team should feel. The arc: **s-expressions $\rightarrow$ evaluation rules $\rightarrow$ recursion as the only loop $\rightarrow$ code as data**.
+Today we study a language as an *artifact*: **Scheme** (we use its Racket dialect), a tiny functional language — where the higher-order style you practiced in *Functional Programming and Higher-Order Functions* is native — whose syntax is so uniform that programs and data share one shape, the parenthesized list. Scheme matters to this course twice over: it is functional programming distilled to essentials, and its **s-expression** syntax makes the lexer-parser machinery you built almost disappear, a designed contrast your team should feel. The arc: **s-expressions $\rightarrow$ evaluation rules $\rightarrow$ recursion as the only loop $\rightarrow$ code as data**.
 
 ---
 
@@ -76,7 +76,7 @@ This model makes the connection between Scheme's syntax and the Abstract Syntax 
 1. Translate `2 + 3 * 4` and `(2 + 3) * 4` into Scheme. Which required parentheses beyond the operators' own, and why does the question almost not make sense?
 2. Draw the AST your CS374 parser builds for `2 + 3 * 4`, then write the Scheme expression beside it. State the relationship in one sentence; it is the punchline of the day.
 3. A Scheme "lexer" needs roughly four token types. Name them, and explain what a Scheme "parser" does that your recursive descent parser did not have to sweat (hint: almost nothing; nesting is explicit).
-4. What did Scheme's designers *pay* for this uniformity, in the week 2 evaluation criteria? (Ask anyone who has counted parentheses.)
+4. What did Scheme's designers *pay* for this uniformity, in the *Evaluating Languages* criteria? (Ask anyone who has counted parentheses.)
 
 ---
 
@@ -524,7 +524,7 @@ In your notebook: Scheme deletes nearly all syntax and gains the ability to trea
 
 ## Going Deeper (Optional Pointers)
 
-> **Going further:** the material that used to live here — the metacircular evaluator (Scheme in Python): s-expression parsing, environment chains, the evaluator core, the global environment, and tail-call optimization via trampoline — is covered in depth in the dedicated tutorial: [Build a Complete Interpreter in Python — Step by Step](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md). You build exactly this in the Interpreter assignment. Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here — the metacircular evaluator (Scheme in Python): s-expression parsing, environment chains, the evaluator core, the global environment, and tail-call optimization via trampoline — now lives as the advanced "Metacircular Scheme Evaluator" section of the dedicated tutorial: [Build a Complete Interpreter in Python — Step by Step](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md). The Interpreter assignment has you build the same architecture for the Mini language. Explore it when your project or curiosity calls for it.
 
 ### If you explore the evaluator: reflection prompts
 
@@ -551,3 +551,7 @@ Answer these in your course notebook if you work through the metacircular evalua
 - **R7RS Scheme specification** — The current small Scheme standard. Section 4 (Expressions) maps directly to our `scheme_eval` dispatch table. Available at [https://small.r7rs.org/](https://small.r7rs.org/).
 
 - **"Proper Tail Recursion and Space Efficiency"** — Will Clinger (PLDI 1998). A careful treatment of what tail-call optimization guarantees and how to implement it correctly.
+
+---
+
+Up next: *The Lambda Calculus, Part 1* strips away even Scheme's parentheses to reach computation's core — and both feed the Functional assignment.

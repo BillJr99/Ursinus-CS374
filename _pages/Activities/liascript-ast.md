@@ -26,12 +26,12 @@ By the end of this activity, you will be able to:
 - Build an AST by hand for a given arithmetic or assignment expression, annotating each node with its type and children
 - Apply tree transformations (constant folding, dead-code elimination) and explain how each transformation preserves program semantics
 
-Your parser has been quietly building nested tuples; this two-day module makes the tree a first-class citizen: the **abstract syntax tree (AST)**, the central data structure of every language implementation and the hinge of your whole project. The arc: **parse trees vs. ASTs → node classes → building trees in the parser → walking trees (printing today, evaluating soon) → transforming trees (optimizing)**
+In *Tokens and Scanning: Building a Lexer* you turned characters into tokens; this two-day module builds the structure those tokens are destined for: the **abstract syntax tree (AST)**, the central data structure of every language implementation and the hinge of your whole project. The recursive-descent parser you build in the *Recursive Descent Parsing* activity constructs exactly these nodes — here you learn to build, walk, and transform them by hand first. The arc: **parse trees vs. ASTs → node classes → building trees in the parser → walking trees (printing today, evaluating soon) → transforming trees (optimizing)**
 
 > **Before You Begin:** This activity assumes you can:
 > - Use Python dataclasses (`@dataclass`, typed fields, `field(...)`)
 > - Reason about recursive tree structures (a tree node holds references to other tree nodes as children)
-> - Read a simple recursive-descent parser and trace how it builds up a result from tokens
+> - Recognize a token stream (the output of your lexer from the *Tokens and Scanning* activity) as the raw material a parser consumes
 > - Understand basic operator precedence (why `2 + 3 * 4` equals `14`, not `20`)
 >
 > If any of these feel shaky, review them first.
@@ -40,7 +40,7 @@ Your parser has been quietly building nested tuples; this two-day module makes t
 
 ## Directions and Group Roles
 
-Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**). Consider each model individually first, then discuss with your group.
+Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**). Consider each model individually first, then discuss with your group. The Recorder posts answers to the Class Activity Questions discussion board; the Presenter reports out areas of disagreement or alternative approaches. After class, respond to the reflective prompt individually in your notebook.
 
 ---
 
@@ -110,7 +110,7 @@ Only 5 nodes remain. The `*` is a child of `+`, which correctly encodes that mul
 
 ## Model 1: Node Classes and the `pretty` Printer
 
-*What problem does this solve?* Now that we know what an AST *is*, we need a concrete way to represent one in Python. This model shows how to define each node type as a dataclass (so fields have names, not just positions), and then how to *walk* the tree recursively with `pretty`. Walking a tree — visiting every node in order — is the one pattern you will use for everything: printing, evaluating, type-checking, compiling. Understand `pretty` here and the evaluator next week is trivial.
+*What problem does this solve?* Now that we know what an AST *is*, we need a concrete way to represent one in Python. This model shows how to define each node type as a dataclass (so fields have names, not just positions), and then how to *walk* the tree recursively with `pretty`. Walking a tree — visiting every node in order — is the one pattern you will use for everything: printing, evaluating, type-checking, compiling. Understand `pretty` here and the evaluator of the *Tree-Walking Interpretation* activity is trivial.
 
 ```python  liascript
 from dataclasses import dataclass, field
@@ -220,7 +220,7 @@ pretty(tree2)
 
 > **CTQ 1.4** The two trees have the same nodes but different shapes. Which one evaluates to 20 and which to 14? Verify by hand.
 
-> **CTQ 1.5** `pretty` dispatches on node type and recurses on children. Name the two or three lines you would change to make it *evaluate* instead of print. You have just designed next week's interpreter.
+> **CTQ 1.5** `pretty` dispatches on node type and recurses on children. Name the two or three lines you would change to make it *evaluate* instead of print. You have just designed the interpreter of the *Tree-Walking Interpretation* activity.
 
 > **CTQ 1.6** The recursion visits children before finishing the parent's subtree. For evaluation, must children be processed before or after the parent's operation? Which traversal order is that (pre-order, in-order, or post-order)?
 
@@ -341,9 +341,9 @@ print(f"Deep expr depth:      {depth(deep)}")
 
 ## 2. The One-Line Upgrade
 
-*What problem does this solve?* Your earlier parser returned nested tuples like `('+', left, right)`. Tuples work, but they are fragile: you have to remember that index 0 is the operator, index 1 is the left child, and so on. A dataclass gives every field a *name*, making the tree self-documenting and letting Python's structural pattern matching work cleanly. The upgrade is literally one line per production: replace a tuple literal with a node constructor. Nothing else in the parser changes.
+*What problem does this solve?* A first parser often returns nested tuples like `('+', left, right)`. Tuples work, but they are fragile: you have to remember that index 0 is the operator, index 1 is the left child, and so on. A dataclass gives every field a *name*, making the tree self-documenting and letting Python's structural pattern matching work cleanly.
 
-Your expression parser changes almost nothing: every place it built a tuple now constructs a node. `('+', left, right)` becomes `BinOp('+', left, right)`. The fold-left associativity logic, the tier structure, the lookahead: untouched.
+**Preview of the connection:** the recursive-descent parser you build in the *Recursive Descent Parsing* activity constructs exactly these nodes. The upgrade from tuples is literally one line per production — every place a parser would build a tuple, it constructs a node instead: `('+', left, right)` becomes `BinOp('+', left, right)`, while the fold-left associativity logic, the tier structure, and the lookahead stay untouched.
 
 ```python  liascript
 from dataclasses import dataclass, field
@@ -645,7 +645,7 @@ Run `import ast; print(ast.dump(ast.parse("2 + 3 * 4")))` in Python. Compare Pyt
 
 ---
 
-# Part V: Expression Trees in Practice — Adapted Examples
+# Part IV: Expression Trees in Practice — Adapted Examples
 
 These models adapt code from *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE). The adapted example rewrites Allison's binary-tree traversal as a typed `ExprNode` dataclass, connecting preorder/inorder/postorder traversal directly to prefix/infix/postfix notation — the same connection your parser and evaluator rely on.
 
@@ -802,6 +802,10 @@ The AST is the third representation of the same program (characters → tokens �
 
 The core lesson above stands on its own. The deep-dive appendices that used to follow it now live on the Tutorials shelf:
 
-> **Going further:** the material that used to live here — expression-oriented language design (conditionals as values, `let`-expressions, sequencing, short-circuit and lazy evaluation) and the interpreter-to-compiler path (the visitor pattern, transpiling your AST to Python, JavaScript, and Haskell, and source maps) — is covered in depth in the dedicated tutorials: [Haskell Essentials for the Programming Languages Course](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-haskell-essentials.md) (a language where *everything* is an expression) and [Parser Combinators — Parsers as First-Class Values](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-parser-combinators.md). Explore them when your project or curiosity calls for it.
+> **Going further:** the material that used to live here — expression-oriented language design (conditionals as values, `let`-expressions, sequencing, short-circuit and lazy evaluation) and the interpreter-to-compiler path (the visitor pattern, transpiling your AST to Python, JavaScript, and Haskell, and source maps) — is covered in depth in the dedicated tutorial [From AST to Code: Visitors and Transpilers](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-ast-to-code.md). Explore it when your project or curiosity calls for it — transpilation is one of the Team Language Project's extension directions.
 
 > **Going further:** the stack-machine and bytecode-compiler material that used to live here — compiling your AST to instructions and executing them on a virtual machine — is covered in depth in the dedicated tutorial: [Building a Bytecode VM for Mini](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md). Explore it when your project or curiosity calls for it.
+
+---
+
+Up next: the *Recursive Descent Parsing* activity builds the machine that constructs these trees from tokens — together they are the core of the Parser assignment.

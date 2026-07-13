@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Control Flow Semantics
 
-Think of a program as a choose-your-own-adventure book: every time you reach a decision point, the story branches, and you only read one of the two paths that follow. Control flow semantics are the rules that determine *which* page you turn to next — and critically, whether the unchosen pages are ever glanced at at all. In this activity you will pin down those rules precisely enough to implement them in your own interpreter.
+Think of a program as a choose-your-own-adventure book: every time you reach a decision point, the story branches, and you only read one of the two paths that follow. Control flow semantics are the rules that determine *which* page you turn to next — and critically, whether the unchosen pages are ever glanced at at all. In this activity you will pin down those rules precisely enough to implement them in your own interpreter. You pinned down *what values are* in the *Type Systems* activity; today you pin down *which code runs*.
 
 ## Learning Goals
 
@@ -405,3 +405,7 @@ In your notebook: short-circuiting means the language promises *not to look* at 
 - Robert Nystrom. *Crafting Interpreters*, "Control Flow" (online), including the break-via-exception trick.
 - Robert Sebesta. *Concepts of Programming Languages*, the statement-level control structures chapter.
 - Python docs on [short-circuit evaluation](https://docs.python.org/3/reference/expressions.html#boolean-operations) — the return-operand semantics documented precisely.
+
+---
+
+Up next: the *Functional Programming and Higher-Order Functions* activity changes the lens entirely — and today's semantics decisions complete the Interpreter assignment's core.

@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Welcome: Why Study Programming Languages?
 
-Every programmer uses languages, but few understand *why* they work the way they do — or how to evaluate a new one quickly. Studying programming language theory is like learning music theory: you can play guitar without it, but understanding harmony, rhythm, and form lets you compose music rather than just repeat what you've heard. This course gives you the composer's toolkit — you'll read languages, compare them, and ultimately build one from scratch.
+Every programmer uses languages, but few understand *why* they work the way they do — or how to evaluate a new one quickly. Studying programming language theory is like learning music theory: you can play guitar without it, but understanding harmony, rhythm, and form lets you compose music rather than just repeat what you've heard. This course gives you the composer's toolkit — you'll read languages, compare them, and ultimately build one from scratch. The companion reading *The Arc of This Course: From Symbols to Languages* previews every destination on that map; today we take the first step.
 
 ## Learning Goals
 
@@ -266,3 +266,7 @@ In your notebook: describe one moment when a programming language fought you —
 - Shriram Krishnamurthi. *Programming Languages: Application and Interpretation* (online). The interpreter-first philosophy we follow.
 - Robert Nystrom. *Crafting Interpreters* (online), "A Map of the Territory."
 - The `ast` module docs: `help(ast)` in Python shows every node type you'll encounter.
+
+---
+
+Up next: the *Programming Paradigms* activity tours the worldviews your language could adopt — and the Overview and Warmup assignments begin the journey.

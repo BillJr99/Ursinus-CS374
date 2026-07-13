@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Evaluating Languages: Readability, Writability, Reliability
 
-Evaluating a programming language is a lot like evaluating a tool in a workshop: a hammer and a screwdriver are both "correct" tools, but which one you reach for depends entirely on what you are building. No language is universally best; every language embodies a set of deliberate tradeoffs that make it excellent for some tasks and awkward for others. In this activity you will develop a systematic, criteria-driven way to evaluate those tradeoffs so that you can choose languages wisely and design your own language with open eyes.
+Evaluating a programming language is a lot like evaluating a tool in a workshop: a hammer and a screwdriver are both "correct" tools, but which one you reach for depends entirely on what you are building. No language is universally best; every language embodies a set of deliberate tradeoffs that make it excellent for some tasks and awkward for others. In this activity you will develop a systematic, criteria-driven way to evaluate those tradeoffs so that you can choose languages wisely and design your own language with open eyes. The paradigms you toured in *Programming Paradigms* are the raw material these criteria judge.
 
 ## Learning Goals
 
@@ -472,3 +472,7 @@ In your notebook: recall the language feature that most confused you as a beginn
 ## Going Deeper (Optional Pointers)
 
 > **Going further:** the material that used to live here — logic programming with Prolog: family-tree facts and rules, Robinson unification, SLD resolution and backtracking, bidirectional list predicates, a complete mini-Prolog interpreter in Python, and the miniKanren connection — is covered in depth in the dedicated guide: [Prolog in the Browser with SWISH](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/Prolog), which backs **Direction F** of the Functional assignment (the mini-Prolog interpreter build now lives there as an advanced section). Explore it when your project or curiosity calls for it.
+
+---
+
+Up next: the *Syntax and BNF/EBNF* activity begins the formal machinery — writing down, precisely, what programs are allowed to look like.

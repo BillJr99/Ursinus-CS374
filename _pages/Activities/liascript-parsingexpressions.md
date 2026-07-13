@@ -30,7 +30,7 @@ This two-day module is the heart of your parser: turning the layered expression 
 
 > **Before You Begin** — make sure you are comfortable with:
 >
-> - **Recursive-descent parsing basics**: writing a function per grammar rule, calling `peek()` / `advance()` / `expect()`, and recognizing the shape `rule -> A B C`.
+> - **Recursive-descent parsing basics** (from the *Recursive Descent Parsing* activity): writing a function per grammar rule, calling `peek()` / `advance()` / `expect()`, and recognizing the shape `rule -> A B C`.
 > - **Operator precedence and associativity**: why `*` binds tighter than `+`, why `7 - 2 - 1` means `(7 - 2) - 1` (left-associative) rather than `7 - (2 - 1)`, and how a layered (unambiguous) grammar encodes both properties.
 > - **Python dataclasses for AST nodes**: the `@dataclass` decorator, field annotations, and constructing nested node objects — you will use these when the assignment upgrades tuples to typed nodes.
 
@@ -68,67 +68,20 @@ $$
 
 ---
 
-## Model 0: Building an Expression Grammar — Step by Step
+## Model 0: The Expression Grammar — Recap and Final Form
 
-Before writing any parser code, you need a *correct grammar* to implement. This model builds one from scratch, showing each pitfall and its cure. By the end, you will have the "ladder grammar" your parser implements — and you will understand *why* it has the form it does.
+Before writing any parser code, you need a *correct grammar* to implement. You built this grammar's ingredients piece by piece in the *Recursive Descent Parsing* activity; the recap box below compresses that construction, and the final ladder grammar your parser implements follows.
 
-### Step 1 — Naive Grammar (Ambiguous)
+> **Recap — from the *Recursive Descent Parsing* activity:**
+>
+> - A naive rule like `expr → expr "+" expr | expr "*" expr | NUMBER` describes the right language but is **ambiguous** — it says nothing about precedence.
+> - The cure is one nonterminal per precedence level: lower-precedence operators sit closer to `expr`, higher-precedence operators sit deeper in the ladder.
+> - Left recursion (`expr → expr "+" term`) encodes left-associativity but sends a top-down parser into infinite recursion before it consumes a single token; the EBNF repetition `expr → term { ("+" | "-") term }` says the same thing in a form descent can run.
+> - In code, `{ ... }` becomes a `while` loop that **folds left** — the running node always becomes the *left* child of the new node — so `7 - 2 - 1` parses as `(7 - 2) - 1`.
+>
+> If any bullet feels shaky, review that activity before continuing.
 
-Start with the most natural expression grammar:
-
-```
-expr → expr "+" expr
-      | expr "-" expr
-      | expr "*" expr
-      | expr "/" expr
-      | "(" expr ")"
-      | NUMBER
-```
-
-This grammar describes the right *language* (all arithmetic expressions), but it is **ambiguous**: the string `2 + 3 * 4` has two parse trees — one where `+` is the root and one where `*` is the root. The grammar says nothing about precedence, so a parser built from it will make arbitrary choices.
-
-### Step 2 — Enforcing Precedence (Hierarchy of Nonterminals)
-
-The fix is to use *separate nonterminals for each precedence level*. Lower-precedence operators go higher in the grammar (closer to `expr`), higher-precedence operators go deeper:
-
-```
-expr    → term   { ("+" | "-") term   }     # lowest precedence
-term    → factor { ("*" | "/") factor }     # higher precedence
-factor  → "-" factor | primary              # unary (right-associative)
-primary → NUMBER | "(" expr ")"
-```
-
-The `{ ... }` notation (EBNF) means zero or more repetitions. Now `2 + 3 * 4` has only one parse tree: `term` processes `3 * 4` before `expr` processes the `+`, encoding precedence structurally.
-
-### Step 3 — From EBNF to a While Loop
-
-The EBNF `{ ("+" | "-") term }` translates directly into Python:
-
-```python
-def parse_expr(lexer):
-    node = parse_term(lexer)              # parse first term
-    while lexer.peek().type in ("PLUS", "MINUS"):
-        op  = lexer.advance().value       # consume the operator
-        right = parse_term(lexer)         # parse next term
-        node = (op, node, right)          # fold left: build left-leaning tree
-    return node
-```
-
-This is **left-associative by construction**: the existing `node` always becomes the *left* child of the new `BinOp`, so `7 - 2 - 1` parses as `(7 - 2) - 1` (correct) rather than `7 - (2 - 1)` (wrong).
-
-### Step 4 — Why Not Left-Recursive Rules?
-
-A natural alternative is a left-recursive grammar rule:
-
-```
-expr → expr "+" term | term       # left-recursive
-```
-
-This encodes left-associativity in the grammar itself. But a recursive-descent parser would loop forever on this rule: `parse_expr` would immediately call `parse_expr` again without consuming any input. **Left-recursive grammars cannot be parsed by LL(k) parsers.** The while-loop pattern is the LL equivalent — it produces the same *tree shape* without the infinite loop.
-
-> **Watch out!** Left recursion and left associativity are different things. Left recursion is a property of a grammar rule; left associativity is a property of the *tree* that rule produces. The while-loop pattern achieves left associativity without left recursion.
-
-### Step 5 — The Final EBNF Grammar
+### The Final EBNF Grammar
 
 ```ebnf
 program  → statement* EOF
@@ -247,8 +200,9 @@ Consider `addsub` parsing the token stream for `7 - 2 - 1`.
 
 ```python
 # The expression parser, one tier at a time, designed to drop into the
-# Parser class from the recursive descent module. Tuples for now; the AST
-# module upgrades them to classes.
+# Parser class from the Recursive Descent Parsing activity. Tuples for now;
+# the assignment upgrades them to the typed node classes you met in the
+# Abstract Syntax Trees activity.
 
 def parse_expr(self):
     return self.parse_addsub()
@@ -507,6 +461,23 @@ for expr in ["2+3*4", "2*3+4", "(2+3)*4", "7-2-1", "-3*2", "1+2+3+4"]:
 
 ---
 
+# Part II: Stress and Extend (Day 2)
+
+Day 2 consolidates and extends what you built on Day 1. You will first check your conceptual grip with a targeted multiple-choice question, then meet **Pratt parsing** — a second strategy that encodes precedence as numbers rather than as a chain of functions — and finally push the parser into new territory: right-associative operators, comparison tiers, and function-call syntax. These exercises mirror the exact extensions your project language will need, so treat them as early project work rather than isolated drills.
+
+> **Watch out!** Right-associative operators like `**` (exponentiation) cannot be handled by the `while`-loop (left-fold) pattern — that pattern is inherently left-associative. Instead, use the original right-recursive grammar rule `power -> unary [ "^" power ]` (a single optional recursive call, not a loop), which naturally builds a right-leaning tree. In a Pratt parser the equivalent move is to pass `bp - 1` rather than `bp` as the minimum binding power for the right-hand recursive call.
+
+## 2. Owning the Pattern
+
+[[MC]]
+In `parse_addsub`, the line `node = (op, node, right)` places the previous result as the left child. Changing nothing else, this single line determines that:
+- ( ) Multiplication binds tighter than addition
+- (x) Operators at this tier associate left, so `7 - 2 - 1` evaluates as `(7 - 2) - 1`
+- ( ) Parentheses are honored
+- ( ) The grammar is LL(1)
+
+---
+
 ## Model 4: Pratt Parsing (Runnable)
 
 Pratt parsing (also called precedence climbing) is an elegant alternative to the tiered-function approach: instead of encoding precedence by the *depth* of a function chain, it encodes it as a *number* (the binding power) and uses a single loop with a numeric comparison to decide whether to keep consuming. The result is exactly the same AST with far less boilerplate — adding a new operator means adding one entry to the `LBP` table, not writing a new function. Both parsers run on the same test cases so you can confirm they agree.
@@ -661,23 +632,6 @@ for t in tests:
 
 ---
 
-# Part II: Stress and Extend (Day 2)
-
-Day 2 consolidates and extends what you built on Day 1. You will first check your conceptual grip with a targeted multiple-choice question, then push the parser into new territory: right-associative operators, comparison tiers, and function-call syntax. These exercises mirror the exact extensions your project language will need, so treat them as early project work rather than isolated drills.
-
-> **Watch out!** Right-associative operators like `**` (exponentiation) cannot be handled by the `while`-loop (left-fold) pattern — that pattern is inherently left-associative. Instead, use the original right-recursive grammar rule `power -> unary [ "^" power ]` (a single optional recursive call, not a loop), which naturally builds a right-leaning tree. In a Pratt parser the equivalent move is to pass `bp - 1` rather than `bp` as the minimum binding power for the right-hand recursive call.
-
-## 2. Owning the Pattern
-
-[[MC]]
-In `parse_addsub`, the line `node = (op, node, right)` places the previous result as the left child. Changing nothing else, this single line determines that:
-- ( ) Multiplication binds tighter than addition
-- (x) Operators at this tier associate left, so `7 - 2 - 1` evaluates as `(7 - 2) - 1`
-- ( ) Parentheses are honored
-- ( ) The grammar is LL(1)
-
----
-
 ## 3. Exercises
 
 1. *Right-associative tier.* Add exponentiation `^` binding tighter than `*` and associating right. The loop pattern will not give right association; the original right-recursive form `power -> unary [ "^" power ]` will. Implement it, and verify `2 ^ 3 ^ 2` yields the tree for `2 ^ (3 ^ 2)`.
@@ -689,7 +643,7 @@ In `parse_addsub`, the line `node = (op, node, right)` places the previous resul
 
 ## Reflection Prompt
 
-In your notebook: the hardest conceptual move this week was seeing that a `while` loop and a left-recursive production say the same thing. Write the explanation of that equivalence you wish someone had given you on Monday, in your own words, for a future student.
+In your notebook: the hardest conceptual move in this activity was seeing that a `while` loop and a left-recursive production say the same thing. Write the explanation of that equivalence you wish someone had given you at the start, in your own words, for a future student.
 
 ---
 
@@ -697,4 +651,8 @@ In your notebook: the hardest conceptual move this week was seeing that a `while
 
 - Douglas Thain. *Introduction to Compilers and Language Design*, Chapter 4.
 - Robert Nystrom. *Crafting Interpreters*, "Parsing Expressions" (online): the same ladder with pictures.
-- Vaughan Pratt. "Top Down Operator Precedence" (1973), the elegant alternative your instructor will sketch if time allows.
+- Vaughan Pratt. "Top Down Operator Precedence" (1973), the original paper behind Model 4.
+
+---
+
+**Up next:** the *Table-Driven and LR Parsing* activity shows the bottom-up, table-driven alternative that parser generators emit; the tiered expression parser you finished here goes directly into the Parser assignment.

@@ -33,7 +33,7 @@ By the end of this activity, you will be able to:
 >
 > If any of these feel shaky, check in with your team before the stand-up.
 
-Studio days are structured work time for the team language project: a stand-up, focused build time, and, on designated days, the formal **gallery walk** peer review that feeds your final sprint. This page is the protocol for every studio day; the gallery walk sections apply on the scheduled walk day. The arc: **stand-up $\rightarrow$ build $\rightarrow$ gallery walk $\rightarrow$ triage $\rightarrow$ release checklist**.
+Studio days are structured work time for the team language project: a stand-up, focused build time, and, on designated days, the formal **gallery walk** peer review that feeds your final sprint. This page is the protocol for every studio day; the gallery walk sections apply on the scheduled walk day. The protocol picks up where the *Language Design Workshop* kickoff left off: your proposal is now a backlog. The arc: **stand-up $\rightarrow$ build $\rightarrow$ gallery walk $\rightarrow$ triage $\rightarrow$ release checklist**.
 
 ---
 
@@ -471,3 +471,7 @@ In your notebook: compare the feedback your team received today with the error m
 - Robert Nystrom. *Crafting Interpreters*, the "Challenges" sections of your weakest chapter, as triage inspiration.
 - Tom DeMarco and Timothy Lister. *Peopleware*, Chapter 11: the cost of not measuring.
 - Kent Beck. *Test-Driven Development: By Example* — the red-green-refactor cycle your Evaluator role embodies.
+
+---
+
+These studios are the Team Language Project's build engine; the road ends at Demo Day, where your language meets its audience.
