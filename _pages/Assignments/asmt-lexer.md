@@ -22,7 +22,7 @@ info:
       preemerging: Fewer than half the required token types are defined, or patterns are so incorrect that the lexer cannot tokenize even simple programs
       beginning: Most token types are defined but several patterns are wrong (e.g., keywords not prioritized over identifiers, or operators missing from the spec)
       progressing: All required token types are defined with correct patterns, but the specification has a minor ordering or coverage gap (e.g., multi-character operators not listed before single-character ones)
-      proficient: All 15+ token types are defined in the correct priority order — keywords before IDENT, multi-character operators before their single-character prefixes, whitespace and comments skipped — demonstrating mastery of ordered regular-expression rule specification; the spec is externalized in a loadable JSON file (or, in the generator-toolchain direction, expressed as an ordered Flex/PLY rule specification)
+      proficient: All 15+ token types are defined in the correct priority order — keywords before IDENT, multi-character operators before their single-character prefixes, whitespace and comments skipped — demonstrating mastery of ordered regular-expression rule specification; the spec is externalized in a loadable JSON file (or, in the generator-toolchain direction, expressed as an ordered Flex/PLY rule specification); and the lexing theory questions (Step 1d) are answered with mechanism-level reasoning about maximal munch, keyword handling, and the lexer/parser division of labor
     - weight: 40
       description: "Lexer Implementation (Goal 2: harden the tokenizer into a reusable Lexer component with peek, advance, and expect)"
       preemerging: The Lexer class does not exist or the peek/advance interface is fundamentally broken
@@ -165,6 +165,14 @@ Token(INT,       "42",  line=1, col=9)
 Token(SEMICOLON, ";",   line=1, col=11)
 Token(EOF,       "",    line=1, col=12)
 ```
+
+### Step 1d: Lexing Theory Questions (in your readme)
+
+Three written questions from the Tokens and Scanning session, graded within Part 1's rubric row:
+
+1. **Maximal munch, precisely.** Your spec tokenizes `<==` as `LE` then `EQ` — not `LT` then `EQEQ`, and not three single-character tokens. State the two rules (longest match, then rule order) that force this outcome, and give one input where the two rules would *disagree* about the result if applied in the other priority.
+2. **Why keywords aren't the lexer's problem twice.** `iffy` must lex as one `IDENT`, never `IF` + `IDENT("fy")`. Explain the two different mechanisms that can enforce this (rule ordering with boundary-aware patterns vs. lex-as-identifier-then-reclassify against a keyword table), and name one cost of each.
+3. **The division of labor.** `let 42 = x;` lexes without a single error. State in one sentence per stage why the lexer *must* accept it and which later pipeline stage rejects it — and what this says about what a token stream does and does not promise.
 
 ---
 

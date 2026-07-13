@@ -20,7 +20,7 @@ info:
       preemerging: The solutions rely pervasively on loops and assignment, or fail to run due to major errors
       beginning: Most solutions run but several use loops or assignment where the directions forbid them, or combinator usage is incorrect (e.g., map returns a map object that is never consumed)
       progressing: All solutions are correct and respect the no-loop and no-assignment constraints, but combinators are used awkwardly (e.g., reduce used where map would suffice, or lambda where a named function would be clearer)
-      proficient: Correct solutions use map, filter, reduce, and recursion idiomatically throughout with no loops or assignment in solution bodies — demonstrating Goal 1; the compose function works for any arity; my_map and my_reduce are property-tested against the built-ins; and each function is documented with its type signature and one-sentence description
+      proficient: Correct solutions use map, filter, reduce, and recursion idiomatically throughout with no loops or assignment in solution bodies — demonstrating Goal 1; the compose function works for any arity; my_map and my_reduce are property-tested against the built-ins; each function is documented with its type signature and one-sentence description; and the functional theory questions are answered with a correct referential-transparency demonstration and paradigm placements
     - weight: 25
       description: "Core — Recursive Data Structures (Goal 2: implement recursive data structures including trees and linked lists with map and fold operations)"
       preemerging: The tree or linked-list structures are missing, or the recursive cases do not terminate
@@ -202,6 +202,17 @@ for lst in test_lists:
     assert my_reduce(lambda a,b: a+b, lst, 0) == reduce(lambda a,b: a+b, lst, 0)
 print("All my_map and my_reduce properties hold.")
 ```
+
+### Functional Theory Questions (in your writeup)
+
+Three written questions from the Programming Paradigms and Functional Programming sessions, graded within Part 1's rubric row:
+
+1. **Referential transparency, demonstrated.** Define referential transparency in one sentence. Then take `total_length` above and show that replacing any call with its result preserves the program — and exhibit one small *impure* Python function (your own example, using mutation or I/O) where that replacement changes behavior, naming exactly which property broke.
+2. **Paradigm placement.** Classify each of these as imperative, functional, or declarative, and state which *question* each paradigm makes the programmer answer ("how, step by step?", "what combination of transformations?", "what result?"):
+   - `total = 0` / `for n in nums: total += n`
+   - `reduce(lambda a, b: a + b, nums, 0)`
+   - `SELECT SUM(n) FROM nums;`
+3. **Purity's price.** Name one thing your Part 1 constraints (no loops, no assignment) made genuinely harder, and one thing they made automatic (testing, reasoning, or parallelism), tying each to a property of pure functions rather than to taste.
 
 ---
 
