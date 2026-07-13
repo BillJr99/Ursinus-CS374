@@ -391,7 +391,7 @@ print(f"Right-assoc 5-(2-1) = {evaluate(right_assoc)}")  # 4  (wrong for subtrac
 
 ---
 
-## Model 3: The Dangling Else
+## Model 7: The Dangling Else
 
 *Intuition: Ambiguity is not limited to arithmetic expressions. Any grammar rule that allows a construct to attach to more than one parent can be ambiguous. The dangling `else` is the most famous example from real language design — virtually every language that has `if/else` has had to make an explicit choice to resolve it.*
 

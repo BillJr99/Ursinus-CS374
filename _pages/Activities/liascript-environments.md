@@ -537,7 +537,7 @@ A student writes `inner.define("x", 99)` when they meant to update the outer sco
 
 # Part III.5: Variable Storage — A Step-by-Step Trace
 
-## Model 5: Dictionary-Based Environment — Walking Through Every Operation
+## Model 6: Dictionary-Based Environment — Walking Through Every Operation
 
 Before wiring the `Environment` class into your interpreter, it helps to trace every environment operation on a concrete program. This model runs a small program step by step, printing the state of every dictionary at each moment. The goal: after this trace, you should be able to predict the environment chain's exact contents at any point in any program — without running it.
 
@@ -661,11 +661,11 @@ print(f"  outer x: {outer.vars['x']}   (should be 10 — unchanged)")
 
 ### Critical Thinking Questions
 
-**CTQ 5.1** In Step 6 of the trace (`total = total + i`), the lookup for `total` walks to the global environment, but the assign also updates the global. Walk through the `assign` method call by call to show exactly why `inner.assign("total", 1)` updates `glob.vars["total"]` rather than creating a new `inner.vars["total"]`.
+**CTQ 6.1** In Step 6 of the trace (`total = total + i`), the lookup for `total` walks to the global environment, but the assign also updates the global. Walk through the `assign` method call by call to show exactly why `inner.assign("total", 1)` updates `glob.vars["total"]` rather than creating a new `inner.vars["total"]`.
 
-**CTQ 5.2** The `__repr__` method prints the chain as `inner:{...} ← global:{...}`. After Step 6, what does the full chain print? Write it out before running the code and confirm.
+**CTQ 6.2** The `__repr__` method prints the chain as `inner:{...} ← global:{...}`. After Step 6, what does the full chain print? Write it out before running the code and confirm.
 
-**CTQ 5.3** Change `inner2.assign("x", 42)` to `inner2.define("x", 42)`. What would `inner2.lookup("x")` and `outer.lookup("x")` return? Explain the difference between `define` and `assign` in one sentence.
+**CTQ 6.3** Change `inner2.assign("x", 42)` to `inner2.define("x", 42)`. What would `inner2.lookup("x")` and `outer.lookup("x")` return? Explain the difference between `define` and `assign` in one sentence.
 
 ---
 

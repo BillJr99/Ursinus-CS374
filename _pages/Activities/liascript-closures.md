@@ -609,7 +609,10 @@ Two closures created by separate calls to `make_adder(5)` and `make_adder(3)` re
 
 ---
 
-# Part IV: Closures vs. Objects
+---
+**🛑 In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+
+# Going Deeper (at home): Closures vs. Objects
 
 At first glance, objects and closures look very different — one is a class instance with named fields; the other is a function bundled with hidden environment variables. But look closer and you will find they are two sides of the same coin. Both bundle state with behavior; both control which code can reach that state. This model encodes a counter two ways, side-by-side, so you can see the structural parallel directly.
 
@@ -699,14 +702,14 @@ A closure carries its context everywhere, so it always means what it meant at ho
 - **Python `__closure__`** — CPython exposes closures via `fn.__closure__`: introspect live closures
 - **JavaScript `let` vs `var`** — MDN: the real-world consequence of the loop-variable trap at ecosystem scale
 
-## Going Deeper (Optional Appendices)
+## Going Deeper (at home, Optional Appendices)
 
-The core lesson above stands on its own. The optional deep dives below expand on it — read whichever interest you:
+The core lesson above stands on its own. The deep dives below stay in this file because they feed directly into the Interpreter assignment and the team project — but they are at-home material, not part of the class session:
 
 - Coroutines and Generators: Pausable Computation
 - Error Handling: From Return Codes to Algebraic Effects
 
-## Going Deeper: Coroutines and Generators: Pausable Computation
+## Going Deeper (at home): Coroutines and Generators — Pausable Computation
 
 > **Opening hook:** Imagine a vending machine. A regular function is like a vending machine that dumps every item it will ever produce onto the floor the moment you press the button — all at once, whether you want them yet or not. A **generator** is a vending machine that produces exactly one item each time you press the button, remembers where it left off, and waits patiently until you press again. The machine's internal state — which slot it was at, how many remain — is frozen between presses. That frozen state is the essence of a coroutine.
 
@@ -720,7 +723,7 @@ By the end of this activity, you will be able to:
 - Explain how `async`/`await` desugars to a state machine and identify where suspension points occur
 - Extend a simple interpreter to support generator objects with `yield` and `send` semantics
 
-> **Prerequisites:** Python functions and closures; basic continuations from the CPS activity
+> **Prerequisites:** Python functions and closures; basic familiarity with the idea of a continuation (see Direction B of the Functional assignment)
 > **Goal:** Understand generators as semi-coroutines, how `yield` captures a continuation, how `async/await` desugars to state machines, and how to add generator support to a simple interpreter.
 
 **POGIL Roles:** Driver · Recorder · Reporter · Manager
@@ -735,7 +738,7 @@ By the end of this activity, you will be able to:
 > - The idea of a **continuation** from the CPS (Continuation-Passing Style) activity — roughly, "the rest of the computation"
 > - Basic Python iteration: `for` loops, `range()`, and what `StopIteration` means
 >
-> If the term "continuation" feels fuzzy, revisit the CPS activity before Model 3. If Python closures feel shaky, review how `def` inside `def` works and what a stack frame contains.
+> If the term "continuation" feels fuzzy, skim Direction B of the Functional assignment. If Python closures feel shaky, review how `def` inside `def` works and what a stack frame contains.
 
 ---
 
@@ -754,364 +757,25 @@ All four problems share a structure: a computation needs to **pause at an arbitr
 
 #### Model 1: Generators as Lazy Sequences
 
-**Intuition:** Think of the difference between a photographer who prints every photo in the roll immediately versus one who prints each photo only when you ask for the next one. The first approach — printing everything up front — is **eager evaluation**: fast to start iterating but expensive in memory. The second — printing on demand — is **lazy evaluation**: the camera (generator) remembers exactly which frame it was on and produces the next one only when asked. `yield` is the instruction that says "print this one, then pause and wait."
-
-A Python **generator function** uses `yield` instead of (or in addition to) `return`. Calling it returns a **generator object** — an object that remembers where the function paused.
-
-```python
-import sys
-
-# A regular function computes a finite list eagerly
-def first_n_squares_eager(n):
-    result = []
-    for i in range(n):
-        result.append(i * i)
-    return result
-
-# A generator function produces values lazily, one at a time
-def squares_lazy():
-    i = 0
-    while True:                  # infinite sequence!
-        yield i * i              # pause here, return i*i to caller
-        i += 1                   # resume here on next()
-
-print("=== Eager list ===")
-xs = first_n_squares_eager(5)
-print(f"  type: {type(xs)}, values: {xs}")
-print(f"  memory: ~{sys.getsizeof(xs)} bytes (all in RAM)")
-
-print()
-print("=== Lazy generator ===")
-gen = squares_lazy()
-print(f"  type: {type(gen)}")
-print(f"  memory: ~{sys.getsizeof(gen)} bytes (no values stored)")
-print()
-
-print("  First 7 values (pulled on demand):")
-for i, val in enumerate(gen):
-    print(f"    next() #{i+1} → {val}")
-    if i >= 6:
-        break
-
-print()
-print("=== Generator protocol: __iter__ and __next__ ===")
-gen2 = squares_lazy()
-print(f"  next(gen2) = {next(gen2)}")
-print(f"  next(gen2) = {next(gen2)}")
-print(f"  next(gen2) = {next(gen2)}")
-
-print()
-print("=== yield expression inside a for loop ===")
-def first_n(gen, n):
-    return [next(gen) for _ in range(n)]
-
-print(f"  First 10 squares: {first_n(squares_lazy(), 10)}")
-
-print()
-print("=== Finite generator: StopIteration ===")
-def countdown(n):
-    while n >= 0:
-        yield n
-        n -= 1
-
-cd = countdown(3)
-for v in cd:
-    print(f"  {v}", end=" ")
-print()
-
-try:
-    next(cd)   # already exhausted
-except StopIteration:
-    print("  StopIteration raised on exhausted generator")
-```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
-
-**Key insight:** A generator function's stack frame is **frozen** at every `yield`. The local variables, loop counter, and instruction pointer are all preserved. `next()` thaws the frame and continues from the yield point.
-
-> **Watch out!** Calling a generator function does **not** execute any of its body. `gen = squares_lazy()` returns a generator object instantly — the line `i = 0` has not run yet. The body only starts executing on the *first* `next(gen)` call. This surprises many beginners who expect `gen = squares_lazy()` to behave like a normal function call.
-
-> **Critical Thinking Questions 1–3**
-
-**CTQ 1.** An infinite list `first_n_squares_eager(1_000_000)` allocates a list of 1 million integers in RAM before returning. A generator `squares_lazy()` uses ~200 bytes regardless of how many values you pull. What architectural difference explains this?
-
-[[___ your answer here ___]]
-
-**CTQ 2.** The generator object remembers "where it was." What four pieces of state must be preserved in the frozen frame to allow resumption at the `yield` point? (Hint: same things a stack frame normally stores.)
-
-[[___ your answer here ___]]
-
-**CTQ 3.** `for v in countdown(3)` implicitly calls `next()` and catches `StopIteration`. Write the desugared version using a `while True` loop with explicit `try/except StopIteration`. What does this reveal about how `for` loops work in Python?
-
-[[___ your answer here ___]]
+> **Going further:** the material that used to live here — generator basics, eager vs. lazy sequences, and generator pipelines — is covered in class in the *Modern Language Features* activity, and lazy evaluation is covered in depth in the dedicated tutorial: [Haskell Essentials for the Programming Languages Course](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-haskell-essentials.md). Explore it when your project or curiosity calls for it.
 
 ---
 
 #### Model 2: `yield` as a Two-Way Channel (`send` and `throw`)
 
-**Intuition:** So far a generator has been a one-way conveyor belt — values flow out to the caller via `yield`. Model 2 upgrades the belt to a **two-lane road**: the generator can also *receive* a value from the caller at the same `yield` point. Think of it as a walkie-talkie conversation where you press the button to transmit a value, hear a reply, and the other party is waiting for your next message before they continue. `.send(v)` is you pressing the button and speaking; `value = yield result` is the generator speaking *and* listening at the same time.
-
-Generators are not just output pipelines — they can **receive** values via `.send()`. This makes them true **coroutines** (two-way communication channels).
-
-```python
-def running_average():
-    """Coroutine: receives numbers via send(), yields running average."""
-    total = 0.0
-    count = 0
-    avg = None
-    while True:
-        value = yield avg         # send avg out AND receive new value in
-        if value is None:
-            break
-        total += value
-        count += 1
-        avg = total / count
-
-print("=== Bidirectional coroutine with send() ===")
-coro = running_average()
-result = next(coro)       # must prime the coroutine (run to first yield)
-print(f"  initial yield: {result}")   # None (no avg yet)
-# Watch out! Calling coro.send(10) before next(coro) raises TypeError.
-# The coroutine must reach its first yield before it can receive a sent value.
-
-for v in [10, 20, 30, 40, 50]:
-    result = coro.send(v)
-    print(f"  sent {v:2d}, received avg = {result:.2f}")
-
-coro.close()   # sends GeneratorExit; coroutine can clean up in try/finally
-
-print()
-print("=== throw(): injecting exceptions ===")
-def safe_counter():
-    n = 0
-    while True:
-        try:
-            yield n
-            n += 1
-        except ValueError as e:
-            print(f"  resetting because: {e}")
-            n = 0
-
-sc = safe_counter()
-for _ in range(4):
-    print(f"  next() → {next(sc)}")
-sc.throw(ValueError, "manual reset!")
-for _ in range(3):
-    print(f"  next() → {next(sc)}")
-sc.close()
-
-print()
-print("=== yield from: delegating to a sub-generator ===")
-def gen_a():
-    yield "a1"
-    yield "a2"
-
-def gen_b():
-    yield "b1"
-    yield from gen_a()   # delegate: transparently yields a1, a2
-    yield "b2"
-
-print("  yield from chain:")
-for v in gen_b():
-    print(f"  {v}")
-```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
-
-> **Critical Thinking Questions 4–6**
-
-**CTQ 4.** `value = yield avg` is a single expression that both sends `avg` out AND receives the next `send()` value in. Draw the communication diagram between the driver code and the coroutine. What is the invariant about when `value` gets its value?
-
-[[___ your answer here ___]]
-
-**CTQ 5.** `next(coro)` is equivalent to `coro.send(None)`. Why must you "prime" a coroutine with `next()` (or `send(None)`) before calling `.send(value)`? What is the coroutine's execution state before and after priming?
-
-[[___ your answer here ___]]
-
-**CTQ 6.** `yield from gen_a()` in `gen_b()` is transparent: values pass through `gen_b` as if `gen_a` were inlined. `send()` and `throw()` values also pass through. What design problem does `yield from` solve that plain `for v in gen_a(): yield v` does not handle?
-
-[[___ your answer here ___]]
+> **Going further:** `yield` is not only an output channel — `gen.send(value)` resumes a paused generator *and delivers a value into it*, and `gen.throw(exc)` raises an exception at the paused `yield`. This two-way protocol is what made generator-based coroutines possible before `async`/`await`. The details are a self-study topic: see the Python reference on generator-iterator methods (`send`, `throw`, `close`).
 
 ---
 
 #### Model 3: How `yield` Captures a Continuation
 
-**Intuition:** Recall from the CPS activity that a continuation is "everything that happens next after this point." When a generator hits `yield`, it takes a snapshot of its entire execution state — local variables, loop counters, the instruction pointer — and stores it on the heap as a frozen frame. This is a *delimited* continuation: it captures only up to the next `yield` or the function's return, not the entire rest of the program. The state machine analogy makes this concrete: if you had to implement `yield` yourself without language support, you would number each yield point and use a big `if/elif` to jump back to the right place. Python's bytecode compiler does exactly that automatically.
-
-`yield` is a **delimited continuation** — it captures the rest of the computation up to the nearest coroutine boundary. This connects generators to the CPS transformation you have already seen.
-
-```python
-# Manual CPS transformation of a generator
-# Original generator:
-#   def gen():
-#       yield 1
-#       yield 2
-#       yield 3
-#
-# In CPS, "the rest of gen after yield 1" becomes a continuation k1.
-# We model this as explicit states.
-
-from dataclasses import dataclass
-from typing import Callable, Any, Optional
-
-@dataclass
-class GeneratorState:
-    """Manual state machine equivalent of a generator."""
-    state: int = 0     # which 'yield' are we at?
-    # local variables would go here
-
-def gen_state_machine():
-    """Models: def gen(): yield 1; yield 2; yield 3"""
-    g = GeneratorState()
-    while True:
-        if g.state == 0:
-            g.state = 1
-            yield 1           # continuation: state 1
-        elif g.state == 1:
-            g.state = 2
-            yield 2           # continuation: state 2
-        elif g.state == 2:
-            g.state = 3
-            yield 3           # continuation: state 3
-        else:
-            return             # StopIteration
-
-print("=== State machine equivalent of a 3-yield generator ===")
-for v in gen_state_machine():
-    print(f"  {v}")
-
-print()
-print("=== Python actually compiles generators to state machines ===")
-def original_gen():
-    yield 1
-    yield 2
-    yield 3
-
-import dis
-print("  Bytecode of original_gen (showing YIELD_VALUE / RESUME):")
-for instr in dis.get_instructions(original_gen):
-    if instr.opname in ('YIELD_VALUE', 'RETURN_VALUE', 'RESUME', 'LOAD_CONST',
-                        'GEN_START', 'RETURN_CONST', 'LOAD_FAST'):
-        print(f"    {instr.offset:3d}  {instr.opname:<20} {instr.argval!r}")
-
-print()
-print("=== Generators and first-class continuations ===")
-# call/cc (call-with-current-continuation) generalizes yield:
-# it captures the ENTIRE continuation, not just to the nearest coroutine boundary.
-# Python doesn't have call/cc, but we can simulate limited versions.
-
-def make_generator_cps():
-    """Shows that 'yield' is equivalent to saving/restoring execution state."""
-    continuations = []
-    
-    def step():
-        results = []
-        for state in [1, 2, 3]:
-            results.append(state)    # 'yield state' captured here
-        return results
-    
-    return step()
-
-print("  Generator-as-CPS result:", make_generator_cps())
-```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
-
-> **Critical Thinking Questions 7–9**
-
-**CTQ 7.** The state machine version of `gen()` tracks which `yield` the function has reached using an integer state variable. Where does Python store this state in a real generator? (Hint: look at what a generator object contains.)
-
-[[___ your answer here ___]]
-
-**CTQ 8.** A generator's continuation is **delimited** — it runs until the next `yield` or the function returns. A true first-class continuation (Scheme's `call/cc`) captures the **entire remaining computation**. Give an example of something `call/cc` can express that generators cannot.
-
-[[___ your answer here ___]]
-
-**CTQ 9.** The bytecode output shows `YIELD_VALUE` and `RESUME` instructions. Explain what the Python VM does when it hits `YIELD_VALUE`: what changes in the VM's execution state, and what happens to the generator object's frame?
-
-[[___ your answer here ___]]
+> **Going further:** the material that used to live here — `yield` seen as a captured continuation, manual CPS transformation, and simulated `call/cc` — now lives where it is assessed: **Direction B of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Functional) builds on this material** — read that direction's section before choosing it.
 
 ---
 
 #### Model 4: `async`/`await` — Generators Over I/O
 
-**Intuition:** Imagine a chef managing multiple orders at a restaurant. A synchronous chef starts one dish, cooks it entirely, plates it, then starts the next — customers wait in sequence. An asynchronous chef starts a dish, puts it in the oven (the I/O), then immediately starts prepping the next dish while the oven does its work. When the oven timer fires (the I/O completes), the chef resumes that dish. `await` is the chef's oven-start moment: "I'm handing this off; resume me when it's done." The **event loop** is the kitchen manager who tracks which oven is done and tells the right chef to continue. Crucially, this is all on one thread — no parallelism, just clever scheduling.
-
-Python's `async def` / `await` syntax is syntactic sugar built on generators. An `async` function is a **coroutine** that yields control when waiting for I/O, and an event loop resumes it when the awaited operation completes.
-
-```python
-import asyncio
-import time
-
-# Simulate async I/O with asyncio.sleep
-async def fetch_data(source: str, delay: float) -> str:
-    print(f"  [{time.monotonic():.2f}s] Starting fetch from {source}...")
-    await asyncio.sleep(delay)    # yields to event loop; other tasks run here
-    print(f"  [{time.monotonic():.2f}s] Finished fetch from {source}")
-    return f"data from {source}"
-
-async def main_sequential():
-    """Sequential: fetch one at a time. Total time ≈ sum of delays."""
-    start = time.monotonic()
-    a = await fetch_data("server_A", 0.05)
-    b = await fetch_data("server_B", 0.05)
-    elapsed = time.monotonic() - start
-    print(f"  Sequential: got {a!r}, {b!r} in {elapsed:.3f}s")
-
-async def main_concurrent():
-    """Concurrent: both fetches run in parallel via asyncio.gather."""
-    start = time.monotonic()
-    a, b = await asyncio.gather(
-        fetch_data("server_A", 0.05),
-        fetch_data("server_B", 0.05),
-    )
-    elapsed = time.monotonic() - start
-    print(f"  Concurrent: got {a!r}, {b!r} in {elapsed:.3f}s")
-
-print("=== Sequential async (awaits one at a time) ===")
-asyncio.run(main_sequential())
-
-print()
-print("=== Concurrent async (gather runs both at once) ===")
-asyncio.run(main_concurrent())
-
-print()
-print("=== Desugaring: async/await as generator syntax ===")
-# Before async/await syntax existed (Python 2 era), coroutines were
-# written using generators with yield from.
-# Here is the mental model (not real Python 2, but illustrative):
-
-def old_style_coroutine():
-    """Equivalent to: async def coroutine(): await asyncio.sleep(0.01)"""
-    print("  about to 'yield' (simulating await)")
-    yield   # pause; event loop does work here
-    print("  resumed after 'yield'")
-
-def old_event_loop(coro):
-    gen = coro()
-    try:
-        next(gen)    # run until first yield
-        print("  [event loop] doing other work...")
-        next(gen)    # resume after yield
-    except StopIteration:
-        pass
-
-old_event_loop(old_style_coroutine)
-```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
-
-> **Critical Thinking Questions 10–12**
-
-> **Watch out!** `async`/`await` is **not** parallelism. Both tasks in `main_concurrent` run on a single OS thread. `asyncio.gather` interleaves them only because each `await asyncio.sleep(...)` voluntarily yields the thread back to the event loop. If one coroutine does CPU-heavy work without any `await`, it **blocks the entire event loop** and no other coroutine can run. For true CPU parallelism you need `multiprocessing` or a thread pool.
-
-**CTQ 10.** In `main_concurrent`, both `fetch_data` calls appear to run simultaneously, yet Python has a Global Interpreter Lock (GIL). Explain how concurrency is achieved without true parallelism. What kind of waiting does `asyncio.sleep` simulate?
-
-[[___ your answer here ___]]
-
-**CTQ 11.** The "function color" problem: an `async` function can only be awaited from another `async` function. This means `async` "infects" callers all the way up the call chain. Why does this structural constraint exist? What would break if you could `await` from a regular function?
-
-[[___ your answer here ___]]
-
-**CTQ 12.** The desugaring demo shows that `await` desugars to `yield`. Describe how an event loop works in terms of generators: what does the event loop do when a coroutine yields? What does it do when the awaited I/O completes?
-
-[[___ your answer here ___]]
+> **Going further:** `async`/`await`, event loops, and the "function color" problem are a self-study topic — Python's `asyncio` documentation and the essay "What Color Is Your Function?" (Bob Nystrom) are the places to start. The mechanism underneath is exactly the paused-and-resumed generator you build in Model 5 below.
 
 ---
 
@@ -1264,21 +928,7 @@ print("  next() on the GeneratorObj resumes exactly where _run paused.")
 - [(X)] A generator object that yields `1` then `2` when iterated
 - [( )] Nothing; the function body has not executed yet
 
-**Question 2.** `coro.send(value)` on a generator/coroutine:
-
-- [( )] Calls the function with `value` as an argument
-- [(X)] Resumes the coroutine and makes `value` the result of the `yield` expression
-- [( )] Appends `value` to the generator's output sequence
-- [( )] Resets the generator to its initial state
-
-**Question 3.** The "function color" problem with `async/await` means:
-
-- [( )] Async functions run faster than regular functions
-- [(X)] Async functions can only be awaited from other async functions, propagating up the call chain
-- [( )] Async functions cannot call regular functions
-- [( )] Async functions require multiple OS threads
-
-**Question 4.** A generator captures its execution state by:
+**Question 2.** A generator captures its execution state by:
 
 - [( )] Allocating a new heap object for each yielded value
 - [( )] Using OS threads with mutex locks
@@ -1289,122 +939,9 @@ print("  next() on the GeneratorObj resumes exactly where _run paused.")
 
 #### Exercises
 
-**Exercise 1.** Implement a `pipeline` that chains generators: `map_gen`, `filter_gen`, and `take_gen`. Use them to compute the first 5 even squares:
+> *(The generator-pipeline, scheduler, and memoization exercises that used to live here duplicated the lazy-streams material now covered by the Haskell Essentials tutorial and the Functional assignment.)*
 
-```python
-def integers_from(n):
-    while True:
-        yield n
-        n += 1
-
-def map_gen(gen, f):
-    for v in gen:
-        yield f(v)
-
-def filter_gen(gen, pred):
-    for v in gen:
-        if pred(v):
-            yield v
-
-def take_gen(gen, n):
-    for i, v in enumerate(gen):
-        if i >= n:
-            break
-        yield v
-
-# Compute: first 5 even perfect squares
-squares = map_gen(integers_from(0), lambda n: n * n)
-even_squares = filter_gen(squares, lambda n: n % 2 == 0)
-result = list(take_gen(even_squares, 5))
-print(f"First 5 even squares: {result}")
-
-# Compare memory: eager vs lazy
-eager = [n*n for n in range(10000) if (n*n) % 2 == 0][:5]
-print(f"Eager (computed 10000, kept 5): {eager}")
-print(f"Lazy (computed exactly 5): {result}")
-print("Both produce the same answer; lazy is O(1) memory.")
-```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
-
-**Exercise 2.** Implement a cooperative multitasking scheduler using generators. Each "task" is a generator that yields to give up control. The scheduler runs tasks in round-robin:
-
-```python
-def task_a():
-    for i in range(3):
-        print(f"  task_a: step {i}")
-        yield   # give up control
-
-def task_b():
-    for i in range(4):
-        print(f"  task_b: step {i}")
-        yield   # give up control
-
-def scheduler(*tasks):
-    """Round-robin cooperative scheduler."""
-    active = [t() for t in tasks]
-    while active:
-        next_round = []
-        for gen in active:
-            try:
-                next(gen)   # run task until its next yield
-                next_round.append(gen)
-            except StopIteration:
-                print(f"  [task finished]")
-        active = next_round
-
-print("=== Cooperative multitasking with generators ===")
-scheduler(task_a, task_b)
-```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
-
-**Exercise 3.** Implement a `memoize_gen` that caches yielded values so that the generator can be replayed from the beginning without recomputing:
-
-```python
-class ReplayableGen:
-    def __init__(self, gen_fn, *args, **kwargs):
-        self._gen_fn = gen_fn
-        self._args = args
-        self._kwargs = kwargs
-        self._cache = []
-        self._gen = gen_fn(*args, **kwargs)
-        self._done = False
-    
-    def __iter__(self):
-        idx = 0
-        while True:
-            if idx < len(self._cache):
-                yield self._cache[idx]
-            elif self._done:
-                return
-            else:
-                try:
-                    val = next(self._gen)
-                    self._cache.append(val)
-                    yield val
-                except StopIteration:
-                    self._done = True
-                    return
-            idx += 1
-
-def expensive_gen(n):
-    for i in range(n):
-        print(f"  [computing {i}]")
-        yield i * i
-
-rg = ReplayableGen(expensive_gen, 4)
-
-print("First pass (computes each value):")
-for v in rg:
-    print(f"  got {v}")
-
-print()
-print("Second pass (reads from cache, no recomputation):")
-for v in rg:
-    print(f"  got {v}")
-```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
-
-**Exercise 4.** Extend the mini interpreter from Model 5 to support a `while` loop inside generator bodies. Add a `While` AST node and a `Assign` node so you can write:
+**Exercise 1.** Extend the mini interpreter from Model 5 to support a `while` loop inside generator bodies. Add a `While` AST node and a `Assign` node so you can write:
 
 ```
 gen count_up(start):
@@ -1536,87 +1073,9 @@ for val in run_generator(count_up, 1, global_env):
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-**Exercise 5.** Implement a simple async event loop using generators. Create a `Task` class, an `EventLoop` that runs tasks cooperatively, and simulate I/O with time-delayed wake-ups:
-
-```python
-import time
-from dataclasses import dataclass, field
-from typing import Any, List, Callable
-
-@dataclass
-class Future:
-    result: Any = None
-    done: bool = False
-    callbacks: List[Callable] = field(default_factory=list)
-    
-    def set_result(self, value):
-        self.result = value
-        self.done = True
-        for cb in self.callbacks:
-            cb(value)
-
-class SimpleEventLoop:
-    def __init__(self):
-        self._ready = []       # (gen, send_value) pairs
-        self._sleeping = []    # (wake_time, gen) pairs
-    
-    def call_soon(self, gen, value=None):
-        self._ready.append((gen, value))
-    
-    def call_later(self, delay, gen):
-        self._sleeping.append((time.monotonic() + delay, gen))
-    
-    def run(self, coro):
-        gen = coro()
-        self.call_soon(gen)
-        
-        while self._ready or self._sleeping:
-            # Wake up sleeping tasks
-            now = time.monotonic()
-            still_sleeping = []
-            for wake_time, gen in self._sleeping:
-                if now >= wake_time:
-                    self.call_soon(gen)
-                else:
-                    still_sleeping.append((wake_time, gen))
-            self._sleeping = still_sleeping
-            
-            # Run ready tasks
-            if self._ready:
-                gen, value = self._ready.pop(0)
-                try:
-                    signal = gen.send(value)
-                    if isinstance(signal, tuple) and signal[0] == "sleep":
-                        self.call_later(signal[1], gen)
-                except StopIteration:
-                    pass
-
-def sleep(seconds):
-    """Our language's equivalent of asyncio.sleep."""
-    yield ("sleep", seconds)
-
-def fake_io_task(name, delay):
-    print(f"  [{time.monotonic():.3f}] {name} starting")
-    yield from sleep(delay)
-    print(f"  [{time.monotonic():.3f}] {name} done after {delay}s")
-    return f"result from {name}"
-
-def main_coro():
-    yield from fake_io_task("task_A", 0.03)
-    yield from fake_io_task("task_B", 0.02)
-    print("  all tasks done")
-
-print("=== Simple generator-based event loop ===")
-loop = SimpleEventLoop()
-loop.run(main_coro)
-```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
-
----
-
 #### Reflection
 
-1. Generators, coroutines, and async/await are all variations on the same idea: pausable computation. Map each to a concept from the CPS activity: where is the continuation stored in each case?
+1. Generators, coroutines, and async/await are all variations on the same idea: pausable computation. Map each to the continuation-passing-style ideas from Direction B of the Functional assignment: where is the continuation stored in each case?
 
 2. Python added `async def` / `await` as dedicated syntax rather than using bare generators. What usability problem did this solve? What did it give up?
 
@@ -1639,7 +1098,7 @@ loop.run(main_coro)
 
 *End of Activity — Coroutines and Generators: yield, send, async/await, state machines, interpreter implementation*
 
-## Going Deeper: Error Handling: From Return Codes to Algebraic Effects
+## Going Deeper (at home): Error Handling — From Return Codes to Algebraic Effects
 
 Error handling is not just a library concern — it is a fundamental language design decision that shapes every program written in a language. Should errors interrupt control flow or flow as values? Should the type system enforce that errors are handled? The choice between exceptions, error values, and algebraic effect types reflects a philosophy about programmer responsibility, code clarity, and what the language should guarantee versus what it trusts the programmer to do correctly.
 
@@ -1878,105 +1337,7 @@ except RuntimeError as e:
 
 #### Model 3: Option / Maybe — Explicit Absence
 
-**Intuition:** Both return codes and exceptions have a common flaw — the type of a function like `find_user(id)` does not tell you that it might fail. What if the return type itself forced you to reckon with the possibility of failure? The `Option` (or `Maybe`) type does exactly that: instead of returning a `User` (which might secretly be `None`) or raising an exception (which is invisible in the type), the function returns `Some(user)` or `Nothing`. The type is now `Option[User]`, and the language (or the type checker) will not let you use the inner user value without first checking which variant you got. This is the functional programming answer to null-pointer crashes.
-
-Many errors boil down to "there is no value here." The **Option** type (Haskell's `Maybe`, Rust's `Option`, Scala's `Option`) makes absence explicit in the type system rather than using `null` or raising an exception.
-
-```python
-from __future__ import annotations
-from dataclasses import dataclass
-from typing import TypeVar, Generic, Callable
-
-T = TypeVar("T")
-U = TypeVar("U")
-
-@dataclass(frozen=True)
-class Some(Generic[T]):
-    value: T
-    def is_some(self): return True
-    def is_none(self): return False
-    def unwrap(self): return self.value
-    def map(self, f: Callable[[T], U]) -> "Option[U]":
-        return Some(f(self.value))
-    def and_then(self, f: Callable[[T], "Option[U]"]) -> "Option[U]":
-        return f(self.value)
-    def unwrap_or(self, default: T) -> T:
-        return self.value
-    def __repr__(self): return f"Some({self.value!r})"
-
-@dataclass(frozen=True)
-class Nothing:
-    def is_some(self): return False
-    def is_none(self): return True
-    def unwrap(self): raise ValueError("called unwrap() on Nothing")
-    def map(self, f): return self
-    def and_then(self, f): return self
-    def unwrap_or(self, default): return default
-    def __repr__(self): return "Nothing"
-
-Option = Some | Nothing
-NOTHING = Nothing()
-
-# Functions that might fail return Option instead of raising
-def safe_div(x: float, y: float) -> Option:
-    if y == 0:
-        return NOTHING
-    return Some(x / y)
-
-def safe_head(lst: list) -> Option:
-    if not lst:
-        return NOTHING
-    return Some(lst[0])
-
-def parse_positive_int(s: str) -> Option:
-    try:
-        n = int(s)
-        return Some(n) if n > 0 else NOTHING
-    except ValueError:
-        return NOTHING
-
-print("=== Option/Maybe usage ===")
-print(safe_div(10, 2))        # Some(5.0)
-print(safe_div(10, 0))        # Nothing
-print(safe_head([1, 2, 3]))   # Some(1)
-print(safe_head([]))          # Nothing
-
-print()
-print("=== Chaining with and_then (flatMap) ===")
-# Process: parse → divide → take head
-def pipeline(s: str, divisor: float) -> Option:
-    return (parse_positive_int(s)
-            .map(float)
-            .and_then(lambda x: safe_div(x, divisor)))
-
-print(f"pipeline('12', 4)   = {pipeline('12', 4)}")    # Some(3.0)
-print(f"pipeline('12', 0)   = {pipeline('12', 0)}")    # Nothing (div by zero)
-print(f"pipeline('-5', 4)   = {pipeline('-5', 4)}")    # Nothing (not positive)
-print(f"pipeline('abc', 4)  = {pipeline('abc', 4)}")   # Nothing (parse fail)
-
-print()
-print("=== unwrap_or for defaults ===")
-result = pipeline("bad", 4).unwrap_or(0.0)
-print(f"pipeline('bad', 4).unwrap_or(0.0) = {result}")
-```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
-
-> **Critical Thinking Questions 7–9**
-
-**CTQ 7.** The Option type forces callers to handle the absence case explicitly (they can't just use the value without checking). How does this differ from the behavior of `None` in Python, where calling a method on `None` raises `AttributeError` at runtime?
-
-[[___ your answer here ___]]
-
-**CTQ 8.** `and_then` (also called `flatMap` or `>>=` in Haskell) sequences Option computations so that if any step returns `Nothing`, the whole chain returns `Nothing`. What is the control flow equivalent of this? (Hint: think about what happens in an imperative `if ... return None` chain.)
-
-[[___ your answer here ___]]
-
-**CTQ 9.** Python's `Optional[T]` type hint (`from typing import Optional`) annotates a value that may be `None`. How does this differ from the `Option` type implemented above, in terms of static guarantees?
-
-[[___ your answer here ___]]
-
-> **Watch out! — Exceptions break referential transparency**
-> In functional programming, a function is *referentially transparent* if you can replace a call with its return value without changing the program's meaning. A function that raises an exception is **not** referentially transparent — calling `parse_int("abc")` does not simply produce a value; it may instead unwind the call stack. This is why purely functional languages like Haskell avoid exceptions in pure code entirely, using `Maybe`/`Either` instead. When you write functional-style pipelines in Python (chaining `.map` and `.and_then`), mixing in `raise` inside those lambdas defeats the whole discipline.
+> **Going further:** the material that used to live here — the `Option`/`Maybe` type that makes absence explicit instead of using `null` — is covered in depth in the dedicated tutorial: [Haskell Essentials for the Programming Languages Course](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-haskell-essentials.md) (the Maybe monad). The `Result`/`Either` pattern in Model 4 below generalizes it by carrying the *reason* for failure.
 
 ---
 
@@ -2237,97 +1598,7 @@ for label, fn in test_cases:
 
 #### Model 6: Comparative Survey
 
-**Intuition:** You have now seen four strategies in detail. This model puts them side by side on a single, concrete task — "find an element in a list, or fail" — so you can feel the ergonomic difference directly. Each strategy makes a different trade: how much the caller is trusted, how much information a failure carries, and how well errors compose when you chain multiple operations. As you read, think about which row of the comparison table you would choose for a new language you were designing, and why.
-
-```python
-# Demonstrate three idioms for "find element or fail" in Python
-from typing import Optional
-
-data = [10, 20, 30, 40, 50]
-
-# Strategy 1: Return None (sentinel value)
-def find_sentinel(lst, target) -> Optional[int]:
-    for i, v in enumerate(lst):
-        if v == target:
-            return i
-    return None   # caller must check
-
-# Strategy 2: Raise exception
-def find_exception(lst, target) -> int:
-    for i, v in enumerate(lst):
-        if v == target:
-            return i
-    raise ValueError(f"{target} not found in list")
-
-# Strategy 3: Return (value, ok) tuple (Go style)
-def find_tuple(lst, target):
-    for i, v in enumerate(lst):
-        if v == target:
-            return i, True
-    return -1, False
-
-# Strategy 4: Return Result type
-from dataclasses import dataclass
-
-@dataclass
-class NotFoundError:
-    target: object
-
-def find_result(lst, target):
-    for i, v in enumerate(lst):
-        if v == target:
-            return ("ok", i)
-    return ("err", NotFoundError(target))
-
-print("=== Comparing four error strategies ===")
-for target in [30, 99]:
-    print(f"\nSearching for {target}:")
-    
-    r = find_sentinel(data, target)
-    print(f"  sentinel:  {r!r}  (caller must check for None)")
-    
-    try:
-        r = find_exception(data, target)
-        print(f"  exception: found at index {r}")
-    except ValueError as e:
-        print(f"  exception: raised {e!r}")
-    
-    idx, ok = find_tuple(data, target)
-    print(f"  tuple:     ({idx}, {ok})  (caller must check ok)")
-    
-    tag, val = find_result(data, target)
-    if tag == "ok":
-        print(f"  result:    Ok({val})")
-    else:
-        print(f"  result:    Err({val})")
-```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
-
-> **Watch out! — Go-style (value, ok) tuples require constant discipline**
-> The `find_tuple` pattern — returning `(result, ok)` and expecting callers to check the `ok` flag — has the same fundamental flaw as C return codes: nothing prevents a caller from writing `idx, _ = find_tuple(data, 99)` and then using `idx` as if it were valid. In a large Go codebase the `if err != nil { return ..., err }` check must appear at *every* call site, and a single omission silently propagates a bad value. The `Result` type wins precisely because the bad value is structurally impossible to use without first unwrapping it.
-
-> **Critical Thinking Questions 16–18**
-
-**CTQ 16.** Fill in this comparison table for your group:
-
-| Strategy | Can be ignored? | Carries error info? | Composable? | Statically checked? |
-|----------|----------------|--------------------|-----------|--------------------|
-| Return None/sentinel | | | | |
-| Exception | | | | |
-| (value, ok) tuple | | | | |
-| Result/Either type | | | | |
-
-Which row has the best profile? Why might languages still use the others?
-
-[[___ your answer here ___]]
-
-**CTQ 17.** Go's (value, error) tuple idiom has been criticized for being verbose — every call site requires `if err != nil { return nil, err }`. The `Result` type with `?` in Rust addresses this. What is the fundamental insight that makes `?` (or monadic bind `>>=`) cleaner than manual propagation?
-
-[[___ your answer here ___]]
-
-**CTQ 18.** **Algebraic effects** (a research direction in PL) generalize both exceptions and coroutines: you define an "effect" (like `raise IOException`), and the effect handler is separate from both the raiser and the call chain. How does this differ from exception handling? What new flexibility does it provide?
-
-[[___ your answer here ___]]
+> **Going further:** the side-by-side survey that used to live here — sentinel `None` vs. exception vs. `(value, ok)` tuple vs. `Result` for the same "find element or fail" task, with a comparison table across C, Go, Java, Python, Rust, and Haskell — is a worthwhile self-study exercise: implement all four idioms yourself and decide which row your team's language will choose (record it in `SEMANTICS.md`).
 
 ---
 
@@ -2466,47 +1737,7 @@ except InterpreterError as e:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-**Exercise 3.** Compare Python's `Optional[T]` type hint (from `typing`) with the `Option` dataclass from Model 3. Write a function that accepts `Optional[int]` and one that accepts your `Option` type. Show what happens at runtime when a caller passes `None` vs. `Nothing()` to each:
-
-```python
-from typing import Optional
-from dataclasses import dataclass
-
-@dataclass(frozen=True)
-class Some:
-    value: object
-    def map(self, f): return Some(f(self.value))
-    def unwrap_or(self, d): return self.value
-
-@dataclass(frozen=True)
-class Nothing:
-    def map(self, f): return self
-    def unwrap_or(self, d): return d
-
-Option = Some | Nothing
-
-def double_optional(x: Optional[int]) -> Optional[int]:
-    if x is None:
-        return None
-    return x * 2
-
-def double_option(x: Option) -> Option:
-    return x.map(lambda v: v * 2)
-
-print("Optional[int]:")
-print(f"  double_optional(5)    = {double_optional(5)}")
-print(f"  double_optional(None) = {double_optional(None)}")
-# What happens if caller ignores the hint and passes a string?
-print(f"  double_optional('hi') = {double_optional('hi')}")  # runtime error or wrong answer?
-
-print()
-print("Option type:")
-print(f"  double_option(Some(5))   = {double_option(Some(5))}")
-print(f"  double_option(Nothing()) = {double_option(Nothing())}")
-```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
-
-**Exercise 4.** Add structured error reporting to a mini expression evaluator. Extend the evaluator to collect ALL errors in an expression (not just the first one) before reporting them:
+**Exercise 3.** Add structured error reporting to a mini expression evaluator. Extend the evaluator to collect ALL errors in an expression (not just the first one) before reporting them:
 
 ```python
 from dataclasses import dataclass, field
@@ -2567,7 +1798,7 @@ for t in tests:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-**Exercise 5.** Design an error hierarchy for a complete interpreter. Create a class hierarchy of `InterpreterError` subclasses covering: lexer errors (invalid character, unterminated string), parser errors (unexpected token, missing closing paren), and runtime errors (undefined variable, type mismatch, division by zero, stack overflow). Write a function that pretty-prints any error with its category, location, and a helpful suggestion:
+**Exercise 4.** Design an error hierarchy for a complete interpreter. Create a class hierarchy of `InterpreterError` subclasses covering: lexer errors (invalid character, unterminated string), parser errors (unexpected token, missing closing paren), and runtime errors (undefined variable, type mismatch, division by zero, stack overflow). Write a function that pretty-prints any error with its category, location, and a helpful suggestion:
 
 ```python
 from dataclasses import dataclass
