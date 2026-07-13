@@ -107,15 +107,17 @@ When `parse_primary` returns a `Num` for `42`, a `Var` for `x`, and raises `Pars
 
 ### Suggested Pacing
 
-This assignment is handed out on Thursday of week 7 (Oct 15) and due on Tuesday of week 9 (Oct 27). Build tier by tier and keep the tests green as you go:
+See the course schedule for the assigned and due dates — this is the most substantial assignment of the semester and has one of the longest windows. If a break falls inside the window, front-load Part 1 so the grammar is drafted while the parsing sessions are fresh. The **Grammar and Derivations Workshop lab** (due mid-assignment) completes Part 1's grammar work with a partner — bring it in directly. Build tier by tier and keep the tests green as you go:
 
 | Checkpoint | You should have |
 |------------|----------------|
-| Week 7 (Thu Oct 15) — assigned | Grammar drafted (Part 1); `parse_primary` and `parse_unary` working |
-| Week 8 (Tue Oct 20) | Expression ladder complete through `parse_expr` with passing tree-shape tests (Step 2b) |
-| Week 8 (Thu Oct 22) | Statements, blocks, and the worked `while` example parsing (Steps 2c–2d) |
-| Weekend | Pretty-printer and unparser working (Steps 3a–3b) |
-| Week 9 (Tue Oct 27) — due | Round-trip verification and error reports complete; readme and ZIP submitted |
+| On assignment | Grammar drafting begun (Part 1, with the Grammar and Derivations Workshop lab) |
+| Checkpoint 1 | Grammar drafted; `parse_primary` and `parse_unary` working |
+| Lab due | Part 1 complete via the lab; expression ladder underway |
+| Checkpoint 2 | Expression ladder complete through `parse_expr` with passing tree-shape tests (Step 2b) |
+| Checkpoint 3 | Statements, blocks, and the worked `while` example parsing (Steps 2c–2d) |
+| Checkpoint 4 | Pretty-printer and unparser working (Steps 3a–3b) |
+| Due date | Round-trip verification and error reports complete; readme and ZIP submitted |
 
 ---
 

@@ -79,7 +79,7 @@ $$
 \mathcal{E}[\![\text{BinOp}(+, l, r)]\!] = \mathcal{E}[\![l]\!] + \mathcal{E}[\![r]\!]
 $$
 
-and so on for every node class: evaluate children first (post-order, exactly as Model 2 of the AST module predicted), then combine with the node's operation. Where the pretty-printer printed, the evaluator returns; the recursion structure is identical, which is why a tree walk is the most honest possible name.
+and so on for every node class: evaluate children first (post-order, exactly as Model 2 of the AST module predicted), then combine with the node's operation. Where the pretty-printer printed, the evaluator returns; the recursion structure is identical, which is why a tree walk is the most accurate possible name.
 
 ---
 

@@ -87,14 +87,14 @@ Compare your output against the six-token listing in Step 1c, including line and
 
 ### Suggested Pacing
 
-This assignment is handed out on Thursday of week 5 (Oct 1) and due on Thursday of week 7 (Oct 15). Fall break sits inside this window — front-load Part 2 before break, and note there is no class on Oct 8 or Oct 13. The pacing below is built around the sessions that actually meet:
+See the course schedule for the assigned and due dates. Your starting point is the mini lexer you built in the **Regex Workshop lab** and grew in the Regex assignment — this assignment turns it into a permanent pipeline component. The Finite Automata Simulators lab runs alongside the start of this window; it is short by design, so plan its two to three hours into your week:
 
 | Checkpoint | You should have |
 |------------|----------------|
-| Week 5 (Thu Oct 1) — assigned | `Token` dataclass and a six-rule `tokenize` generator working |
-| Week 6 (Tue Oct 6) — checkpoint (the only class session before break) | Parts 1–2a: full `TOKEN_SPEC` passing all maximal-munch cases, and the core `Lexer` class with `peek`/`advance`/`expect` working |
-| Fall break (Oct 8–13, no class) | Parts 2b–2c on your own schedule: string escapes and JSON configuration (both dialects) |
-| Week 7 (Thu Oct 15) — due | Part 3 error modes with precise positions and the full test suite complete; readme written; ZIP assembled and submitted |
+| On assignment | `Token` dataclass and a six-rule `tokenize` generator working (grown from your mini lexer) |
+| Checkpoint 1 | Parts 1–2a: full `TOKEN_SPEC` passing all maximal-munch cases, and the core `Lexer` class with `peek`/`advance`/`expect` working |
+| Checkpoint 2 | Parts 2b–2c: string escapes and JSON configuration (both dialects) |
+| Due date | Part 3 error modes with precise positions and the full test suite complete; readme written; ZIP assembled and submitted |
 
 ---
 

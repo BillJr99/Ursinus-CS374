@@ -153,7 +153,7 @@ Builders build the sprint increment; the Evaluator extends the test suite *ahead
 
 ## Model 2: The Red-Green Discipline — Writing Tests Before Code
 
-A failing test is not a sign of failure — it is a specification. Before a feature exists, the only honest representation of "we plan to build this" is a test that currently fails. This model makes that discipline concrete by treating the set of failing tests as the literal sprint backlog, so the sprint goal is visible and measurable at every moment.
+A failing test is not a sign of failure — it is a specification. Before a feature exists, the only accurate representation of "we plan to build this" is a test that currently fails. This model makes that discipline concrete by treating the set of failing tests as the literal sprint backlog, so the sprint goal is visible and measurable at every moment.
 
 The Evaluator's job is to write **failing tests** before the Builder writes the code they test. A failing test is a specification: it states precisely what the code must do before the code exists. The cell below demonstrates the discipline by running a test suite against a deliberately incomplete interpreter, showing which tests fail (red), which pass (green), and what the gap is.
 
@@ -265,7 +265,7 @@ Hosts demonstrate honestly: at least one **known failure case** must be shown at
 
 Raw gallery walk feedback is like unprocessed ore — valuable but unusable until refined. Triage converts cards into decisions: this gets fixed before Demo Day, this gets disclosed honestly, this goes on the future-work list. The discipline is the middle bucket: admitting known limitations publicly is mature engineering, not weakness.
 
-> **Watch out!** "Disclose" does not mean "hide." It means you have a rehearsed, honest one-sentence description of the limitation ready for Demo Day. A question-and-answer session where a known bug surfaces without preparation is much worse than a proactive "our interpreter does not yet handle nested function calls, and here is why that is hard."
+> **Watch out!** "Disclose" does not mean "hide." It means you have a rehearsed, candid one-sentence description of the limitation ready for Demo Day. A question-and-answer session where a known bug surfaces without preparation is much worse than a proactive "our interpreter does not yet handle nested function calls, and here is why that is hard."
 
 The Scribe collects all gallery walk cards and triages them live. The cell below simulates triage: take each card, classify it into a bucket, and produce an actionable backlog sorted by priority.
 

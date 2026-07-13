@@ -53,7 +53,7 @@ The music path follows the course's own arc — the same required assignments, i
 4. **[Functional Programming](/Assignments/Functional) → the Parallel Functional direction** — purity buys parallelism: the same core parts as everyone (pure functions, higher-order combinators, recursive structures with fold), then a complete MapReduce pipeline measured and analyzed against Amdahl's Law — the same pure-map/associative-reduce discipline pattern engines like Strudel run on.
 5. **[Team Language Project](/Projects/TeamLanguage) → the Music and Live-Coding direction** (capstone) — design, specify, build, and demonstrate a small live-coding language with your team. The closing demonstration may be a live edit-and-rerun session over printed event output — rendered sound is optional here as everywhere on the path.
 
-Assignments without a music direction listed here (Warmup, Regex, Automata, Lexer, Interpreter, and the rest) are simply taken as they stand — they build the skills every direction draws on. And the choices are independent: you can take the Mini-Notation direction in the Parser assignment and any direction you like in Functional, or vice versa. The path above is the coherent musical route, not a package deal.
+Assignments without a music direction listed here (Warmup, Regex, the Automata lab, Lexer, Interpreter, and the rest) are simply taken as they stand — they build the skills every direction draws on. And the choices are independent: you can take the Mini-Notation direction in the Parser assignment and any direction you like in Functional, or vice versa. The path above is the coherent musical route, not a package deal.
 
 ---
 

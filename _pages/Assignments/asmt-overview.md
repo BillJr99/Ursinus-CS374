@@ -9,7 +9,7 @@ info:
   tilt:
     task: "Verify your environment with the starter script, write a short Language Autobiography, and charter your team."
     criteria: "Assessed on a verified environment, a specific and reflective autobiography, and a complete signed charter; see the rubric below for the full breakdown."
-  points: 25
+  points: 100
   goals:
     - To verify a working Python development environment for the semester's build
     - To demonstrate baseline command-line, git, and Python-environment fluency by navigating a shell, committing to a repository, and creating a reproducible environment with uv
@@ -208,7 +208,7 @@ Complete each step and capture the terminal output:
 The purpose of this section is to capture your relationship with programming languages at the start of the course, as a baseline you will revisit in your final report. Write approximately one page (400–600 words), addressing all four prompts below.
 
 **Prompt 1: Your language history.**
-List every programming language and formal notation you have used — count regex, SQL, spreadsheets, HTML, configuration languages, shell scripts. For each, write one sentence explaining what it was good at, from your perspective as a user. Do not worry about precision; honest impressions count more than textbook accuracy here.
+List every programming language and formal notation you have used — count regex, SQL, spreadsheets, HTML, configuration languages, shell scripts. For each, write one sentence explaining what it was good at, from your perspective as a user. Do not worry about precision; candid impressions count more than textbook accuracy here.
 
 *Example opening:* "Python (four years): excellent for data exploration because the REPL makes it easy to try ideas without a compile step. SQL (one semester): surprisingly good at expressing 'find all rows where' queries, but I found joins hard to visualize..."
 

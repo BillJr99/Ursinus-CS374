@@ -5,9 +5,9 @@ title: "CS374: Principles of Programming Languages - Demo Day Guide: External Gu
 
 info:
   coursenum: CS374
-  purpose: "To prepare you to present your language to people outside the course — invited guests at Demo Day, and eventually interviewers and colleagues — by practicing the plain-language pitch, the honest limitation, and the interview-style deep dive on work you actually did."
+  purpose: "To prepare you to present your language to people outside the course — invited guests at Demo Day, and eventually interviewers and colleagues — by practicing the plain-language pitch, the known limitation, and the interview-style deep dive on work you actually did."
   tilt:
-    task: "Read the guest-facing brief, take part in the cross-team mock technical interview during the Week 14 sprint studios, and arrive at Demo Day ready to present your language to a mixed audience of classmates, faculty, and invited external guests."
+    task: "Read the guest-facing brief, take part in the cross-team mock technical interview during the final sprint studios, and arrive at Demo Day ready to present your language to a mixed audience of classmates, faculty, and invited external guests."
     criteria: "Nothing is separately graded here — the presentation itself is assessed within the Team Language Project's Demo Day Presentation dimension, and the mock-interview rehearsal is credited as class participation. Use the self-check below to know you are ready."
   points: 0
   goals:
@@ -59,7 +59,7 @@ Demo Day is not a private class ritual. Alumni, industry guests, and faculty fro
 
 ## Demo Day Format and Schedule
 
-Seven teams of three present in the 75-minute slot (10:00–11:15): each team has a hard cap of **9 minutes**, followed by a **1-minute transition** while the next team plugs in. Nine minutes rewards a rehearsed demo — time your run-through, and cut material rather than rushing it. The order of presentation is set by lot: teams draw lots in the Dec 3 studio, so you know your slot before the day.
+All teams present within a single 75-minute class slot: each team has a hard cap of **9 minutes**, followed by a **1-minute transition** while the next team plugs in. Nine minutes rewards a rehearsed demo — time your run-through, and cut material rather than rushing it. The order of presentation is set by lot: teams draw lots in the release-hardening studio, so you know your slot before the day.
 
 ---
 
@@ -78,15 +78,15 @@ Have these five moves rehearsed before Demo Day:
 
 1. **The ninety-second opener.** What the language is, the niche it serves, who would use it, and one sentence on what you personally built. Write it, say it aloud, cut every term a non-CS friend would stumble on.
 2. **The three-sentence architecture.** The pipeline in plain words: *text comes in; the lexer breaks it into words; the parser builds the sentence structure; the evaluator walks that structure and produces the answer.* Then one sentence on where your distinctive feature lives in that pipeline.
-3. **The honest limitation.** One known limitation, stated plainly, with why you triaged it as disclose-rather-than-fix. Practice saying it without apologizing.
+3. **The known limitation.** One known limitation, stated plainly, with why you triaged it as disclose-rather-than-fix. Practice saying it without apologizing.
 4. **The redirect.** For questions you cannot answer: "I don't know — my teammate built that part, let me hand you to them," or "I don't know, but here's how I'd find out." Both are strong answers. Bluffing is the only weak one.
 5. **The question back.** Prepare two genuine questions to ask a guest — about their work, their team's languages and tools, or their path. Demo Day is a networking event wearing a final-exam costume; treat the conversation as two-way.
 
 ---
 
-## The Mock Technical Interview (Week 14 Sprint Studios)
+## The Mock Technical Interview (Final Sprint Studios)
 
-During the Week 14 studio sessions, you will pair **across teams** for interview rounds, credited as class participation:
+During the final sprint studio sessions, you will pair **across teams** for interview rounds, credited as class participation:
 
 **Format.** Ten minutes per round, then swap roles. The interviewer asks from the question bank below (or invents better ones); the interviewee answers **without slides** — a whiteboard or paper is allowed, your repository is not. Close each round with a feedback card in the gallery-walk vocabulary: one **Strength**, one **Question** the interviewee should be ready for at Demo Day.
 

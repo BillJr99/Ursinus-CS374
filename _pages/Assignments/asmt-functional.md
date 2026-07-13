@@ -86,6 +86,8 @@ This is one assignment with one deliverable and one rubric. Parts 1 and 2 below 
 
 Every direction is worth the same 50 points, graded on the same direction-depth rubric row, and ends in the same deliverable shape: working code, tests, and a writeup section that connects the direction back to the core. Choose by interest — none is the "easy" one.
 
+> **Scope note:** this assignment runs alongside your team project's build sprints, so budget the direction at roughly **6–8 hours** and pick a bounded slice you can finish well — the depth checklists in each direction mark the line between "complete" and "extension." If you completed the **Lambda Calculus lab**, Direction C is a natural continuation: the lab's by-hand reductions and Church encodings are exactly the behavior your reducer must reproduce in code.
+
 ---
 
 ## Getting Started
@@ -121,15 +123,16 @@ Notice what is *absent*: no loop, no accumulator variable, no assignment. If you
 
 ### Suggested Pacing
 
-This assignment is handed out on Thursday of week 11 (Nov 12) and due on Tuesday of week 13 (Nov 24) — a 12-day turnaround, so treat the core as two sittings and give your direction the back half of the window:
+See the course schedule for the assigned and due dates. If a break falls inside the window, complete the core Parts 1–2 before it so the direction work is what travels with you, and remember your team project's sprints run in parallel:
 
 | Checkpoint | You should have |
 |------------|----------------|
-| Week 11 (Thu Nov 12) — assigned | Part 1 complete: combinators, `compose`, and property-tested `my_map`/`my_reduce`; direction chosen |
-| Weekend | Part 2 complete: tree and linked-list operations with edge-case tests; direction started (Direction G: scope approval by Sunday Nov 15) |
-| Week 12 (Tue Nov 17) | Direction components working for the provided cases |
-| Week 12 (Thu Nov 19) | Direction depth work underway (the Closures class session meets today) |
-| Week 13 (Tue Nov 24) — due | Direction depth checklist complete; writeup and ZIP submitted |
+| On assignment | Part 1 underway: combinators, `compose`, and property-tested `my_map`/`my_reduce`; direction chosen |
+| Checkpoint 1 | Part 1 complete (Direction G: scope approval within 3 days of hand-out) |
+| Checkpoint 2 | Part 2 complete: tree and linked-list operations with edge-case tests; direction started |
+| Midpoint | Direction components working for the provided cases, on your own schedule |
+| Checkpoint 3 | Direction depth work underway |
+| Due date | Direction depth checklist complete; writeup and ZIP submitted |
 
 ---
 
@@ -271,7 +274,7 @@ Convert from a Python list to a linked list, implemented via `my_reduce` from Pa
 
 *Files: `closures.py`, `generators.py`.*
 
-> **Scheduling note:** the Closures class session falls on Nov 19, mid-assignment. Direction A students should read ahead via the session activity rather than waiting for it.
+> **Scheduling note:** the Closures class session falls early in this assignment's window (see the course schedule) — early enough that Direction A students can lean on it, but read ahead via the session activity if you want to start sooner.
 
 ### A.1: Closures and Function Factories
 
@@ -609,7 +612,7 @@ Close with a short written comparison (this is required, and it is what ties the
 
 ## Direction G: Contribute to an Open-Source Language Ecosystem
 
-*Files: `contribution.md` (the contribution log described below), plus a link to your public pull request. Scope approval from the instructor is required within 3 days of hand-out (by Sunday Nov 15).*
+*Files: `contribution.md` (the contribution log described below), plus a link to your public pull request. Scope approval from the instructor is required within 3 days of hand-out.*
 
 Every other direction builds something new inside the course; this one takes the paradigm into a codebase that predates you and will outlive the semester. You will find a scoped, functional-paradigm-relevant piece of work in a real open-source language ecosystem, specify it with a failing test before you write the fix — the same failing-test-as-specification discipline the whole course runs on — and carry it through a public pull request and a maintainer exchange. The paradigm content is the same as the other directions (pure transformations, recursion over structure, functions as values); the added content is the professional practice around it, and the result is a portfolio line few undergraduates have: *my code was reviewed by the maintainers of a real project.*
 
@@ -624,7 +627,7 @@ Something else you care about is negotiable — bring it to the scope-approval c
 
 ### G.1: Issue selection and scope approval (first 3 days)
 
-Find your target: a triaged open issue, a gap in the documentation, a missing test, or a small feature request with maintainer interest. In `contribution.md`, record: the issue or gap (with links), why it is *functional-paradigm* work (which core ideas from Parts 1–2 it exercises), and your one-sentence minimum viable scope. **Bring this to the instructor for approval within 3 days of hand-out (by Sunday Nov 15)** — the approval exists to protect you from scope that cannot land in the 12-day assignment window.
+Find your target: a triaged open issue, a gap in the documentation, a missing test, or a small feature request with maintainer interest. In `contribution.md`, record: the issue or gap (with links), why it is *functional-paradigm* work (which core ideas from Parts 1–2 it exercises), and your one-sentence minimum viable scope. **Bring this to the instructor for approval within 3 days of hand-out** — the approval exists to protect you from scope that cannot land in the assignment window.
 
 ### G.2: Specification first
 
@@ -640,7 +643,7 @@ Submit the pull request and engage with what comes back: respond to review comme
 
 ### Direction G depth checklist
 
-- The scope was approved by the instructor within 3 days of hand-out (by Sunday Nov 15), and `contribution.md` records the issue, its functional-paradigm substance, and the minimum viable scope.
+- The scope was approved by the instructor within 3 days of hand-out, and `contribution.md` records the issue, its functional-paradigm substance, and the minimum viable scope.
 - Specification-first evidence exists: the failing test (or documentation checklist) is preserved in its original form, dated before the fix.
 - The pull request is public, linked, and includes tests and documentation, following the upstream project's contributing guidelines.
 - The maintainer exchange is documented — or, if none occurred within a week, the attempt is documented and a written self-review against the project's standards stands in its place.

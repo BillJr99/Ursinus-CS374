@@ -472,7 +472,7 @@ with parse_session("bad $ input") as s:
 
 ## 2. Exercises
 
-1. *Feature pitch.* Each pair writes a half-page pitch for adding their jigsaw feature (or an honest slice of it) to the team language: the construct's syntax in your grammar's EBNF, the node it adds, the evaluator rule, and the criterion it serves. The team votes one pitch onto the project's "stretch goals" list.
+1. *Feature pitch.* Each pair writes a half-page pitch for adding their jigsaw feature (or a realistic slice of it) to the team language: the construct's syntax in your grammar's EBNF, the node it adds, the evaluator rule, and the criterion it serves. The team votes one pitch onto the project's "stretch goals" list.
 2. *Exhaustiveness by hand.* Add a new node type to your AST but not to your match-based evaluate. Run it; read the failure. Now add a `case _:` that raises a located error listing the node type. You have hand-built the safety net ML compilers automate; one sentence on the difference.
 3. *Color audit.* Sketch (no implementation) what adding async to your language would split: which built-ins become awaitable, which functions change color, what the REPL does with a pending value. Conclude with a recommendation and its rationale.
 4. *Feature archaeology.* Each teammate picks one feature that *arrived* in a mainstream language during their lifetime (Python match 2021, Java records 2020, JS async 2017, C++ lambdas 2011) and reports the proposal document's stated motivation versus what we identified today.
