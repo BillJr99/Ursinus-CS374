@@ -145,6 +145,8 @@ $$
 
 The **lexer** (scanner) groups characters into meaningful units called tokens, using the machinery of regular expressions and finite automata. The **parser** assembles tokens into a tree according to a grammar. The **interpreter** walks the tree, computing values within environments that give names their meanings. A **compiler** shares the front half and differs at the back, emitting code instead of computing values; we focus on interpretation, and the principles transfer.
 
+What flows through this pipeline is built from each language's **primitives** — the small set of atoms the language treats as given rather than defined: its primitive *values* (numbers, strings, booleans), the *operators* that combine them (`+`, `<`, `and`), and the *forms* that structure behavior (assignment, selection, iteration, function application). Every language in this course — and the one your team designs — is some choice of primitives plus rules for composing them; the *Type Systems* and *Control Flow and Statement Semantics* activities are where those choices get made precise, one primitive at a time.
+
 [[MC]]
 In the pipeline above, the component whose job is to decide that the characters `c`, `o`, `u`, `n`, `t` form a single identifier token is:
 - (x) The lexer

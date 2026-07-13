@@ -58,6 +58,7 @@ Before diving in, here is a plain-English glossary of the terms this activity us
 | **Coercion** | An implicit, automatic type conversion the programmer never asked for | The defining behavior of weak typing; contrast with explicit conversion |
 | **Type inference** | The checker deduces types from values and context, with no annotations written | Static safety without annotation ceremony — Rust, Haskell, TypeScript |
 | **Type environment** | A mapping from variable names to their (inferred or declared) types | The checker's version of your interpreter's environment: names to types, not values |
+| **Primitive type** | A type the language provides as an atom — numbers, strings, booleans — rather than one built from other types | Every language, including yours, starts from a chosen set of primitives; today's axes describe how a language polices the operations on them |
 
 ---
 

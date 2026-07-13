@@ -48,6 +48,26 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 # Part I: Evaluation Is a Fold over the Tree (Day 1)
 
+## 0. Interpreters and Compilers: When Does Translation Happen?
+
+Before writing the evaluator, place it on the map. There are two fundamentally different ways to make source text run, and the difference is *when* the translation work happens:
+
+| | **Interpreter** (what you build in this course) | **Compiler** |
+|---|---|---|
+| What it does with the AST | Walks it and computes values *now* | Translates it into another language (machine code, bytecode) to run *later* |
+| When errors like `1 + "hello"` surface | While the program runs, at that expression | Potentially before the program ever runs |
+| Cost model | Pays a small translation tax on every execution of every node | Pays translation once, then runs at full speed |
+| Change the source? | Just run again | Recompile first |
+
+The pipeline you have built so far — lexer → parser → AST — is **identical for both**. They diverge only at this step: a compiler of your class language would consume the very same AST your parser produces and emit instructions instead of values. (That path is walked in the *Table-Driven and LR Parsing* session's compile–link–load model and the *Build a Bytecode VM* tutorial.) Everything you learn today about evaluation order and environments applies to both worlds.
+
+Quick check — a tree-walking interpreter and a compiler for the same language both receive the AST for `x * (y + 1)`. What does each produce from it?
+
+- [( )] Both produce the numeric answer
+- [(X)] The interpreter produces the numeric answer; the compiler produces code that will compute it when run
+- [( )] The interpreter produces machine code; the compiler produces the answer
+- [( )] Both produce new source text in a different language
+
 The central idea of Part I is deceptively simple: **the value of any expression is computed entirely from the values of its sub-expressions.** A number node is its own value; an addition node evaluates both children and adds the results. This recursive definition is both the formal semantics of the language and the literal shape of the code you will write.
 
 ## 1. The Recursive Definition of Meaning

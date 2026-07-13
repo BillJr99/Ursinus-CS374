@@ -62,6 +62,20 @@ One pointer before you begin: several assignments this semester offer **directio
 
 This course builds a language implementation in Python, incrementally, across six assignments. The final pipeline connects a lexer, parser, AST, environments, and an evaluator; every stage uses `re` (regular expressions), `json` (configuration files), and Python's structural pattern matching (`match`/`case`, available in Python 3.10+). Verify that all three work before the build begins.
 
+Complete this part by **one of two routes** — the transcript requirement at the end applies to whichever you choose.
+
+### Route A (recommended): the course dev container
+
+Set up the course Docker container by following the [Development Environment tutorial](/Tutorials/DevEnvironment): one container image with the entire semester's toolchain preinstalled (Python 3.11, pytest, hypothesis, PLY, and flex/bison/gcc/make for the generator-toolchain directions), bind-mounted onto a `cs374-work` GitHub repository you create in the tutorial. Then:
+
+1. Copy `warmup_check.py` (from Step 2 of Route B below) into your `cs374-work` repository.
+2. Enter the container and run it **inside the container**: `python3 warmup_check.py`. Include the full transcript — the container prompt, `python3 --version`, and the script's banner output — in your submission.
+3. Complete Step 3 of Route B (editor/IDE) as written; VS Code with the Dev Containers extension, opened inside the course container, is the recommended answer and satisfies all three bullets.
+
+Route A students skip Steps 1–2 of Route B on the host: the tutorial's toolchain verification plus the in-container `warmup_check.py` transcript covers them.
+
+### Route B: native install
+
 **Step 1: Confirm Python 3.10 or later.**
 
 ```
@@ -158,13 +172,15 @@ State which editor or IDE you will use for the semester and confirm that you can
 
 Recommended editors: VS Code (with Python extension), PyCharm Community Edition, or any editor you already know. Avoid IDEs that hide the command line entirely; you will need `python3`, `git`, and occasionally `pip` directly.
 
-**Capture a transcript** (copy-paste or screenshot) of all three steps. If any step fails, document the error text verbatim, your hypothesis about the cause, and what you tried to fix it. A well-documented failure with a follow-up plan earns full credit for that step.
+**Capture a transcript** (copy-paste or screenshot) of all three steps — for Route A, that means the in-container `warmup_check.py` run with `python3 --version`, plus the editor step. If any step fails, document the error text verbatim, your hypothesis about the cause, and what you tried to fix it. A well-documented failure with a follow-up plan earns full credit for that step.
 
 ---
 
 ## Part 1.5: Command-Line and Git Checkpoint
 
 You will build one language across six assignments, each importing the previous stage's component *unchanged*, all from the terminal and all under version control. This checkpoint confirms those underlying tools work before the pipeline depends on them. You do not need to be a shell expert — you need to navigate, version your work, and create a reproducible environment. The **Command-Line Survival** links below (and the [Shell Skills for Language Development](/Tutorials/ShellForLanguageDev) tutorial) fill any gaps.
+
+**Container-route note (Route A):** perform the git steps of this checkpoint **from inside the course container**, against the `cs374-work` GitHub repository you created in the [Development Environment tutorial](/Tutorials/DevEnvironment) — the tutorial's practice section (create `hello.py`, run, commit, push) is exactly this checkpoint, so its transcript satisfies the shell-navigation and git items below. The `uv` step still runs on your host (the container image already pins the course packages; `uv` is your reproducible-environment tool for the native route and anywhere outside the container).
 
 Complete each step and capture the terminal output:
 

@@ -11,6 +11,7 @@ These tutorials are the course's self-serve depth: worked paths, toolchain guide
 ## Companions to the Assignments
 
 - [Parser Combinators — Parsers as First-Class Values](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-parser-combinators.md) *(interactive)* — companion to Recursive Descent Parsing
+- [Your Course Development Environment — Docker, Git, and GitHub](DevEnvironment) — *anchors required work* — the recommended setup route in the Overview assignment: the course container, a GitHub-backed workspace, and the commit/push workflow
 - [Build an Interpreter](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md) *(interactive)* — start-to-finish companion for the Tree-Walking Interpreter assignment
 - [Type Inference — Implementing Hindley-Milner](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-type-inference.md) *(interactive)* — companion to the Interpreter assignment's type-checking direction
 - [Property-Based Testing Your Language with Hypothesis](PropertyBasedTesting) — *anchors required work* — companion to the Parser (Step 3e) and Interpreter (Step 2e) property-based-testing requirements

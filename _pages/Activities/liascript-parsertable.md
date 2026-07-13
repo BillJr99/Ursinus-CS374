@@ -287,6 +287,29 @@ for nt in grammar:
 
 > **Watch out!** When a nonterminal A can derive ε (i.e., ε ∈ FIRST(A)), computing the parse table for any production that contains A requires you to also consult FOLLOW(A) — not just FIRST(A). Students commonly skip this step and then wonder why the table rejects valid inputs. The rule is: if ε ∈ FIRST(α) for production `B -> α`, add that production to `table[B][t]` for every `t ∈ FOLLOW(B)` as well.
 
+## Model: From Source to Running Program — Compile, Link, Load
+
+Today's generated parsers are one station on an industrial assembly line, and this ten-minute model walks the rest of it. Your interpreter runs programs directly from the tree; a compiled language like C takes three more steps between source text and running behavior:
+
+1. **Compile.** Each source file is translated *separately* into an **object file** — machine code plus a **symbol table** listing the names it defines (`main`, `parse_expr`) and the names it uses but cannot find (`printf`, `yylex`). An object file is a puzzle piece with labeled tabs and labeled holes.
+2. **Link.** The **linker** fits the pieces together: every "uses" hole must be filled by exactly one "defines" tab, drawn from your other object files or from libraries. Two definitions of the same name is a *duplicate symbol* error; zero is the famous *undefined reference*. **Static linking** copies library code into the executable; **dynamic linking** leaves a note to find it later.
+3. **Load.** When you run the program, the **loader** places the executable into memory, resolves the dynamic-library notes against `.so`/`.dll` files on the system, and jumps to the entry point. Only now does behavior exist.
+
+The mini-notation scaffold you can build with flex and bison goes through exactly this pipeline: `flex` and `bison` generate C, the C compiler makes object files, the linker joins them with the C library, and the loader runs the result.
+
+**CTQ (teams, 3 minutes):** Your interpreter reports an undefined variable *while the program runs*; a C program reports an undefined function *before it ever runs*. Which of the three stations above catches the C error, and what does that tell you about when each language *binds names*?
+
+    [[?]] Hint: the error message "undefined reference to `foo`" comes from the tool that matches tabs to holes.
+
+Which statement about the pipeline is correct?
+
+- [( )] The compiler must see the whole program at once, which is why C builds are slow
+- [(X)] Each file compiles separately; the linker is the first station that sees the whole program's names together
+- [( )] The loader recompiles the program each time it runs
+- [( )] Static and dynamic linking differ only in file size, never in behavior
+
+> **Going deeper:** the full story — object-file formats, symbol tables you can inspect with `nm`, linker maps, and dynamic loading — is the [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-compiling-linking.md) tutorial.
+
 ---
 
 ---
