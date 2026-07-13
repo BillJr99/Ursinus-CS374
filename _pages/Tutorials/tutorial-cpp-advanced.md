@@ -439,6 +439,44 @@ except Exception as e:
 
 ---
 
+### Building and Running These Examples
+
+The C++ snippets above are ordinary programs — each has a `main()`. To compile and run one yourself, save it (say, the `unique_ptr` demo) as `smartptr.cpp` and drive the build with this `Makefile`:
+
+```makefile
+# Makefile — build and run the smart-pointer demo
+CXX      := g++
+CXXFLAGS := -std=c++17 -Wall -Wextra -g -fsanitize=address
+TARGET   := smartptr
+SRC      := smartptr.cpp
+
+# Default target: `make` builds the binary
+$(TARGET): $(SRC)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SRC)
+
+# `make run` builds if needed, then runs
+run: $(TARGET)
+	./$(TARGET)
+
+# `make clean` removes the built binary
+clean:
+	rm -f $(TARGET)
+
+.PHONY: run clean
+```
+
+Then, from the same directory:
+
+```bash
+make         # compiles smartptr.cpp into ./smartptr (the default target)
+make run     # compiles if needed, then runs ./smartptr
+make clean   # removes the built binary
+```
+
+A `Makefile`'s recipe lines must be indented with a **real tab**, not spaces — a classic first-time error. The `-fsanitize=address` flag links AddressSanitizer, which reports use-after-free, double-free, and leaks at runtime: run `make run` on a raw-pointer (`new`/`delete`) version and on the `unique_ptr` version and compare — the sanitizer stays quiet only when ownership is correct, which is the whole case for smart pointers in one command.
+
+---
+
 ## Part 3: Move Semantics and Rvalue References
 
 ### Model 3.1 — Lvalues and Rvalues

@@ -5,7 +5,7 @@ title: "CS374: Principles of Programming Languages - Reading Exercises and Discu
 
 info:
   coursenum: CS374
-  points: 0
+  points: 10
   submission: "Bring your attempts to class on the days marked on the schedule. These are low-stakes preparation, assessed as part of the 15% Class Activities and Participation component, not graded for correctness."
   goals:
     - To engage each unit's reading actively before class, by hand

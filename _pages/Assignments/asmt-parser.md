@@ -68,7 +68,7 @@ This is one assignment with one deliverable shape — a formal EBNF grammar, a w
 
 - **Recursive descent (the core direction).** Hand-write the parser tier by tier atop your Lexer, exactly as scaffolded in Parts 1–3 below. This is the direction the step-by-step scaffolding assumes, and the component it produces is imported unchanged by the Interpreter assignment.
 - **Generator toolchain (Bison or PLY).** Write the same grammar as a Bison `.y` file (or PLY `yacc` module) with semantic actions that build the AST, letting the LALR machinery replace the hand-written ladder. See **[Direction A](#direction-a-generator-toolchain-bison-or-ply)**.
-- **Mini-Notation music parser.** Parse a real live-coding pattern notation — the mini-notation shared by TidalCycles and Strudel — into an AST, and give it meaning as timed events validated against the production reference at strudel.cc. See **[Direction B](#direction-b-the-mini-notation-music-parser)**. This is the Parser stop on the [music and live-coding path](/Assignments/MusicTrack).
+- **Mini-Notation music parser.** Parse a real live-coding pattern notation — the mini-notation shared by TidalCycles and Strudel — into an AST, and give it meaning as timed events validated against the production reference at strudel.cc. See **[Direction B](#direction-b-the-mini-notation-music-parser)**. This is the Parser stop on the [music and live-coding path](/Projects/TeamLanguage#the-music-and-live-coding-path).
 
 In every direction, Part 1 (the formal grammar) and the Part 3 requirements (AST design, tooling, positioned errors) apply; the directions substitute Part 2's parsing *vehicle*, and Direction B additionally substitutes the unparser/round-trip portion of Part 3 with a timed-event evaluator and reference validation of equivalent weight. The rubric applies equivalently to all three. If you take Direction A or B, plan with the Interpreter assignment in mind: the interpreter consumes your core pipeline's AST, so keep your recursive-descent skills warm — the worked grammar in Part 1 is your specification either way.
 
@@ -444,9 +444,9 @@ Do **not** transcribe Strudel's own parser; derive the grammar and semantics you
 
 **B.1 — Grammar first (Part 1 equivalent).** Write the complete EBNF grammar for your extended mini-notation — sequences, rests, groups, `*`, `/`, `?`, plus the three constructs below — with one sentence per non-terminal explaining its placement. The grammar must remain conflict-free LALR(1); your readme cites specific states from the `.output` automaton to show where each new construct lives.
 
-**B.2 — Complete the scaffolded cases.** The in-class evaluator leaves `SLOW` and `DEGRADE` unimplemented. `slow n` stretches its child across $n$ cycles, which forces a design change — the evaluator signature carries no cycle number, so extend it (or derive the cycle from the span) and document your choice. Gate `DEGRADE` on `rand() < RAND_MAX / 2` with `srand(42)` called exactly once, so grading is reproducible. Transcript: `bd/2 sn` on cycles 0 and 1, with a sentence explaining why they differ, and three identical consecutive runs of `hh*8?`.
+**B.2 — Complete the scaffolded cases.** The in-class evaluator leaves `SLOW` and `DEGRADE` unimplemented. `slow n` stretches its child across $$n$$ cycles, which forces a design change — the evaluator signature carries no cycle number, so extend it (or derive the cycle from the span) and document your choice. Gate `DEGRADE` on `rand() < RAND_MAX / 2` with `srand(42)` called exactly once, so grading is reproducible. Transcript: `bd/2 sn` on cycles 0 and 1, with a sentence explaining why they differ, and three identical consecutive runs of `hh*8?`.
 
-**B.3 — Alternation.** `<a b c>` plays element $\lfloor c \rfloor \bmod k$ on cycle $c$, occupying the whole span:
+**B.3 — Alternation.** `<a b c>` plays element $$\lfloor c \rfloor \bmod k$$ on cycle $$c$$, occupying the whole span:
 
 $$
 \mathcal{E}[\![\, \texttt{ALT}(c_1, \ldots, c_k) \,]\!](t_0, t_1, c) \;=\; \mathcal{E}[\![\, c_{(c \bmod k) + 1} \,]\!](t_0, t_1, c)
@@ -454,13 +454,13 @@ $$
 
 Add `LANGLE`/`RANGLE` tokens, an `atom` production, an `N_ALT` node, and the evaluator case. Transcript: `bd <sn cp hh>` across cycles 0–3, demonstrating rotation and wraparound. If you introduce a conflict along the way, keep the broken `.output` excerpt — diagnosing it is worth describing in your readme.
 
-**B.4 — Euclidean rhythms.** `bd(3,8)` distributes $k = 3$ onsets as evenly as possible among $n = 8$ steps — Toussaint showed these onset sets reproduce rhythm timelines from musical traditions worldwide ($E(3,8)$ is the Cuban tresillo). An onset occurs at step $i$ exactly when
+**B.4 — Euclidean rhythms.** `bd(3,8)` distributes $$k = 3$$ onsets as evenly as possible among $$n = 8$$ steps — Toussaint showed these onset sets reproduce rhythm timelines from musical traditions worldwide ($$E(3,8)$$ is the Cuban tresillo). An onset occurs at step $$i$$ exactly when
 
 $$
 (i \cdot k) \bmod n \;<\; k
 $$
 
-Verify the rule by hand for $E(3,8)$ (steps 0, 3, 6 → `x..x..x.`) and one other $(k, n)$ pair before implementing, and include the hand-verification in your readme with a two-or-three-sentence argument for why the rule yields exactly $k$ onsets. Syntactically, Euclid is a postfix modifier among the `term` productions: `term LPAREN NUMBER COMMA NUMBER RPAREN`. Transcripts: `bd(3,8)` and `bd(5,8)`, each matching its hand-computed onset set.
+Verify the rule by hand for $$E(3,8)$$ (steps 0, 3, 6 → `x..x..x.`) and one other $$(k, n)$$ pair before implementing, and include the hand-verification in your readme with a two-or-three-sentence argument for why the rule yields exactly $$k$$ onsets. Syntactically, Euclid is a postfix modifier among the `term` productions: `term LPAREN NUMBER COMMA NUMBER RPAREN`. Transcripts: `bd(3,8)` and `bd(5,8)`, each matching its hand-computed onset set.
 
 **B.5 — Polymeter.** `{a b, c d e}` runs its subsequences simultaneously at a common step rate, so different lengths drift and realign; `{a b, c d e}%4` fixes four steps per cycle. **Specify the semantics yourself, precisely, in displayed-equation style before writing code** — the specification is a graded artifact, and discovering your first draft was ambiguous is an intended outcome. Use strudel.cc to interrogate the corner cases (what happens on cycle 1? which subsequence sets the default step count?). Add the brace/comma/percent tokens, the productions, an `N_POLY` node, and your specification's evaluator case. Transcript: `{bd sn, hh hh hh}` across cycles 0–2, annotated to show drift and realignment.
 

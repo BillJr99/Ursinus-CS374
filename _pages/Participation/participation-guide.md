@@ -5,7 +5,7 @@ title: "CS374: Principles of Programming Languages - Preparing for Each Class an
 
 info:
   coursenum: CS374
-  points: 0
+  points: 10
   submission: "Nothing to submit. This is a support page; return to it before class throughout the term."
   goals:
     - To arrive at each POGIL session ready to build and to discuss

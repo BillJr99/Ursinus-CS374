@@ -80,9 +80,9 @@ This is one assignment with one deliverable and one rubric. Parts 1 and 2 below 
 - **[Direction B: Continuation-Passing Style and call/cc](#direction-b-continuation-passing-style-and-callcc)** — transform a small interpreter so no call ever returns, then capture "the rest of the computation" as a first-class value and re-derive break, exceptions, and generators from it.
 - **[Direction C: Church Encodings](#direction-c-church-encodings)** — the untyped lambda calculus in code: capture-avoiding substitution, normal-order reduction, and data (booleans, numerals, pairs) represented as pure behavior.
 - **[Direction D: Combinatory Logic — A Flock of Birds](#direction-d-combinatory-logic--a-flock-of-birds)** — computation with no variables at all: a reducer for the S, K, I (and friends) combinators, point-free programming, and the bracket-abstraction translation from lambda terms.
-- **[Direction E: Parallel Functional Programming](#direction-e-parallel-functional-programming)** — purity buys parallelism: a MapReduce pipeline over a real corpus, measured and analyzed against Amdahl's Law. This is the Functional stop on the [music and live-coding path](/Assignments/MusicTrack).
+- **[Direction E: Parallel Functional Programming](#direction-e-parallel-functional-programming)** — purity buys parallelism: a MapReduce pipeline over a real corpus, measured and analyzed against Amdahl's Law. This is the Functional stop on the [music and live-coding path](/Projects/TeamLanguage#the-music-and-live-coding-path).
 - **[Direction F: Declarative Logic Programming in Prolog](#direction-f-declarative-logic-programming-in-prolog)** — a genuinely different paradigm: you describe *relations that hold* and let a search engine (unification + backtracking) find the answers, including running the same relation "backwards." Zero install via the browser. The natural direction if you want to feel the widest possible contrast with the interpreter you just built.
-- **[Direction G: Contribute to an Open-Source Language Ecosystem](#direction-g-contribute-to-an-open-source-language-ecosystem)** — take the paradigm public: a scoped, functional-paradigm-relevant contribution to a real open-source project — [mal (Make-a-Lisp)](https://github.com/kanaka/mal) (a step port increment or test-harness improvement), [Strudel](https://github.com/tidalcycles/strudel)/TidalCycles (a pattern or transformation function — the open-source stop on the [music path](/Assignments/MusicTrack)), a [tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammar, or [SWI-Prolog](https://www.swi-prolog.org/) documentation and worked examples (pairs naturally with Direction F's material) — submitted as a real pull request with tests and documentation. **Requires instructor scope approval within the first week of the assignment.**
+- **[Direction G: Contribute to an Open-Source Language Ecosystem](#direction-g-contribute-to-an-open-source-language-ecosystem)** — take the paradigm public: a scoped, functional-paradigm-relevant contribution to a real open-source project — [mal (Make-a-Lisp)](https://github.com/kanaka/mal) (a step port increment or test-harness improvement), [Strudel](https://github.com/tidalcycles/strudel)/TidalCycles (a pattern or transformation function — the open-source stop on the [music path](/Projects/TeamLanguage#the-music-and-live-coding-path)), a [tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammar, or [SWI-Prolog](https://www.swi-prolog.org/) documentation and worked examples (pairs naturally with Direction F's material) — submitted as a real pull request with tests and documentation. **Requires instructor scope approval within the first week of the assignment.**
 
 Every direction is worth the same 50 points, graded on the same direction-depth rubric row, and ends in the same deliverable shape: working code, tests, and a writeup section that connects the direction back to the core. Choose by interest — none is the "easy" one.
 
@@ -450,8 +450,8 @@ Implement an AST (`LVar`, `LLam`, `LApp` dataclasses), a `free_vars(term)` funct
 
 **Adversarial substitution tests** — your substitution must pass, and your writeup must display, these capture traps:
 
-- $(\lambda y.\, x)[x := y]$ — naive substitution captures $y$; correct substitution renames the binder first.
-- $(\lambda y.\, x\ y)[x := y\ z]$ — same trap, one level deeper.
+- $$(\lambda y.\, x)[x := y]$$ — naive substitution captures $$y$$; correct substitution renames the binder first.
+- $$(\lambda y.\, x\ y)[x := y\ z]$$ — same trap, one level deeper.
 - One trap of your own design that defeats a substitution function lacking the fresh-variable case; show the wrong answer naive substitution produces.
 
 ### C.2: The encodings
@@ -459,19 +459,19 @@ Implement an AST (`LVar`, `LLam`, `LApp` dataclasses), a `free_vars(term)` funct
 Encode as terms in your AST, and verify **mechanically** through your reducer:
 
 - **Booleans:** `TRUE = λt.λf.t`, `FALSE = λt.λf.f`, with `AND`, `OR`, `NOT`, and `IF` — verify the full truth tables reduce correctly.
-- **Numerals:** $\overline{0}$ through $\overline{4}$, with `SUCC`, `ADD`, and `MUL` — verify `ADD 2 2` and `MUL 2 2` both reduce to terms alpha-equivalent to $\overline{4}$ (you will need a small alpha-equivalence checker; write one).
+- **Numerals:** $$\overline{0}$$ through $$\overline{4}$$, with `SUCC`, `ADD`, and `MUL` — verify `ADD 2 2` and `MUL 2 2` both reduce to terms alpha-equivalent to $$\overline{4}$$ (you will need a small alpha-equivalence checker; write one).
 - **Pairs:** `PAIR`, `FST`, `SND` — verify `FST (PAIR a b)` reduces to `a` and `SND (PAIR a b)` to `b`.
 
 Present the verification as a test table mapping each law to a passing reduction.
 
 ### C.3: Strategy and divergence
 
-Implement **applicative-order** reduction (arguments first) behind the same interface, and demonstrate the term where the strategies diverge in behavior: $(\lambda x.\, \lambda y.\, y)\ \Omega$, where $\Omega = (\lambda x.\, x\ x)(\lambda x.\, x\ x)$. Normal order discards $\Omega$ unevaluated and terminates; applicative order runs forever (your step limit fires). Write a sentence on what each strategy does and why — and one more connecting this to why a lazy language can pass an infinite structure to a function that ignores it.
+Implement **applicative-order** reduction (arguments first) behind the same interface, and demonstrate the term where the strategies diverge in behavior: $$(\lambda x.\, \lambda y.\, y)\ \Omega$$, where $$\Omega = (\lambda x.\, x\ x)(\lambda x.\, x\ x)$$. Normal order discards $$\Omega$$ unevaluated and terminates; applicative order runs forever (your step limit fires). Write a sentence on what each strategy does and why — and one more connecting this to why a lazy language can pass an infinite structure to a function that ignores it.
 
 ### Direction C depth checklist
 
 - Substitution passes all three adversarial capture traps, with the naive wrong answer exhibited for your own trap.
-- Both reduction strategies work behind a common interface, with the step limit and trace verbosity configurable, and the $\Omega$ divergence demonstrated (graceful step-limit report, not a crash).
+- Both reduction strategies work behind a common interface, with the step limit and trace verbosity configurable, and the $$\Omega$$ divergence demonstrated (graceful step-limit report, not a crash).
 - All encoding laws are verified mechanically, including `MUL 2 2` up to alpha-equivalence via your checker, presented as a law-to-reduction test table.
 - One derivation (your choice) is worked by hand in the writeup, one reduction per line with the contracted redex marked, and cross-checked step-for-step against the interpreter's trace — reconciling any disagreement (finding your own mistake is worth more than not reporting one).
 - The writeup answers: where in `map`/`filter`/`reduce` from Part 1 have you already been treating behavior as data, and where in a modern language have Church-style encodings earned their keep?
@@ -500,11 +500,11 @@ $$
 
 Reduce each to normal form, one rule per line, naming the rule that fires at each step:
 
-**(a)** $\mathbf{K}\ \mathbf{I}\ a\ b$ — identify which standard function this is. **(b)** $\mathbf{S}\ \mathbf{K}\ \mathbf{K}\ 42$ — what well-known combinator is $\mathbf{S}\ \mathbf{K}\ \mathbf{K}$? **(c)** $\mathbf{B}\ f\ (\mathbf{B}\ g\ h)\ x$ and $\mathbf{B}\ (\mathbf{B}\ f\ g)\ h\ x$ — confirm both produce $f\ (g\ (h\ x))$: associativity of composition. **(d)** $\mathbf{C}\ (\mathbf{B}\ f\ g)\ a\ b$ — what two-argument function is $\mathbf{C}\ (\mathbf{B}\ f\ g)$? **(e)** $\mathbf{S}\ (\mathbf{K}\ \mathbf{S})\ \mathbf{K}\ f\ g\ x$ — reduce fully and identify the result as one of the named birds.
+**(a)** $$\mathbf{K}\ \mathbf{I}\ a\ b$$ — identify which standard function this is. **(b)** $$\mathbf{S}\ \mathbf{K}\ \mathbf{K}\ 42$$ — what well-known combinator is $$\mathbf{S}\ \mathbf{K}\ \mathbf{K}$$? **(c)** $$\mathbf{B}\ f\ (\mathbf{B}\ g\ h)\ x$$ and $$\mathbf{B}\ (\mathbf{B}\ f\ g)\ h\ x$$ — confirm both produce $$f\ (g\ (h\ x))$$: associativity of composition. **(d)** $$\mathbf{C}\ (\mathbf{B}\ f\ g)\ a\ b$$ — what two-argument function is $$\mathbf{C}\ (\mathbf{B}\ f\ g)$$? **(e)** $$\mathbf{S}\ (\mathbf{K}\ \mathbf{S})\ \mathbf{K}\ f\ g\ x$$ — reduce fully and identify the result as one of the named birds.
 
 ### D.2: The combinator reducer
 
-Represent terms as `Prim(name)` and `App(rator, rand)` (application left-associative, so `S K K` is `App(App(Prim("S"), Prim("K")), Prim("K"))`). Implement outermost-first (normal-order analog) reduction as the default, with innermost-first selectable via `config.json` alongside `max_steps` (default 1000) and `trace`. If no normal form is reached within the step limit, print a location-prefixed diagnostic and stop — do not crash. Verify on: $\mathbf{I}\ 42$, $\mathbf{K}\ \mathbf{I}\ a\ b$, $\mathbf{S}\ \mathbf{K}\ \mathbf{K}\ x$, $\mathbf{B}\ f\ g\ x$, and the diverging $\mathbf{M}\ \mathbf{M}$.
+Represent terms as `Prim(name)` and `App(rator, rand)` (application left-associative, so `S K K` is `App(App(Prim("S"), Prim("K")), Prim("K"))`). Implement outermost-first (normal-order analog) reduction as the default, with innermost-first selectable via `config.json` alongside `max_steps` (default 1000) and `trace`. If no normal form is reached within the step limit, print a location-prefixed diagnostic and stop — do not crash. Verify on: $$\mathbf{I}\ 42$$, $$\mathbf{K}\ \mathbf{I}\ a\ b$$, $$\mathbf{S}\ \mathbf{K}\ \mathbf{K}\ x$$, $$\mathbf{B}\ f\ g\ x$$, and the diverging $$\mathbf{M}\ \mathbf{M}$$.
 
 ### D.3: Point-free programming
 
@@ -526,15 +526,15 @@ $$
 [x]\, (e_1\ e_2) = \mathbf{S}\, ([x]\, e_1)\, ([x]\, e_2)
 $$
 
-applied for every lambda, outermost first, until no lambdas remain. Verify by reducing the translations of $\lambda x.\ x$, $\lambda f.\ \lambda x.\ f\ x$, and $\lambda x.\ \lambda y.\ x$ through your reducer and confirming they behave as identity, function-identity, and Kestrel. Measure the size (node count) of the SKI translation of $\lambda x.\ \lambda y.\ x\ y$ against the original term and comment on the expansion ratio — this blowup is why real combinator compilers (Turner's algorithm) optimize the translation.
+applied for every lambda, outermost first, until no lambdas remain. Verify by reducing the translations of $$\lambda x.\ x$$, $$\lambda f.\ \lambda x.\ f\ x$$, and $$\lambda x.\ \lambda y.\ x$$ through your reducer and confirming they behave as identity, function-identity, and Kestrel. Measure the size (node count) of the SKI translation of $$\lambda x.\ \lambda y.\ x\ y$$ against the original term and comment on the expansion ratio — this blowup is why real combinator compilers (Turner's algorithm) optimize the translation.
 
 ### Direction D depth checklist
 
 - All hand reductions are correct, one rule per line with rule names, and where multiple redexes were available the choice is noted with a remark that confluence held.
-- The reducer supports all seven birds with a selectable strategy, a firing step limit on $\mathbf{M}\ \mathbf{M}$ (graceful, location-prefixed), and a trace mode showing each step.
+- The reducer supports all seven birds with a selectable strategy, a firing step limit on $$\mathbf{M}\ \mathbf{M}$$ (graceful, location-prefixed), and a trace mode showing each step.
 - All five point-free functions are correct and tested, each with its combinator expression stated; a sixth of your own design is included with a motivation.
 - The bracket-abstraction translator passes all three verifications *through the reducer*, and the size analysis appears in the writeup.
-- The writeup answers: how does $\mathbf{S}\ f\ g\ x = f\ x\ (g\ x)$ do the job your interpreter's environment does — distributing a value to everywhere it is needed — without any environment at all?
+- The writeup answers: how does $$\mathbf{S}\ f\ g\ x = f\ x\ (g\ x)$$ do the job your interpreter's environment does — distributing a value to everywhere it is needed — without any environment at all?
 
 ---
 
@@ -542,7 +542,7 @@ applied for every lambda, outermost first, until no lambdas remain. Verify by re
 
 *Files: `pipeline.py`, plus your corpus.*
 
-The Google MapReduce paper (Dean and Ghemawat, 2004) opens with a single observation: when you write a computation as a **pure map** over independent inputs followed by an **associative reduce** over results, the framework can parallelize it automatically. You do not coordinate threads. You do not write locks. This direction cashes the functional paradigm's central promise — *purity buys parallelism* — on a real corpus, with real measurements, and confronts the practical limits (Amdahl's Law) that constrain real distributed systems. This is the Functional stop on the [music and live-coding path](/Assignments/MusicTrack): the same pure-map/associative-reduce discipline is exactly how pattern engines like Strudel evaluate independent events, and students on that path may additionally analyze a corpus of timed-event listings as their dataset — the pipeline requirements are identical.
+The Google MapReduce paper (Dean and Ghemawat, 2004) opens with a single observation: when you write a computation as a **pure map** over independent inputs followed by an **associative reduce** over results, the framework can parallelize it automatically. You do not coordinate threads. You do not write locks. This direction cashes the functional paradigm's central promise — *purity buys parallelism* — on a real corpus, with real measurements, and confronts the practical limits (Amdahl's Law) that constrain real distributed systems. This is the Functional stop on the [music and live-coding path](/Projects/TeamLanguage#the-music-and-live-coding-path): the same pure-map/associative-reduce discipline is exactly how pattern engines like Strudel evaluate independent events, and students on that path may additionally analyze a corpus of timed-event listings as their dataset — the pipeline requirements are identical.
 
 **Dataset:** the Project Gutenberg plain-text *Moby Dick* (approximately 21,000 lines), split into lines; each line is one "document."
 
@@ -552,28 +552,28 @@ Implement and test: **`word_frequencies(line) -> dict[str, int]`** (your map fun
 
 ### E.2: The parallel map
 
-Replace `map(word_frequencies, lines)` with `multiprocessing.Pool.map` (the function must be module-level to be picklable). **Assert** the parallel result equals the sequential result. Then measure wall-clock time (`timeit`, five runs per configuration, report the mean) across worker counts 1, 2, 4, and max available, and across chunk sizes (default, 10, 100, 1000) at max workers. Tabulate time, speedup, and efficiency ($= \text{speedup} / \text{workers}$) for every configuration. At what worker count does efficiency drop below 0.8, and why? What effect does chunk size have, and why?
+Replace `map(word_frequencies, lines)` with `multiprocessing.Pool.map` (the function must be module-level to be picklable). **Assert** the parallel result equals the sequential result. Then measure wall-clock time (`timeit`, five runs per configuration, report the mean) across worker counts 1, 2, 4, and max available, and across chunk sizes (default, 10, 100, 1000) at max workers. Tabulate time, speedup, and efficiency ($$= \text{speedup} / \text{workers}$$) for every configuration. At what worker count does efficiency drop below 0.8, and why? What effect does chunk size have, and why?
 
 ### E.3: Tree-reduce
 
-The sequential `reduce(merge_counts, results, {})` is $O(n)$ sequential merges. Implement **`tree_reduce(merge_fn, results)`**: pair up adjacent elements, merge pairs in parallel via `Pool.map`, repeat until one remains (odd element carried forward). Verify it matches the sequential reduce; measure and compare both on the full corpus. In your writeup, draw the dependency graph of a tree-reduce over 8 elements: how many rounds, what is the maximum speedup regardless of core count, and how does the between-rounds synchronization relate to the serial fraction below?
+The sequential `reduce(merge_counts, results, {})` is $$O(n)$$ sequential merges. Implement **`tree_reduce(merge_fn, results)`**: pair up adjacent elements, merge pairs in parallel via `Pool.map`, repeat until one remains (odd element carried forward). Verify it matches the sequential reduce; measure and compare both on the full corpus. In your writeup, draw the dependency graph of a tree-reduce over 8 elements: how many rounds, what is the maximum speedup regardless of core count, and how does the between-rounds synchronization relate to the serial fraction below?
 
 ### E.4: Amdahl's Law analysis
 
-If a fraction $f$ of the computation is serial, the maximum speedup with $n$ processors is
+If a fraction $$f$$ of the computation is serial, the maximum speedup with $$n$$ processors is
 
 $$
 S(n) = \frac{1}{f + \frac{1-f}{n}} \;\xrightarrow{\,n \to \infty\,}\; \frac{1}{f}
 $$
 
-From your measured data, estimate $f$ (using $f \approx \frac{1/S_{\text{max}} - 1/n_{\text{max}}}{1 - 1/n_{\text{max}}}$), compute the theoretical maximum speedup, and compare to what you measured — explaining discrepancies (process spawn cost, pickling for IPC, the final sort, OS scheduling). What speedup would 100 workers give, and what does that imply about this pipeline at datacenter scale?
+From your measured data, estimate $$f$$ (using $$f \approx \frac{1/S_{\text{max}} - 1/n_{\text{max}}}{1 - 1/n_{\text{max}}}$$), compute the theoretical maximum speedup, and compare to what you measured — explaining discrepancies (process spawn cost, pickling for IPC, the final sort, OS scheduling). What speedup would 100 workers give, and what does that imply about this pipeline at datacenter scale?
 
 ### Direction E depth checklist
 
 - The map function's purity and the reduce function's purity *and associativity* are argued in writing, and the parallel results are asserted equal to the sequential baseline.
 - Timing uses at least five runs per configuration; the full time/speedup/efficiency table covers all worker counts and chunk sizes, with the chunk-size effect explained.
 - The tree-reduce works (including the odd-element and empty/single-document edge cases), is measured against the sequential reduce, and its dependency-graph analysis appears in the writeup.
-- The Amdahl analysis estimates $f$ from measured data, computes the theoretical bound, reconciles it with measurement, and projects to 100 workers. Your machine's CPU model and core count are stated prominently — speedup numbers are meaningless without them.
+- The Amdahl analysis estimates $$f$$ from measured data, computes the theoretical bound, reconciles it with measurement, and projects to 100 workers. Your machine's CPU model and core count are stated prominently — speedup numbers are meaningless without them.
 - The writeup constructs one hypothetical *non*-associative reduce function and shows how tree-reduce would produce wrong results with it — connecting associativity back to Part 2's folds.
 
 ---
@@ -630,7 +630,7 @@ Every other direction builds something new inside the course; this one takes the
 **Choosing a target.** Approved ecosystems, with the kind of contribution that fits each:
 
 - **[mal — Make-a-Lisp](https://github.com/kanaka/mal)**: an increment to a step implementation in a language of your choice, or an improvement to the shared test harness — mal's whole structure is fold-and-recursion over expression trees, the paradigm at full strength.
-- **[Strudel](https://github.com/tidalcycles/strudel) / TidalCycles**: a pattern or transformation function — pattern combinators *are* higher-order functions over timed event structures. This is the open-source stop on the [music and live-coding path](/Assignments/MusicTrack).
+- **[Strudel](https://github.com/tidalcycles/strudel) / TidalCycles**: a pattern or transformation function — pattern combinators *are* higher-order functions over timed event structures. This is the open-source stop on the [music and live-coding path](/Projects/TeamLanguage#the-music-and-live-coding-path).
 - **[tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammars**: a grammar fix or improvement with its test cases — structural recursion over syntax, adjacent to everything you built this semester.
 - **[SWI-Prolog](https://www.swi-prolog.org/)**: documentation with worked examples, or test cases for library predicates — pairs naturally with Direction F's material, and documentation contributions are how most successful open-source careers start.
 
