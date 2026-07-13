@@ -19,11 +19,11 @@ info:
     - To report syntax errors with positions, expected tokens, and found tokens
   rubric:
     - weight: 30
-      description: "EBNF Grammar (Goal 1: write a formal EBNF grammar covering expressions, statements, and programs)"
+      description: "EBNF Grammar and Parsing Theory (Goal 1: write a formal EBNF grammar covering expressions, statements, and programs, and reason about how a bottom-up parser would treat it)"
       preemerging: No grammar is provided, or the grammar is so incomplete that fewer than half the language constructs are covered
-      beginning: A grammar is provided but contains ambiguities, missing precedence levels, or structural errors that would cause the parser to behave incorrectly
-      progressing: The grammar covers all constructs and is mostly unambiguous, but the precedence ladder is incomplete (e.g., comparison operators at the wrong level) or associativity is not explicit
-      proficient: The grammar is complete, unambiguous, and matches the implemented parser exactly — every precedence level is a separate non-terminal, associativity is enforced by structure, and the dangling-else resolution is stated explicitly — demonstrating mastery of formal language specification
+      beginning: A grammar is provided but contains ambiguities, missing precedence levels, or structural errors that would cause the parser to behave incorrectly; the theory questions are unanswered or answered without reference to parser actions
+      progressing: The grammar covers all constructs and is mostly unambiguous, but the precedence ladder is incomplete (e.g., comparison operators at the wrong level) or associativity is not explicit; most theory questions are answered but one trace or conflict explanation has a mechanical error
+      proficient: The grammar is complete, unambiguous, and matches the implemented parser exactly — every precedence level is a separate non-terminal, associativity is enforced by structure, and the dangling-else resolution is stated explicitly — and the parsing theory questions are answered correctly, with the shift-reduce and reduce-reduce conflicts explained in terms of stack actions, a correct hand-executed shift-reduce trace, and the left-recursion contrast stated — demonstrating mastery of formal language specification in both the top-down and bottom-up views
     - weight: 40
       description: "Recursive Descent Parser (Goals 2–3: implement a recursive descent parser with the full precedence ladder and correct associativity)"
       preemerging: The parser fails to run or fails most provided programs due to major structural errors
@@ -107,16 +107,16 @@ When `parse_primary` returns a `Num` for `42`, a `Var` for `x`, and raises `Pars
 
 ### Suggested Pacing
 
-See the course schedule for the assigned and due dates — this is the most substantial assignment of the semester and has one of the longest windows. If a break falls inside the window, front-load Part 1 so the grammar is drafted while the parsing sessions are fresh. The **Grammar and Derivations Workshop lab** (due mid-assignment) completes Part 1's grammar work with a partner — bring it in directly. Build tier by tier and keep the tests green as you go:
+See the course schedule for the assigned and due dates — this is the most substantial assignment of the semester and has one of the longest windows. If a break falls inside the window, front-load Part 1 so the grammar is drafted while the parsing sessions are fresh. Two pair labs land inside this window and complete pieces of it for you: the **Grammar and Derivations Workshop lab** completes Part 1's grammar work, and the **Parser Skeleton lab** builds the first two ladder tiers (`parse_primary`, `parse_unary`) — bring both in directly. Build tier by tier and keep the tests green as you go:
 
 | Checkpoint | You should have |
 |------------|----------------|
 | On assignment | Grammar drafting begun (Part 1, with the Grammar and Derivations Workshop lab) |
-| Checkpoint 1 | Grammar drafted; `parse_primary` and `parse_unary` working |
-| Lab due | Part 1 complete via the lab; expression ladder underway |
-| Checkpoint 2 | Expression ladder complete through `parse_expr` with passing tree-shape tests (Step 2b) |
-| Checkpoint 3 | Statements, blocks, and the worked `while` example parsing (Steps 2c–2d) |
-| Checkpoint 4 | Pretty-printer and unparser working (Steps 3a–3b) |
+| Grammar lab due | Part 1's grammar complete via the lab; theory questions (Step 1c) drafted |
+| Skeleton lab due | `parse_primary` and `parse_unary` working via the lab; expression ladder underway |
+| Checkpoint | Expression ladder complete through `parse_expr` with passing tree-shape tests (Step 2b) |
+| Checkpoint | Statements, blocks, and the worked `while` example parsing (Steps 2c–2d) |
+| Checkpoint | Pretty-printer and unparser working (Steps 3a–3b) |
 | Due date | Round-trip verification and error reports complete; readme and ZIP submitted |
 
 ---
@@ -171,6 +171,15 @@ In your readme, write the complete grammar. For each non-terminal, add one sente
 ### Step 1b: Dangling-Else Resolution
 
 State explicitly in your writeup which `if` a dangling `else` is attached to, and how your grammar enforces that rule. Example: given `if a if b print 1; else print 2;`, does the `else` belong to the inner `if` or the outer? Most languages attach `else` to the nearest `if`; if you follow that convention, explain why the grammar (and parser) do so.
+
+### Step 1c: Parsing Theory Questions
+
+Answer these in your readme — they exercise the Table-Driven and LR Parsing session's material on the same grammar you just wrote, and they are graded within Part 1's rubric row. Your recursive descent parser is top-down; these questions make you reason about what the bottom-up alternative would do with your language:
+
+1. **The dangling else, bottom-up.** An LR parser generator reports a **shift-reduce conflict** at the token `ELSE` for a grammar like yours. Explain, in terms of the parser's stack and the two available actions, what the conflict *is* — what does shifting choose, and what does reducing choose? Then give the two standard resolutions (a precedence/`%prec`-style declaration favoring shift, or grammar surgery into `matched`/`unmatched` productions) and state which one your grammar's Step 1b convention corresponds to.
+2. **Manufacture a reduce-reduce conflict.** Consider adding this pair of productions to your grammar: `const_stmt ::= LET IDENT EQ INT SEMICOLON` alongside the existing `let_stmt ::= LET IDENT EQ expr SEMICOLON`. Explain why an LR parser hits a **reduce-reduce conflict** on input like `let x = 42;` (which completed right-hand side matches the stack?), and restructure the productions to eliminate the conflict while keeping both language features.
+3. **One shift-reduce trace.** Using the toy grammar `E ::= E + T | T` and `T ::= INT`, execute the shift-reduce parse of `1 + 2 + 3` as a stack–input–action table (the format from the Table-Driven and LR Parsing session; expect about ten rows). Note the step where the parser reduces `E + T` to `E` *before* shifting the second `+` — and state which associativity that choice enforces.
+4. **Left recursion, both worlds.** The toy grammar above is left-recursive. State in one sentence each: why that grammar would send your recursive descent parser into an infinite loop, and why the LR parser handles it without complaint.
 
 ---
 

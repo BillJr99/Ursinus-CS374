@@ -60,7 +60,7 @@ Verify against the provided behavior script `test_environment.py` (in the course
 
 ## Part 2: Scope Trace Exercise (30 points)
 
-On paper (in `trace.md`), predict — *before running* — the environment chain at each numbered step of the short program provided with the test script (three nested blocks mixing `define` and `assign`). Show each scope as a box with its bindings and a parent arrow. Then run it and reconcile: for any step where the prediction missed, explain which rule you misapplied. Close with one sentence: which line of your class makes this language **lexically** scoped rather than dynamically scoped?
+On paper (in `trace.md`), predict — *before running* — the environment chain at each numbered step of the short program provided with the test script (three nested blocks mixing `define` and `assign`). Show each scope as a box with its bindings and a parent arrow. Then run it and reconcile: for any step where the prediction missed, explain which rule you misapplied. Close with two theory questions from the Binding and Scope session: (1) which line of your class makes this language **lexically** scoped rather than dynamically scoped? (2) re-predict the trace program's final output under **dynamic** scoping — where the lookup chain follows the *callers* rather than the *enclosing text* — and name the step where the two disciplines first diverge.
 
 ---
 
