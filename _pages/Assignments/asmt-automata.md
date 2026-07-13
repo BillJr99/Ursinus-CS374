@@ -84,13 +84,13 @@ Run `python simulator.py 0110` (accept) and `python simulator.py 101` (reject), 
 
 ### Suggested Pacing
 
-This lab is handed out on Tuesday of week 4 (Sep 22) — the class sessions on regular expressions and finite automata are behind you — and due on Thursday of week 5 (Oct 1). One focused session with your partner covers Parts 1–2; the paper constructions fit in a second short sitting:
+This lab is handed out once the class sessions on regular expressions and finite automata are behind you; see the course schedule for the assigned and due dates. One focused session with your partner covers Parts 1–2; the paper constructions fit in a second short sitting:
 
 | Checkpoint | You should have |
 |------------|----------------|
-| Week 4 (Tue Sep 22) — assigned | Loader and DFA simulator working against the provided machines |
-| Week 5 (Tue Sep 29) | NFA simulator with epsilon-closure working; both designed machines encoded and tested |
-| Week 5 (Thu Oct 1) — due | Construction traces and writeup assembled; ZIP submitted |
+| On assignment | Loader and DFA simulator working against the provided machines |
+| Midpoint | NFA simulator with epsilon-closure working; both designed machines encoded and tested |
+| Due date | Construction traces and writeup assembled; ZIP submitted |
 
 ---
 

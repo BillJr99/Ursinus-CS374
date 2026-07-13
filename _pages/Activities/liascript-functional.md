@@ -198,7 +198,7 @@ print(f"max score: {max_score}")
 
 > **CTQ 2.2** `reduce` with `lambda a, b: a - b` over `[10, 3, 2]` and seed 0: compute it by hand using the left-fold formula `((0 - 10) - 3) - 2`. What is the result? Now try seed 10 with `[3, 2]`. What does "left fold" mean?
 
-> **CTQ 2.3** The pipeline composes `map`, `filter`, and `reduce` in a *single expression* with no intermediate names. Name one benefit and one honest cost for a reader.
+> **CTQ 2.3** The pipeline composes `map`, `filter`, and `reduce` in a *single expression* with no intermediate names. Name one benefit and one cost for a reader.
 
 ---
 

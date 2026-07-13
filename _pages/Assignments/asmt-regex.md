@@ -86,19 +86,19 @@ check("COURSE_CODE", COURSE_CODE,
 
 Run `python patterns.py` and confirm you see a `PASS` line. Then break it on purpose: remove the `-?` and rerun to watch `check()` report the failure. That edit-run-read-failure loop is the whole workflow for Part 1 — once it works for one pattern, the remaining nine are repetitions of the same cycle.
 
-This assignment is handed out on Tuesday, September 15 — the day of the dedicated Regular Expressions class session — alongside the **Regex Workshop lab**, which is due one week later and completes your first patterns and the mini-lexer skeleton for you. Bring your lab artifacts into Parts 1 and 2 directly: the lab is a head start on this assignment, not separate work.
+This assignment is handed out alongside the dedicated Regular Expressions class session and the **Regex Workshop lab**, which is due mid-assignment and completes your first patterns and the mini-lexer skeleton for you. Bring your lab artifacts into Parts 1 and 2 directly: the lab is a head start on this assignment, not separate work.
 
 ### Suggested Pacing
 
-This assignment is handed out on Tuesday of week 3 and due on Thursday of week 4:
+See the course schedule for the assigned and due dates. A suggested sequence:
 
 | Checkpoint | You should have |
 |------------|----------------|
-| Week 3 (Tue) — assigned | `check()` harness working (from the Regex Workshop lab); patterns P1–P3 passing |
-| Week 3 (Thu) | Part 1 complete: all ten patterns with test cases |
-| Week 4 (Tue) — lab due | Part 2 complete: mini lexer (grown from the lab's skeleton) passing the ordering table |
-| Midweek | Part 3 complete: transformer and log parser producing the sample output |
-| Week 4 (Thu) — due | Part 4 analysis written; deliverables assembled and submitted |
+| On assignment | `check()` harness working (from the Regex Workshop lab); patterns P1–P3 passing |
+| Checkpoint 1 | Part 1 complete: all ten patterns with test cases |
+| Lab due | Part 2 complete: mini lexer (grown from the lab's skeleton) passing the ordering table |
+| Checkpoint 2 | Part 3 complete: transformer and log parser producing the sample output |
+| Due date | Part 4 analysis written; deliverables assembled and submitted |
 
 ---
 
@@ -345,7 +345,7 @@ Explain the difference between plain groups `(...)`, non-capturing groups `(?:..
 ### Q4: The Limits of Regular Expressions
 
 In one paragraph, explain why no regular expression can validate balanced nested parentheses in general. Your explanation must:
-- Reference the pumping lemma for regular languages (by name; you do not need to reproduce the full proof) (taught in the Sep 15 session with a worked example; see Allison Ch. 4).
+- Reference the pumping lemma for regular languages (by name; you do not need to reproduce the full proof) (taught in the Regular Expressions class session with a worked example; see Allison Ch. 4).
 - Name the level of the Chomsky hierarchy that handles context-free languages.
 - Name the component of your language pipeline (from the Lexer, Parser, and Interpreter assignments) whose job it is to handle balanced nesting.
 

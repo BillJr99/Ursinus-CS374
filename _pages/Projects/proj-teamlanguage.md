@@ -8,7 +8,7 @@ info:
   purpose: "To design, build, document, and perform a programming language of your own — assembled from the semester's lexer, parser, AST, environment, and evaluator components — proving they were reusable components that snap together and grow."
   tilt:
     task: "In rotating-role team sprints, choose your language's direction, integrate your components into one pipeline, add a distinctive feature (going deeper via the Extensions Menu if you choose), and ship a REPL, file-runner, samples, tests, and SEMANTICS.md, then present the language at Demo Day."
-    criteria: "Assessed on the Sprint 0 proposal, language design and documentation, implementation correctness and integration, testing, reproducibility, and the Demo Day presentation, weighted 25/20/20/15/10/10. The proposal (25 points) is due at the Sprint 0 kickoff on Tuesday, November 17; the remaining 75 points are earned at Demo Day with the final submission on Tuesday, December 8. See the rubric below for the full breakdown."
+    criteria: "Assessed on the Sprint 0 proposal, language design and documentation, implementation correctness and integration, testing, reproducibility, and the Demo Day presentation, weighted 25/20/20/15/10/10. The proposal (25 points) is due at the Sprint 0 kickoff; the remaining 75 points are earned at Demo Day with the final submission — see the course schedule for the dates, and the rubric below for the full breakdown."
   points: 100
   goals:
     - To design a programming language with a niche, a documented grammar, and exhaustive semantics
@@ -16,11 +16,11 @@ info:
     - To implement the language end to end by integrating the lexer, parser, AST, environments, and evaluator built across the semester
     - To implement at least one distinctive feature requiring real design and implementation work
     - To deliver a tested, reproducible implementation with a REPL, file-runner, and sample program suite
-    - To present the language at a public Demo Day with an honest account of its limitations
+    - To present the language at a public Demo Day with a candid account of its limitations
     - To work in sustained team sprints with rotating roles and structured peer review
   rubric:
     - weight: 25
-      description: Proposal (due at the Sprint 0 kickoff, Tuesday, November 17)
+      description: Proposal (due at the Sprint 0 kickoff)
       preemerging: The proposal is missing, or names a language with no niche, grammar, or plan
       beginning: The proposal states a niche but the grammar v0, node inventory, or SEMANTICS.md v0 is missing or generic, or the merge plan and sprint plan are absent
       progressing: All checklist items are present and specific, with minor gaps such as a vague risk pre-mortem or an incomplete node inventory
@@ -86,7 +86,7 @@ Your team will design, implement, document, and present **a programming language
 
 **Required scope.** Your language must include variables with documented scoping; arithmetic with full precedence and associativity; booleans, comparisons, and short-circuit logic; selection and iteration; strings or another non-numeric type; and at least one **distinctive feature** requiring real design and implementation (functions with closures, a desugared construct, pattern slices, or a domain-specific statement serving your niche). It ships with a REPL, a file-runner, at least five sample programs (one showcasing the niche), a test suite, a language reference document, and `SEMANTICS.md`. (Direction B teams satisfy this scope through the equivalences described below.)
 
-Teams are seven teams of three, formed in the design phase from your standing POGIL groups. Project roles (**Coordinator**, **Builder**, **Evaluator**, **Scribe**) rotate at every sprint boundary so every member holds every role; your report's contribution statements must show the rotation.
+Teams are three members each, formed in the design phase from your standing POGIL groups. Project roles (**Coordinator**, **Builder**, **Evaluator**, **Scribe**) rotate at every sprint boundary so every member holds every role; your report's contribution statements must show the rotation.
 
 **Reference implementation policy.** Teams may build on the released reference lexer, parser, and interpreter instead of (or merged with) their own semester components, declared in the project README. The project is graded on the language you design and build on top, not on whose components you started from — spend your sprint time on the design, the distinctive feature, and the integration, wherever your starting components came from.
 
@@ -96,18 +96,17 @@ Teams are seven teams of three, formed in the design phase from your standing PO
 
 The project is worth **100 points** total, earned at two graded milestones:
 
-| Date | Milestone | Points |
+| Milestone (see the course schedule for dates) | What happens | Points |
 |---|---|---|
-| Thursday, October 29 | Project handed out — design phase begins: form teams of 3, pick a niche, draft the design scorecard | — |
-| Tuesday, November 10 | Design-phase milestone: team, niche, and design scorecard (checked in studio, ungraded) | — |
-| **Tuesday, November 17** | **Sprint 0 kickoff — Proposal due, presented in class** | **25** |
-| Nov 17–24 | Sprint 1: integrate components (class working time Tuesday, November 24) | — |
-| Nov 25–29 | Thanksgiving break | — |
-| Tuesday, December 1 | Sprint 2 studio: gallery walk and peer review | — |
-| Thursday, December 3 | Sprint 3 studio: release hardening | — |
-| **Tuesday, December 8** | **Demo Day and final submission (last class meeting)** | **75** |
+| Project hand-out | Design phase begins: form teams of 3, pick a niche, draft the design scorecard | — |
+| Design-phase studio check | Design-phase milestone: team, niche, and design scorecard (checked in studio, ungraded) | — |
+| **Sprint 0 kickoff** | **Proposal due, presented in class** | **25** |
+| Sprint 1 (see schedule) | Integrate components, with an in-class working-time session | — |
+| Sprint 2 studio | Gallery walk and peer review | — |
+| Sprint 3 studio | Release hardening | — |
+| **Demo Day (last class meeting)** | **Demo Day and final submission** | **75** |
 
-Demo Day is the **last class meeting (Tuesday, December 8)**. There is no final exam, and no work is accepted after the last class.
+Demo Day is the **last class meeting**. There is no final exam, and no work is accepted after the last class.
 
 ---
 
@@ -127,7 +126,7 @@ Design a small live-coding language of your own — a language whose programs de
 
 Direction B maps onto the same timeline and stages:
 
-- **Proposal (Sprint 0, Nov 17):** your design document additionally includes a denotational semantics — one displayed equation per construct, mapping programs to event sets over cycle spans — at least one **algebraic law** your language satisfies, stated as an equation, and a design rationale argued against the embedded-versus-external tradeoff axes, with at least two rejected alternatives. These stand in for (or fold into) `SEMANTICS.md` v0.
+- **Proposal (Sprint 0):** your design document additionally includes a denotational semantics — one displayed equation per construct, mapping programs to event sets over cycle spans — at least one **algebraic law** your language satisfies, stated as an equation, and a design rationale argued against the embedded-versus-external tradeoff axes, with at least two rejected alternatives. These stand in for (or fold into) `SEMANTICS.md` v0.
 - **Sprint 1:** the lexical and syntactic front end — built either from your semester's Python components or with flex/bison (if you use bison, keep the grammar conflict-free and include the `-v` automaton report in your repository) — parsing every specification example and printing ASTs with location-prefixed errors.
 - **Sprint 2:** the evaluator, by structural recursion over the AST, one case per semantic equation, each case commented with the equation it implements, emitting a **timed event list**.
 - **Sprint 3:** hardening, the specification-driven test suite (every semantic equation has at least one test against a hand-computed event list; the algebraic law is verified empirically on at least three instances; stochastic constructs are reproducible under a fixed seed), and performance rehearsal.
@@ -193,11 +192,11 @@ Instead of (or alongside) extending your own language, contribute to an existing
 
 ---
 
-## Stage 1: Design Phase and Proposal (proposal due Tuesday, November 17, at the Sprint 0 kickoff — 25 points)
+## Stage 1: Design Phase and Proposal (proposal due at the Sprint 0 kickoff — 25 points)
 
-The project is handed out on Thursday, October 29, opening a **design phase**: form your team of three, pick a niche, and draft the design scorecard. The design-phase milestone — team, niche, and scorecard — is checked in studio on Tuesday, November 10 (ungraded); it exists so the graded proposal a week later is a refinement, not a scramble.
+The project hand-out opens a **design phase**: form your team of three, pick a niche, and draft the design scorecard. The design-phase milestone — team, niche, and scorecard — is checked at the design-phase studio check (ungraded); it exists so the graded proposal that follows is a refinement, not a scramble.
 
-The proposal itself is due Tuesday, November 17, at the Sprint 0 kickoff, and is **presented in class**. A two-to-three page proposal containing:
+The proposal itself is due at the Sprint 0 kickoff, and is **presented in class**. A two-to-three page proposal containing:
 
 **Checklist:**
 - The language name, niche, and three-sentence pitch, with your **direction (A or B)** declared.
@@ -212,30 +211,30 @@ The proposal itself is due Tuesday, November 17, at the Sprint 0 kickoff, and is
 
 ---
 
-## Stage 2: Sprints and Studios (November 17 through December 3)
+## Stage 2: Sprints and Studios (Sprint 0 kickoff through the release-hardening studio)
 
-Build in sprints aligned with the in-class studio days, following the sprint studio protocol: stand-ups with numbers, failing tests as specifications, current documents, role rotation at boundaries. **Sprint 1 (Nov 17–24)** integrates members' components into one pipeline running the class language (Direction B: the front end printing ASTs), with class working time on Tuesday, November 24, before Thanksgiving break; **Sprint 2 (Dec 1 studio)** implements grammar differences and the distinctive feature's skeleton (Direction B: the evaluator emitting timed events); **Sprint 3 (Dec 3 studio)** completes the feature, hardens errors, and finishes the sample suite — budget ~4 hours for the ShipIt checks (cold clone-to-run, packaging, README) — they are scored in the Documentation and Reproducibility dimension. The **gallery walk** (Tuesday, December 1 studio day) is mandatory: host with one known failure shown, walk with Strength, Question, and Risk cards, and triage all feedback into fix, disclose, or future work. The **release hardening** studio (Thursday, December 3) is your last in-class working session before Demo Day.
+Build in sprints aligned with the in-class studio days (see the course schedule for dates), following the sprint studio protocol: stand-ups with numbers, failing tests as specifications, current documents, role rotation at boundaries. **Sprint 1 (see schedule)** integrates members' components into one pipeline running the class language (Direction B: the front end printing ASTs), with an in-class working-time session; if a break falls inside the sprint window, front-load the integration so a working pipeline travels with you. **Sprint 2 (gallery-walk studio)** implements grammar differences and the distinctive feature's skeleton (Direction B: the evaluator emitting timed events); **Sprint 3 (release-hardening studio)** completes the feature, hardens errors, and finishes the sample suite — budget ~4 hours for the ShipIt checks (cold clone-to-run, packaging, README) — they are scored in the Documentation and Reproducibility dimension. The **gallery walk** (Sprint 2 studio day) is mandatory: host with one known failure shown, walk with Strength, Question, and Risk cards, and triage all feedback into fix, disclose, or future work. The **release hardening** studio is your last in-class working session before Demo Day.
 
 ---
 
-## Stage 3: Demo Day (Tuesday, December 8 — the last class meeting)
+## Stage 3: Demo Day (the last class meeting)
 
-With seven teams of three presenting in the 75-minute slot (10:00–11:15), each team has a hard cap of **9 minutes**, plus a 1-minute transition to the next team. Within your 9 minutes:
+With all teams presenting in a single 75-minute class slot, each team has a hard cap of **9 minutes**, plus a 1-minute transition to the next team. Within your 9 minutes:
 
 1. The pitch: niche, scorecard, and one design decision defended (60 seconds each).
 2. The live demonstration: the REPL, a sample program showcasing the niche, and the distinctive feature **explained and demonstrated by a teammate who did not implement it**. Direction B teams close with the short performance described above — a live edit-and-rerun over the event output.
-3. The honest minute: one known limitation, disclosed with its triage rationale.
+3. The candid minute: one known limitation, disclosed with its triage rationale.
 4. The numbers: the test results table and one bug story with its regression test.
 
 Every teammate speaks. The audience (your classmates) will write one Strength and one Question card per language; responding to your cards is part of the report.
 
-Demo Day is **external-facing**: alumni, industry guests, and faculty from other departments may join the audience and Q&A, as available — your grade never depends on who attends. Prepare with the [Demo Day Guide](/Assignments/DemoDayGuide); the Week 14 studios include a cross-team mock-interview rehearsal, credited as class participation.
+Demo Day is **external-facing**: alumni, industry guests, and faculty from other departments may join the audience and Q&A, as available — your grade never depends on who attends. Prepare with the [Demo Day Guide](/Assignments/DemoDayGuide); the final sprint studios include a cross-team mock-interview rehearsal, credited as class participation.
 
 There is no final exam. Demo Day and the final submission fall on the last class meeting, and **no work is accepted after the last class**.
 
 ---
 
-## Stage 4: Final Submission (Demo Day, Tuesday, December 8 — 75 points, together with the presentation)
+## Stage 4: Final Submission (Demo Day — 75 points, together with the presentation)
 
 **Deliverables:**
 1. **The repository**: the integrated implementation, REPL and file-runner, test suite, sample programs with expected outputs, all configuration in JSON, located exception handling throughout, and a readme tested by the teammate who did not write it. Ensure reproducibility by fixing random seeds where applicable and listing software version information. The repository is public and recruiter-legible: run the [ShipIt self-check](/Assignments/ShipIt) before Demo Day — it is scored within the Documentation and Reproducibility dimension. (Direction B: the timed-event test fixtures and, if you used bison, the automaton report ride along here.)

@@ -25,7 +25,7 @@ The notebook has one job: to turn the reflecting you are already asked to do —
 
 ## What Goes In It
 
-- **Activity reflections.** Each in-class activity closes with a reflection prompt. Answer it in your notebook, in a few honest sentences — what the activity made click, and what is still fuzzy.
+- **Activity reflections.** Each in-class activity closes with a reflection prompt. Answer it in your notebook, in a few candid sentences — what the activity made click, and what is still fuzzy.
 - **Assignment reflections.** Each assignment asks what you did, what fought you, how long it took, and what grade you would give yourself against the rubric. Keep those here too; they are half of the reflective habit.
 - **Reading-exercise stuck points.** When a [reading exercise]({{ site.baseurl }}/Participation/ReadingExercises) resists you, note where and why. These are often where the best learning is hiding.
 - **Cross-unit connections.** The most valuable entries: a sentence noticing that this week's idea is last month's idea in new form. Collect these deliberately.
@@ -43,7 +43,7 @@ Keep the notebook however you will actually keep it — a paper notebook, a runn
 The notebook is assessed on engagement, not correctness or length. A strong notebook is:
 
 - **Consistent** — entries across the term, not a last-minute batch;
-- **Honest** — it names real confusion rather than performing understanding;
+- **Candid** — it names real confusion rather than performing understanding;
 - **Connective** — it links ideas across units and back to the Language Autobiography;
 - **Reflective** — it says what changed in your thinking, not just what the material was.
 

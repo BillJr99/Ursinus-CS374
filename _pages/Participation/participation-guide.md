@@ -41,7 +41,7 @@ Run this before each meeting. It turns the assigned reading into readiness, and 
 
 1. **Survey first (5 minutes).** Skim the assigned reading and the day's activity: the headings, the "Key Concepts" table, the models, and the exercises. Build a map before you read for detail — know what the session is going to ask you to do.
 2. **Read the technical prose slowly, with a pencil and an interpreter open.** Formal and technical writing is read at sentence speed, not paragraph speed. When the text shows a grammar rule, a regular expression, or a snippet, *run it* — in the Python REPL, on paper, or by hand. A definition you have only read is not yet a definition you know.
-3. **Attempt the reading exercises before class.** Try the short reading-linked exercises for the unit (see the [Reading Exercises]({{ site.baseurl }}/Participation/ReadingExercises) bank). You are not expected to get them all right; you are expected to arrive with an attempt, because an honest attempt is what makes the in-class work land.
+3. **Attempt the reading exercises before class.** Try the short reading-linked exercises for the unit (see the [Reading Exercises]({{ site.baseurl }}/Participation/ReadingExercises) bank). You are not expected to get them all right; you are expected to arrive with an attempt, because a genuine attempt is what makes the in-class work land.
 4. **Bring one question or one stuck point.** Mark the single thing that resisted you most — a rule you could not derive, a snippet you could not trace, a tradeoff you could not resolve — and bring it to class. This is the accountability check that the reading happened, and the stuck point you bring is usually where the best discussion of the day begins.
 
 ## Ways to Contribute

@@ -22,7 +22,7 @@ Reading about a grammar is not the same as writing one; reading about beta reduc
 
 ## Purpose
 
-These exercises exist so that class begins where you are, not where the reading assumes you are. On the days marked **"Reading Exercise / Discussion"** on the schedule, come having attempted that unit's exercises; we will work through them together, compare approaches, and let the places you got stuck set the agenda. An honest attempt that ran aground is worth more to the discussion than a blank page or a perfect one — the stuck points are the lesson.
+These exercises exist so that class begins where you are, not where the reading assumes you are. On the days marked **"Reading Exercise / Discussion"** on the schedule, come having attempted that unit's exercises; we will work through them together, compare approaches, and let the places you got stuck set the agenda. A genuine attempt that ran aground is worth more to the discussion than a blank page or a perfect one — the stuck points are the lesson.
 
 ## How to Use These
 

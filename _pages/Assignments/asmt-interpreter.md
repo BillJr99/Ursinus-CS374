@@ -108,17 +108,17 @@ Then fill in just the `Num` branch (`return node.value`) and the `Print` branch,
 
 ### Suggested Pacing
 
-This assignment is handed out on Thursday of week 9 (Oct 29) and due on Tuesday of week 12 (Nov 17) — a three-week window, because it is the longest assignment in the pipeline. Two pair labs land inside it and complete pieces of it for you: the **Environments and Scope lab** (due Thu Nov 5) builds the `Environment` machinery of Step 2c, and the **Type Checker Starter lab** (due Thu Nov 12) builds the core of Part 4's checker. Part 2 is the steepest section — the schedule below climbs it in small steps rather than one leap:
+See the course schedule for the assigned and due dates — this is the longest assignment in the pipeline, with a window to match. Two pair labs land inside it and complete pieces of it for you: the **Environments and Scope lab** (due mid-assignment) builds the `Environment` machinery of Step 2c, and the **Type Checker Starter lab** (due later in the window) builds the core of Part 4's checker. Part 2 is the steepest section — the sequence below climbs it in small steps rather than one leap:
 
 | Checkpoint | You should have |
 |------------|----------------|
-| Week 9 (Thu Oct 29) — assigned | Part 1 complete: all node dataclasses and the dispatch skeleton (Steps 1a–1b) |
-| Week 10 (Tue Nov 3) | Expression evaluation and short-circuit logic with the bomb test passing (Steps 2a–2b) |
-| Week 10 (Thu Nov 5) — Environments lab due | `Environment` and statement evaluation (grown from the lab); shadowing program prints `51` then `2` (Step 2c) |
-| Week 11 (Tue Nov 10) | Break/continue signals and the file runner with staged errors (Step 2d, Step 3a) |
-| Week 11 (Thu Nov 12) — Type Checker lab due | REPL with persistent environment and recovery; the checker core in place from the lab (Step 3b, Part 4) |
-| Weekend | Checker complete across all constructs; error hierarchy in place (Part 4, Step 5a) |
-| Week 12 (Tue Nov 17) — due | `SEMANTICS.md`, differential programs, REPL transcript; ZIP submitted (Steps 5b–5c) |
+| On assignment | Part 1 complete: all node dataclasses and the dispatch skeleton (Steps 1a–1b) |
+| Checkpoint 1 | Expression evaluation and short-circuit logic with the bomb test passing (Steps 2a–2b) |
+| Environments lab due | `Environment` and statement evaluation (grown from the lab); shadowing program prints `51` then `2` (Step 2c) |
+| Checkpoint 2 | Break/continue signals and the file runner with staged errors (Step 2d, Step 3a) |
+| Type Checker lab due | REPL with persistent environment and recovery; the checker core in place from the lab (Step 3b, Part 4) |
+| Checkpoint 3 | Checker complete across all constructs; error hierarchy in place (Part 4, Step 5a) |
+| Due date | `SEMANTICS.md`, differential programs, REPL transcript; ZIP submitted (Steps 5b–5c) |
 
 ---
 
@@ -407,7 +407,7 @@ Your language's `define` statements and function definitions carry (or are exten
 - **Operators.** Arithmetic operators require `Num` operands; comparison operators yield `Bool`; `and`/`or` require `Bool`; mixed-type operands are rejected naming *both* types.
 - **Call sites.** Every function call checks arity and each argument's type against the parameter annotations, and the call expression takes the declared return type; a function whose body cannot produce its declared return type is an error.
 
-Every rejection is reported as `Type error at line L, col C: ...`, naming both conflicting types — your file runner gains a fourth stage label, and a program that fails the check never runs. Keep the checker's scope honest: annotations are required at declarations, so there is no unification and no inference — where a type is unknown (an unannotated construct you choose not to cover), document the gap in your readme rather than guessing. If you choose the **full Hindley-Milner direction** in Part 5, that direction grows this checker into whole-program inference — Part 4 is its foundation, not a throwaway.
+Every rejection is reported as `Type error at line L, col C: ...`, naming both conflicting types — your file runner gains a fourth stage label, and a program that fails the check never runs. Keep the checker's scope contained: annotations are required at declarations, so there is no unification and no inference — where a type is unknown (an unannotated construct you choose not to cover), document the gap in your readme rather than guessing. If you choose the **full Hindley-Milner direction** in Part 5, that direction grows this checker into whole-program inference — Part 4 is its foundation, not a throwaway.
 
 ## Part 5: Making the Semantics Precise (15 points) — Choose Your Direction
 

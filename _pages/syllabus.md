@@ -222,7 +222,7 @@ schedule:
   deliverables:
   - dtitle: "Overview Assignment Handed Out"
     dlink: "Assignments/Overview"
-    points: "25"
+    points: "100"
     rubricpath: "_pages/Assignments/asmt-overview.md"
   - dtitle: "Warmup Assignment Handed Out"
     dlink: "Assignments/Warmup"
@@ -274,7 +274,7 @@ schedule:
   deliverables:
   - dtitle: "Overview Assignment Due"
     dlink: "Assignments/Overview"
-    points: "25"
+    points: "100"
     rubricpath: "_pages/Assignments/asmt-overview.md"
 - week: "2"
   date: "1"
@@ -624,14 +624,14 @@ Every assignment in this course is written to be transparent about three things,
 
 When you open an assignment, read the Purpose first: it tells you what the assignment is really for, which is the fastest way to make good decisions when the task gets ambiguous. Every assignment also closes by asking you to reflect — what you did, what fought you, how long it took, and what grade you would give yourself against the criteria. That reflection is part of the work, not an afterthought.
 
-A note on grade categories: the **Overview** (25 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the five programming assignments — Regular Expressions, Lexer, Parser, Interpreter, and Functional Programming — make up the **Programming Assignments** category. The **Labs** category comprises six short scaffolding labs (Regex Workshop, Finite Automata Simulators, Grammar and Derivations Workshop, Environments and Scope, Type Checker Starter, and Lambda Calculus), each scoped to roughly two to three hours. Labs may be completed **in pairs** (both partners submit, naming each other; both earn the same grade); the programming assignments remain individual work. Each lab lands mid-assignment and completes a piece of the assignment it scaffolds, so lab work is a head start, not an add-on. **There is no midterm or final exam**: Demo Day on the last class meeting (Tuesday, December 8) is the course's terminal event, and no work is accepted after it. Seven teams present for nine minutes each within our 10:00–11:15 slot; external guests visiting both this Demo Day and CS357's (12:00–1:15, same day) are welcome to stay for both.
+A note on grade categories: the **Overview** (100 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the five programming assignments — Regular Expressions, Lexer, Parser, Interpreter, and Functional Programming — make up the **Programming Assignments** category. The **Labs** category comprises six short scaffolding labs (Regex Workshop, Finite Automata Simulators, Grammar and Derivations Workshop, Environments and Scope, Type Checker Starter, and Lambda Calculus), each scoped to roughly two to three hours. Labs may be completed **in pairs** (both partners submit, naming each other; both earn the same grade); the programming assignments remain individual work. Each lab lands mid-assignment and completes a piece of the assignment it scaffolds, so lab work is a head start, not an add-on. **There is no midterm or final exam**: Demo Day on the last class meeting (Tuesday, December 8) is the course's terminal event, and no work is accepted after it. Seven teams present for nine minutes each within our 10:00–11:15 slot; external guests visiting both this Demo Day and CS357's (12:00–1:15, same day) are welcome to stay for both.
 
 ## Generative AI Policy
 
 Generative AI tools are part of the professional landscape you are graduating into, and this course treats them the way it treats any powerful tool: welcome in some roles, corrosive in others, and never a substitute for your own understanding.
 
 - **Permitted uses.** You may use AI tools to explain concepts you are stuck on, to debug your own code, and to explore alternative approaches to a problem you have already engaged with. Used this way, they are a tutor on call — and a good complement to the reading routine described below.
-- **Required disclosure.** Each assignment's reflection asks what AI tools you used and how. Answer it plainly, every time; "none" is always an acceptable answer, and honest disclosure is never penalized.
+- **Required disclosure.** Each assignment's reflection asks what AI tools you used and how. Answer it plainly, every time; "none" is always an acceptable answer, and disclosure is never penalized.
 - **Primary authorship.** You must be the primary author of the code and prose you submit, and you must be able to explain any line of your submission on request. If a tool wrote something you cannot explain, it is not ready to submit — and the gap will be obvious the moment we discuss your work, because the reflection and the conversation are part of the assessment.
 - **Public work.** Work that leaves the classroom carries an extra obligation: for Functional Direction G pull requests and team-project open-source extensions, AI-assisted contributions must be disclosed to maintainers according to that project's own policy, and you are accountable for their correctness. An upstream maintainer's trust is not yours to spend casually.
 

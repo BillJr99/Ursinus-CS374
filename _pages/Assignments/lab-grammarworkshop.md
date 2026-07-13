@@ -47,7 +47,7 @@ tags:
 
 ---
 
-This **lab** is the Parser assignment's Part 1, done early and with a partner: the EBNF grammar that your recursive-descent parser will transcribe function-by-function. Getting the grammar right on paper first is the highest-leverage two hours of the whole Parser assignment — every parsing function you write next week is one production from this document. Budget **two to three hours**; it is due mid-assignment, before the parsing code gets serious.
+This **lab** is the Parser assignment's Part 1, done early and with a partner: the EBNF grammar that your recursive-descent parser will transcribe function-by-function. Getting the grammar right on paper first is the highest-leverage two hours of the whole Parser assignment — every parsing function you write in the Parser assignment is one production from this document. Budget **two to three hours**; it is due mid-assignment, before the parsing code gets serious.
 
 **Pair policy:** this lab may be completed **in pairs**. Grammar design benefits from argument — one partner proposes a production, the other tries to break it with a program it mis-derives. Both partners submit the same document, each naming the other, and both earn the same grade. (You may also work alone.) The Parser assignment remains individual work: you may both build on this shared grammar, but your parsers are your own.
 
