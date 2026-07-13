@@ -89,6 +89,8 @@ test_parser.py   # the test suite
 
 Confirm the import works before writing any parser code: `python -c "from lexer import Lexer; print(Lexer('let x = 1;').peek())"` should print a `LET` token.
 
+**Reference implementation policy.** A Reference Lexer is released the day this assignment goes out. You may import it in place of your own `lexer.py` by declaring one line in your readme ("This project uses the reference lexer"). Your Lexer assignment grade stands on its own, and using the reference carries no penalty here — the point of this assignment is the parser, and everyone deserves a solid token stream to build on.
+
 ### Your First 30 Minutes
 
 Draft the expression tiers of your grammar on paper (Part 1 gives you the ladder), then implement just the bottom rung. Copy the `Num` and `Var` dataclasses from Step 2a into `ast_nodes.py`, and write `parse_primary()` in `parser.py`:
@@ -105,15 +107,15 @@ When `parse_primary` returns a `Num` for `42`, a `Var` for `x`, and raises `Pars
 
 ### Suggested Pacing
 
-This assignment is handed out on Thursday of week 7 and due on Tuesday of week 9. Build tier by tier and keep the tests green as you go:
+This assignment is handed out on Thursday of week 7 (Oct 15) and due on Tuesday of week 9 (Oct 27). Build tier by tier and keep the tests green as you go:
 
 | Checkpoint | You should have |
 |------------|----------------|
-| Week 7 (Thu) — assigned | Grammar drafted (Part 1); `parse_primary` and `parse_unary` working |
-| Week 8 (Tue) | Expression ladder complete through `parse_expr` with passing tree-shape tests (Step 2b) |
-| Week 8 (Thu) | Statements, blocks, and the worked `while` example parsing (Steps 2c–2d) |
+| Week 7 (Thu Oct 15) — assigned | Grammar drafted (Part 1); `parse_primary` and `parse_unary` working |
+| Week 8 (Tue Oct 20) | Expression ladder complete through `parse_expr` with passing tree-shape tests (Step 2b) |
+| Week 8 (Thu Oct 22) | Statements, blocks, and the worked `while` example parsing (Steps 2c–2d) |
 | Weekend | Pretty-printer and unparser working (Steps 3a–3b) |
-| Week 9 (Tue) — due | Round-trip verification and error reports complete; readme and ZIP submitted |
+| Week 9 (Tue Oct 27) — due | Round-trip verification and error reports complete; readme and ZIP submitted |
 
 ---
 
@@ -423,9 +425,11 @@ This direction pairs naturally with the Lexer assignment's generator-toolchain d
 
 ## Direction B: The Mini-Notation Music Parser
 
-In this direction you parse a production language: the **mini-notation** shared by TidalCycles and Strudel, in which `bd sn` is a two-step drum pattern, `bd*2` doubles, `<sn cp>` alternates per cycle, and `bd(3,8)` distributes three onsets among eight steps. You will grow the in-class flex/yacc subset (provided in the course repository under `examples/mininote/`) toward the real language — extending the lexer, the grammar, the AST, and the evaluator in concert, which is the authentic experience of DSL maintenance: a new construct is never just a parser change. The default toolchain is C with flex and bison, as in class; PLY is welcome, and its `parser.out` stands in for bison's `.output` automaton wherever cited below. This direction never requires audio: the semantics maps patterns to printable timed events `(value, begin, end)` over the cycle $[0,1)$, which you read, diff, and test as plain text.
+In this direction you parse a production language: the **mini-notation** shared by TidalCycles and Strudel, in which `bd sn` is a two-step drum pattern, `bd*2` doubles, `<sn cp>` alternates per cycle, and `bd(3,8)` distributes three onsets among eight steps. You will grow the in-class flex/yacc subset (provided in the course repository under `files/examples/mininote/`) toward the real language — extending the lexer, the grammar, the AST, and the evaluator in concert, which is the authentic experience of DSL maintenance: a new construct is never just a parser change. The default toolchain is C with flex and bison, as in class; PLY is welcome, and its `parser.out` stands in for bison's `.output` automaton wherever cited below. This direction never requires audio: the semantics maps patterns to printable timed events `(value, begin, end)` over the cycle $[0,1)$, which you read, diff, and test as plain text.
 
 Do **not** transcribe Strudel's own parser; derive the grammar and semantics yourself, then use Strudel strictly as an *oracle* to test against.
+
+> **Scope note.** Direction B is the most ambitious direction of the three — budget roughly 25–35 hours end to end — and it is recommended mainly for students planning the music direction of the team project. A **reduced-scope variant earns full credit**: B.2 (SLOW and DEGRADE) and B.3 (alternation `<a b c>`, with its displayed equation) are required; B.4 (Euclidean rhythms) and B.5 (polymeter) become optional extensions beyond full credit. If you take the reduced scope, say so in your readme and build your B.6 validation table from the features you implemented.
 
 **B.1 — Grammar first (Part 1 equivalent).** Write the complete EBNF grammar for your extended mini-notation — sequences, rests, groups, `*`, `/`, `?`, plus the three constructs below — with one sentence per non-terminal explaining its placement. The grammar must remain conflict-free LALR(1); your readme cites specific states from the `.output` automaton to show where each new construct lives.
 
@@ -491,4 +495,5 @@ Ensure reproducibility by listing your Python version.
 - If you took a direction beyond the core: what did the grammar-first discipline reveal that jumping straight to code would have hidden?
 - Direction B only: Toussaint's Euclidean rhythms emerged from a scheduling algorithm and turned out to describe music made by humans across centuries and continents. What does this suggest about the relationship between formal structure and cultural practice, and about who is credited when an algorithm formalizes existing human knowledge?
 - If collaboration with a buddy was permitted, did you work with a buddy on this assignment? If so, who? If not, do you certify that this submission represents your own original work? Please identify any and all portions of your submission that were not originally written by you.
+- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
 - Approximately how many hours it took you to finish this assignment (I will not judge you for this at all — I am simply using it to gauge if the assignments are too easy or hard)?

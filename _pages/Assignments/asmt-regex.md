@@ -86,6 +86,8 @@ check("COURSE_CODE", COURSE_CODE,
 
 Run `python patterns.py` and confirm you see a `PASS` line. Then break it on purpose: remove the `-?` and rerun to watch `check()` report the failure. That edit-run-read-failure loop is the whole workflow for Part 1 — once it works for one pattern, the remaining nine are repetitions of the same cycle.
 
+The dedicated Regular Expressions class session is Tue Sep 15, three days after hand-out — start with Part 1 using the reading (Allison §3.1–3.2), and save Part 2 until after Tuesday's session.
+
 ### Suggested Pacing
 
 This assignment is handed out on Thursday of week 2 and due on Tuesday of week 4:
@@ -343,7 +345,7 @@ Explain the difference between plain groups `(...)`, non-capturing groups `(?:..
 ### Q4: The Limits of Regular Expressions
 
 In one paragraph, explain why no regular expression can validate balanced nested parentheses in general. Your explanation must:
-- Reference the pumping lemma for regular languages (by name; you do not need to reproduce the full proof).
+- Reference the pumping lemma for regular languages (by name; you do not need to reproduce the full proof) (taught in the Sep 15 session with a worked example; see Allison Ch. 4).
 - Name the level of the Chomsky hierarchy that handles context-free languages.
 - Name the component of your language pipeline (from the Lexer, Parser, and Interpreter assignments) whose job it is to handle balanced nesting.
 
@@ -383,4 +385,5 @@ Ensure reproducibility by listing your Python version.
 - Where did you choose a simpler pattern over a perfectly precise one, and how did you document the tradeoff?
 - After completing Part 2, what is the main difference between your mini lexer and the Lexer class you built in the Lexer assignment?
 - If collaboration with a buddy was permitted, did you work with a buddy on this assignment? If so, who? If not, do you certify that this submission represents your own original work? Please identify any and all portions of your submission that were not originally written by you.
+- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
 - Approximately how many hours it took you to finish this assignment (I will not judge you for this at all — I am simply using it to gauge if the assignments are too easy or hard)?

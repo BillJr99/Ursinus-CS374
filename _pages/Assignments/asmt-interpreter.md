@@ -7,8 +7,8 @@ info:
   coursenum: CS374
   purpose: "To complete your language pipeline with a tree-walking evaluator — nested scopes, strong dynamic typing, a REPL, and a precise semantics document — the capstone component your team project extends."
   tilt:
-    task: "Define AST node dataclasses with visitor dispatch, build a tree-walking evaluator with environments and short-circuit logic, add a REPL and file runner, and complete Part 4 in your choice of direction — a staged dynamic error hierarchy documented in SEMANTICS.md, or a static type checker with Hindley-Milner-style inference."
-    criteria: "Assessed on a correct evaluator with well-behaved scopes and short-circuit logic, a recoverable REPL and file runner, and a complete Part 4 in your chosen direction — stage-identified errors matched by SEMANTICS.md, or a sound static type checker with positioned type errors — weighted 25/35/20/20 across the four parts; the Part 4 rubric applies equivalently to either direction. See the rubric below for the full breakdown."
+    task: "Define AST node dataclasses with visitor dispatch, build a tree-walking evaluator with environments and short-circuit logic, add a REPL and file runner, and complete Part 4 in your choice of direction — Error Messages and SEMANTICS.md, or Static Type Checking, or the Intcode VM."
+    criteria: "Assessed on a correct evaluator with well-behaved scopes and short-circuit logic, a recoverable REPL and file runner, and a complete Part 4 in your chosen direction — Error Messages and SEMANTICS.md, or Static Type Checking, or the Intcode VM — weighted 25/35/20/20 across the four parts; the Part 4 rubric applies equivalently to every direction. See the rubric below for the full breakdown."
   points: 100
   goals:
     - To define a complete set of AST node dataclasses covering every language construct
@@ -82,6 +82,8 @@ test_interpreter.py   # the test suite
 
 Confirm the pipeline is connected before evaluating anything: `python -c "from parser import parse; print(parse('print 1 + 2;'))"` should print a `Program` tree.
 
+**Reference implementation policy.** A Reference Parser and AST are released the day this assignment goes out. You may import them in place of your own `parser.py` and `ast_nodes.py` by declaring one line in your readme ("This project uses the reference parser and AST"). Your Parser assignment grade stands on its own, and using the reference carries no penalty here — the point of this assignment is the evaluator, and everyone deserves a solid tree to walk.
+
 ### Your First 30 Minutes
 
 Do exactly what Step 1b's worked example asks — build the dispatch skeleton before any evaluation logic. Copy the node dataclasses from Step 1a (reconciling them with your parser's existing nodes), then write the `Interpreter` class with an `eval_node` that has one branch per node type, each raising `NotImplementedError`:
@@ -98,16 +100,16 @@ Then fill in just the `Num` branch (`return node.value`) and the `Print` branch,
 
 ### Suggested Pacing
 
-This assignment is handed out on Tuesday of week 9 and due on Thursday of week 11. It is the longest assignment in the pipeline, and Part 2 is its steepest section — the schedule below climbs it in small steps rather than one leap:
+This assignment is handed out on Tuesday of week 9 (Oct 27) and due on Tuesday of week 11 (Nov 10). It is the longest assignment in the pipeline, and Part 2 is its steepest section — the schedule below climbs it in small steps rather than one leap:
 
 | Checkpoint | You should have |
 |------------|----------------|
-| Week 9 (Tue) — assigned | Part 1 complete: all node dataclasses and the dispatch skeleton (Steps 1a–1b) |
-| Week 9 (Thu) | Expression evaluation and short-circuit logic with the bomb test passing (Steps 2a–2b) |
-| Week 10 (Tue) | `Environment` and statement evaluation; shadowing program prints `51` then `2` (Step 2c) |
-| Week 10 (Thu) | Break/continue signals and the file runner with staged errors (Step 2d, Step 3a) |
-| Week 11 (Tue) | REPL with persistent environment and recovery; error hierarchy in place (Step 3b, Step 4a) |
-| Week 11 (Thu) — due | `SEMANTICS.md`, differential programs, REPL transcript; ZIP submitted (Steps 4b–4c) |
+| Week 9 (Tue Oct 27) — assigned | Part 1 complete: all node dataclasses and the dispatch skeleton (Steps 1a–1b) |
+| Week 9 (Thu Oct 29) | Expression evaluation and short-circuit logic with the bomb test passing (Steps 2a–2b) |
+| Week 10 (Tue Nov 3) | `Environment` and statement evaluation; shadowing program prints `51` then `2` (Step 2c) |
+| Week 10 (Thu Nov 5) | Break/continue signals and the file runner with staged errors (Step 2d, Step 3a) |
+| Weekend | REPL with persistent environment and recovery; error hierarchy in place (Step 3b, Step 4a) |
+| Week 11 (Tue Nov 10) — due | `SEMANTICS.md`, differential programs, REPL transcript; ZIP submitted (Steps 4b–4c) |
 
 ---
 
@@ -540,7 +542,7 @@ Ensure reproducibility by listing your Python version.
 | Part 1: AST Node Dataclasses | 25 |
 | Part 2: Tree-Walking Evaluator | 35 |
 | Part 3: REPL and File Runner | 20 |
-| Part 4 (chosen direction): Error Messages and SEMANTICS.md, or Static Type Checking | 20 |
+| Part 4 (chosen direction): Error Messages and SEMANTICS.md, or Static Type Checking, or the Intcode VM | 20 |
 | **Total** | **100** |
 
 ---
@@ -552,4 +554,5 @@ Ensure reproducibility by listing your Python version.
 - Typing direction only: your dynamic truthiness rule accepts `while 1 { ... }`, but your type checker demands a `Bool` condition. Where else did the static discipline reject a program your evaluator would have happily run, and which behavior do you consider correct for your language?
 - The `BreakSignal`/`ContinueSignal` pattern uses exceptions for control flow — a technique the course calls "signal exceptions." What property of exceptions makes them well suited for this, and what would you use instead if exceptions were not available?
 - If collaboration with a buddy was permitted, did you work with a buddy on this assignment? If so, who? If not, do you certify that this submission represents your own original work? Please identify any and all portions of your submission that were not originally written by you.
+- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
 - Approximately how many hours it took you to finish this assignment (I will not judge you for this at all — I am simply using it to gauge if the assignments are too easy or hard)?

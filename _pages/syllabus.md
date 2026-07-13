@@ -579,6 +579,17 @@ When you open an assignment, read the Purpose first: it tells you what the assig
 
 A note on grade categories: the **Overview** (25 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the six programming assignments — Regular Expressions, Automata, Lexer, Parser, Interpreter, and Functional Programming — make up the **Programming Assignments** category. **There is no midterm or final exam**: Demo Day on the last class meeting (Tuesday, December 8) is the course's terminal event, and no work is accepted after it.
 
+## Generative AI Policy
+
+Generative AI tools are part of the professional landscape you are graduating into, and this course treats them the way it treats any powerful tool: welcome in some roles, corrosive in others, and never a substitute for your own understanding.
+
+- **Permitted uses.** You may use AI tools to explain concepts you are stuck on, to debug your own code, and to explore alternative approaches to a problem you have already engaged with. Used this way, they are a tutor on call — and a good complement to the reading routine described below.
+- **Required disclosure.** Each assignment's reflection asks what AI tools you used and how. Answer it plainly, every time; "none" is always an acceptable answer, and honest disclosure is never penalized.
+- **Primary authorship.** You must be the primary author of the code and prose you submit, and you must be able to explain any line of your submission on request. If a tool wrote something you cannot explain, it is not ready to submit — and the gap will be obvious the moment we discuss your work, because the reflection and the conversation are part of the assessment.
+- **Public work.** Work that leaves the classroom carries an extra obligation: for Functional Direction G pull requests and team-project open-source extensions, AI-assisted contributions must be disclosed to maintainers according to that project's own policy, and you are accountable for their correctness. An upstream maintainer's trust is not yours to spend casually.
+
+The point of every assignment here is the fluency you build, not the artifact you hand in. Use the tools in ways that leave you knowing more than you did before, and you will be on the right side of this policy.
+
 ## Preparing for Each Class
 
 Our class meetings are hands-on POGIL sessions: you work in your standing team through activities that build the concepts and the code, not lectures you passively receive. That means class works best when you arrive ready, and "ready" is a routine you can run rather than a matter of luck. The **[Preparing for Each Class](Participation/PreparingForClass)** guide lays out that routine: how to read a technical section in passes, how to attempt the reading exercises before class, and how to arrive with a question or a stuck point that the session can resolve. Bringing that prepared question is itself the accountability check that the reading happened — and it is usually where the best discussion starts.

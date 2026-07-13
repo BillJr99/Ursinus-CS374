@@ -154,4 +154,5 @@ Answer these as a team during release hardening, and individually as part of you
 - What did the cold test catch that the authors could not see, and why couldn't they see it?
 - Read your own 200-word project story as a stranger: what claim in it is best supported by evidence in the repository, and what claim still needs shoring up?
 - Do you certify that the repository and your portfolio story accurately represent your team's and your own work? Please identify any and all portions that were not originally created by your team.
+- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
 - Approximately how many hours did this guide's checklist take your team (I will not judge you for this at all...I am simply using it to gauge if the assignments are too easy or hard)?

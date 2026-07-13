@@ -21,6 +21,8 @@ tags:
 
 The purpose of this assignment is to get us set up for the course, both by getting to know each other better and by getting you connected to the tools we will use all semester.
 
+The Warmup is the Teams-based onboarding survey; the Overview is the technical setup + Language Autobiography — they are separate deliverables.
+
 ## Personal Survey (5 Pts)
 
 I gave a couple of fun facts about myself in class, but I want to get to know you all better.  First, join our class team on [{{ page.info.chatname }}]({{ page.info.class_team }}).  Then please submit answers to the following questions as a private message to me on {{ page.info.chatname }}.
@@ -55,3 +57,4 @@ Please take a moment to familiarize yourself with [the course syllabus]({{ site.
 3.  When and where are my office hours, and how can you sign up for a one-on-one appointment?
 4.  Where on {{ page.info.chatname }} can you go to ask questions about the course?
 5.  How many classes may you miss before it affects your grade, according to the attendance policy?
+6.  AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').

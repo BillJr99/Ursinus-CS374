@@ -52,6 +52,8 @@ tags:
 
 The purpose of this warmup is to confirm your tools before the build begins, to capture your current relationship with programming languages as a baseline you will revisit at semester end, and to launch your team with an explicit charter.
 
+The Warmup is the Teams-based onboarding survey; the Overview is the technical setup + Language Autobiography — they are separate deliverables.
+
 One pointer before you begin: several assignments this semester offer **directions** — equivalent ways of meeting the same deliverable — and some of those directions build toward live-coded music. If making a language that makes music appeals to you, skim the [Music and Live-Coding guide](/Assignments/MusicTrack) this week. Directions are chosen assignment-by-assignment later, inside each assignment; nothing is committed now.
 
 ---
@@ -70,7 +72,7 @@ If the version is earlier than 3.10, install a newer version or use a virtual en
 
 **Step 2: Run the starter script.**
 
-Download `warmup_check.py` from the course site (or copy it from below) and run it. It exercises `re`, `json`, and `match`/`case`, and prints a confirmation banner if all three pass.
+Download `warmup_check.py` from the course site (or copy it from below) and run it. It exercises `re`, `json`, and `match`/`case`, and prints a confirmation banner if all three pass. Note: on Windows consoles that garble the ✓/✗ characters, run with `PYTHONIOENCODING=utf-8` or read the True/False values instead.
 
 ```python
 # warmup_check.py — CS374 environment verification script
@@ -238,4 +240,5 @@ One charter per team is fine; include it in each member's individual submission.
 Please also answer the following questions in your submission:
 
 - If collaboration with a buddy was permitted, did you work with a buddy on this assignment? If so, who? If not, do you certify that this submission represents your own original work? Please identify any and all portions of your submission that were not originally written by you.
+- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
 - Approximately how many hours it took you to finish this assignment (I will not judge you for this at all — I am simply using it to gauge if the assignments are too easy or hard).

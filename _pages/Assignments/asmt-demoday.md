@@ -57,6 +57,12 @@ Demo Day is not a private class ritual. Alumni, industry guests, and faculty fro
 
 ---
 
+## Demo Day Format and Schedule
+
+Seven teams of three present in the 75-minute slot (10:00–11:15): each team has a hard cap of **9 minutes**, followed by a **1-minute transition** while the next team plugs in. Nine minutes rewards a rehearsed demo — time your run-through, and cut material rather than rushing it. The order of presentation is set by lot: teams draw lots in the Dec 3 studio, so you know your slot before the day.
+
+---
+
 ## What Strong Work Looks Like
 
 - **The opener lands with someone who has never heard of a parser.** "We built a small programming language for describing drum patterns. You type a pattern, our system checks it, understands it, and plays it back as timed events. I built the part that turns your text into a structure the computer can walk." Ninety seconds, no jargon, ends with what *working* looks like.
@@ -129,4 +135,5 @@ Answer individually after the mock-interview rehearsal:
 
 - Which question made you realize you understood something less well than you thought, and what did you do about it before Demo Day?
 - What did you learn from being the *interviewer* that you could not have learned as the interviewee?
+- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
 - Approximately how many hours did you spend preparing with this guide (I will not judge you for this at all...I am simply using it to gauge if the assignments are too easy or hard)?

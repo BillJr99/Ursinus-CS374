@@ -87,16 +87,14 @@ Compare your output against the six-token listing in Step 1c, including line and
 
 ### Suggested Pacing
 
-This assignment is handed out on Tuesday of week 5 and due on Thursday of week 7. The pacing below leaves the final class day for polish rather than panic:
+This assignment is handed out on Thursday of week 5 (Oct 1) and due on Thursday of week 7 (Oct 15). Fall break sits inside this window — front-load Part 2 before break, and note there is no class on Oct 8 or Oct 13. The pacing below is built around the sessions that actually meet:
 
 | Checkpoint | You should have |
 |------------|----------------|
-| Week 5 (Tue) — assigned | `Token` dataclass and a six-rule `tokenize` generator working |
-| Week 5 (Thu) | Part 1 complete: full `TOKEN_SPEC` passing all maximal-munch cases |
-| Week 6 (Tue) | Steps 2a–2b: `Lexer` class with `peek`/`advance`/`expect`; both consumption patterns agree |
-| Week 6 (Thu) | Steps 2c–2d: string escapes and JSON configuration (both dialects) |
-| Week 7 (Tue) | Part 3 error modes with precise positions; test suite largely written |
-| Week 7 (Thu) — due | Full test suite passing; readme written; ZIP assembled and submitted |
+| Week 5 (Thu Oct 1) — assigned | `Token` dataclass and a six-rule `tokenize` generator working |
+| Week 6 (Tue Oct 6) — checkpoint (the only class session before break) | Parts 1–2a: full `TOKEN_SPEC` passing all maximal-munch cases, and the core `Lexer` class with `peek`/`advance`/`expect` working |
+| Fall break (Oct 8–13, no class) | Parts 2b–2c on your own schedule: string escapes and JSON configuration (both dialects) |
+| Week 7 (Thu Oct 15) — due | Part 3 error modes with precise positions and the full test suite complete; readme written; ZIP assembled and submitted |
 
 ---
 
@@ -374,4 +372,5 @@ Ensure reproducibility by listing your Python version (`python --version`).
 - What about your lexer would you change if your language used significant indentation like Python?
 - The `expect` method was designed for the parser's benefit. Explain why the parser needs `expect` rather than just calling `advance` and checking the type afterward.
 - If collaboration with a buddy was permitted, did you work with a buddy on this assignment? If so, who? If not, do you certify that this submission represents your own original work? Please identify any and all portions of your submission that were not originally written by you.
+- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
 - Approximately how many hours it took you to finish this assignment (I will not judge you for this at all — I am simply using it to gauge if the assignments are too easy or hard)?
