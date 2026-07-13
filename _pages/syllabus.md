@@ -243,8 +243,6 @@ schedule:
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-course-arc.md"
   - rtitle: "Required setup (Overview assignment, Route A): Your Course Development Environment — Docker, Git, and GitHub"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/DevEnvironment"
-  - rtitle: "The Music and Live-Coding Directions: several assignments and the team project offer a music-programming direction — skim the guide now if that pulls you (nothing to decide yet)"
-    rlink: "/Projects/TeamLanguage#the-music-and-live-coding-path"
 - week: "0"
   date: "1"
   title: "Programming Paradigms"
@@ -476,8 +474,6 @@ schedule:
     points: "100"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
-  - rtitle: "The Music and Live-Coding Directions: several assignments and the team project offer a music-programming direction — read the guide as your team weighs its niche (teams commit at the Sprint 0 kickoff)"
-    rlink: "/Projects/TeamLanguage#the-music-and-live-coding-path"
 - week: "10"
   date: "0"
   title: "Functional Programming and Higher-Order Functions"
@@ -524,8 +520,6 @@ schedule:
   title: "Lambda Calculus II: Church Encodings and Combinators"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-lambdacalculus2.md"
   readings:
-  - rtitle: "The Music and Live-Coding Directions: how to take your remaining assignments and the team project in a musical direction (commit to a project direction by the kickoff)"
-    rlink: "/Projects/TeamLanguage#the-music-and-live-coding-path"
   deliverables:
   - dtitle: "Lab: Type Checker Starter Due"
     dlink: "Assignments/TypeCheckerLab"
@@ -553,8 +547,6 @@ schedule:
     points: "25"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
-  - rtitle: "The Music and Live-Coding Directions: guide and equivalence map — teams commit to a project direction today"
-    rlink: "/Projects/TeamLanguage#the-music-and-live-coding-path"
   - rtitle: "Supplemental Tutorial: Build a Bytecode VM"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md"
   - rtitle: "Project Extensions Menu: libraries and packaging, scripting and automation targets, transpilation, and more (see the Team Language Project page)"
@@ -582,8 +574,6 @@ schedule:
   title: "Sprint Studio: Sprints 1-2 and Gallery Walk: Peer Review of Team Languages"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-sprintstudio.md"
   readings:
-  - rtitle: "Demo Day Guide: External Guests and Technical Interview Practice (the cross-team mock-interview rehearsal happens in this week's studios, credited as participation)"
-    rlink: "/Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice"
   - rtitle: "Supplemental Tutorial: CI and TDD for Interpreters"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CITDDForInterpreters"
   - rtitle: "Supplemental Tutorial: The Project Language Guide (a complete worked path for the team project)"
@@ -604,8 +594,6 @@ schedule:
     points: "100"
     rubricpath: "_pages/Assignments/asmt-functional.md"
   readings:
-  - rtitle: "ShipIt Guide: Repo Hygiene, README, Packaging, and Your Portfolio (required self-check before Demo Day; scored within the project's Documentation and Reproducibility dimension)"
-    rlink: "/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist"
   - rtitle: "Supplemental Tutorial: Publishing Your Language — pip, npm, and Docker"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PublishingYourLanguage"
   - rtitle: "Supplemental Tutorial: Advanced C++ for Language Implementers"
