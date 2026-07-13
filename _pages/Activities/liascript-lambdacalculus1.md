@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-lambdacalculus1.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-lambdacalculus1.md
+comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-lambdacalculus1.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-lambdacalculus1.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -704,6 +704,6 @@ In your notebook: Church built this system in 1936 to study what "computable" me
 
 The core lesson above stands on its own. The deep-dive appendices that used to follow it now live elsewhere:
 
-> **Going further:** the material that used to live here — combinatory logic and the SKI calculus: the "flock of birds" (S, K, I, B, C, W and friends), deriving B and C from S and K, bracket abstraction, and point-free programming — is covered in depth in the dedicated tutorial: [Implementing a Lambda Calculus Reducer](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md). **Direction D of the Functional assignment builds on this material.** Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here — combinatory logic and the SKI calculus: the "flock of birds" (S, K, I, B, C, W and friends), deriving B and C from S and K, bracket abstraction, and point-free programming — is covered in depth in the dedicated tutorial: [Implementing a Lambda Calculus Reducer](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md). **Direction D of the Functional assignment builds on this material.** Explore it when your project or curiosity calls for it.
 
 > **Going further:** the material that used to live here — algebraic data types and pattern matching (safe lookups, Maybe-style values, matching on nested structures, symbolic differentiation over an expression tree) — is covered in depth in the Modern Language Features activity (pattern matching, in class) and the dedicated guide: [Typing Disciplines — Strong vs. Weak, Static vs. Dynamic, and Gradual Typing](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypingDisciplines) (product and sum types). Explore them when your project or curiosity calls for it.

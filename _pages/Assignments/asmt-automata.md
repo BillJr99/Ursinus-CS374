@@ -43,9 +43,9 @@ info:
       proficient: Thompson's construction is applied step-by-step with each fragment labeled, the final NFA is encoded as JSON, verified by simulation, and the writeup connects automata theory to the lexer pipeline with thoughtful reflection
   readings:
     - rtitle: "Finite Automata Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-automata.md"
+      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-automata.md"
     - rtitle: "Grammars and the Chomsky Hierarchy Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-grammars.md"
+      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-grammars.md"
 
 tags:
   - automata

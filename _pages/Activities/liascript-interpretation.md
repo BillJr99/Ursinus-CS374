@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-interpretation.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-interpretation.md
+comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-interpretation.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-interpretation.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -634,6 +634,6 @@ In your notebook: you have now run a program in a language whose every component
 
 The core lesson above stands on its own. The deep-dive appendices that used to follow it now live elsewhere:
 
-> **Going further:** the material that used to live here — the standalone start-to-finish pipeline (tokenizer, parser, evaluator, statement executor, error reporting, closures, and a complete REPL, assembled as one program) — is covered in depth in the dedicated tutorial: [Build a Complete Interpreter in Python — Step by Step](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md), the complete start-to-finish companion for the Interpreter assignment. Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here — the standalone start-to-finish pipeline (tokenizer, parser, evaluator, statement executor, error reporting, closures, and a complete REPL, assembled as one program) — is covered in depth in the dedicated tutorial: [Build a Complete Interpreter in Python — Step by Step](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md), the complete start-to-finish companion for the Interpreter assignment. Explore it when your project or curiosity calls for it.
 
 > **Going further:** the operational-semantics appendix (specifying languages with inference rules: judgments, big-step and small-step rules, and derivation trees) is now a self-study topic — search "big-step operational semantics" or start with Chapter 3 of Benjamin Pierce's *Types and Programming Languages* when curiosity calls for it.

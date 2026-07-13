@@ -757,7 +757,7 @@ All four problems share a structure: a computation needs to **pause at an arbitr
 
 #### Model 1: Generators as Lazy Sequences
 
-> **Going further:** the material that used to live here — generator basics, eager vs. lazy sequences, and generator pipelines — is covered in class in the *Modern Language Features* activity, and lazy evaluation is covered in depth in the dedicated tutorial: [Haskell Essentials for the Programming Languages Course](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-haskell-essentials.md). Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here — generator basics, eager vs. lazy sequences, and generator pipelines — is covered in class in the *Modern Language Features* activity, and lazy evaluation is covered in depth in the dedicated tutorial: [Haskell Essentials for the Programming Languages Course](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-haskell-essentials.md). Explore it when your project or curiosity calls for it.
 
 ---
 
@@ -1337,7 +1337,7 @@ except RuntimeError as e:
 
 #### Model 3: Option / Maybe — Explicit Absence
 
-> **Going further:** the material that used to live here — the `Option`/`Maybe` type that makes absence explicit instead of using `null` — is covered in depth in the dedicated tutorial: [Haskell Essentials for the Programming Languages Course](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-haskell-essentials.md) (the Maybe monad). The `Result`/`Either` pattern in Model 4 below generalizes it by carrying the *reason* for failure.
+> **Going further:** the material that used to live here — the `Option`/`Maybe` type that makes absence explicit instead of using `null` — is covered in depth in the dedicated tutorial: [Haskell Essentials for the Programming Languages Course](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-haskell-essentials.md) (the Maybe monad). The `Result`/`Either` pattern in Model 4 below generalizes it by carrying the *reason* for failure.
 
 ---
 

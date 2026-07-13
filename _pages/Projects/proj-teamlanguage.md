@@ -57,9 +57,9 @@ info:
       proficient: The presentation includes a live REPL demonstration, a sample program showcasing the niche, the distinctive feature explained by its non-author, a rehearsed disclosure of one known limitation, and every teammate presenting
   readings:
     - rtitle: "Language Design Studio Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-languagedesign.md"
+      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-languagedesign.md"
     - rtitle: "Sprint Studio Protocol"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-sprintstudio.md"
+      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-sprintstudio.md"
     - rtitle: "Music and Live-Coding Track Guide (for Direction B: deliverable equivalence table and the text-events-only route)"
       rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/MusicTrack"
     - rtitle: "Make-a-Lisp (mal) — incremental scaffold with a built-in test harness (Direction A option)"

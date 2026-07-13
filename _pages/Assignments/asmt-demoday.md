@@ -36,7 +36,7 @@ info:
       proficient: My project story is written, linked from my profile or portfolio per the ShipIt guide, rehearsed aloud as a two-minute narrative, and I can produce the evidence behind every claim in it on request
   readings:
     - rtitle: "Sprint Studio Protocol"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-sprintstudio.md"
+      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-sprintstudio.md"
     - rtitle: "Team Language Project"
       rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage"
     - rtitle: "ShipIt Guide: Repo Hygiene, README, Packaging, and Your Portfolio"

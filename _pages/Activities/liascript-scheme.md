@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-scheme.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-scheme.md
+comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-scheme.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-scheme.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -524,7 +524,7 @@ In your notebook: Scheme deletes nearly all syntax and gains the ability to trea
 
 ## Going Deeper (Optional Pointers)
 
-> **Going further:** the material that used to live here — the metacircular evaluator (Scheme in Python): s-expression parsing, environment chains, the evaluator core, the global environment, and tail-call optimization via trampoline — is covered in depth in the dedicated tutorial: [Build a Complete Interpreter in Python — Step by Step](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md). You build exactly this in the Interpreter assignment. Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here — the metacircular evaluator (Scheme in Python): s-expression parsing, environment chains, the evaluator core, the global environment, and tail-call optimization via trampoline — is covered in depth in the dedicated tutorial: [Build a Complete Interpreter in Python — Step by Step](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md). You build exactly this in the Interpreter assignment. Explore it when your project or curiosity calls for it.
 
 ### If you explore the evaluator: reflection prompts
 
