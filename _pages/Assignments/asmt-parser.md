@@ -107,15 +107,17 @@ When `parse_primary` returns a `Num` for `42`, a `Var` for `x`, and raises `Pars
 
 ### Suggested Pacing
 
-This assignment is handed out on Thursday of week 7 (Oct 15) and due on Tuesday of week 9 (Oct 27). Build tier by tier and keep the tests green as you go:
+This assignment is handed out on Tuesday of week 6 (Oct 6) and due on Thursday of week 9 (Oct 29) — a three-week window, because this is the most substantial assignment of the semester. **Fall break (Oct 8–13, no class) sits at the start of this window**: front-load Part 1 before break so the grammar is drafted while the parsing sessions are fresh. The **Grammar and Derivations Workshop lab** (due Thu Oct 15) completes Part 1's grammar work with a partner — bring it in directly. Build tier by tier and keep the tests green as you go:
 
 | Checkpoint | You should have |
 |------------|----------------|
-| Week 7 (Thu Oct 15) — assigned | Grammar drafted (Part 1); `parse_primary` and `parse_unary` working |
+| Week 6 (Tue Oct 6) — assigned | Grammar drafting begun (Part 1, with the Grammar and Derivations Workshop lab) |
+| Fall break (Oct 8–13, no class) | Grammar drafted; `parse_primary` and `parse_unary` working |
+| Week 7 (Thu Oct 15) — lab due | Part 1 complete via the lab; expression ladder underway |
 | Week 8 (Tue Oct 20) | Expression ladder complete through `parse_expr` with passing tree-shape tests (Step 2b) |
 | Week 8 (Thu Oct 22) | Statements, blocks, and the worked `while` example parsing (Steps 2c–2d) |
-| Weekend | Pretty-printer and unparser working (Steps 3a–3b) |
-| Week 9 (Tue Oct 27) — due | Round-trip verification and error reports complete; readme and ZIP submitted |
+| Week 9 (Tue Oct 27) | Pretty-printer and unparser working (Steps 3a–3b) |
+| Week 9 (Thu Oct 29) — due | Round-trip verification and error reports complete; readme and ZIP submitted |
 
 ---
 

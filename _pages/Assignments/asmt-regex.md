@@ -86,19 +86,19 @@ check("COURSE_CODE", COURSE_CODE,
 
 Run `python patterns.py` and confirm you see a `PASS` line. Then break it on purpose: remove the `-?` and rerun to watch `check()` report the failure. That edit-run-read-failure loop is the whole workflow for Part 1 — once it works for one pattern, the remaining nine are repetitions of the same cycle.
 
-The dedicated Regular Expressions class session is Tue Sep 15, three days after hand-out — start with Part 1 using the reading (Allison §3.1–3.2), and save Part 2 until after Tuesday's session.
+This assignment is handed out on Tuesday, September 15 — the day of the dedicated Regular Expressions class session — alongside the **Regex Workshop lab**, which is due one week later and completes your first patterns and the mini-lexer skeleton for you. Bring your lab artifacts into Parts 1 and 2 directly: the lab is a head start on this assignment, not separate work.
 
 ### Suggested Pacing
 
-This assignment is handed out on Thursday of week 2 and due on Tuesday of week 4:
+This assignment is handed out on Tuesday of week 3 and due on Thursday of week 4:
 
 | Checkpoint | You should have |
 |------------|----------------|
-| Week 2 (Thu) — assigned | `check()` harness working; patterns P1–P3 passing |
-| Week 3 (Tue) | Part 1 complete: all ten patterns with test cases |
-| Week 3 (Thu) | Part 2 complete: mini lexer passing the ordering table |
-| Weekend | Part 3 complete: transformer and log parser producing the sample output |
-| Week 4 (Tue) — due | Part 4 analysis written; deliverables assembled and submitted |
+| Week 3 (Tue) — assigned | `check()` harness working (from the Regex Workshop lab); patterns P1–P3 passing |
+| Week 3 (Thu) | Part 1 complete: all ten patterns with test cases |
+| Week 4 (Tue) — lab due | Part 2 complete: mini lexer (grown from the lab's skeleton) passing the ordering table |
+| Midweek | Part 3 complete: transformer and log parser producing the sample output |
+| Week 4 (Thu) — due | Part 4 analysis written; deliverables assembled and submitted |
 
 ---
 

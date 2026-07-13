@@ -5,10 +5,10 @@ title: "CS374: Principles of Programming Languages - The Interpreter"
 
 info:
   coursenum: CS374
-  purpose: "To complete your language pipeline with a tree-walking evaluator — nested scopes, strong dynamic typing, a REPL, and a precise semantics document — the capstone component your team project extends."
+  purpose: "To complete your language pipeline with a tree-walking evaluator — nested scopes, strong dynamic typing, a small static type checker, a REPL, and a precise semantics document — the capstone component your team project extends."
   tilt:
-    task: "Define AST node dataclasses with visitor dispatch, build a tree-walking evaluator with environments and short-circuit logic, add a REPL and file runner, and complete Part 4 in your choice of direction — Error Messages and SEMANTICS.md, or Static Type Checking, or the Intcode VM."
-    criteria: "Assessed on a correct evaluator with well-behaved scopes and short-circuit logic, a recoverable REPL and file runner, and a complete Part 4 in your chosen direction — Error Messages and SEMANTICS.md, or Static Type Checking, or the Intcode VM — weighted 25/35/20/20 across the four parts; the Part 4 rubric applies equivalently to every direction. See the rubric below for the full breakdown."
+    task: "Define AST node dataclasses with visitor dispatch, build a tree-walking evaluator with environments and short-circuit logic, add a REPL and file runner, implement a small static type checker over annotated declarations, and complete Part 5 in your choice of direction — Error Messages and SEMANTICS.md, or full Hindley-Milner Type Inference, or the Intcode VM."
+    criteria: "Assessed on a correct evaluator with well-behaved scopes and short-circuit logic, a recoverable REPL and file runner, a working small static type checker that runs as its own stage before evaluation, and a complete Part 5 in your chosen direction — Error Messages and SEMANTICS.md, or full Hindley-Milner Type Inference, or the Intcode VM — weighted 25/30/15/15/15 across the five parts; the Part 5 rubric applies equivalently to every direction. See the rubric below for the full breakdown."
   points: 100
   goals:
     - To define a complete set of AST node dataclasses covering every language construct
@@ -16,7 +16,8 @@ info:
     - To implement nested scopes with an Environment class distinguishing definition from assignment
     - To verify semantic invariants (determinism, scope restoration, short-circuit non-evaluation) with property-based testing using Hypothesis and a generated program space
     - To build a REPL and file-runner with stage-identified error messages
-    - To make the language's semantics precise — by documenting the dynamic rules exhaustively in SEMANTICS.md, by enforcing them statically with a Hindley-Milner-style type checker, or by implementing and precisely specifying a contrasting opcode-based execution model (the Intcode VM), in your choice of direction
+    - To implement a small static type checker over annotated declarations — literal, variable, operator, and call-site checks — that runs as its own pipeline stage between parsing and evaluation
+    - To make the language's semantics precise — by documenting the dynamic rules exhaustively in SEMANTICS.md, by extending the required checker to full Hindley-Milner type inference, or by implementing and precisely specifying a contrasting opcode-based execution model (the Intcode VM), in your choice of direction
   rubric:
     - weight: 25
       description: "AST Node Dataclasses (Goal 1: define a complete set of AST node dataclasses covering every language construct)"
@@ -24,24 +25,30 @@ info:
       beginning: All required node types exist but several are missing fields, have incorrect types, or lack documented field meanings
       progressing: All required node types are defined with correct fields and a useful __repr__, but source-position information is missing from most nodes
       proficient: All required node types are defined as dataclasses with every field documented and source-position (line/col) stored where it aids error reporting — demonstrating Goal 1 by providing a complete, parser-consistent node hierarchy with a visitor dispatch table or isinstance chain ready for the evaluator
-    - weight: 35
+    - weight: 30
       description: "Tree-Walking Evaluator (Goals 2–3: implement a tree-walking evaluator with strong dynamic typing and an Environment class for nested scopes)"
       preemerging: The evaluator fails to run or fails most provided programs due to major structural errors such as missing cases or infinite loops
       beginning: The evaluator runs but fails on several programs — e.g., nested scopes leak, type errors are not raised, or short-circuit logic evaluates both branches always
       progressing: The evaluator passes the provided programs but fails on hidden edge cases — e.g., a scope is not discarded after a block, or division by zero crashes Python instead of raising a language error
       proficient: A correct evaluator passes all provided and hidden programs — nested scopes behave per documented semantics, type errors name both operand types, short-circuit logic is verified by a non-evaluation test, and all runtime errors are raised at the language level with stage and position; the required Hypothesis invariant tests (Step 2e — determinism, scope restoration, short-circuit non-evaluation, and at least one more) pass over the generated program space, with one shrunk counterexample reported or a reasoned all-clear — demonstrating that Goals 2 and 3 are met
-    - weight: 20
+    - weight: 15
       description: "REPL and File Runner (Goal 4: build a REPL and file-runner with stage-identified error messages)"
       preemerging: Neither the REPL nor the file runner exists, or both crash on the first error
       beginning: One of the two exists but dies on any error, or the REPL does not maintain state between inputs
       progressing: Both exist and survive most errors, but one error class (e.g., type errors) still crashes the REPL, or the file runner does not identify the stage in its error messages
       proficient: Both the REPL and file runner work — the REPL maintains a persistent environment across inputs and recovers from all error classes, the file runner identifies stage and position in every error message, and a transcript demonstrates each error class and recovery — demonstrating Goal 4 end-to-end
-    - weight: 20
-      description: "Part 4, in the chosen direction — Staged Errors with SEMANTICS.md, Static Type Checking, or the Intcode VM with a precise operational semantics (Goal 5: make the language's semantics precise — by documenting the dynamic rules exhaustively, enforcing them statically before evaluation, or specifying and implementing a contrasting opcode-based execution model)"
+    - weight: 15
+      description: "The Small Static Type Checker (Goal 5: implement a static type checker over annotated declarations that runs as its own pipeline stage between parsing and evaluation)"
+      preemerging: "No checker exists, or it never rejects an ill-typed program"
+      beginning: "The checker rejects some ill-typed programs but misses operator mismatches or call-site errors, or it runs interleaved with evaluation rather than as its own stage"
+      progressing: "The checker catches literal, variable, operator, and call-site errors as a separate stage, but error messages lack positions or do not name both conflicting types, or one construct (e.g., function return types) is unchecked"
+      proficient: "The checker runs as its own stage between parsing and evaluation and rejects every ill-typed test program before any code runs; every type error is reported as \"Type error at line L, col C\" naming both conflicting types; annotated declarations, operator uses, call-site arity and argument types, and return types are all checked; and the file runner's staged output shows the Type stage firing before the Run stage"
+    - weight: 15
+      description: "Part 5, in the chosen direction — Staged Errors with SEMANTICS.md, full Hindley-Milner Type Inference, or the Intcode VM with a precise operational semantics (Goal 6: make the language's semantics precise — by documenting the dynamic rules exhaustively, extending the required checker to whole-program inference, or specifying and implementing a contrasting opcode-based execution model)"
       preemerging: "Dynamic-errors direction: errors are unhandled Python exceptions with no stage identification. Typing direction: no checker exists, or unification fails on basic cases. Intcode direction: the VM fails the Day 2 sample, or opcodes are not documented as transition rules"
       beginning: "Dynamic-errors direction: errors are caught but the stage (lexical vs. syntax vs. runtime) is not identified, or the position is absent. Typing direction: unification handles trivial cases but the checker fails on function application or let, or type errors carry no position. Intcode direction: the VM runs the Day 2 sample but parameter modes are wrong or INTCODE.md is incomplete"
       progressing: "Dynamic-errors direction: most error classes are caught with stage and position, but one class (e.g., type errors) is missing position or stage identification. Typing direction: the checker infers correct types for most programs with a defect in one case (e.g., a missing occurs check, or an incorrect constraint for one operator), and most type errors are positioned. Intcode direction: the VM passes the Day 2 and Day 5 checkpoints and most opcodes have transition rules, but position/immediate mode has a defect or the differential test against the tree-walker is missing"
-      proficient: "Dynamic-errors direction: every error class — LexError, ParseError, NameError, TypeError, ZeroDivisionError — is caught at the appropriate stage and reported with a message of the form \"Stage error at line L, col C: description\"; SEMANTICS.md includes one example program that triggers each error class with the expected message shown. Typing direction: unification (with the occurs check) and Algorithm-W-style inference are correct for every construct the checker covers; the checker runs as its own stage before evaluation; every type error names both conflicting types with line and context; and TYPES.md states the typing rule per construct with one accepted and one rejected program each. Intcode direction: the VM passes every cited AoC checkpoint, illegal opcodes raise staged positioned errors, INTCODE.md gives a precise transition rule for every opcode and parameter mode, and the required differential test shows the VM and tree-walker agree on shared arithmetic — any direction demonstrating Goal 5 by providing a complete semantics reference"
+      proficient: "Dynamic-errors direction: every error class — LexError, ParseError, NameError, TypeError, ZeroDivisionError — is caught at the appropriate stage and reported with a message of the form \"Stage error at line L, col C: description\"; SEMANTICS.md includes one example program that triggers each error class with the expected message shown. Typing direction: unification (with the occurs check) and Algorithm-W-style inference are correct for every construct the checker covers; the checker runs as its own stage before evaluation; every type error names both conflicting types with line and context; and TYPES.md states the typing rule per construct with one accepted and one rejected program each. Intcode direction: the VM passes every cited AoC checkpoint, illegal opcodes raise staged positioned errors, INTCODE.md gives a precise transition rule for every opcode and parameter mode, and the required differential test shows the VM and tree-walker agree on shared arithmetic — any direction demonstrating Goal 6 by providing a complete semantics reference"
   readings:
     - rtitle: "Tree-Walking Interpretation Activity"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-interpretation.md"
@@ -51,7 +58,7 @@ info:
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-controlflowsemantics.md"
     - rtitle: "Property-Based Testing Your Language with Hypothesis (Tutorial)"
       rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PropertyBasedTesting"
-    - rtitle: "Advent of Code 2019, Day 2 — Intcode (Part 4 Intcode direction)"
+    - rtitle: "Advent of Code 2019, Day 2 — Intcode (Part 5 Intcode direction)"
       rlink: "https://adventofcode.com/2019/day/2"
 
 tags:
@@ -76,7 +83,8 @@ You need Python 3.10+ plus your completed Lexer and Parser. Copy `lexer.py`, `pa
 ```
 interpreter.py        # evaluator, Environment, error hierarchy
 mylang.py             # entry point: file runner and REPL (Part 3)
-SEMANTICS.md          # the semantics document (Part 4)
+typechecker.py        # the small static type checker (Part 4)
+SEMANTICS.md          # the semantics document (Part 5)
 test_interpreter.py   # the test suite
 ```
 
@@ -100,16 +108,17 @@ Then fill in just the `Num` branch (`return node.value`) and the `Print` branch,
 
 ### Suggested Pacing
 
-This assignment is handed out on Tuesday of week 9 (Oct 27) and due on Tuesday of week 11 (Nov 10). It is the longest assignment in the pipeline, and Part 2 is its steepest section — the schedule below climbs it in small steps rather than one leap:
+This assignment is handed out on Thursday of week 9 (Oct 29) and due on Tuesday of week 12 (Nov 17) — a three-week window, because it is the longest assignment in the pipeline. Two pair labs land inside it and complete pieces of it for you: the **Environments and Scope lab** (due Thu Nov 5) builds the `Environment` machinery of Step 2c, and the **Type Checker Starter lab** (due Thu Nov 12) builds the core of Part 4's checker. Part 2 is the steepest section — the schedule below climbs it in small steps rather than one leap:
 
 | Checkpoint | You should have |
 |------------|----------------|
-| Week 9 (Tue Oct 27) — assigned | Part 1 complete: all node dataclasses and the dispatch skeleton (Steps 1a–1b) |
-| Week 9 (Thu Oct 29) | Expression evaluation and short-circuit logic with the bomb test passing (Steps 2a–2b) |
-| Week 10 (Tue Nov 3) | `Environment` and statement evaluation; shadowing program prints `51` then `2` (Step 2c) |
-| Week 10 (Thu Nov 5) | Break/continue signals and the file runner with staged errors (Step 2d, Step 3a) |
-| Weekend | REPL with persistent environment and recovery; error hierarchy in place (Step 3b, Step 4a) |
-| Week 11 (Tue Nov 10) — due | `SEMANTICS.md`, differential programs, REPL transcript; ZIP submitted (Steps 4b–4c) |
+| Week 9 (Thu Oct 29) — assigned | Part 1 complete: all node dataclasses and the dispatch skeleton (Steps 1a–1b) |
+| Week 10 (Tue Nov 3) | Expression evaluation and short-circuit logic with the bomb test passing (Steps 2a–2b) |
+| Week 10 (Thu Nov 5) — Environments lab due | `Environment` and statement evaluation (grown from the lab); shadowing program prints `51` then `2` (Step 2c) |
+| Week 11 (Tue Nov 10) | Break/continue signals and the file runner with staged errors (Step 2d, Step 3a) |
+| Week 11 (Thu Nov 12) — Type Checker lab due | REPL with persistent environment and recovery; the checker core in place from the lab (Step 3b, Part 4) |
+| Weekend | Checker complete across all constructs; error hierarchy in place (Part 4, Step 5a) |
+| Week 12 (Tue Nov 17) — due | `SEMANTICS.md`, differential programs, REPL transcript; ZIP submitted (Steps 5b–5c) |
 
 ---
 
@@ -219,7 +228,7 @@ Write an `Interpreter` class with one `eval_node(node)` method that dispatches o
 
 ---
 
-## Part 2: Tree-Walking Evaluator (35 points)
+## Part 2: Tree-Walking Evaluator (30 points)
 
 ### Step 2a: Expression Evaluation
 
@@ -346,7 +355,7 @@ When a property fails, Hypothesis shrinks to the minimal offending program. In y
 
 ---
 
-## Part 3: REPL and File Runner (20 points)
+## Part 3: REPL and File Runner (15 points)
 
 ### Step 3a: File Runner
 
@@ -388,17 +397,29 @@ Lexical error at line 1, col 1: unexpected character '@'
 
 ---
 
-## Part 4: Making the Semantics Precise (20 points) — Choose Your Direction
+## Part 4: The Small Static Type Checker (15 points)
 
-Parts 1–3 give your language a working evaluator. Part 4 makes its semantics *precise*, in your choice of **direction** — one Part 4, one deliverable, the same 20-point rubric row applied equivalently:
+Your evaluator enforces types *dynamically* — a type error surfaces only when the offending expression is actually evaluated. Part 4 adds a **small static type checker** that catches a useful class of those errors *before evaluation ever begins*, running as its own pipeline stage: lex → parse → **check** → evaluate. This is deliberately not full type inference — it checks what is *declared*, and the **Type Checker Starter lab** builds its core with a partner before this part is due.
 
-- **Staged dynamic errors and SEMANTICS.md (the core direction).** Build the language-level error hierarchy and document every semantic rule, as scaffolded in Steps 4a–4c below.
-- **Static type checking (Hindley-Milner-style inference).** Instead of documenting what happens when a type error reaches the evaluator, catch it *before evaluation ever begins*, the way Haskell, OCaml, and Rust do. This direction substitutes Steps 4b and 4c (SEMANTICS.md and the differential programs) with the type checker described in the **[typing direction](#part-4-direction-static-type-checking-hindley-milner-style-inference)** section; Step 4a's error hierarchy is still required, since lexical, syntax, and name errors still need staged reporting, and your file runner gains a fourth stage label (`Type error`). The total remains 100 points.
-- **A contrasting execution model — the Intcode VM.** Your tree-walker interprets an AST directly. A *virtual machine* instead executes a flat list of numeric opcodes — the model behind CPython's bytecode, the JVM, and WebAssembly. In this direction you implement the **[Advent of Code 2019 Intcode](https://adventofcode.com/2019/day/2)** machine, whose operational semantics is small enough to specify completely yet rich enough to be Turing-capable, and you make that semantics *precise* by writing each opcode as a state-transition rule. This direction substitutes Steps 4b and 4c with the **[Intcode direction](#part-4-direction-a-contrasting-execution-model-the-intcode-vm)** section; Step 4a's error hierarchy is still required (malformed programs and illegal opcodes are staged errors). The self-checking AoC inputs are your oracle, and a required differential test pins your VM's arithmetic against your tree-walker's on shared operations.
+Your language's `define` statements and function definitions carry (or are extended to carry) type annotations — `let x: Num = 42;`, `fun f(a: Num, b: Str) -> Bool { ... }`. The checker walks the AST once, maintaining a type environment that mirrors your `Environment` class, and verifies:
+
+- **Literals and variables.** Every literal has its constant type; every variable use looks up the declared type; a `define` whose initializer's type disagrees with its annotation is an error.
+- **Operators.** Arithmetic operators require `Num` operands; comparison operators yield `Bool`; `and`/`or` require `Bool`; mixed-type operands are rejected naming *both* types.
+- **Call sites.** Every function call checks arity and each argument's type against the parameter annotations, and the call expression takes the declared return type; a function whose body cannot produce its declared return type is an error.
+
+Every rejection is reported as `Type error at line L, col C: ...`, naming both conflicting types — your file runner gains a fourth stage label, and a program that fails the check never runs. Keep the checker's scope honest: annotations are required at declarations, so there is no unification and no inference — where a type is unknown (an unannotated construct you choose not to cover), document the gap in your readme rather than guessing. If you choose the **full Hindley-Milner direction** in Part 5, that direction grows this checker into whole-program inference — Part 4 is its foundation, not a throwaway.
+
+## Part 5: Making the Semantics Precise (15 points) — Choose Your Direction
+
+Parts 1–4 give your language a working evaluator and a static checking stage. Part 5 makes its semantics *precise*, in your choice of **direction** — one Part 5, one deliverable, the same 15-point rubric row applied equivalently:
+
+- **Staged dynamic errors and SEMANTICS.md (the core direction).** Build the language-level error hierarchy and document every semantic rule, as scaffolded in Steps 5a–5c below.
+- **Full type inference (Hindley-Milner).** Grow Part 4's annotation checker into whole-program *inference* that deduces types with no annotations at all, the way Haskell, OCaml, and Rust do. This direction substitutes Steps 5b and 5c (SEMANTICS.md and the differential programs) with the inference engine described in the **[typing direction](#part-5-direction-full-type-inference-hindley-milner)** section; Step 5a's error hierarchy is still required, since lexical, syntax, and name errors still need staged reporting. The total remains 100 points.
+- **A contrasting execution model — the Intcode VM.** Your tree-walker interprets an AST directly. A *virtual machine* instead executes a flat list of numeric opcodes — the model behind CPython's bytecode, the JVM, and WebAssembly. In this direction you implement the **[Advent of Code 2019 Intcode](https://adventofcode.com/2019/day/2)** machine, whose operational semantics is small enough to specify completely yet rich enough to be Turing-capable, and you make that semantics *precise* by writing each opcode as a state-transition rule. This direction substitutes Steps 5b and 5c with the **[Intcode direction](#part-5-direction-a-contrasting-execution-model-the-intcode-vm)** section; Step 5a's error hierarchy is still required (malformed programs and illegal opcodes are staged errors). The self-checking AoC inputs are your oracle, and a required differential test pins your VM's arithmetic against your tree-walker's on shared operations.
 
 Whichever direction you choose, the underlying goal is the same: for every construct in your language (or VM), there is exactly one written answer to "what does this mean, and what happens when it is misused?" — and your implementation agrees with it.
 
-### Step 4a: Error Class Hierarchy
+### Step 5a: Error Class Hierarchy
 
 Define a hierarchy of language-specific exceptions:
 
@@ -419,7 +440,7 @@ class LangRuntimeError(LangError): pass
 
 Every `raise` in the evaluator must use one of these classes with a meaningful message that names the variables, types, or operators involved.
 
-### Step 4b: SEMANTICS.md
+### Step 5b: SEMANTICS.md
 
 Write `SEMANTICS.md` with one section per topic below. Each section must include: a statement of the rule, a code example in your language, and the expected output (or error message).
 
@@ -431,15 +452,16 @@ Write `SEMANTICS.md` with one section per topic below. Each section must include
 6. **Type strictness** — can you add an int to a float? A string to a number? Show both cases and their outcomes.
 7. **String concatenation** — is `"a" + "b"` legal? What about `"a" + 1`? State the rule and show examples.
 
-### Step 4c: Differential Programs
+### Step 5c: Differential Programs
 
 Five programs are provided whose outputs depend on your semantics decisions. Run each, record the output, and confirm it matches your SEMANTICS.md documentation. If it does not match, fix either the code or the documentation — they must agree.
 
 ---
 
-## Part 4 Direction: Static Type Checking (Hindley-Milner-Style Inference)
+## Part 5 Direction: Full Type Inference (Hindley-Milner)
+{: #part-5-direction-full-type-inference-hindley-milner}
 
-This direction replaces Steps 4b–4c with a static type checker that runs as its own pipeline stage — after parsing, before evaluation — and rejects ill-typed programs without running them. It is the same machinery (unification and Algorithm-W-style inference) that lets Haskell, OCaml, and Rust deduce types without annotations, scoped here to your language's constructs.
+This direction replaces Steps 5b–5c by growing Part 4's annotation checker into whole-program *inference* — still its own pipeline stage after parsing and before evaluation, but now deducing types where no annotations exist at all. It is the same machinery (unification and Algorithm-W-style inference) that lets Haskell, OCaml, and Rust deduce types without annotations, scoped here to your language's constructs. Your Part 4 checker is the foundation: its type environment, its staged error reporting, and its operator rules all carry forward — what changes is that unknown types become type *variables* to be solved rather than gaps to be documented.
 
 ### Background
 
@@ -479,8 +501,8 @@ In place of SEMANTICS.md, write `TYPES.md`: one section per construct stating it
 
 ---
 
-## Part 4 Direction: A Contrasting Execution Model — the Intcode VM
-{: #part-4-direction-a-contrasting-execution-model-the-intcode-vm}
+## Part 5 Direction: A Contrasting Execution Model — the Intcode VM
+{: #part-5-direction-a-contrasting-execution-model-the-intcode-vm}
 
 ### Background
 
@@ -498,7 +520,7 @@ Cover opcodes `1` (add), `2` (multiply), `3` (input), `4` (output), `5` (jump-if
 
 ### I.2 — The VM (`intcode.py`)
 
-Implement `run(program, inputs) -> outputs` as an opcode dispatch loop. Decode each instruction as `opcode = instr % 100` and the per-parameter modes from the higher digits. Structure the dispatch so that adding an opcode is a localized change (a dict from opcode to a small handler, or a match statement) — the same "one construct, one place" discipline as your tree-walker's visitor. Illegal opcodes and out-of-range addresses raise your Part 4a error classes with a position (the `pc` at fault).
+Implement `run(program, inputs) -> outputs` as an opcode dispatch loop. Decode each instruction as `opcode = instr % 100` and the per-parameter modes from the higher digits. Structure the dispatch so that adding an opcode is a localized change (a dict from opcode to a small handler, or a match statement) — the same "one construct, one place" discipline as your tree-walker's visitor. Illegal opcodes and out-of-range addresses raise your Step 5a error classes with a position (the `pc` at fault).
 
 ### I.3 — Self-checking against the AoC oracle
 
@@ -511,7 +533,7 @@ Intcode is self-validating: the puzzle inputs come with known answers. Include a
 
 The two execution models must agree where they overlap. Write a differential test: for a handful of integer arithmetic expressions, evaluate each **both** with your Part 2 tree-walker and with an equivalent hand-assembled Intcode program, and assert the results match. In your readme, name one thing the VM makes easy that the tree-walker makes hard (or vice versa) — e.g., self-modifying code, or explicit control over evaluation order.
 
-> **Scope note:** this direction is warm-up-scale by design — the VM is a couple hundred lines and its correctness is externally checkable, so your effort goes into the *precise semantics* and the *model comparison*, which is what the 20-point Part 4 rubric rewards.
+> **Scope note:** this direction is warm-up-scale by design — the VM is a couple hundred lines and its correctness is externally checkable, so your effort goes into the *precise semantics* and the *model comparison*, which is what the 15-point Part 5 rubric rewards.
 
 ---
 
@@ -540,9 +562,10 @@ Ensure reproducibility by listing your Python version.
 | Component | Points |
 |-----------|--------|
 | Part 1: AST Node Dataclasses | 25 |
-| Part 2: Tree-Walking Evaluator | 35 |
-| Part 3: REPL and File Runner | 20 |
-| Part 4 (chosen direction): Error Messages and SEMANTICS.md, or Static Type Checking, or the Intcode VM | 20 |
+| Part 2: Tree-Walking Evaluator | 30 |
+| Part 3: REPL and File Runner | 15 |
+| Part 4: The Small Static Type Checker | 15 |
+| Part 5 (chosen direction): Error Messages and SEMANTICS.md, or full Hindley-Milner Type Inference, or the Intcode VM | 15 |
 | **Total** | **100** |
 
 ---
