@@ -1,0 +1,20 @@
+# scopes.lang -- shadowing, assignment through scopes, short-circuit logic.
+let x = 2;
+let log = "outer=";
+{
+    let x = 51;             # shadows the outer x inside this block only
+    print x;                # 51
+    log = log + "shadowed"; # bare assignment updates the OUTER binding
+}
+print x;                    # 2 -- the outer x was never touched
+print log;                  # outer=shadowed
+
+# the bomb test: the right operand must never be evaluated
+let safe = true or (1 / 0);
+print safe;                 # true
+let calm = false and (1 / 0);
+print calm;                 # false
+
+# and/or return the deciding operand value
+let name = "" or "anonymous";
+print name;                 # anonymous
