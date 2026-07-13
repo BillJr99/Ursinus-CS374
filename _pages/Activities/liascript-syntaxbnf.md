@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-syntaxbnf.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-syntaxbnf.md
+comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-syntaxbnf.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-syntaxbnf.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Syntax and BNF/EBNF
 
-Every programming language has rules about what programs are allowed to look like — rules that are too precise to describe in plain English. BNF (Backus-Naur Form) and its extension EBNF are the standard notations for writing those rules down exactly. Think of BNF like a recipe template: it describes the *structure* of a valid dish (a statement, an expression, a declaration) without pinning down the specific ingredients — and from a finite set of such templates you can generate infinitely many valid programs, just as a handful of recipe patterns can describe every possible meal.
+Every programming language has rules about what programs are allowed to look like — rules that are too precise to describe in plain English. BNF (Backus-Naur Form) and its extension EBNF are the standard notations for writing those rules down exactly. Think of BNF like a recipe template: it describes the *structure* of a valid dish (a statement, an expression, a declaration) without pinning down the specific ingredients — and from a finite set of such templates you can generate infinitely many valid programs, just as a handful of recipe patterns can describe every possible meal. After judging languages by criteria in *Evaluating Languages*, today you learn the notation those languages are defined in.
 
 ## Learning Goals
 
@@ -267,7 +267,10 @@ for tokens, expected, label in test_cases:
 
 ---
 
-## Model 5: BNF vs EBNF — Two Notations, One Language
+---
+**🛑 In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+
+## Model 5 (At Home): BNF vs EBNF — Two Notations, One Language
 
 This model makes the equivalence between BNF and EBNF concrete by running both side by side on the same inputs. After this exercise you should be comfortable translating between the two forms — a skill you will need when reading language manuals (which often use BNF) and when writing parsers (where EBNF maps more directly to code).
 
@@ -354,7 +357,7 @@ for tokens, expected, label in test_cases:
 
 ---
 
-## Model 6: FIRST Sets (Preview)
+## Model 6 (At Home): FIRST Sets (Preview)
 
 So far you have been deriving strings by applying rules manually. A real parser has to make that choice automatically — when it sees the next token, it needs to know which rule to try. FIRST sets are the lookup table that answers that question: given a nonterminal and the next token, which alternative fires? This model gives you an early glimpse of that machinery before it is covered in depth later.
 
@@ -456,7 +459,7 @@ for nt in ["expr", "expr_rest", "term", "term_rest", "factor"]:
 
 ---
 
-# Part III: Synthesis and Practice
+# Part III: Synthesis and Practice (At Home)
 
 The exercises below ask you to write grammars from scratch, which is harder than reading them. Start by listing a few example strings the grammar should accept, then figure out what rule structure generates all of them. The final exercise seeds your project grammar — keep what you write.
 
@@ -469,9 +472,9 @@ The exercises below ask you to write grammars from scratch, which is harder than
 
 ---
 
-## Practice — Allison, Ch. 4: Hand-Traced Grammar Recognition
+## Practice (At Home) — Allison, Ch. 4: Hand-Traced Grammar Recognition
 
-These exercises build confidence in the mapping between notation and code by writing small recognizer functions from grammar rules and tracing them on sample inputs. They directly support the recursive-descent parser assignment (Week 4).
+These exercises build confidence in the mapping between notation and code by writing small recognizer functions from grammar rules and tracing them on sample inputs. They directly support the *Recursive Descent Parsing* activity and the Parser assignment.
 
 > *Exercises adapted from topics covered in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
@@ -578,3 +581,7 @@ In your notebook: BNF was introduced in 1959 to define ALGOL and remains in ever
 - Douglas Thain. *Introduction to Compilers and Language Design*, Chapter 3.
 - The Python Language Reference, section 10 (online): the full grammar of Python, in a BNF dialect, now readable to you.
 - Backus et al. "Report on the Algorithmic Language ALGOL 60" (1960), where the notation debuted.
+
+---
+
+Up next: the *Grammars and the Chomsky Hierarchy* activity places BNF in its theoretical home — and these grammar-writing skills feed directly into the Parser assignment.

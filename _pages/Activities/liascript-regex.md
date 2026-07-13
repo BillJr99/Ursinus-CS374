@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-regex.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-regex.md
+comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-regex.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-regex.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -26,7 +26,7 @@ By the end of this activity, you will be able to:
 - Identify the limits of regular expressions by constructing a language that requires counting or matching nested structure, and explaining why no regex can describe it
 - Write the regular expression for a programming language token type (identifier, integer literal, floating-point literal) suitable for use in a lexer specification
 
-The Chomsky hierarchy's bottom rung, regular languages, comes with the most widely used notation in computing: **regular expressions**. Over this two-day module we master them twice: as *theory* (three operators and what they can and cannot describe) and as *practice* (Python's `re` library, the tool of your next assignment and the specification language of your lexer). The arc: **the three operators $\rightarrow$ practical syntax $\rightarrow$ matching, capturing, substituting in Python $\rightarrow$ the limits**.
+The Chomsky hierarchy's bottom rung (mapped in *Grammars and the Chomsky Hierarchy*), regular languages, comes with the most widely used notation in computing: **regular expressions**. Over this two-day module we master them twice: as *theory* (three operators and what they can and cannot describe) and as *practice* (Python's `re` library, the tool of your next assignment and the specification language of your lexer). The arc: **the three operators $\rightarrow$ practical syntax $\rightarrow$ matching, capturing, substituting in Python $\rightarrow$ the limits**.
 
 ---
 
@@ -114,7 +114,7 @@ for pattern, tests in patterns:
 ### Critical Thinking Questions
 
 1. For each pattern, write the set of strings in plain English and give two members and one non-member. Where did `ab*c` versus `(ab)*c` divide the team?
-2. Star binds tighter than concatenation, which binds tighter than `|`. Where have you seen this exact design move (precedence by convention) earlier this week, and what notation made it unambiguous there?
+2. Star binds tighter than concatenation, which binds tighter than `|`. Where have you seen this exact design move (precedence by convention) before — in the *Derivations, Parse Trees, Ambiguity, and Precedence* activity — and what notation made it unambiguous there?
 3. Write a regular expression for identifiers as most languages define them: a letter or underscore, followed by any number of letters, digits, or underscores. This pattern reappears, verbatim, in your lexer.
 
 ---
@@ -454,3 +454,7 @@ In your notebook: regular expressions are simultaneously beloved (irreplaceable 
 - Python `re` documentation and HOWTO: https://docs.python.org/3/library/re.html
 - Russ Cox. "Regular Expression Matching Can Be Simple And Fast" (online), a bridge to next module's automata.
 - [regex101.com](https://regex101.com) — interactive regex tester with explanation of each match step.
+
+---
+
+Up next: the *Finite Automata* activity builds the machines that execute these patterns — and everything here feeds the Regular Expressions assignment.

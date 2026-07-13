@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-tokensscanning.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-tokensscanning.md
+comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-tokensscanning.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-tokensscanning.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -26,7 +26,7 @@ By the end of this activity, you will be able to:
 - Identify and handle lexer error conditions (illegal characters, unterminated strings) and explain why error recovery strategy must be chosen deliberately
 - Construct a token specification (TOKEN_SPEC) for a new language, ordering rules correctly to enforce keyword priority over identifier patterns
 
-Today the theory pays its first concrete dividend: over two days we build a working **lexer**, the first stage of your project pipeline, which converts raw characters into a stream of typed **tokens** using exactly the regular machinery of the past two weeks. The arc: **what a token is $\rightarrow$ the scanning rules (maximal munch, priority) $\rightarrow$ a complete Python lexer $\rightarrow$ error handling and positions**.
+Today the theory pays its first concrete dividend: over two days we build a working **lexer**, the first stage of your project pipeline, which converts raw characters into a stream of typed **tokens** using exactly the regular machinery of the *Regular Expressions* and *Finite Automata* activities. The arc: **what a token is $\rightarrow$ the scanning rules (maximal munch, priority) $\rightarrow$ a complete Python lexer $\rightarrow$ error handling and positions**.
 
 > **Before You Begin:** This activity assumes you can:
 > - Write Python classes with __init__ and methods
@@ -69,7 +69,7 @@ Tokenize by hand: `count2 = count2 + 12 >= limit`
 
 ---
 
-# Part II: The Lexer in Code
+# Part II: The Lexer in Code (Day 1, continued)
 
 ## 2. A Complete Tokenizer
 
@@ -455,3 +455,7 @@ In your notebook: the lexer absorbs whitespace and comments so later stages neve
 - Douglas Thain. *Introduction to Compilers and Language Design*, Chapter 3.
 - Robert Nystrom. *Crafting Interpreters*, "Scanning" (online).
 - Python `re` documentation on named groups and `finditer`.
+
+---
+
+Up next: the *Abstract Syntax Trees* activity builds the structure your parser will produce — and this lexer is the heart of the Lexer assignment.

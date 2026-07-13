@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-welcomepl.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-welcomepl.md
+comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-welcomepl.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-welcomepl.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Welcome: Why Study Programming Languages?
 
-Every programmer uses languages, but few understand *why* they work the way they do — or how to evaluate a new one quickly. Studying programming language theory is like learning music theory: you can play guitar without it, but understanding harmony, rhythm, and form lets you compose music rather than just repeat what you've heard. This course gives you the composer's toolkit — you'll read languages, compare them, and ultimately build one from scratch.
+Every programmer uses languages, but few understand *why* they work the way they do — or how to evaluate a new one quickly. Studying programming language theory is like learning music theory: you can play guitar without it, but understanding harmony, rhythm, and form lets you compose music rather than just repeat what you've heard. This course gives you the composer's toolkit — you'll read languages, compare them, and ultimately build one from scratch. The companion reading *The Arc of This Course: From Symbols to Languages* previews every destination on that map; today we take the first step.
 
 ## Learning Goals
 
@@ -145,6 +145,8 @@ $$
 
 The **lexer** (scanner) groups characters into meaningful units called tokens, using the machinery of regular expressions and finite automata. The **parser** assembles tokens into a tree according to a grammar. The **interpreter** walks the tree, computing values within environments that give names their meanings. A **compiler** shares the front half and differs at the back, emitting code instead of computing values; we focus on interpretation, and the principles transfer.
 
+What flows through this pipeline is built from each language's **primitives** — the small set of atoms the language treats as given rather than defined: its primitive *values* (numbers, strings, booleans), the *operators* that combine them (`+`, `<`, `and`), and the *forms* that structure behavior (assignment, selection, iteration, function application). Every language in this course — and the one your team designs — is some choice of primitives plus rules for composing them; the *Type Systems* and *Control Flow and Statement Semantics* activities are where those choices get made precise, one primitive at a time.
+
 [[MC]]
 In the pipeline above, the component whose job is to decide that the characters `c`, `o`, `u`, `n`, `t` form a single identifier token is:
 - (x) The lexer
@@ -266,3 +268,7 @@ In your notebook: describe one moment when a programming language fought you —
 - Shriram Krishnamurthi. *Programming Languages: Application and Interpretation* (online). The interpreter-first philosophy we follow.
 - Robert Nystrom. *Crafting Interpreters* (online), "A Map of the Territory."
 - The `ast` module docs: `help(ast)` in Python shows every node type you'll encounter.
+
+---
+
+Up next: the *Programming Paradigms* activity tours the worldviews your language could adopt — and the Overview and Warmup assignments begin the journey.

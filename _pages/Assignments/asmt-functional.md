@@ -35,11 +35,11 @@ info:
       proficient: Every item on the chosen direction's depth checklist is met, all required components work on provided and edge cases, and the writeup connects the direction back to the core — stating precisely what Parts 1 and 2's pure-function and fold disciplines contributed to the direction work — demonstrating Goal 3 at full depth
   readings:
     - rtitle: "Functional Programming Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-functional.md"
+      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-functional.md"
     - rtitle: "Scheme Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-scheme.md"
+      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-scheme.md"
     - rtitle: "Lambda Calculus Part 2 Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-lambdacalculus2.md"
+      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-lambdacalculus2.md"
     - rtitle: "The Power of Prolog (Markus Triska) — Direction F"
       rlink: "https://www.metalevel.at/prolog"
     - rtitle: "SWISH — SWI-Prolog in the Browser (Direction F)"
@@ -121,14 +121,15 @@ Notice what is *absent*: no loop, no accumulator variable, no assignment. If you
 
 ### Suggested Pacing
 
-This assignment is handed out on Thursday of week 11 and due on Thursday of week 12 — a one-week turnaround, so treat the core as two sittings and give your direction the back half of the week:
+This assignment is handed out on Thursday of week 11 (Nov 12) and due on Tuesday of week 13 (Nov 24) — a 12-day turnaround, so treat the core as two sittings and give your direction the back half of the window:
 
 | Checkpoint | You should have |
 |------------|----------------|
-| Week 11 (Thu) — assigned | Part 1 complete: combinators, `compose`, and property-tested `my_map`/`my_reduce`; direction chosen |
-| Weekend | Part 2 complete: tree and linked-list operations with edge-case tests; direction started |
-| Week 12 (Tue) | Direction components working for the provided cases |
-| Week 12 (Thu) — due | Direction depth checklist complete; writeup and ZIP submitted |
+| Week 11 (Thu Nov 12) — assigned | Part 1 complete: combinators, `compose`, and property-tested `my_map`/`my_reduce`; direction chosen |
+| Weekend | Part 2 complete: tree and linked-list operations with edge-case tests; direction started (Direction G: scope approval by Sunday Nov 15) |
+| Week 12 (Tue Nov 17) | Direction components working for the provided cases |
+| Week 12 (Thu Nov 19) | Direction depth work underway (the Closures class session meets today) |
+| Week 13 (Tue Nov 24) — due | Direction depth checklist complete; writeup and ZIP submitted |
 
 ---
 
@@ -269,6 +270,8 @@ Convert from a Python list to a linked list, implemented via `my_reduce` from Pa
 ## Direction A: Closures and Lazy Generators
 
 *Files: `closures.py`, `generators.py`.*
+
+> **Scheduling note:** the Closures class session falls on Nov 19, mid-assignment. Direction A students should read ahead via the session activity rather than waiting for it.
 
 ### A.1: Closures and Function Factories
 
@@ -606,7 +609,7 @@ Close with a short written comparison (this is required, and it is what ties the
 
 ## Direction G: Contribute to an Open-Source Language Ecosystem
 
-*Files: `contribution.md` (the contribution log described below), plus a link to your public pull request. Scope approval from the instructor is required within the first week of the assignment.*
+*Files: `contribution.md` (the contribution log described below), plus a link to your public pull request. Scope approval from the instructor is required within 3 days of hand-out (by Sunday Nov 15).*
 
 Every other direction builds something new inside the course; this one takes the paradigm into a codebase that predates you and will outlive the semester. You will find a scoped, functional-paradigm-relevant piece of work in a real open-source language ecosystem, specify it with a failing test before you write the fix — the same failing-test-as-specification discipline the whole course runs on — and carry it through a public pull request and a maintainer exchange. The paradigm content is the same as the other directions (pure transformations, recursion over structure, functions as values); the added content is the professional practice around it, and the result is a portfolio line few undergraduates have: *my code was reviewed by the maintainers of a real project.*
 
@@ -619,9 +622,9 @@ Every other direction builds something new inside the course; this one takes the
 
 Something else you care about is negotiable — bring it to the scope-approval conversation. What is *not* negotiable: the work must have functional-paradigm substance (a typo fix or formatting change does not qualify), and it must be small enough to finish. One well-scoped, well-tested contribution beats an ambitious abandoned one.
 
-### G.1: Issue selection and scope approval (first week)
+### G.1: Issue selection and scope approval (first 3 days)
 
-Find your target: a triaged open issue, a gap in the documentation, a missing test, or a small feature request with maintainer interest. In `contribution.md`, record: the issue or gap (with links), why it is *functional-paradigm* work (which core ideas from Parts 1–2 it exercises), and your one-sentence minimum viable scope. **Bring this to the instructor for approval within the first week** — the approval exists to protect you from scope that cannot land in the assignment window.
+Find your target: a triaged open issue, a gap in the documentation, a missing test, or a small feature request with maintainer interest. In `contribution.md`, record: the issue or gap (with links), why it is *functional-paradigm* work (which core ideas from Parts 1–2 it exercises), and your one-sentence minimum viable scope. **Bring this to the instructor for approval within 3 days of hand-out (by Sunday Nov 15)** — the approval exists to protect you from scope that cannot land in the 12-day assignment window.
 
 ### G.2: Specification first
 
@@ -637,7 +640,7 @@ Submit the pull request and engage with what comes back: respond to review comme
 
 ### Direction G depth checklist
 
-- The scope was approved by the instructor within the first week, and `contribution.md` records the issue, its functional-paradigm substance, and the minimum viable scope.
+- The scope was approved by the instructor within 3 days of hand-out (by Sunday Nov 15), and `contribution.md` records the issue, its functional-paradigm substance, and the minimum viable scope.
 - Specification-first evidence exists: the failing test (or documentation checklist) is preserved in its original form, dated before the fix.
 - The pull request is public, linked, and includes tests and documentation, following the upstream project's contributing guidelines.
 - The maintainer exchange is documented — or, if none occurred within a week, the attempt is documented and a written self-review against the project's standards stands in its place.
@@ -677,4 +680,5 @@ Ensure reproducibility by listing your Python version (and, for Direction E, you
 - Why did you choose the direction you chose — and now that you have finished it, which *other* direction do you most wish you had time for, and what do you suspect it would have taught you?
 - Every direction is the same paradigm at a different altitude: closures capture environments, continuations capture control, Church encodings capture data, combinators capture composition, parallelism captures the payoff of purity, logic programming captures relations instead of functions, and an upstream contribution captures the paradigm living in real code. State, in your own words, the single idea they all share.
 - If collaboration with a buddy was permitted, did you work with a buddy on this assignment? If so, who? If not, do you certify that this submission represents your own original work? Please identify any and all portions of your submission that were not originally written by you.
+- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
 - Approximately how many hours it took you to finish this assignment (I will not judge you for this at all — I am simply using it to gauge if the assignments are too easy or hard)?

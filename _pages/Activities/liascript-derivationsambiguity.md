@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-derivationsambiguity.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-derivationsambiguity.md
+comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-derivationsambiguity.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-derivationsambiguity.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -26,7 +26,7 @@ By the end of this activity, you will be able to:
 - Construct an unambiguous expression grammar that enforces a specified precedence and associativity for multiple operator levels, and verify it by deriving a target expression
 - Analyze an existing grammar to determine whether it correctly captures left or right associativity, and modify it to reverse the associativity if needed
 
-A grammar that accepts the right strings can still mean the wrong things: if `2 + 3 * 4` has *two* parse trees, the language has two meanings for one program. Today we build, slowly and deliberately, the standard cure: a layered expression grammar in which **precedence and associativity live in the grammar's shape**. This build-up is the single most important preparation for your parser assignment. The arc: **derivations and trees $\rightarrow$ ambiguity diagnosed $\rightarrow$ the layered grammar, constructed step by step $\rightarrow$ associativity**.
+A grammar of the kind you wrote in *Grammars and the Chomsky Hierarchy* can accept the right strings and still mean the wrong things: if `2 + 3 * 4` has *two* parse trees, the language has two meanings for one program. Today we build, slowly and deliberately, the standard cure: a layered expression grammar in which **precedence and associativity live in the grammar's shape**. This build-up is the single most important preparation for your parser assignment. The arc: **derivations and trees $\rightarrow$ ambiguity diagnosed $\rightarrow$ the layered grammar, constructed step by step $\rightarrow$ associativity**.
 
 ---
 
@@ -218,9 +218,9 @@ show_derivation("E", GRAMMAR, "Rightmost")
 
 ### Critical Thinking Questions
 
-10. Both derivations start from `E` and end at the same terminal string. What is that string? (Read the last printed line of each derivation.)
-11. Count the number of steps in the leftmost versus rightmost derivation. Are they the same? Explain why the number of steps must always be equal for a given derivation of a given string.
-12. The tracer always picks the first production for each nonterminal. Modify the grammar so `F -> ["num"]` is listed *before* `F -> ["(", "E", ")"]` (swap the two entries). Predict how the derivation changes — will it be shorter, longer, or the same length?
+8. Both derivations start from `E` and end at the same terminal string. What is that string? (Read the last printed line of each derivation.)
+9. Count the number of steps in the leftmost versus rightmost derivation. Are they the same? Explain why the number of steps must always be equal for a given derivation of a given string.
+10. The tracer always picks the first production for each nonterminal. Modify the grammar so `F -> ["num"]` is listed *before* `F -> ["(", "E", ")"]` (swap the two entries). Predict how the derivation changes — will it be shorter, longer, or the same length?
 
 ---
 
@@ -304,9 +304,9 @@ else:
 
 ### Critical Thinking Questions
 
-13. The detector finds two trees for `a + b + c`. Write out both trees using nested parentheses notation (e.g., `((a+b)+c)` and `(a+(b+c))`). Which tree does the *left-recursive* grammar `E -> E + T | T` force? Which does the *right-recursive* form force?
-14. For *addition*, both trees give the same numeric value. Name a binary operator where `(a OP b) OP c ≠ a OP (b OP c)`, and verify with concrete numbers. This is why ambiguity matters even when the two trees share a root operator.
-15. The grammar `E -> E + E | id` is ambiguous; `E -> E + T | T` with `T -> id` is not. Describe in one sentence the structural property of the unambiguous grammar that forces exactly one parse tree.
+11. The detector finds two trees for `a + b + c`. Write out both trees using nested parentheses notation (e.g., `((a+b)+c)` and `(a+(b+c))`). Which tree does the *left-recursive* grammar `E -> E + T | T` force? Which does the *right-recursive* form force?
+12. For *addition*, both trees give the same numeric value. Name a binary operator where `(a OP b) OP c ≠ a OP (b OP c)`, and verify with concrete numbers. This is why ambiguity matters even when the two trees share a root operator.
+13. The grammar `E -> E + E | id` is ambiguous; `E -> E + T | T` with `T -> id` is not. Describe in one sentence the structural property of the unambiguous grammar that forces exactly one parse tree.
 
 ---
 
@@ -385,13 +385,13 @@ print(f"Right-assoc 5-(2-1) = {evaluate(right_assoc)}")  # 4  (wrong for subtrac
 
 ### Critical Thinking Questions
 
-16. In `ambig_tree_B`, the `*` node is the root and `+` is its left child. Under the *layered* grammar `E -> E + T | T`, explain precisely why this tree is *not derivable* — which rule is violated?
-17. The unambiguous grammar encodes left-associativity through *left recursion* (`E -> E + T`). If you changed this rule to `E -> T + E`, what would change about associativity? Verify with `5 - 2 - 1`.
-18. Look at `left_assoc` versus `right_assoc` for `5 - 2 - 1`. The values are 2 and 4. Now consider a purely additive expression `5 + 2 + 1`. Would left vs. right associativity produce different values? What does this tell you about when associativity "matters"?
+14. In `ambig_tree_B`, the `*` node is the root and `+` is its left child. Under the *layered* grammar `E -> E + T | T`, explain precisely why this tree is *not derivable* — which rule is violated?
+15. The unambiguous grammar encodes left-associativity through *left recursion* (`E -> E + T`). If you changed this rule to `E -> T + E`, what would change about associativity? Verify with `5 - 2 - 1`.
+16. Look at `left_assoc` versus `right_assoc` for `5 - 2 - 1`. The values are 2 and 4. Now consider a purely additive expression `5 + 2 + 1`. Would left vs. right associativity produce different values? What does this tell you about when associativity "matters"?
 
 ---
 
-## Model 3: The Dangling Else
+## Model 7: The Dangling Else
 
 *Intuition: Ambiguity is not limited to arithmetic expressions. Any grammar rule that allows a construct to attach to more than one parent can be ambiguous. The dangling `else` is the most famous example from real language design — virtually every language that has `if/else` has had to make an explicit choice to resolve it.*
 
@@ -407,8 +407,8 @@ The string `if A then if B then other else other` has two trees: the `else` can 
 
 ### Critical Thinking Questions
 
-8. Sketch both attachments. Which `if` owns the `else` in C, Java, and Python's grammar tradition (the conventional answer: the *nearest* unmatched `if`)?
-9. Your team's language must resolve this. List the three standard remedies (grammar rewriting, a disambiguating rule in the parser, or required braces/end markers) and pick one for your project, recording the rationale.
+17. Sketch both attachments. Which `if` owns the `else` in C, Java, and Python's grammar tradition (the conventional answer: the *nearest* unmatched `if`)?
+18. Your team's language must resolve this. List the three standard remedies (grammar rewriting, a disambiguating rule in the parser, or required braces/end markers) and pick one for your project, recording the rationale.
 
 ---
 
@@ -477,3 +477,7 @@ In your notebook: precedence conventions are pure social agreement; mathematics 
 - Douglas Thain. *Introduction to Compilers and Language Design*, Chapter 4.
 - Robert Nystrom. *Crafting Interpreters*, "Representing Code" and "Parsing Expressions" (online), the same layering with beautiful diagrams.
 - Aho, Lam, Sethi, Ullman. *Compilers: Principles, Techniques, and Tools*, section 4.3, for the formal treatment.
+
+---
+
+Up next: the *Regular Expressions* activity drops to the hierarchy's bottom rung — and the Regular Expressions assignment, handed out now, puts it to work.

@@ -1,0 +1,16 @@
+# countdown.lang -- while loop, if/else-if chain, break and continue.
+let x = 10;
+while x > 0 {
+    x = x - 1;
+    if x == 7 {
+        continue;         # skip seven, it's unlucky today
+    }
+    if x <= 2 {
+        print "almost done...";
+        if x == 1 {
+            break;        # bail out before zero
+        }
+    }
+    print x;
+}
+print "liftoff!";

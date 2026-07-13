@@ -43,9 +43,9 @@ info:
       proficient: Thompson's construction is applied step-by-step with each fragment labeled, the final NFA is encoded as JSON, verified by simulation, and the writeup connects automata theory to the lexer pipeline with thoughtful reflection
   readings:
     - rtitle: "Finite Automata Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-automata.md"
+      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-automata.md"
     - rtitle: "Grammars and the Chomsky Hierarchy Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-grammars.md"
+      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-grammars.md"
 
 tags:
   - automata
@@ -89,14 +89,15 @@ Run `python simulator.py 0110` (accept) and `python simulator.py 101` (reject), 
 
 ### Suggested Pacing
 
-This assignment is handed out on Tuesday of week 4 and due on Tuesday of week 5 — a one-week turnaround, so start the day it is assigned:
+This assignment is handed out on Tuesday of week 4 (Sep 22) and due on Thursday of week 5 (Oct 1) — a short turnaround, so start the day it is assigned:
 
 | Checkpoint | You should have |
 |------------|----------------|
-| Week 4 (Tue) — assigned | Loader/validator and DFA simulator working (Steps 1a–1b); DFA 1 designed |
-| Week 4 (Thu) | Part 1 portfolio complete; epsilon-closure and NFA simulator working (Steps 2a–2b) |
+| Week 4 (Tue Sep 22) — assigned | Loader/validator and DFA simulator working (Steps 1a–1b); DFA 1 designed |
+| Week 4 (Thu Sep 24) | Part 1 portfolio complete; epsilon-closure and NFA simulator working (Steps 2a–2b) |
 | Weekend | Part 2 portfolio complete; Part 3 subset construction table and verified DFA |
-| Week 5 (Tue) — due | Part 4 Thompson's construction verified; writeup assembled and submitted |
+| Week 5 (Tue Sep 29) | Part 4 Thompson's construction verified |
+| Week 5 (Thu Oct 1) — due | Writeup assembled and submitted |
 
 ---
 
@@ -310,4 +311,5 @@ Ensure reproducibility by listing Python version. Run `python simulator.py --hel
 - Your simulators treat machines as data (loaded from JSON). Name one benefit this brought during testing that hard-coded machines would have denied you.
 - After completing Thompson's construction, describe one way the resulting NFA differs structurally from the hand-designed NFAs in Part 2.
 - If collaboration with a buddy was permitted, did you work with a buddy on this assignment? If so, who? If not, do you certify that this submission represents your own original work? Please identify any and all portions of your submission that were not originally written by you.
+- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
 - Approximately how many hours it took you to finish this assignment (I will not judge you for this at all — I am simply using it to gauge if the assignments are too easy or hard)?

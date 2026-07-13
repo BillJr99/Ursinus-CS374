@@ -16,9 +16,9 @@ info:
     - "Know that every music direction supports a text-events-only route, so no audio production or playback is ever required"
   readings:
     - rtitle: "Music Languages and Live Coding Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-languagedesign.md"
+      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-languagedesign.md"
     - rtitle: "Flex and Yacc Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-parsertable.md"
+      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-parsertable.md"
 
 tags:
   - music
@@ -47,8 +47,8 @@ In the spirit of Universal Design for Learning, the music path is a deliberate c
 
 The music path follows the course's own arc — the same required assignments, in the same order, with the music direction chosen where one is offered:
 
-1. **[Music Languages and Live Coding](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-languagedesign.md)** (activity) — meet TidalCycles and Strudel as *language designs*: embedded versus external DSLs, a formal model of patterns, and the timed-event semantics the rest of the path builds on.
-2. **[Flex and Yacc](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-parsertable.md)** (activity) — build a working flex/yacc pipeline for a subset of the mini-notation in class. (Relatedly, the [Lexer assignment](/Assignments/Lexer)'s generator-toolchain direction is a natural on-ramp: choosing Flex or PLY there puts the tools of the mini-notation pipeline in your hands early. It pairs well with what follows, but it is not required for it.)
+1. **[Music Languages and Live Coding](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-languagedesign.md)** (activity) — meet TidalCycles and Strudel as *language designs*: embedded versus external DSLs, a formal model of patterns, and the timed-event semantics the rest of the path builds on.
+2. **[Flex and Yacc](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-parsertable.md)** (activity) — build a working flex/yacc pipeline for a subset of the mini-notation in class. (Relatedly, the [Lexer assignment](/Assignments/Lexer)'s generator-toolchain direction is a natural on-ramp: choosing Flex or PLY there puts the tools of the mini-notation pipeline in your hands early. It pairs well with what follows, but it is not required for it.)
 3. **[The Parser and AST](/Assignments/Parser) → the Mini-Notation direction** — grow the in-class mini-notation subset toward the real language: alternation, Euclidean rhythms, and polymeter, parsed into an AST, evaluated to timed events, and validated against the Strudel reference implementation (or against printed event lists alone).
 4. **[Functional Programming](/Assignments/Functional) → the Parallel Functional direction** — purity buys parallelism: the same core parts as everyone (pure functions, higher-order combinators, recursive structures with fold), then a complete MapReduce pipeline measured and analyzed against Amdahl's Law — the same pure-map/associative-reduce discipline pattern engines like Strudel run on.
 5. **[Team Language Project](/Projects/TeamLanguage) → the Music and Live-Coding direction** (capstone) — design, specify, build, and demonstrate a small live-coding language with your team. The closing demonstration may be a live edit-and-rerun session over printed event output — rendered sound is optional here as everywhere on the path.

@@ -1,0 +1,18 @@
+# interest.lang -- arithmetic precedence, floats, comparisons, strings.
+# Yearly compounding at 5% until the balance doubles.
+let principal = 100.0;
+let balance = principal;
+let rate = 0.05;
+let years = 0;
+while balance < principal * 2 {
+    balance = balance * (1 + rate);
+    years = years + 1;
+}
+print "years to double:";
+print years;
+print "final balance:";
+print balance;
+print "precedence check (2 + 3 * 4 == 14):";
+print 2 + 3 * 4 == 14;
+print "not 1 > 2:";
+print not 1 > 2;

@@ -1,0 +1,42 @@
+# CS374 Course Development Container -- compose file
+# ---------------------------------------------------
+# Put this file, together with the course Dockerfile, in a `.devcontainer/`
+# folder INSIDE your cloned GitHub work repo:
+#
+#   cs374-work/                <-- your cloned GitHub repo
+#     .devcontainer/
+#       Dockerfile
+#       docker-compose.yml     <-- this file
+#       devcontainer.json
+#     (your assignment work lives here, at the repo root)
+#
+# Then, from the .devcontainer/ folder:
+#
+#   docker compose build            # build the image (first time / after edits)
+#   docker compose run --rm cs374   # open a shell inside the container
+#
+# `--rm` deletes the container when you exit; your files survive because
+# they live in the bind-mounted repo on YOUR disk, not in the container.
+
+services:
+  cs374:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cs374-dev
+
+    # THE bind mount: ".." is the parent of this .devcontainer/ folder --
+    # that is, the root of your cloned GitHub repo. It appears inside the
+    # container at /workspace. This is the ONLY part of your machine the
+    # container can see or modify. Edit on either side; it is the same
+    # directory, so you can `git commit` and `git push` from inside.
+    volumes:
+      - "..:/workspace"
+
+    working_dir: /workspace
+
+    # Keep stdin open and allocate a terminal so that
+    # `docker compose run cs374` gives you a usable interactive bash
+    # (the compose-file equivalent of `docker run -it`).
+    stdin_open: true
+    tty: true

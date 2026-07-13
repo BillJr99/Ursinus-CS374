@@ -36,7 +36,7 @@ info:
       proficient: My project story is written, linked from my profile or portfolio per the ShipIt guide, rehearsed aloud as a two-minute narrative, and I can produce the evidence behind every claim in it on request
   readings:
     - rtitle: "Sprint Studio Protocol"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-sprintstudio.md"
+      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-sprintstudio.md"
     - rtitle: "Team Language Project"
       rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage"
     - rtitle: "ShipIt Guide: Repo Hygiene, README, Packaging, and Your Portfolio"
@@ -54,6 +54,12 @@ tags:
 This guide is not separately graded; the presentation is assessed within the Team Language Project's **Demo Day Presentation** dimension, and the mock-interview rehearsal is credited as **class participation**.
 
 Demo Day is not a private class ritual. Alumni, industry guests, and faculty from other departments may be in the room as audience members and Q&A panelists — invited **as available**; your grade never depends on who attends — and the skills the day demands are exactly the ones a technical interview demands: explain a system you built, in plain language first and full depth on request, defend your decisions, and be honest about what does not work. This guide prepares you for both audiences at once. Nothing here is extra work — it is rehearsal for work you already owe.
+
+---
+
+## Demo Day Format and Schedule
+
+Seven teams of three present in the 75-minute slot (10:00–11:15): each team has a hard cap of **9 minutes**, followed by a **1-minute transition** while the next team plugs in. Nine minutes rewards a rehearsed demo — time your run-through, and cut material rather than rushing it. The order of presentation is set by lot: teams draw lots in the Dec 3 studio, so you know your slot before the day.
 
 ---
 
@@ -129,4 +135,5 @@ Answer individually after the mock-interview rehearsal:
 
 - Which question made you realize you understood something less well than you thought, and what did you do about it before Demo Day?
 - What did you learn from being the *interviewer* that you could not have learned as the interviewee?
+- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
 - Approximately how many hours did you spend preparing with this guide (I will not judge you for this at all...I am simply using it to gauge if the assignments are too easy or hard)?
