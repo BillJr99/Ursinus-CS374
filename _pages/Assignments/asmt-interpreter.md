@@ -30,7 +30,7 @@ info:
       preemerging: The evaluator fails to run or fails most provided programs due to major structural errors such as missing cases or infinite loops
       beginning: The evaluator runs but fails on several programs — e.g., nested scopes leak, type errors are not raised, or short-circuit logic evaluates both branches always
       progressing: The evaluator passes the provided programs but fails on hidden edge cases — e.g., a scope is not discarded after a block, or division by zero crashes Python instead of raising a language error
-      proficient: A correct evaluator passes all provided and hidden programs — nested scopes behave per documented semantics, type errors name both operand types, short-circuit logic is verified by a non-evaluation test, and all runtime errors are raised at the language level with stage and position; the required Hypothesis invariant tests (Step 2e — determinism, scope restoration, short-circuit non-evaluation, and at least one more) pass over the generated program space, with one shrunk counterexample reported or a reasoned all-clear — demonstrating that Goals 2 and 3 are met
+      proficient: A correct evaluator passes all provided and hidden programs — nested scopes behave per documented semantics, type errors name both operand types, short-circuit logic is verified by a non-evaluation test, and all runtime errors are raised at the language level with stage and position; the required Hypothesis invariant tests (Step 2e — determinism, scope restoration, short-circuit non-evaluation, and at least one more) pass over the generated program space, with one shrunk counterexample reported or a reasoned all-clear; and the control-flow theory questions are answered in the readme with the bomb test used as evidence — demonstrating that Goals 2 and 3 are met
     - weight: 15
       description: "REPL and File Runner (Goal 4: build a REPL and file-runner with stage-identified error messages)"
       preemerging: Neither the REPL nor the file runner exists, or both crash on the first error
@@ -270,6 +270,8 @@ let y = x + 1;      # LangTypeError at line 2, col 11: + requires numbers, got s
 ```
 let safe = true or (1 / 0);   # right side must NOT be evaluated
 ```
+
+**Control-flow theory questions (in your readme, required in every Part 5 direction):** from the Control Flow and Statement Semantics session — (1) explain why short-circuiting is a *semantic commitment* rather than an optimization, using the bomb test as evidence (what observable behavior changes if both sides evaluate?); (2) your `and`/`or` return an *operand*, not a boolean — name one language that does this and one that coerces to boolean, and state one concrete program whose result differs between the two designs; (3) pick one truthiness rule you adopted and one you rejected, and defend the pair against a reliability argument from the Evaluating Languages criteria.
 
 ### Step 2c: Environment and Statement Evaluation
 

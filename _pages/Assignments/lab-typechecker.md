@@ -62,6 +62,8 @@ Verify against the provided programs (course starter repo): six well-typed progr
 
 In `RULES.md`, state the typing rule for each construct your checker covers — one rule per construct, premises and conclusion, in either inference-rule layout or a disciplined "if... then..." sentence (e.g., *if `e1 : Num` and `e2 : Num`, then `e1 + e2 : Num`*). Cite, for each rule, the function or branch in `typechecker.py` that implements it. This document becomes the seed of the Interpreter assignment's semantics writeup — and if you later choose the full Hindley-Milner direction, these rules are exactly what inference generalizes.
 
+Close `RULES.md` with two theory questions from the Type Systems session: (1) place four languages — Python, C, Haskell, and JavaScript — on the **static/dynamic × strong/weak** quadrant, with one sentence of justification each; (2) your checker makes the class language *gradually* typed in spirit (annotated declarations are checked, unannotated territory is documented as unchecked) — state one benefit and one risk of that middle ground, using the mypy/TypeScript comparison from class.
+
 ---
 
 ## Deliverables

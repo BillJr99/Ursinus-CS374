@@ -276,6 +276,10 @@ schedule:
     dlink: "Assignments/Overview"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-overview.md"
+  - dtitle: "Lab: BNF Workshop Handed Out (pair lab; early grammar-writing practice)"
+    dlink: "Assignments/BNFWorkshop"
+    points: "100"
+    rubricpath: "_pages/Assignments/lab-bnfworkshop.md"
 - week: "2"
   date: "1"
   title: "Derivations, Parse Trees, Ambiguity, and Precedence"
@@ -294,6 +298,10 @@ schedule:
   - rtitle: "Allison, Ch. 3 §3.1–3.2: Regular Expressions and Their Equivalence to Finite Automata"
   - rtitle: "Allison, Ch. 4: The Pumping Lemma — proving a language is not regular (required for the Regex assignment's Part 4 theory questions; we work one example in class today)"
   deliverables:
+  - dtitle: "Lab: BNF Workshop Due"
+    dlink: "Assignments/BNFWorkshop"
+    points: "100"
+    rubricpath: "_pages/Assignments/lab-bnfworkshop.md"
   - dtitle: "Programming Assignment: Regular Expressions Handed Out"
     dlink: "Assignments/Regex"
     points: "100"
@@ -399,6 +407,10 @@ schedule:
     dlink: "Assignments/GrammarWorkshop"
     points: "100"
     rubricpath: "_pages/Assignments/lab-grammarworkshop.md"
+  - dtitle: "Lab: Parser Skeleton Handed Out (pair lab; scaffolds the Parser assignment's first ladder tiers)"
+    dlink: "Assignments/ParserSkeleton"
+    points: "100"
+    rubricpath: "_pages/Assignments/lab-parserskeleton.md"
 - week: "8"
   date: "0"
   title: "Binding and Scope"
@@ -414,6 +426,11 @@ schedule:
   date: "1"
   title: "Environments and Variable Storage"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-environments.md"
+  deliverables:
+  - dtitle: "Lab: Parser Skeleton Due"
+    dlink: "Assignments/ParserSkeleton"
+    points: "100"
+    rubricpath: "_pages/Assignments/lab-parserskeleton.md"
   readings:
   - rtitle: "Supplemental Tutorial: Build an Interpreter (start-to-finish companion for the upcoming assignment)"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md"
@@ -555,6 +572,11 @@ schedule:
   date: "0"
   title: "Modern Language Features (and Sprint 1 working time)"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-modernfeatures.md"
+  deliverables:
+  - dtitle: "Team Language Project: Sprint 1 Increment Checkpoint (runnable increment shown in studio; checked, not separately graded)"
+    dlink: "Projects/TeamLanguage"
+    points: "0"
+    rubricpath: "_pages/Projects/proj-teamlanguage.md"
 - week: "14"
   date: "0"
   title: "Sprint Studio: Sprints 1-2 and Gallery Walk: Peer Review of Team Languages"
@@ -624,7 +646,7 @@ Every assignment in this course is written to be transparent about three things,
 
 When you open an assignment, read the Purpose first: it tells you what the assignment is really for, which is the fastest way to make good decisions when the task gets ambiguous. Every assignment also closes by asking you to reflect — what you did, what fought you, how long it took, and what grade you would give yourself against the criteria. That reflection is part of the work, not an afterthought.
 
-A note on grade categories: the **Overview** (100 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the five programming assignments — Regular Expressions, Lexer, Parser, Interpreter, and Functional Programming — make up the **Programming Assignments** category. The **Labs** category comprises six short scaffolding labs (Regex Workshop, Finite Automata Simulators, Grammar and Derivations Workshop, Environments and Scope, Type Checker Starter, and Lambda Calculus), each scoped to roughly two to three hours. Labs may be completed **in pairs** (both partners submit, naming each other; both earn the same grade); the programming assignments remain individual work. Each lab lands mid-assignment and completes a piece of the assignment it scaffolds, so lab work is a head start, not an add-on. **There is no midterm or final exam**: Demo Day on the last class meeting (Tuesday, December 8) is the course's terminal event, and no work is accepted after it. Seven teams present for nine minutes each within our 10:00–11:15 slot; external guests visiting both this Demo Day and CS357's (12:00–1:15, same day) are welcome to stay for both.
+A note on grade categories: the **Overview** (100 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the five programming assignments — Regular Expressions, Lexer, Parser, Interpreter, and Functional Programming — make up the **Programming Assignments** category. The **Labs** category comprises eight short labs (BNF Workshop, Regex Workshop, Finite Automata Simulators, Grammar and Derivations Workshop, Parser Skeleton, Environments and Scope, Type Checker Starter, and Lambda Calculus), each scoped to roughly two to three hours. Labs may be completed **in pairs** (both partners submit, naming each other; both earn the same grade); the programming assignments remain individual work. Each lab lands mid-assignment and completes a piece of the assignment it scaffolds, so lab work is a head start, not an add-on. **There is no midterm or final exam**: Demo Day on the last class meeting (Tuesday, December 8) is the course's terminal event, and no work is accepted after it. Seven teams present for nine minutes each within our class meeting; external guests visiting both this Demo Day and CS357's (same day) are welcome to stay for both.
 
 ## Generative AI Policy
 
