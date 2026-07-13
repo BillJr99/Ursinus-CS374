@@ -5,7 +5,7 @@ title: "CS374: Principles of Programming Languages - The Reflection Notebook"
 
 info:
   coursenum: CS374
-  points: 0
+  points: 10
   submission: "Kept all semester in a notebook or a repository of your choice; reviewed at midterm and at the end of the term. Its quality is the 10% Reflection Notebook grade."
   goals:
     - To make your learning visible to yourself as the course's ideas recur in new forms

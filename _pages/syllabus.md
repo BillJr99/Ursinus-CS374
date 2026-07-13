@@ -227,6 +227,15 @@ schedule:
   - dtitle: "Warmup Assignment Handed Out"
     dlink: "Assignments/Warmup"
     points: "10"
+  - dtitle: "Class Activities and Participation Handed Out"
+    dlink: "Participation/PreparingForClass"
+    points: "10"
+  - dtitle: "Reflection Notebook Handed Out"
+    dlink: "Participation/ReflectionNotebook"
+    points: "10"
+  - dtitle: "Reading Exercises Handed Out"
+    dlink: "Participation/ReadingExercises"
+    points: "10"
   readings:
   - rtitle: "Thain, Chapter 1"
   - rtitle: "Allison, Ch. 1: Introduction — Formal Languages and Finite State Machines"
@@ -234,8 +243,6 @@ schedule:
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-course-arc.md"
   - rtitle: "Required setup (Overview assignment, Route A): Your Course Development Environment — Docker, Git, and GitHub"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/DevEnvironment"
-  - rtitle: "The Music and Live-Coding Directions: several assignments and the team project offer a music-programming direction — skim the guide now if that pulls you (nothing to decide yet)"
-    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/MusicTrack"
 - week: "0"
   date: "1"
   title: "Programming Paradigms"
@@ -276,7 +283,7 @@ schedule:
     dlink: "Assignments/Overview"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-overview.md"
-  - dtitle: "Lab: BNF Workshop Handed Out (pair lab; early grammar-writing practice)"
+  - dtitle: "Lab: BNF Workshop Handed Out"
     dlink: "Assignments/BNFWorkshop"
     points: "100"
     rubricpath: "_pages/Assignments/lab-bnfworkshop.md"
@@ -306,7 +313,7 @@ schedule:
     dlink: "Assignments/Regex"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-regex.md"
-  - dtitle: "Lab: Regex Workshop Handed Out (pair lab; scaffolds the Regex assignment's pattern library and mini-lexer)"
+  - dtitle: "Lab: Regex Workshop Handed Out"
     dlink: "Assignments/RegexWorkshop"
     points: "100"
     rubricpath: "_pages/Assignments/lab-regexworkshop.md"
@@ -330,7 +337,7 @@ schedule:
     dlink: "Assignments/RegexWorkshop"
     points: "100"
     rubricpath: "_pages/Assignments/lab-regexworkshop.md"
-  - dtitle: "Lab: Finite Automata Simulators Handed Out (pair lab)"
+  - dtitle: "Lab: Finite Automata Simulators Handed Out"
     dlink: "Assignments/Automata"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-automata.md"
@@ -387,10 +394,7 @@ schedule:
     dlink: "Assignments/Parser"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-parser.md"
-  - dtitle: "Reference Lexer Released (use it if your own lexer is holding you back — see the Parser assignment's reference-implementation policy)"
-    dlink: "Assignments/Parser"
-    points: "0"
-  - dtitle: "Lab: Grammar and Derivations Workshop Handed Out (pair lab; scaffolds the Parser assignment's grammar work)"
+  - dtitle: "Lab: Grammar and Derivations Workshop Handed Out"
     dlink: "Assignments/GrammarWorkshop"
     points: "100"
     rubricpath: "_pages/Assignments/lab-grammarworkshop.md"
@@ -407,7 +411,7 @@ schedule:
     dlink: "Assignments/GrammarWorkshop"
     points: "100"
     rubricpath: "_pages/Assignments/lab-grammarworkshop.md"
-  - dtitle: "Lab: Parser Skeleton Handed Out (pair lab; scaffolds the Parser assignment's first ladder tiers)"
+  - dtitle: "Lab: Parser Skeleton Handed Out"
     dlink: "Assignments/ParserSkeleton"
     points: "100"
     rubricpath: "_pages/Assignments/lab-parserskeleton.md"
@@ -461,20 +465,14 @@ schedule:
     dlink: "Assignments/Interpreter"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-interpreter.md"
-  - dtitle: "Reference Parser and AST Released (see the Interpreter assignment's reference-implementation policy)"
-    dlink: "Assignments/Interpreter"
-    points: "0"
-  - dtitle: "Lab: Environments and Scope Handed Out (pair lab; scaffolds the Interpreter assignment's Environment and scoping work)"
+  - dtitle: "Lab: Environments and Scope Handed Out"
     dlink: "Assignments/EnvironmentsLab"
     points: "100"
     rubricpath: "_pages/Assignments/lab-environments.md"
-  - dtitle: "Team Language Project Handed Out (design phase begins: teams, niche, and design scorecard due at the Week 11 studio check; build sprints begin at the Sprint 0 kickoff)"
+  - dtitle: "Team Language Project Handed Out"
     dlink: "Projects/TeamLanguage"
     points: "100"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
-  readings:
-  - rtitle: "The Music and Live-Coding Directions: several assignments and the team project offer a music-programming direction — read the guide as your team weighs its niche (teams commit at the Sprint 0 kickoff)"
-    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/MusicTrack"
 - week: "10"
   date: "0"
   title: "Functional Programming and Higher-Order Functions"
@@ -493,7 +491,7 @@ schedule:
     dlink: "Assignments/EnvironmentsLab"
     points: "100"
     rubricpath: "_pages/Assignments/lab-environments.md"
-  - dtitle: "Lab: Type Checker Starter Handed Out (pair lab; scaffolds the Interpreter assignment's static type checker)"
+  - dtitle: "Lab: Type Checker Starter Handed Out"
     dlink: "Assignments/TypeCheckerLab"
     points: "100"
     rubricpath: "_pages/Assignments/lab-typechecker.md"
@@ -502,9 +500,9 @@ schedule:
   title: "Lambda Calculus I: Syntax and Beta Reduction"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-lambdacalculus1.md"
   deliverables:
-  - dtitle: "Team Language Project: Design-Phase Milestone Due (team roster, language niche, and design scorecard; checked in studio, private to instructor)"
+  - dtitle: "Team Language Project: Design-Phase Milestone Due"
     dlink: "Projects/TeamLanguage"
-    points: "0"
+    points: "3"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
   - rtitle: "Reading Exercise / Discussion: attempt the Lambda Calculus exercises before class"
@@ -520,15 +518,12 @@ schedule:
   date: "1"
   title: "Lambda Calculus II: Church Encodings and Combinators"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-lambdacalculus2.md"
-  readings:
-  - rtitle: "The Music and Live-Coding Directions: how to take your remaining assignments and the team project in a musical direction (commit to a project direction by the kickoff)"
-    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/MusicTrack"
   deliverables:
   - dtitle: "Lab: Type Checker Starter Due"
     dlink: "Assignments/TypeCheckerLab"
     points: "100"
     rubricpath: "_pages/Assignments/lab-typechecker.md"
-  - dtitle: "Lab: Lambda Calculus Handed Out (pair lab; standalone — also preps the Functional assignment's Church-encodings direction)"
+  - dtitle: "Lab: Lambda Calculus Handed Out"
     dlink: "Assignments/LambdaCalculusLab"
     points: "100"
     rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
@@ -545,16 +540,11 @@ schedule:
     dlink: "Assignments/Functional"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-functional.md"
-  - dtitle: "Reference Interpreter Released (see the Team Language Project's reference-implementation policy)"
-    dlink: "Projects/TeamLanguage"
-    points: "0"
-  - dtitle: "Team Language Project: Proposal Due (Sprint 0, presented in class)"
+  - dtitle: "Team Language Project: Proposal Due"
     dlink: "Projects/TeamLanguage"
     points: "25"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
-  - rtitle: "The Music and Live-Coding Directions: guide and equivalence map — teams commit to a project direction today"
-    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/MusicTrack"
   - rtitle: "Supplemental Tutorial: Build a Bytecode VM"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md"
   - rtitle: "Project Extensions Menu: libraries and packaging, scripting and automation targets, transpilation, and more (see the Team Language Project page)"
@@ -573,17 +563,15 @@ schedule:
   title: "Modern Language Features (and Sprint 1 working time)"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-modernfeatures.md"
   deliverables:
-  - dtitle: "Team Language Project: Sprint 1 Increment Checkpoint (runnable increment shown in studio; checked, not separately graded)"
+  - dtitle: "Team Language Project: Sprint 1 Increment Checkpoint Due"
     dlink: "Projects/TeamLanguage"
-    points: "0"
+    points: "3"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
 - week: "14"
   date: "0"
   title: "Sprint Studio: Sprints 1-2 and Gallery Walk: Peer Review of Team Languages"
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-sprintstudio.md"
   readings:
-  - rtitle: "Demo Day Guide: External Guests and Technical Interview Practice (the cross-team mock-interview rehearsal happens in this week's studios, credited as participation)"
-    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/DemoDayGuide"
   - rtitle: "Supplemental Tutorial: CI and TDD for Interpreters"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CITDDForInterpreters"
   - rtitle: "Supplemental Tutorial: The Project Language Guide (a complete worked path for the team project)"
@@ -604,8 +592,6 @@ schedule:
     points: "100"
     rubricpath: "_pages/Assignments/asmt-functional.md"
   readings:
-  - rtitle: "ShipIt Guide: Repo Hygiene, README, Packaging, and Your Portfolio (required self-check before Demo Day; scored within the project's Documentation and Reproducibility dimension)"
-    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/ShipIt"
   - rtitle: "Supplemental Tutorial: Publishing Your Language — pip, npm, and Docker"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PublishingYourLanguage"
   - rtitle: "Supplemental Tutorial: Advanced C++ for Language Implementers"
@@ -613,14 +599,20 @@ schedule:
 - week: "15"
   date: "0"
   title: "Demo Day: Team Language Presentations (Class Switch Day: follows a Thursday schedule)"
-  readings:
-  - rtitle: "Demo Day Guide: who is in the room (alumni, industry guests, and faculty, as available) and how to talk to them"
-    rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/DemoDayGuide"
   deliverables:
-  - dtitle: "Team Language Project Due and Demo Day Presentations"
+  - dtitle: "Team Language Project and Demo Day Presentations Due"
     dlink: "Projects/TeamLanguage"
     points: "75"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
+  - dtitle: "Class Activities and Participation Due"
+    dlink: "Participation/PreparingForClass"
+    points: "10"
+  - dtitle: "Reflection Notebook Due"
+    dlink: "Participation/ReflectionNotebook"
+    points: "10"
+  - dtitle: "Reading Exercises Due"
+    dlink: "Participation/ReadingExercises"
+    points: "10"
 
 ---
 
@@ -631,7 +623,7 @@ This semester is a build: by December, your team will have designed and implemen
 This course is built on the principle that there is more than one good path through it, and that you should have real say over yours. The choices are deliberate, in the spirit of Universal Design for Learning — multiple ways to engage with the material and multiple ways to demonstrate what you have learned — and none of them is the "remedial" path.
 
 - **A capstone you shape.** The Team Language Project is yours to design; a compelling original language is always welcome, and the final project's extension menu lets you go deep where your interest lies rather than following a single fixed spec.
-- **The Music and Live-Coding Directions.** If you would rather build toward making music than a general-purpose language, several assignments (the Parser and Functional Programming among them) and the Team Language Project each offer a music direction inside the same required deliverable — the [Music and Live-Coding guide](Assignments/MusicTrack) maps the whole path, including a text-events-only route that never requires audio. Choose direction by direction as each assignment arrives; teams commit to a project direction at the kickoff.
+- **The Music and Live-Coding Directions.** If you would rather build toward making music than a general-purpose language, several assignments (the Parser and Functional Programming among them) and the Team Language Project each offer a music direction inside the same required deliverable — the [Music and Live-Coding guide](Projects/TeamLanguage#the-music-and-live-coding-path) maps the whole path, including a text-events-only route that never requires audio. Choose direction by direction as each assignment arrives; teams commit to a project direction at the kickoff.
 - **Depth inside every assignment, and supplemental depth everywhere.** Each programming assignment offers **directions** you choose inside it — a generator-toolchain lexer, a music-notation parser, a type checker for your interpreter, continuations or Church encodings in the functional assignment — so nothing on the schedule is optional, but every deliverable has room for your interests. Beyond the assignments, the schedule carries supplemental activities and tutorials (parser combinators, garbage collection, bytecode VMs, and more; browse the [Tutorials shelf](Tutorials/)): invitations, not obligations. Tell me when one of them becomes the thing you want to go further with.
 
 If a path you want is not on the menu, propose it. The point of the choices is to let you build the language, and the fluency, that you actually care about.
@@ -669,7 +661,7 @@ This is a course you do, not one you watch, and this component values the daily 
 
 Participation takes more than one form, by design. In the in-class activities your team rotates the POGIL roles — **Manager, Recorder, Presenter, and Reflector** — so that on different days you facilitate, capture the group's thinking, report out, or step back and synthesize. In the project phase your team rotates a second set of roles — **Coordinator, Builder, Evaluator, and Scribe**. Speaking up in whole-class discussion counts; so does posting your team's answer to the class discussion board, asking a sharp question, or helping a teammate past a bug. If the spoken room is hard for you, the written and role-based channels are real ways to earn this component — talk with me early and we will find the path that fits.
 
-From time to time the class agenda sets aside time for **reading exercises and discussion**: a short problem tied to the reading — write a grammar rule, trace a tokenizer, evaluate a language-design tradeoff — that you attempt beforehand and we work through together. These are marked on the schedule and drawn from the **[Reading Exercises](Participation/ReadingExercises)** bank. The Week 14 **mock-interview rehearsal** — practicing an interview-style explanation of your own interpreter and language with a partner from another team — counts here too; see the [Demo Day Guide](Assignments/DemoDayGuide).
+From time to time the class agenda sets aside time for **reading exercises and discussion**: a short problem tied to the reading — write a grammar rule, trace a tokenizer, evaluate a language-design tradeoff — that you attempt beforehand and we work through together. These are marked on the schedule and drawn from the **[Reading Exercises](Participation/ReadingExercises)** bank. The Week 14 **mock-interview rehearsal** — practicing an interview-style explanation of your own interpreter and language with a partner from another team — counts here too; see the [Demo Day Guide](Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice).
 
 ## Reflection Notebook (10%)
 

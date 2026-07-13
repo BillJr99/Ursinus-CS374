@@ -142,6 +142,82 @@ print(categorize(200))    # fine
 
 ---
 
+# Interlude: Enforcing Types at Runtime with pydantic
+
+Python's type hints (`def add(x: int, y: int) -> int:`) are, by default, *documentation the interpreter ignores* — nothing checks them when the program runs. **pydantic** is a widely used library that turns those same annotations into **enforced contracts**: it validates data against your declared types the instant an object is constructed, and raises a precise, located error the moment a promise is broken. It is the runtime, strong-typing gatekeeper from Part I, packaged for real Python code — and it is the same discipline you are about to build into your interpreter.
+
+```bash
+pip install pydantic
+```
+
+## A First pydantic Model
+
+A class that subclasses `BaseModel` declares its fields with ordinary type annotations; constructing an instance validates every field:
+
+```python
+from pydantic import BaseModel, ValidationError
+
+class Token(BaseModel):
+    kind: str
+    lexeme: str
+    line: int
+
+# Valid: types match
+t = Token(kind="NUMBER", lexeme="42", line=7)
+print(t)                        # kind='NUMBER' lexeme='42' line=7
+
+# Declared coercion: the string "7" is converted to int 7
+t2 = Token(kind="NUMBER", lexeme="42", line="7")
+print(type(t2.line), t2.line)   # <class 'int'> 7
+
+# Invalid: "seven" cannot become an int -> ValidationError
+try:
+    Token(kind="NUMBER", lexeme="42", line="seven")
+except ValidationError as e:
+    print(e)                    # line: Input should be a valid integer ...
+```
+
+Both behaviors from the *Type Systems* axes show up here, made concrete. pydantic is **strong** — it refuses `"seven"` as an `int` — yet it performs **deliberate, declared coercion** (`"7"` → `7`): coercion you opted into by choosing pydantic, not the silent coercion of a weakly typed language. Turn coercion off entirely with strict mode (`model_config = ConfigDict(strict=True)`), and `"7"` is rejected too.
+
+## Validators: When a "Type" Encodes an Invariant
+
+A validator lets a field mean more than `int` — it can mean *a line number that must be positive*, or *an operator that must be one the language actually has*:
+
+```python
+from pydantic import BaseModel, field_validator, ValidationError
+
+class AstNode(BaseModel):
+    op: str
+    line: int
+
+    @field_validator("op")
+    @classmethod
+    def op_must_be_known(cls, v: str) -> str:
+        allowed = {"+", "-", "*", "/"}
+        if v not in allowed:
+            raise ValueError(f"unknown operator {v!r}; expected one of {sorted(allowed)}")
+        return v
+
+    @field_validator("line")
+    @classmethod
+    def line_is_positive(cls, v: int) -> int:
+        if v < 1:
+            raise ValueError("line numbers start at 1")
+        return v
+
+for bad in (dict(op="%", line=3), dict(op="+", line=0)):
+    try:
+        AstNode(**bad)
+    except ValidationError as e:
+        print(e)
+```
+
+This is the same **check-before-you-compute** gatekeeper you will write into your interpreter's evaluator in the next section — pydantic just applies it at the *boundary* where untrusted data (a config file, a JSON request, a serialized AST, a parsed token stream) enters your program, giving you specific, located errors for free.
+
+> **Watch out!** Plain type *hints* (`x: int`) are never enforced by CPython at runtime — `add("a", "b")` runs until `+` fails. `@dataclass` gives you the same annotations but also does **not** validate them. A static checker like `mypy` checks before running and does nothing at runtime. pydantic is the tool that enforces the annotation *when the data arrives*. Know which of these three guarantees you actually have.
+
+---
+
 # Part II: Types in Your Interpreter
 
 **Intuition for Model 2:** Your interpreter already evaluates binary expressions like `3.0 + 4.0`. This model shows you how to add a gatekeeper at the top of that evaluation: before you touch the operands, check whether the combination makes sense and raise a clear error if it does not. Think of it like a bouncer who checks IDs before letting values into an operation — `float + float` gets in, `float + string` does not.
