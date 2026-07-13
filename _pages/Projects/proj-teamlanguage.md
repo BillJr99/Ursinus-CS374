@@ -219,7 +219,7 @@ Build in sprints aligned with the in-class studio days (see the course schedule 
 
 ## Stage 3: Demo Day (the last class meeting)
 
-With all teams presenting in a single 75-minute class slot, each team has a hard cap of **9 minutes**, plus a 1-minute transition to the next team. Within your 9 minutes:
+With all teams presenting in a single class session, each team has a hard cap of **9 minutes**, plus a 1-minute transition to the next team. Within your 9 minutes:
 
 1. The pitch: niche, scorecard, and one design decision defended (60 seconds each).
 2. The live demonstration: the REPL, a sample program showcasing the niche, and the distinctive feature **explained and demonstrated by a teammate who did not implement it**. Direction B teams close with the short performance described above — a live edit-and-rerun over the event output.

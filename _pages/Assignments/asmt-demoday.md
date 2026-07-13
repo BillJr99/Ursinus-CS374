@@ -59,7 +59,7 @@ Demo Day is not a private class ritual. Alumni, industry guests, and faculty fro
 
 ## Demo Day Format and Schedule
 
-All teams present within a single 75-minute class slot: each team has a hard cap of **9 minutes**, followed by a **1-minute transition** while the next team plugs in. Nine minutes rewards a rehearsed demo — time your run-through, and cut material rather than rushing it. The order of presentation is set by lot: teams draw lots in the release-hardening studio, so you know your slot before the day.
+All teams present within a single class session: each team has a hard cap of **9 minutes**, followed by a **1-minute transition** while the next team plugs in. Nine minutes rewards a rehearsed demo — time your run-through, and cut material rather than rushing it. The order of presentation is set by lot: teams draw lots in the release-hardening studio, so you know your slot before the day.
 
 ---
 
