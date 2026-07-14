@@ -218,7 +218,7 @@ schedule:
 - week: "0"
   date: "0"
   title: "Welcome: Why Study Programming Languages?"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-welcomepl.md"
+  link: "https://www.billmongan.com/Ursinus-CS374-Overview"
   deliverables:
   - dtitle: "Overview Assignment Handed Out"
     dlink: "Assignments/Overview"
@@ -246,7 +246,7 @@ schedule:
 - week: "0"
   date: "1"
   title: "Programming Paradigms"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-paradigms.md"
+  link: "https://www.billmongan.com/Ursinus-CS374-History"
   readings:
   - rtitle: "In-class taste: the declarative paradigm in Prolog — a 15-minute SWISH warm-up (facts, rules, a query that backtracks). Previews the Functional assignment's Logic Programming direction"
     rlink: "https://swish.swi-prolog.org/"
