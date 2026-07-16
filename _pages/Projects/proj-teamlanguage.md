@@ -88,20 +88,22 @@ Your team will design, implement, document, and present **a programming language
 
 Teams are three members each, formed in the design phase from your standing POGIL groups. Project roles (**Coordinator**, **Builder**, **Evaluator**, **Scribe**) rotate at every sprint boundary so every member holds every role; your report's contribution statements must show the rotation.
 
+**Your team over the project's seven weeks.** Teams reliably pass through recognizable stages (Tuckman, 1965), and this project's milestones are placed on that map deliberately. Your **team charter** (drafted in the Overview assignment, signed in week 2) is the *forming* work — you did it before the stakes were high. The **design-phase studio** is where *storming* is expected: the argument over which niche to serve and what the design scorecard says is the productive conflict, so have it out loud there rather than quietly in a group chat. The **Sprint 0 proposal** is *norming* made concrete — a signed, presented agreement about what you are building and who owns what. The **sprints** are *performing*: role rotation and stand-ups carry the load, and the team self-corrects without drama. **Demo Day's retrospective** is *adjourning*: close deliberately, with contribution statements and the portfolio story each member takes with them. If the design phase feels contentious, that is the map working — run the charter's conflict-repair process and keep moving.
+
 **Reference implementation policy.** Teams may build on the released reference lexer, parser, and interpreter instead of (or merged with) their own semester components, declared in the project README. The project is graded on the language you design and build on top, not on whose components you started from — spend your sprint time on the design, the distinctive feature, and the integration, wherever your starting components came from.
 
 ---
 
 ## Timeline and Milestones
 
-The project is worth **100 points** total, earned at two graded milestones:
+The project is worth **100 points** total, earned at two graded milestones (proposal and Demo Day). The two small 3-point checkpoints along the way are assessed within Class Activities and Participation — they keep the team honest without raising the stakes of a studio day:
 
 | Milestone (see the course schedule for dates) | What happens | Points |
 |---|---|---|
 | Project hand-out | Design phase begins: form teams of 3, pick a niche, draft the design scorecard | — |
-| Design-phase studio check | Design-phase milestone: team, niche, and design scorecard (checked in studio, ungraded) | — |
+| Design-phase studio check | Design-phase milestone: team, niche, and design scorecard (checked at the design-phase studio; 3 points, assessed within Class Activities and Participation) | 3 |
 | **Sprint 0 kickoff** | **Proposal due, presented in class** | **25** |
-| Sprint 1 (see schedule) | Integrate components, with an in-class working-time session | — |
+| Sprint 1 increment checkpoint (see schedule) | Integrate components, with an in-class working-time session; checkpoint includes the charter re-read and confidential peer pulse (3 points, assessed within Class Activities and Participation) | 3 |
 | Sprint 2 studio | Gallery walk and peer review | — |
 | Sprint 3 studio | Release hardening | — |
 | **Demo Day (last class meeting)** | **Demo Day and final submission** | **75** |
@@ -194,7 +196,7 @@ Instead of (or alongside) extending your own language, contribute to an existing
 
 ## Stage 1: Design Phase and Proposal (proposal due at the Sprint 0 kickoff — 25 points)
 
-The project hand-out opens a **design phase**: form your team of three, pick a niche, and draft the design scorecard. The design-phase milestone — team, niche, and scorecard — is checked at the design-phase studio check (ungraded); it exists so the graded proposal that follows is a refinement, not a scramble.
+The project hand-out opens a **design phase**: form your team of three, pick a niche, and draft the design scorecard. The design-phase milestone — team, niche, and scorecard — is checked at the design-phase studio check (3 points, assessed within Class Activities and Participation); it exists so the graded proposal that follows is a refinement, not a scramble.
 
 The proposal itself is due at the Sprint 0 kickoff, and is **presented in class**. A two-to-three page proposal containing:
 
@@ -213,7 +215,7 @@ The proposal itself is due at the Sprint 0 kickoff, and is **presented in class*
 
 ## Stage 2: Sprints and Studios (Sprint 0 kickoff through the release-hardening studio)
 
-Build in sprints aligned with the in-class studio days (see the course schedule for dates), following the sprint studio protocol: stand-ups with numbers, failing tests as specifications, current documents, role rotation at boundaries. **Sprint 1 (see schedule)** integrates members' components into one pipeline running the class language (Direction B: the front end printing ASTs), with an in-class working-time session; if a break falls inside the sprint window, front-load the integration so a working pipeline travels with you. **Sprint 2 (gallery-walk studio)** implements grammar differences and the distinctive feature's skeleton (Direction B: the evaluator emitting timed events); **Sprint 3 (release-hardening studio)** completes the feature, hardens errors, and finishes the sample suite — budget ~4 hours for the ShipIt checks (cold clone-to-run, packaging, README) — they are scored in the Documentation and Reproducibility dimension. The **gallery walk** (Sprint 2 studio day) is mandatory: host with one known failure shown, walk with Strength, Question, and Risk cards, and triage all feedback into fix, disclose, or future work. The **release hardening** studio is your last in-class working session before Demo Day.
+Build in sprints aligned with the in-class studio days (see the course schedule for dates), following the sprint studio protocol: stand-ups with numbers, failing tests as specifications, current documents, role rotation at boundaries. **Sprint 1 (see schedule)** integrates members' components into one pipeline running the class language (Direction B: the front end printing ASTs), with an in-class working-time session; if a break falls inside the sprint window, front-load the integration so a working pipeline travels with you. The Sprint 1 increment checkpoint also carries the project's one structured team-health pause: **re-read your charter** ("does it still describe this team?" — file one revision if not) and each member sends the instructor a **confidential peer pulse** — rate yourself and each teammate 1-5 on contributing to the work, interacting with teammates, keeping the team on track, expecting quality, and having relevant knowledge and skills (the CATME dimensions), with a sentence of evidence for any 2 or below. The pulse is read only by the instructor, never mechanically averaged into a grade, and used to calibrate individual contribution and to start a coaching conversation where self- and peer-views diverge. **Sprint 2 (gallery-walk studio)** implements grammar differences and the distinctive feature's skeleton (Direction B: the evaluator emitting timed events); **Sprint 3 (release-hardening studio)** completes the feature, hardens errors, and finishes the sample suite — budget ~4 hours for the ShipIt checks (cold clone-to-run, packaging, README) — they are scored in the Documentation and Reproducibility dimension. The **gallery walk** (Sprint 2 studio day) is mandatory: host with one known failure shown, walk with Strength, Question, and Risk cards, and triage all feedback into fix, disclose, or future work. The **release hardening** studio is your last in-class working session before Demo Day.
 
 ---
 
@@ -413,6 +415,7 @@ The last stage is individual. Each teammate:
 - **Pins or links the repository** from their GitHub profile (or personal portfolio page). If you do not have a profile README, this is the moment to create one — it is a ten-minute job with an outsized payoff.
 - **Writes a project story of roughly 200 words**: the problem (what niche, why a new language), what the team built (the pipeline, the distinctive feature, any extensions), and the evidence (the repo link, the CI badge, the verified install, a test-suite number). Name your individual contribution explicitly — "I built X" — because that is the sentence a resume bullet and an interview answer are made from.
 - **Reuses the story.** The same story is your opening move with guests at Demo Day (see the [Demo Day Guide](/Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice)) and the seed of the resume bullet you will write when you next update your materials.
+- **Drafts the post.** Each member turns the story into a **drafted LinkedIn-style post** (150-250 words: the niche, what you built, one concrete number — tests passing, sample programs, the install command — and what you learned) and includes the draft in the final submission. Submitting the draft is required; **publishing it is always optional and never graded — your professional profiles are yours.** The draft exists so that if you choose to post, the post is already written while the language still runs on your machine.
 
 ---
 
@@ -564,5 +567,5 @@ Answer individually after the mock-interview rehearsal:
 |---|---|---|---|---|
 | Self-Check: Guest-Facing Communication | I cannot explain the project without assuming the listener took this course | I can describe the language, but my opening runs long, leans on jargon, or hides what does not work | I can open the project in about ninety seconds in plain language and disclose a limitation when asked, though my answers to unexpected questions still wobble | I can open the project in ninety seconds in plain language, volunteer one rehearsed limitation with its triage rationale, redirect a question I cannot answer honestly ("I don't know, but here is how I would find out"), and ask a guest a genuine question back |
 | Self-Check: Mock Technical Interview | I skipped the rehearsal or could not explain my own component | I explained my component but not how it connects to the rest of the pipeline, or I could not tell a single concrete bug story | I walked my partner through the pipeline token-to-value, defended one design decision, and told one bug story, though I leaned on notes or slides | Without slides, I explained the pipeline end to end, defended a design decision by naming the alternative we rejected and why, told a bug story with its regression test, and asked my partner at least one probing question about their language when roles reversed |
-| Self-Check: Portfolio Story | I have no way to show this project to anyone outside the course | I can point at the repository but cannot yet tell its story in a way a recruiter would follow | My 200-word project story exists and names my contribution, though it is not yet linked from anywhere or rehearsed aloud | My project story is written, linked from my profile or portfolio per the ShipIt guide, rehearsed aloud as a two-minute narrative, and I can produce the evidence behind every claim in it on request |
+| Self-Check: Portfolio Story | I have no way to show this project to anyone outside the course | I can point at the repository but cannot yet tell its story in a way a recruiter would follow | My 200-word project story exists and names my contribution, though it is not yet linked from anywhere or rehearsed aloud | My project story is written, linked from my profile or portfolio per the ShipIt guide, rehearsed aloud as a two-minute narrative, a drafted (publication-optional) LinkedIn-style post exists, and I can produce the evidence behind every claim in it on request |
 
