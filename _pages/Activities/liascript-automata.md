@@ -73,6 +73,88 @@ Before writing any code, you need to be comfortable *tracing* a DFA by hand — 
 3. Design a DFA accepting strings containing the substring `aa`. Compare with question 2: ending-in versus containing changes which states are accepting; articulate how.
 4. Try to design a DFA for $a^n b^n$. Where does finite memory fail you, and which prior module predicted this?
 
+### Worked Example: tracing `1011`, as a static table
+
+CTQ 1 asks for this trace. Do it first; then check. The point of writing it as a table rather than "running it" is that you can do this on paper in an exam, in a design meeting, or when the code is not written yet.
+
+| Step | State before | Symbol read | Transition used | State after |
+|------|--------------|-------------|-----------------|-------------|
+| 0 | — | *(start)* | — | `even` |
+| 1 | `even` | `1` | `even --1--> odd` | `odd` |
+| 2 | `odd` | `0` | `odd --0--> odd` | `odd` |
+| 3 | `odd` | `1` | `odd --1--> even` | `even` |
+| 4 | `even` | `1` | `even --1--> odd` | `odd` |
+
+Final state `odd`, which is **not** an accepting state, so `1011` is **rejected**. It has three `1`s, and this machine accepts an even count.
+
+Two habits worth forming from this small table. First, the `0` transitions are self-loops — reading a `0` never changes the answer, which is the machine *saying* that zeros are irrelevant to parity. A DFA's self-loops are always a claim about what the machine chooses to ignore. Second, the state after step 4 is the entire memory of the computation: the machine has forgotten that it read `1011` and remembers only "odd so far." That is the whole limitation you will run into in CTQ 4.
+
+### Worked Example: subset construction, worked to completion
+
+Here is the NFA for "ends in `ab`" (CTQ 2's machine, built the easy way — with nondeterminism). State `q0` loops on everything and guesses when to start matching:
+
+```
+        a,b
+       ┌───┐
+       │   ▼
+   ──► (q0) ──a──► (q1) ──b──► ((q2))
+```
+
+`q0` on `a` has **two** choices: stay in `q0` or move to `q1`. That is the nondeterminism. Subset construction removes it by making each DFA state a *set* of NFA states — "all the places the NFA could be right now."
+
+Start from `{q0}` and repeatedly compute where each symbol leads:
+
+| DFA state (set) | on `a` | on `b` | accepting? |
+|---|---|---|---|
+| `A = {q0}` | `{q0, q1}` = **B** | `{q0}` = A | no |
+| `B = {q0, q1}` | `{q0, q1}` = B | `{q0, q2}` = **C** | no |
+| `C = {q0, q2}` | `{q0, q1}` = B | `{q0}` = A | **yes** (contains `q2`) |
+
+No new sets appear, so the construction is done: **three DFA states**, from three NFA states. Read the meaning off the sets — `A` = "have not just seen an `a`", `B` = "just saw an `a`, so a `b` would finish", `C` = "just finished an `ab`". That is exactly the "what does each state remember?" answer CTQ 2 asks for, and you did not have to guess it; the algorithm produced it.
+
+> Subset construction can blow up: $n$ NFA states admit up to $2^n$ subsets. Here we got 3 instead of 8 because most subsets were unreachable, which is the usual outcome in practice.
+
+### Worked Example: Thompson's construction on `a(b|c)*`
+
+Thompson's construction builds an NFA from a regex compositionally: every operator has one fixed gadget, and you glue them. Each fragment has exactly one start and one accepting state, which is what makes the gluing work. Using `ε` for the empty transition:
+
+**1. Literals.** `a`, `b`, `c` are each a two-state fragment:
+
+```
+   (1) ──a──► ((2))        (3) ──b──► ((4))        (5) ──c──► ((6))
+```
+
+**2. Alternation `b|c`.** Add a new start and a new accept, with `ε` branches into each side and `ε` exits out:
+
+```
+              ε      b      ε
+        ┌──► (3) ────────► (4) ──┐
+   (7) ─┤                        ├──► ((8))
+        └──► (5) ────────► (6) ──┘
+              ε      c      ε
+```
+
+**3. Star `(b|c)*`.** Wrap it: `ε` to skip entirely, and `ε` from the old accept back to the old start to repeat:
+
+```
+                    ┌─────── ε ───────┐
+                    │                 │
+   (9) ──ε──► (7) ──┴─[ b|c ]─► (8) ──┴──ε──► ((10))
+    │                                            ▲
+    └──────────────── ε ─────────────────────────┘
+```
+
+The outer `ε` from `9` straight to `10` is what makes zero repetitions legal; the back edge from `8` to `7` is what makes many legal.
+
+**4. Concatenation `a` then `(b|c)*`.** Join with an `ε` from `a`'s accept to the star's start:
+
+```
+   (1) ──a──► (2) ──ε──► (9) ──[ (b|c)* ]──► ((10))
+```
+
+Ten states, and every one of them is forced — no creativity anywhere. That mechanical quality is the point: it is why a program can do this, which is exactly what `lab-automata.md` asks you to implement. Count the `ε` transitions and notice how many are pure bookkeeping; a real implementation usually removes them afterward with an ε-closure pass.
+
+
 ---
 
 ## Model 2: DFA Simulation — A Dictionary and a Loop

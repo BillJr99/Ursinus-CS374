@@ -84,6 +84,25 @@ Using the grammar above, derive the string `-42`.
 1. Write the derivation step by step, one rule application per line, starting from `<signed>`. The Recorder writes the team's agreed sequence.
 2. How many derivation steps did `-42` take? Predict the count for `-12345` and state the general formula in terms of the number of digits.
 3. Show that `4-2` cannot be derived: which rule would have to fire, and why can it not?
+
+### Worked Example: deriving `-42`
+
+Do CTQ 1 as a team first. One rule application per line, and the rule used named on the right — that discipline is what makes a derivation checkable by someone else.
+
+```
+<signed>
+=> <sign> <number>          (used <signed> -> <sign> <number>)
+=> - <number>               (used <sign> -> -)
+=> - <digit> <number>       (used <number> -> <digit> <number>)
+=> - 4 <number>             (used <digit> -> 4)
+=> - 4 <digit>              (used <number> -> <digit>)
+=> - 4 2                    (used <digit> -> 2)
+= -42
+```
+
+Six steps. **CTQ 2's formula:** one step for `<signed>`, one for the sign, then for a $d$-digit number you need $d$ applications of a `<number>` rule and $d$ applications of `<digit>` — so $2 + 2d$ steps in total. For `-42` that is $2 + 4 = 6$ ✓, and for `-12345` it predicts $2 + 10 = 12$.
+
+**CTQ 3, answered.** `4-2` cannot be derived because the only rule that produces a `-` is `<sign> -> -`, and `<sign>` appears exactly once in `<signed> -> <sign> <number>` — at the very front. There is no production anywhere that puts a `-` *between* digits, so no sequence of rule applications can reach it. This grammar describes signed numerals, not subtraction; the string `4-2` belongs to a different language.
 4. Modify the grammar so that a signed number may also be written with no digits after the sign... wait, should it? Decide as a team whether `-` alone should be a signed integer, and notice that you are now doing *language design*.
 
 ---

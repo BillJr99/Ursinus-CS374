@@ -77,6 +77,69 @@ E -> E + E | E * E | num
 3. State the definition this exercise has earned: a grammar is **ambiguous** when... (finish the sentence precisely; "confusing" is not precise).
 4. Is ambiguity a property of the *string*, the *grammar*, or the *language*? Test your answer: could a different grammar for the same language be unambiguous?
 
+### Worked Example: both trees for `2 + 3 * 4`, drawn
+
+Do CTQ 1 yourself first. Then check against this — the point is not the answer, it is seeing that *both* derivations are legal under the same grammar.
+
+**Tree A — `+` on top (multiply first, value 14):**
+
+```
+            E
+          / | \
+         E  +  E
+         |     /|\
+        num   E * E
+         |    |   |
+         2   num num
+              |   |
+              3   4
+```
+
+Leftmost derivation for Tree A, one production per line:
+
+```
+E
+=> E + E          (used E -> E + E)
+=> num + E        (used E -> num, leftmost E first)
+=> 2 + E
+=> 2 + E * E      (used E -> E * E)
+=> 2 + num * E    (used E -> num)
+=> 2 + 3 * E
+=> 2 + 3 * num    (used E -> num)
+=> 2 + 3 * 4
+```
+
+**Tree B — `*` on top (add first, value 20):**
+
+```
+            E
+          / | \
+         E  *  E
+        /|\     |
+       E + E   num
+       |   |    |
+      num num   4
+       |   |
+       2   3
+```
+
+Leftmost derivation for Tree B:
+
+```
+E
+=> E * E          (used E -> E * E)
+=> E + E * E      (used E -> E + E on the leftmost E)
+=> num + E * E    (used E -> num)
+=> 2 + E * E
+=> 2 + num * E    (used E -> num)
+=> 2 + 3 * E
+=> 2 + 3 * num    (used E -> num)
+=> 2 + 3 * 4
+```
+
+**Both derivations end at the same string.** That is the whole definition: the grammar admits two distinct leftmost derivations of `2 + 3 * 4`, so it is ambiguous. Note the divergence is at the *very first step* — `E -> E + E` versus `E -> E * E` — and everything after is forced. CTQ 2 asks where the meanings diverge; it is the root node, and nothing below it.
+
+
 ---
 
 # Part II: The Cure, Built One Layer at a Time
@@ -108,6 +171,50 @@ Walk the logic: an `E` is a sum of `T`s; each `T` is a product of `F`s; a parent
 5. Derive `2 + 3 * 4` from the layered grammar (leftmost derivation, every step). Confirm exactly one tree exists and that it evaluates to 14.
 6. Derive `(2 + 3) * 4`. Identify the production that lets the parentheses hoist the addition above the multiplication.
 7. Add a new tightest-binding level: exponentiation `^`. Decide as a team where the new nonterminal slots into the chain `E, T, F`, write the modified grammar, and verify on `2 * 3 ^ 2` (should be 18, not 36).
+
+### Worked Example: the layered grammar admits only one tree
+
+CTQ 5 asks you to derive `2 + 3 * 4` from the layered grammar. Here is that derivation, and then the failure you should try to produce for the other tree.
+
+```
+E
+=> E + T          (used E -> E + T)
+=> T + T          (used E -> T)
+=> F + T          (used T -> F)
+=> num + T        (used F -> num)
+=> 2 + T
+=> 2 + T * F      (used T -> T * F)
+=> 2 + F * F      (used T -> F)
+=> 2 + num * F    (used F -> num)
+=> 2 + 3 * F
+=> 2 + 3 * num    (used F -> num)
+=> 2 + 3 * 4
+```
+
+The resulting tree, with `*` forced below `+`:
+
+```
+            E
+          / | \
+         E  +  T
+         |    /|\
+         T   T * F
+         |   |    |
+         F   F   num
+         |   |    |
+        num num   4
+         |   |
+         2   3
+```
+
+**Now try to build Tree B and watch it fail.** To put `*` at the root you would need `E -> E * ...`, but no production for `E` mentions `*` at all — `*` appears only in `T -> T * F`, and every `T` sits *below* an `E`. There is no path. That impossibility is the cure working: precedence is not a convention the parser applies, it is a shape the grammar cannot violate.
+
+For CTQ 6, the production that lets parentheses win is `F -> ( E )`. It demotes a whole expression back down to a factor, which is why `(2 + 3) * 4` can put `+` beneath `*`:
+
+```
+E => T => T * F => F * F => ( E ) * F => ( E + T ) * F => ... => ( 2 + 3 ) * 4
+```
+
 
 ---
 

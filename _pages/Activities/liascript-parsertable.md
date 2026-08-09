@@ -80,6 +80,88 @@ In the second-to-last row, the stack `E + T` with input `$` is reduced using the
 
 ---
 
+## Worked Example: Building the Table by Hand
+
+The trace above used a table without saying where the table came from. That is the gap this section closes: an LR parser is a stack plus a *table*, and the table is not magic — it is a finite automaton over **items**, and you can build it with a pencil.
+
+An **item** is a production with a dot marking how much of the right-hand side we have already seen. `T -> T . * F` means "we are partway through `T -> T * F`; we have the `T`, we expect a `*` next."
+
+First, **augment** the grammar with a new start production so acceptance is a single, unambiguous event:
+
+```
+0.  E' -> E
+1.  E  -> E + T
+2.  E  -> T
+3.  T  -> T * F
+4.  T  -> F
+5.  F  -> num
+6.  F  -> ( E )
+```
+
+### Step 1: closure of the start state
+
+Start from the single item `E' -> . E`. The **closure** rule says: if the dot sits immediately before a non-terminal, add every production for that non-terminal with the dot at the front. Repeat until nothing new appears.
+
+| Added because | Item |
+|---|---|
+| we start here | `E' -> . E` |
+| dot before `E` | `E -> . E + T` |
+| dot before `E` | `E -> . T` |
+| dot before `T` | `T -> . T * F` |
+| dot before `T` | `T -> . F` |
+| dot before `F` | `F -> . num` |
+| dot before `F` | `F -> . ( E )` |
+
+That set of seven items **is** state `I0`. Notice what closure means: standing at the very beginning of the input, the parser is simultaneously "about to parse an E, and a T, and an F, and a num, and a `(`." It commits to nothing until it sees a token.
+
+### Step 2: GOTO — one transition, worked
+
+`GOTO(I, X)` advances the dot past `X` in every item that has the dot before `X`, then takes the closure. Take `GOTO(I0, T)`:
+
+- Items in `I0` with the dot before `T`: `E -> . T` and `T -> . T * F`
+- Advance the dot: `E -> T .` and `T -> T . * F`
+- Closure adds nothing (no dot sits before a non-terminal)
+
+So `I2 = { E -> T . , T -> T . * F }`. **This one state is the whole precedence story.** It contains a completed item (`E -> T .`, meaning "reduce") *and* an item expecting more input (`T -> T . * F`, meaning "shift the `*`"). Which one fires depends entirely on the lookahead token — and that is exactly the shift-reduce decision CTQ 2 asks about, sitting in a single state you just built by hand.
+
+Repeating this for every state and every symbol gives twelve states. Here are the ones you need:
+
+| State | Items |
+|---|---|
+| `I0` | the seven items above |
+| `I1` | `E' -> E .` , `E -> E . + T` |
+| `I2` | `E -> T .` , `T -> T . * F` |
+| `I3` | `T -> F .` |
+| `I4` | `F -> num .` |
+| `I6` | `E -> E + . T` , `T -> . T * F` , `T -> . F` , `F -> . num` , `F -> . ( E )` |
+| `I7` | `T -> T * . F` , `F -> . num` , `F -> . ( E )` |
+| `I8` | `E -> E + T .` , `T -> T . * F` |
+| `I9` | `T -> T * F .` |
+
+### Step 3: fill in ACTION and GOTO
+
+Now read the table straight off the states. A dot before a **terminal** means *shift to the target state*. A **completed** item (dot at the end) means *reduce by that production*, on every token in the FOLLOW set of its left-hand side. `E' -> E .` on `$` means *accept*.
+
+`FOLLOW(E) = { + ) $ }` and `FOLLOW(T) = FOLLOW(F) = { * + ) $ }`.
+
+| State | `num` | `*` | `+` | `$` | → E | → T | → F |
+|---|---|---|---|---|---|---|---|
+| 0 | s4 | | | | 1 | 2 | 3 |
+| 1 | | | s6 | **accept** | | | |
+| 2 | | s7 | r2 | r2 | | | |
+| 3 | | r4 | r4 | r4 | | | |
+| 4 | | r5 | r5 | r5 | | | |
+| 6 | s4 | | | | | 8 | 3 |
+| 7 | s4 | | | | | | 9 |
+| 8 | | s7 | r1 | r1 | | | |
+| 9 | | r3 | r3 | r3 | | | |
+
+Look at **row 2**: on `*` the parser shifts, on `+` or `$` it reduces `E -> T`. That single row is where `*` binds tighter than `+`. Nobody decided it at parse time — it fell out of the item set. Compare that to recursive descent, where the same precedence lives in the *shape of your function calls*.
+
+> **Check yourself.** In row 8 (`E -> E + T .` and `T -> T . * F`), why is there an `s7` under `*` rather than a reduce? Because `T . * F` is still expecting a `*` — reducing `E -> E + T` first would build `(2+3)*4` instead of `2+(3*4)`. That is CTQ 2's answer, visible in one table cell.
+
+---
+
 ## Model 1: Drive the Machine
 
 The example above walked through `2 + 3` step by step. Now your team will execute the same algorithm on a slightly more complex input and confront a key decision: when two tokens compete for precedence, the lookahead token is what breaks the tie. The table already encodes that decision — your job here is to discover *why* the lookahead is necessary by watching what goes wrong without it.
@@ -689,6 +771,35 @@ In an LR(0) shift-reduce parser, the stack corresponds to:
    - Explain what is pushed and popped at each reduction step
 
 5. *Grammar to PDA.* Given a context-free grammar, there is a standard algorithm to construct a PDA that recognizes the same language (the "top-down PDA"). Apply it to the grammar `S → aSb | ε`. Write out the PDA's transition rules and trace it on `aabb`.
+
+---
+
+---
+
+## Answer Key: Model 1, CTQ 1 — the full parse of `2 * 3 + 4`
+
+Attempt this as a team **before** you read it. Fourteen rows, using the ACTION/GOTO table you built above. Stack entries are written `symbol(state)`; state 0 is always at the bottom.
+
+| # | Stack | Input | Action |
+|---|-------|-------|--------|
+| 1 | `0` | `2 * 3 + 4 $` | shift 4 |
+| 2 | `0 2(4)` | `* 3 + 4 $` | reduce `F -> num`, goto 3 |
+| 3 | `0 F(3)` | `* 3 + 4 $` | reduce `T -> F`, goto 2 |
+| 4 | `0 T(2)` | `* 3 + 4 $` | **shift 7** (row 2, column `*`) |
+| 5 | `0 T(2) *(7)` | `3 + 4 $` | shift 4 |
+| 6 | `0 T(2) *(7) 3(4)` | `+ 4 $` | reduce `F -> num`, goto 9 |
+| 7 | `0 T(2) *(7) F(9)` | `+ 4 $` | reduce `T -> T * F`, goto 2 |
+| 8 | `0 T(2)` | `+ 4 $` | reduce `E -> T`, goto 1 |
+| 9 | `0 E(1)` | `+ 4 $` | shift 6 |
+| 10 | `0 E(1) +(6)` | `4 $` | shift 4 |
+| 11 | `0 E(1) +(6) 4(4)` | `$` | reduce `F -> num`, goto 3 |
+| 12 | `0 E(1) +(6) F(3)` | `$` | reduce `T -> F`, goto 8 |
+| 13 | `0 E(1) +(6) T(8)` | `$` | reduce `E -> E + T`, goto 1 |
+| 14 | `0 E(1)` | `$` | **accept** |
+
+**CTQ 3 answered from this table:** the subtree for `2 * 3` finishes at **row 7**, where `T -> T * F` reduces three stack symbols into one `T`. Everything above row 7 is that subtree being built; everything below is it being used. The parent `E -> E + T` does not reduce until row 13 — six rows *after* its own child existed. That is what "bottom-up" means, and the row numbers are the evidence.
+
+**Contrast with row 4.** At `0 T(2)` with `*` next, the parser shifts instead of reducing `E -> T`. Had it reduced, `2` would have become a complete `E` and the `*` would have had to attach to it — yielding `(2) * (3 + 4)`. Precedence is decided in exactly one table cell.
 
 ---
 

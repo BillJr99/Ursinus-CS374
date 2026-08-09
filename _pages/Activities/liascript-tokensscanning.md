@@ -65,6 +65,39 @@ Tokenize by hand: `count2 = count2 + 12 >= limit`
 3. `>=` must not become `>` then `=`. Describe the bug a parser would face downstream if the lexer got this wrong, and state the general principle about where to fix errors in a pipeline.
 4. Should the lexer reject `12abc`, or emit `12` then `abc` and let the parser complain? Defend a position; real languages differ, and your project must choose.
 
+### Worked Example: maximal munch, position by position
+
+Do CTQ 1 as a team before reading this. Then check the boundaries — the interesting rows are the ones where more than one pattern matches and the *longest* wins.
+
+Input: `count2 = count2 + 12 >= limit`
+
+| Pos | Remaining input | Patterns that match here | Longest wins | Token emitted |
+|-----|-----------------|--------------------------|--------------|---------------|
+| 0 | `count2 = ...` | `IDENT` → `count2` (6 chars) | `count2` | `IDENT("count2")` |
+| 6 | `_= count2 ...` | `WHITESPACE` → ` ` | ` ` | *(skipped)* |
+| 7 | `= count2 ...` | `EQ` → `=` (1). `EQEQ` needs `==`, fails | `=` | `EQ("=")` |
+| 8 | `_count2 + ...` | `WHITESPACE` | ` ` | *(skipped)* |
+| 9 | `count2 + 12 ...` | `IDENT` → `count2` (6) | `count2` | `IDENT("count2")` |
+| 15 | `_+ 12 ...` | `WHITESPACE` | ` ` | *(skipped)* |
+| 16 | `+ 12 >= ...` | `PLUS` → `+` (1) | `+` | `PLUS("+")` |
+| 17 | `_12 >= ...` | `WHITESPACE` | ` ` | *(skipped)* |
+| 18 | `12 >= limit` | `INT` → `12` (2). `FLOAT` needs a `.`, fails | `12` | `INT("12")` |
+| 20 | `_>= limit` | `WHITESPACE` | ` ` | *(skipped)* |
+| 21 | `>= limit` | **`GE` → `>=` (2)** and `GT` → `>` (1) | `>=` (longer) | `GE(">=")` |
+| 23 | `_limit` | `WHITESPACE` | ` ` | *(skipped)* |
+| 24 | `limit` | `IDENT` → `limit` (5) | `limit` | `IDENT("limit")` |
+| 29 | *(end)* | — | — | `EOF` |
+
+**Seven tokens** plus `EOF`: `IDENT EQ IDENT PLUS INT GE IDENT`.
+
+Two rows carry the whole lesson:
+
+- **Position 21** is maximal munch doing real work. Both `GT` and `GE` match at that position. Take the *longest*, not the first one listed, and `>=` stays whole. This is CTQ 3: had the lexer emitted `GT` then `EQ`, the parser would see `a > = b`, which matches no production — and the error would surface as a mystifying *parse* error several stages away from the actual bug. Fix errors where the information still exists.
+- **Position 0** is CTQ 2. The identifier pattern is `[A-Za-z_][A-Za-z0-9_]*`, whose second half admits digits, so the match runs to the end of `count2` — six characters, not four. There is no point at which the scanner "notices" the `2` and stops, because stopping early would not be the longest match. The same mechanism is why `iffy` is one `IDENT` and not `IF` followed by `IDENT("fy")`: `IDENT` matches four characters where `IF` matches only two.
+
+Notice what the table does *not* contain: any decision about meaning. The scanner never asks whether `count2` was declared, or whether adding an `INT` to an `IDENT` type-checks. It only asks "how far does a pattern reach from here?" — which is precisely why a regular expression is enough to do this job, and why the next stage needs a grammar instead.
+
+
 > **Watch out!** The maximal munch rule always takes the *longest* possible match at the current position, not the first pattern that matches. This means `>=` is always one token, never two — and `iffy` is always one identifier, never the keyword `if` followed by `fy`. If your hand tokenization ever splits a run of identifier-legal characters mid-stream, you have violated maximal munch.
 
 ---

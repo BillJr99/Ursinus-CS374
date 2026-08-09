@@ -227,7 +227,18 @@ def mini_lex(source: str) -> list:
 
 ### Step 2b: Extend the Token Spec
 
-Extend TOKEN_SPEC to cover the full language from the Lexer assignment (at least 15 token types, including all keywords, operators, and literals from Part 1 of the Lexer assignment). Use negative lookahead `(?!\w)` on all keywords to prevent `iffy` from tokenizing as `IF`.
+Extend TOKEN_SPEC to cover the language below - at least 15 token types, including every keyword, operator, and literal listed. Use negative lookahead `(?!\w)` on all keywords to prevent `iffy` from tokenizing as `IF`.
+
+| Category | Tokens |
+|----------|--------|
+| Keywords | `if`, `else`, `while`, `let`, `print`, `true`, `false`, `and`, `or`, `not`, `fun` |
+| Literals | `INT` (`42`), `FLOAT` (`3.14`), `STRING` (`"hello"`), `IDENT` (`my_var`) |
+| Two-char operators | `<=`, `>=`, `==`, `!=`, `->` |
+| One-char operators | `=`, `<`, `>`, `+`, `-`, `*`, `/`, `!` |
+| Punctuation | `(`, `)`, `{`, `}`, `;`, `:`, `,` |
+| Skipped | whitespace, `# comment to end of line` |
+
+This is the same language the Lexer assignment will ask you to tokenize with a reusable component, so the work you do here carries forward directly - but everything you need is in the table above; you do not need that assignment sheet to finish this one.
 
 ### Step 2c: Verify Ordering and Maximal Munch
 
@@ -383,7 +394,7 @@ Ensure reproducibility by listing your Python version.
 
 - Which pattern took the most revisions, and what misconception did the failures expose?
 - Where did you choose a simpler pattern over a perfectly precise one, and how did you document the tradeoff?
-- After completing Part 2, what is the main difference between your mini lexer and the Lexer class you built in the Lexer assignment?
+- After completing Part 2, what are the limits of a regex-only lexer? Name one thing this `finditer` loop cannot do that a hand-written scanner with `peek`/`advance` can - you will build exactly that in the Lexer assignment.
 - If collaboration with a buddy was permitted, did you work with a buddy on this assignment? If so, who? If not, do you certify that this submission represents your own original work? Please identify any and all portions of your submission that were not originally written by you.
 - AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
 - Approximately how many hours it took you to finish this assignment (I will not judge you for this at all — I am simply using it to gauge if the assignments are too easy or hard)?

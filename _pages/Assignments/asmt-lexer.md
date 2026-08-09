@@ -19,10 +19,10 @@ info:
   rubric:
     - weight: 30
       description: "Token Specification (Goal 1: specify a complete token grammar using ordered regular-expression rules)"
-      preemerging: Fewer than half the required token types are defined, or patterns are so incorrect that the lexer cannot tokenize even simple programs
+      preemerging: Fewer than half the token types in the specification table are defined, or patterns are so incorrect that the lexer cannot tokenize even simple programs
       beginning: Most token types are defined but several patterns are wrong (e.g., keywords not prioritized over identifiers, or operators missing from the spec)
       progressing: All required token types are defined with correct patterns, but the specification has a minor ordering or coverage gap (e.g., multi-character operators not listed before single-character ones)
-      proficient: All 15+ token types are defined in the correct priority order — keywords before IDENT, multi-character operators before their single-character prefixes, whitespace and comments skipped — demonstrating mastery of ordered regular-expression rule specification; the spec is externalized in a loadable JSON file (or, in the generator-toolchain direction, expressed as an ordered Flex/PLY rule specification); and the lexing theory questions (Step 1d) are answered with mechanism-level reasoning about maximal munch, keyword handling, and the lexer/parser division of labor
+      proficient: Every token type in the specification table is defined in the correct priority order — keywords before IDENT, multi-character operators before their single-character prefixes, whitespace and comments skipped — demonstrating mastery of ordered regular-expression rule specification; the spec is externalized in a loadable JSON file (or, in the generator-toolchain direction, expressed as an ordered Flex/PLY rule specification); and the lexing theory questions (Step 1d) are answered with mechanism-level reasoning about maximal munch, keyword handling, and the lexer/parser division of labor
     - weight: 40
       description: "Lexer Implementation (Goal 2: harden the tokenizer into a reusable Lexer component with peek, advance, and expect)"
       preemerging: The Lexer class does not exist or the peek/advance interface is fundamentally broken
@@ -111,7 +111,7 @@ The correct ordering is: **keywords before identifiers**, and **longer operators
 
 ### Step 1a: Define the TOKEN_SPEC
 
-Define a `TOKEN_SPEC` list of `(token_name, regex_pattern)` pairs that covers at minimum the following 16 token types. Every pattern must be a raw string (`r"..."`).
+Define a `TOKEN_SPEC` list of `(token_name, regex_pattern)` pairs that covers, at minimum, every token type in the table below. Every pattern must be a raw string (`r"..."`).
 
 | Token Name | Example Lexemes | Notes |
 |------------|----------------|-------|
@@ -127,11 +127,17 @@ Define a `TOKEN_SPEC` list of `(token_name, regex_pattern)` pairs that covers at
 | `PRINT` | `print` | Must appear before IDENT |
 | `TRUE` | `true` | Must appear before IDENT |
 | `FALSE` | `false` | Must appear before IDENT |
+| `AND` | `and` | Must appear before IDENT; used by the Parser's `and_expr` |
+| `OR` | `or` | Must appear before IDENT; used by the Parser's `or_expr` |
+| `NOT` | `not` | Must appear before IDENT; used by the Parser's `not_expr` |
+| `FUN` | `fun` | Must appear before IDENT; used by function definitions |
 | `IDENT` | `foo`, `my_var`, `x1` | Letter or underscore, then letters/digits/underscores |
 | `LE` | `<=` | Must appear before LT |
 | `GE` | `>=` | Must appear before GT |
 | `EQEQ` | `==` | Must appear before EQ |
 | `NEQ` | `!=` | Must appear before BANG |
+| `BANG` | `!` | Logical negation; must appear after NEQ |
+| `ARROW` | `->` | Return-type annotation; must appear before MINUS |
 | `EQ` | `=` | Assignment |
 | `LT` | `<` | |
 | `GT` | `>` | |
@@ -144,8 +150,10 @@ Define a `TOKEN_SPEC` list of `(token_name, regex_pattern)` pairs that covers at
 | `LBRACE` | `{` | |
 | `RBRACE` | `}` | |
 | `SEMICOLON` | `;` | |
+| `COLON` | `:` | Type annotations, e.g. `let x: Num = 42;` |
+| `COMMA` | `,` | Parameter and argument lists |
 
-**Maximal-munch test cases you must pass:** `iffy` → `IDENT("iffy")` (not `IF` + `IDENT("ffy")`); `<=` → `LE` (not `LT` + `EQ`); `==` → `EQEQ` (not two `EQ`s); `whiles` → `IDENT("whiles")`.
+**Maximal-munch test cases you must pass:** `iffy` → `IDENT("iffy")` (not `IF` + `IDENT("ffy")`); `<=` → `LE` (not `LT` + `EQ`); `==` → `EQEQ` (not two `EQ`s); `whiles` → `IDENT("whiles")`; `notable` → `IDENT("notable")` (not `NOT` + `IDENT("able")`); `->` → `ARROW` (not `MINUS` + `GT`); `!=` → `NEQ` (not `BANG` + `EQ`).
 
 ### Step 1b: Token Dataclass
 

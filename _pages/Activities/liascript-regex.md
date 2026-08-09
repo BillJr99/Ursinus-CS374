@@ -63,6 +63,77 @@ Before diving in, here is a plain-English glossary of the terms this activity us
 
 ---
 
+---
+
+## Regex at the Command Line: `grep`
+
+You will use regular expressions this semester in two places: inside Python, where you write your lexer, and at the shell, where you search your own source tree. The Overview assignment already asks you to submit a `grep` transcript, and you will reach for it constantly once your interpreter is a few thousand lines — "where do I construct a `BinOp` node?" is a `grep` question, not a scrolling question.
+
+`grep` prints every **line** of its input that contains a match. That is the whole idea. Everything else is flags.
+
+### The flags that earn their keep
+
+| Flag | Does | Use it when |
+|------|------|-------------|
+| `-n` | prefix each match with its line number | almost always — you want to jump there |
+| `-r` | recurse into a directory tree | searching a project rather than one file |
+| `-i` | ignore case | you are unsure how something was capitalized |
+| `-w` | match whole words only | searching `eval` without hitting `evaluate` |
+| `-v` | invert: print lines that do **not** match | filtering noise out of a log |
+| `-c` | print only the count of matching lines | "how many `TODO`s are left?" |
+| `-o` | print only the matched part, not the whole line | harvesting every token name from a file |
+| `-l` | print only the filenames that matched | "which files mention `Environment`?" |
+| `-E` | use **extended** regex syntax | any pattern with `+`, `?`, `|`, or `()` |
+
+```bash
+grep -rn "def parse_" src/              # every parse function, with line numbers
+grep -rn --include="*.py" "Environment" .   # only Python files
+grep -c "TODO" interpreter.py           # how much is left
+grep -rnw "eval" src/                   # eval, not evaluate
+grep -rnoE "[A-Z]+_[A-Z]+" lexer.py     # harvest SCREAMING_CASE token names
+```
+
+### The one thing that surprises everyone: BRE vs ERE
+
+Plain `grep` uses **POSIX Basic Regular Expressions (BRE)**, where `+`, `?`, `|`, `(` and `)` are *literal characters*. To get the meanings you know from Python, you must either escape them with a backslash or pass `-E` for **Extended** regular expressions.
+
+| You want | BRE (plain `grep`) | ERE (`grep -E`) | Python `re` |
+|---|---|---|---|
+| one or more | `a\+` | `a+` | `a+` |
+| optional | `a\?` | `a?` | `a?` |
+| alternation | `cat\|dog` | `cat\|dog` | `cat\|dog` |
+| grouping | `\(ab\)*` | `(ab)*` | `(ab)*` |
+| exactly 3 | `a\{3\}` | `a{3}` | `a{3}` |
+
+```bash
+grep -n  "TODO\|FIXME" notes.md    # BRE: escaped alternation
+grep -nE "TODO|FIXME"   notes.md    # ERE: reads like Python
+```
+
+**Just use `-E`.** The escaping rules in BRE are a historical artifact, and every pattern you write in this course will already be in the syntax `-E` expects. (`egrep` is the same thing under an older name.)
+
+### Character classes and anchors behave as you expect
+
+```bash
+grep -nE "^def "        parser.py   # ^ anchors to start of line
+grep -nE "return$"      parser.py   # $ anchors to end of line
+grep -nE "\bnum\b"      lexer.py    # \b is a word boundary: num, not number
+grep -nE "[0-9]+\.[0-9]+" lexer.py   # a float literal; note the escaped dot
+grep -nE "[[:alpha:]_][[:alnum:]_]*" lexer.py   # POSIX class = an identifier
+```
+
+Two portability notes worth knowing now rather than at 2am: `\d` and `\w` are **not** POSIX and may not work in every `grep`; the portable spellings are `[0-9]` and `[[:alnum:]_]`. And `.` still means "any character," so a literal dot needs escaping — `[0-9]+\.[0-9]+` matches `3.14`, while `[0-9]+.[0-9]+` would also match `3x14`.
+
+[[MC]]
+You run `grep -n "lexer|parser" src/main.py` and get no output, though the file plainly contains both words. What went wrong?
+- ( ) `grep` cannot search for two words at once
+- (x) Plain `grep` uses BRE, where `|` is a literal character - it searched for the string `lexer|parser`. Use `grep -nE` or escape it as `lexer\|parser`
+- ( ) The `-n` flag suppresses output when there are multiple matches
+- ( ) `src/main.py` must be passed with `-r`
+
+> **Watch out!** `grep` is line-oriented, so it cannot match a pattern that spans a newline. When you find yourself wanting that — "find every function whose body contains `raise`" — you have left `grep`'s regular-language territory and want a parser. That is the same boundary this activity's final section draws between regular expressions and context-free grammars, and it shows up in your tools as well as in your theory.
+
+
 # Part I: Theory (Day 1)
 
 Every regular expression you will ever write, no matter how elaborate, is built from exactly three primitive ideas. Before reading the formal definitions, convince yourself intuitively: you can glue strings together (concatenation), pick one of several alternatives (alternation), and repeat something zero or more times (Kleene star). That is the entire toolkit — the rest of regex syntax is just abbreviation.
