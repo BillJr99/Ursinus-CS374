@@ -143,11 +143,15 @@ stmt        ::= let_stmt
               | while_stmt
               | block
 
-let_stmt    ::= LET IDENT EQ expr SEMICOLON
+let_stmt    ::= LET IDENT ( COLON type )? EQ expr SEMICOLON
 assign_stmt ::= IDENT EQ expr SEMICOLON
 print_stmt  ::= PRINT expr SEMICOLON
 if_stmt     ::= IF expr block ( ELSE ( if_stmt | block ) )?
 while_stmt  ::= WHILE expr block
+fun_stmt    ::= FUN IDENT LPAREN params? RPAREN ( ARROW type )? block
+params      ::= param ( COMMA param )*
+param       ::= IDENT COLON type
+type        ::= IDENT                       // Num, Str, Bool
 block       ::= LBRACE stmt* RBRACE
 
 expr        ::= or_expr
@@ -157,10 +161,14 @@ not_expr    ::= NOT not_expr | comparison
 comparison  ::= addsub ( ( LT | LE | GT | GE | EQEQ | NEQ ) addsub )?
 addsub      ::= muldiv ( ( PLUS | MINUS ) muldiv )*
 muldiv      ::= unary ( ( STAR | SLASH ) unary )*
-unary       ::= MINUS unary | primary
+unary       ::= ( MINUS | BANG ) unary | call
+call        ::= primary ( LPAREN args? RPAREN )*
+args        ::= expr ( COMMA expr )*
 primary     ::= INT | FLOAT | STRING | TRUE | FALSE | IDENT
               | LPAREN expr RPAREN
 ```
+
+**On the optional parts.** The `( COLON type )?` on `let_stmt`, the `fun_stmt` production, and the `call` production exist because the Interpreter assignment's type checker (Part 4) needs syntax for annotations, function definitions, and call sites. Parse them now, even though you will not evaluate function calls until the Interpreter assignment - a parser that produces `FunDef` and `Call` AST nodes today is a parser you do not have to reopen later. If you are short on time, the annotation and function productions are the last thing to implement and the first thing to say so about in your readme.
 
 ### Step 1a: Grammar Documentation
 
