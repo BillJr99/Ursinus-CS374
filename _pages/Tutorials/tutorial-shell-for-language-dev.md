@@ -302,7 +302,7 @@ Shows the line count of every test file plus a total. Useful for a quick sanity 
 ### Find all evaluator functions
 
 ```bash
-grep -r "def eval_" src/
+grep -rn "def eval_" src/
 ```
 
 `-r` searches recursively through the `src/` directory. Prints every line matching `def eval_`, with the filename and line number prepended. Replace `src/` with `.` to search the entire project.
@@ -470,5 +470,11 @@ No additional configuration needed — the exit code from the script tells GitHu
 | Syntax-check a module | `python3 -m py_compile lexer.py` |
 | Debug a crash | `python3 -m pdb mylang.py tests/crash.ml` |
 | Time a run | `time python3 mylang.py tests/fibonacci.ml` |
-| Search for a pattern | `grep -r "def eval_" src/` |
+| Search for a pattern | `grep -rn "def eval_" src/` |
+| Search, extended regex | `grep -rnE "parse_(expr\|term)" src/` |
+| Search, whole word only | `grep -rnw "eval" src/` |
+| Count matches | `grep -c "TODO" interpreter.py` |
+| Print only the match | `grep -rnoE "[A-Z]+_[A-Z]+" lexer.py` |
+| List matching files only | `grep -rl "Environment" src/` |
+| Invert (lines *without*) | `grep -v "^#" grammar.bnf` |
 | Clean caches | `make clean` |

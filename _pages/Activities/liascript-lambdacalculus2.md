@@ -234,6 +234,38 @@ SUCC ZERO
 = ONE  ✓
 ```
 
+
+**Step-by-step reduction: PLUS TWO THREE reduces to FIVE**
+
+`SUCC` shows the shape; addition shows why the encoding is more than a trick. Recall `PLUS = λm.λn.λf.λx. m f (n f x)` — "apply `f` `m` times on top of applying it `n` times."
+
+```
+PLUS TWO THREE
+= (λm.λn.λf.λx. m f (n f x)) (λf.λx. f (f x)) (λf.λx. f (f (f x)))
+
+→β  (λn.λf.λx. TWO f (n f x)) THREE            substitute m := TWO
+→β  λf.λx. TWO f (THREE f x)                   substitute n := THREE
+
+    -- expand THREE f x first:
+    THREE f x = (λf.λx. f (f (f x))) f x
+    →β (λx. f (f (f x))) x
+    →β f (f (f x))
+
+→   λf.λx. TWO f (f (f (f x)))
+
+    -- now expand TWO f applied to that:
+    TWO f (f (f (f x))) = (λf.λx. f (f x)) f (f (f (f x)))
+    →β (λx. f (f x)) (f (f (f x)))
+    →β f (f (f (f (f x))))
+
+→   λf.λx. f (f (f (f (f x))))
+=   FIVE  ✓                                    five applications of f
+```
+
+Count the `f`s at each stage: `THREE f x` contributes three, and `TWO f` wraps two more around them. Addition of Church numerals is literally **function composition counted** — `m + n` applications of `f` because you applied `f` `n` times and then `m` more times to the result. Nothing was added; things were nested.
+
+Try `MULT TWO THREE = λf.λx. m (n f) x` on your own with the same method and watch why it gives six: `n f` is "apply `f` three times" treated as a *single* function, and `m` applies **that** twice.
+
 **Decode helper — "peek inside" a Church numeral:**
 
 ```python  liascript

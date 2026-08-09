@@ -151,6 +151,62 @@ def parse_factor():
 
 **Key insight:** Notice that `parse_expr` calls `parse_term`, which calls `parse_factor`, which can call back to `parse_expr` (via the parenthesized subexpression). This is the **recursive** part of "recursive descent" — the mutual recursion between functions mirrors the nesting in the grammar.
 
+### Worked Example: `1 + 2 * 3` on the full ladder, with the tree
+
+The Practice section later traces `1 + 2` on a one-level grammar, where precedence never comes up. This is the one that matters: `1 + 2 * 3` on the full `expr / term / factor` ladder, where the answer must be 7 and not 9.
+
+Grammar:
+
+```
+expr   -> term { ('+' | '-') term }
+term   -> factor { ('*' | '/') factor }
+factor -> NUMBER | '(' expr ')'
+```
+
+Indentation shows the call stack. `pos` is the index of the next unconsumed token; tokens are `1 + 2 * 3`.
+
+```
+call parse_expr()                      pos=0
+  call parse_term()                    pos=0
+    call parse_factor()                pos=0
+      peek()=NUMBER(1) -> consume      pos=1
+      return ('num', 1)
+    peek()='+' -> not * or /, loop does NOT run
+    return ('num', 1)                  <- term returns the bare 1
+  peek()='+' -> loop RUNS
+  consume '+'                          pos=2
+  call parse_term()                    pos=2
+    call parse_factor()                pos=2
+      peek()=NUMBER(2) -> consume      pos=3
+      return ('num', 2)
+    peek()='*' -> loop RUNS
+    consume '*'                        pos=4
+    call parse_factor()                pos=4
+      peek()=NUMBER(3) -> consume      pos=5
+      return ('num', 3)
+    peek()=EOF -> loop ends
+    return ('*', ('num',2), ('num',3)) <- the product is built HERE
+  peek()=EOF -> loop ends
+  return ('+', ('num',1), ('*', ...))
+```
+
+The tree that comes back:
+
+```
+        (+)
+       /   \
+   ('num',1)  (*)
+             /   \
+      ('num',2)  ('num',3)
+```
+
+**Where precedence actually happened.** Look at the two `peek()='+' `lines. The *first* one is inside `parse_term`, and `+` is not in `term`'s operator set, so `term` returns immediately with just `1`. The `+` is left on the input for `parse_expr` to handle. The `*`, by contrast, *is* in `term`'s set, so the second `parse_term` call consumes it and builds the product before returning.
+
+That is the whole mechanism: **`term` gets first refusal on every operator, and it only accepts the tight ones.** The `*` node is finished and returned before the `+` node is ever constructed, so `*` ends up deeper in the tree — and deeper means evaluated first. Nothing in the code says "multiplication has higher precedence." The grammar's layering says it, and the call stack enacts it.
+
+Compare this against the LR table you will build in the *Table-Driven and LR Parsing* activity: there, the same decision lives in one cell of a table (shift on `*`, reduce on `+`). Here it lives in which function's loop is willing to consume which token. Same precedence, two completely different places to look for it.
+
+
 ---
 
 ## Model 1: Translate by Hand

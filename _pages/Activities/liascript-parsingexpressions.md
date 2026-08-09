@@ -194,6 +194,43 @@ Consider `addsub` parsing the token stream for `7 - 2 - 1`.
 2. Suppose the loop body instead wrapped the new operand as the left child and the running result as the right. What tree, and what wrong value, results for `7 - 2 - 1`? You have just located associativity in a single line of code.
 3. Why does the loop in `addsub` test for `+` *or* `-` while leaving `*` to a different function entirely? Connect to the depth-equals-precedence principle.
 
+### Worked Example: `7 - 2 - 1`, one iteration at a time
+
+Answer CTQ 1 yourself before reading. The column that matters is `node` — watch it become its own left child.
+
+| Point in the loop | `node` (the accumulator) | Tokens left | What just happened |
+|---|---|---|---|
+| before the loop | `7` | `- 2 - 1` | `parse_muldiv()` returned the bare `7` |
+| iteration 1, after wrap | `(- 7 2)` | `- 1` | saw `-`, parsed `2`, wrapped: old `node` became the **left** child |
+| iteration 2, after wrap | `(- (- 7 2) 1)` | *(none)* | saw `-`, parsed `1`, wrapped again: the whole subtree became the left child |
+| loop exits | `(- (- 7 2) 1)` | — | next token is not `+` or `-` |
+
+The tree, leaning left:
+
+```
+        (-)
+       /   \
+     (-)    1
+    /   \
+   7     2
+```
+
+Evaluated bottom-up: `(7 - 2) = 5`, then `5 - 1 = 4`. Correct.
+
+**CTQ 2, answered.** Swap the two children in the wrap — make the *new* operand the left child and the accumulator the right — and the same tokens build:
+
+```
+        (-)
+       /   \
+      1    (-)
+          /   \
+         2     7
+```
+
+which evaluates as `1 - (2 - 7) = 6`. Wrong. Not a parse error, not a crash — a silently wrong number, from a one-line change in which side receives the accumulator.
+
+That is the point of the model: **associativity is not a property of the `-` operator, it is a property of which side of the wrap the accumulator lands on.** Right-associative operators (`**` in Python, `^` in many languages) are built by *recursing* instead of looping — `parse_pow()` calls itself for the right operand rather than accumulating in a `while` — which puts the growth on the right side of the tree instead of the left.
+
 ---
 
 ## Code Cell
