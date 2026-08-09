@@ -24,7 +24,7 @@ By the end of this activity, you will be able to:
 - Construct a working recursive descent parser for a statement-level grammar including assignments, conditionals, and while loops
 - Produce informative error messages by detecting and reporting unexpected tokens at each parsing decision point
 
-The parser is where the grammar becomes a program, and **recursive descent** is the technique that makes the translation nearly mechanical: **one function per nonterminal**, where each function's body mirrors its production's right-hand side. Over two days we learn the mapping, meet its one famous landmine (left recursion), and parse real statements. The arc: **the grammar-to-code mapping $\rightarrow$ a working statement parser $\rightarrow$ left recursion and lookahead $\rightarrow$ error messages worth reading**. In the *Abstract Syntax Trees* activity you designed the trees a parser should build; today you build the machine that produces them.
+The parser is where the grammar becomes a program, and **recursive descent** is the technique that makes the translation nearly mechanical: **one function per nonterminal**, where each function's body mirrors its production's right-hand side. We learn the mapping, meet its one famous landmine (left recursion), and parse real statements. The arc: **the grammar-to-code mapping $\rightarrow$ a working statement parser $\rightarrow$ left recursion and lookahead $\rightarrow$ error messages worth reading**. In the *Abstract Syntax Trees* activity you designed the trees a parser should build; today you build the machine that produces them.
 
 ---
 
@@ -77,7 +77,7 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 ---
 
-# Part I: The Mapping (Day 1)
+# Part I: The Mapping
 
 ## 1. One Nonterminal, One Function
 
@@ -338,7 +338,7 @@ for source in ["print 42;", "let x = 7;", "let x 7;"]:
 
 ---
 
-# Part II: The Landmine and the Lookahead (Day 2)
+# Part II: The Landmine and the Lookahead
 
 ## 2. Left Recursion Kills Descent
 
@@ -532,7 +532,7 @@ When parsing a statement like `if ( cond ) stmt`, the parser's call sequence is:
 
 ---
 
-# Part III: Runnable Models (Day 2, continued)
+# Part III: Runnable Models (at home)
 
 ## Model 3: Complete Recursive Descent Parser
 

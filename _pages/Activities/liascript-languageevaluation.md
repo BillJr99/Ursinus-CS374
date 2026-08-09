@@ -149,94 +149,7 @@ Part I gave you four lenses; Part II shows why you cannot maximize all four at o
 
 **Flexibility versus reliability.** Dynamic typing (Python) lets any variable hold anything, which speeds exploration and defers type errors to runtime, possibly in production. Static typing (Java, Rust) front-loads the friction. Modern designs hedge: type *inference* (the compiler deduces types you did not write) and *gradual typing* (Python's optional annotations) try to buy reliability without the ceremony.
 
-```python
-# Concrete illustration of the writability-reliability tradeoff.
-# Four "feature choices" measured on both axes.
-
-print("=== Implicit Type Coercion (writability UP, reliability DOWN) ===")
-# Python refuses; JavaScript would silently convert
-try:
-    result = "3" + 4     # TypeError in Python; would be "34" in JS
-    print(f"  '3' + 4 = {result!r}")
-except TypeError as e:
-    print(f"  Python refuses '3' + 4: {e}")
-    print("  JavaScript would give '34' (string concat) — silent wrong type")
-
-print()
-print("=== List Comprehensions (writability UP, readability tradeoff) ===")
-# Three ways to build squares of evens 0..9
-# Option 1: verbose loop (high readability to beginners)
-result_loop = []
-for x in range(10):
-    if x % 2 == 0:
-        result_loop.append(x ** 2)
-
-# Option 2: comprehension (concise, rewards fluency)
-result_comp = [x ** 2 for x in range(10) if x % 2 == 0]
-
-# Option 3: functional pipeline (composable, unfamiliar to imperative readers)
-result_func = list(map(lambda x: x**2, filter(lambda x: x % 2 == 0, range(10))))
-
-print(f"  Loop:          {result_loop}")
-print(f"  Comprehension: {result_comp}")
-print(f"  Functional:    {result_func}")
-print("  Same answer, different readability/writability profiles")
-
-print()
-print("=== Exception Handling (reliability UP, writability cost) ===")
-def safe_divide(a, b):
-    """Checked division: reliability over brevity."""
-    if not isinstance(a, (int, float)):
-        raise TypeError(f"Expected number, got {type(a).__name__}")
-    if not isinstance(b, (int, float)):
-        raise TypeError(f"Expected number, got {type(b).__name__}")
-    if b == 0:
-        raise ZeroDivisionError("Cannot divide by zero")
-    return a / b
-
-def unsafe_divide(a, b):
-    """Unchecked: writability over reliability."""
-    return a / b
-
-for a, b in [(10, 2), (10, 0), ("10", 2)]:
-    try:
-        print(f"  safe_divide({a!r}, {b!r}) = {safe_divide(a, b)}")
-    except (TypeError, ZeroDivisionError) as e:
-        print(f"  safe_divide({a!r}, {b!r}) → {type(e).__name__}: {e}")
-    try:
-        print(f"  unsafe_divide({a!r}, {b!r}) = {unsafe_divide(a, b)}")
-    except Exception as e:
-        print(f"  unsafe_divide({a!r}, {b!r}) → {type(e).__name__}: {e}")
-
-print()
-print("=== Dynamic Dispatch (writability UP, reliability cost) ===")
-# Duck typing: no interface required, but caller has no guarantee
-class Duck:
-    def sound(self): return "quack"
-
-class Dog:
-    def sound(self): return "woof"
-
-class Rock:
-    pass   # no 'sound' method
-
-def make_sound(thing):
-    """Works if thing has .sound(); crashes at runtime otherwise."""
-    return thing.sound()
-
-for obj in [Duck(), Dog(), Rock()]:
-    try:
-        print(f"  {type(obj).__name__}.sound() = {make_sound(obj)!r}")
-    except AttributeError as e:
-        print(f"  {type(obj).__name__}.sound() → AttributeError: {e}")
-```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
-
-### Critical Thinking Questions
-
-5. For each of the four "feature choices" in the cell, identify which criterion it improves and which it weakens, using the vocabulary (readability/writability/reliability/cost).
-6. The list comprehension and `for`-loop produce identical results. A new programmer finds the loop more readable; an experienced Python programmer finds the comprehension more readable. What does this asymmetry reveal about readability as a criterion — is it absolute or relative to the reader?
-7. Duck typing (`make_sound`) defers the `Rock` error until `make_sound(Rock())` is actually called. In a large program, how far might that call be from the assignment `thing = Rock()`? Connect this to the "hidden path" problem from the types module.
+> **Runnable version (at home).** A four-way demonstration of these tradeoffs in executable Python - coercion, comprehensions, checked division, and duck typing - is in *Part III* below, with its own questions.
 
 [[MC]]
 A team adds implicit type coercion to their language so that `"3" + 4` yields `7`, reasoning that it improves writability. The most likely cost, in this framework, is to:
@@ -352,96 +265,102 @@ print("  Design 3 (no null):       max ceremony, compiler-guaranteed safety")
 
 ---
 
-## Model 3: Simplicity vs Expressiveness — Counting the Ways
 
-Here is a deceptively simple question: is it good or bad for a language to offer six different ways to sum a list? The answer depends entirely on who is reading the code and what they already know. This model makes that tension concrete by showing all six Python idioms side by side, then connecting them to the competing design philosophies of Python (one obvious way) and Perl (there is more than one way to do it).
+> **Cut for time.** The simplicity-versus-expressiveness comparison (including the Perl-golf demonstration) added length without adding a criterion beyond the four lenses in Part I. The point it made — that terseness and clarity are different axes, and that a language can optimize for either — is covered in Model 1's orthogonality discussion.
 
-> **Watch out!** "More expressive" does not automatically mean "better." Expressiveness raises writability for experienced users but can crush readability for the next person who maintains the code. When you design your own language, expressiveness features are the ones most worth scrutinizing: every new idiom you add is a new pattern every future reader must recognize.
+# Part III: Synthesis and Practice
 
-One dimension of readability is the number of ways a language provides to do the same thing. More ways can improve writability (each programmer uses their preferred style) but harm readability (the reader must recognize all styles). The cell below counts several ways to sum a list in Python to make this concrete.
+## Runnable: Four Feature Choices, Measured on Both Axes (At Home)
 
 ```python
-nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-target = sum(nums)  # 55
+# Concrete illustration of the writability-reliability tradeoff.
+# Four "feature choices" measured on both axes.
 
-print("=== Six ways to sum a list ===")
-print(f"  Target: {target}")
-print()
-
-# Way 1: built-in
-r1 = sum(nums)
-print(f"  1. sum(nums)                           = {r1}")
-
-# Way 2: for loop
-r2 = 0
-for x in nums:
-    r2 += x
-print(f"  2. for loop with accumulator           = {r2}")
-
-# Way 3: while loop
-r3, i = 0, 0
-while i < len(nums):
-    r3 += nums[i]; i += 1
-print(f"  3. while loop with index               = {r3}")
-
-# Way 4: reduce
-from functools import reduce
-r4 = reduce(lambda a, b: a + b, nums)
-print(f"  4. functools.reduce                    = {r4}")
-
-# Way 5: generator expression
-r5 = sum(x for x in nums)
-print(f"  5. sum(generator)                      = {r5}")
-
-# Way 6: recursion
-def recursive_sum(lst):
-    if not lst: return 0
-    return lst[0] + recursive_sum(lst[1:])
-r6 = recursive_sum(nums)
-print(f"  6. recursion                           = {r6}")
+print("=== Implicit Type Coercion (writability UP, reliability DOWN) ===")
+# Python refuses; JavaScript would silently convert
+try:
+    result = "3" + 4     # TypeError in Python; would be "34" in JS
+    print(f"  '3' + 4 = {result!r}")
+except TypeError as e:
+    print(f"  Python refuses '3' + 4: {e}")
+    print("  JavaScript would give '34' (string concat) — silent wrong type")
 
 print()
-assert r1 == r2 == r3 == r4 == r5 == r6 == target
-print("  All six agree. ✓")
-print()
+print("=== List Comprehensions (writability UP, readability tradeoff) ===")
+# Three ways to build squares of evens 0..9
+# Option 1: verbose loop (high readability to beginners)
+result_loop = []
+for x in range(10):
+    if x % 2 == 0:
+        result_loop.append(x ** 2)
 
-# Now: which is most readable? Force the team to vote.
-print("=== APL — extreme concision, extreme opacity ===")
-print("  APL would write: +/1 2 3 4 5  (read: reduce-add over the array)")
-print("  Python's 'sum([1..10])' is longer but more readable to most humans.")
-print()
-print("  Question: who is 'most humans'? The answer depends on the reader's background.")
-print()
+# Option 2: comprehension (concise, rewards fluency)
+result_comp = [x ** 2 for x in range(10) if x % 2 == 0]
 
-# Perl golf (unrunnable, shown as string)
-print("=== Perl one-liner (write-only) ===")
-print("  perl -e 'print eval join(\"+\",1..10),\"\\n\"'")
-print("  Produces 55, but requires knowing Perl's list and eval idioms.")
+# Option 3: functional pipeline (composable, unfamiliar to imperative readers)
+result_func = list(map(lambda x: x**2, filter(lambda x: x % 2 == 0, range(10))))
+
+print(f"  Loop:          {result_loop}")
+print(f"  Comprehension: {result_comp}")
+print(f"  Functional:    {result_func}")
+print("  Same answer, different readability/writability profiles")
+
 print()
-print("=== Key insight ===")
-print("  The 'number of ways' is a language design axis.")
-print("  Perl/Ruby maximize it (TIMTOWTDI: There Is More Than One Way To Do It)")
-print("  Python minimizes it (PEP 20: 'There should be one obvious way to do it')")
-print("  Your language will land somewhere; mark your position deliberately.")
+print("=== Exception Handling (reliability UP, writability cost) ===")
+def safe_divide(a, b):
+    """Checked division: reliability over brevity."""
+    if not isinstance(a, (int, float)):
+        raise TypeError(f"Expected number, got {type(a).__name__}")
+    if not isinstance(b, (int, float)):
+        raise TypeError(f"Expected number, got {type(b).__name__}")
+    if b == 0:
+        raise ZeroDivisionError("Cannot divide by zero")
+    return a / b
+
+def unsafe_divide(a, b):
+    """Unchecked: writability over reliability."""
+    return a / b
+
+for a, b in [(10, 2), (10, 0), ("10", 2)]:
+    try:
+        print(f"  safe_divide({a!r}, {b!r}) = {safe_divide(a, b)}")
+    except (TypeError, ZeroDivisionError) as e:
+        print(f"  safe_divide({a!r}, {b!r}) → {type(e).__name__}: {e}")
+    try:
+        print(f"  unsafe_divide({a!r}, {b!r}) = {unsafe_divide(a, b)}")
+    except Exception as e:
+        print(f"  unsafe_divide({a!r}, {b!r}) → {type(e).__name__}: {e}")
+
+print()
+print("=== Dynamic Dispatch (writability UP, reliability cost) ===")
+# Duck typing: no interface required, but caller has no guarantee
+class Duck:
+    def sound(self): return "quack"
+
+class Dog:
+    def sound(self): return "woof"
+
+class Rock:
+    pass   # no 'sound' method
+
+def make_sound(thing):
+    """Works if thing has .sound(); crashes at runtime otherwise."""
+    return thing.sound()
+
+for obj in [Duck(), Dog(), Rock()]:
+    try:
+        print(f"  {type(obj).__name__}.sound() = {make_sound(obj)!r}")
+    except AttributeError as e:
+        print(f"  {type(obj).__name__}.sound() → AttributeError: {e}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
-11. Python's PEP 20 says "There should be one — and preferably only one — obvious way to do it." Yet Python provides *six* ways to sum a list (the cell above). Is this a contradiction or a pragmatic balance? What would Perl's TIMTOWTDI philosophy say?
-12. For a *beginner* writing their first sum loop, which of the six methods is most readable, and which is most writable? Do your answers change for an experienced Python developer?
-13. Rank the six methods on reliability: which is hardest to introduce an off-by-one error into, and why?
+5. For each of the four "feature choices" in the cell, identify which criterion it improves and which it weakens, using the vocabulary (readability/writability/reliability/cost).
+6. The list comprehension and `for`-loop produce identical results. A new programmer finds the loop more readable; an experienced Python programmer finds the comprehension more readable. What does this asymmetry reveal about readability as a criterion — is it absolute or relative to the reader?
+7. Duck typing (`make_sound`) defers the `Rock` error until `make_sound(Rock())` is actually called. In a large program, how far might that call be from the assignment `thing = Rock()`? Connect this to the "hidden path" problem from the types module.
 
-[[MC]]
-Python's design philosophy ("There should be one obvious way to do it") prioritizes which criterion above all others?
-- (x) Readability — fewer ways to express the same thing means readers encounter fewer patterns to learn
-- ( ) Writability — one way is faster to type
-- ( ) Reliability — one way reduces bugs
-- ( ) Cost of compilation — fewer forms to parse
-
----
-
-# Part III: Synthesis and Practice
 
 ## 4. Exercises
 

@@ -1837,3 +1837,287 @@ Answer these questions in your course notebook after completing this section.
 - **R7RS Scheme specification** — The current small Scheme standard. Section 4 (Expressions) maps directly to our `scheme_eval` dispatch table. Available at [https://small.r7rs.org/](https://small.r7rs.org/).
 
 - **"Proper Tail Recursion and Space Efficiency"** — Will Clinger (PLDI 1998). A careful treatment of what tail-call optimization guarantees and how to implement it correctly.
+
+# From the Closures Activity: Closures in Your Interpreter
+
+Twenty lines that give your interpreter first-class functions, plus why closures are what make recursion work. Previously part of the Closures class session.
+
+# Part II: Closures in Your Interpreter
+
+Building an interpreter that supports closures requires translating the abstract idea ("a function carries its birth environment") into concrete data structures. Think of it like building a passport system: when a function is created, you stamp its passport with the environment it was born in; when it is called later, you open a new room that is connected back to that stamped environment, not to wherever the function happens to be called from. This section shows exactly how `Environment`, `Closure`, and `eval_call` work together to implement that passport stamp.
+
+## 2. Twenty Lines to First-Class Functions
+
+Adding closures to Mini requires:
+1. A `FunDef` node and a `Call` node from the parser
+2. A `Closure` value created at **definition time**, capturing the *current* environment
+3. A call rule that builds the new environment parented on the **closure's captured environment**
+
+```python  liascript
+# Closure-based interpreter for Mini (simplified)
+
+class Environment:
+    def __init__(self, parent=None):
+        self._vars = {}
+        self.parent = parent
+
+    def define(self, name, value):
+        self._vars[name] = value
+
+    def lookup(self, name):
+        if name in self._vars:
+            return self._vars[name]
+        if self.parent is not None:
+            return self.parent.lookup(name)
+        raise NameError(f"Undefined: {name}")
+
+    def assign(self, name, value):
+        if name in self._vars:
+            self._vars[name] = value
+        elif self.parent is not None:
+            self.parent.assign(name, value)
+        else:
+            raise NameError(f"Undefined: {name}")
+
+class Closure:
+    def __init__(self, params, body, env):
+        self.params = params
+        self.body   = body
+        self.env    = env   # THE CAPTURED ENVIRONMENT — static scope lives here
+
+class ReturnSignal(Exception):
+    def __init__(self, value): self.value = value
+
+def execute_fundef(name, params, body, env):
+    """Create a closure and bind it to name in env."""
+    closure = Closure(params, body, env)   # capture env HERE
+    env.define(name, closure)
+
+def eval_call(callee_val, arg_vals, evaluate_body, env):
+    """Call a closure with evaluated argument values."""
+    fn = callee_val
+    if not isinstance(fn, Closure):
+        raise TypeError(f"Not callable: {fn!r}")
+    if len(arg_vals) != len(fn.params):
+        raise TypeError(f"Expected {len(fn.params)} args, got {len(arg_vals)}")
+    # *** THE ONE LINE THAT CHOOSES LEXICAL SCOPE ***
+    local = Environment(parent=fn.env)   # parent = DEFINING env, not calling env!
+    for name, val in zip(fn.params, arg_vals):
+        local.define(name, val)
+    try:
+        evaluate_body(fn.body, local)
+    except ReturnSignal as r:
+        return r.value
+    return None
+
+# -----------------------------------------------------------------------
+# STEP-BY-STEP TRACE: what happens when we define and call make_adder(5)
+#
+# Step 1 (DEFINITION — execute_fundef called):
+#   current env = global_env  { }
+#   closure = Closure(params=["n"], body=..., env=global_env)
+#   global_env.define("make_adder", closure)
+#   Result: global_env = { make_adder -> <Closure env=global_env> }
+#
+# Step 2 (CALL make_adder(5) — eval_call called):
+#   fn       = global_env.lookup("make_adder")  -> the Closure from Step 1
+#   arg_vals = [5]
+#   local    = Environment(parent=fn.env)        # parent = global_env (lexical!)
+#   local.define("n", 5)
+#   Result: local = { n -> 5, parent -> global_env }
+#   evaluate_body runs and creates the inner 'adder' closure:
+#     inner_closure = Closure(params=["x"], body=..., env=local)  # captures local!
+#     local.define("adder", inner_closure)
+#     ReturnSignal(inner_closure) raised and caught
+#   eval_call returns inner_closure
+#
+# Step 3 (CALL add5(3), where add5 = inner_closure from Step 2):
+#   fn       = add5  (inner_closure, env=local where n=5)
+#   arg_vals = [3]
+#   call_env = Environment(parent=fn.env)   # parent = local (n=5), NOT global!
+#   call_env.define("x", 3)
+#   body evaluates x + n:
+#     call_env.lookup("x") -> 3 (found in call_env)
+#     call_env.lookup("n") -> not in call_env -> tries parent (local) -> 5
+#   return 3 + 5 = 8  ✓
+#
+# The key: Step 3 uses fn.env (local, where n=5) as parent, NOT the caller's env.
+# That single parent= choice IS lexical scope.
+# -----------------------------------------------------------------------
+
+# Demo: make_adder in this closure system
+global_env = Environment()
+
+execute_fundef("make_adder", ["n"],
+    # body: return lambda x: x + n  (simulated as a nested closure)
+    [("fundef", "adder", ["x"], [("return", ("add", ("var", "x"), ("var", "n")))])],
+    global_env)
+
+# Verify the closure was created and captured the right env
+ma = global_env.lookup("make_adder")
+print(f"make_adder is a Closure: {isinstance(ma, Closure)}")
+print(f"make_adder captured env has 'make_adder': {'make_adder' in ma.env._vars}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+**CTQs**
+
+> **CTQ 3.1** Find the single line `local = Environment(parent=fn.env)` that decides static-versus-dynamic scope. Write the one-token change that would make your language dynamically scoped. (Hint: what if you used `env` instead of `fn.env`?)
+
+> **CTQ 3.2** Arguments are evaluated in `env` (the caller's environment) but bound in `local` (parented on the *definer's* environment). Construct a program where these two environments differ and where confusing them would change the output.
+
+> **CTQ 3.3** `ReturnSignal` rides an exception out of nested blocks to the call boundary. What would happen if `eval_call` caught *all* exceptions rather than only `ReturnSignal`?
+
+---
+
+For a function to call itself recursively, it must be able to look up its own name at the moment it runs. This is not automatic — it requires the function's name to be bound in the environment *before* the function body executes. Think of it like a business that must be registered with the government before it can issue contracts referencing itself. This model shows the precise ordering: bind the name first, then use the closure, so that recursive lookup through the captured environment succeeds.
+
+## Model 3: Closures Enable Recursion
+
+```python  liascript
+# Recursion requires the function to see itself in its own closure.
+# execute_fundef binds the name BEFORE returning, so:
+
+class Environment:
+    def __init__(self, parent=None):
+        self._vars = {}
+        self.parent = parent
+    def define(self, name, val):   self._vars[name] = val
+    def lookup(self, name):
+        if name in self._vars: return self._vars[name]
+        if self.parent: return self.parent.lookup(name)
+        raise NameError(name)
+
+class Closure:
+    def __init__(self, params, body_fn, env):
+        self.params = params; self.body_fn = body_fn; self.env = env
+    def __call__(self, *args):
+        local = Environment(parent=self.env)
+        for p, a in zip(self.params, args):
+            local.define(p, a)
+        return self.body_fn(local)
+
+global_env = Environment()
+
+# Define factorial using our closure mechanism
+# fact(n) = if n <= 0 then 1 else n * fact(n-1)
+def fact_body(env):
+    n = env.lookup('n')
+    if n <= 0: return 1
+    return n * env.lookup('fact')(n - 1)   # looks up 'fact' via captured env!
+
+fact_closure = Closure(['n'], fact_body, global_env)
+global_env.define('fact', fact_closure)    # bind BEFORE any calls
+
+print(f"fact(0) = {global_env.lookup('fact')(0)}")
+print(f"fact(5) = {global_env.lookup('fact')(5)}")
+print(f"fact(10) = {global_env.lookup('fact')(10)}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+> **CTQ 4.1** `execute_fundef` defines the name in the *current* environment before any calls. When `fact_body` runs and looks up `'fact'`, it finds the closure in `global_env`. Trace the environment chain: call frame → captured `global_env` → finds `fact`. What would break if we didn't define the name until after creating the closure?
+
+> **CTQ 4.2** `make_adder` creates a new closure for each call. `fact` is a single closure that calls itself. Draw the environment chain for `fact(3)` calling `fact(2)` calling `fact(1)` calling `fact(0)`. How deep does the chain grow?
+
+---
+
+Every closure question becomes answerable the moment you draw the boxes. Here we take the classic **counter factory** — the "hello world" of stateful closures — and draw every environment box and arrow it creates, then verify the picture by peeking at Python's actual closure cells.
+
+## Model 4: The Counter Factory, Drawn as Environment Boxes
+
+**Worked example.** Trace this program by hand before running anything:
+
+```python
+def make_counter():
+    count = 0
+    def increment():
+        nonlocal count
+        count += 1
+        return count
+    return increment
+
+c1 = make_counter()   # call #1
+c2 = make_counter()   # call #2
+c1(); c1(); c2()
+```
+
+Step by step:
+
+1. **Call #1 to `make_counter`** creates environment box **E1** (parent: global) holding `count = 0`.
+2. The `def increment` inside that call creates **closure A** = ⟨code of `increment`, E1⟩, which is returned and bound to `c1`. `make_counter` has returned, but E1 survives — closure A still points to it (lifetime follows reachability).
+3. **Call #2** repeats the story with a *fresh* box **E2** and **closure B**, bound to `c2`.
+4. **`c1()`** creates a call frame whose parent is **E1** (the captured environment, not the caller's!). `nonlocal count` makes `count += 1` an *assignment into E1*: E1's count becomes 1. The second `c1()` makes it 2.
+5. **`c2()`** assigns into **E2**: its count becomes 1. E1 is untouched.
+
+The final picture:
+
+```
+                +---------------------------+
+                | global                    |
+                |   make_counter -> <fn>    |
+                |   c1 -> closure A         |
+                |   c2 -> closure B         |
+                +---------------------------+
+                     ^                ^
+             parent  |                |  parent
+        +-----------------+    +-----------------+
+        | E1 (call #1)    |    | E2 (call #2)    |
+        |   count = 2     |    |   count = 1     |
+        +-----------------+    +-----------------+
+                 ^                      ^
+        captured |             captured |
+        closure A = <increment, E1>   closure B = <increment, E2>
+             (bound to c1)                 (bound to c2)
+```
+
+And the same history as a table:
+
+| Action | E1's `count` | E2's `count` | Return value |
+|--------|--------------|--------------|--------------|
+| `c1 = make_counter()` | 0 | — | closure A |
+| `c2 = make_counter()` | 0 | 0 | closure B |
+| `c1()` | 1 | 0 | 1 |
+| `c1()` | 2 | 0 | 2 |
+| `c2()` | 2 | 1 | 1 |
+
+```python  liascript
+def make_counter():
+    count = 0
+    def increment():
+        nonlocal count
+        count += 1
+        return count
+    return increment
+
+c1 = make_counter()
+c2 = make_counter()
+
+print(c1(), c1())     # 1 2  — both assignments land in E1
+print(c2())           # 1    — E2 is a separate box
+
+# Verify the boxes are real: Python exposes them as closure "cells"
+print("c1's captured count:", c1.__closure__[0].cell_contents)   # 2
+print("c2's captured count:", c2.__closure__[0].cell_contents)   # 1
+print("same box?", c1.__closure__[0] is c2.__closure__[0])       # False — E1 is not E2
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+[[MC]]
+After `c1 = make_counter()`, `c2 = make_counter()`, then `c1(); c1(); c2()`, the returned values are 1, 2, 1 because:
+- ( ) Each call to `c1` creates a fresh environment with `count = 0`
+- (x) Each *call to `make_counter`* created its own environment box, so `c1` and `c2` increment different `count` bindings
+- ( ) Python copies the value of `count` into each closure at definition time
+- ( ) `c2` reset the shared counter
+
+**Critical Thinking Questions (CTQs)**
+
+> **CTQ 5.1** The diagram shows two separate boxes, E1 and E2, each holding its own `count`. What single fact about *when* environment boxes are created explains why `c1` and `c2` never interfere?
+
+> **CTQ 5.2** `make_counter` returned long ago, yet the table shows E1's `count` still changing. Using the phrase "lifetime follows reachability," name exactly what is keeping E1 alive, and predict what would have to happen for Python to reclaim it.
+
+> **CTQ 5.3** `nonlocal count` makes `count += 1` an **assign** into E1 rather than a **define** of a new local. Connect this to the environments module: without `nonlocal`, which operation would `count += 1` attempt, and why does it fail here? (Delete the `nonlocal` line in the cell and read the error.)
+
+> **CTQ 5.4** Redraw the boxes for the `make_counter` of Model 1, which returns *two* closures (`increment` and `reset`). How many E-boxes does one call create, and which arrows in your drawing explain why the pair shares state?
+
+---
+

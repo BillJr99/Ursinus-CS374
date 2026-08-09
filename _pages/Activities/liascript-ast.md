@@ -26,7 +26,7 @@ By the end of this activity, you will be able to:
 - Build an AST by hand for a given arithmetic or assignment expression, annotating each node with its type and children
 - Apply tree transformations (constant folding, dead-code elimination) and explain how each transformation preserves program semantics
 
-In *Tokens and Scanning: Building a Lexer* you turned characters into tokens; this two-day module builds the structure those tokens are destined for: the **abstract syntax tree (AST)**, the central data structure of every language implementation and the hinge of your whole project. The recursive-descent parser you build in the *Recursive Descent Parsing* activity constructs exactly these nodes — here you learn to build, walk, and transform them by hand first. The arc: **parse trees vs. ASTs → node classes → building trees in the parser → walking trees (printing today, evaluating soon) → transforming trees (optimizing)**
+In *Tokens and Scanning: Building a Lexer* you turned characters into tokens; this session builds the structure those tokens are destined for: the **abstract syntax tree (AST)**, the central data structure of every language implementation and the hinge of your whole project. The recursive-descent parser you build in the *Recursive Descent Parsing* activity constructs exactly these nodes — here you learn to build, walk, and transform them by hand first. The arc: **parse trees vs. ASTs → node classes → building trees in the parser → walking trees (printing today, evaluating soon) → transforming trees (optimizing)**
 
 > **Before You Begin:** This activity assumes you can:
 > - Use Python dataclasses (`@dataclass`, typed fields, `field(...)`)
@@ -440,118 +440,8 @@ pretty(tree)
 
 ---
 
-## Model 3: Tree Transformations — Your First Optimizer
 
-*What problem does this solve?* A language implementer does not just read the AST — they sometimes want to *rewrite* it into a simpler or faster equivalent before evaluation. Constant folding is the canonical first optimization: if both children of a `BinOp` are `Num` nodes, there is no reason to wait until runtime to compute the result. This model introduces the pattern of a tree *transformation*: a function that takes a node and returns a (possibly different) node, recursing on children. The same pattern underlies dead-code elimination, inlining, and virtually every compiler optimization you will study.
-
-Trees can be *transformed* as well as traversed. The simplest transformation is **constant folding**: evaluating constant sub-expressions at compile time.
-
-```python  liascript
-from dataclasses import dataclass
-from typing import Any
-
-@dataclass
-class Num:
-    value: float
-
-@dataclass
-class Var:
-    name: str
-
-@dataclass
-class BinOp:
-    op: str; left: Any; right: Any
-
-@dataclass
-class UnaryOp:
-    op: str; operand: Any
-
-def constant_fold(node):
-    """Simplify constant sub-expressions: 2+3 → 5, 1*x → x, etc."""
-    match node:
-        case Num() | Var():
-            return node
-
-        case UnaryOp(op='-', operand=Num(value=v)):
-            return Num(-v)   # -5 → Num(-5)
-
-        case UnaryOp(op=op, operand=o):
-            return UnaryOp(op, constant_fold(o))
-
-        case BinOp(op=op, left=left, right=right):
-            l = constant_fold(left)
-            r = constant_fold(right)
-            # Both constant: compute now
-            if isinstance(l, Num) and isinstance(r, Num):
-                match op:
-                    case '+': return Num(l.value + r.value)
-                    case '-': return Num(l.value - r.value)
-                    case '*': return Num(l.value * r.value)
-                    case '/' if r.value != 0: return Num(l.value / r.value)
-            # Algebraic identities: x * 1 → x, x + 0 → x, etc.
-            if isinstance(r, Num):
-                if r.value == 0 and op == '+': return l
-                if r.value == 0 and op == '-': return l
-                if r.value == 1 and op == '*': return l
-                if r.value == 1 and op == '/': return l
-            if isinstance(l, Num):
-                if l.value == 0 and op == '+': return r
-                if l.value == 1 and op == '*': return r
-                if l.value == 0 and op == '*': return Num(0)
-            return BinOp(op, l, r)
-
-def pretty(node):
-    match node:
-        case Num(value=v):           return str(v)
-        case Var(name=n):            return n
-        case BinOp(op=o, left=l, right=r): return f"({pretty(l)} {o} {pretty(r)})"
-        case UnaryOp(op=o, operand=x):     return f"(-{pretty(x)})"
-
-# Test constant folding
-tests = [
-    BinOp('+', Num(2), Num(3)),                          # 2+3 → 5
-    BinOp('*', Num(1), Var('x')),                         # 1*x → x
-    BinOp('+', Var('x'), Num(0)),                         # x+0 → x
-    BinOp('*', Num(2), BinOp('+', Num(3), Num(4))),       # 2*(3+4) → 2*7 → 14
-    BinOp('+', BinOp('*', Num(2), Num(3)), Var('y')),     # (2*3)+y → 6+y
-    UnaryOp('-', Num(5)),                                  # -5 → Num(-5)
-]
-
-for t in tests:
-    folded = constant_fold(t)
-    print(f"{pretty(t):30} → {pretty(folded)}")
-```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
-
-> **Watch out!** Constant folding is only safe for *pure* sub-expressions — ones with no side effects. It is tempting to fold `f() + 0` to `f()` because "adding zero does nothing," but that reasoning only applies when `f()` has no side effects. If `f()` prints to the screen or modifies a global, folding away the `+ 0` is correct *for the arithmetic* but changes the program's observable behavior in other ways. When in doubt, only fold sub-trees made entirely of `Num`, `Bool`, and `Str` nodes with no `Call` or `Var` nodes anywhere inside.
-
-> **CTQ 4.1** Constant folding is safe for pure expressions. Why is it *unsafe* to fold `f() + 0` to `f()` if `f` has side effects?
-
-> **CTQ 4.2** The folding rule `x * 0 → 0` is an algebraic simplification. Why does this rule require checking `l.value == 0` rather than checking `isinstance(l, Num) and l.value == 0`? (They're the same — but why does the type check matter for correctness?)
-
-> **CTQ 4.3** Dead code elimination is another tree transformation: `if true { body1 } else { body2 }` → `body1`. How would you extend `constant_fold` to handle this case?
-
----
-
-[[MC]]
-After upgrading the parser to emit AST nodes, the team's old torture tests still pass with identical tree shapes. The best explanation is:
-
-    [(x)] The grammar and parsing logic determine the shape; the node classes only changed the representation
-    [( )] Python tuples and dataclasses are interchangeable types
-    [( )] The lexer normalizes the input before parsing
-    [( )] Associativity moved into the node classes
-
----
-
-[[MC]]
-`constant_fold` is a tree *transformation* that returns a new tree. What does this say about ASTs?
-
-    [( )] ASTs can only be read, not modified
-    [(x)] The same tree-walking pattern used for evaluation and printing also supports transformation and optimization
-    [( )] Constant folding requires the evaluator to run first
-    [( )] Only leaf nodes can be transformed
-
----
+> **Your first optimizer — constant folding as a tree transformation — moved to the tutorial shelf:** [From AST Back to Code](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-ast-to-code.md). It is the natural warm-up for that tutorial's `unparse` work.
 
 # Part III: The `unparse` Round-Trip
 

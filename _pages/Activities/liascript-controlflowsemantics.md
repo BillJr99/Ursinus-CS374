@@ -409,3 +409,241 @@ In your notebook: short-circuiting means the language promises *not to look* at 
 ---
 
 Up next: the *Functional Programming and Higher-Order Functions* activity changes the lens entirely — and today's semantics decisions complete the Interpreter assignment's core.
+
+# From the Tree-Walking Interpretation Activity: Statements, State, and the REPL
+
+This session is Day 2 of tree-walking interpretation. Day 1 evaluated *expressions* - a fold over the tree that returns a value. Statements are different: they do not return values, they change state, and that difference is what the rest of this session is about. The material below came from the interpretation activity's own Part II, which covered the same ground this session covers.
+
+# Part II: Statements, State, and the REPL (Day 2)
+
+## 2. Executing Statements
+
+Expressions produce values; **statements produce effects**: an `Assign` updates the environment, a `Print` writes output, a `Block` executes children in order, a `While` re-evaluates its condition. The executor therefore threads the environment through:
+
+```
+def execute(stmt, env):
+    Assign(name, e)   -> env[name] = evaluate(e, env)
+    Print(e)          -> print(evaluate(e, env))
+    Block(stmts)      -> for s in stmts: execute(s, env)
+    If(c, t, o)       -> execute(t if truthy(evaluate(c, env)) else o, env)
+    While(c, body)    -> while truthy(evaluate(c, env)): execute(body, env)
+```
+
+Notice `truthy`: your language must decide what counts as true (only a boolean? any nonzero number? an empty string?), a semantics decision with daily consequences.
+
+[[MC]]
+In a tree-walking interpreter, executing the program's `while` loop one million times will re-walk the loop body's subtree one million times. The principal cost this design accepts, relative to compilation, is:
+- ( ) Incorrect results on large inputs
+- (x) Repeated traversal and dispatch overhead per execution of the same code
+- ( ) Loss of operator precedence
+- ( ) The inability to support variables
+
+---
+
+**Model 3 preview:** Where expressions *return* values, statements *change the world* — they update the environment, produce output, or repeat a block. This model introduces `execute`, a sibling function to `evaluate` that handles the statement layer. The single most important design rule here is that `execute` must always pass the *same* `env` dictionary through every recursive call so that assignments made inside a loop body are visible after the loop ends.
+
+> **Watch out!** A common mistake is for `execute` to return `None` (implicitly) for every branch, and then have a caller accidentally use that `None` as if it were a language value — for example, printing the result of `execute(Print(...), env)` instead of the result already printed inside `execute`. Statements produce *effects*, not values; callers of `execute` should never inspect its return value.
+
+## Model 3: Complete Statement Executor
+
+```python
+from dataclasses import dataclass, field
+from typing import Any, List, Optional
+
+# ─── AST nodes ────────────────────────────────────────────────────────────────
+@dataclass
+class Num:     value: float
+@dataclass
+class Var:     name: str
+@dataclass
+class BinOp:   op: str; left: Any; right: Any
+@dataclass
+class Assign:  name: str; expr: Any
+@dataclass
+class Print:   expr: Any
+@dataclass
+class Block:   stmts: List[Any]
+@dataclass
+class If:      cond: Any; then_: Any; else_: Any = None
+@dataclass
+class While:   cond: Any; body: Any
+
+# ─── Evaluator ────────────────────────────────────────────────────────────────
+def evaluate(node, env):
+    if isinstance(node, Num):   return node.value
+    if isinstance(node, Var):
+        if node.name not in env: raise NameError(f"undefined: {node.name!r}")
+        return env[node.name]
+    if isinstance(node, BinOp):
+        L, R = evaluate(node.left, env), evaluate(node.right, env)
+        return {"+": L+R, "-": L-R, "*": L*R, "/": L/R,
+                ">": L>R, "<": L<R, ">=": L>=R, "<=": L<=R,
+                "==": L==R, "!=": L!=R}[node.op]
+    raise TypeError(f"unknown expr node: {node!r}")
+
+def truthy(val):
+    if isinstance(val, bool): return val
+    if isinstance(val, (int, float)): return val != 0
+    return val is not None
+
+# ─── Executor ────────────────────────────────────────────────────────────────
+def execute(stmt, env):
+    if isinstance(stmt, Assign):
+        env[stmt.name] = evaluate(stmt.expr, env)
+    elif isinstance(stmt, Print):
+        print(evaluate(stmt.expr, env))
+    elif isinstance(stmt, Block):
+        for s in stmt.stmts:
+            execute(s, env)
+    elif isinstance(stmt, If):
+        cond = evaluate(stmt.cond, env)
+        if truthy(cond):
+            execute(stmt.then_, env)
+        elif stmt.else_ is not None:
+            execute(stmt.else_, env)
+    elif isinstance(stmt, While):
+        while truthy(evaluate(stmt.cond, env)):
+            execute(stmt.body, env)
+    else:
+        raise TypeError(f"unknown stmt node: {stmt!r}")
+
+# ─── Test: n = 5; total = 0; while n > 0: total += n; n -= 1; print total ───
+env = {}
+program = Block([
+    Assign("n",     Num(5)),
+    Assign("total", Num(0)),
+    While(BinOp(">", Var("n"), Num(0)),
+          Block([
+              Assign("total", BinOp("+", Var("total"), Var("n"))),
+              Assign("n",     BinOp("-", Var("n"),     Num(1))),
+          ])),
+    Print(Var("total")),        # should print 15
+])
+execute(program, env)
+print(f"env after: {env}")     # n=0, total=15
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+8. Predict the output before running; then run. If they differ, the bug hunt order is: lexer → parser tree (use pretty-printer!) → evaluator. Why that order?
+9. Print the environment after execution. Should `n` still exist after the loop? Defend your language's answer; both choices are defensible.
+10. Add a `truthy(0.0)` call and a `truthy(None)` call to the test. What do they return? How does your `truthy` definition match Python's? Where do they differ?
+
+---
+
+**Model 4 preview:** The REPL (Read-Eval-Print Loop) is what makes your language *feel* like a language. It chains the entire pipeline — tokenize, parse, evaluate — inside a loop that persists a single `env` across lines, so earlier assignments are visible in later ones. This model uses a simulated REPL (a list of inputs instead of real keyboard input) so it can run non-interactively here, but the architecture is identical to what you would wire up with Python's `input()`.
+
+> **Watch out!** Because the REPL's `env` dictionary persists across lines, a variable assigned on line 1 is still live on line 100. This means the *order* in which the user types lines matters, and re-running the REPL from scratch will start with an empty environment. Students sometimes expect the REPL to behave like a script (isolated, top-to-bottom) rather than a stateful session. They are different execution models, and it is worth being explicit in your language documentation about which one your REPL provides.
+
+## Model 4: The REPL — Your Language Goes Interactive
+
+```python
+from dataclasses import dataclass
+from typing import Any
+import re
+
+# Minimal tokenizer → parser → evaluator pipeline for the REPL
+@dataclass
+class Num:  value: float
+@dataclass
+class Var:  name: str
+@dataclass
+class BinOp: op: str; left: Any; right: Any
+@dataclass
+class Assign: name: str; expr: Any
+
+def tokenize(src):
+    return re.findall(r"\d+\.?\d*|[A-Za-z_]\w*|[=+\-*/()]|;", src)
+
+def parse_expr(tokens, pos):
+    lhs, pos = parse_term(tokens, pos)
+    while pos < len(tokens) and tokens[pos] in ("+", "-"):
+        op, pos = tokens[pos], pos+1
+        rhs, pos = parse_term(tokens, pos)
+        lhs = BinOp(op, lhs, rhs)
+    return lhs, pos
+
+def parse_term(tokens, pos):
+    lhs, pos = parse_primary(tokens, pos)
+    while pos < len(tokens) and tokens[pos] in ("*", "/"):
+        op, pos = tokens[pos], pos+1
+        rhs, pos = parse_primary(tokens, pos)
+        lhs = BinOp(op, lhs, rhs)
+    return lhs, pos
+
+def parse_primary(tokens, pos):
+    tok = tokens[pos]
+    if tok == "(":
+        expr, pos = parse_expr(tokens, pos+1)
+        assert tokens[pos] == ")", "expected ')'"
+        return expr, pos+1
+    if re.match(r"\d", tok):
+        return Num(float(tok)), pos+1
+    return Var(tok), pos+1
+
+def parse(src):
+    tokens = tokenize(src.strip().rstrip(";"))
+    if len(tokens) >= 2 and re.match(r"[A-Za-z_]", tokens[0]) and tokens[1] == "=":
+        expr, _ = parse_expr(tokens, 2)
+        return Assign(tokens[0], expr)
+    expr, _ = parse_expr(tokens, 0)
+    return expr
+
+def evaluate(node, env):
+    if isinstance(node, Num):    return node.value
+    if isinstance(node, Var):    return env.get(node.name, 0.0)
+    if isinstance(node, Assign):
+        val = evaluate(node.expr, env)
+        env[node.name] = val
+        return val
+    if isinstance(node, BinOp):
+        L, R = evaluate(node.left, env), evaluate(node.right, env)
+        return {"+": L+R, "-": L-R, "*": L*R, "/": L/R}[node.op]
+
+# ─── Simulate a REPL session ────────────────────────────────────────────────
+env = {}
+repl_input = [
+    "x = 10",
+    "y = 3",
+    "x * y + 2",
+    "z = (x - y) * 4",
+    "z",
+]
+
+print("Mini-REPL session:")
+for line in repl_input:
+    try:
+        result = evaluate(parse(line), env)
+        print(f"  >>> {line}")
+        if not line.strip().startswith(tuple("abcdefghijklmnopqrstuvwxyz") + ("x","y","z")) or "=" in line:
+            pass
+        print(f"  {result}")
+    except Exception as e:
+        print(f"  Error: {e}")
+
+print(f"\nFinal environment: {env}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+11. A real REPL must handle errors without dying: if the user types `1/0` or `undefined_var`, the REPL should print an error and continue. Wrap the inner call in a `try/except` and identify the *three error classes* you must catch (one per stage: lex, parse, eval).
+12. The REPL above has a persistent `env` dictionary. If a user types `x = 10` and then `x = 20`, what should happen? Should the language allow rebinding?
+13. REPLs for functional languages (Haskell's `ghci`, Scheme's REPL) do not allow mutation. How would you implement a purely functional REPL where each "assignment" introduces a new immutable binding rather than updating an old one?
+
+---
+
+---
+**🛑 In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+
+## 3. Exercises
+
+1. *Complete the executor.* Implement `execute` for all your statement nodes with the exception pattern from class, define and document `truthy` for your language, and demonstrate the summation program plus an `if/else` program.
+2. *The REPL.* Write the read-evaluate-print loop: prompt, read a line, tokenize, parse, execute against a persistent environment, repeat, catching and printing every error class without dying. Your language now has an interactive shell; transcript required.
+3. *Error taxonomy.* Construct one program each that fails in the lexer, the parser, and the evaluator. Verify each error message names its stage and location; improve the worst one.
+4. *Semantics memo.* Document three semantics decisions your team made today (truthiness, division by zero, loop variable persistence) in a `SEMANTICS.md` your project will grow all semester.
+5. *Interpreter speedup.* Modify the `While` executor to count the number of times the loop body executes. Then add a "step limit" parameter that raises a `RuntimeError` if the loop exceeds 10,000 iterations. This protects against infinite loops in student-written programs. Show it triggering on `while 1 > 0: print 1`.
+
+---
+

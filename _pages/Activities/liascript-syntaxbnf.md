@@ -196,98 +196,12 @@ The code cell above shows the EBNF-to-code mapping at work: `[ sign ]` became an
 
 ---
 
-## Model 4: Grammar as a Python Data Structure
 
-A grammar written on paper and a grammar stored as a Python dictionary are the same thing — the dictionary just makes the structure explicit enough to run. This model shows how the recursive structure of a grammar translates directly into mutually recursive functions, one per nonterminal. Notice especially how left recursion is avoided: instead of `expr -> expr "+" term`, the grammar uses a separate `expr_rest` rule.
+> **The runnable version — a grammar as a Python dictionary — is in [Grammar Tooling in Python](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-grammars-in-python.md),** alongside the left-recursion detector and derivation tracer that use the same representation.
 
-> **Watch out!** **Left recursion** — a rule of the form `A -> A ...` — causes an infinite loop in top-down (recursive descent) parsers because the parser calls itself immediately without consuming any input. The standard fix is to rewrite the rule using a right-recursive helper or an explicit `_rest` nonterminal, as this grammar does.
+# Part III: Synthesis and Practice (At Home)
 
-A grammar is just data: a mapping from nonterminal names to lists of alternatives, where each alternative is a list of symbols. Terminals are plain strings; nonterminals are wrapped to distinguish them. The checker below walks a token sequence against an arithmetic-expression grammar and reports whether it is valid.
-
-The grammar for arithmetic expressions:
-
-```
-expr   -> term { ("+" | "-") term }
-term   -> factor { ("*" | "/") factor }
-factor -> NUMBER | "(" expr ")"
-```
-
-```python  liascript
-# Grammar as a Python dict: each key is a nonterminal, each value is
-# a list of alternatives. Each alternative is a list of symbols.
-# "t:X" means terminal X; "n:X" means nonterminal X.
-
-GRAMMAR = {
-    "expr":   [["n:term", "n:expr_rest"]],
-    "expr_rest": [["t:+", "n:term", "n:expr_rest"],
-                  ["t:-", "n:term", "n:expr_rest"],
-                  []],                          # epsilon (empty)
-    "term":   [["n:factor", "n:term_rest"]],
-    "term_rest": [["t:*", "n:factor", "n:term_rest"],
-                  ["t:/", "n:factor", "n:term_rest"],
-                  []],
-    "factor": [["t:NUM"], ["t:(", "n:expr", "t:)"]],
-}
-
-def parse(tokens, rule, pos):
-    """Try to match 'rule' starting at tokens[pos].
-    Returns (success, new_pos). Tries each alternative in order."""
-    if rule not in GRAMMAR:
-        return False, pos
-    for alt in GRAMMAR[rule]:
-        ok, npos = match_alt(tokens, alt, pos)
-        if ok:
-            return True, npos
-    return False, pos
-
-def match_alt(tokens, alt, pos):
-    cur = pos
-    for sym in alt:
-        if sym.startswith("t:"):
-            term = sym[2:]
-            if cur >= len(tokens) or tokens[cur] != term:
-                return False, pos   # backtrack to original pos
-            cur += 1
-        elif sym.startswith("n:"):
-            ok, cur = parse(tokens, sym[2:], cur)
-            if not ok:
-                return False, pos
-    return True, cur
-
-def check(tokens):
-    ok, end = parse(tokens, "expr", 0)
-    return ok and end == len(tokens)
-
-test_cases = [
-    (["NUM", "+", "NUM"],                   True,  "a + b"),
-    (["NUM", "*", "NUM", "+", "NUM"],       True,  "a*b + c"),
-    (["(", "NUM", "+", "NUM", ")"],         True,  "(a + b)"),
-    (["NUM", "+"],                          False, "a + (missing rhs)"),
-    (["*", "NUM"],                          False, "* a (no lhs)"),
-    (["NUM", "NUM"],                        False, "a b (no operator)"),
-    (["NUM", "+", "NUM", "*", "NUM"],       True,  "a + b*c"),
-]
-
-print(f"{'tokens':<35} {'expect':>6}  {'got':>6}  {'pass':>4}")
-print("-" * 58)
-for tokens, expected, label in test_cases:
-    result = check(tokens)
-    status = "OK" if result == expected else "FAIL"
-    print(f"{label:<35} {str(expected):>6}  {str(result):>6}  {status:>4}")
-```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
-
-### Critical Thinking Questions
-
-10. The grammar stores `expr_rest` and `term_rest` as separate rules to encode left-associative repetition without left recursion. Why is left recursion (`expr -> expr "+" term`) a problem for a top-down recognizer like this one? Describe the infinite loop that would occur.
-11. `match_alt` returns `(False, pos)` — the *original* position — on failure, not the furthest position reached. Why does restoring the original position matter when there are multiple alternatives?
-12. The grammar currently uses token strings like `"NUM"`, `"+"`, `"*"`. Sketch how you would extend this representation to carry actual lexemes (e.g., distinguish integer literal `3` from float `3.14`) without rewriting the entire matching engine.
-13. The checker only returns True/False. What would a *parse tree* version return instead, and what would one node of that tree look like as a Python value?
-
----
-
----
-**🛑 In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+> These two models are at-home reinforcement, not in-class work. Do them before the next session.
 
 ## Model 5 (At Home): BNF vs EBNF — Two Notations, One Language
 
@@ -375,6 +289,7 @@ for tokens, expected, label in test_cases:
 16. The BNF `list_tail` handles the empty case by returning `pos` unchanged. In a grammar with *two* optional suffixes, what would BNF require that EBNF avoids?
 
 ---
+
 
 ## Model 6 (At Home): FIRST Sets (Preview)
 
@@ -478,7 +393,6 @@ for nt in ["expr", "expr_rest", "term", "term_rest", "factor"]:
 
 ---
 
-# Part III: Synthesis and Practice (At Home)
 
 The exercises below ask you to write grammars from scratch, which is harder than reading them. Start by listing a few example strings the grammar should accept, then figure out what rule structure generates all of them. The final exercise seeds your project grammar — keep what you write.
 

@@ -77,70 +77,8 @@ E -> E + E | E * E | num
 3. State the definition this exercise has earned: a grammar is **ambiguous** when... (finish the sentence precisely; "confusing" is not precise).
 4. Is ambiguity a property of the *string*, the *grammar*, or the *language*? Test your answer: could a different grammar for the same language be unambiguous?
 
-### Worked Example: both trees for `2 + 3 * 4`, drawn
 
-Do CTQ 1 yourself first. Then check against this — the point is not the answer, it is seeing that *both* derivations are legal under the same grammar.
-
-**Tree A — `+` on top (multiply first, value 14):**
-
-```
-            E
-          / | \
-         E  +  E
-         |     /|\
-        num   E * E
-         |    |   |
-         2   num num
-              |   |
-              3   4
-```
-
-Leftmost derivation for Tree A, one production per line:
-
-```
-E
-=> E + E          (used E -> E + E)
-=> num + E        (used E -> num, leftmost E first)
-=> 2 + E
-=> 2 + E * E      (used E -> E * E)
-=> 2 + num * E    (used E -> num)
-=> 2 + 3 * E
-=> 2 + 3 * num    (used E -> num)
-=> 2 + 3 * 4
-```
-
-**Tree B — `*` on top (add first, value 20):**
-
-```
-            E
-          / | \
-         E  *  E
-        /|\     |
-       E + E   num
-       |   |    |
-      num num   4
-       |   |
-       2   3
-```
-
-Leftmost derivation for Tree B:
-
-```
-E
-=> E * E          (used E -> E * E)
-=> E + E * E      (used E -> E + E on the leftmost E)
-=> num + E * E    (used E -> num)
-=> 2 + E * E
-=> 2 + num * E    (used E -> num)
-=> 2 + 3 * E
-=> 2 + 3 * num    (used E -> num)
-=> 2 + 3 * 4
-```
-
-**Both derivations end at the same string.** That is the whole definition: the grammar admits two distinct leftmost derivations of `2 + 3 * 4`, so it is ambiguous. Note the divergence is at the *very first step* — `E -> E + E` versus `E -> E * E` — and everything after is forced. CTQ 2 asks where the meanings diverge; it is the root node, and nothing below it.
-
-
----
+> The worked answers to this session's models are in the **Answer Key** at the end of this page. Attempt them with your team first.
 
 # Part II: The Cure, Built One Layer at a Time
 
@@ -171,52 +109,6 @@ Walk the logic: an `E` is a sum of `T`s; each `T` is a product of `F`s; a parent
 5. Derive `2 + 3 * 4` from the layered grammar (leftmost derivation, every step). Confirm exactly one tree exists and that it evaluates to 14.
 6. Derive `(2 + 3) * 4`. Identify the production that lets the parentheses hoist the addition above the multiplication.
 7. Add a new tightest-binding level: exponentiation `^`. Decide as a team where the new nonterminal slots into the chain `E, T, F`, write the modified grammar, and verify on `2 * 3 ^ 2` (should be 18, not 36).
-
-### Worked Example: the layered grammar admits only one tree
-
-CTQ 5 asks you to derive `2 + 3 * 4` from the layered grammar. Here is that derivation, and then the failure you should try to produce for the other tree.
-
-```
-E
-=> E + T          (used E -> E + T)
-=> T + T          (used E -> T)
-=> F + T          (used T -> F)
-=> num + T        (used F -> num)
-=> 2 + T
-=> 2 + T * F      (used T -> T * F)
-=> 2 + F * F      (used T -> F)
-=> 2 + num * F    (used F -> num)
-=> 2 + 3 * F
-=> 2 + 3 * num    (used F -> num)
-=> 2 + 3 * 4
-```
-
-The resulting tree, with `*` forced below `+`:
-
-```
-            E
-          / | \
-         E  +  T
-         |    /|\
-         T   T * F
-         |   |    |
-         F   F   num
-         |   |    |
-        num num   4
-         |   |
-         2   3
-```
-
-**Now try to build Tree B and watch it fail.** To put `*` at the root you would need `E -> E * ...`, but no production for `E` mentions `*` at all — `*` appears only in `T -> T * F`, and every `T` sits *below* an `E`. There is no path. That impossibility is the cure working: precedence is not a convention the parser applies, it is a shape the grammar cannot violate.
-
-For CTQ 6, the production that lets parentheses win is `F -> ( E )`. It demotes a whole expression back down to a factor, which is why `(2 + 3) * 4` can put `+` beneath `*`:
-
-```
-E => T => T * F => F * F => ( E ) * F => ( E + T ) * F => ... => ( 2 + 3 ) * 4
-```
-
-
----
 
 ## 3. Step 2: Associativity Is Direction of Recursion
 
@@ -271,232 +163,8 @@ right_assoc = ("-", 5, ("-", 2, 1))      # 5-(2-1) = 4   <- E -> T - E
 
 ---
 
-## Model 4: Derivation Tracer (Runnable)
 
-*Intuition: A leftmost derivation and a rightmost derivation of the same string take different paths through the grammar, but they always arrive at the same parse tree. Running the tracer below lets you watch both paths step by step and confirm they converge. Pay attention to how many steps each takes — it turns out they must be equal, and understanding why solidifies your mental model of what a derivation actually is.*
-
-A leftmost derivation always expands the leftmost nonterminal at each step; a rightmost derivation always expands the rightmost one. Watching them side by side makes it concrete that **both derivations produce the same parse tree** even though the step sequences differ.
-
-```python
-# Model 4: Leftmost and rightmost derivation tracer for simple CFGs
-
-GRAMMAR = {
-    "E": [["E", "+", "T"], ["T"]],
-    "T": [["T", "*", "F"], ["F"]],
-    "F": [["(", "E", ")"], ["num"]],
-}
-TERMINALS = {"+", "*", "(", ")", "num"}
-
-def is_terminal(sym):
-    return sym in TERMINALS
-
-def expand(form, grammar, leftmost=True):
-    """Yield each step of a leftmost (or rightmost) derivation for `form`."""
-    try:
-        idx_fn = next if leftmost else lambda it: list(it)[-1]  # pick position
-        while any(not is_terminal(s) for s in form):
-            # Find the nonterminal to expand
-            positions = [i for i, s in enumerate(form) if not is_terminal(s)]
-            idx = positions[0] if leftmost else positions[-1]
-            sym = form[idx]
-            # Use the FIRST production (just to pick one derivation path)
-            rhs = grammar[sym][0]
-            form = form[:idx] + rhs + form[idx+1:]
-            yield list(form)
-            if len(form) > 30:   # safety: stop runaway expansions
-                yield ["... (truncated)"]
-                return
-    except Exception as e:
-        print(f"[derivation:expand] {e}")
-        import traceback; traceback.print_exc()
-
-def show_derivation(start, grammar, label):
-    print(f"── {label} derivation from {start} ──")
-    form = [start]
-    print("  " + " ".join(form))
-    for step in expand(form, grammar, leftmost=(label=="Leftmost")):
-        print("  " + " ".join(step))
-    print()
-
-show_derivation("E", GRAMMAR, "Leftmost")
-show_derivation("E", GRAMMAR, "Rightmost")
-```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
-
-### Critical Thinking Questions
-
-8. Both derivations start from `E` and end at the same terminal string. What is that string? (Read the last printed line of each derivation.)
-9. Count the number of steps in the leftmost versus rightmost derivation. Are they the same? Explain why the number of steps must always be equal for a given derivation of a given string.
-10. The tracer always picks the first production for each nonterminal. Modify the grammar so `F -> ["num"]` is listed *before* `F -> ["(", "E", ")"]` (swap the two entries). Predict how the derivation changes — will it be shorter, longer, or the same length?
-
----
-
-## Model 5: Ambiguity Detector (Runnable)
-
-*Intuition: To prove a grammar is ambiguous, you only need one witness — a single string that has two distinct parse trees. The code below systematically generates all parse trees up to a depth limit for the naive grammar `E -> E + E | id` and checks whether any string gets more than one. For `a + b + c` it finds two, which is the formal proof that the grammar is ambiguous.*
-
-An ambiguous grammar lets the same string be derived via two *different* leftmost derivations, which means two different parse trees. The detector below generates all parse trees up to a size bound for a naive expression grammar and reports strings that have more than one tree.
-
-```python
-# Model 5: Find two distinct parse trees for a + b + c under an ambiguous grammar
-# Grammar: E -> E + E | id
-# We represent trees as nested tuples for easy comparison.
-
-AMBIGUOUS = {
-    "E": [("E", "+", "E"), ("id",)],
-}
-
-def gen_trees(sym, depth=0, max_depth=4):
-    """Generate all parse trees for sym as nested tuples."""
-    try:
-        if sym not in AMBIGUOUS:
-            yield sym   # terminal
-            return
-        if depth > max_depth:
-            return
-        for rhs in AMBIGUOUS[sym]:
-            # Collect all combinations of subtrees for each symbol in rhs
-            combos = [list(gen_trees(s, depth+1, max_depth)) for s in rhs]
-            # Cartesian product
-            from itertools import product as cart_product
-            for combo in cart_product(*combos):
-                if len(rhs) == 1:
-                    yield combo[0]
-                else:
-                    yield (rhs[1], combo[0], combo[2])   # (op, left, right) shape
-    except Exception as e:
-        print(f"[ambiguity:gen_trees] {e}")
-        import traceback; traceback.print_exc()
-
-def leaves(tree):
-    """Collect the leaf terminals in left-to-right order."""
-    if not isinstance(tree, tuple):
-        return [tree]
-    result = []
-    for child in tree:
-        result.extend(leaves(child))
-    return result
-
-def trees_for(target_leaves, sym="E", max_depth=4):
-    """Return all distinct trees whose leaves match target_leaves."""
-    try:
-        seen = set()
-        matches = []
-        for t in gen_trees(sym, max_depth=max_depth):
-            if leaves(t) == target_leaves and t not in seen:
-                seen.add(t)
-                matches.append(t)
-        return matches
-    except Exception as e:
-        print(f"[ambiguity:trees_for] {e}")
-        import traceback; traceback.print_exc()
-        return []
-
-target = ["id", "id", "id"]   # represents  a + b + c
-found = trees_for(target)
-
-print(f"Trees for 'a + b + c' under E -> E + E | id:")
-for i, t in enumerate(found, 1):
-    print(f"  Tree {i}: {t}")
-
-if len(found) >= 2:
-    print(f"\nGrammar IS ambiguous: found {len(found)} distinct parse trees.")
-    print("Tree 1 evaluates left-first  (like (a+b)+c)")
-    print("Tree 2 evaluates right-first (like a+(b+c))")
-    print("For addition they give the same number, but for subtraction they would not.")
-else:
-    print("Only one tree found (grammar may be unambiguous for this input).")
-```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
-
-### Critical Thinking Questions
-
-11. The detector finds two trees for `a + b + c`. Write out both trees using nested parentheses notation (e.g., `((a+b)+c)` and `(a+(b+c))`). Which tree does the *left-recursive* grammar `E -> E + T | T` force? Which does the *right-recursive* form force?
-12. For *addition*, both trees give the same numeric value. Name a binary operator where `(a OP b) OP c ≠ a OP (b OP c)`, and verify with concrete numbers. This is why ambiguity matters even when the two trees share a root operator.
-13. The grammar `E -> E + E | id` is ambiguous; `E -> E + T | T` with `T -> id` is not. Describe in one sentence the structural property of the unambiguous grammar that forces exactly one parse tree.
-
----
-
-## Model 6: Disambiguating by Convention (Runnable)
-
-*Intuition: This model puts the two grammars side by side in runnable code so you can see the concrete difference. The ambiguous grammar allows two distinct tree shapes for `2 + 3 * 4`; the layered grammar produces only one. Tracing the printed tree shapes will make the structural difference between "precedence encoded in grammar" and "precedence enforced externally" tangible.*
-
-The standard cure for expression ambiguity is to stratify the grammar: one nonterminal per precedence level, left recursion on the left for left-associativity. The model below builds parse trees under both the ambiguous and the unambiguous grammar for the same string and shows they differ in shape.
-
-```python
-# Model 6: Compare trees from ambiguous vs. unambiguous (layered) grammar
-
-def leaf(v):   return {"op": None, "val": v,  "left": None, "right": None}
-def node(op, l, r): return {"op": op, "val": None, "left": l, "right": r}
-
-def pretty(t, indent=0):
-    """Indented ASCII art."""
-    try:
-        pad = "  " * indent
-        if t["op"] is None:
-            print(f"{pad}{t['val']}")
-        else:
-            print(f"{pad}({t['op']})")
-            pretty(t["left"],  indent + 1)
-            pretty(t["right"], indent + 1)
-    except Exception as e:
-        print(f"[disambig:pretty] {e}")
-        import traceback; traceback.print_exc()
-
-def evaluate(t):
-    try:
-        if t["op"] is None:
-            return t["val"]
-        l, r = evaluate(t["left"]), evaluate(t["right"])
-        if t["op"] == "+": return l + r
-        if t["op"] == "-": return l - r
-        if t["op"] == "*": return l * r
-        if t["op"] == "/": return l / r
-    except Exception as e:
-        print(f"[disambig:evaluate] {e}")
-        import traceback; traceback.print_exc()
-        return None
-
-# String: 2 + 3 * 4
-
-# ── Ambiguous grammar: could group either way ──────────────────────────
-ambig_tree_A = node("+", leaf(2), node("*", leaf(3), leaf(4)))  # correct
-ambig_tree_B = node("*", node("+", leaf(2), leaf(3)), leaf(4))  # also valid under naive grammar
-
-# ── Unambiguous (layered) grammar: only one tree possible ──────────────
-# E -> E + T | T    T -> T * F | F    F -> num
-unambig_tree = node("+", leaf(2), node("*", leaf(3), leaf(4)))
-
-print("=== Ambiguous grammar, Tree A (+ is root) ===")
-pretty(ambig_tree_A)
-print(f"Value = {evaluate(ambig_tree_A)}")   # 14
-
-print()
-print("=== Ambiguous grammar, Tree B (* is root) ===")
-pretty(ambig_tree_B)
-print(f"Value = {evaluate(ambig_tree_B)}")   # 20
-
-print()
-print("=== Unambiguous (layered) grammar: only Tree A is derivable ===")
-pretty(unambig_tree)
-print(f"Value = {evaluate(unambig_tree)}")   # 14
-
-print()
-# Associativity comparison for 5 - 2 - 1
-left_assoc  = node("-", node("-", leaf(5), leaf(2)), leaf(1))
-right_assoc = node("-", leaf(5), node("-", leaf(2), leaf(1)))
-print(f"Left-assoc  (5-2)-1 = {evaluate(left_assoc)}")   # 2  (correct)
-print(f"Right-assoc 5-(2-1) = {evaluate(right_assoc)}")  # 4  (wrong for subtraction)
-```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
-
-### Critical Thinking Questions
-
-14. In `ambig_tree_B`, the `*` node is the root and `+` is its left child. Under the *layered* grammar `E -> E + T | T`, explain precisely why this tree is *not derivable* — which rule is violated?
-15. The unambiguous grammar encodes left-associativity through *left recursion* (`E -> E + T`). If you changed this rule to `E -> T + E`, what would change about associativity? Verify with `5 - 2 - 1`.
-16. Look at `left_assoc` versus `right_assoc` for `5 - 2 - 1`. The values are 2 and 4. Now consider a purely additive expression `5 + 2 + 1`. Would left vs. right associativity produce different values? What does this tell you about when associativity "matters"?
-
----
+> **The runnable versions are on their own page.** A derivation tracer, an ambiguity detector, and a tree-comparison harness are in [Grammar Tooling in Python](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-grammars-in-python.md). Use the ambiguity detector on your own project grammar before you build a parser on it.
 
 ## Model 7: The Dangling Else
 
@@ -588,3 +256,119 @@ In your notebook: precedence conventions are pure social agreement; mathematics 
 ---
 
 Up next: the *Regular Expressions* activity drops to the hierarchy's bottom rung — and the Regular Expressions assignment, handed out now, puts it to work.
+
+# Answer Key
+
+Work the models above with your team before reading these. Each one answers a Critical Thinking Question the session poses; seeing the answer first turns the exercise into transcription.
+
+### Worked Example: both trees for `2 + 3 * 4`, drawn
+
+Do CTQ 1 yourself first. Then check against this — the point is not the answer, it is seeing that *both* derivations are legal under the same grammar.
+
+**Tree A — `+` on top (multiply first, value 14):**
+
+```
+            E
+          / | \
+         E  +  E
+         |     /|\
+        num   E * E
+         |    |   |
+         2   num num
+              |   |
+              3   4
+```
+
+Leftmost derivation for Tree A, one production per line:
+
+```
+E
+=> E + E          (used E -> E + E)
+=> num + E        (used E -> num, leftmost E first)
+=> 2 + E
+=> 2 + E * E      (used E -> E * E)
+=> 2 + num * E    (used E -> num)
+=> 2 + 3 * E
+=> 2 + 3 * num    (used E -> num)
+=> 2 + 3 * 4
+```
+
+**Tree B — `*` on top (add first, value 20):**
+
+```
+            E
+          / | \
+         E  *  E
+        /|\     |
+       E + E   num
+       |   |    |
+      num num   4
+       |   |
+       2   3
+```
+
+Leftmost derivation for Tree B:
+
+```
+E
+=> E * E          (used E -> E * E)
+=> E + E * E      (used E -> E + E on the leftmost E)
+=> num + E * E    (used E -> num)
+=> 2 + E * E
+=> 2 + num * E    (used E -> num)
+=> 2 + 3 * E
+=> 2 + 3 * num    (used E -> num)
+=> 2 + 3 * 4
+```
+
+**Both derivations end at the same string.** That is the whole definition: the grammar admits two distinct leftmost derivations of `2 + 3 * 4`, so it is ambiguous. Note the divergence is at the *very first step* — `E -> E + E` versus `E -> E * E` — and everything after is forced. CTQ 2 asks where the meanings diverge; it is the root node, and nothing below it.
+
+
+---
+
+### Worked Example: the layered grammar admits only one tree
+
+CTQ 5 asks you to derive `2 + 3 * 4` from the layered grammar. Here is that derivation, and then the failure you should try to produce for the other tree.
+
+```
+E
+=> E + T          (used E -> E + T)
+=> T + T          (used E -> T)
+=> F + T          (used T -> F)
+=> num + T        (used F -> num)
+=> 2 + T
+=> 2 + T * F      (used T -> T * F)
+=> 2 + F * F      (used T -> F)
+=> 2 + num * F    (used F -> num)
+=> 2 + 3 * F
+=> 2 + 3 * num    (used F -> num)
+=> 2 + 3 * 4
+```
+
+The resulting tree, with `*` forced below `+`:
+
+```
+            E
+          / | \
+         E  +  T
+         |    /|\
+         T   T * F
+         |   |    |
+         F   F   num
+         |   |    |
+        num num   4
+         |   |
+         2   3
+```
+
+**Now try to build Tree B and watch it fail.** To put `*` at the root you would need `E -> E * ...`, but no production for `E` mentions `*` at all — `*` appears only in `T -> T * F`, and every `T` sits *below* an `E`. There is no path. That impossibility is the cure working: precedence is not a convention the parser applies, it is a shape the grammar cannot violate.
+
+For CTQ 6, the production that lets parentheses win is `F -> ( E )`. It demotes a whole expression back down to a factor, which is why `(2 + 3) * 4` can put `+` beneath `*`:
+
+```
+E => T => T * F => F * F => ( E ) * F => ( E + T ) * F => ... => ( 2 + 3 ) * 4
+```
+
+
+---
+
