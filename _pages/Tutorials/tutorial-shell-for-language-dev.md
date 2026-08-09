@@ -478,3 +478,177 @@ No additional configuration needed — the exit code from the script tells GitHu
 | List matching files only | `grep -rl "Environment" src/` |
 | Invert (lines *without*) | `grep -v "^#" grammar.bnf` |
 | Clean caches | `make clean` |
+
+## From the Regular Expressions Activity: grep in Depth and Capture-Group Applications
+
+The *Regular Expressions* class session keeps a compact grep primer - the flag table and the BRE-vs-ERE trap - because the Overview assignment grades a grep transcript. The longer material below moved here: worked grep examples, named groups, and a full log-triage walkthrough that uses capture groups to turn unstructured log lines into structured records.
+
+## Model 4: Log Triage — A Capture-Group Walkthrough
+
+**Worked example.** Take one log line and the triage pattern:
+
+```
+line:    2026-09-18 08:10:22 WARN disk usage 91%
+pattern: (?P<date>\d{4}-\d{2}-\d{2}) (?P<time>\d{2}:\d{2}:\d{2}) (?P<level>[A-Z]+) (?P<msg>.*)
+```
+
+The engine walks left to right, and each group records the *span* of text it consumed. Character positions (0-indexed):
+
+```
+2026-09-18 08:10:22 WARN disk usage 91%
+0.........1.........2.........3........
+└──date──┘ └─time─┘ └lv┘ └─────msg────┘
+```
+
+| Group | Sub-pattern | Text captured | Span (start, end) |
+|-------|-------------|---------------|-------------------|
+| `date` | `\d{4}-\d{2}-\d{2}` | `2026-09-18` | (0, 10) |
+| `time` | `\d{2}:\d{2}:\d{2}` | `08:10:22` | (11, 19) |
+| `level` | `[A-Z]+` | `WARN` | (20, 24) |
+| `msg` | `.*` | `disk usage 91%` | (25, 39) |
+
+Two details deserve attention. First, `[A-Z]+` is greedy, yet it stops cleanly after `WARN`: the next character is a space, which is not in the class `[A-Z]`, so the quantifier has nothing more it is *allowed* to take — the class boundary does the work, and no backtracking is needed. Second, `.*` in `msg` is also greedy and *does* swallow spaces, running to the end of the line (`.` matches every character except newline).
+
+```python
+import re
+from collections import Counter
+
+LOG = """\
+2026-09-18 08:10:22 WARN disk usage 91%
+2026-09-18 08:10:41 INFO backup started
+2026-09-18 08:12:03 ERROR backup failed: disk full
+2026-09-18 08:12:04 WARN retrying backup
+2026-09-18 08:15:59 ERROR backup failed: disk full
+2026-09-18 08:16:10 INFO alert emailed to admin
+"""
+
+PATTERN = re.compile(
+    r"(?P<date>\d{4}-\d{2}-\d{2}) (?P<time>\d{2}:\d{2}:\d{2}) "
+    r"(?P<level>[A-Z]+) (?P<msg>.*)")
+
+records = []
+for m in PATTERN.finditer(LOG):
+    records.append(m.groupdict())
+    if len(records) == 1:
+        # show the spans for the first line, matching the walkthrough table
+        for g in ("date", "time", "level", "msg"):
+            print(f"  {g:5} = {m.group(g)!r:20} span {m.span(g)}")
+
+print("\nTriage report:")
+counts = Counter(r["level"] for r in records)
+for level, n in counts.most_common():
+    print(f"  {level:5} x{n}")
+
+print("\nAll ERROR messages:")
+for r in records:
+    if r["level"] == "ERROR":
+        print(f"  {r['time']}  {r['msg']}")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+[[MC]]
+In `(?P<level>[A-Z]+) (?P<msg>.*)`, the `level` group stops at the end of `WARN` because:
+- ( ) `+` is reluctant by default
+- (x) The next character is a space, which is not in `[A-Z]`, so the greedy `+` has nothing more it is allowed to consume
+- ( ) Named groups match at most four characters
+- ( ) The `msg` group claimed the space first
+
+### Critical Thinking Questions
+
+16. Both `[A-Z]+` and `.*` are greedy, yet one stops at a space and the other swallows spaces to the end of the line. State the rule that predicts where any greedy quantifier stops.
+17. Suppose a rogue line reads `2026-09-18 08:13:00 warning disk usage 92%` (lowercase level). Trace the pattern against it: which group's sub-pattern fails first, and what does `finditer` do with the line as a whole? Propose the smallest pattern change that would accept both spellings.
+18. `m.span(g)` gives each field's exact offsets, and `m.groupdict()` gives a dictionary per line. In two sentences, relate this to your lexer: what plays the role of the token types here, and what plays the role of the token stream?
+19. The `msg` group's `.*` would happily match an *empty* message (`.*` matches zero characters). Is that a bug or a feature for log triage? If your team decides empty messages are invalid, what one-character change enforces the decision?
+
+---
+
+This final model has two purposes: to make greedy-versus-reluctant matching concrete so it never surprises you again, and to close the theoretical loop by showing exactly where regular expressions run out of power. Both lessons point to the same underlying cause — a finite automaton has no stack, so it cannot count or remember how deeply it has nested.
+
+> **Watch out!** Regular expressions **cannot match balanced (nested) parentheses** in general — for example, the language $\{(^n)^n \mid n \geq 0\}$ (equal numbers of open and close parens) is context-free, not regular. No matter how clever your regex, there exists a depth $n$ large enough to fool it. When you need to match nested structure, you need a parser built from a context-free grammar — exactly what the next unit covers.
+
+## Model 3: Named Groups and the Lexer Connection
+
+**Named groups make a mini-lexer readable:**
+```python
+import re
+
+# Named groups: each token type is a named group
+TOKEN_SPEC = [
+    ("NUMBER",   r"\d+(?:\.\d+)?"),
+    ("KEYWORD",  r"\b(?:if|else|while|let|print|true|false)\b"),
+    ("IDENT",    r"[A-Za-z_]\w*"),
+    ("GE",       r">="), ("LE", r"<="), ("EQ", r"=="), ("NE", r"!="),
+    ("ASSIGN",   r"="),
+    ("GT",       r">"),  ("LT", r"<"),
+    ("PLUS",     r"\+"), ("MINUS", r"-"), ("STAR", r"\*"), ("SLASH", r"/"),
+    ("LPAREN",   r"\("), ("RPAREN", r"\)"),
+    ("LBRACE",   r"\{"), ("RBRACE", r"\}"),
+    ("SEMI",     r";"),
+    ("SKIP",     r"[ \t\n]+"),
+    ("COMMENT",  r"#[^\n]*"),
+    ("ERROR",    r"."),
+]
+
+MASTER = re.compile("|".join(f"(?P<{name}>{pat})" for name, pat in TOKEN_SPEC))
+
+def lex(source):
+    line, line_start = 1, 0
+    for m in MASTER.finditer(source):
+        kind = m.lastgroup
+        lexeme = m.group()
+        col = m.start() - line_start + 1
+        if kind == "SKIP":
+            line += lexeme.count("\n")
+            if "\n" in lexeme:
+                line_start = m.end() - len(lexeme) + lexeme.rfind("\n") + 1
+            continue
+        if kind == "COMMENT":
+            continue
+        if kind == "ERROR":
+            raise SyntaxError(f"line {line}, col {col}: unexpected {lexeme!r}")
+        yield (kind, lexeme, line, col)
+
+src = """let count = 0;
+while (count <= 10) {
+    count = count + 1;
+}
+print count;"""
+
+for tok in lex(src):
+    print(tok)
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+12. The master pattern joins all specs with `|`. Why must multi-character operators like `>=` appear before single-character `>`? What happens to `>=` if you swap their order?
+13. The `KEYWORD` pattern uses `\b` word boundaries. What would happen to the identifier `iffy` if keywords were matched without `\b`?
+14. The `ERROR` catch-all `.` matches any single character not matched by earlier patterns. Why is this the *last* pattern rather than the first? What role does it play in error reporting?
+15. The `SKIP` handler tracks newlines to maintain `line` and `line_start`. Why is accurate line/column tracking valuable for a language learner using your language?
+
+---
+
+Capture groups are what turn a regex from a yes/no detector into a *parser of flat records*: each group carves out one field of the matched text, and named groups label the fields. Nothing exercises this like log triage — the daily chore of turning thousands of text lines into structured data you can count, filter, and sort.
+
+### Character classes and anchors behave as you expect
+
+```bash
+grep -nE "^def "        parser.py   # ^ anchors to start of line
+grep -nE "return$"      parser.py   # $ anchors to end of line
+grep -nE "\bnum\b"      lexer.py    # \b is a word boundary: num, not number
+grep -nE "[0-9]+\.[0-9]+" lexer.py   # a float literal; note the escaped dot
+grep -nE "[[:alpha:]_][[:alnum:]_]*" lexer.py   # POSIX class = an identifier
+```
+
+Two portability notes worth knowing now rather than at 2am: `\d` and `\w` are **not** POSIX and may not work in every `grep`; the portable spellings are `[0-9]` and `[[:alnum:]_]`. And `.` still means "any character," so a literal dot needs escaping — `[0-9]+\.[0-9]+` matches `3.14`, while `[0-9]+.[0-9]+` would also match `3x14`.
+
+[[MC]]
+You run `grep -n "lexer|parser" src/main.py` and get no output, though the file plainly contains both words. What went wrong?
+- ( ) `grep` cannot search for two words at once
+- (x) Plain `grep` uses BRE, where `|` is a literal character - it searched for the string `lexer|parser`. Use `grep -nE` or escape it as `lexer\|parser`
+- ( ) The `-n` flag suppresses output when there are multiple matches
+- ( ) `src/main.py` must be passed with `-r`
+
+> **Watch out!** `grep` is line-oriented, so it cannot match a pattern that spans a newline. When you find yourself wanting that — "find every function whose body contains `raise`" — you have left `grep`'s regular-language territory and want a parser. That is the same boundary this activity's final section draws between regular expressions and context-free grammars, and it shows up in your tools as well as in your theory.
+
+

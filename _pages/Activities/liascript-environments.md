@@ -33,7 +33,7 @@ By the end of this activity, you will be able to:
 >
 > If any of these feel shaky, review them first.
 
-The scope rules of *Binding and Scope* become today's data structure: the **environment**, a chain of dictionaries linked by parent pointers, in which lookup walks outward exactly as static scoping demands. This two-day module builds the `Environment` class your interpreter assignment requires. The arc: **why one dict fails $\rightarrow$ the chain $\rightarrow$ the four operations $\rightarrow$ blocks creating and discarding scopes**.
+The scope rules of *Binding and Scope* become today's data structure: the **environment**, a chain of dictionaries linked by parent pointers, in which lookup walks outward exactly as static scoping demands. This session builds the `Environment` class your interpreter assignment requires. The arc: **why one dict fails $\rightarrow$ the chain $\rightarrow$ the four operations $\rightarrow$ blocks creating and discarding scopes**.
 
 ---
 
@@ -43,7 +43,7 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 ---
 
-# Part I: The Chain (Day 1)
+# Part I: The Chain
 
 ## 1. One Dictionary Cannot Shadow
 
@@ -168,7 +168,7 @@ except NameError as e:
 
 ---
 
-# Part II: The Four Operations in Practice (Day 1, continued)
+# Part II: The Four Operations in Practice
 
 **Intuition for Model 3:** At a hotel front desk, `define` is checking *in* — always a fresh entry, even if a same-named guest is registered on a higher floor. `assign` is the manager walking every floor to hand the *existing* guest a new key — never a new entry. This model runs both operations side-by-side so you can see the difference concretely.
 
@@ -254,7 +254,7 @@ print(f"  outer counter at end = {glob2.lookup('counter')}")  # still 3!
 
 ---
 
-# Part III: Blocks, Loops, and Per-Iteration Scope (Day 2)
+# Part III: Blocks, Loops, and Per-Iteration Scope
 
 ## 2. Blocks Push, Statements Thread
 
@@ -385,7 +385,7 @@ A student writes `inner.define("x", 99)` when they meant to update the outer sco
 
 # Part IV: Variable Storage — A Step-by-Step Trace
 
-## Model 6: Dictionary-Based Environment — Walking Through Every Operation
+## Model 6 (At Home): Dictionary-Based Environment — Walking Through Every Operation
 
 Before wiring the `Environment` class into your interpreter, trace every environment operation on a concrete program: this model runs one step by step, printing the state of every dictionary at each moment. The goal: to predict the chain's exact contents at any point in any program — without running it.
 
@@ -456,7 +456,7 @@ trace_program()
 
 ---
 
-# Part V: Wiring It into the Interpreter (Day 2)
+# Part V: Wiring It into the Interpreter
 
 ## 3. Exercises
 
@@ -487,3 +487,4 @@ In your notebook: the environment chain makes "context" an explicit, inspectable
 ---
 
 Up next: the *Type Systems* activity asks what your interpreter should do with senseless values — while the `Environment` you built here goes straight into the Interpreter assignment.
+

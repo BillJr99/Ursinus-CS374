@@ -502,7 +502,7 @@ If any output differs from the transcript, read the REPL's error message aloud t
 ## 4. Exercises
 
 1. *Warmups.* Define and test: `(double x)`, `(average a b)`, `(my-length lst)` recursively, and `(count-if pred lst)`.
-2. *The translation suite.* Port your Day 1 functional exercises to Scheme: the product of odds (use your `my-filter` plus a recursive `product`), and word-count's shape `(my-reduce + 0 (my-map (lambda (w) 1) ws))`. Note which felt more natural in which language, honestly.
+2. *The translation suite.* Port your exercises from the *Functional Programming* activity to Scheme: the product of odds (use your `my-filter` plus a recursive `product`), and word-count's shape `(my-reduce + 0 (my-map (lambda (w) 1) ws))`. Note which felt more natural in which language, honestly.
 3. *Trees, of course.* Represent your CS374 AST in Scheme as nested lists, like `'(* (+ 2 3) 4)`, and write `(evaluate tree)` for `+ - * /` in fifteen lines. You have now written your interpreter twice; compare line counts and explain the difference in one sentence.
 4. *Quote experiments.* Using `car`, `cdr`, and `cons` on `'(define (square x) (* x x))`, extract the function name, the parameter list, and the body. You are manipulating a program with a program; say so out loud.
 

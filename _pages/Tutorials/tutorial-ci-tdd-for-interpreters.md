@@ -1053,3 +1053,200 @@ Pick the `TestArithmetic` class or the `TestBooleans` class. Replace the individ
 - Batchelder, Ned. *coverage.py: Code Coverage for Python*. coverage.readthedocs.io, 2024. https://coverage.readthedocs.io/
 - Beck, Kent. *Test Driven Development: By Example*. Addison-Wesley, 2002. — The original TDD book; the Red-Green-Refactor cycle comes from Chapter 1.
 - Fowler, Martin. *Refactoring: Improving the Design of Existing Code*, 2nd ed. Addison-Wesley, 2018. — Chapter 4 covers test strategy for larger systems.
+
+# From the Sprint Studio: Velocity and Red-Green Discipline
+
+Two studio tools from the Sprint Studio sessions: measuring what "done" means across sprints, and writing the test before the code.
+
+## Model 1: Sprint Velocity — Measuring What "Done" Looks Like
+
+Velocity is the sprint's heartbeat reading: a falling trend is your early warning system, and a flat trend three sprints before the deadline is a crisis that has not been named yet. This model simulates three sprints with concrete numbers so you can see what a healthy trajectory looks like versus a warning trajectory — and practice interpreting the dashboard before your own numbers are in it.
+
+A sprint velocity is a *count*, not a feeling. The Evaluator tracks two numbers: **stories completed** (AST nodes with passing tests) and **tests passing**. The cell below simulates a three-sprint project and visualizes the velocity trend, because a slowing velocity three sprints before Demo Day is early warning, not bad luck.
+
+```python
+# Sprint health dashboard: velocity, test coverage, and projection.
+# Edit the DATA dict to reflect your team's actual numbers each sprint.
+
+DATA = {
+    "Sprint 1": {
+        "nodes_planned": 8,
+        "nodes_done":    6,
+        "tests_passing": 14,
+        "tests_total":   18,
+        "sample_programs_running": 1,
+        "known_failures": ["string concatenation crashes", "nested if not parsed"],
+    },
+    "Sprint 2": {
+        "nodes_planned": 6,
+        "nodes_done":    5,
+        "tests_passing": 22,
+        "tests_total":   26,
+        "sample_programs_running": 3,
+        "known_failures": ["function return value sometimes None"],
+    },
+    "Sprint 3": {
+        "nodes_planned": 4,
+        "nodes_done":    4,
+        "tests_passing": 30,
+        "tests_total":   30,
+        "sample_programs_running": 5,
+        "known_failures": [],
+    },
+}
+
+TOTAL_NODES = 18  # total nodes in the node inventory
+
+print("=" * 60)
+print("SPRINT HEALTH DASHBOARD")
+print("=" * 60)
+print()
+
+completed_so_far = 0
+for sprint, d in DATA.items():
+    velocity = d["nodes_done"] / d["nodes_planned"] if d["nodes_planned"] else 0
+    test_pct  = d["tests_passing"] / d["tests_total"] * 100 if d["tests_total"] else 0
+    bar_v     = "█" * d["nodes_done"] + "░" * (d["nodes_planned"] - d["nodes_done"])
+    bar_t     = "█" * (d["tests_passing"] // 2) + "░" * ((d["tests_total"] - d["tests_passing"]) // 2)
+
+    print(f"── {sprint} ──────────────────────────────────")
+    print(f"  Nodes:   [{bar_v}]  {d['nodes_done']}/{d['nodes_planned']} ({velocity*100:.0f}%)")
+    print(f"  Tests:   [{bar_t}]  {d['tests_passing']}/{d['tests_total']} ({test_pct:.0f}%)")
+    print(f"  Samples: {d['sample_programs_running']} running")
+    if d["known_failures"]:
+        print(f"  Known failures ({len(d['known_failures'])}):")
+        for f in d["known_failures"]:
+            print(f"    • {f}")
+    else:
+        print(f"  Known failures: none ✓")
+    completed_so_far += d["nodes_done"]
+    print()
+
+remaining = TOTAL_NODES - completed_so_far
+last_velocity = DATA["Sprint 3"]["nodes_done"] / DATA["Sprint 3"]["nodes_planned"]
+sprints_needed = remaining / (last_velocity * DATA["Sprint 3"]["nodes_planned"]) if last_velocity > 0 else float("inf")
+
+print("── Projection ─────────────────────────────────────")
+print(f"  Total nodes:        {TOTAL_NODES}")
+print(f"  Completed so far:   {completed_so_far}")
+print(f"  Remaining:          {remaining}")
+print(f"  Last sprint rate:   {last_velocity*100:.0f}% ({DATA['Sprint 3']['nodes_done']}/{DATA['Sprint 3']['nodes_planned']})")
+if remaining == 0:
+    print(f"  → All nodes complete! Ready for Demo Day polish. ✓")
+elif sprints_needed <= 1:
+    print(f"  → On track: ~{sprints_needed:.1f} sprints to clear remaining nodes.")
+else:
+    print(f"  → WARNING: at current rate, ~{sprints_needed:.1f} more sprints needed. Re-scope now.")
+
+print()
+print("  Rule: a sprint with more than 2 known failures is not done.")
+print("  Rule: test_pct < 80% triggers a test-debt sprint before new features.")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+> **Watch out!** The projection formula assumes your last sprint's velocity holds constant. Real project velocity rarely stays constant — it often drops in the final sprint due to integration work and debugging. If you are already at 80% velocity, the projection is optimistic. Use the projection as a floor, not a ceiling.
+
+### Critical Thinking Questions
+
+1. The dashboard reports "known failures." Why is it *better* to list them than to omit them? Connect to the gallery walk protocol's requirement that every host show at least one failure.
+2. If the projection says "2.3 more sprints" and only 1 sprint remains, what are the two legitimate responses? (Hint: one improves execution; the other improves scope.) Which is harder, and why?
+3. "Mostly working" is not a status. Rewrite each of these non-statuses as a measurable status using the dashboard's vocabulary: "the parser is almost done," "tests are passing," "the niche feature is nearly complete."
+
+---
+
+## Model 2: The Red-Green Discipline — Writing Tests Before Code
+
+A failing test is not a sign of failure — it is a specification. Before a feature exists, the only accurate representation of "we plan to build this" is a test that currently fails. This model makes that discipline concrete by treating the set of failing tests as the literal sprint backlog, so the sprint goal is visible and measurable at every moment.
+
+The Evaluator's job is to write **failing tests** before the Builder writes the code they test. A failing test is a specification: it states precisely what the code must do before the code exists. The cell below demonstrates the discipline by running a test suite against a deliberately incomplete interpreter, showing which tests fail (red), which pass (green), and what the gap is.
+
+```python
+# Demonstrate red-green testing: tests written first, implementation following.
+# Edit the 'implemented' set to simulate different sprint states.
+
+# ── Sprint State ──────────────────────────────────────────────────────────────
+# Set each feature to True when it is implemented in your interpreter.
+IMPLEMENTED = {
+    "NumLit":     True,
+    "StrLit":     True,
+    "BoolLit":    True,
+    "BinOp_arith": True,
+    "BinOp_compare": True,
+    "LetStmt":    True,
+    "VarRef":     True,
+    "IfStmt":     True,
+    "WhileStmt":  False,   # ← not yet implemented
+    "FunDecl":    False,   # ← not yet implemented
+    "Call":       False,   # ← not yet implemented
+    "ReturnStmt": False,
+    "PrintStmt":  True,
+    "LogicOp":    False,   # short-circuit
+    "StringConcat": False, # "a" + "b"
+}
+
+# ── Test Registry ─────────────────────────────────────────────────────────────
+# Each test: (description, required_feature, expected_output)
+TESTS = [
+    ("Integer literal",          "NumLit",       "42"),
+    ("String literal",           "StrLit",       "hello"),
+    ("Boolean literal",          "BoolLit",      "true"),
+    ("Addition 2+3",             "BinOp_arith",  "5"),
+    ("Subtraction 10-4",         "BinOp_arith",  "6"),
+    ("Multiplication 3*4",       "BinOp_arith",  "12"),
+    ("Division 10/4",            "BinOp_arith",  "2.5"),
+    ("Comparison 3 < 5",         "BinOp_compare","true"),
+    ("Equality 5 == 5",          "BinOp_compare","true"),
+    ("Let x = 5; print x",       "LetStmt",      "5"),
+    ("Variable reference",       "VarRef",       "10"),
+    ("If true print yes",        "IfStmt",       "yes"),
+    ("If false print no",        "IfStmt",       "no"),
+    ("While count down",         "WhileStmt",    "0"),
+    ("Function declaration",     "FunDecl",      None),
+    ("Function call",            "Call",         "42"),
+    ("Return statement",         "ReturnStmt",   "7"),
+    ("Print statement",          "PrintStmt",    "hello world"),
+    ("Short-circuit: and",       "LogicOp",      "false"),
+    ("Short-circuit: or",        "LogicOp",      "true"),
+    ("String concat 'a'+'b'",    "StringConcat", "ab"),
+]
+
+# ── Run and Report ─────────────────────────────────────────────────────────────
+passing = [t for t in TESTS if IMPLEMENTED.get(t[1], False)]
+failing = [t for t in TESTS if not IMPLEMENTED.get(t[1], False)]
+
+print("=" * 55)
+print(f"  TEST RESULTS — Sprint {sum(IMPLEMENTED.values())}/{len(IMPLEMENTED)} features")
+print("=" * 55)
+print()
+print("  ✓ PASSING")
+for desc, feat, expected in passing:
+    print(f"    ✓  {desc}")
+
+print()
+print("  ✗ FAILING (specification written, not yet implemented)")
+for desc, feat, expected in failing:
+    label = f"[{feat}]"
+    print(f"    ✗  {desc:<35} {label}")
+
+print()
+print(f"  Summary: {len(passing)}/{len(TESTS)} tests passing ({len(passing)/len(TESTS)*100:.0f}%)")
+print()
+if len(failing) == 0:
+    print("  All tests green. Sprint goal met. ✓")
+elif len(failing) <= 3:
+    print(f"  {len(failing)} test(s) remaining. Sprint finish is this session.")
+else:
+    print(f"  {len(failing)} tests still failing. Evaluate sprint scope with Coordinator.")
+print()
+print("  Key: failing tests ARE the sprint backlog. Each ✗ is the next task.")
+```
+@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+
+### Critical Thinking Questions
+
+4. The test for `FunDecl` has `expected_output = None` — no known output yet, just a known requirement. What does this represent in the red-green discipline, and why is it still worth writing the test?
+5. If the Evaluator writes 5 new failing tests at the start of the sprint, and the Builder closes 3 of them, what is the sprint's velocity? Is a sprint with 2 remaining failing tests "done"?
+6. The test suite acts as executable documentation of the language's semantics. Which is more authoritative: a test that passes, or the corresponding entry in `SEMANTICS.md`? What should you do when they disagree?
+
+---
+
