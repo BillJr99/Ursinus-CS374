@@ -471,7 +471,7 @@ schedule:
     points: "15"
     rubricpath: "_pages/Assignments/lab-parserskeleton.md"
   - dtitle: "Lab: Environments and Scope Handed Out"
-    dlink: "Assignments/Environments"
+    dlink: "Assignments/EnvironmentsLab"
     points: "15"
     rubricpath: "_pages/Assignments/lab-environments.md"
   readings:
@@ -508,7 +508,7 @@ schedule:
     points: "3"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
   - dtitle: "Lab: Type Checker Starter Handed Out"
-    dlink: "Assignments/TypeChecker"
+    dlink: "Assignments/TypeCheckerLab"
     points: "15"
     rubricpath: "_pages/Assignments/lab-typechecker.md"
   readings:
@@ -527,7 +527,7 @@ schedule:
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-functional.md"
   deliverables:
   - dtitle: "Lab: Environments and Scope Due"
-    dlink: "Assignments/Environments"
+    dlink: "Assignments/EnvironmentsLab"
     points: "15"
     rubricpath: "_pages/Assignments/lab-environments.md"
   readings:
@@ -557,11 +557,11 @@ schedule:
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-lambdacalculus1.md"
   deliverables:
   - dtitle: "Lab: Type Checker Starter Due"
-    dlink: "Assignments/TypeChecker"
+    dlink: "Assignments/TypeCheckerLab"
     points: "15"
     rubricpath: "_pages/Assignments/lab-typechecker.md"
   - dtitle: "Lab: Lambda Calculus Handed Out"
-    dlink: "Assignments/LambdaCalculus"
+    dlink: "Assignments/LambdaCalculusLab"
     points: "15"
     rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
@@ -607,7 +607,7 @@ schedule:
   link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-sprintstudio.md"
   deliverables:
   - dtitle: "Lab: Lambda Calculus Due"
-    dlink: "Assignments/LambdaCalculus"
+    dlink: "Assignments/LambdaCalculusLab"
     points: "15"
     rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   - dtitle: "Team Language Project: Sprint 2 Gallery Walk (Strength/Question/Risk cards + triage) Due"
