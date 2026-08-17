@@ -177,7 +177,7 @@ goals:
 - goal: "Design and implement an original programming language as a team, integrating course components through iterative sprints, peer review, and a public demonstration."
 
 grade_breakdown:
-- category: "Programming Assignments (5)"
+- category: "Programming Assignments"
   weight: "40%"
 - category: "Labs"
   weight: "10%"
