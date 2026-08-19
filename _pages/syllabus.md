@@ -40,11 +40,11 @@ info:
     - day: "T"
       starttime: "10:00 AM"
       endtime: "11:15 AM"
-      place: "Pfahler 007"
+      place: "Pfahler 012"
     - day: "R"
       starttime: "10:00 AM"
       endtime: "11:15 AM"
-      place: "Pfahler 007"
+      place: "Pfahler 012"
   # No midterm/final in this course. "TBD" dates are the sentinel that suppresses
   # rendering and .ics events for these blocks - do not delete them.
   midtermexam: 
