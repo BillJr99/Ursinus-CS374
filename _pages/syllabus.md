@@ -229,10 +229,6 @@ schedule:
   - dtitle: "Participation: Warmup Assignment Handed Out"
     dlink: "Assignments/Warmup"
     points: "10"
-  - dtitle: "Participation: Reading Exercises Handed Out"
-    dlink: "Participation/ReadingExercises"
-    points: "10"
-    module: overarching
   readings:
   - rtitle: "Thain, Chapter 1"
   - rtitle: "Allison, Ch. 1: Introduction — Formal Languages and Finite State Machines"
@@ -253,6 +249,10 @@ schedule:
     dlink: "Assignments/Overview"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-overview.md"
+  - dtitle: "Participation: Reading Exercises Handed Out"
+    dlink: "Participation/ReadingExercises"
+    points: "10"
+    module: overarching
   readings:
   - rtitle: "This session merges two former topics: programming paradigms and the criteria for evaluating a language. Read the paradigms overview before class."
     rlink: "https://www.billmongan.com/Ursinus-CS374-History"
