@@ -29,7 +29,7 @@ These exercises exist so that class begins where you are, not where the reading 
 - **Attempt before class, not for a grade.** These are not graded for correctness. They are the preparation half of participation: arriving with an attempt is what the [participation rubric]({{ site.baseurl }}/Participation/PreparingForClass) calls proficient preparation.
 - **Work by hand first, then check with code.** Derive the answer on paper, then confirm it in the REPL where you can. The by-hand pass is where the understanding forms; the code is the check.
 - **Bring your stuck point.** Mark the one step that resisted you and bring it. That is your entry ticket to the discussion.
-- **Keep them.** Your attempts are natural raw material for your [Reflection Notebook]({{ site.baseurl }}/Participation/ReflectionNotebook) and a study resource for later units, since each object in this course becomes the input to the next.
+- **Keep them.** Your attempts are natural raw material for the reflection prompts that close each assignment.
 
 ## The Exercises, by Unit
 
@@ -91,4 +91,3 @@ These exercises exist so that class begins where you are, not where the reading 
 ## See also
 
 - [Preparing for Each Class]({{ site.baseurl }}/Participation/PreparingForClass) — the routine these exercises fit into, and the participation rubric.
-- [Reflection Notebook]({{ site.baseurl }}/Participation/ReflectionNotebook) — where your attempts and stuck points become tracked reflection.

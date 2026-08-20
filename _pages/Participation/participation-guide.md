@@ -60,7 +60,7 @@ Being confused is part of learning this material — it is not a sign you do not
 
 At midterm and at the end of the term, write a short self-assessment (a paragraph or two) against the four rubric dimensions:
 
-1. **Preparation and reflection:** How reliably have you been arriving with the reading done and the exercises attempted? What does your Reflection Notebook show?
+1. **Preparation and reflection:** How reliably have you been arriving with the reading done and the exercises attempted? What do your reflection responses show?
 2. **Contribution and collaboration:** Name one session you helped move forward, and one teammate you helped.
 3. **A goal:** One concrete thing you will do differently in the second half of the term.
 
@@ -69,5 +69,4 @@ Your own account of your growth is part of this grade, and the self-assessment i
 ## See also
 
 - [Reading Exercises]({{ site.baseurl }}/Participation/ReadingExercises) — the reading-linked exercise bank you draw on when preparing.
-- [Reflection Notebook]({{ site.baseurl }}/Participation/ReflectionNotebook) — what to keep in your notebook and how it is evaluated.
 - [Overview Assignment]({{ site.baseurl }}/Assignments/Overview) — the Language Autobiography that anchors your semester-long reflection.

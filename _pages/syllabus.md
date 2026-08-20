@@ -182,14 +182,12 @@ goals:
 
 grade_breakdown:
 - category: "Programming Assignments"
-  weight: "40%"
+  weight: "30%"
 - category: "Labs"
-  weight: "10%"
+  weight: "30%"
 - category: "Team Language Project"
-  weight: "25%"
+  weight: "30%"
 - category: "Class Activities and Participation"
-  weight: "15%"
-- category: "Reflection Notebook"
   weight: "10%"
 
 letter_grades:
@@ -692,7 +690,3 @@ This is a course you do, not one you watch, and this component values the daily 
 Participation takes more than one form, by design. In the in-class activities your team rotates the POGIL roles — **Manager, Recorder, Presenter, and Reflector** — so that on different days you facilitate, capture the group's thinking, report out, or step back and synthesize. In the project phase your team rotates a second set of roles — **Coordinator, Builder, Evaluator, and Scribe**. Speaking up in whole-class discussion counts; so does posting your team's answer to the class discussion board, asking a sharp question, or helping a teammate past a bug. If the spoken room is hard for you, the written and role-based channels are real ways to earn this component — talk with me early and we will find the path that fits.
 
 From time to time the class agenda sets aside time for **reading exercises and discussion**: a short problem tied to the reading — write a grammar rule, trace a tokenizer, evaluate a language-design tradeoff — that you attempt beforehand and we work through together. These are marked on the schedule and drawn from the **[Reading Exercises](Participation/ReadingExercises)** bank. The Week 14 **mock-interview rehearsal** — practicing an interview-style explanation of your own interpreter and language with a partner from another team — counts here too; see the [Demo Day Guide](Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice).
-
-## Reflection Notebook (10%)
-
-Programming language theory rewards reflection: the same idea returns in new clothes — a grammar becomes a parser becomes an AST becomes an evaluator — and the students who notice the pattern go furthest. Your **[Reflection Notebook](Participation/ReflectionNotebook)** is where you make that noticing visible. It collects your responses to the reflection prompt that closes each class activity and each assignment, anchored by the Language Autobiography you write in the Overview assignment and revisit at semester's end. It is reviewed at midterm and at the end of the term; the guide explains what to keep in it and how it is evaluated.
