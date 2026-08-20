@@ -40,7 +40,9 @@ info:
     - rtitle: "Thain, Chapter 1"
     - rtitle: "uv — the Python environment manager we standardize on (Part 1.5)"
       rlink: "https://docs.astral.sh/uv/"
-    - rtitle: "Shell Skills for Language Development (Tutorial)"
+    - rtitle: "Required setup (Route A): The Course Development Environment - Docker, Git, and GitHub (Tutorial)"
+      rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/DevEnvironment"
+    - rtitle: "Required setup (Part 1.5): Shell Skills for Language Development - the step-by-step tutorial article this assignment's shell work follows"
       rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ShellForLanguageDev"
 
 tags:
@@ -177,7 +179,7 @@ Recommended editors: VS Code (with Python extension), PyCharm Community Edition,
 
 ## Part 1.5: Command-Line and Git Checkpoint
 
-You will build one language across six assignments, each importing the previous stage's component *unchanged*, all from the terminal and all under version control. This checkpoint confirms those underlying tools work before the pipeline depends on them. You do not need to be a shell expert — you need to navigate, version your work, and create a reproducible environment. The **Command-Line Survival** links below (and the [Shell Skills for Language Development](/Tutorials/ShellForLanguageDev) tutorial) fill any gaps.
+You will build one language across six assignments, each importing the previous stage's component *unchanged*, all from the terminal and all under version control. This checkpoint confirms those underlying tools work before the pipeline depends on them. You do not need to be a shell expert — you need to navigate, version your work, and create a reproducible environment. The two required-setup tutorials teach all of it, so nothing is repeated here: work through the [Course Development Environment](/Tutorials/DevEnvironment) for the container, git identity, and the daily loop, and [Shell Skills for Language Development](/Tutorials/ShellForLanguageDev) — a step-by-step article with a *Try it* checkpoint per step — for navigation, `grep`, redirection, and the test harness. The **Command-Line Survival** links below fill any remaining gaps.
 
 **Container-route note (Route A):** perform the git steps of this checkpoint **from inside the course container**, against the `cs374-work` GitHub repository you created in the [Development Environment tutorial](/Tutorials/DevEnvironment) — the tutorial's practice section (create `hello.py`, run, commit, push) is exactly this checkpoint, so its transcript satisfies the shell-navigation and git items below. The `uv` step still runs on your host (the container image already pins the course packages; `uv` is your reproducible-environment tool for the native route and anywhere outside the container).
 

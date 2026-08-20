@@ -232,12 +232,15 @@ schedule:
   - dtitle: "Participation: Class Activities Handed Out"
     dlink: "Participation/PreparingForClass"
     points: "10"
+    module: overarching
   - dtitle: "Reflection Notebook Handed Out"
     dlink: "Participation/ReflectionNotebook"
     points: "10"
+    module: overarching
   - dtitle: "Participation: Reading Exercises Handed Out"
     dlink: "Participation/ReadingExercises"
     points: "10"
+    module: overarching
   readings:
   - rtitle: "Thain, Chapter 1"
   - rtitle: "Allison, Ch. 1: Introduction — Formal Languages and Finite State Machines"
@@ -245,8 +248,10 @@ schedule:
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-course-arc.md"
   - rtitle: "Required setup (Overview assignment, Route A): Your Course Development Environment — Docker, Git, and GitHub"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/DevEnvironment"
+    module: resource
   - rtitle: "Required setup (Overview assignment, Part 1.5): The Shell for Language Development - navigation, grep, and the command line you will live in this semester"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ShellForLanguageDev"
+    module: resource
 - week: "0"
   date: "1"
   title: "Programming Paradigms and Evaluating Languages"
