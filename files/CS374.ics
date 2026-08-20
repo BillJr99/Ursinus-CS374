@@ -56,9 +56,9 @@ PRIORITY:3
 END:VEVENT
 BEGIN:VEVENT
 UID:00000000-0000-0000-0000-0366c95f1803
-DTSTAMP:20260825T000000Z
-DTSTART;VALUE=DATE:20260825
-SUMMARY:CS374 Principles of Programming Languages: Participation: Reading Exercises Handed Out
+DTSTAMP:20260827T000000Z
+DTSTART;VALUE=DATE:20260827
+SUMMARY:CS374 Principles of Programming Languages: Participation: Overview Assignment Handed Out
 LOCATION:
 DESCRIPTION:
 PRIORITY:3
@@ -67,7 +67,7 @@ BEGIN:VEVENT
 UID:00000000-0000-0000-0000-0366c95f1804
 DTSTAMP:20260827T000000Z
 DTSTART;VALUE=DATE:20260827
-SUMMARY:CS374 Principles of Programming Languages: Participation: Overview Assignment Handed Out
+SUMMARY:CS374 Principles of Programming Languages: Participation: Reading Exercises Handed Out
 LOCATION:
 DESCRIPTION:
 PRIORITY:3
