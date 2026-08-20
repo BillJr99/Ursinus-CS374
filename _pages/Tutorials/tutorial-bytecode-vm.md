@@ -2491,28 +2491,28 @@ print(f"\nfact body has tail call to 'fact': {is_tail_call(fact_body, 'fact')}")
 
 Which optimization is UNSAFE to apply to `result = print("hello") or True`?
 
-    [(x)] Replacing `print("hello")` with its constant value (it returns `None`)
-    [( )] Evaluating `True` at compile time
-    [( )] Keeping the original expression unchanged
-    [( )] All of the above
+[(X)] Replacing `print("hello")` with its constant value (it returns `None`)
+[( )] Evaluating `True` at compile time
+[( )] Keeping the original expression unchanged
+[( )] All of the above
 
 ---
 
 Constant propagation extends the environment with `{x: 3}` when `let x = 3`. Why is it safe to propagate this constant throughout the body?
 
-    [( )] Because x is an integer
-    [(x)] Because `let` creates an immutable binding — x's value cannot change in the body
-    [( )] Because 3 is small enough to inline
-    [( )] Because the compiler checked for side effects
+[( )] Because x is an integer
+[(X)] Because `let` creates an immutable binding — x's value cannot change in the body
+[( )] Because 3 is small enough to inline
+[( )] Because the compiler checked for side effects
 
 ---
 
 A tail call optimization converts a tail-recursive call into a loop at compile time. What benefit does this provide?
 
-    [( )] Faster garbage collection
-    [(x)] Constant stack space instead of O(n) stack frames — enables deep or infinite recursion without stack overflow
-    [( )] Smaller bytecode
-    [( )] Type safety
+[( )] Faster garbage collection
+[(X)] Constant stack space instead of O(n) stack frames — enables deep or infinite recursion without stack overflow
+[( )] Smaller bytecode
+[( )] Type safety
 
 ---
 

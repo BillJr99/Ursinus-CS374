@@ -122,12 +122,12 @@ $$
 E \rightarrow E + T \ \text{(left assoc.)} \qquad P \rightarrow F \,\hat{}\, P \mid F \ \text{(right assoc.)}
 $$
 
-[[MC]]
 In the layered grammar, multiplication binds tighter than addition because:
-- ( ) The parser checks a precedence table at runtime
-- ( ) Multiplication appears earlier in the file
-- (x) The multiplication rule lives deeper in the nonterminal chain, forcing `*` nodes lower in every parse tree
-- ( ) The lexer tags `*` with higher priority
+
+[( )] The parser checks a precedence table at runtime
+[( )] Multiplication appears earlier in the file
+[(X)] The multiplication rule lives deeper in the nonterminal chain, forcing `*` nodes lower in every parse tree
+[( )] The lexer tags `*` with higher priority
 
 ---
 
@@ -202,26 +202,26 @@ The string `if A then if B then other else other` has two trees: the `else` can 
 
 > *Exercises adapted from topics covered in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
-[[MC]]
 A grammar is ambiguous if:
-- ( ) It has more than one nonterminal
-- ( ) Some of its rules are left-recursive
-- (x) Some string in the language has two or more distinct parse trees
-- ( ) It generates an infinite language
 
-[[MC]]
+[( )] It has more than one nonterminal
+[( )] Some of its rules are left-recursive
+[(X)] Some string in the language has two or more distinct parse trees
+[( )] It generates an infinite language
+
 Left-recursion in a grammar rule causes a problem for:
-- ( ) LR parsers
-- (x) LL (recursive-descent) parsers
-- ( ) Both equally
-- ( ) Neither (left-recursion is handled by both parser types)
 
-[[MC]]
+[( )] LR parsers
+[(X)] LL (recursive-descent) parsers
+[( )] Both equally
+[( )] Neither (left-recursion is handled by both parser types)
+
 The "dangling else" ambiguity occurs because:
-- ( ) The `else` keyword is reserved in most languages
-- ( ) `if` and `else` have the same precedence
-- (x) The grammar does not specify which `if` an `else` belongs to when they are nested
-- ( ) The parser cannot distinguish `if` from `else` tokens
+
+[( )] The `else` keyword is reserved in most languages
+[( )] `if` and `else` have the same precedence
+[(X)] The grammar does not specify which `if` an `else` belongs to when they are nested
+[( )] The parser cannot distinguish `if` from `else` tokens
 
 1. *Derivation tree practice.* For the unambiguous ladder grammar (expr → term { ("+"|"-") term }, term → factor { ("*"|"/") factor }, factor → NUMBER | "(" expr ")"), draw the unique derivation tree for `3 - 1 - 1`. Show both the tree and the bottom-up evaluation order.
 

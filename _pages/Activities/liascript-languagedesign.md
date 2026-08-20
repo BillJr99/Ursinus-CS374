@@ -333,12 +333,12 @@ for i, goal in enumerate(sprint1_goals, 1):
 12. "Write 3 failing tests before any sprint" is a red-green discipline. What does a *failing* test (before the code exists) prove that a passing test cannot? Why is it more valuable to write tests before the code?
 13. The mitigation for "Demo Day: sample programs not ready" is "1 sample program per sprint." Rewrite this as a Definition of Done criterion: a sentence that Sprint Review will use to decide whether the sprint succeeded.
 
-[[MC]]
 The Coordinator is allocating Sprint 1 tasks. The niche feature (dice rolls) is exciting but risky. The best allocation strategy is:
-- ( ) Assign the niche feature to Sprint 1 to demonstrate ambition early
-- ( ) Avoid the niche feature entirely until all core features are stable
-- (x) Prototype the niche feature's *parser rule only* this sprint to retire the parse risk, while keeping it out of the evaluator until Sprint 2
-- ( ) Let the niche feature's complexity drive the entire sprint plan
+
+[( )] Assign the niche feature to Sprint 1 to demonstrate ambition early
+[( )] Avoid the niche feature entirely until all core features are stable
+[(X)] Prototype the niche feature's *parser rule only* this sprint to retire the parse risk, while keeping it out of the evaluator until Sprint 2
+[( )] Let the niche feature's complexity drive the entire sprint plan
 
 ---
 

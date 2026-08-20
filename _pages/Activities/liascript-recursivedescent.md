@@ -370,12 +370,12 @@ The two grammars accept the same strings; the loop version builds the *same left
 >
 > **The rule:** If you find yourself writing `peek_ahead(2)`, refactor the grammar first.
 
-[[MC]]
 A teammate's `parse_expr` overflows the call stack instantly on any input. Without seeing the code, the most likely diagnosis from today is:
-- ( ) The lexer returned too many tokens
-- (x) A left-recursive production was translated directly, so the function recurses before consuming input
-- ( ) The grammar is ambiguous
-- ( ) Python's recursion limit is too small for parsing
+
+[( )] The lexer returned too many tokens
+[(X)] A left-recursive production was translated directly, so the function recurses before consuming input
+[( )] The grammar is ambiguous
+[( )] Python's recursion limit is too small for parsing
 
 ---
 
@@ -394,19 +394,19 @@ These exercises build confidence in the grammar-to-code mapping and the call str
 
 > *Exercises adapted from the recursive descent parsing technique covered in standard compiler texts, including Douglas Thain's *Introduction to Compilers and Language Design* (Chapter 4).*
 
-[[MC]]
 A recursive descent parser for `expr → term { '+' term }` will call `parse_term()` how many times for input `1 + 2 + 3`?
-- ( ) Once (parse_term is called one time total)
-- ( ) Twice (once per `+` operator)
-- (x) Three times (one for each number in the sum)
-- ( ) Unboundedly many (until end of input)
 
-[[MC]]
+[( )] Once (parse_term is called one time total)
+[( )] Twice (once per `+` operator)
+[(X)] Three times (one for each number in the sum)
+[( )] Unboundedly many (until end of input)
+
 When parsing a statement like `if ( cond ) stmt`, the parser's call sequence is:
-- ( ) `parse_if_stmt()` → `parse_cond()` → `parse_stmt()`
-- ( ) `parse_stmt()` → `parse_cond()` → `parse_if_stmt()`
-- (x) `parse_stmt()` calls `parse_if_stmt()` when it sees `if` at the start; `parse_if_stmt()` then calls `parse_cond()` and `parse_stmt()` for its sub-parts
-- ( ) All three functions are called in parallel by the lexer
+
+[( )] `parse_if_stmt()` → `parse_cond()` → `parse_stmt()`
+[( )] `parse_stmt()` → `parse_cond()` → `parse_if_stmt()`
+[(X)] `parse_stmt()` calls `parse_if_stmt()` when it sees `if` at the start; `parse_if_stmt()` then calls `parse_cond()` and `parse_stmt()` for its sub-parts
+[( )] All three functions are called in parallel by the lexer
 
 1. **Hand-trace a parser call stack (simple grammar).**
    

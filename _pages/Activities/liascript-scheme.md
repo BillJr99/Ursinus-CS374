@@ -121,12 +121,12 @@ Model 2 is where recursion becomes your only loop. Every pattern you know from P
 
 7. The quote in `'(1 2 3)` says "data, do not evaluate." Predict the difference between `(1 2 3)` and `'(1 2 3)` at the prompt; verify; explain the error message in terms of the One Syntax Rule.
 
-[[MC]]
 In Scheme, the expression `(+ 1 2)` and the quoted form `'(+ 1 2)` differ in that:
-- ( ) The first is a list and the second is a number
-- (x) The first evaluates to 3, while the second is a three-element list (the unevaluated program itself, as data)
-- ( ) The second contains a syntax error
-- ( ) They are identical in every context
+
+[( )] The first is a list and the second is a number
+[(X)] The first evaluates to 3, while the second is a three-element list (the unevaluated program itself, as data)
+[( )] The second contains a syntax error
+[( )] They are identical in every context
 
 ---
 
@@ -540,7 +540,7 @@ Answer these in your course notebook if you work through the metacircular evalua
 
 ### Further reading on metacircular evaluation
 
-- **Runnable example archive** — [SchemeInterpreter.zip](/files/replit/SchemeInterpreter.zip): a complete reference implementation of this activity's evaluator, worth exploring after you have attempted the activity yourself.
+- **Runnable example archive** — [SchemeInterpreter.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeInterpreter.zip): a complete reference implementation of this activity's evaluator, worth exploring after you have attempted the activity yourself.
 
 - **SICP Chapter 4** — Abelson & Sussman, *Structure and Interpretation of Computer Programs*, 2nd ed. The original metacircular evaluator. MIT Press open access: [https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf)
 

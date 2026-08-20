@@ -34,19 +34,19 @@ with a worst-case exponential blowup in state count ($2^{|Q|}$ subsets) as the p
 
 > **Watch out!** NFAs and DFAs recognize *exactly the same class of languages* — neither is more powerful. NFAs are simply more *compact to write*: the ends-in-`ab` NFA needs 3 states while the equivalent DFA needs 4. The equivalence is proven by the subset construction, not assumed.
 
-[[MC]]
 An NFA has 4 states. The subset-construction DFA recognizing the same language has at most:
-- ( ) 4 states
-- ( ) 8 states
-- (x) 16 states, one per subset of the NFA's states
-- ( ) Unboundedly many states
 
-[[MC]]
+[( )] 4 states
+[( )] 8 states
+[(X)] 16 states, one per subset of the NFA's states
+[( )] Unboundedly many states
+
 The NFA "ends in ab" has 3 states: start/loop (q0), saw-a (q1), saw-ab (q2). The key non-determinism is at q0 on input 'a': the machine can stay in q0 (still looping) OR move to q1 (guessing the ending starts here). This non-determinism means:
-- ( ) The machine will fail on inputs where multiple paths exist
-- ( ) The machine requires exponential time to simulate
-- (x) The machine accepts if ANY choice of path leads to an accepting state
-- ( ) The machine requires the programmer to specify which path to take
+
+[( )] The machine will fail on inputs where multiple paths exist
+[( )] The machine requires exponential time to simulate
+[(X)] The machine accepts if ANY choice of path leads to an accepting state
+[( )] The machine requires the programmer to specify which path to take
 
 ---
 
@@ -407,26 +407,26 @@ for i,(ba,bb) in enumerate(zip(a_bits, b_bits)):
 
 ## Practice — Allison Readings 2.1 and 2.2
 
-[[MC]]
 A DFA accepting binary strings representing multiples of 3 needs at minimum:
-- (x) 3 states — one per remainder mod 3
-- ( ) 4 states
-- ( ) 2 states (even/odd)
-- ( ) Infinitely many states (since there are infinitely many multiples of 3)
 
-[[MC]]
+[(X)] 3 states — one per remainder mod 3
+[( )] 4 states
+[( )] 2 states (even/odd)
+[( )] Infinitely many states (since there are infinitely many multiples of 3)
+
 Which of the following languages has NO finite automaton that recognizes it?
-- ( ) Strings over {a,b} with an even number of `a`s
-- ( ) Strings over {a,b} ending with `bb`
-- (x) Strings over {a,b} with equal numbers of `a`s and `b`s
-- ( ) Strings over {a,b} not containing `aa` as a substring
 
-[[MC]]
+[( )] Strings over {a,b} with an even number of `a`s
+[( )] Strings over {a,b} ending with `bb`
+[(X)] Strings over {a,b} with equal numbers of `a`s and `b`s
+[( )] Strings over {a,b} not containing `aa` as a substring
+
 An NFA with 5 states is converted to a DFA via the subset construction. The DFA has at most:
-- ( ) 5 states
-- ( ) 10 states
-- (x) 32 states — one per subset of the 5 NFA states
-- ( ) 25 states
+
+[( )] 5 states
+[( )] 10 states
+[(X)] 32 states — one per subset of the 5 NFA states
+[( )] 25 states
 
 1. *Divisibility DFA.* Draw a DFA over $\{0,1\}$ that accepts binary numbers divisible by 3. Label each state with the remainder it represents. Verify on: `0` (0), `11` (3), `110` (6), `101` (5).
 

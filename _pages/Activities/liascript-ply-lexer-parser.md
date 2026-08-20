@@ -799,37 +799,37 @@ for prog in programs:
 
 Which statement best describes what `t_ignore = ' \t'` does in a PLY lexer?
 
-    [( )] It raises an error whenever a space or tab is found in the input.
-    [(X)] It silently discards space and tab characters without calling any rule function.
-    [( )] It converts spaces and tabs into WHITESPACE tokens.
-    [( )] It causes PLY to report an illegal-character warning for spaces and tabs.
+[( )] It raises an error whenever a space or tab is found in the input.
+[(X)] It silently discards space and tab characters without calling any rule function.
+[( )] It converts spaces and tabs into WHITESPACE tokens.
+[( )] It causes PLY to report an illegal-character warning for spaces and tabs.
 
 ---
 
 Given the PLY declaration `precedence = (('left', 'PLUS', 'MINUS'), ('left', 'TIMES', 'DIVIDE'))`, what does PLY do when parsing `3 + 4 * 2` and the parser has `3 + 4` on its stack with `*` as the lookahead token?
 
-    [( )] It reduces `3 + 4` immediately because `+` was seen first.
-    [(X)] It shifts `*` because `TIMES` has higher precedence than `PLUS`.
-    [( )] It reports a shift-reduce conflict and halts.
-    [( )] It shifts `*` because all tokens shift before any reduction.
+[( )] It reduces `3 + 4` immediately because `+` was seen first.
+[(X)] It shifts `*` because `TIMES` has higher precedence than `PLUS`.
+[( )] It reports a shift-reduce conflict and halts.
+[( )] It shifts `*` because all tokens shift before any reduction.
 
 ---
 
 LALR(1) and LL(1) are both parsing strategies that use one token of lookahead. Which statement correctly distinguishes them?
 
-    [( )] LL(1) is bottom-up; LALR(1) is top-down.
-    [( )] Both are top-down; LALR(1) uses a larger lookahead set.
-    [(X)] LL(1) is top-down (predictive); LALR(1) is bottom-up (shift-reduce) and handles a larger class of grammars.
-    [( )] LALR(1) requires the grammar to be right-recursive; LL(1) requires left-recursion.
+[( )] LL(1) is bottom-up; LALR(1) is top-down.
+[( )] Both are top-down; LALR(1) uses a larger lookahead set.
+[(X)] LL(1) is top-down (predictive); LALR(1) is bottom-up (shift-reduce) and handles a larger class of grammars.
+[( )] LALR(1) requires the grammar to be right-recursive; LL(1) requires left-recursion.
 
 ---
 
 Why is building an Abstract Syntax Tree (AST) in the parser generally better than evaluating expressions directly in parser actions?
 
-    [( )] ASTs are faster to build than direct evaluation.
-    [( )] Direct evaluation in parser actions is impossible in PLY.
-    [(X)] An AST can be traversed multiple times for different purposes (type checking, optimization, code generation), while direct evaluation discards structure immediately.
-    [( )] ASTs are required by the LALR(1) algorithm.
+[( )] ASTs are faster to build than direct evaluation.
+[( )] Direct evaluation in parser actions is impossible in PLY.
+[(X)] An AST can be traversed multiple times for different purposes (type checking, optimization, code generation), while direct evaluation discards structure immediately.
+[( )] ASTs are required by the LALR(1) algorithm.
 
 ---
 

@@ -144,19 +144,19 @@ for l, op, r in [(3.0, "+", 4.0), ("ab", "+", "cd"), (3.0, "+", "cd"),
 6. We licensed `+` for two strings but not `*` for string and number. Python licenses `"ab" * 3`. Debate and record your project's policy on string repetition, and add it to `SEMANTICS.md`.
 7. Where would a *static* checker for your language live in the pipeline (between which two existing stages), and what would it walk? You already own every data structure it needs; name them.
 
-[[MC]]
 Python raises a TypeError on `"5" - 1` at the moment the subtraction executes, never silently converting. On the two axes, Python is therefore:
-- ( ) Statically and weakly typed
-- ( ) Statically and strongly typed
-- (x) Dynamically and strongly typed
-- ( ) Dynamically and weakly typed
 
-[[MC]]
+[( )] Statically and weakly typed
+[( )] Statically and strongly typed
+[(X)] Dynamically and strongly typed
+[( )] Dynamically and weakly typed
+
 A language that deduces `n: int` from `let n = 5` without requiring the programmer to write the type annotation is using:
-- ( ) Dynamic typing
-- ( ) Weak typing
-- (x) Type inference
-- ( ) Duck typing
+
+[( )] Dynamic typing
+[( )] Weak typing
+[(X)] Type inference
+[( )] Duck typing
 
 > **Watch out!** Duck typing (Python's "if it walks like a duck and quacks like a duck, treat it as a duck") is *still* a form of typing — it is a dynamic, structural approach where compatibility is checked by whether an object supports the required operations, not by its declared class. Saying a language "has no types" because it uses duck typing is incorrect. Duck typing is a deliberate design choice that trades the early-error benefits of nominal or structural static checks for maximum flexibility.
 
@@ -239,12 +239,12 @@ except TypeError as e:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-[[MC]]
 An interpreter with dynamic (runtime) checking evaluates `(3.0 + 4.0) < ("a" + 1.0)`. When is the type error for `"a" + 1.0` detected?
-- ( ) Before execution begins
-- ( ) When the `<` comparison runs
-- (x) At the moment the `+` on `"a"` and `1.0` is evaluated — after `3.0 + 4.0` has already computed
-- ( ) Never; dynamic languages coerce automatically
+
+[( )] Before execution begins
+[( )] When the `<` comparison runs
+[(X)] At the moment the `+` on `"a"` and `1.0` is evaluated — after `3.0 + 4.0` has already computed
+[( )] Never; dynamic languages coerce automatically
 
 #### Critical Thinking Questions
 
@@ -436,12 +436,12 @@ except TypeError as e:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-[[MC]]
 In a weakly typed language, `"19.99" + 5.0` yields `"19.995"` and `"19.995" * 1.06` yields `21.1947`. The deepest design problem this postmortem illustrates is:
-- ( ) Floating-point rounding error
-- ( ) The slowness of string operations
-- (x) Silent coercion lets a type mistake flow through the program as plausible-looking wrong values instead of stopping with an error
-- ( ) Strings cannot represent decimal numbers
+
+[( )] Floating-point rounding error
+[( )] The slowness of string operations
+[(X)] Silent coercion lets a type mistake flow through the program as plausible-looking wrong values instead of stopping with an error
+[( )] Strings cannot represent decimal numbers
 
 #### Critical Thinking Questions
 

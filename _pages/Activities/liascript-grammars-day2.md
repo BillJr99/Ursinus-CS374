@@ -185,26 +185,26 @@ These exercises cover context-free grammars and the Chomsky hierarchy, drawn fro
 
 > *Exercises adapted from topics covered in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
-[[MC]]
 Which of the following languages is context-free but NOT regular?
-- ( ) Strings over {a,b} ending in `bb`
-- ( ) Strings over {a,b} with an even number of `a`s
-- (x) Strings of the form a^n b^n (equal numbers of a's then b's)
-- ( ) The empty language
 
-[[MC]]
+[( )] Strings over {a,b} ending in `bb`
+[( )] Strings over {a,b} with an even number of `a`s
+[(X)] Strings of the form a^n b^n (equal numbers of a's then b's)
+[( )] The empty language
+
 In a context-free grammar, a production rule:
-- ( ) Maps a pair of nonterminals to a terminal
-- (x) Maps a single nonterminal to a string of terminals and/or nonterminals
-- ( ) Must have exactly two alternatives
-- ( ) Cannot contain the empty string (epsilon)
 
-[[MC]]
+[( )] Maps a pair of nonterminals to a terminal
+[(X)] Maps a single nonterminal to a string of terminals and/or nonterminals
+[( )] Must have exactly two alternatives
+[( )] Cannot contain the empty string (epsilon)
+
 A derivation tree (parse tree) for a grammar:
-- ( ) Shows only the terminals, in left-to-right order
-- (x) Shows the nonterminals used at each step, with the final string as its leaves
-- ( ) Is always a binary tree
-- ( ) Is unique for every string in the language
+
+[( )] Shows only the terminals, in left-to-right order
+[(X)] Shows the nonterminals used at each step, with the final string as its leaves
+[( )] Is always a binary tree
+[( )] Is unique for every string in the language
 
 1. *Write a CFG.* Write a context-free grammar (in BNF) for the language of properly nested parentheses: `()`, `(())`, `()()`, `((()))`, etc. Show a derivation tree for `(()())`.
 

@@ -367,19 +367,19 @@ except NameError as e:
 
 ## Multiple Choice Questions
 
-[[MC]]
 A `while` loop's body declares `let t = ...` each iteration, and the team gives each iteration a fresh child environment. After the loop, `t` is undefined. This behavior is the direct consequence of:
-- ( ) The lexer discarding the variable
-- ( ) Dynamic scoping
-- (x) The binding's lifetime ending with the environment that held it, when the block scope is discarded
-- ( ) Python's garbage collector running mid-loop
 
-[[MC]]
+[( )] The lexer discarding the variable
+[( )] Dynamic scoping
+[(X)] The binding's lifetime ending with the environment that held it, when the block scope is discarded
+[( )] Python's garbage collector running mid-loop
+
 A student writes `inner.define("x", 99)` when they meant to update the outer scope's `x`. The symptom they observe is:
-- ( ) A `NameError` because `x` was not yet defined anywhere
-- ( ) The outer `x` is updated to 99, as expected
-- (x) A new inner `x` shadows the outer one, so the outer `x` is unchanged and the bug is silent
-- ( ) The program crashes with a `KeyError`
+
+[( )] A `NameError` because `x` was not yet defined anywhere
+[( )] The outer `x` is updated to 99, as expected
+[(X)] A new inner `x` shadows the outer one, so the outer `x` is unchanged and the bug is silent
+[( )] The program crashes with a `KeyError`
 
 ---
 

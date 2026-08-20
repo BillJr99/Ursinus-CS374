@@ -306,12 +306,12 @@ print("fix1 closures:", [f.__closure__ for f in fix1])   # [None, None, None]
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-[[MC]]
 `fns = [lambda: i for i in range(3)]` yields functions that all return 2, and `fns[0].__closure__[0] is fns[1].__closure__[0]` prints `True`. Together these show:
-- ( ) The lambdas were compiled to the same code object, which forces one result
-- (x) All three closures captured the very same binding (cell) for `i`, whose final value is 2
-- ( ) Python evaluates lambda bodies eagerly at definition time
-- ( ) The list comprehension copied the last lambda three times
+
+[( )] The lambdas were compiled to the same code object, which forces one result
+[(X)] All three closures captured the very same binding (cell) for `i`, whose final value is 2
+[( )] Python evaluates lambda bodies eagerly at definition time
+[( )] The list comprehension copied the last lambda three times
 
 **Critical Thinking Questions (CTQs)**
 
@@ -323,13 +323,12 @@ print("fix1 closures:", [f.__closure__ for f in fix1])   # [None, None, None]
 
 ---
 
-[[MC]]
 Two closures created by separate calls to `make_adder(5)` and `make_adder(3)` return different results for the same input because:
 
-    [( )] The function body's code differs between them
-    [(x)] Each closure captured a different defining environment in which `n` is bound to a different value
-    [( )] Python caches the most recent return value
-    [( )] Closures copy the global environment at call time
+[( )] The function body's code differs between them
+[(X)] Each closure captured a different defining environment in which `n` is bound to a different value
+[( )] Python caches the most recent return value
+[( )] Closures copy the global environment at call time
 
 ---
 

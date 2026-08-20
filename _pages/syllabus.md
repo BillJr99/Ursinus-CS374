@@ -229,14 +229,6 @@ schedule:
   - dtitle: "Participation: Warmup Assignment Handed Out"
     dlink: "Assignments/Warmup"
     points: "10"
-  - dtitle: "Participation: Class Activities Handed Out"
-    dlink: "Participation/PreparingForClass"
-    points: "10"
-    module: overarching
-  - dtitle: "Reflection Notebook Handed Out"
-    dlink: "Participation/ReflectionNotebook"
-    points: "10"
-    module: overarching
   - dtitle: "Participation: Reading Exercises Handed Out"
     dlink: "Participation/ReadingExercises"
     points: "10"
@@ -246,10 +238,10 @@ schedule:
   - rtitle: "Allison, Ch. 1: Introduction — Formal Languages and Finite State Machines"
   - rtitle: "The Arc of This Course: From Symbols to Languages (Day 1 preview)"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-course-arc.md"
-  - rtitle: "Required setup (Overview assignment, Route A): Your Course Development Environment — Docker, Git, and GitHub"
+  - rtitle: "Setup (Overview assignment, Route A): Your Course Development Environment — Docker, Git, and GitHub"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/DevEnvironment"
     module: resource
-  - rtitle: "Required setup (Overview assignment, Part 1.5): The Shell for Language Development - navigation, grep, and the command line you will live in this semester"
+  - rtitle: "Setup (Overview assignment, Part 1.5): The Shell for Language Development - navigation, grep, and the command line you will live in this semester"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ShellForLanguageDev"
     module: resource
 - week: "0"
@@ -333,7 +325,7 @@ schedule:
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Participation/ReadingExercises"
   - rtitle: "Allison, Ch. 3 §3.1–3.2: Regular Expressions and Their Equivalence to Finite Automata"
   - rtitle: "Allison, Ch. 4: The Pumping Lemma — proving a language is not regular (required for the Regex assignment's Part 4 theory questions; we work one example in class today)"
-  - rtitle: "Required alongside today's regex activity: The Shell for Language Development - the grep section, which puts today's patterns to work on your own source tree"
+  - rtitle: "The Shell for Language Development - the grep section, which puts today's patterns to work on your own source tree"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ShellForLanguageDev"
 - week: "3"
   date: "1"
@@ -415,7 +407,7 @@ schedule:
     points: "15"
     rubricpath: "_pages/Assignments/lab-automata.md"
   readings:
-  - rtitle: "Required for the Parser assignment (Step 3e): Property-Based Testing with Hypothesis - the round-trip property and how to shrink a failing case"
+  - rtitle: "For the Parser assignment (Step 3e): Property-Based Testing with Hypothesis - the round-trip property and how to shrink a failing case"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PropertyBasedTesting"
 - week: "8"
   date: "0"
@@ -463,7 +455,7 @@ schedule:
   readings:
   - rtitle: "This session is Day 2 of tree-walking interpretation: statements change state, where expressions returned values."
     rlink: false
-  - rtitle: "Required for the Tree-Walking Interpreter (Step 2e): Property-Based Testing with Hypothesis - the round-trip property, now over evaluation"
+  - rtitle: "For the Tree-Walking Interpreter (Step 2e): Property-Based Testing with Hypothesis - the round-trip property, now over evaluation"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PropertyBasedTesting"
   - rtitle: "Optional depth — tutorial: CI and TDD for Interpreters"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CITDDForInterpreters"
@@ -655,12 +647,6 @@ schedule:
     dlink: "Projects/TeamLanguage"
     points: "75"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
-  - dtitle: "Participation: Class Activities Due"
-    dlink: "Participation/PreparingForClass"
-    points: "10"
-  - dtitle: "Reflection Notebook Due"
-    dlink: "Participation/ReflectionNotebook"
-    points: "10"
   - dtitle: "Participation: Reading Exercises Due"
     dlink: "Participation/ReadingExercises"
     points: "10"

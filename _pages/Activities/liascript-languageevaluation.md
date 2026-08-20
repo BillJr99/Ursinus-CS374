@@ -151,12 +151,12 @@ Part I gave you four lenses; Part II shows why you cannot maximize all four at o
 
 > **Runnable version (at home).** A four-way demonstration of these tradeoffs in executable Python - coercion, comprehensions, checked division, and duck typing - is in *Part III* below, with its own questions.
 
-[[MC]]
 A team adds implicit type coercion to their language so that `"3" + 4` yields `7`, reasoning that it improves writability. The most likely cost, in this framework, is to:
-- ( ) Execution speed only
-- (x) Reliability, because errors that types would have caught now produce silently wrong values
-- ( ) Training cost only
-- ( ) Nothing; coercion is free
+
+[( )] Execution speed only
+[(X)] Reliability, because errors that types would have caught now produce silently wrong values
+[( )] Training cost only
+[( )] Nothing; coercion is free
 
 ---
 

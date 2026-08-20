@@ -365,26 +365,26 @@ print(f"\nEvaluated result: {eval_postorder(expr_tree)}  (expected 9.0)")
 
 ## Practice — Allison Reading 6.3
 
-[[MC]]
 An evaluator that processes an AST uses which traversal order?
-- ( ) Breadth-first (level by level)
-- ( ) Pre-order (root before children)
-- (x) Post-order (children before root)
-- ( ) In-order (left child, root, right child)
 
-[[MC]]
+[( )] Breadth-first (level by level)
+[( )] Pre-order (root before children)
+[(X)] Post-order (children before root)
+[( )] In-order (left child, root, right child)
+
 A pretty-printer that prints operators *between* their operands uses which traversal?
-- ( ) Post-order
-- ( ) Pre-order
-- (x) In-order (with parentheses)
-- ( ) Breadth-first
 
-[[MC]]
+[( )] Post-order
+[( )] Pre-order
+[(X)] In-order (with parentheses)
+[( )] Breadth-first
+
 The BFS traversal of the tree for `(1 + 2) * 3` visits nodes in order:
-- ( ) `1 2 + 3 *`
-- ( ) `* + 3 1 2`
-- (x) `* + 3 1 2` — root first, then level 1, then leaves
-- ( ) `1 + 2 * 3`
+
+[( )] `1 2 + 3 *`
+[( )] `* + 3 1 2`
+[(X)] `* + 3 1 2` — root first, then level 1, then leaves
+[( )] `1 + 2 * 3`
 
 1. *Three traversals.* Build the expression tree for `a * b + c * d` (where `+` is the root). Write out all three traversal orders by hand, then verify with code.
 

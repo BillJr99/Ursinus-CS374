@@ -288,12 +288,12 @@ print(f"total = {total}, mean = {total / len(passing):.1f}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-[[MC]]
 In the pipeline trace, the score 54 becomes 59 after the map stage and then vanishes. Which statement is accurate?
-- ( ) `map` removed it because it was below 70
-- (x) `map` transformed it (54 → 59) and `filter` discarded it because 59 < 70
-- ( ) `reduce` skipped it while folding
-- ( ) It was removed before the map stage ran
+
+[( )] `map` removed it because it was below 70
+[(X)] `map` transformed it (54 → 59) and `filter` discarded it because 59 < 70
+[( )] `reduce` skipped it while folding
+[( )] It was removed before the map stage ran
 
 **Critical Thinking Questions (CTQs)**
 
@@ -344,13 +344,12 @@ print(f"add5 twice applied to 0: {add5_twice(0)}")   # 10
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-[[MC]]
 `compose = lambda f, g: lambda x: f(g(x))` is a higher-order function because it:
 
-    [( )] Uses lambda syntax twice
-    [( )] Avoids mutation
-    [(x)] Both consumes functions as arguments and produces a function as its result
-    [( )] Runs in logarithmic time
+[( )] Uses lambda syntax twice
+[( )] Avoids mutation
+[(X)] Both consumes functions as arguments and produces a function as its result
+[( )] Runs in logarithmic time
 
 ---
 
@@ -412,12 +411,12 @@ print(f"result: {messy('  Hello World  ')!r}")
 
 Notice that `traced` is itself a higher-order function: it consumes a function and returns a new one with the same behavior plus narration — the same shape as `twice` and `compose`.
 
-[[MC]]
 `compose(f, g)` returns `lambda x: f(g(x))`. Evaluating `compose(str.lower, str.strip)("  ABC  ")` therefore:
-- ( ) Applies `lower` first, then `strip`
-- (x) Applies `strip` first (it is innermost), then `lower`
-- ( ) Applies both simultaneously
-- ( ) Raises an error because strings are immutable
+
+[( )] Applies `lower` first, then `strip`
+[(X)] Applies `strip` first (it is innermost), then `lower`
+[( )] Applies both simultaneously
+[( )] Raises an error because strings are immutable
 
 **Critical Thinking Questions (CTQs)**
 
@@ -650,10 +649,10 @@ print(f"mergesort([5,2,8,1,9,3]) = {mergesort([5,2,8,1,9,3])}")
 
 Which of the following is a *pure* function?
 
-    [( )] `def f(lst): lst.append(1); return lst`
-    [(x)] `def f(lst): return lst + [1]`
-    [( )] `def f(x): print(x); return x`
-    [( )] `def f(): return time.time()`
+[( )] `def f(lst): lst.append(1); return lst`
+[(X)] `def f(lst): return lst + [1]`
+[( )] `def f(x): print(x); return x`
+[( )] `def f(): return time.time()`
 
 ---
 

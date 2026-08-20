@@ -31,7 +31,7 @@ This tutorial teaches the shell skills you need to build, test, and ship your CS
 
 **Work through it at a terminal, not in a chair.** Each step below ends with a **Try it** box: a small, concrete thing to run against your own interpreter before moving on. By the last step you will have an executable interpreter, a test harness that reports PASS/FAIL, a Makefile that standardizes how your language is invoked, and a CI job that fails the build when a test regresses.
 
-**What you need before you start.** A working interpreter you can run — even one that only prints a token stream is enough to follow along — and a terminal in the [course development environment](/Tutorials/DevEnvironment).
+**What you need before you start.** A working interpreter you can run — even one that only prints a token stream is enough to follow along — and a terminal in the [course development environment]({{ site.baseurl }}/Tutorials/DevEnvironment).
 
 **The running example.** Your interpreter is invoked as `python3 mylang.py <sourcefile>`, your source files use the extension `.ml`, test cases live in `tests/`, and expected outputs live in `expected/`. Adapt the paths to match your actual layout as you go.
 

@@ -231,12 +231,12 @@ This says "a function that ignores its argument and returns ... its argument." T
 →β  λz.y               # correct: a function that ignores z and returns the free y
 ```
 
-[[MC]]
 The reduction $(\lambda x. \lambda y.\, x\, y)\; y \rightarrow \lambda y.\, y\, y$ is wrong because:
-- ( ) Application associates left
-- ( ) The expression was already in normal form
-- (x) The substituted free y was captured by the inner binder; alpha-renaming the inner λy is required first
-- ( ) Beta reduction may only be applied once per expression
+
+[( )] Application associates left
+[( )] The expression was already in normal form
+[(X)] The substituted free y was captured by the inner binder; alpha-renaming the inner λy is required first
+[( )] Beta reduction may only be applied once per expression
 
 ---
 

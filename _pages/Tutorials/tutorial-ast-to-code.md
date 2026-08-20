@@ -410,41 +410,37 @@ print(f"Result: {answer}")  # Only prints "evaluating THEN"
 
 **Question 1:** In a functional language where `if` is an expression, what must be true?
 
-[[MC]]
-- [( )] Only the condition is evaluated; neither branch is evaluated until explicitly called
-- [(X)] Both branches exist syntactically, but only one is evaluated based on the condition
-- [( )] Both branches are always evaluated eagerly, and the result is selected after
-- [( )] The condition and both branches are always evaluated to check for errors
+[( )] Only the condition is evaluated; neither branch is evaluated until explicitly called
+[(X)] Both branches exist syntactically, but only one is evaluated based on the condition
+[( )] Both branches are always evaluated eagerly, and the result is selected after
+[( )] The condition and both branches are always evaluated to check for errors
 
 ---
 
 **Question 2:** In Scheme, `let` binds all variables simultaneously using the *outer* environment. `letrec` allows bindings to refer to each other. Which of the following **requires** `letrec` and cannot be expressed with plain `let`?
 
-[[MC]]
-- [( )] `(let ((x 1) (y 2)) (+ x y))`
-- [( )] `(let ((x 5)) (let ((y x)) y))`
-- [(X)] `(letrec ((even? (lambda (n) (if (= n 0) #t (odd? (- n 1))))) (odd? (lambda (n) (if (= n 0) #f (even? (- n 1)))))) (even? 4))`
-- [( )] `(let ((f (lambda (x) (* x 2)))) (f 5))`
+[( )] `(let ((x 1) (y 2)) (+ x y))`
+[( )] `(let ((x 5)) (let ((y x)) y))`
+[(X)] `(letrec ((even? (lambda (n) (if (= n 0) #t (odd? (- n 1))))) (odd? (lambda (n) (if (= n 0) #f (even? (- n 1)))))) (even? 4))`
+[( )] `(let ((f (lambda (x) (* x 2)))) (f 5))`
 
 ---
 
 **Question 3:** Consider the `BinOp` case in the expression evaluator from Model 4. Both `eval_expr(expr.left, env)` and `eval_expr(expr.right, env)` are called before performing the operation. What does this mean about the evaluator's strategy for `BinOp`?
 
-[[MC]]
-- [( )] It uses lazy evaluation — operands are evaluated only when needed
-- [(X)] It uses strict (eager) evaluation — both operands are always evaluated before the operation
-- [( )] It uses short-circuit evaluation — the right operand may not be evaluated
-- [( )] It uses call-by-name — operands are substituted unevaluated into the operation
+[( )] It uses lazy evaluation — operands are evaluated only when needed
+[(X)] It uses strict (eager) evaluation — both operands are always evaluated before the operation
+[( )] It uses short-circuit evaluation — the right operand may not be evaluated
+[( )] It uses call-by-name — operands are substituted unevaluated into the operation
 
 ---
 
 **Question 4:** Python's `or` operator short-circuits. Given `result = f() or g()`, when is `g()` **not** called?
 
-[[MC]]
-- [( )] When `g()` would raise an exception
-- [( )] When both `f()` and `g()` return `True`
-- [(X)] When `f()` returns a truthy value
-- [( )] When `f()` returns `False` or `None`
+[( )] When `g()` would raise an exception
+[( )] When both `f()` and `g()` return `True`
+[(X)] When `f()` returns a truthy value
+[( )] When `f()` returns `False` or `None`
 
 ---
 
@@ -885,13 +881,12 @@ print("Haskell expression:", hs_code)
 
 ---
 
-[[MC]]
 A transpiler differs from an interpreter in which fundamental way?
 
-- (x) A transpiler emits code in a target language rather than executing the program; both traverse the same AST but produce different output from each node.
-- ( ) A transpiler performs type-checking at compile time while an interpreter does not.
-- ( ) A transpiler uses a bottom-up (LR) parser while an interpreter uses a top-down (LL) parser.
-- ( ) A transpiler is always faster to execute than an interpreter because it generates native code.
+[(X)] A transpiler emits code in a target language rather than executing the program; both traverse the same AST but produce different output from each node.
+[( )] A transpiler performs type-checking at compile time while an interpreter does not.
+[( )] A transpiler uses a bottom-up (LR) parser while an interpreter uses a top-down (LL) parser.
+[( )] A transpiler is always faster to execute than an interpreter because it generates native code.
 
 ---
 
@@ -1118,23 +1113,21 @@ for t in tests:
 
 ---
 
-[[MC]]
 After upgrading the parser to emit AST nodes, the team's old torture tests still pass with identical tree shapes. The best explanation is:
 
-    [(x)] The grammar and parsing logic determine the shape; the node classes only changed the representation
-    [( )] Python tuples and dataclasses are interchangeable types
-    [( )] The lexer normalizes the input before parsing
-    [( )] Associativity moved into the node classes
+[(X)] The grammar and parsing logic determine the shape; the node classes only changed the representation
+[( )] Python tuples and dataclasses are interchangeable types
+[( )] The lexer normalizes the input before parsing
+[( )] Associativity moved into the node classes
 
 ---
 
-[[MC]]
 `constant_fold` is a tree *transformation* that returns a new tree. What does this say about ASTs?
 
-    [( )] ASTs can only be read, not modified
-    [(x)] The same tree-walking pattern used for evaluation and printing also supports transformation and optimization
-    [( )] Constant folding requires the evaluator to run first
-    [( )] Only leaf nodes can be transformed
+[( )] ASTs can only be read, not modified
+[(X)] The same tree-walking pattern used for evaluation and printing also supports transformation and optimization
+[( )] Constant folding requires the evaluator to run first
+[( )] Only leaf nodes can be transformed
 
 ---
 

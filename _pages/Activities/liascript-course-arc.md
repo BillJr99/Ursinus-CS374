@@ -527,7 +527,7 @@ print("="*50)
 
 # Multiple Choice
 
-[[MC]] In Model 1, `TRUE = lambda x: lambda y: x`. What is the type of `TRUE` in Haskell's type notation?
+In Model 1, `TRUE = lambda x: lambda y: x`. What is the type of `TRUE` in Haskell's type notation?
 
 [(X)] `a -> b -> a` — it takes any type `a`, then any type `b`, and returns the `a` value
 [( )] `Bool -> Bool -> Bool` — it takes two booleans and returns a boolean
@@ -536,7 +536,7 @@ print("="*50)
 
 ---
 
-[[MC]] In Model 2, the grammar has `expr → term (('+'|'-') term)*`. What does the `*` mean?
+In Model 2, the grammar has `expr → term (('+'|'-') term)*`. What does the `*` mean?
 
 [( )] The `+` and `-` operators are optional and can appear at most once
 [(X)] Zero or more occurrences of `(('+'|'-') term)` — the expression can have any number of additions or subtractions
@@ -545,7 +545,7 @@ print("="*50)
 
 ---
 
-[[MC]] Which of the following would a static type checker (Model 3) catch?
+Which of the following would a static type checker (Model 3) catch?
 
 [(X)] `Add(Num(1), Bool_(True))` — adding an integer to a boolean
 [( )] Dividing by a variable that might be zero at runtime
@@ -554,7 +554,7 @@ print("="*50)
 
 ---
 
-[[MC]] In Model 4, a `Closure` captures the environment at the time the `lambda` is created. What is this called?
+In Model 4, a `Closure` captures the environment at the time the `lambda` is created. What is this called?
 
 [( )] Dynamic scoping — variables are looked up in the caller's environment
 [(X)] Lexical (static) scoping — variables are looked up in the environment where the function was defined

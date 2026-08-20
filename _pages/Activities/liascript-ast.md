@@ -640,26 +640,26 @@ for label, tree, expected_val in [
 
 ## Practice — Allison Readings 6.1 and 6.2
 
-[[MC]]
 A postorder traversal of an expression tree visits nodes in which order?
-- ( ) Root, then left subtree, then right subtree
-- ( ) Left subtree, then root, then right subtree
-- (x) Left subtree, then right subtree, then root
-- ( ) Right subtree, then left subtree, then root
 
-[[MC]]
+[( )] Root, then left subtree, then right subtree
+[( )] Left subtree, then root, then right subtree
+[(X)] Left subtree, then right subtree, then root
+[( )] Right subtree, then left subtree, then root
+
 The postfix expression `3 4 + 5 *` evaluates to:
-- ( ) 23
-- (x) 35
-- ( ) 17
-- ( ) 32
 
-[[MC]]
+[( )] 23
+[(X)] 35
+[( )] 17
+[( )] 32
+
 In an expression tree for `a + b * c`, the root node contains:
-- ( ) `a`
-- ( ) `*`
-- (x) `+`
-- ( ) `b`
+
+[( )] `a`
+[( )] `*`
+[(X)] `+`
+[( )] `b`
 
 1. *Tree construction.* Build `ExprNode` trees for: (a) `2 + 3 * 4`, (b) `(2 + 3) * 4`, (c) `a - b + c` (left-associative). For each, print all three notations and the numeric value (using `a=2, b=3, c=4`).
 

@@ -370,12 +370,12 @@ except SyntaxError as e:
 
 Your assignment hardens this lexer into a component your December language will import unchanged: string literals with escapes, configurable token specifications loaded from JSON, a `peek`/`advance` interface for the parser, and a test suite. The interface is the deliverable as much as the code: the parser you write next month will call `peek()` to look at the next token without consuming it and `advance()` to consume it, and nothing else.
 
-[[MC]]
 The parser asks the lexer for the next token and receives `Token(NUMBER, "12", 4, 7)`. The information the parser will use for its *grammar* decisions is:
-- (x) The type NUMBER; the lexeme and position ride along for evaluation and error messages
-- ( ) The lexeme "12" alone
-- ( ) The line number, to enforce indentation
-- ( ) All fields equally, at every decision
+
+[(X)] The type NUMBER; the lexeme and position ride along for evaluation and error messages
+[( )] The lexeme "12" alone
+[( )] The line number, to enforce indentation
+[( )] All fields equally, at every decision
 
 ---
 
@@ -395,19 +395,19 @@ These exercises build confidence in the maximal-munch rule and token ordering by
 
 > *Exercises adapted from topics covered in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
-[[MC]]
 The lexer applies patterns in order, using maximal munch. For the input `x>=5`, if `IDENT` is listed before `GE` (`>=`) in TOKEN_SPEC, the result is:
-- ( ) `IDENT("x"), GE, INT(5)` — the lexer is smart enough to lookahead and reorder
-- (x) `IDENT("x"), GT, EQ, INT(5)` — `>=` is never recognized because `IDENT` greedily consumed `x`
-- ( ) Undefined behavior; the order doesn't matter
-- ( ) A `LexError` because ambiguous input
 
-[[MC]]
+[( )] `IDENT("x"), GE, INT(5)` — the lexer is smart enough to lookahead and reorder
+[(X)] `IDENT("x"), GT, EQ, INT(5)` — `>=` is never recognized because `IDENT` greedily consumed `x`
+[( )] Undefined behavior; the order doesn't matter
+[( )] A `LexError` because ambiguous input
+
 Maximal munch means the lexer matches the longest possible token. For input `<=`, if both `LT` (`<`) and `LE` (`<=`) are valid patterns:
-- ( ) The lexer tries `LT` first and succeeds immediately
-- (x) The lexer finds both `LT` and `LE` as possibilities and chooses `LE` (the longer match)
-- ( ) The lexer raises an ambiguity error
-- ( ) It depends on which is listed first in TOKEN_SPEC
+
+[( )] The lexer tries `LT` first and succeeds immediately
+[(X)] The lexer finds both `LT` and `LE` as possibilities and chooses `LE` (the longer match)
+[( )] The lexer raises an ambiguity error
+[( )] It depends on which is listed first in TOKEN_SPEC
 
 1. **Tokenize by hand (maximal munch rules).**
    - Input: `x>=5+2`

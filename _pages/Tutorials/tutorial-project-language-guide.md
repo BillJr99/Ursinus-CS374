@@ -2137,12 +2137,12 @@ print("  Each True flag = at minimum one new grammar rule + one new AST node.")
 6. The niche feature `dice_roll` appears in both `statement` and `primary`. Is `3d6` a statement (roll and discard), an expression (roll and use the value), or both? How should the grammar reflect this distinction?
 7. The expression ladder encodes precedence by nesting: `or_expr` calls `and_expr` which calls `not_expr`. Add `**` (exponentiation) to the ladder with higher precedence than `*`. Write the new rule and its position in the ladder.
 
-[[MC]]
 A team's niche is dice-game scripting, and they are debating whether `3d6` should be core syntax (a lexer token and AST node) or a library function `roll(3, 6)`. The scorecard-driven way to decide is:
-- ( ) Core syntax, because it is more impressive at Demo Day
-- ( ) A function, because lexer changes are risky
-- (x) Ask which choice best serves the niche's readability and writability, then weigh it against the implementation cost row of the scorecard
-- ( ) Defer the decision until the final sprint
+
+[( )] Core syntax, because it is more impressive at Demo Day
+[( )] A function, because lexer changes are risky
+[(X)] Ask which choice best serves the niche's readability and writability, then weigh it against the implementation cost row of the scorecard
+[( )] Defer the decision until the final sprint
 
 ---
 

@@ -1670,31 +1670,31 @@ Answer these to check your understanding before moving on.
 
 **Question 1.** What does evaluating `(lambda (x) x)` return in our interpreter?
 
-    [( )] The number `0`
-    [(x)] A `Procedure` object (a closure)
-    [( )] The symbol `x`
-    [( )] A `SchemeError` because `x` is unbound
+[( )] The number `0`
+[(X)] A `Procedure` object (a closure)
+[( )] The symbol `x`
+[( )] A `SchemeError` because `x` is unbound
 
 **Question 2.** The expression `(let ((x 5)) (+ x 1))` desugars to which of the following?
 
-    [( )] `(define x 5) (+ x 1)`
-    [(x)] `((lambda (x) (+ x 1)) 5)`
-    [( )] `(set! x 5) (+ x 1)`
-    [( )] `(begin (define x 5) (+ x 1))`
+[( )] `(define x 5) (+ x 1)`
+[(X)] `((lambda (x) (+ x 1)) 5)`
+[( )] `(set! x 5) (+ x 1)`
+[( )] `(begin (define x 5) (+ x 1))`
 
 **Question 3.** In `(define (square n) (* n n))`, the list `(square n)` as the first argument to `define` is:
 
-    [( )] A syntax error in standard Scheme
-    [( )] A pair of a function name and its return type
-    [(x)] Syntactic sugar that expands to `(define square (lambda (n) (* n n)))`
-    [( )] A call to the `square` function before it is defined
+[( )] A syntax error in standard Scheme
+[( )] A pair of a function name and its return type
+[(X)] Syntactic sugar that expands to `(define square (lambda (n) (* n n)))`
+[( )] A call to the `square` function before it is defined
 
 **Question 4.** Which component of the evaluator is directly responsible for implementing **lexical scope**?
 
-    [( )] The tokenizer, which preserves symbol names
-    [( )] The `scheme_eval` dispatch loop
-    [(x)] The `Env` chain: each `Procedure` captures and stores its *defining* environment, which becomes the `outer` of each call frame
-    [( )] The `trampoline` function
+[( )] The tokenizer, which preserves symbol names
+[( )] The `scheme_eval` dispatch loop
+[(X)] The `Env` chain: each `Procedure` captures and stores its *defining* environment, which becomes the `outer` of each call frame
+[( )] The `trampoline` function
 
 ---
 
@@ -1826,7 +1826,7 @@ Answer these questions in your course notebook after completing this section.
 
 ## Further Reading on Metacircular Evaluation
 
-- **Runnable example archive** — [SchemeInterpreter.zip](/files/replit/SchemeInterpreter.zip): a complete reference implementation of this section's evaluator, worth exploring after you have worked through this section yourself.
+- **Runnable example archive** — [SchemeInterpreter.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeInterpreter.zip): a complete reference implementation of this section's evaluator, worth exploring after you have worked through this section yourself.
 
 - **SICP Chapter 4** — Abelson & Sussman, *Structure and Interpretation of Computer Programs*, 2nd ed. The original metacircular evaluator. MIT Press open access: [https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf)
 
@@ -2102,12 +2102,12 @@ print("same box?", c1.__closure__[0] is c2.__closure__[0])       # False — E1 
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-[[MC]]
 After `c1 = make_counter()`, `c2 = make_counter()`, then `c1(); c1(); c2()`, the returned values are 1, 2, 1 because:
-- ( ) Each call to `c1` creates a fresh environment with `count = 0`
-- (x) Each *call to `make_counter`* created its own environment box, so `c1` and `c2` increment different `count` bindings
-- ( ) Python copies the value of `count` into each closure at definition time
-- ( ) `c2` reset the shared counter
+
+[( )] Each call to `c1` creates a fresh environment with `count = 0`
+[(X)] Each *call to `make_counter`* created its own environment box, so `c1` and `c2` increment different `count` bindings
+[( )] Python copies the value of `count` into each closure at definition time
+[( )] `c2` reset the shared counter
 
 **Critical Thinking Questions (CTQs)**
 

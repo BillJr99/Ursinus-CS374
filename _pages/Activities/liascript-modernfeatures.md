@@ -106,12 +106,12 @@ print(describe(("+", ("num", 2), ("neg", ("num", 3)))))
 3. Ownership and garbage collection are both answers to "when may memory be reclaimed?" Place C, Java/Python, and Rust on a binding-time axis for that decision, and state each position's billion-dollar risk.
 4. Which of the four features could a *tree-walking interpreter team* plausibly implement a slice of in three weeks, and which are out of reach? Justify with reference to which pipeline stage each feature lives in (parser? evaluator? a checker between them?).
 
-[[MC]]
 Rust achieves memory safety without a garbage collector primarily by:
-- ( ) Forbidding heap allocation
-- ( ) Checking every pointer at runtime
-- (x) Compile-time ownership and borrowing rules that prove references cannot outlive the values they point to
-- ( ) Running a collector only at program exit
+
+[( )] Forbidding heap allocation
+[( )] Checking every pointer at runtime
+[(X)] Compile-time ownership and borrowing rules that prove references cannot outlive the values they point to
+[( )] Running a collector only at program exit
 
 ---
 

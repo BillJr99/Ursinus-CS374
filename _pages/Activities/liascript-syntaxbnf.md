@@ -123,12 +123,12 @@ digit   -> "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 
 The two notations describe exactly the same languages; EBNF is sugar. The sugar matters to *you* as an implementer: when we write the parser, `{ digit }` becomes a `while` loop and `[ sign ]` becomes an `if`, a translation so mechanical you will perform it in your sleep by October.
 
-[[MC]]
 The EBNF fragment `term { ("*" | "/") term }` describes:
-- ( ) Exactly one multiplication or division
-- ( ) An optional single operator between two terms
-- (x) A term followed by zero or more operator-term pairs, such as `a`, `a*b`, or `a*b/c`
-- ( ) Nested parenthesized expressions
+
+[( )] Exactly one multiplication or division
+[( )] An optional single operator between two terms
+[(X)] A term followed by zero or more operator-term pairs, such as `a`, `a*b`, or `a*b/c`
+[( )] Nested parenthesized expressions
 
 ---
 
@@ -411,19 +411,19 @@ These exercises build confidence in the mapping between notation and code by wri
 
 > *Exercises adapted from topics covered in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
-[[MC]]
 In a recognizer function for `IDENT "=" expr`, if the input is `x = 2 + 3`, which of the following matches?
-- ( ) The entire string is one IDENT
-- (x) IDENT matches `x`, literal `=` matches `=`, IDENT for `expr` would attempt to match `2` (and fail because `2` is not an identifier)
-- ( ) The rule accepts any input as long as the characters `=` appears somewhere
-- ( ) IDENT, `=`, and expr all must match *exactly once* each, in any order
 
-[[MC]]
+[( )] The entire string is one IDENT
+[(X)] IDENT matches `x`, literal `=` matches `=`, IDENT for `expr` would attempt to match `2` (and fail because `2` is not an identifier)
+[( )] The rule accepts any input as long as the characters `=` appears somewhere
+[( )] IDENT, `=`, and expr all must match *exactly once* each, in any order
+
 For the grammar rule `expr → term { ('+' | '-') term }`, the { ... } repetition becomes a `while` loop in code. The loop continues as long as:
-- ( ) There are more tokens
-- (x) The next token is `+` or `-` (i.e., matches one of the alternatives inside the braces)
-- ( ) The parser has consumed at least one term
-- ( ) End of input is not reached
+
+[( )] There are more tokens
+[(X)] The next token is `+` or `-` (i.e., matches one of the alternatives inside the braces)
+[( )] The parser has consumed at least one term
+[( )] End of input is not reached
 
 1. **Write a recognizer from a grammar rule.**
    Grammar: `identifier → LETTER { LETTER | DIGIT | '_' }`

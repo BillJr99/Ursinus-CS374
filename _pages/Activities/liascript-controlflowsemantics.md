@@ -217,19 +217,19 @@ print(f"Safe guard result: {result}")   # False (never indexes out of bounds)
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-[[MC]]
 The guarantee that `i < n and items[i] > 0` never indexes out of bounds depends on:
-- ( ) The parser checking array lengths
-- ( ) Operator precedence placing and below comparison
-- (x) The semantic rule that and does not evaluate its right operand when the left is falsy
-- ( ) The type checker proving i is a number
 
-[[MC]]
+[( )] The parser checking array lengths
+[( )] Operator precedence placing and below comparison
+[(X)] The semantic rule that and does not evaluate its right operand when the left is falsy
+[( )] The type checker proving i is a number
+
 In Python, `x or "default"` returns `"default"` when `x` is falsy. This behavior — returning the *operand* rather than normalizing to `True`/`False` — is called:
-- ( ) Type coercion
-- ( ) Lazy evaluation
-- (x) Short-circuit evaluation with value-preserving semantics
-- ( ) Boolean normalization
+
+[( )] Type coercion
+[( )] Lazy evaluation
+[(X)] Short-circuit evaluation with value-preserving semantics
+[( )] Boolean normalization
 
 ### Critical Thinking Questions
 
@@ -431,12 +431,12 @@ def execute(stmt, env):
 
 Notice `truthy`: your language must decide what counts as true (only a boolean? any nonzero number? an empty string?), a semantics decision with daily consequences.
 
-[[MC]]
 In a tree-walking interpreter, executing the program's `while` loop one million times will re-walk the loop body's subtree one million times. The principal cost this design accepts, relative to compilation, is:
-- ( ) Incorrect results on large inputs
-- (x) Repeated traversal and dispatch overhead per execution of the same code
-- ( ) Loss of operator precedence
-- ( ) The inability to support variables
+
+[( )] Incorrect results on large inputs
+[(X)] Repeated traversal and dispatch overhead per execution of the same code
+[( )] Loss of operator precedence
+[( )] The inability to support variables
 
 ---
 

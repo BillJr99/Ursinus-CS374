@@ -125,12 +125,12 @@ There is no way to produce exactly two `a`s and one `b` under this grammar.
 
 **Tokens are regular; structure is context-free; meaning is neither.** Identifiers, numbers, and keywords have regular shape, so lexers are built from finite automata (the *Finite Automata* activity's topic). Nesting (balanced braces, expressions inside expressions) requires counting, so parsers use context-free grammars and a stack. And some rules, famously "every variable must be declared before use," are not context-free at all; real compilers enforce them in a separate **semantic analysis** pass over the tree rather than burdening the grammar. The pipeline of your project is the hierarchy made architecture.
 
-[[MC]]
 A language requires that every `begin` token be matched by a later `end`, with arbitrary nesting. The weakest grammar class that can express this requirement is:
-- ( ) Regular, because keywords are tokens
-- (x) Context-free, because matched nesting requires a stack's worth of memory
-- ( ) Context-sensitive, because two different keywords are involved
-- ( ) Unrestricted, because programs can be arbitrarily long
+
+[( )] Regular, because keywords are tokens
+[(X)] Context-free, because matched nesting requires a stack's worth of memory
+[( )] Context-sensitive, because two different keywords are involved
+[( )] Unrestricted, because programs can be arbitrarily long
 
 ---
 

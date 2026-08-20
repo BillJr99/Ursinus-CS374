@@ -353,12 +353,12 @@ for n, val in [(ZERO, "ZERO"), (ONE, "ONE"), (TWO, "TWO")]:
 
 > **CTQ 3.4** Where is the data? A Church numeral stores no digits anywhere. Connect this to homoiconicity week's lesson, and to the claim "data is frozen behavior."
 
-[[MC]]
 Under Church encoding, the expression `b(t)(e)` where b is a Church boolean implements if-then-else because:
-- ( ) Python evaluates booleans specially
-- (x) TRUE and FALSE are themselves selector functions returning their first and second arguments respectively
-- ( ) The lambda calculus has a built-in conditional form
-- ( ) t and e must be numerals
+
+[( )] Python evaluates booleans specially
+[(X)] TRUE and FALSE are themselves selector functions returning their first and second arguments respectively
+[( )] The lambda calculus has a built-in conditional form
+[( )] t and e must be numerals
 
 ---
 

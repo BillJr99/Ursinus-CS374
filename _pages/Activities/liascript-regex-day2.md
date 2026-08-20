@@ -105,12 +105,12 @@ for s in ["aaab", "ab", "b", "aaa"]:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-[[MC]]
 Matching `a*ab` against `"aaab"`, the engine's first attempt lets `a*` consume all three `a`s, and the rest of the pattern then fails. What happens next?
-- ( ) The engine reports failure immediately
-- ( ) The engine restarts with the reluctant interpretation of `*`
-- (x) The engine backtracks: `a*` gives back one character and the rest of the pattern is retried from there
-- ( ) The engine raises an exception because the pattern is ambiguous
+
+[( )] The engine reports failure immediately
+[( )] The engine restarts with the reluctant interpretation of `*`
+[(X)] The engine backtracks: `a*` gives back one character and the rest of the pattern is retried from there
+[( )] The engine raises an exception because the pattern is ambiguous
 
 ### Critical Thinking Questions
 
@@ -164,19 +164,19 @@ except:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-[[MC]]
 A teammate proposes one grand regular expression to validate fully parenthesized arithmetic of unlimited nesting depth. The principled response is:
-- ( ) Increase the pattern's length until it works
-- ( ) Use the re.DOTALL flag
-- (x) No regular expression can do this in general, because matched nesting requires counting beyond finite memory; this is the parser's job
-- ( ) Use findall instead of search
 
-[[MC]]
+[( )] Increase the pattern's length until it works
+[( )] Use the re.DOTALL flag
+[(X)] No regular expression can do this in general, because matched nesting requires counting beyond finite memory; this is the parser's job
+[( )] Use findall instead of search
+
 The pattern `r"\b(?:if|else|while)\b"` uses `(?:...)` (non-capturing group) rather than `(...)` (capturing group). The effect is:
-- ( ) The pattern fails to match keywords
-- ( ) The alternation `if|else|while` is broken
-- (x) The group matches but does not appear in `re.findall` results or `m.groups()`, since it's a grouping convenience only
-- ( ) It makes the pattern case-insensitive
+
+[( )] The pattern fails to match keywords
+[( )] The alternation `if|else|while` is broken
+[(X)] The group matches but does not appear in `re.findall` results or `m.groups()`, since it's a grouping convenience only
+[( )] It makes the pattern case-insensitive
 
 ### Critical Thinking Questions
 

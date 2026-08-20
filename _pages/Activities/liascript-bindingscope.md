@@ -194,19 +194,19 @@ show_dynamic()          # static simulation: show sees 10 (global)
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-[[MC]]
 Under static scoping, the binding that a variable use refers to can be determined:
-- ( ) Only by running the program and inspecting the call stack
-- (x) By reading the program text and finding the innermost enclosing declaration
-- ( ) By checking which function was called most recently
-- ( ) By the order of declarations in the global region only
 
-[[MC]]
+[( )] Only by running the program and inspecting the call stack
+[(X)] By reading the program text and finding the innermost enclosing declaration
+[( )] By checking which function was called most recently
+[( )] By the order of declarations in the global region only
+
 A function `f` uses a variable `config` that it does not declare. Under **dynamic** scope, `config` resolves to:
-- ( ) The global `config` from when `f` was defined
-- (x) The most recent `config` on the call stack when `f` executes
-- ( ) An error — undefined variables are always errors
-- ( ) The `config` in `f`'s textual enclosing scope
+
+[( )] The global `config` from when `f` was defined
+[(X)] The most recent `config` on the call stack when `f` executes
+[( )] An error — undefined variables are always errors
+[( )] The `config` in `f`'s textual enclosing scope
 
 ### Critical Thinking Questions
 

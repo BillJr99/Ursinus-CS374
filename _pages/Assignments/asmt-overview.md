@@ -51,11 +51,11 @@ tags:
 
 ---
 
-The purpose of this warmup is to confirm your tools before the build begins and to capture your current relationship with programming languages as a baseline you will revisit at semester end. (Your team charter is **not** part of this assignment — you will draft it with the [Team Language Project](/Projects/TeamLanguage) Design-Phase Submission and sign it with the Proposal.)
+The purpose of this warmup is to confirm your tools before the build begins and to capture your current relationship with programming languages as a baseline you will revisit at semester end. (Your team charter is **not** part of this assignment — you will draft it with the [Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) Design-Phase Submission and sign it with the Proposal.)
 
 The Warmup is the Teams-based onboarding survey; the Overview is the technical setup + Language Autobiography — they are separate deliverables.
 
-One pointer before you begin: several assignments this semester offer **directions** — equivalent ways of meeting the same deliverable — and some of those directions build toward live-coded music. If making a language that makes music appeals to you, skim the [Music and Live-Coding guide](/Projects/TeamLanguage#the-music-and-live-coding-path) this week. Directions are chosen assignment-by-assignment later, inside each assignment; nothing is committed now.
+One pointer before you begin: several assignments this semester offer **directions** — equivalent ways of meeting the same deliverable — and some of those directions build toward live-coded music. If making a language that makes music appeals to you, skim the [Music and Live-Coding guide]({{ site.baseurl }}/Projects/TeamLanguage#the-music-and-live-coding-path) this week. Directions are chosen assignment-by-assignment later, inside each assignment; nothing is committed now.
 
 ---
 
@@ -67,7 +67,7 @@ Complete this part by **one of two routes** — the transcript requirement at th
 
 ### Route A (recommended): the course dev container
 
-Set up the course Docker container by following the [Development Environment tutorial](/Tutorials/DevEnvironment): one container image with the entire semester's toolchain preinstalled (Python 3.11, pytest, hypothesis, PLY, and flex/bison/gcc/make for the generator-toolchain directions), bind-mounted onto a `cs374-work` GitHub repository you create in the tutorial. Then:
+Set up the course Docker container by following the [Development Environment tutorial]({{ site.baseurl }}/Tutorials/DevEnvironment): one container image with the entire semester's toolchain preinstalled (Python 3.11, pytest, hypothesis, PLY, and flex/bison/gcc/make for the generator-toolchain directions), bind-mounted onto a `cs374-work` GitHub repository you create in the tutorial. Then:
 
 1. Copy `warmup_check.py` (from Step 2 of Route B below) into your `cs374-work` repository.
 2. Enter the container and run it **inside the container**: `python3 warmup_check.py`. Include the full transcript — the container prompt, `python3 --version`, and the script's banner output — in your submission.
@@ -179,9 +179,9 @@ Recommended editors: VS Code (with Python extension), PyCharm Community Edition,
 
 ## Part 1.5: Command-Line and Git Checkpoint
 
-You will build one language across six assignments, each importing the previous stage's component *unchanged*, all from the terminal and all under version control. This checkpoint confirms those underlying tools work before the pipeline depends on them. You do not need to be a shell expert — you need to navigate, version your work, and create a reproducible environment. The two required-setup tutorials teach all of it, so nothing is repeated here: work through the [Course Development Environment](/Tutorials/DevEnvironment) for the container, git identity, and the daily loop, and [Shell Skills for Language Development](/Tutorials/ShellForLanguageDev) — a step-by-step article with a *Try it* checkpoint per step — for navigation, `grep`, redirection, and the test harness. The **Command-Line Survival** links below fill any remaining gaps.
+You will build one language across six assignments, each importing the previous stage's component *unchanged*, all from the terminal and all under version control. This checkpoint confirms those underlying tools work before the pipeline depends on them. You do not need to be a shell expert — you need to navigate, version your work, and create a reproducible environment. The two required-setup tutorials teach all of it, so nothing is repeated here: work through the [Course Development Environment]({{ site.baseurl }}/Tutorials/DevEnvironment) for the container, git identity, and the daily loop, and [Shell Skills for Language Development]({{ site.baseurl }}/Tutorials/ShellForLanguageDev) — a step-by-step article with a *Try it* checkpoint per step — for navigation, `grep`, redirection, and the test harness. The **Command-Line Survival** links below fill any remaining gaps.
 
-**Container-route note (Route A):** perform the git steps of this checkpoint **from inside the course container**, against the `cs374-work` GitHub repository you created in the [Development Environment tutorial](/Tutorials/DevEnvironment) — the tutorial's practice section (create `hello.py`, run, commit, push) is exactly this checkpoint, so its transcript satisfies the shell-navigation and git items below. The `uv` step still runs on your host (the container image already pins the course packages; `uv` is your reproducible-environment tool for the native route and anywhere outside the container).
+**Container-route note (Route A):** perform the git steps of this checkpoint **from inside the course container**, against the `cs374-work` GitHub repository you created in the [Development Environment tutorial]({{ site.baseurl }}/Tutorials/DevEnvironment) — the tutorial's practice section (create `hello.py`, run, commit, push) is exactly this checkpoint, so its transcript satisfies the shell-navigation and git items below. The `uv` step still runs on your host (the container image already pins the course packages; `uv` is your reproducible-environment tool for the native route and anywhere outside the container).
 
 Complete each step and capture the terminal output:
 

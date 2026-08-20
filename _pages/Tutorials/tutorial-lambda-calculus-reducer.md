@@ -789,13 +789,12 @@ print([factorial_via_Z(n) for n in range(8)])
 
 The Z combinator differs from Y only in the `lambda v:` wrapper: instead of `x(x)` (evaluated immediately), it is `lambda v: x(x)(v)` (a function, evaluated only when called). This one-token change converts Y from a normal-order term to an applicative-order term. (You can watch the difference with the reducer you built in Part 4: normal order finds the base case; applicative order hits the step limit.)
 
-[[MC]]
 What is the key difference between the Y combinator and the Z combinator?
 
-- (x) Z wraps the self-application in an extra lambda (eta-expansion), delaying evaluation to make it safe for applicative-order (strict) languages like Python.
-- ( ) Z works for non-recursive functions while Y only works for recursive ones.
-- ( ) Z is for multi-argument functions while Y is for single-argument functions.
-- ( ) They are the same combinator; Z is just an alternative name for Y used in some textbooks.
+[(X)] Z wraps the self-application in an extra lambda (eta-expansion), delaying evaluation to make it safe for applicative-order (strict) languages like Python.
+[( )] Z works for non-recursive functions while Y only works for recursive ones.
+[( )] Z is for multi-argument functions while Y is for single-argument functions.
+[( )] They are the same combinator; Z is just an alternative name for Y used in some textbooks.
 
 ---
 
@@ -1293,12 +1292,12 @@ print(B_from_SK(str)(double)(5))       # "10": str(double(5))
 
 ---
 
-[[MC]]
 Which reduction sequence correctly shows that $\mathbf{K}\ \mathbf{I}\ a\ b \Rightarrow b$ (i.e., that $\mathbf{K}\ \mathbf{I}$ is **false** / the second-argument selector)?
-- (x) $\mathbf{K}\ \mathbf{I}\ a \Rightarrow \mathbf{I}$, then $\mathbf{I}\ b \Rightarrow b$. Each step fires one combinator rule.
-- ( ) $\mathbf{K}\ \mathbf{I}\ a\ b \Rightarrow \mathbf{K}\ b$, then $\mathbf{K}\ b \Rightarrow b$.
-- ( ) $\mathbf{K}\ \mathbf{I}\ a\ b \Rightarrow \mathbf{I}\ \mathbf{I}\ b \Rightarrow b$. K fires on I and b simultaneously.
-- ( ) The reduction diverges because $\mathbf{K}\ \mathbf{I}$ contains no redex.
+
+[(X)] $\mathbf{K}\ \mathbf{I}\ a \Rightarrow \mathbf{I}$, then $\mathbf{I}\ b \Rightarrow b$. Each step fires one combinator rule.
+[( )] $\mathbf{K}\ \mathbf{I}\ a\ b \Rightarrow \mathbf{K}\ b$, then $\mathbf{K}\ b \Rightarrow b$.
+[( )] $\mathbf{K}\ \mathbf{I}\ a\ b \Rightarrow \mathbf{I}\ \mathbf{I}\ b \Rightarrow b$. K fires on I and b simultaneously.
+[( )] The reduction diverges because $\mathbf{K}\ \mathbf{I}$ contains no redex.
 
 ---
 

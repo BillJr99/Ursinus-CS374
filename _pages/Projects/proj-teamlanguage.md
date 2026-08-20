@@ -134,7 +134,7 @@ Direction B maps onto the same timeline and stages:
 - **Sprint 3:** hardening, the specification-driven test suite (every semantic equation has at least one test against a hand-computed event list; the algebraic law is verified empirically on at least three instances; stochastic constructs are reproducible under a fixed seed), and performance rehearsal.
 - **Demo Day:** your live demonstration closes with a short **performance** — live-editing and re-running a program while the class follows the event output as it changes. **Emitting events as text is sufficient; audio hardware is never required.** Ambitious teams may additionally render sound by translating event lists into Strudel or MIDI, and that translation layer — mapping your semantics onto someone else's — is itself worth a section of your report.
 
-The required scope maps naturally: patterns and tracks are your non-numeric type, cycle arithmetic and transformation operators are your arithmetic and precedence story, conditional and repeated structures are your selection and iteration, and the cycle semantics itself is a distinctive feature by construction. The **Music and Live-Coding guide** at [Projects/TeamLanguage#the-music-and-live-coding-path](/Projects/TeamLanguage#the-music-and-live-coding-path) provides the full equivalence table mapping each deliverable to its classic counterpart, plus the text-events-only route through the whole track.
+The required scope maps naturally: patterns and tracks are your non-numeric type, cycle arithmetic and transformation operators are your arithmetic and precedence story, conditional and repeated structures are your selection and iteration, and the cycle semantics itself is a distinctive feature by construction. The **Music and Live-Coding guide** at [Projects/TeamLanguage#the-music-and-live-coding-path]({{ site.baseurl }}/Projects/TeamLanguage#the-music-and-live-coding-path) provides the full equivalence table mapping each deliverable to its classic counterpart, plus the text-events-only route through the whole track.
 
 ---
 
@@ -186,7 +186,7 @@ Make your language a good citizen of the shell: a file-runner that composes in p
 
 ### Editor Support: Syntax Highlighting (and an Optional Diagnostic)
 
-Give your language real editor support so an audience *sees* it is a language: a [tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammar for your syntax (its precedence annotations mirror the ladder you already wrote) plus a `highlights.scm` query, or — the lower-friction route — a TextMate grammar wrapped in a minimal VS Code extension. Scope this small: keyword/number/operator/string coloring is a complete extension. The "wow" upgrade is one live **diagnostic** — pipe your interpreter's positioned error output (`line L, col C: message`, which your pipeline already emits) into VS Code's diagnostics API so a bad program shows a red squiggle at the right spot. Demonstrate on a sample program at Demo Day, and include a README line showing how a grader installs the extension. The [Syntax Highlighter tutorial](/Tutorials/SyntaxHighlighter) is the step-by-step companion.
+Give your language real editor support so an audience *sees* it is a language: a [tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammar for your syntax (its precedence annotations mirror the ladder you already wrote) plus a `highlights.scm` query, or — the lower-friction route — a TextMate grammar wrapped in a minimal VS Code extension. Scope this small: keyword/number/operator/string coloring is a complete extension. The "wow" upgrade is one live **diagnostic** — pipe your interpreter's positioned error output (`line L, col C: message`, which your pipeline already emits) into VS Code's diagnostics API so a bad program shows a red squiggle at the right spot. Demonstrate on a sample program at Demo Day, and include a README line showing how a grader installs the extension. The [Syntax Highlighter tutorial]({{ site.baseurl }}/Tutorials/SyntaxHighlighter) is the step-by-step companion.
 
 ### Contribute Upstream: An Open-Source Contribution
 
@@ -245,7 +245,7 @@ With all teams presenting in a single class session, each team has a hard cap of
 
 Every teammate speaks. The audience (your classmates) will write one Strength and one Question card per language; responding to your cards is part of the report.
 
-Demo Day is **external-facing**: alumni, industry guests, and faculty from other departments may join the audience and Q&A, as available — your grade never depends on who attends. Prepare with the [Demo Day Guide](/Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice); the final sprint studios include a cross-team mock-interview rehearsal, credited as class participation.
+Demo Day is **external-facing**: alumni, industry guests, and faculty from other departments may join the audience and Q&A, as available — your grade never depends on who attends. Prepare with the [Demo Day Guide]({{ site.baseurl }}/Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice); the final sprint studios include a cross-team mock-interview rehearsal, credited as class participation.
 
 There is no final exam. Demo Day and the final submission fall on the last class meeting, and **no work is accepted after the last class**.
 
@@ -254,7 +254,7 @@ There is no final exam. Demo Day and the final submission fall on the last class
 ## Stage 4: Final Submission (Demo Day — 75 points, together with the presentation)
 
 **Deliverables:**
-1. **The repository**: the integrated implementation, REPL and file-runner, test suite, sample programs with expected outputs, all configuration in JSON, located exception handling throughout, and a readme tested by the teammate who did not write it. Ensure reproducibility by fixing random seeds where applicable and listing software version information. The repository is public and recruiter-legible: run the [ShipIt self-check](/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist) before Demo Day — it is scored within the Documentation and Reproducibility dimension. (Direction B: the timed-event test fixtures and, if you used bison, the automaton report ride along here.)
+1. **The repository**: the integrated implementation, REPL and file-runner, test suite, sample programs with expected outputs, all configuration in JSON, located exception handling throughout, and a readme tested by the teammate who did not write it. Ensure reproducibility by fixing random seeds where applicable and listing software version information. The repository is public and recruiter-legible: run the [ShipIt self-check]({{ site.baseurl }}/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist) before Demo Day — it is scored within the Documentation and Reproducibility dimension. (Direction B: the timed-event test fixtures and, if you used bison, the automaton report ride along here.)
 2. **The language reference** (approximately four pages): teach your language to a newcomer with examples for every construct, the full grammar, the distinctive feature's guide, and a section per adopted extension.
 3. **`SEMANTICS.md`**, final and verified against the implementation by the differential programs (Direction B: the semantic equations, revised to match the implemented language, with a change log from the proposal).
 4. **The report** (approximately four pages): the design story with the decision log's three most contested calls, the integration experience (what snapped together, what did not, and why), the evaluation summary, limitations (your disclose bucket, verbatim), responses to your Demo Day cards, and individual contribution statements covering the rotation. (Direction B: include the performance postmortem — what performing revealed that the test suite could not — and, if you rendered audio, the translation-layer section.)
@@ -313,10 +313,10 @@ In the spirit of Universal Design for Learning, the music path is a deliberate c
 The music path follows the course's own arc — the same required assignments, in the same order, with the music direction chosen where one is offered:
 
 1. **[Music Languages and Live Coding](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-languagedesign.md)** (activity) — meet TidalCycles and Strudel as *language designs*: embedded versus external DSLs, a formal model of patterns, and the timed-event semantics the rest of the path builds on.
-2. **[Flex and Yacc](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-parsertable.md)** (activity) — build a working flex/yacc pipeline for a subset of the mini-notation in class. (Relatedly, the [Lexer assignment](/Assignments/Lexer)'s generator-toolchain direction is a natural on-ramp: choosing Flex or PLY there puts the tools of the mini-notation pipeline in your hands early. It pairs well with what follows, but it is not required for it.)
-3. **[The Parser and AST](/Assignments/Parser) → the Mini-Notation direction** — grow the in-class mini-notation subset toward the real language: alternation, Euclidean rhythms, and polymeter, parsed into an AST, evaluated to timed events, and validated against the Strudel reference implementation (or against printed event lists alone).
-4. **[Functional Programming](/Assignments/Functional) → the Parallel Functional direction** — purity buys parallelism: the same core parts as everyone (pure functions, higher-order combinators, recursive structures with fold), then a complete MapReduce pipeline measured and analyzed against Amdahl's Law — the same pure-map/associative-reduce discipline pattern engines like Strudel run on.
-5. **[Team Language Project](/Projects/TeamLanguage) → the Music and Live-Coding direction** (capstone) — design, specify, build, and demonstrate a small live-coding language with your team. The closing demonstration may be a live edit-and-rerun session over printed event output — rendered sound is optional here as everywhere on the path.
+2. **[Flex and Yacc](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-parsertable.md)** (activity) — build a working flex/yacc pipeline for a subset of the mini-notation in class. (Relatedly, the [Lexer assignment]({{ site.baseurl }}/Assignments/Lexer)'s generator-toolchain direction is a natural on-ramp: choosing Flex or PLY there puts the tools of the mini-notation pipeline in your hands early. It pairs well with what follows, but it is not required for it.)
+3. **[The Parser and AST]({{ site.baseurl }}/Assignments/Parser) → the Mini-Notation direction** — grow the in-class mini-notation subset toward the real language: alternation, Euclidean rhythms, and polymeter, parsed into an AST, evaluated to timed events, and validated against the Strudel reference implementation (or against printed event lists alone).
+4. **[Functional Programming]({{ site.baseurl }}/Assignments/Functional) → the Parallel Functional direction** — purity buys parallelism: the same core parts as everyone (pure functions, higher-order combinators, recursive structures with fold), then a complete MapReduce pipeline measured and analyzed against Amdahl's Law — the same pure-map/associative-reduce discipline pattern engines like Strudel run on.
+5. **[Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) → the Music and Live-Coding direction** (capstone) — design, specify, build, and demonstrate a small live-coding language with your team. The closing demonstration may be a live edit-and-rerun session over printed event output — rendered sound is optional here as everywhere on the path.
 
 Assignments without a music direction listed here (Warmup, Regex, the Automata lab, Lexer, Interpreter, and the rest) are simply taken as they stand — they build the skills every direction draws on. And the choices are independent: you can take the Mini-Notation direction in the Parser assignment and any direction you like in Functional, or vice versa. The path above is the coherent musical route, not a package deal.
 
@@ -326,9 +326,9 @@ Assignments without a music direction listed here (Warmup, Regex, the Automata l
 
 | Required assignment | Its music direction |
 | --- | --- |
-| [The Parser and AST](/Assignments/Parser) | Direction B: The Mini-Notation Music Parser |
-| [Functional Programming](/Assignments/Functional) | Direction E: Parallel Functional Programming |
-| [Team Language Project](/Projects/TeamLanguage) | The Music and Live-Coding direction (text-events-only route available) |
+| [The Parser and AST]({{ site.baseurl }}/Assignments/Parser) | Direction B: The Mini-Notation Music Parser |
+| [Functional Programming]({{ site.baseurl }}/Assignments/Functional) | Direction E: Parallel Functional Programming |
+| [Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) | The Music and Live-Coding direction (text-events-only route available) |
 
 The two activities (Music Languages and Live Coding; Flex and Yacc) are preparation, not deliverables — they play the same role the optional readings do elsewhere in the schedule.
 
@@ -399,7 +399,7 @@ Rewrite the README so its first screen passes the thirty-second test:
 
 Then, below the fold:
 
-- A **CI badge** showing the test suite passing on the submission commit (the [CI and TDD for Interpreters](/Tutorials/CITDDForInterpreters) tutorial covers wiring this up).
+- A **CI badge** showing the test suite passing on the submission commit (the [CI and TDD for Interpreters]({{ site.baseurl }}/Tutorials/CITDDForInterpreters) tutorial covers wiring this up).
 - Links to the **language reference**, **`SEMANTICS.md`**, and the sample program suite.
 - A **credits section** naming each teammate and what they built — contribution attribution is part of the self-check, and it is what lets each of you point at this repository individually.
 
@@ -415,7 +415,7 @@ Give your language a real installation path — one of:
 - **npm:** for JavaScript implementations, a scoped package with a working `bin`.
 - **Docker:** a small image whose default command opens the REPL and which can run a mounted program file.
 
-The step-by-step mechanics live in the [Publishing Your Language — pip, npm, and Docker](/Tutorials/PublishingYourLanguage) tutorial; this guide only insists on the discipline around it:
+The step-by-step mechanics live in the [Publishing Your Language — pip, npm, and Docker]({{ site.baseurl }}/Tutorials/PublishingYourLanguage) tutorial; this guide only insists on the discipline around it:
 
 - **Tag the release** with a semantic version (`v1.0.0` for the Demo Day submission) so the installed artifact and the graded commit are the same thing.
 - **Verify cold.** The teammate who did *not* do the packaging installs it on a machine (or in a fresh container) that has never seen the project, following the README alone, and records a one-line confirmation with their name in the report.
@@ -429,7 +429,7 @@ The last stage is individual. Each teammate:
 
 - **Pins or links the repository** from their GitHub profile (or personal portfolio page). If you do not have a profile README, this is the moment to create one — it is a ten-minute job with an outsized payoff.
 - **Writes a project story of roughly 200 words**: the problem (what niche, why a new language), what the team built (the pipeline, the distinctive feature, any extensions), and the evidence (the repo link, the CI badge, the verified install, a test-suite number). Name your individual contribution explicitly — "I built X" — because that is the sentence a resume bullet and an interview answer are made from.
-- **Reuses the story.** The same story is your opening move with guests at Demo Day (see the [Demo Day Guide](/Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice)) and the seed of the resume bullet you will write when you next update your materials.
+- **Reuses the story.** The same story is your opening move with guests at Demo Day (see the [Demo Day Guide]({{ site.baseurl }}/Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice)) and the seed of the resume bullet you will write when you next update your materials.
 - **Drafts the post.** Each member turns the story into a **drafted LinkedIn-style post** (150-250 words: the niche, what you built, one concrete number — tests passing, sample programs, the install command — and what you learned) and includes the draft in the final submission. Submitting the draft is required; **publishing it is always optional and never graded — your professional profiles are yours.** The draft exists so that if you choose to post, the post is already written while the language still runs on your machine.
 
 ---
@@ -487,7 +487,7 @@ Answer these as a team during release hardening, and individually as part of you
 
 - [Sprint Studio Protocol](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-sprintstudio.md)
 - [Team Language Project](https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage)
-- [ShipIt Guide: Repo Hygiene, README, Packaging, and Your Portfolio](/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist)
+- [ShipIt Guide: Repo Hygiene, README, Packaging, and Your Portfolio]({{ site.baseurl }}/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist)
 
 This guide is not separately graded; the presentation is assessed within the Team Language Project's **Demo Day Presentation** dimension, and the mock-interview rehearsal is credited as **class participation**.
 
@@ -547,7 +547,7 @@ The project does not have to end at Demo Day:
 
 - **[CCSC-Eastern](https://ccscne.org/)** and similar regional conferences run **student poster sessions** — a team language with a live REPL demo is exactly the kind of work they exist to showcase. Talk to the instructor about submitting; the proposal you already wrote is most of the abstract.
 - **Campus research and creative-work showcases** welcome course projects of this scope; presenting there is a low-stakes rehearsal for any external venue.
-- **Your profile.** The [ShipIt guide](/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist)'s Stage 4 — the pinned repository and 200-word project story — is the durable version of everything you rehearsed here. Update your resume and LinkedIn while the numbers (test counts, sample programs, the verified install) are fresh.
+- **Your profile.** The [ShipIt guide]({{ site.baseurl }}/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist)'s Stage 4 — the pinned repository and 200-word project story — is the durable version of everything you rehearsed here. Update your resume and LinkedIn while the numbers (test counts, sample programs, the verified install) are fresh.
 
 ---
 

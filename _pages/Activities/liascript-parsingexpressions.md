@@ -267,12 +267,12 @@ Part II consolidates and extends what you built in Part I. You will first check 
 
 ## 2. Owning the Pattern
 
-[[MC]]
 In `parse_addsub`, the line `node = (op, node, right)` places the previous result as the left child. Changing nothing else, this single line determines that:
-- ( ) Multiplication binds tighter than addition
-- (x) Operators at this tier associate left, so `7 - 2 - 1` evaluates as `(7 - 2) - 1`
-- ( ) Parentheses are honored
-- ( ) The grammar is LL(1)
+
+[( )] Multiplication binds tighter than addition
+[(X)] Operators at this tier associate left, so `7 - 2 - 1` evaluates as `(7 - 2) - 1`
+[( )] Parentheses are honored
+[( )] The grammar is LL(1)
 
 ---
 

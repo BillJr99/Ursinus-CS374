@@ -69,12 +69,12 @@ Using the ladder grammar (`E -> E + T | T`, `T -> T * F | F`, `F -> num | ( E )`
 
 Check your reading of the table before moving on:
 
-[[MC]]
 In the trace above, the single token `2` is reduced through `F -> num`, `T -> F`, and `E -> T` *before* the `+` is shifted. What makes those three reductions necessary?
-- ( ) An LR parser must alternate one shift with one reduce
-- (x) The production that will eventually consume the `+` is `E -> E + T`, which requires an `E` (not a bare `num`) on the stack to the left of the `+`
-- ( ) The token `2` is ambiguous until it has been reduced
-- ( ) Reductions shrink the stack so it cannot overflow
+
+[( )] An LR parser must alternate one shift with one reduce
+[(X)] The production that will eventually consume the `+` is `E -> E + T`, which requires an `E` (not a bare `num`) on the stack to the left of the `+`
+[( )] The token `2` is ambiguous until it has been reduced
+[( )] Reductions shrink the stack so it cannot overflow
 
 In the second-to-last row, the stack `E + T` with input `$` is reduced using the production `E -> E +` [[T]] — after which the stack holds only the start symbol and the parser accepts.
 
@@ -185,12 +185,12 @@ A parsing table cell with two entries is a conflict: the grammar gave the parser
 
 **A grammar produces a conflict when some table cell needs two actions.** A **shift-reduce conflict** arises when the parser could either extend the current phrase or close it (the dangling else is the canonical case: shift the `else` or reduce the bare `if`); a **reduce-reduce conflict** arises when two completed productions match the same stack top. Conflicts are the LR world's version of the descent world's non-LL(1) alternations: a sign the grammar (or the language) is ambiguous or needs more lookahead. Tools resolve some conflicts with declared precedence; the rest demand grammar surgery, the same surgery skills you built in the ambiguity module.
 
-[[MC]]
 A parser generator reports a shift-reduce conflict on the team's grammar at the token `else`. The most informative first response is:
-- ( ) Increase the parser's stack size
-- ( ) Switch to recursive descent, which has no tables
-- (x) Recognize the dangling else ambiguity and either restructure the grammar or accept the tool's default of shifting, documenting the choice
-- ( ) Delete the else construct
+
+[( )] Increase the parser's stack size
+[( )] Switch to recursive descent, which has no tables
+[(X)] Recognize the dangling else ambiguity and either restructure the grammar or accept the tool's default of shifting, documenting the choice
+[( )] Delete the else construct
 
 > **Watch out!** A conflict in the parsing table — whether LL(1) or LR — means the grammar is not in the class the table was built for. For LL(1) tables specifically, any cell with more than one entry means the grammar is not LL(1) and the table-driven parser is undefined for that grammar. The right response is always to diagnose *why* the conflict arose (ambiguity? left recursion? missing factoring?) rather than picking an entry arbitrarily.
 
@@ -202,12 +202,12 @@ Now that you have seen how the machinery works, the practical question is whethe
 
 Your project must choose its parsing technology; most teams hand-write recursive descent, and you should know what you are declining.
 
-[[MC]]
 Your project grammar contains the left-recursive list rule `args -> args "," expr | expr`. Which statement about the two technologies is correct?
-- ( ) Both require rewriting the rule before they can parse it
-- (x) A generated LR parser handles the rule as written; a hand-written recursive descent parser requires rewriting it as `args -> expr { "," expr }`
-- ( ) Recursive descent handles it as written; LR requires the rewrite
-- ( ) Neither technology can parse comma-separated lists
+
+[( )] Both require rewriting the rule before they can parse it
+[(X)] A generated LR parser handles the rule as written; a hand-written recursive descent parser requires rewriting it as `args -> expr { "," expr }`
+[( )] Recursive descent handles it as written; LR requires the rewrite
+[( )] Neither technology can parse comma-separated lists
 
 ### Critical Thinking Questions
 
@@ -731,33 +731,33 @@ These exercises cover pushdown automata (PDAs) and their relationship to context
 
 > *Exercises adapted from topics covered in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
-[[MC]]
 A pushdown automaton (PDA) differs from a finite automaton primarily because:
-- ( ) It reads input from right to left
-- ( ) It has more than one start state
-- (x) It has access to an unbounded stack in addition to finite states
-- ( ) It can move without reading input (epsilon transitions only)
 
-[[MC]]
+[( )] It reads input from right to left
+[( )] It has more than one start state
+[(X)] It has access to an unbounded stack in addition to finite states
+[( )] It can move without reading input (epsilon transitions only)
+
 The language a^n b^n (equal numbers of a's then b's) is recognized by a PDA because:
-- ( ) It is a regular language, recognizable by any finite automaton
-- (x) The PDA pushes 'a's onto the stack and pops one for each 'b', checking balance
-- ( ) The PDA uses its states (not the stack) to count the a's
-- ( ) The stack stores the entire input before processing begins
 
-[[MC]]
+[( )] It is a regular language, recognizable by any finite automaton
+[(X)] The PDA pushes 'a's onto the stack and pops one for each 'b', checking balance
+[( )] The PDA uses its states (not the stack) to count the a's
+[( )] The stack stores the entire input before processing begins
+
 The connection between PDAs and context-free grammars is:
-- ( ) Every PDA can be converted to a regular expression
-- ( ) PDAs recognize only a subset of context-free languages
-- (x) PDAs and CFGs recognize exactly the same class of languages (the context-free languages)
-- ( ) CFGs are strictly more powerful than PDAs
 
-[[MC]]
+[( )] Every PDA can be converted to a regular expression
+[( )] PDAs recognize only a subset of context-free languages
+[(X)] PDAs and CFGs recognize exactly the same class of languages (the context-free languages)
+[( )] CFGs are strictly more powerful than PDAs
+
 In an LR(0) shift-reduce parser, the stack corresponds to:
-- ( ) The remaining unconsumed input
-- (x) The portion of the input already read, organized as a pushdown automaton's stack contents
-- ( ) The set of all parse trees built so far
-- ( ) The lookahead buffer
+
+[( )] The remaining unconsumed input
+[(X)] The portion of the input already read, organized as a pushdown automaton's stack contents
+[( )] The set of all parse trees built so far
+[( )] The lookahead buffer
 
 1. *PDA design.* Design a PDA (state diagram or transition table) that accepts the language $\{a^n b^n \mid n \geq 0\}$. Your PDA should: push `a` onto the stack on input `a`, pop one stack symbol for each `b`, and accept by empty stack. Trace it on `aabb` and `aaabbb`.
 
