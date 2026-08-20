@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: default-standard
 permalink: /Tutorials/ShellForLanguageDev
 title: "CS374: Shell Skills for Language Development"
 
@@ -27,13 +27,26 @@ tags:
 
 # Shell Skills for Language Development
 
-This tutorial teaches the shell skills you need to build, test, and ship your CS374 final-project interpreter. You already know Python. This tutorial bridges the gap between "I can run it in my IDE" and "I can run, test, and debug it confidently from the command line."
+This tutorial teaches the shell skills you need to build, test, and ship your CS374 final-project interpreter. You already know Python. This bridges the gap between "I can run it in my IDE" and "I can run, test, and debug it confidently from the command line."
 
-The examples assume your interpreter is invoked as `python3 mylang.py <sourcefile>`, your source files use the extension `.ml`, test cases live in `tests/`, and expected outputs live in `expected/`. Adapt paths to match your actual layout.
+**Work through it at a terminal, not in a chair.** Each step below ends with a **Try it** box: a small, concrete thing to run against your own interpreter before moving on. By the last step you will have an executable interpreter, a test harness that reports PASS/FAIL, a Makefile that standardizes how your language is invoked, and a CI job that fails the build when a test regresses.
+
+**What you need before you start.** A working interpreter you can run — even one that only prints a token stream is enough to follow along — and a terminal in the [course development environment](/Tutorials/DevEnvironment).
+
+**The running example.** Your interpreter is invoked as `python3 mylang.py <sourcefile>`, your source files use the extension `.ml`, test cases live in `tests/`, and expected outputs live in `expected/`. Adapt the paths to match your actual layout as you go.
+
+| Step | You will build | Time |
+|---|---|---|
+| 1 | An interpreter you can run directly, with meaningful exit codes | 15 min |
+| 2 | Output captured and diffed against expected results | 15 min |
+| 3 | `test_runner.sh` — a harness that runs every test and reports PASS/FAIL | 30 min |
+| 4 | A `Makefile` so `make test` is the only command anyone needs | 20 min |
+| 5 | A debugging toolkit of shell one-liners | 20 min |
+| 6 | Environment-variable configuration and a CI job | 25 min |
 
 ---
 
-## Section 1: Running Your Interpreter from the Terminal
+## Step 1: Run Your Interpreter from the Terminal
 
 ### Basic invocation
 
@@ -99,7 +112,11 @@ echo $?          # prints 1 if your interpreter exited with sys.exit(1)
 
 ---
 
-## Section 2: I/O Redirection for Testing
+> **Try it.** Add a shebang to your interpreter, `chmod +x` it, and run it as `./mylang.py` on a test program. Then run it on a program with a deliberate syntax error and check `echo $?` — if it prints `0`, your interpreter is lying about failure, and every harness you build later will believe it. Fix that now with `sys.exit(1)`.
+
+---
+
+## Step 2: Capture and Compare Output with Redirection
 
 ### Capturing output to a file
 
@@ -158,7 +175,11 @@ python3 mylang.py tests/fibonacci.ml | sort        # sort output lines
 
 ---
 
-## Section 3: Writing a Shell Test Harness
+> **Try it.** Pick one test program, run it, and save the output as its expected file. Now change one line of your evaluator so the result is wrong, and run the `diff` again — you should see exactly what changed. Undo the change. That diff is the whole idea behind Step 3.
+
+---
+
+## Step 3: Write a Shell Test Harness
 
 Once you have more than two or three test cases, running them by hand becomes impractical. A shell script can run all of them automatically and print a summary.
 
@@ -225,7 +246,11 @@ Commit both `tests/` and `expected/` to git so the test harness has something to
 
 ---
 
-## Section 4: Makefile for Your Language Project
+> **Try it.** Save `test_runner.sh`, `chmod +x` it, and run it. Every test should report PASS. Now break one on purpose and confirm the harness reports FAIL *and* exits non-zero (`echo $?`) — a harness that always exits `0` will make CI green no matter what.
+
+---
+
+## Step 4: Standardize the Commands with a Makefile
 
 A `Makefile` gives every contributor — including you after a vacation — a single consistent interface. `make run FILE=tests/fib.ml`, `make test`, `make clean` all just work.
 
@@ -289,7 +314,11 @@ make clean                          # remove __pycache__ directories
 
 ---
 
-## Section 5: Useful Shell One-Liners for Debugging
+> **Try it.** Run `make test`, then `make clean`. Hand the command to a teammate who has never run your project and see whether it works on their machine without further explanation. That is the bar the Makefile has to clear.
+
+---
+
+## Step 5: Build a Debugging Toolkit of One-Liners
 
 ### Count lines in your test suite
 
@@ -368,7 +397,11 @@ Both process substitutions run in parallel and their outputs are compared direct
 
 ---
 
-## Section 6: Environment Variables for Configuration
+> **Try it.** Use `grep -rn` to find every place your evaluator dispatches on a node type. Then run your interpreter on a program that crashes it, under `python3 -m pdb`, and walk to the failing frame. Both are faster than adding print statements, and neither requires an IDE.
+
+---
+
+## Step 6: Configure with Environment Variables and Wire Up CI
 
 Environment variables let you add debug flags to your interpreter without changing any source file or command-line argument parsing.
 
@@ -455,6 +488,10 @@ No additional configuration needed — the exit code from the script tells GitHu
 
 ---
 
+> **Try it.** Add a `DEBUG` check to your interpreter that prints the token stream when `DEBUG=1` is set, and confirm `DEBUG=1 python3 mylang.py tests/scoping.ml` behaves differently from the plain invocation. Then commit the CI workflow and watch the job run on a push — including one push where a test is deliberately broken, so you see it fail.
+
+---
+
 ## Quick Reference
 
 | Task | Command |
@@ -479,11 +516,11 @@ No additional configuration needed — the exit code from the script tells GitHu
 | Invert (lines *without*) | `grep -v "^#" grammar.bnf` |
 | Clean caches | `make clean` |
 
-## From the Regular Expressions Activity: grep in Depth and Capture-Group Applications
+## Appendix: grep in Depth and Capture Groups
 
 The *Regular Expressions* class session keeps a compact grep primer - the flag table and the BRE-vs-ERE trap - because the Overview assignment grades a grep transcript. The longer material below moved here: worked grep examples, named groups, and a full log-triage walkthrough that uses capture groups to turn unstructured log lines into structured records.
 
-## Model 4: Log Triage — A Capture-Group Walkthrough
+### Log Triage: A Capture-Group Walkthrough
 
 **Worked example.** Take one log line and the triage pattern:
 
@@ -544,14 +581,14 @@ for r in records:
     if r["level"] == "ERROR":
         print(f"  {r['time']}  {r['msg']}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-[[MC]]
-In `(?P<level>[A-Z]+) (?P<msg>.*)`, the `level` group stops at the end of `WARN` because:
-- ( ) `+` is reluctant by default
-- (x) The next character is a space, which is not in `[A-Z]`, so the greedy `+` has nothing more it is allowed to consume
-- ( ) Named groups match at most four characters
-- ( ) The `msg` group claimed the space first
+**Check yourself.** In `(?P<level>[A-Z]+) (?P<msg>.*)`, why does the `level` group stop at the end of `WARN`?
+
+<details><summary>Answer</summary>
+
+The next character is a space, which is not in `[A-Z]`, so the greedy `+` has nothing more it is allowed to consume. It is not that `+` is reluctant (it is not), nor that named groups have a length limit (they do not).
+
+</details>
 
 ### Critical Thinking Questions
 
@@ -566,7 +603,7 @@ This final model has two purposes: to make greedy-versus-reluctant matching conc
 
 > **Watch out!** Regular expressions **cannot match balanced (nested) parentheses** in general — for example, the language $\{(^n)^n \mid n \geq 0\}$ (equal numbers of open and close parens) is context-free, not regular. No matter how clever your regex, there exists a depth $n$ large enough to fool it. When you need to match nested structure, you need a parser built from a context-free grammar — exactly what the next unit covers.
 
-## Model 3: Named Groups and the Lexer Connection
+### Named Groups and the Lexer Connection
 
 **Named groups make a mini-lexer readable:**
 ```python
@@ -617,7 +654,6 @@ print count;"""
 for tok in lex(src):
     print(tok)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -642,12 +678,13 @@ grep -nE "[[:alpha:]_][[:alnum:]_]*" lexer.py   # POSIX class = an identifier
 
 Two portability notes worth knowing now rather than at 2am: `\d` and `\w` are **not** POSIX and may not work in every `grep`; the portable spellings are `[0-9]` and `[[:alnum:]_]`. And `.` still means "any character," so a literal dot needs escaping — `[0-9]+\.[0-9]+` matches `3.14`, while `[0-9]+.[0-9]+` would also match `3x14`.
 
-[[MC]]
-You run `grep -n "lexer|parser" src/main.py` and get no output, though the file plainly contains both words. What went wrong?
-- ( ) `grep` cannot search for two words at once
-- (x) Plain `grep` uses BRE, where `|` is a literal character - it searched for the string `lexer|parser`. Use `grep -nE` or escape it as `lexer\|parser`
-- ( ) The `-n` flag suppresses output when there are multiple matches
-- ( ) `src/main.py` must be passed with `-r`
+**Check yourself.** You run `grep -n "lexer|parser" src/main.py` and get no output, though the file plainly contains both words. What went wrong?
+
+<details><summary>Answer</summary>
+
+Plain `grep` uses BRE, where `|` is a literal character — it searched for the string `lexer|parser`. Use `grep -nE`, or escape it as `lexer\|parser`.
+
+</details>
 
 > **Watch out!** `grep` is line-oriented, so it cannot match a pattern that spans a newline. When you find yourself wanting that — "find every function whose body contains `raise`" — you have left `grep`'s regular-language territory and want a parser. That is the same boundary this activity's final section draws between regular expressions and context-free grammars, and it shows up in your tools as well as in your theory.
 

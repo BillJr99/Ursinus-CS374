@@ -88,7 +88,7 @@ Your team will design, implement, document, and present **a programming language
 
 Teams are three members each, formed in the design phase from your standing POGIL groups. Project roles (**Coordinator**, **Builder**, **Evaluator**, **Scribe**) rotate at every sprint boundary so every member holds every role; your report's contribution statements must show the rotation.
 
-**Your team over the project's seven weeks.** Teams reliably pass through recognizable stages (Tuckman, 1965), and this project's milestones are placed on that map deliberately. Your **team charter** (drafted in the Overview assignment, signed in week 2) is the *forming* work — you did it before the stakes were high. The **design phase** is where *storming* is expected: the argument over which niche to serve and what the design scorecard says is the productive conflict, so have it out loud in your own team meeting rather than quietly in a group chat. The **Sprint 0 proposal** is *norming* made concrete — a signed, presented agreement about what you are building and who owns what. The **sprints** are *performing*: role rotation and stand-ups carry the load, and the team self-corrects without drama. **Demo Day's retrospective** is *adjourning*: close deliberately, with contribution statements and the portfolio story each member takes with them. If the design phase feels contentious, that is the map working — run the charter's conflict-repair process and keep moving.
+**Your team over the project's seven weeks.** Teams reliably pass through recognizable stages (Tuckman, 1965), and this project's milestones are placed on that map deliberately. Your **team charter** (drafted at the design-phase milestone, signed with the proposal) is the *forming* work — you do it before the stakes are high. The **design phase** is where *storming* is expected: the argument over which niche to serve and what the design scorecard says is the productive conflict, so have it out loud in your own team meeting rather than quietly in a group chat. The **Sprint 0 proposal** is *norming* made concrete — a signed, presented agreement about what you are building and who owns what. The **sprints** are *performing*: role rotation and stand-ups carry the load, and the team self-corrects without drama. **Demo Day's retrospective** is *adjourning*: close deliberately, with contribution statements and the portfolio story each member takes with them. If the design phase feels contentious, that is the map working — run the charter's conflict-repair process and keep moving.
 
 **Reference implementation policy.** Teams may build on the released reference lexer, parser, and interpreter instead of (or merged with) their own semester components, declared in the project README. The project is graded on the language you design and build on top, not on whose components you started from — spend your sprint time on the design, the distinctive feature, and the integration, wherever your starting components came from.
 
@@ -101,8 +101,8 @@ The project is worth **100 points** total, earned at two graded milestones (prop
 | Milestone (see the course schedule for dates) | What happens | Points |
 |---|---|---|
 | Project hand-out | Design phase begins: form teams of 3, pick a niche, draft the design scorecard | — |
-| Design-phase studio check | Design-phase milestone: team, niche, and design scorecard (submitted as the design-phase milestone; 3 points, assessed within Class Activities and Participation) | 3 |
-| **Sprint 0 kickoff** | **Proposal due, presented in class** | **25** |
+| Design-phase studio check | Design-phase milestone: team, niche, design scorecard, and the **draft team charter** (submitted as the design-phase milestone; 3 points, assessed within Class Activities and Participation) | 3 |
+| **Sprint 0 kickoff** | **Proposal due, presented in class — includes the signed team charter** | **25** |
 | Sprint 1 increment checkpoint (see schedule) | Integrate components, with an in-class working-time session; checkpoint includes the charter re-read and confidential peer pulse (3 points, assessed within Class Activities and Participation) | 3 |
 | Sprint 2 studio | Gallery walk and peer review | — |
 | Sprint 3 studio | Release hardening | — |
@@ -196,7 +196,21 @@ Instead of (or alongside) extending your own language, contribute to an existing
 
 ## Stage 1: Design Phase and Proposal (proposal due at the Sprint 0 kickoff — 25 points)
 
-The project hand-out opens a **design phase**: form your team of three, pick a niche, and draft the design scorecard. This phase runs outside class - there is no studio session for it - so budget a team meeting of your own between the hand-out and the milestone. The design-phase milestone — team, niche, and scorecard — is submitted through Canvas (3 points, assessed within Class Activities and Participation); it exists so the graded proposal that follows is a refinement, not a scramble.
+The project hand-out opens a **design phase**: form your team of three, pick a niche, draft the design scorecard, and draft your team charter. This phase runs outside class - there is no studio session for it - so budget a team meeting of your own between the hand-out and the milestone. The design-phase milestone — team, niche, scorecard, and draft charter — is submitted through Canvas (3 points, assessed within Class Activities and Participation); it exists so the graded proposal that follows is a refinement, not a scramble.
+
+### The Team Charter
+
+Your team writes a one-page charter it will actually use. Draft it for the design-phase milestone; the **signed** version is part of the proposal. All four topics are required.
+
+**Role rotation plan.** The project phase uses four roles: **Coordinator** (sprint planning, scope), **Builder** (implementation), **Evaluator** (testing and sample programs), **Scribe** (documentation and decision log). State how your team will rotate them: e.g., "we will rotate by sprint, in alphabetical order by last name." Every member must hold every role at least once.
+
+**External communication channel and norms.** State where the team will communicate outside class (Discord, text, email — pick one channel and use it consistently). State your response-time norm: e.g., "we will respond within 24 hours on weekdays, 48 on weekends." State how you will signal availability changes (illness, travel, exam crunch).
+
+**Preparation norms.** State what "prepared for class" means for your team: e.g., "readings and previous activity reviewed before class; laptop charged; roles assigned by the start of class." State what you will do if a member is unprepared.
+
+**Disagreement resolution.** State a concrete mechanism for resolving technical disagreements (e.g., "we will vote; ties go to the Coordinator") and interpersonal disagreements (e.g., "we will raise the issue with the Scribe, who records it in the decision log; unresolved issues go to the instructor"). Having this written before a disagreement occurs is the point.
+
+All members sign the charter (typed names suffice) for the proposal. One charter per team; the Sprint 1 increment checkpoint is where you re-read it and file a revision if it no longer describes your team.
 
 The proposal itself is due at the Sprint 0 kickoff, and is **presented in class**. A two-to-three page proposal containing:
 
@@ -210,6 +224,7 @@ The proposal itself is due at the Sprint 0 kickoff, and is **presented in class*
 - The merge plan: whose lexer, parser, and evaluator seed the integration, and the order of merging.
 - The risk pre-mortem: the most likely derailment and the smallest experiment that retires it.
 - The sprint plan with role rotation schedule.
+- The **signed team charter** (all four topics, every member's typed signature), revised from the design-phase draft.
 
 ---
 

@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: default-standard
 permalink: /Tutorials/DevEnvironment
 title: "CS374: The Course Development Environment"
 

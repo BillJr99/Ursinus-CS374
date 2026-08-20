@@ -7,14 +7,13 @@ info:
   coursenum: CS374
   purpose: "To confirm your Python toolchain and capture a baseline of your relationship with languages before the build begins."
   tilt:
-    task: "Verify your environment with the starter script, write a short Language Autobiography, and charter your team."
-    criteria: "Assessed on a verified environment, a specific and reflective autobiography, and a complete signed charter; see the rubric below for the full breakdown."
+    task: "Verify your environment with the starter script and write a short Language Autobiography."
+    criteria: "Assessed on a verified environment and a specific, reflective autobiography; see the rubric below for the full breakdown."
   points: 100
   goals:
     - To verify a working Python development environment for the semester's build
     - To demonstrate baseline command-line, git, and Python-environment fluency by navigating a shell, committing to a repository, and creating a reproducible environment with uv
     - To reflect on your language background as a baseline for the course
-    - To form and charter your semester team
     - To run the provided starter script that exercises the libraries used throughout the semester
   rubric:
     - weight: 40
@@ -30,11 +29,11 @@ info:
       progressing: All four prompts are addressed with specific examples drawn from the student's own experience, with limited connection to course themes (parsing, semantics, scoping)
       proficient: All four prompts are addressed with specific examples; the "language fought you" entry uses precise vocabulary (syntax, semantics, type, scope, evaluation order); the reflection question is stated as a genuinely open question, not a question whose answer the student already knows
     - weight: 20
-      description: Team Charter and Submission
-      preemerging: No charter is submitted, or the submission is missing major components
-      beginning: A charter exists but addresses only one or two of the four required topics
-      progressing: A complete charter addressing roles, communication, preparation norms, and disagreement resolution, with a minor omission such as a missing signature
-      proficient: A complete, signed charter covering role rotation plan (Coordinator/Builder/Evaluator/Scribe), external communication channel and norms, preparation expectations, and a concrete disagreement-resolution mechanism; all four prompts answered in the autobiography; complete transcript; single PDF submitted
+      description: Submission
+      preemerging: No submission, or the submission is missing major components
+      beginning: The submission is present but disorganized — transcript and autobiography are hard to tell apart, or one is missing
+      progressing: All required components are present in one file, with a minor omission such as an unlabeled transcript section
+      proficient: A single, well-organized PDF (or Markdown) containing a complete labeled transcript for every verification step and all four autobiography prompts, with the collaboration, AI-disclosure, and time questions answered
   readings:
     - rtitle: "Welcome Activity"
       rlink: "https://www.billmongan.com/Ursinus-CS374-Overview"
@@ -50,7 +49,7 @@ tags:
 
 ---
 
-The purpose of this warmup is to confirm your tools before the build begins, to capture your current relationship with programming languages as a baseline you will revisit at semester end, and to launch your team with an explicit charter.
+The purpose of this warmup is to confirm your tools before the build begins and to capture your current relationship with programming languages as a baseline you will revisit at semester end. (Your team charter is **not** part of this assignment — you will draft it with the [Team Language Project](/Projects/TeamLanguage) Design-Phase Submission and sign it with the Proposal.)
 
 The Warmup is the Teams-based onboarding survey; the Overview is the technical setup + Language Autobiography — they are separate deliverables.
 
@@ -227,31 +226,12 @@ Pose one question about how programming languages work that you hope this course
 
 ---
 
-## Part 3: Team Charter
-
-With your assigned team (your standing POGIL team), draft a one-page charter that your team will actually use. All four topics below are required.
-
-**Role rotation plan.** The project phase uses four roles: **Coordinator** (sprint planning, scope), **Builder** (implementation), **Evaluator** (testing and sample programs), **Scribe** (documentation and decision log). State how your team will rotate them: e.g., "we will rotate by sprint, in alphabetical order by last name." Every member must hold every role at least once.
-
-**External communication channel and norms.** State where the team will communicate outside class (Discord, text, email — pick one channel and use it consistently). State your response-time norm: e.g., "we will respond within 24 hours on weekdays, 48 on weekends." State how you will signal availability changes (illness, travel, exam crunch).
-
-**Preparation norms.** State what "prepared for class" means for your team: e.g., "readings and previous activity reviewed before class; laptop charged; POGIL roles assigned by the start of class." State what you will do if a member is unprepared.
-
-**Disagreement resolution.** State a concrete mechanism for resolving technical disagreements (e.g., "we will vote; ties go to the Coordinator") and interpersonal disagreements (e.g., "we will raise the issue with the Scribe, who records it in the decision log; unresolved issues go to the instructor"). Having this written before a disagreement occurs is the point.
-
-All members sign the charter (typed names suffice).
-
----
-
 ## Deliverables
 
 Submit a **single PDF** (preferred) or Markdown file containing:
 1. The verification transcript for all three environment steps.
 2. The command-line and git checkpoint transcript (Part 1.5: navigation/search, git commit/push, uv environment).
 3. The language autobiography (all four prompts, approximately one page).
-4. The team charter (all four topics, all signatures).
-
-One charter per team is fine; include it in each member's individual submission.
 
 Please also answer the following questions in your submission:
 
