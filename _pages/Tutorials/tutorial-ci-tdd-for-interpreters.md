@@ -240,7 +240,6 @@ from lexer   import LexError
 from parser  import ParseError
 from evaluator import LangNameError, LangTypeError
 
-
 # ---------------------------------------------------------------------------
 # Arithmetic
 # ---------------------------------------------------------------------------
@@ -278,7 +277,6 @@ class TestArithmetic:
     def test_nested_parens(self):
         assert run("((1 + 2) * (3 + 4))") == 21
 
-
 # ---------------------------------------------------------------------------
 # Booleans and comparisons
 # ---------------------------------------------------------------------------
@@ -311,7 +309,6 @@ class TestBooleans:
     def test_if_condition_is_expression(self):
         assert run("if 3 < 5 then 10 else 20") == 10
 
-
 # ---------------------------------------------------------------------------
 # Variables and let-bindings
 # ---------------------------------------------------------------------------
@@ -337,7 +334,6 @@ class TestVariables:
     def test_undefined_variable_message(self):
         with pytest.raises(LangNameError, match="x"):
             run("x + 1")
-
 
 # ---------------------------------------------------------------------------
 # Functions and closures
@@ -385,7 +381,6 @@ class TestFunctions:
             add10 32
         """) == 42
 
-
 # ---------------------------------------------------------------------------
 # Recursion via letrec
 # ---------------------------------------------------------------------------
@@ -419,7 +414,6 @@ class TestRecursion:
         # Skip this test if your language does not support mutual recursion yet
         pytest.skip("mutual recursion not yet implemented")
 
-
 # ---------------------------------------------------------------------------
 # Error handling
 # ---------------------------------------------------------------------------
@@ -448,7 +442,6 @@ class TestErrors:
     def test_name_error_in_function_body(self):
         with pytest.raises(LangNameError):
             run("(fun x -> y) 1")
-
 
 # ---------------------------------------------------------------------------
 # Lexer-level tests (stage isolation)
@@ -495,7 +488,6 @@ from mylang import run
 ])
 def test_arithmetic_ops(src, expected):
     assert run(src) == expected
-
 
 @pytest.mark.parametrize("src,expected", [
     ("if true  then 1 else 2", 1),
@@ -1142,7 +1134,6 @@ print()
 print("  Rule: a sprint with more than 2 known failures is not done.")
 print("  Rule: test_pct < 80% triggers a test-debt sprint before new features.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 > **Watch out!** The projection formula assumes your last sprint's velocity holds constant. Real project velocity rarely stays constant — it often drops in the final sprint due to integration work and debugging. If you are already at 80% velocity, the projection is optimistic. Use the projection as a floor, not a ceiling.
 
@@ -1240,7 +1231,6 @@ else:
 print()
 print("  Key: failing tests ARE the sprint backlog. Each ✗ is the next task.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
