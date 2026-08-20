@@ -68,6 +68,7 @@ A flex file has three sections separated by `%%`:
 3. **User code**: C functions, including `main` if desired
 
 Build and test:
+
 ```bash
 flex -o hello.c hello.l
 gcc -o hello hello.c -lfl
@@ -75,6 +76,7 @@ echo "hello 42 world 99" | ./hello
 ```
 
 Expected output:
+
 ```
 WORD: hello
 NUMBER: 42
@@ -277,11 +279,13 @@ clean:
 ```
 
 Build:
+
 ```bash
 make
 ```
 
 Test:
+
 ```bash
 echo "3 + 4 * 2" | ./calc          # = 11
 echo "x = 5" | ./calc              # x = 5

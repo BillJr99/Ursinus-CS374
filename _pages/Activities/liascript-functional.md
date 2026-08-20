@@ -368,7 +368,7 @@ A composed pipeline like `clean` reads as a single gesture, but the machine exec
 
 As a flow diagram — and contrast with `compose`, which runs right to left:
 
-```
+```bash
 pipeline:  x --> [strip] --> [lower] --> [replace ' '->'_'] --> "hello_world"
 compose:   compose(f, g)(x) = f(g(x))    -- g runs FIRST, then f
 ```
@@ -563,6 +563,7 @@ Here is how to transform it step by step into a functional composition:
 - *Aggregate*: sum the results → `+`
 
 **Step 2 — Write each concern as a lambda:**
+
 ```python
 is_even  = lambda x: x % 2 == 0
 square   = lambda x: x ** 2
@@ -570,12 +571,14 @@ add      = lambda a, b: a + b
 ```
 
 **Step 3 — Assemble with `filter`, `map`, `reduce`:**
+
 ```python
 from functools import reduce
 result = reduce(add, map(square, filter(is_even, nums)), 0)
 ```
 
 **Step 4 — Inline the lambdas for a one-liner (optional):**
+
 ```python
 result = reduce(lambda a, b: a + b,
                 map(lambda x: x**2,
@@ -662,12 +665,14 @@ Which of the following is a *pure* function?
 ## Exercises (Homework — ~95 minutes total)
 
 ### Exercise 1 — Loop Exorcism (15 min)
+
 Rewrite each using `map`/`filter`/`reduce` with no loops or assignments:
 - (a) lengths of all words longer than 3 in a sentence
 - (b) product of all odd numbers in a list (use `reduce`)
 - (c) word count of a string: split, map each word to 1, reduce with +
 
 ### Exercise 2 — Higher-Order Toolkit (15 min)
+
 Implement and test:
 - `compose(f, g)` — apply g then f
 - `twice(f)` — apply f two times
@@ -677,12 +682,15 @@ Implement and test:
 Demo: `pipeline(str.strip, str.lower, lambda s: s.split())` on `"  Hello World  "`.
 
 ### Exercise 3 — My Map and Reduce (20 min)
+
 Implement `my_map` and `my_reduce` recursively (no `for`/`while`). Test against the built-ins on 5 inputs each. Then implement `my_zip(lst1, lst2)` and `my_flatten(nested)` recursively.
 
 ### Exercise 4 — Purity Refactor (20 min)
+
 Take the impure `f2` and `f3` from Model 1, refactor them to be pure, and write tests that pass for the pure version but fail (or behave unexpectedly) for the impure version.
 
 ### Exercise 5 — No-Assignment Challenge (25 min)
+
 Compute the average word length of a paragraph using **exactly one expression** — no statements, no intermediate variable names (except the function parameter). Then discuss: when does point-free style help, and when does it hurt readability?
 
 ---

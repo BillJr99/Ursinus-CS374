@@ -133,6 +133,7 @@ You have now seen how to match a single pattern; a real lexer must recognize *ma
 **Quantifiers are greedy by default**: `<.*>` against `<a><b>` matches the whole string, because `*` takes as much as possible while still permitting a match; the reluctant form `<.*?>` matches `<a>`. And the theoretical wall stands: regular expressions cannot match **arbitrarily nested** structure (balanced parentheses is $a^n b^n$ wearing makeup), because finite memory cannot count unboundedly.
 
 **Greedy vs reluctant — a concrete experiment:**
+
 ```python
 import re
 

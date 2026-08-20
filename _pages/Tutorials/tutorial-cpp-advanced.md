@@ -281,6 +281,7 @@ int main() { unique_ptr_demo(); }
 ```
 
 Expected output:
+
 ```
 Widget(Button) constructed
 Drawing Button

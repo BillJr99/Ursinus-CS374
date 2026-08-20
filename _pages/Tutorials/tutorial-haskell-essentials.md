@@ -57,6 +57,7 @@ False
 ```
 
 **`:t` shows the type of any expression:**
+
 ```haskell
 Prelude> :t 42
 42 :: Num p => p
@@ -95,6 +96,7 @@ square = \x -> x * x
 ```
 
 Load in GHCi:
+
 ```haskell
 Prelude> :l functions.hs
 Prelude> double 7          -- 14

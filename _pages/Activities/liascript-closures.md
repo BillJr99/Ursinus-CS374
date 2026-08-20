@@ -394,6 +394,7 @@ print(f"Closure counter: {clo_counter['value']()}")
 ## Exercises
 
 ### Exercise 1 — Integrate Closures into Mini (30 min)
+
 Add closures to your Mini interpreter:
 1. Add `FunDef(name, params, body)` and `Call(callee, args)` AST nodes
 2. In the parser, add `fun name(params) { body }` syntax and `name(args)` call syntax
@@ -401,12 +402,15 @@ Add closures to your Mini interpreter:
 4. Demonstrate: a plain function, `factorial(5)`, and `make_adder` working in your language
 
 ### Exercise 2 — Counter Objects (15 min)
+
 Build `make_counter()` using closures (not a class) that returns an increment function. Then build `make_account(balance)` with `deposit(amount)` and `withdraw(amount)` methods. Demonstrate shared state between the two returned functions.
 
 ### Exercise 3 — Trap Tour (15 min)
+
 Reproduce the loop-variable trap in your language (or Python), apply both fixes, and explain each fix's mechanism with environment diagrams.
 
 ### Exercise 4 — Scope Flip Experiment (20 min)
+
 Apply the one-token change from CTQ 3.1 to make your interpreter dynamically scoped. Rerun the `show`/`demo` program from the *Binding and Scope* activity. Report the output difference and explain with a diagram which environment chain the dynamically scoped version follows.
 
 ---

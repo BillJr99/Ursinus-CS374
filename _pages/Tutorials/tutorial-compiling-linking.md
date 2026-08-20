@@ -210,7 +210,7 @@ The **linker** (`ld`, usually invoked via `gcc`) takes multiple object files (an
 2. **Symbol resolution**: For each `U` (undefined) symbol, find which other `.o` file defines it
 3. **Relocation**: Fill in all the placeholder addresses with actual virtual addresses
 
-```
+```yaml
 main.o:   defines main, uses printf (undefined)
 libc.a:   contains printf.o which defines printf
 
@@ -441,6 +441,7 @@ dis.dis(fib)
 ```
 
 CPython bytecode output for `fib`:
+
 ```
   2           0 LOAD_FAST                0 (n)
               2 LOAD_CONST               1 (1)
@@ -471,6 +472,7 @@ CPython bytecode output for `fib`:
 | Portability | Compile per arch | Bytecode = arch-independent |
 
 **Why Python's `int` is 28 bytes:**
+
 ```python  
 import sys
 print(sys.getsizeof(42))     # 28 bytes — not 4!
@@ -631,21 +633,26 @@ Process   (running in virtual address space)
 ## Exercises
 
 ### Exercise 1 — Inspect Your Own Compiler (20 min)
+
 Run `gcc -save-temps hello.c -o hello` on a simple C program. Examine each intermediate file: `.i`, `.s`, `.o`, and the final binary. Using `objdump -h hello.o`, identify which section contains each piece of data.
 
 ### Exercise 2 — Symbol Hunt (15 min)
+
 Write a C program with: one initialized global int, one uninitialized global int, one string literal, and one function. Predict which section each goes in. Verify with `nm` and `objdump -h`.
 
 ### Exercise 3 — Linking Error Diagnosis (20 min)
+
 Create two `.c` files where one calls a function defined in the other. Compile each to `.o` separately, then:
 1. Try linking only one `.o` (observe the undefined reference error)
 2. Link both (should succeed)
 3. Add a second definition of the function in a third `.c` file and try linking all three (observe the multiple definition error)
 
 ### Exercise 4 — Python Bytecode (15 min)
+
 Use `dis.dis()` to disassemble a Python function you've written. Identify: LOAD_FAST vs LOAD_GLOBAL, CALL_FUNCTION, and any JUMP instructions. Map each bytecode instruction back to a line of source code.
 
 ### Exercise 5 — Compare Memory Sizes (15 min)
+
 Write a C program that uses `sizeof` to print the size of `int`, `long`, `double`, `char*`, and a struct. Then write an equivalent Python program using `sys.getsizeof`. Why are the Python sizes so much larger? Explain in terms of Python's object model.
 
 ---

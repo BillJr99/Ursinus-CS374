@@ -216,6 +216,7 @@ The result correctly returns the *free* $y$, whatever it refers to outside. Capt
 ### Step-by-step capture example (WRONG, then RIGHT):
 
 **Wrong (capture):**
+
 ```
 (λx.λy.x) y
 →β  [x := y] (λy.x)    # naively substitute y for x
@@ -224,6 +225,7 @@ The result correctly returns the *free* $y$, whatever it refers to outside. Capt
 This says "a function that ignores its argument and returns ... its argument." That is the identity function, not the constant function. We changed the meaning!
 
 **Right (alpha-rename first):**
+
 ```
 (λx.λy.x) y
 =α  (λx.λz.x) y        # rename bound y to fresh z (safe because z is not free in argument)

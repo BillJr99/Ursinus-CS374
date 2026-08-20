@@ -64,6 +64,7 @@ Every language designer must answer the question: "What values are allowed to ap
 The condition values: `0`, `1`, `-3`, `""`, `"false"`, an empty list, the boolean `false`.
 
 **Run the Python truthiness table:**
+
 ```python
 test_values = [0, 1, -3, "", "false", [], False, True, None, 0.0, 0.1]
 
@@ -95,6 +96,7 @@ for v in test_values:
 It is one thing to say "the untaken branch is not evaluated" and another to *prove* it. In this model a special `Bomb` node plays the role of a branch that would crash the program if it were ever executed. If the interpreter is truly non-strict, the bomb never goes off — and that silence is itself the evidence. Pay close attention to the single line that makes this work: the Python ternary that *chooses which recursive call to make*, rather than making both.
 
 **Prove that if does not evaluate the untaken branch:**
+
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -420,7 +422,7 @@ This session is Day 2 of tree-walking interpretation. Day 1 evaluated *expressio
 
 Expressions produce values; **statements produce effects**: an `Assign` updates the environment, a `Print` writes output, a `Block` executes children in order, a `While` re-evaluates its condition. The executor therefore threads the environment through:
 
-```
+```python
 def execute(stmt, env):
     Assign(name, e)   -> env[name] = evaluate(e, env)
     Print(e)          -> print(evaluate(e, env))

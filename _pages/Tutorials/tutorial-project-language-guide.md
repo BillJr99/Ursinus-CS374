@@ -1413,6 +1413,7 @@ interp.eval(tree, interp.global_env)
 **Try It Exercise 7.1:** Verify that `^` is right-associative end-to-end: evaluate `2 ^ 3 ^ 2` and confirm it equals `512` (= `2 ^ 9`), not `64` (= `8 ^ 2`).
 
 **Try It Exercise 7.2:** Implement a `make_counter` closure in Mini:
+
 ```mini
 fun make_counter() {
   let n = 0;

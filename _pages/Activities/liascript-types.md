@@ -92,6 +92,7 @@ Before diving in, here is a plain-English glossary of the terms this activity us
 > **Watch out!** Python is *not* "untyped." Every Python value has a definite type — `type(42)` is `<class 'int'>`, `type("hi")` is `<class 'str'>`. The language simply chooses to check type compatibility at runtime rather than before execution. Calling Python "untyped" is a common and consequential misconception: it conflates the absence of *declared* types with the absence of types altogether.
 
 **Verify Python's dynamic strong typing:**
+
 ```python
 # Python: dynamic (checks at runtime) + strong (refuses coercion)
 print("=== Python Type Behavior ===")

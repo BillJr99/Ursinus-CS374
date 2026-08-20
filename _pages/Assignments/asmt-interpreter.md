@@ -251,6 +251,7 @@ Implement evaluation for expression nodes. Return Python values: numbers as `flo
 - `<`, `<=`, `>`, `>=` require numbers; `==`, `!=` compare any same-type pair (cross-type raises or returns False — document which and why).
 
 **Worked example — type error:**
+
 ```
 let x = "hello";
 let y = x + 1;      # LangTypeError at line 2, col 11: + requires numbers, got str and int
@@ -267,6 +268,7 @@ let y = x + 1;      # LangTypeError at line 2, col 11: + requires numbers, got s
 **Truthiness policy** (document in SEMANTICS.md): What is falsy in your language? At minimum: `false`, `0`, `0.0`, and `""`. Everything else is truthy.
 
 **Bomb test** — include this program in your test suite and verify it does not raise an error:
+
 ```
 let safe = true or (1 / 0);   # right side must NOT be evaluated
 ```
@@ -306,6 +308,7 @@ class Environment:
 ```
 
 **Verify the shadowing program produces `51` then `2`:**
+
 ```
 let x = 2;
 {
@@ -461,6 +464,7 @@ Five programs are provided whose outputs depend on your semantics decisions. Run
 ---
 
 ## Part 5 Direction: Full Type Inference (Hindley-Milner)
+
 {: #part-5-direction-full-type-inference-hindley-milner}
 
 This direction replaces Steps 5b–5c by growing Part 4's annotation checker into whole-program *inference* — still its own pipeline stage after parsing and before evaluation, but now deducing types where no annotations exist at all. It is the same machinery (unification and Algorithm-W-style inference) that lets Haskell, OCaml, and Rust deduce types without annotations, scoped here to your language's constructs. Your Part 4 checker is the foundation: its type environment, its staged error reporting, and its operator rules all carry forward — what changes is that unknown types become type *variables* to be solved rather than gaps to be documented.
@@ -504,6 +508,7 @@ In place of SEMANTICS.md, write `TYPES.md`: one section per construct stating it
 ---
 
 ## Part 5 Direction: A Contrasting Execution Model — the Intcode VM
+
 {: #part-5-direction-a-contrasting-execution-model-the-intcode-vm}
 
 ### Background

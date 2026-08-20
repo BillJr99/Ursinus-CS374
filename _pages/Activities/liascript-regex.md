@@ -145,6 +145,7 @@ Before running any code, practice reading patterns the way a regex engine does: 
 | `[0-9]+\.[0-9]+` | ? |
 
 **Verify your predictions:**
+
 ```python
 import re
 

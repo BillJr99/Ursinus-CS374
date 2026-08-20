@@ -99,7 +99,7 @@ factor → NUMBER | '(' expr ')'
 
 **Step 1 — Each nonterminal becomes a function skeleton:**
 
-```
+```python
 def parse_expr():   ...   # handles expr
 def parse_term():   ...   # handles term
 def parse_factor(): ...   # handles factor
@@ -112,7 +112,7 @@ def parse_factor(): ...   # handles factor
 - The `(...)* ` is EBNF repetition → use a `while` loop
 - Inside the loop, the alternation `'+' | '-'` → `if peek() in ('+', '-')`
 
-```
+```python
 def parse_expr():
     node = parse_term()          # parse the first term
     while peek() in ('+', '-'): # repetition: { ... }
@@ -124,7 +124,7 @@ def parse_expr():
 
 **Step 3 — Do the same for `term → factor ( ('*' | '/') factor )*`:**
 
-```
+```python
 def parse_term():
     node = parse_factor()
     while peek() in ('*', '/'):
@@ -136,7 +136,7 @@ def parse_term():
 
 **Step 4 — For `factor → NUMBER | '(' expr ')'`, the alternation uses lookahead:**
 
-```
+```python
 def parse_factor():
     if peek() is a NUMBER:
         return ('num', advance())

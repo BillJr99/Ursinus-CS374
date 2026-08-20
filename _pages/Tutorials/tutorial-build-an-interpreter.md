@@ -36,6 +36,7 @@ This tutorial walks you through every line of a complete interpreter for a small
 7. A REPL and file-runner
 
 **The language design:**
+
 ```
 expr ::= NUMBER | BOOL
        | IDENT
@@ -695,6 +696,7 @@ print("File runner defined.")
 Now that your interpreter works, here are natural extensions to explore:
 
 **Type checking (pre-evaluation pass):**
+
 ```python
 class TypeChecker(Evaluator):
     """
@@ -705,11 +707,13 @@ class TypeChecker(Evaluator):
 ```
 
 **Multi-argument functions (syntactic sugar):**
+
 ```
 fun x y z -> body  =>  fun x -> fun y -> fun z -> body
 ```
 
 **Lists and pattern matching:**
+
 ```
 let xs = [1, 2, 3] in
 match xs with

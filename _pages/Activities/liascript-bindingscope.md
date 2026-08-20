@@ -65,6 +65,7 @@ This model establishes the central vocabulary: a **binding** is the attachment o
 | The value of `count` during a loop | ? |
 
 **Explore Python's binding times interactively:**
+
 ```python
 # Python binds types at runtime, not compile time
 x = 42
@@ -132,6 +133,7 @@ This model makes the static-versus-dynamic distinction concrete by showing the s
 ## Model 2: Be Both Resolvers
 
 **Python is statically scoped — verify it:**
+
 ```python
 # Static scope in action: Python resolves print(x) inside show() textually.
 
@@ -170,6 +172,7 @@ print(outer())                      # ('inner', 'outer')
 5. After both calls return, the global `x` is still `10`, untouched.
 
 **Simulate dynamic scope in Python:**
+
 ```python
 # Dynamic scope simulation using a stack
 scope_stack = [{"x": 10}]   # global frame
@@ -258,6 +261,7 @@ print(f"All built-ins: {len(dir(builtins))} names")
 > **Watch out!** Python scopes are **function-level**, not block-level. In Java or C, a variable declared inside an `if` block or `for` loop is local to that block. In Python, `if` blocks and `for` loops do **not** create a new scope — a variable introduced inside them belongs to the enclosing function (or module). So a variable first assigned inside an `if` body is accessible throughout the rest of the function. This surprises programmers coming from Java or C, and it means Python's `global` keyword is nothing like C's `global` storage class: Python's `global` is a declaration inside a function saying "when I write this name, go find it in the module scope, not here."
 
 **The `nonlocal` keyword — fixing the counter bug:**
+
 ```python
 # Classic bug: cannot assign to enclosing scope without 'nonlocal'
 def make_counter_broken():
@@ -303,6 +307,7 @@ Scope tells you *where in the code* a name is visible; lifetime tells you *how l
 **Scope is the region of *text* where a binding is visible; lifetime is the span of *execution* during which its storage exists.** The two usually align (a local lives while its block runs) but can diverge: a C `static` local has tiny scope and program-long lifetime, and, the divergence that matters most for your project, a **closure** keeps a binding *alive* after its scope has ended.
 
 **Lifetime divergence — closures keep bindings alive:**
+
 ```python
 def make_adder(n):
     # n's SCOPE: the body of make_adder
@@ -327,6 +332,7 @@ print(add10.__closure__[0].cell_contents)  # 10
 > **Watch out!** The loop variable trap catches nearly every Python programmer eventually. When a `lambda` (or any closure) captures a name from an enclosing scope, it captures the **name**, not the value the name held at the moment the closure was created. By the time the loop finishes, `i` equals `4`, and every closure refers to that same `i`. This is not a bug in Python — it is the correct behavior of late binding — but it is different from what most people intend. The fix is to force **value capture** at creation time, either via a default argument (`i=i`) or a factory function that creates a fresh scope.
 
 **The loop variable trap — scope vs lifetime:**
+
 ```python
 # Classic bug: all closures share the SAME variable
 adders_broken = []

@@ -68,11 +68,13 @@ The set of node classes *is* your language's semantic inventory: if a construct 
 **Worked example — tracing `1 + 2 * 3` from tokens to AST:**
 
 **Step 1 — Tokens:**
+
 ```
 NUM(1)  OP(+)  NUM(2)  OP(*)  NUM(3)
 ```
 
 **Step 2 — Parse tree** (using a ladder grammar with separate `additive` and `multiplicative` levels):
+
 ```
 expr
 └─ additive
@@ -89,6 +91,7 @@ expr
 The parse tree has 10+ nodes, most of them grammar scaffolding.
 
 **Step 3 — AST** (scaffolding collapsed, precedence now encoded in tree shape):
+
 ```
 BinOp('+')
 ├─ Num(1)
@@ -516,21 +519,26 @@ print(f"5-(3-1) unparse: {unparse(t4)}")
 ## Exercises (Homework — ~90 minutes total)
 
 ### Exercise 1 — Parser Upgrade (20 min)
+
 Convert your expression parser from tuples to the node classes, and extend to cover your statement forms (`Assign`/`Let`, `Print`, `While`, `Block`, `If`). Demonstrate `pretty` on a three-statement program.
 
 ### Exercise 2 — Round-Trip (20 min)
+
 Write `unparse(node)` producing valid source text from an AST. Verify `parse(unparse(parse(s)))` yields an identical tree for five inputs. This round-trip test will live in your project test suite forever.
 
 ### Exercise 3 — Tree Statistics (15 min)
+
 Write `count_nodes` and `depth` as tree walks. Report both for three programs: a simple expression, a while loop, and a recursive function. Which feature drives depth highest?
 
 ### Exercise 4 — Constant Folding (20 min)
+
 Extend `constant_fold` from Model 3 to handle:
 - Boolean constant folding: `true and false → false`, `true or x → true`
 - Dead code elimination: `if true { body1 } else { body2 }` → `body1`
 Test on at least 5 cases, including one where folding is NOT safe (function call with side effects).
 
 ### Exercise 5 — Python's ast Module (15 min)
+
 Run `import ast; print(ast.dump(ast.parse("2 + 3 * 4")))` in Python. Compare Python's AST structure to what you built. What nodes does Python use? How does it handle operator precedence?
 
 ---

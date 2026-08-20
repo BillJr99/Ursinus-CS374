@@ -79,7 +79,7 @@ Route A students skip Steps 1–2 of Route B on the host: the tutorial's toolcha
 
 **Step 1: Confirm Python 3.10 or later.**
 
-```
+```bash
 python3 --version
 ```
 

@@ -274,6 +274,7 @@ A second contact: support@ursinus.edu, deadline 12/15/2026.
 ```
 
 Expected output (approximately):
+
 ```
 Contact MONGAN, WILLIAM at [EMAIL] or call [PHONE].
 The registration deadline was 2026-09-01.
@@ -294,6 +295,7 @@ print(f"Lazy:   {lazy.group()!r}")
 ```
 
 Expected:
+
 ```
 Greedy: '<b>bold</b> and <i>italic</i>'
 Lazy:   '<b>'
@@ -318,6 +320,7 @@ YYYY-MM-DD HH:MM:SS LEVEL message text here
 ```
 
 **Sample output:**
+
 ```
 Counts: INFO=42, WARN=8, ERROR=3
 Earliest: 2026-09-01 00:01:14

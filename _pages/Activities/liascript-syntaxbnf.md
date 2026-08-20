@@ -210,6 +210,7 @@ This model makes the equivalence between BNF and EBNF concrete by running both s
 BNF encodes repetition as *recursion*, which forces an extra nonterminal and two alternatives for every repeated construct. EBNF adds `*` and `+` as sugar. The recognizer below demonstrates that both styles accept exactly the same strings for a comma-separated list grammar.
 
 **BNF version** (repetition via recursion):
+
 ```
 list     -> item list_tail
 list_tail -> "," item list_tail | (empty)
@@ -217,6 +218,7 @@ item     -> NUMBER
 ```
 
 **EBNF version** (repetition via `{ }`):
+
 ```
 list -> item { "," item }
 item -> NUMBER

@@ -5,7 +5,7 @@ title: "CS374: Principles of Programming Languages"
 
 info:
   course_number: CS374
-  course_sections: 
+  course_sections:
   - section: "A"
   course_title: "Principles of Programming Languages"
   credit_hours: "4 Semester Hours"
@@ -32,7 +32,7 @@ info:
     isT: true
     isW: false
     isR: true
-    isF: false 
+    isF: false
     isS: false
     isU: false
   class_meets_locations:
@@ -47,17 +47,17 @@ info:
       place: "Pfahler 012"
   # No midterm/final in this course. "TBD" dates are the sentinel that suppresses
   # rendering and .ics events for these blocks - do not delete them.
-  midtermexam: 
+  midtermexam:
     - mdate: "TBD"
       mstarttime: "N/A"
       mendtime: "N/A"
       mroom: "N/A"       
-  finalexam: 
+  finalexam:
     - fdate: "TBD"
       fstarttime: "TBD"
       fendtime: "TBD"
-      froom: "N/A" 
-  flexible_submission_policy: "In the absence of <a href=\"#accommodations\">accommodations</a> arranged in advance with the instructor or college, all assignments are due at 11:59 PM Eastern Time on the date(s) stated on the schedule.  With prior permission and a reasonable first draft submission by the deliverable deadline, any student may request a three day extension on any deliverable, as often as needed.  Assignments will be accepted without prior permission following the original deadline, or, if requested, following the three-day extension deadline, with a points deduction of 10% per day if submitted before 11:59 PM Eastern Time on the day submitted.  If a student adds the course late, deliverables due prior to or on the day of that student's registration will be due twice the number of days following the first day of the semester that they registered (for example, a student who registers on the third day of the semester shall receive six days to submit assignments from the first three days, and then the remainder of this policy takes effect for those and for all other deliverables).  Under no circumstances (including accommodations) can late work be accepted after the final class meeting, nor during final exams week, nor after the exam." 
+      froom: "N/A"
+  flexible_submission_policy: "In the absence of <a href=\"#accommodations\">accommodations</a> arranged in advance with the instructor or college, all assignments are due at 11:59 PM Eastern Time on the date(s) stated on the schedule.  With prior permission and a reasonable first draft submission by the deliverable deadline, any student may request a three day extension on any deliverable, as often as needed.  Assignments will be accepted without prior permission following the original deadline, or, if requested, following the three-day extension deadline, with a points deduction of 10% per day if submitted before 11:59 PM Eastern Time on the day submitted.  If a student adds the course late, deliverables due prior to or on the day of that student's registration will be due twice the number of days following the first day of the semester that they registered (for example, a student who registers on the third day of the semester shall receive six days to submit assignments from the first three days, and then the remainder of this policy takes effect for those and for all other deliverables).  Under no circumstances (including accommodations) can late work be accepted after the final class meeting, nor during final exams week, nor after the exam."
   late_penalty_per_period: 10
   late_penalty_period: "day"
   attendance: "Students may miss up to 4 classes without justification, although students are encouraged to communicate with me prior to missing class (or immediately after) so that we can discuss what was missed and how to catch up.  Any student who misses more than 4 classes will receive a full letter grade reduction for each subsequent class missed from the final letter grade.  A lateness to class shall count as one-half of an absence for purposes of this policy."  
