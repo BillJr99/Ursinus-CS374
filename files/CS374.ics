@@ -49,7 +49,7 @@ BEGIN:VEVENT
 UID:00000000-0000-0000-0000-0366c95f1802
 DTSTAMP:20260825T000000Z
 DTSTART;VALUE=DATE:20260825
-SUMMARY:CS374 Principles of Programming Languages: Participation: Overview Assignment Handed Out
+SUMMARY:CS374 Principles of Programming Languages: Participation: Warmup Assignment Handed Out
 LOCATION:
 DESCRIPTION:
 PRIORITY:3
@@ -58,7 +58,7 @@ BEGIN:VEVENT
 UID:00000000-0000-0000-0000-0366c95f1803
 DTSTAMP:20260825T000000Z
 DTSTART;VALUE=DATE:20260825
-SUMMARY:CS374 Principles of Programming Languages: Participation: Warmup Assignment Handed Out
+SUMMARY:CS374 Principles of Programming Languages: Participation: Class Activities Handed Out
 LOCATION:
 DESCRIPTION:
 PRIORITY:3
@@ -67,7 +67,7 @@ BEGIN:VEVENT
 UID:00000000-0000-0000-0000-0366c95f1804
 DTSTAMP:20260825T000000Z
 DTSTART;VALUE=DATE:20260825
-SUMMARY:CS374 Principles of Programming Languages: Participation: Class Activities Handed Out
+SUMMARY:CS374 Principles of Programming Languages: Reflection Notebook Handed Out
 LOCATION:
 DESCRIPTION:
 PRIORITY:3
@@ -76,16 +76,16 @@ BEGIN:VEVENT
 UID:00000000-0000-0000-0000-0366c95f1805
 DTSTAMP:20260825T000000Z
 DTSTART;VALUE=DATE:20260825
-SUMMARY:CS374 Principles of Programming Languages: Reflection Notebook Handed Out
+SUMMARY:CS374 Principles of Programming Languages: Participation: Reading Exercises Handed Out
 LOCATION:
 DESCRIPTION:
 PRIORITY:3
 END:VEVENT
 BEGIN:VEVENT
 UID:00000000-0000-0000-0000-0366c95f1806
-DTSTAMP:20260825T000000Z
-DTSTART;VALUE=DATE:20260825
-SUMMARY:CS374 Principles of Programming Languages: Participation: Reading Exercises Handed Out
+DTSTAMP:20260827T000000Z
+DTSTART;VALUE=DATE:20260827
+SUMMARY:CS374 Principles of Programming Languages: Participation: Overview Assignment Handed Out
 LOCATION:
 DESCRIPTION:
 PRIORITY:3
@@ -110,8 +110,8 @@ PRIORITY:3
 END:VEVENT
 BEGIN:VEVENT
 UID:00000000-0000-0000-0000-0366c95f1809
-DTSTAMP:20260908T000000Z
-DTSTART;VALUE=DATE:20260908
+DTSTAMP:20260910T000000Z
+DTSTART;VALUE=DATE:20260910
 SUMMARY:CS374 Principles of Programming Languages: Participation: Overview Assignment Due
 LOCATION:
 DESCRIPTION:
@@ -283,7 +283,7 @@ BEGIN:VEVENT
 UID:00000000-0000-0000-0000-0366c95f181c
 DTSTAMP:20261105T000000Z
 DTSTART;VALUE=DATE:20261105
-SUMMARY:CS374 Principles of Programming Languages: Team Language Project: Design-Phase Submission (team, niche, design scorecard) Due
+SUMMARY:CS374 Principles of Programming Languages: Team Language Project: Design-Phase Submission (team, niche, design scorecard, draft team charter) Due
 LOCATION:
 DESCRIPTION:
 PRIORITY:3
@@ -310,7 +310,7 @@ BEGIN:VEVENT
 UID:00000000-0000-0000-0000-0366c95f181f
 DTSTAMP:20261112T000000Z
 DTSTART;VALUE=DATE:20261112
-SUMMARY:CS374 Principles of Programming Languages: Team Language Project: Proposal Due
+SUMMARY:CS374 Principles of Programming Languages: Team Language Project: Proposal (with signed team charter) Due
 LOCATION:
 DESCRIPTION:
 PRIORITY:3
