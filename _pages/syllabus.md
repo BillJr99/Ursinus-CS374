@@ -246,7 +246,7 @@ schedule:
     points: "10"
     module: overarching
   readings:
-  - rtitle: "This session merges two former topics: programming paradigms and the criteria for evaluating a language. Read the paradigms overview before class."
+  - rtitle: "History of Programming Languages"
     rlink: "https://www.billmongan.com/Ursinus-CS374-History"
   - rtitle: "Reading Exercise / Discussion: attempt the Evaluating Languages and Paradigms exercises before class"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Participation/ReadingExercises"
