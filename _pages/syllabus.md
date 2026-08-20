@@ -144,17 +144,17 @@ instructors:
     endtime: "5:30 PM"
     location: "Pfahler Hall 101L"
 textbooks:
-- title: "Introduction to Compilers and Language Design"
-  authors: "Douglas Thain"
-  edition: "2nd Edition"
-  link: https://www3.nd.edu/~dthain/compilerbook/
-  isrequired: true
-  freelyavailable: https://www3.nd.edu/~dthain/compilerbook/compilerbook.pdf
 - title: "Foundations of Computing: An Accessible Introduction to Formal Languages"
   authors: "Chuck Allison"
   link: "https://www.amazon.com/dp/0578944170"
   isrequired: true
   freelyavailable: "https://leanpub.com/foundationsofcomputing"
+- title: "Introduction to Compilers and Language Design"
+  authors: "Douglas Thain"
+  edition: "2nd Edition"
+  link: https://www3.nd.edu/~dthain/compilerbook/
+  isrequired: false
+  freelyavailable: https://www3.nd.edu/~dthain/compilerbook/compilerbook.pdf
 - title: "Programming Languages: Application and Interpretation"
   authors: "Shriram Krishnamurthi"
   link: "https://www.plai.org/"
