@@ -40,9 +40,9 @@ info:
     - rtitle: "Thain, Chapter 1"
     - rtitle: "uv — the Python environment manager we standardize on (Part 1.5)"
       rlink: "https://docs.astral.sh/uv/"
-    - rtitle: "Required setup (Route A): The Course Development Environment - Docker, Git, and GitHub (Tutorial)"
+    - rtitle: "Setup (Route A): The Course Development Environment - Docker, Git, and GitHub (Tutorial)"
       rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/DevEnvironment"
-    - rtitle: "Required setup (Part 1.5): Shell Skills for Language Development - the step-by-step tutorial article this assignment's shell work follows"
+    - rtitle: "Setup (Part 1.5): Shell Skills for Language Development - the step-by-step tutorial article this assignment's shell work follows"
       rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ShellForLanguageDev"
 
 tags:
