@@ -11,7 +11,7 @@ info:
   credit_hours: "4 Semester Hours"
   course_homepage: "https://www.billmongan.com/Ursinus-CS374-Fall2026/"
   teamshelproom: "https://teams.microsoft.com/l/team/19%3AraoRrj75t_Hao34_QVtu1F2Cg6czbvuGhzWdQz7VbRc1%40thread.tacv2/conversations?groupId=6abc67f1-e0c8-4245-9795-e27108d7af8f&tenantId=921f1c03-8689-4e60-a722-f5ea581e00fe"
-  class_notebook: "https://ursinuscollege365-my.sharepoint.com/personal/wmongan_ursinus_edu/Documents/Class Notebooks/CS374 Fall 2026"
+  class_notebook: https://ursinuscollege365-my.sharepoint.com/personal/wmongan_ursinus_edu/Documents/Class%20Notebooks/CS374%20Fall%202026
   ical: files/CS374.ics
   course_prerequisites: "CS174 with a grade of C- or higher."
   course_start_date: "2026/08/24"
