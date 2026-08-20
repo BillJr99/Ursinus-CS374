@@ -7,6 +7,14 @@ on:
     branches:
       - gh-pages
 
+# Serialize the whole run, not just the deploy job. Job-level concurrency lets a
+# newer run's build start while the previous run's Pages deployment is still
+# settling on GitHub's side, which fails with "due to in progress deployment".
+# Queueing at workflow level keeps one build+deploy in flight at a time.
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
