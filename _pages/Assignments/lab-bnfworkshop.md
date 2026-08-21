@@ -20,7 +20,7 @@ info:
       preemerging: Grammars are missing or do not use BNF/EBNF notation
       beginning: One grammar is attempted but accepts clearly invalid strings or rejects clearly valid ones
       progressing: Both grammars are written and mostly correct, but one has an undefined nonterminal or accepts an edge case it should reject (or vice versa)
-      proficient: Both grammars are complete and correct EBNF: every nonterminal defined, repetition and optionality expressed with EBNF operators rather than ad-hoc prose, and each is accompanied by three strings it accepts and two it rejects, verified by hand against the productions
+      proficient: Both grammars are complete and correct EBNF; every nonterminal defined, repetition and optionality expressed with EBNF operators rather than ad-hoc prose, and each is accompanied by three strings it accepts and two it rejects, verified by hand against the productions
     - weight: 30
       description: "Chomsky Classification (Goal 2)"
       preemerging: No classifications, or levels are assigned without reasons
