@@ -5,7 +5,7 @@ version:  0.0.1
 language: en
 narrator: US English Female
 
-comment: Build a stack-based bytecode VM for Mini — the same architecture used by CPython, the JVM, and Lua. Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md
+comment: Build a stack-based bytecode VM for Mini, the same architecture used by CPython, the JVM, and Lua. Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -26,18 +26,18 @@ By the end of this tutorial, you will have:
 - Implemented upvalues (the Lua trick) so that closures in the VM correctly capture variables from enclosing frames
 - Verified that the VM produces identical output to the tree-walking interpreter on all provided test programs and measured the speedup
 
-Your tree-walking interpreter is correct and elegant — but every time it evaluates `x + 1` it traverses three AST nodes, looks up `x` in the environment dictionary, allocates a new addition result, and works its way back up. For programs with tight loops or deeply recursive functions, this overhead adds up. **Bytecode virtual machines** solve this by translating the AST once into a flat sequence of simple instructions, then running those instructions in a tight loop. This is the architecture behind CPython, the Java Virtual Machine, Lua, Ruby's YARV, and dozens of other production runtimes.
+Your tree-walking interpreter is correct and elegant, but every time it evaluates `x + 1` it traverses three AST nodes, looks up `x` in the environment dictionary, allocates a new addition result, and works its way back up. For programs with tight loops or deeply recursive functions, this overhead adds up. **Bytecode virtual machines** solve this by translating the AST once into a flat sequence of simple instructions, then running those instructions in a tight loop. This is the architecture behind CPython, the Java Virtual Machine, Lua, Ruby's YARV, and dozens of other production runtimes.
 
 This tutorial builds a complete bytecode VM for Mini in six phases:
 
-1. **Phase 0** — Why bytecode? Comparison of execution strategies
-2. **Phase 1** — Instruction Set Architecture: the `Opcode` enum and `Instruction` dataclass
-3. **Phase 2** — The Compiler: walking the AST and emitting bytecode
-4. **Phase 3** — The VM: the dispatch loop, value stack, and call stack
-5. **Phase 4** — Functions and closures: upvalues (the Lua trick)
-6. **Phase 5** — Integration, disassembler, and performance comparison
+1. **Phase 0**: Why bytecode? Comparison of execution strategies
+2. **Phase 1**: Instruction Set Architecture: the `Opcode` enum and `Instruction` dataclass
+3. **Phase 2**: The Compiler: walking the AST and emitting bytecode
+4. **Phase 3**: The VM: the dispatch loop, value stack, and call stack
+5. **Phase 4**: Functions and closures: upvalues (the Lua trick)
+6. **Phase 5**: Integration, disassembler, and performance comparison
 
-**Prerequisites:** the Mini interpreter assignment, the Closures activity, and the Environments lecture. You do not need to understand the JVM or CPython internals — we build everything from scratch.
+**Prerequisites:** the Mini interpreter assignment, the Closures activity, and the Environments lecture. You do not need to understand the JVM or CPython internals; we build everything from scratch.
 
 ---
 
@@ -59,11 +59,11 @@ Bytecode VMs hit the sweet spot: they are much faster than tree-walkers in pract
 
 Every major dynamic language uses a bytecode VM:
 
-- **CPython** — Python's reference implementation; compiles `.py` to `.pyc` bytecode for the CPython VM
-- **JVM** — Java, Kotlin, Scala, Clojure all compile to `.class` files (JVM bytecode)
-- **Lua 5.x** — direct AST-to-bytecode compiler; used in game engines and embedded systems
-- **Ruby's YARV** — Yet Another Ruby VM, introduced in Ruby 1.9
-- **V8 (JavaScript)** — starts with bytecode (Ignition), then JIT-compiles hot paths (TurboFan)
+- **CPython**: Python's reference implementation; compiles `.py` to `.pyc` bytecode for the CPython VM
+- **JVM**: Java, Kotlin, Scala, Clojure all compile to `.class` files (JVM bytecode)
+- **Lua 5.x**: direct AST-to-bytecode compiler; used in game engines and embedded systems
+- **Ruby's YARV**: Yet Another Ruby VM, introduced in Ruby 1.9
+- **V8 (JavaScript)**: starts with bytecode (Ignition), then JIT-compiles hot paths (TurboFan)
 
 ### Peeking at CPython's Bytecode
 
@@ -109,7 +109,7 @@ Source code
     VM     --> Result                                <- run many times
 ```
 
-The compiler runs once. The VM runs the same bytecode repeatedly — or, in the case of a REPL, compiles each expression and immediately runs it. The bytecode can also be serialized to disk (like `.pyc` files) so that compilation cost is paid only when the source changes.
+The compiler runs once. The VM runs the same bytecode repeatedly, or, in the case of a REPL, compiles each expression and immediately runs it. The bytecode can also be serialized to disk (like `.pyc` files) so that compilation cost is paid only when the source changes.
 
 ---
 
@@ -256,7 +256,7 @@ ADD              ; pop 6,1; push 7     stack: [7]
 ;; Final result: 7 (sits on top of stack)
 ```
 
-This flat sequence is what the VM actually executes — no tree traversal, no recursion, just a loop over a list of integers.
+This flat sequence is what the VM actually executes: no tree traversal, no recursion, just a loop over a list of integers.
 
 ---
 
@@ -584,7 +584,7 @@ except Exception as e:
 
 ### The Patch-Back Technique for Forward Jumps
 
-Compiling `if` and `while` requires **forward jumps** — jumps to an address that we do not know yet when we emit the jump instruction. The solution is the **patch-back** technique:
+Compiling `if` and `while` requires **forward jumps**: jumps to an address that we do not know yet when we emit the jump instruction. The solution is the **patch-back** technique:
 
 1. Emit `JUMP_IF_FALSE 0` (placeholder operand `0`)
 2. Compile the then-branch
@@ -599,7 +599,7 @@ This is the same technique used in production compilers. In the code above, `com
 
 ### Call Frames
 
-Each function call gets its own **call frame** — a record of the currently-executing chunk, the instruction pointer within that chunk, and the local variables for that call.
+Each function call gets its own **call frame**: a record of the currently-executing chunk, the instruction pointer within that chunk, and the local variables for that call.
 
 ```python
 try:
@@ -1138,7 +1138,7 @@ except Exception as e:
 
 ### Why Closures Are Tricky for VMs
 
-In a tree-walking interpreter, closures are easy: a `Closure` object holds a reference to the environment at the time of creation, and lookups walk the environment chain. In a bytecode VM, variables live on the stack inside call frames — when a function returns, its frame is gone. A closure that was created inside that function would be left with a dangling reference.
+In a tree-walking interpreter, closures are easy: a `Closure` object holds a reference to the environment at the time of creation, and lookups walk the environment chain. In a bytecode VM, variables live on the stack inside call frames; when a function returns, its frame is gone. A closure that was created inside that function would be left with a dangling reference.
 
 The **upvalue** pattern (invented for Lua 5.x by Roberto Ierusalimschy) solves this elegantly.
 
@@ -1146,8 +1146,8 @@ The **upvalue** pattern (invented for Lua 5.x by Roberto Ierusalimschy) solves t
 
 An **upvalue** is an indirect reference to a captured variable. It has two states:
 
-1. **Open** — the captured variable is still on the stack (the enclosing function is running). The upvalue holds a reference into the live stack frame.
-2. **Closed** — the enclosing function has returned. The upvalue now holds the final value itself (it was "closed over").
+1. **Open**: the captured variable is still on the stack (the enclosing function is running). The upvalue holds a reference into the live stack frame.
+2. **Closed**: the enclosing function has returned. The upvalue now holds the final value itself (it was "closed over").
 
 ```python
 try:
@@ -1173,14 +1173,14 @@ try:
         Indirect reference to a captured variable.
 
         While the enclosing call frame is alive, `cell` is a one-element
-        list shared with the frame's local slot — both the frame and the
+        list shared with the frame's local slot - both the frame and the
         upvalue write/read through the same list, so mutations are visible.
 
         When the enclosing frame is popped (function returns), `close()`
         is called: the value is copied into the upvalue itself and the
         shared list is detached. Future reads go to `self.closed_value`.
         """
-        cell: List[Any]   # [value] — shared with enclosing frame while open
+        cell: List[Any]   # [value] - shared with enclosing frame while open
         is_open: bool = True
 
         @property
@@ -1229,7 +1229,7 @@ except Exception as e:
 
 ### Closure Factory: Counter Example
 
-The classic test for closures is a **counter factory** — a function that returns another function, where the inner function mutates a variable from the enclosing scope.
+The classic test for closures is a **counter factory**: a function that returns another function, where the inner function mutates a variable from the enclosing scope.
 
 ```python
 try:
@@ -1266,7 +1266,7 @@ try:
         def __len__(self): return len(self.instructions)
 
     # For the closure demo, we use a Python-level callable that wraps state.
-    # This is exactly what a VM's closure object does — hold the captured upvalues.
+    # This is exactly what a VM's closure object does - hold the captured upvalues.
     class MiniClosure:
         def __init__(self, name, fn):
             self._fn = fn
@@ -1922,24 +1922,24 @@ except Exception as e:
 
 Before submitting your bytecode VM implementation, verify all of the following:
 
-- [ ] **Arithmetic** — `(2 + 3) * 4 - 1` evaluates to `19`
-- [ ] **Comparison** — `5 >= 5` evaluates to `True`; `5 > 5` evaluates to `False`
-- [ ] **Short-circuit `and`** — `false and explode()` does not call `explode`
-- [ ] **Short-circuit `or`** — `true or explode()` does not call `explode`
-- [ ] **If / else** — `if 3 > 2 { print("yes"); } else { print("no"); }` prints `yes`
-- [ ] **While loop** — count from 1 to 5, printing each value
-- [ ] **Function call** — `fun square(x) { return x * x; }` then `square(7)` returns `49`
-- [ ] **Recursion** — `fib(10)` returns `55`
-- [ ] **Nested functions** — a function returning a closure correctly captures its upvalues
-- [ ] **Disassembler** — `disassemble(chunk)` produces readable output for all of the above
+- [ ] **Arithmetic**: `(2 + 3) * 4 - 1` evaluates to `19`
+- [ ] **Comparison**: `5 >= 5` evaluates to `True`; `5 > 5` evaluates to `False`
+- [ ] **Short-circuit `and`**: `false and explode()` does not call `explode`
+- [ ] **Short-circuit `or`**: `true or explode()` does not call `explode`
+- [ ] **If / else**: `if 3 > 2 { print("yes"); } else { print("no"); }` prints `yes`
+- [ ] **While loop**: count from 1 to 5, printing each value
+- [ ] **Function call**: `fun square(x) { return x * x; }` then `square(7)` returns `49`
+- [ ] **Recursion**: `fib(10)` returns `55`
+- [ ] **Nested functions**: a function returning a closure correctly captures its upvalues
+- [ ] **Disassembler**: `disassemble(chunk)` produces readable output for all of the above
 
 ### What Is Next: GC and JIT
 
-**Garbage Collector** — the VM currently never frees memory. Add a mark-and-sweep GC: the GC roots are the value stack, all call frames, and the globals table. Everything reachable from roots is live; everything else can be reclaimed. See the Garbage Collection tutorial for a complete implementation over a simulated heap.
+**Garbage Collector**: the VM currently never frees memory. Add a mark-and-sweep GC: the GC roots are the value stack, all call frames, and the globals table. Everything reachable from roots is live; everything else can be reclaimed. See the Garbage Collection tutorial for a complete implementation over a simulated heap.
 
-**Just-in-Time Compilation** — modern VMs (V8, LuaJIT, PyPy) profile which bytecode sequences run most frequently ("hot paths") and compile those sequences to native machine code at runtime. The key insight is that the JIT can specialize on observed types: if `ADD` has only ever seen integers, the JIT emits a single native `ADD` instruction instead of a general dispatch. Python 3.13's "copy-and-patch" JIT uses exactly this approach.
+**Just-in-Time Compilation**: modern VMs (V8, LuaJIT, PyPy) profile which bytecode sequences run most frequently ("hot paths") and compile those sequences to native machine code at runtime. The key insight is that the JIT can specialize on observed types: if `ADD` has only ever seen integers, the JIT emits a single native `ADD` instruction instead of a general dispatch. Python 3.13's "copy-and-patch" JIT uses exactly this approach.
 
-**Register-Based VMs** — Lua 5.0 used a stack-based VM; Lua 5.1 switched to a **register-based** VM, which reduces instruction count by 20-30% by keeping intermediate values in named registers rather than pushing and popping them. The CPython team is exploring a register-based bytecode for CPython 3.14+.
+**Register-Based VMs**: Lua 5.0 used a stack-based VM; Lua 5.1 switched to a **register-based** VM, which reduces instruction count by 20-30% by keeping intermediate values in named registers rather than pushing and popping them. The CPython team is exploring a register-based bytecode for CPython 3.14+.
 
 ---
 
@@ -1956,15 +1956,15 @@ You have now built every layer of a bytecode VM:
 | 4 | `Upvalue` and `MAKE_CLOSURE` | Closing over live stack slots |
 | 5 | `disassemble`, `compile_and_run`, performance timing | Tooling and integration |
 
-The architecture you built is not academic — it is the same design used by Lua, CPython (with a few thousand additional opcodes), and the JVM's early interpreter tier. The primary difference between this tutorial's VM and a production VM is scale: more opcodes, optimized dispatch (computed `goto` in C, or a `switch` statement with branch prediction hints), a GC, and a JIT tier for hot loops.
+The architecture you built is not academic: it is the same design used by Lua, CPython (with a few thousand additional opcodes), and the JVM's early interpreter tier. The primary difference between this tutorial's VM and a production VM is scale: more opcodes, optimized dispatch (computed `goto` in C, or a `switch` statement with branch prediction hints), a GC, and a JIT tier for hot loops.
 
 ---
 
-## Appendix: Compiler Optimizations — Making Programs Faster
+## Appendix: Compiler Optimizations, Making Programs Faster
 
 This appendix supports the Team Language Project's **Bytecode Compiler and Stack VM** extension: once your compiler emits bytecode, these optimization passes are the natural next step for making the programs it produces run faster.
 
-Think of a compiler optimizer as an editor who rewrites a paragraph to say the same thing in fewer words — the meaning is perfectly preserved, but the form is tightened. A compiler does the same thing to your program: it replaces slow, verbose machine instructions with fast, compact ones while guaranteeing that every possible input still produces the same output. You will build five such "editors" — constant folding, dead-code elimination, CSE, inlining, and tail-call optimization — each implemented as a tree rewrite over the AST you have been building throughout the course.
+Think of a compiler optimizer as an editor who rewrites a paragraph to say the same thing in fewer words: the meaning is perfectly preserved, but the form is tightened. A compiler does the same thing to your program: it replaces slow, verbose machine instructions with fast, compact ones while guaranteeing that every possible input still produces the same output. You will build five such "editors" (constant folding, dead-code elimination, CSE, inlining, and tail-call optimization), each implemented as a tree rewrite over the AST you have been building throughout the course.
 
 ### Learning Goals
 
@@ -1975,31 +1975,31 @@ By the end of this section, you will be able to:
 - Implement function inlining as an AST substitution pass, and explain when inlining improves and when it hurts performance
 - Recognize tail calls in recursive functions, apply the tail-call optimization transformation, and explain why it enables constant-stack recursion
 
-> **Before You Begin — Prerequisites**
+> **Before You Begin: Prerequisites**
 >
 > You should be comfortable with the following before starting this section:
 >
 > - **AST representation**: you know how to represent a program as a tree of dataclass nodes (`Num`, `BinOp`, `Let`, `If`, etc.) and how to walk that tree recursively.
-> - **Pattern matching** (`match`/`case`): Python 3.10+ structural pattern matching — used throughout every optimizer below.
+> - **Pattern matching** (`match`/`case`): Python 3.10+ structural pattern matching, used throughout every optimizer below.
 > - **Pure vs. side-effectful functions**: you can distinguish between an expression that always produces the same value and one that prints, raises, or mutates state.
 > - **Variable scope and substitution**: you understand what "free variable" and "bound variable" mean, and how substituting one expression for another can go wrong (variable capture).
 >
-> If any of these feel shaky, re-read the functional programming and lambda calculus notes before proceeding — the safety proofs in this section rely on all four.
+> If any of these feel shaky, re-read the functional programming and lambda calculus notes before proceeding; the safety proofs in this section rely on all four.
 
-> **"The first 90% of the code accounts for the first 90% of the development time. The remaining 10% of the code accounts for the other 90% of the development time."** — Tom Cargill
+> **"The first 90% of the code accounts for the first 90% of the development time. The remaining 10% of the code accounts for the other 90% of the development time."**, Tom Cargill
 >
-> Optimizations speed up programs *without changing their meaning*. In this appendix you will implement five core optimizations: constant folding, dead code elimination, common subexpression elimination, inlining, and tail call optimization. Each operates on the AST or IR — the same data structures you've been building throughout the course.
+> Optimizations speed up programs *without changing their meaning*. In this appendix you will implement five core optimizations: constant folding, dead code elimination, common subexpression elimination, inlining, and tail call optimization. Each operates on the AST or IR, the same data structures you've been building throughout the course.
 
 ---
 
-### Model 1 — What Makes an Optimization Valid?
+### Model 1: What Makes an Optimization Valid?
 
-**Intuition.** Before you can speed anything up, you need a safety rule: *when is a transformation allowed?* The answer is deceptively simple — a transformation is valid if and only if every valid input still produces the same observable output. "Observable" is the key word: printing to the screen is observable; computing an unused intermediate value is not. This section builds the mental checklist that every later optimizer will depend on.
+**Intuition.** Before you can speed anything up, you need a safety rule: *when is a transformation allowed?* The answer is deceptively simple: a transformation is valid if and only if every valid input still produces the same observable output. "Observable" is the key word: printing to the screen is observable; computing an unused intermediate value is not. This section builds the mental checklist that every later optimizer will depend on.
 
-An optimization is **valid** if it *preserves program semantics* — the optimized program produces the same observable results as the original for all valid inputs.
+An optimization is **valid** if it *preserves program semantics*: the optimized program produces the same observable results as the original for all valid inputs.
 
 ```python  liascript
-# Some "optimizations" are INVALID — they change observable behavior
+# Some "optimizations" are INVALID - they change observable behavior
 
 def f():
     print("side effect!")
@@ -2007,7 +2007,7 @@ def f():
 
 # INVALID: cannot fold f() + 0 -> 0 (removes the print side effect)
 x = f() + 0    # prints "side effect!" and gives x=0
-# "optimized": x = 0   # WRONG — side effect gone!
+# "optimized": x = 0   # WRONG - side effect gone!
 
 # VALID: can fold pure expressions
 y = 2 + 3 * 4   # evaluates to 14 at compile time
@@ -2038,13 +2038,13 @@ print("x =", x, "  y =", y)
 
 > **CTQ 1.3** Name three operations that are NEVER safe to optimize away, even if their result is unused. (Think: division, function calls, I/O.)
 
-> **Watch out!** It is tempting to think "if the result is unused, we can delete it." This is only safe for *pure* expressions. `f() + 0` cannot become `0` if `f` prints, writes to a file, raises an exception, or mutates global state — even though the arithmetic result is discarded. Always ask: "What happens if I remove this entirely?" before applying any optimization.
+> **Watch out!** It is tempting to think "if the result is unused, we can delete it." This is only safe for *pure* expressions. `f() + 0` cannot become `0` if `f` prints, writes to a file, raises an exception, or mutates global state, even though the arithmetic result is discarded. Always ask: "What happens if I remove this entirely?" before applying any optimization.
 
 ---
 
-### Model 2 — Constant Folding and Propagation
+### Model 2: Constant Folding and Propagation
 
-**Intuition.** Suppose your program contains `let x = 3 in x + 2`. A human reader sees immediately that `x + 2` must equal `5` — there is no need to wait until run time to add those two numbers. Constant folding does this mechanically: whenever both operands of an arithmetic node are already `Num` literals, replace the whole `BinOp` with the computed `Num`. Constant propagation extends this: once we know `x = 3`, we can substitute `3` for every occurrence of `x` before folding, enabling further reductions downstream. Together the two passes can collapse an entire chain of `let` bindings into a single number.
+**Intuition.** Suppose your program contains `let x = 3 in x + 2`. A human reader sees immediately that `x + 2` must equal `5`; there is no need to wait until run time to add those two numbers. Constant folding does this mechanically: whenever both operands of an arithmetic node are already `Num` literals, replace the whole `BinOp` with the computed `Num`. Constant propagation extends this: once we know `x = 3`, we can substitute `3` for every occurrence of `x` before folding, enabling further reductions downstream. Together the two passes can collapse an entire chain of `let` bindings into a single number.
 
 **Constant folding**: evaluate constant sub-expressions at compile time.
 **Constant propagation**: substitute known constant values for variables.
@@ -2160,15 +2160,15 @@ for t in tests:
 
 > **CTQ 2.1** The first test case propagates `x=3` into the body, evaluates `y=5`, then folds `3*5=15`. What is the final result? Is there any variable left in the output?
 
-> **CTQ 2.2** Dead code elimination fires when the `If` condition folds to a known constant. The `2 > 0` case reduces to `Num(1)` (true). But our code doesn't fold `BinOp('>', Num(2), Num(0))` — fix the `fold_and_propagate` function to handle comparison operators.
+> **CTQ 2.2** Dead code elimination fires when the `If` condition folds to a known constant. The `2 > 0` case reduces to `Num(1)` (true). But our code doesn't fold `BinOp('>', Num(2), Num(0))`; fix the `fold_and_propagate` function to handle comparison operators.
 
 > **CTQ 2.3** Constant propagation extends the `const_env` when a `let`-bound name gets a constant value. Why do we use `new_env = dict(const_env)` (a copy) rather than mutating `const_env` directly?
 
 ---
 
-### Model 3 — Common Subexpression Elimination (CSE)
+### Model 3: Common Subexpression Elimination (CSE)
 
-**Intuition.** Imagine writing `(x + 1) * (x + 1)` on paper. You would not reach for your calculator twice — you would compute `x + 1` once, write down the answer, then square it. CSE does exactly that: it scans the expression tree for sub-trees that appear more than once (with no intervening mutation), names the shared sub-computation with a fresh `let` binding, and replaces every duplicate occurrence with that name. The original two additions collapse into one, halving the work. The trick is identifying "same expression" in a way that is both correct and efficient — that is what `expr_key` does below.
+**Intuition.** Imagine writing `(x + 1) * (x + 1)` on paper. You would not reach for your calculator twice; you would compute `x + 1` once, write down the answer, then square it. CSE does exactly that: it scans the expression tree for sub-trees that appear more than once (with no intervening mutation), names the shared sub-computation with a fresh `let` binding, and replaces every duplicate occurrence with that name. The original two additions collapse into one, halving the work. The trick is identifying "same expression" in a way that is both correct and efficient; that is what `expr_key` does below.
 
 If the same expression appears twice and has no side effects in between, compute it once and reuse the result.
 
@@ -2254,7 +2254,7 @@ def pretty(node) -> str:
         case BinOp(op=o, left=l, right=r): return f"({pretty(l)}{o}{pretty(r)})"
         case Let(name=n, value=v, body=b):  return f"let {n}={pretty(v)} in\n  {pretty(b)}"
 
-# Expression: (x+1)*(x+1) — x+1 computed TWICE
+# Expression: (x+1)*(x+1) - x+1 computed TWICE
 from dataclasses import dataclass
 _cse_counter = 0
 
@@ -2277,13 +2277,13 @@ print(f"  {pretty(optimized)}")
 
 > **CTQ 3.3** CSE requires checking if two expressions are "the same." The `expr_key` function produces a canonical string. What's wrong with this approach if expressions contain variable names that were renamed by earlier passes?
 
-> **Watch out!** CSE introduces new variable bindings (`_cse1`, `_cse2`, ...). If you run CSE before constant propagation, those new variables will block the propagation pass from recognizing constants. If you run CSE after constant propagation, some sub-expressions that *looked* identical before may differ because their variables were replaced by different constants. Order matters — design your pipeline intentionally.
+> **Watch out!** CSE introduces new variable bindings (`_cse1`, `_cse2`, ...). If you run CSE before constant propagation, those new variables will block the propagation pass from recognizing constants. If you run CSE after constant propagation, some sub-expressions that *looked* identical before may differ because their variables were replaced by different constants. Order matters; design your pipeline intentionally.
 
 ---
 
-### Model 4 — Function Inlining
+### Model 4: Function Inlining
 
-**Intuition.** Every function call costs something: push arguments onto the stack, jump to the callee, eventually jump back, clean up. For a tiny function like `double(x) = x + x`, the bookkeeping overhead may actually exceed the cost of the addition. Inlining copies the function body to the call site, replacing the parameter with the actual argument — the call vanishes entirely. As a bonus, the inlined body is now visible to the surrounding optimizations, so constant folding or CSE may fire again on the merged code. The danger: inlining a large function (or worse, a recursive one) causes code-size explosion, so every production inliner has a size threshold.
+**Intuition.** Every function call costs something: push arguments onto the stack, jump to the callee, eventually jump back, clean up. For a tiny function like `double(x) = x + x`, the bookkeeping overhead may actually exceed the cost of the addition. Inlining copies the function body to the call site, replacing the parameter with the actual argument; the call vanishes entirely. As a bonus, the inlined body is now visible to the surrounding optimizations, so constant folding or CSE may fire again on the merged code. The danger: inlining a large function (or worse, a recursive one) causes code-size explosion, so every production inliner has a size threshold.
 
 **Inlining** replaces a function call with the function body, substituting arguments for parameters. This eliminates call overhead and enables further optimizations.
 
@@ -2369,7 +2369,7 @@ def pretty(node) -> str:
         case App(func=f, arg=a):            return f"{pretty(f)}({pretty(a)})"
         case Let(name=n, value=v, body=b):  return f"let {n}={pretty(v)} in {pretty(b)}"
 
-# double = λx. x + x  — inline double(5) -> 5 + 5
+# double = λx. x + x  - inline double(5) -> 5 + 5
 double = Lambda('x', BinOp('+', Var('x'), Var('x')))
 fn_env = {'double': double}
 
@@ -2396,9 +2396,9 @@ print(f"Inlined: {pretty(inlined2)}")
 
 ---
 
-### Model 5 — Tail Call Optimization (TCO)
+### Model 5: Tail Call Optimization (TCO)
 
-**Intuition.** Consider a recursive function where the very last thing it does before returning is call itself. At the moment that recursive call happens, the current stack frame has no remaining work to do — it will just forward whatever the callee returns. That frame is wasted space. TCO exploits this: instead of pushing a new frame, the compiler converts the call into a backward jump that reuses the existing frame, effectively turning the recursion into a loop. A tail-recursive function compiled with TCO uses *constant* stack space no matter how deep the recursion goes. Functional languages like Scheme, Haskell, and Erlang mandate TCO; Python does not implement it natively, but you can simulate it with a trampoline.
+**Intuition.** Consider a recursive function where the very last thing it does before returning is call itself. At the moment that recursive call happens, the current stack frame has no remaining work to do; it will just forward whatever the callee returns. That frame is wasted space. TCO exploits this: instead of pushing a new frame, the compiler converts the call into a backward jump that reuses the existing frame, effectively turning the recursion into a loop. A tail-recursive function compiled with TCO uses *constant* stack space no matter how deep the recursion goes. Functional languages like Scheme, Haskell, and Erlang mandate TCO; Python does not implement it natively, but you can simulate it with a trampoline.
 
 A **tail call** is a function call that is the *last* action of a function. Instead of creating a new stack frame, we can *reuse* the current frame.
 
@@ -2470,8 +2470,8 @@ def is_tail_call(node, fn_name: str) -> bool:
 
 # fact(n, acc) = if n<=1 then return acc else return fact(n-1, n*acc)
 fact_body = If(None,
-    Return(None),   # return acc — not a tail call to fact
-    Return(Call('fact', []))   # return fact(...) — IS a tail call!
+    Return(None),   # return acc - not a tail call to fact
+    Return(Call('fact', []))   # return fact(...) - IS a tail call!
 )
 print(f"\nfact body has tail call to 'fact': {is_tail_call(fact_body, 'fact')}")
 ```
@@ -2481,9 +2481,9 @@ print(f"\nfact body has tail call to 'fact': {is_tail_call(fact_body, 'fact')}")
 
 > **CTQ 5.2** `factorial_tco_helper` has `return factorial_tco_helper(n-1, n*acc)`. Why IS this a tail call? What does "last action" mean precisely?
 
-> **CTQ 5.3** Trampolining achieves tail call optimization without changing the language runtime — it works in Python, Java, or any language. What is the tradeoff compared to a language that natively supports TCO (like Scheme or Haskell)?
+> **CTQ 5.3** Trampolining achieves tail call optimization without changing the language runtime; it works in Python, Java, or any language. What is the tradeoff compared to a language that natively supports TCO (like Scheme or Haskell)?
 
-> **Watch out!** Not every recursive call in a tail position belongs to a *tail-recursive* function. Mutual recursion (`f` calls `g`, which calls `f`) also creates tail calls, and TCO applies there too — but detecting it requires tracking which functions are in the current call chain. The simple `is_tail_call` detector below only checks for self-recursion. A production compiler needs to handle the mutual case, which is why Scheme's TCO guarantee covers all proper tail calls, not just self-calls.
+> **Watch out!** Not every recursive call in a tail position belongs to a *tail-recursive* function. Mutual recursion (`f` calls `g`, which calls `f`) also creates tail calls, and TCO applies there too, but detecting it requires tracking which functions are in the current call chain. The simple `is_tail_call` detector below only checks for self-recursion. A production compiler needs to handle the mutual case, which is why Scheme's TCO guarantee covers all proper tail calls, not just self-calls.
 
 ---
 
@@ -2501,7 +2501,7 @@ Which optimization is UNSAFE to apply to `result = print("hello") or True`?
 Constant propagation extends the environment with `{x: 3}` when `let x = 3`. Why is it safe to propagate this constant throughout the body?
 
 [( )] Because x is an integer
-[(X)] Because `let` creates an immutable binding — x's value cannot change in the body
+[(X)] Because `let` creates an immutable binding: x's value cannot change in the body
 [( )] Because 3 is small enough to inline
 [( )] Because the compiler checked for side effects
 
@@ -2510,7 +2510,7 @@ Constant propagation extends the environment with `{x: 3}` when `let x = 3`. Why
 A tail call optimization converts a tail-recursive call into a loop at compile time. What benefit does this provide?
 
 [( )] Faster garbage collection
-[(X)] Constant stack space instead of O(n) stack frames — enables deep or infinite recursion without stack overflow
+[(X)] Constant stack space instead of O(n) stack frames: enables deep or infinite recursion without stack overflow
 [( )] Smaller bytecode
 [( )] Type safety
 
@@ -2518,11 +2518,11 @@ A tail call optimization converts a tail-recursive call into a loop at compile t
 
 ### Exercises
 
-##### Exercise 1 — Fix Comparison Folding (15 min)
+##### Exercise 1: Fix Comparison Folding (15 min)
 
 Extend `fold_and_propagate` from Model 2 to handle comparison operators (`>`, `<`, `>=`, `<=`, `==`, `!=`) and boolean operators (`and`, `or`, `not`). Test: `if (2 > 1) then 42 else 0` should fold to `42`.
 
-##### Exercise 2 — Strength Reduction (20 min)
+##### Exercise 2: Strength Reduction (20 min)
 
 **Strength reduction** replaces expensive operations with cheaper ones:
 - `x * 2` -> `x + x` (addition is faster than multiplication on some CPUs)
@@ -2531,7 +2531,7 @@ Extend `fold_and_propagate` from Model 2 to handle comparison operators (`>`, `<
 
 Implement `strength_reduce(node)` as a tree transformation. Test on `y * 8` and `z / 4`.
 
-##### Exercise 3 — Dead Code Elimination (20 min)
+##### Exercise 3: Dead Code Elimination (20 min)
 
 Write `eliminate_dead_code(node, live_vars: set)` that removes let-bindings whose names are never used in the body:
 
@@ -2542,7 +2542,7 @@ let x = expensive_computation() in 42
 
 But be careful: only eliminate if the binding expression is pure!
 
-##### Exercise 4 — Optimization Pipeline (25 min)
+##### Exercise 4: Optimization Pipeline (25 min)
 
 Combine multiple passes into a pipeline:
 
@@ -2557,7 +2557,7 @@ def optimize(node):
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 Test the pipeline on a program that contains all four optimization opportunities. Show before and after.
 
-##### Exercise 5 — Mini TCO (30 min, harder)
+##### Exercise 5: Mini TCO (30 min, harder)
 
 Add tail call optimization to your Mini interpreter:
 1. Write `is_tail_position(node, current_fn_name)` that returns True if a node is a tail call
@@ -2578,9 +2578,9 @@ Add tail call optimization to your Mini interpreter:
 
 ### Further Reading
 
-- **"Engineering a Compiler"** — Cooper & Torczon, Chapters 8-10: the canonical compiler optimization textbook
-- **"Compilers: Principles, Techniques, and Tools"** — Aho, Lam, Sethi, Ullman (Dragon Book): Chapters 9-10
-- **"Compiling with Continuations"** — Appel: how CPS enables many optimizations uniformly
-- **GCC optimization flags** — `gcc -O2` enables ~50 optimizations; the manual lists them all
-- **LLVM passes** — each LLVM optimization is a separate pass; the source code is readable: https://llvm.org/docs/Passes.html
-- **"Hacker's Delight"** — Henry Warren: arithmetic tricks behind strength reduction
+- **"Engineering a Compiler"**: Cooper & Torczon, Chapters 8-10: the canonical compiler optimization textbook
+- **"Compilers: Principles, Techniques, and Tools"**: Aho, Lam, Sethi, Ullman (Dragon Book): Chapters 9-10
+- **"Compiling with Continuations"**: Appel: how CPS enables many optimizations uniformly
+- **GCC optimization flags**: `gcc -O2` enables ~50 optimizations; the manual lists them all
+- **LLVM passes**: each LLVM optimization is a separate pass; the source code is readable: https://llvm.org/docs/Passes.html
+- **"Hacker's Delight"**: Henry Warren: arithmetic tricks behind strength reduction

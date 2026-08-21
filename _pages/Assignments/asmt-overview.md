@@ -100,7 +100,7 @@ EXPECTED_PYTHON = (3, 10)
 def check_python_version():
     v = sys.version_info
     ok = (v.major, v.minor) >= EXPECTED_PYTHON
-    print(f"[{'✓' if ok else '✗'}] Python {v.major}.{v.minor}.{v.micro}  "
+    print(f"[{'OK' if ok else 'FAIL'}] Python {v.major}.{v.minor}.{v.micro}  "
           f"(need >= {EXPECTED_PYTHON[0]}.{EXPECTED_PYTHON[1]})")
     return ok
 
@@ -110,13 +110,13 @@ def check_re():
     tokens = [(m.lastgroup, m.group()) for m in pattern.finditer("1 + 2")
               if m.lastgroup != "WS"]
     ok = tokens == [("NUM", "1"), ("PLUS", "+"), ("NUM", "2")]
-    print(f"[{'✓' if ok else '✗'}] re module: tokenized '1 + 2' -> {tokens}")
+    print(f"[{'OK' if ok else 'FAIL'}] re module: tokenized '1 + 2' -> {tokens}")
     return ok
 
 def check_json():
     data = json.loads('{"language": "Mini", "version": 1, "strict": true}')
     ok = data["language"] == "Mini" and data["version"] == 1
-    print(f"[{'✓' if ok else '✗'}] json module: parsed {data}")
+    print(f"[{'OK' if ok else 'FAIL'}] json module: parsed {data}")
     return ok
 
 def check_match_case():
@@ -129,7 +129,7 @@ def check_match_case():
             case _:                return "other"
     tests = [(-1, "negative int"), (5, "non-negative int"), ("hi", "string 'hi'")]
     ok = all(classify(v) == expected for v, expected in tests)
-    print(f"[{'✓' if ok else '✗'}] match/case: all {len(tests)} structural tests passed")
+    print(f"[{'OK' if ok else 'FAIL'}] match/case: all {len(tests)} structural tests passed")
     return ok
 
 def check_dataclasses():
@@ -141,7 +141,7 @@ def check_dataclasses():
         line: int = 1
     t = Token("NUM", "42")
     ok = t.type == "NUM" and t.line == 1
-    print(f"[{'✓' if ok else '✗'}] dataclasses: Token{t} constructed correctly")
+    print(f"[{'OK' if ok else 'FAIL'}] dataclasses: Token{t} constructed correctly")
     return ok
 
 results = [
@@ -155,7 +155,7 @@ results = [
 print()
 if all(results):
     print("=" * 50)
-    print("  CS374 environment verified. ✓")
+    print("  CS374 environment verified. OK")
     print("  You are ready to build a language.")
     print("=" * 50)
 else:

@@ -1,7 +1,7 @@
 ---
 layout: tutorial
 permalink: /Tutorials/PublishingYourLanguage
-title: "CS374: Publishing Your Language — pip, npm, and Docker"
+title: "CS374: Publishing Your Language: pip, npm, and Docker"
 
 info:
   coursenum: CS374
@@ -29,13 +29,13 @@ tags:
 
 ## Introduction
 
-By the end of CS374 you have built a real programming language: a lexer, a parser, an evaluator or compiler, and probably a REPL. That implementation lives in a folder on your laptop. This tutorial shows you how to share it with the world so that anyone — without cloning your repository or installing your dependencies by hand — can run programs written in your language.
+By the end of CS374 you have built a real programming language: a lexer, a parser, an evaluator or compiler, and probably a REPL. That implementation lives in a folder on your laptop. This tutorial shows you how to share it with the world so that anyone (without cloning your repository or installing your dependencies by hand) can run programs written in your language.
 
 There are three scenarios, and you only need the one that fits your project:
 
-- **pip** — Your interpreter is written in Python. After publishing, anyone who runs `pip install mylang-cs374` will get the `mylang` command on their PATH and can run `mylang program.ml` directly.
-- **npm** — Your transpiler emits JavaScript. After publishing, anyone who runs `npx @yourname/mylang program.ml` will transpile and run the source file using Node.js — no installation required.
-- **Docker / ghcr.io** — Your language has native dependencies that are difficult to install (Flex/Bison, LLVM, a custom C runtime). A Docker image bundles everything. After publishing, users run `docker run --rm -v $(pwd):/work ghcr.io/yourname/mylang program.ml` and it just works.
+- **pip**: Your interpreter is written in Python. After publishing, anyone who runs `pip install mylang-cs374` will get the `mylang` command on their PATH and can run `mylang program.ml` directly.
+- **npm**: Your transpiler emits JavaScript. After publishing, anyone who runs `npx @yourname/mylang program.ml` will transpile and run the source file using Node.js; no installation required.
+- **Docker / ghcr.io**: Your language has native dependencies that are difficult to install (Flex/Bison, LLVM, a custom C runtime). A Docker image bundles everything. After publishing, users run `docker run --rm -v $(pwd):/work ghcr.io/yourname/mylang program.ml` and it just works.
 
 Pick the section that matches your project. The three parts are completely independent.
 
@@ -77,7 +77,7 @@ tests/
   test_closures.py
 ```
 
-`__init__.py` can be empty — it just tells Python that `mylang/` is a package. Your existing source files (`lexer.py`, `parser.py`, `evaluator.py`) stay exactly where they are.
+`__init__.py` can be empty; it just tells Python that `mylang/` is a package. Your existing source files (`lexer.py`, `parser.py`, `evaluator.py`) stay exactly where they are.
 
 ### A2: pyproject.toml
 
@@ -154,7 +154,7 @@ python3 -m build
 # dist/mylang_cs374-0.1.0-py3-none-any.whl  (wheel)
 ```
 
-Validate the distributions before uploading — this catches missing files and metadata errors:
+Validate the distributions before uploading; this catches missing files and metadata errors:
 
 ```bash
 twine check dist/*
@@ -207,7 +207,7 @@ Users get the update by running `pip install --upgrade mylang-cs374`.
 
 ## Part B: Publishing to npm
 
-Use this section if your transpiler emits JavaScript. Your users will run programs with `npx @yourname/mylang program.ml` — no install step needed for one-off use.
+Use this section if your transpiler emits JavaScript. Your users will run programs with `npx @yourname/mylang program.ml`; no install step needed for one-off use.
 
 ### B1: When to Use npm
 
@@ -350,7 +350,7 @@ npm rejects uploads of a version that already exists, so always bump before uplo
 
 ## Part C: Docker and GitHub Container Registry (ghcr.io)
 
-Use this section if your language has native dependencies — Flex/Bison, LLVM, a custom C library, or any system package that is painful to install by hand.
+Use this section if your language has native dependencies: Flex/Bison, LLVM, a custom C library, or any system package that is painful to install by hand.
 
 ### C1: When to Use Docker
 
@@ -422,7 +422,7 @@ done
 
 ### C4: Push to GitHub Container Registry (ghcr.io)
 
-GitHub Container Registry (ghcr.io) is free for public images and integrates directly with your GitHub account — no separate Docker Hub account needed.
+GitHub Container Registry (ghcr.io) is free for public images and integrates directly with your GitHub account; no separate Docker Hub account needed.
 
 **Step 1: Create a Personal Access Token (PAT)**
 
@@ -519,7 +519,7 @@ git push origin main --tags
 
 GitHub Actions will detect the `v0.2.0` tag, build the Docker image, and push `ghcr.io/yourname/mylang:v0.2.0` and `ghcr.io/yourname/mylang:latest` automatically. No manual `docker build` or `docker push` needed.
 
-{% raw %}The `${{ secrets.GITHUB_TOKEN }}` is automatically available in every Actions workflow{% endraw %} — you do not need to create it manually. It has `write:packages` permission because the workflow declares `packages: write`.
+{% raw %}The `${{ secrets.GITHUB_TOKEN }}` is automatically available in every Actions workflow{% endraw %}; you do not need to create it manually. It has `write:packages` permission because the workflow declares `packages: write`.
 
 ---
 

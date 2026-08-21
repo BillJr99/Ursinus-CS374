@@ -69,7 +69,7 @@ primary     ::= INT | FLOAT | STRING | TRUE | FALSE | IDENT
 - **Comparison chaining:** `a < b < c` is a syntax error, reported
   explicitly (`comparison operators do not chain; use parentheses`).
 - **Assignment lookahead:** the grammar has no expression statements, so a
-  statement starting with `IDENT` can only be an assignment — one token of
+  statement starting with `IDENT` can only be an assignment; one token of
   lookahead suffices.
 - **`break`/`continue` statements** are added beyond the Parser
   assignment's minimum grammar because the Interpreter assignment's AST

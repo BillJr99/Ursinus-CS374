@@ -115,7 +115,7 @@ NOT TRUE
 = (λb. b FALSE TRUE) (λx.λy. x)
 ->β (λx.λy. x) FALSE TRUE
 ->β (λy. FALSE) TRUE
-->β FALSE  ✓
+->β FALSE  OK
 ```
 
 **Step-by-step reduction: AND TRUE FALSE**
@@ -127,7 +127,7 @@ AND TRUE FALSE
 ->β TRUE FALSE TRUE
 = (λx.λy. x) FALSE TRUE
 ->β (λy. FALSE) TRUE
-->β FALSE  ✓
+->β FALSE  OK
 ```
 
 **Decode helper, "peek inside" a Church boolean:**
@@ -231,7 +231,7 @@ SUCC ZERO
 ->β λf.λx. f ((λf.λx. x) f x)
 ->β λf.λx. f ((λx. x) x)
 ->β λf.λx. f x
-= ONE  ✓
+= ONE  OK
 ```
 
 
@@ -259,7 +259,7 @@ PLUS TWO THREE
     ->β f (f (f (f (f x))))
 
 ->   λf.λx. f (f (f (f (f x))))
-=   FIVE  ✓                                    five applications of f
+=   FIVE  OK                                    five applications of f
 ```
 
 Count the `f`s at each stage: `THREE f x` contributes three, and `TWO f` wraps two more around them. Addition of Church numerals is literally **function composition counted**, `m + n` applications of `f` because you applied `f` `n` times and then `m` more times to the result. Nothing was added; things were nested.

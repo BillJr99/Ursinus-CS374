@@ -129,24 +129,24 @@ for team, kind, text in FEEDBACK:
         bucket = triage_item(text)
         buckets[bucket].append((team, kind, text))
 
-print("  ✓ STRENGTHS (keep and amplify)")
+print("  OK STRENGTHS (keep and amplify)")
 for team, text in buckets["STRENGTH"]:
     print(f"    [{team}] {text}")
 
 print()
-print(f"  🔴 FIX BEFORE DEMO DAY ({len(buckets['FIX'])} items)")
+print(f"  FIX BEFORE DEMO DAY ({len(buckets['FIX'])} items)")
 for team, kind, text in buckets["FIX"]:
     print(f"    [{team}] {text}")
     print(f"           -> Assign to: ___  Due: ___  Done when: ___")
 
 print()
-print(f"  🟡 DISCLOSE AT DEMO DAY ({len(buckets['DISCLOSE'])} items)")
+print(f"  DISCLOSE AT DEMO DAY ({len(buckets['DISCLOSE'])} items)")
 for team, kind, text in buckets["DISCLOSE"]:
     print(f"    [{team}] {text}")
     print(f"           -> Disclosure wording: ___")
 
 print()
-print(f"  🔵 FUTURE WORK ({len(buckets['FUTURE'])} items)")
+print(f"  FUTURE WORK ({len(buckets['FUTURE'])} items)")
 for team, kind, text in buckets["FUTURE"]:
     print(f"    [{team}] {text}")
 
@@ -190,7 +190,7 @@ Before Demo Day, the Evaluator verifies and signs each line:
 import os, subprocess, sys
 
 def check(label, result, guidance=""):
-    status = "✓" if result else "✗"
+    status = "OK" if result else "FAIL"
     print(f"  {status}  {label}")
     if not result and guidance:
         print(f"        -> {guidance}")
@@ -254,7 +254,7 @@ passed = sum(results)
 total  = len(results)
 print(f"  {passed}/{total} checks passed")
 if passed == total:
-    print("  -> Ready for Demo Day. ✓")
+    print("  -> Ready for Demo Day. OK")
 elif passed >= total - 1:
     print("  -> One item remaining. Fix it today.")
 else:

@@ -55,7 +55,7 @@ By the end of this tutorial, you will have:
 - Used `coverage.py` to generate an HTML coverage report and identified untested paths in your evaluator
 - Structured your interpreter as independent, testable functions so that each stage (lexer, parser, evaluator) can be tested in isolation
 
-Interpreters are unusually hard to debug manually. When you run a program and get the wrong answer, the bug could live in the lexer, the parser, the AST representation, the environment lookup, the evaluator dispatch, or the closure construction. A good test suite isolates each stage and catches regressions the moment you introduce them. Continuous integration then ensures those tests run on every push — not just when you remember to.
+Interpreters are unusually hard to debug manually. When you run a program and get the wrong answer, the bug could live in the lexer, the parser, the AST representation, the environment lookup, the evaluator dispatch, or the closure construction. A good test suite isolates each stage and catches regressions the moment you introduce them. Continuous integration then ensures those tests run on every push, not just when you remember to.
 
 **What you need:**
 
@@ -86,9 +86,9 @@ This breaks down as soon as you have more than a handful of language features. A
 
 Test-driven development inverts the usual order of work:
 
-1. **Red** — write a test that exercises a feature that does not exist yet. Run it. Watch it fail.
-2. **Green** — write the minimum code to make the test pass.
-3. **Refactor** — clean up, then confirm the test still passes.
+1. **Red**: write a test that exercises a feature that does not exist yet. Run it. Watch it fail.
+2. **Green**: write the minimum code to make the test pass.
+3. **Refactor**: clean up, then confirm the test still passes.
 
 For language work, the "feature" is almost always a new construct: a loop, a list literal, a pattern match, a type annotation. Writing the test first forces you to decide exactly what the feature should do before you write a single line of evaluator code. This is the same discipline as writing an operational semantics rule before implementing it.
 
@@ -112,16 +112,16 @@ GitHub Actions runs your test suite every time you push a commit. The benefits f
 The most important architectural decision for testability is keeping the three stages of interpretation as separate, stateless functions:
 
 ```python
-# lexer.py  — source text -> token list
+# lexer.py  - source text -> token list
 def tokenize(source: str) -> list[Token]: ...
 
-# parser.py — token list -> AST
+# parser.py - token list -> AST
 def parse(tokens: list[Token]) -> ASTNode: ...
 
-# evaluator.py — AST + environment -> value
+# evaluator.py - AST + environment -> value
 def evaluate(ast: ASTNode, env: Environment) -> Value: ...
 
-# mylang.py — convenience entry point
+# mylang.py - convenience entry point
 def run(source: str) -> Value:
     return evaluate(parse(tokenize(source)))
 ```
@@ -135,7 +135,7 @@ If each function is pure (no global state, no mutation of shared objects) then e
 The single most common reason test suites fail intermittently is shared mutable state. Consider this evaluator that keeps a global symbol table:
 
 ```python
-# BAD — global state leaks between tests
+# BAD - global state leaks between tests
 _global_env = {}
 
 def evaluate(ast):
@@ -148,7 +148,7 @@ If test A binds `x = 5` and test B asks for `x`, test B may pass even though it 
 The fix is always the same: create a fresh `Environment()` for each test.
 
 ```python
-# GOOD — each test starts clean
+# GOOD - each test starts clean
 class Environment:
     def __init__(self, parent=None):
         self.bindings = {}
@@ -535,7 +535,7 @@ tests/test_mylang.py::TestFunctions::test_closure_in_let       PASSED
 
 ---
 
-# Part 4: Test-Driven Development — Adding a Feature
+# Part 4: Test-Driven Development, Adding a Feature
 
 ## 4.1 The Red-Green-Refactor Cycle in Practice
 
@@ -549,7 +549,7 @@ The loop evaluates `body` repeatedly as long as `condition` is `true`. Because M
 
 ---
 
-## 4.2 Step 1 — Write the Failing Test (Red)
+## 4.2 Step 1: Write the Failing Test (Red)
 
 Add this test to `tests/test_mylang.py` before touching any interpreter code:
 
@@ -591,11 +591,11 @@ FAILED tests/test_mylang.py::TestWhileLoop::test_while_counts_to_three
   ParseError: unexpected token 'while'
 ```
 
-The test is **Red** — it fails with a `ParseError` because the parser does not yet know about `while`.
+The test is **Red**: it fails with a `ParseError` because the parser does not yet know about `while`.
 
 ---
 
-## 4.3 Step 2 — Add the AST Node and Token
+## 4.3 Step 2: Add the AST Node and Token
 
 In `lexer.py`, register `while`, `do`, and `done` as keywords:
 
@@ -618,11 +618,11 @@ class WhileExpr:
     line: int
 ```
 
-Run pytest again — the `ParseError` about `while` being an unexpected token is gone, but now you get a different error because the parser still does not produce a `WhileExpr`.
+Run pytest again: the `ParseError` about `while` being an unexpected token is gone, but now you get a different error because the parser still does not produce a `WhileExpr`.
 
 ---
 
-## 4.4 Step 3 — Parse the `while` Expression
+## 4.4 Step 3: Parse the `while` Expression
 
 In `parser.py`, add a branch in your top-level expression parser:
 
@@ -659,7 +659,7 @@ Progress: parsing works, evaluation is missing.
 
 ---
 
-## 4.5 Step 4 — Evaluate the `while` Expression (Green)
+## 4.5 Step 4: Evaluate the `while` Expression (Green)
 
 In `evaluator.py`, add:
 
@@ -699,7 +699,7 @@ Every pre-existing test still passes. The `while` feature is shipped.
 
 ---
 
-## 4.6 Step 5 — Refactor
+## 4.6 Step 5: Refactor
 
 Now that the tests are green, you can safely clean up. For example, if `eval_WhileExpr` duplicates a type-checking pattern used in `eval_IfExpr`, extract a helper:
 
@@ -712,7 +712,7 @@ def _assert_bool(self, value, construct_name: str, line: int) -> None:
         )
 ```
 
-Run pytest after the refactor to confirm nothing broke. This is the refactor step — change structure, not behavior, and let the tests catch you if you slip.
+Run pytest after the refactor to confirm nothing broke. This is the refactor step: change structure, not behavior, and let the tests catch you if you slip.
 
 ---
 
@@ -766,14 +766,14 @@ jobs:
 
 ## 5.2 What Each Section Does
 
-**`on`** — triggers for this workflow:
+**`on`**: triggers for this workflow:
 
 - `push` to `main` or any branch starting with `claude/` runs the suite immediately.
 - `pull_request` targeting `main` runs the suite on every PR update.
 
-**`jobs`** — a workflow has one or more jobs. Each job runs on a fresh virtual machine. Our single `test` job runs on the latest Ubuntu image (`ubuntu-latest`).
+**`jobs`**: a workflow has one or more jobs. Each job runs on a fresh virtual machine. Our single `test` job runs on the latest Ubuntu image (`ubuntu-latest`).
 
-**`steps`** — sequential commands inside the job:
+**`steps`**: sequential commands inside the job:
 
 | Step | What it does |
 |---|---|
@@ -783,7 +783,7 @@ jobs:
 | `pytest tests/ -v --tb=short` | Runs all tests; `--tb=short` prints concise tracebacks |
 | `pytest ... --cov-fail-under=70` | Fails the job if coverage drops below 70% |
 
-**`--cov-fail-under=70`** — if your test suite covers fewer than 70% of your interpreter's lines, the CI job fails and GitHub marks the commit with a red X. This prevents you from shipping a feature with zero test coverage. You can raise the threshold over time as your suite grows.
+**`--cov-fail-under=70`** - if your test suite covers fewer than 70% of your interpreter's lines, the CI job fails and GitHub marks the commit with a red X. This prevents you from shipping a feature with zero test coverage. You can raise the threshold over time as your suite grows.
 
 ---
 
@@ -965,7 +965,7 @@ If you have already committed to a print-based design, pytest's built-in `capsys
 If your language supports floating-point:
 
 ```python
-# BAD — may fail due to floating-point rounding
+# BAD; may fail due to floating-point rounding
 assert run("0.1 + 0.2") == 0.3
 
 # GOOD
@@ -980,13 +980,13 @@ assert run("0.1 + 0.2") == pytest.approx(0.3)
 
 ## 7.4 Dict Ordering in Environment Display
 
-If your interpreter has a `debug` or `print-env` feature that displays the current environment, do not compare the raw string — dictionaries preserve insertion order in Python 3.7+ but tests should not rely on that if the order is semantically arbitrary:
+If your interpreter has a `debug` or `print-env` feature that displays the current environment, do not compare the raw string - dictionaries preserve insertion order in Python 3.7+ but tests should not rely on that if the order is semantically arbitrary:
 
 ```python
 # BAD
 assert run("debug-env") == "{'x': 1, 'y': 2}"
 
-# GOOD — parse the output and compare as a set of pairs
+# GOOD, parse the output and compare as a set of pairs
 result = run("debug-env")
 pairs  = set(result.strip("{}").split(", "))
 assert pairs == {"'x': 1", "'y': 2"}
@@ -1004,35 +1004,35 @@ def test_list_literal():
     assert run("[1, 2, 3]") == [1, 2, 3]
 ```
 
-`strict=True` means the test suite fails if the test unexpectedly passes — a reminder that you should remove the `xfail` marker once the feature ships.
+`strict=True` means the test suite fails if the test unexpectedly passes: a reminder that you should remove the `xfail` marker once the feature ships.
 
 ---
 
 ## Exercises
 
-### Exercise 1 — Bootstrap Your Test Suite (30 min)
+### Exercise 1: Bootstrap Your Test Suite (30 min)
 
 Take your current interpreter (or the Mini interpreter from the Build-an-Interpreter tutorial). Create `tests/__init__.py` and `tests/test_mylang.py`. Copy the `TestArithmetic` and `TestVariables` classes from Section 3.2, adjusting imports and language syntax to match your project. Run `pytest tests/ -v`. Aim for all tests green before proceeding.
 
-### Exercise 2 — TDD: Add String Literals (45 min)
+### Exercise 2: TDD: Add String Literals (45 min)
 
 Using strict TDD:
 
 1. Write a failing test: `assert run('"hello"') == "hello"` and `assert run('"a" + "b"') == "ab"`.
-2. Run pytest — confirm Red.
+2. Run pytest: confirm Red.
 3. Add string tokens to the lexer, a `StringLit` AST node to the parser, and `eval_StringLit` to the evaluator.
-4. Run pytest — confirm Green.
+4. Run pytest: confirm Green.
 5. Run the full suite to confirm no regressions.
 
-### Exercise 3 — Set Up GitHub Actions (20 min)
+### Exercise 3: Set Up GitHub Actions (20 min)
 
 Create `.github/workflows/test.yml` using the template from Section 5.1. Push it to your repository. Open the GitHub Actions tab and watch the first run. If the run fails, read the log and fix the issue.
 
-### Exercise 4 — Coverage Hunt (30 min)
+### Exercise 4: Coverage Hunt (30 min)
 
 Run `pytest tests/ --cov=. --cov-report=html`. Open `htmlcov/index.html`. Find the three largest blocks of red (uncovered) lines in your evaluator. Write a test for each one. Re-run coverage and confirm the lines turn green.
 
-### Exercise 5 — Parametrize a Test Class (15 min)
+### Exercise 5: Parametrize a Test Class (15 min)
 
 Pick the `TestArithmetic` class or the `TestBooleans` class. Replace the individual test methods with a single `@pytest.mark.parametrize` test. Confirm the parametrized version reports the same results as the original.
 
@@ -1043,16 +1043,16 @@ Pick the `TestArithmetic` class or the `TestBooleans` class. Replace the individ
 - Krekel, Holger, et al. *pytest: helps you write better programs*. pytest.org, 2024. https://docs.pytest.org/
 - GitHub. *GitHub Actions Documentation*. docs.github.com, 2024. https://docs.github.com/en/actions
 - Batchelder, Ned. *coverage.py: Code Coverage for Python*. coverage.readthedocs.io, 2024. https://coverage.readthedocs.io/
-- Beck, Kent. *Test Driven Development: By Example*. Addison-Wesley, 2002. — The original TDD book; the Red-Green-Refactor cycle comes from Chapter 1.
-- Fowler, Martin. *Refactoring: Improving the Design of Existing Code*, 2nd ed. Addison-Wesley, 2018. — Chapter 4 covers test strategy for larger systems.
+- Beck, Kent. *Test Driven Development: By Example*. Addison-Wesley, 2002., The original TDD book; the Red-Green-Refactor cycle comes from Chapter 1.
+- Fowler, Martin. *Refactoring: Improving the Design of Existing Code*, 2nd ed. Addison-Wesley, 2018., Chapter 4 covers test strategy for larger systems.
 
 # From the Sprint Studio: Velocity and Red-Green Discipline
 
 Two studio tools from the Sprint Studio sessions: measuring what "done" means across sprints, and writing the test before the code.
 
-## Model 1: Sprint Velocity — Measuring What "Done" Looks Like
+## Model 1: Sprint Velocity; Measuring What "Done" Looks Like
 
-Velocity is the sprint's heartbeat reading: a falling trend is your early warning system, and a flat trend three sprints before the deadline is a crisis that has not been named yet. This model simulates three sprints with concrete numbers so you can see what a healthy trajectory looks like versus a warning trajectory — and practice interpreting the dashboard before your own numbers are in it.
+Velocity is the sprint's heartbeat reading: a falling trend is your early warning system, and a flat trend three sprints before the deadline is a crisis that has not been named yet. This model simulates three sprints with concrete numbers so you can see what a healthy trajectory looks like versus a warning trajectory, and practice interpreting the dashboard before your own numbers are in it.
 
 A sprint velocity is a *count*, not a feeling. The Evaluator tracks two numbers: **stories completed** (AST nodes with passing tests) and **tests passing**. The cell below simulates a three-sprint project and visualizes the velocity trend, because a slowing velocity three sprints before Demo Day is early warning, not bad luck.
 
@@ -1110,7 +1110,7 @@ for sprint, d in DATA.items():
         for f in d["known_failures"]:
             print(f"    * {f}")
     else:
-        print(f"  Known failures: none ✓")
+        print(f"  Known failures: none OK")
     completed_so_far += d["nodes_done"]
     print()
 
@@ -1124,7 +1124,7 @@ print(f"  Completed so far:   {completed_so_far}")
 print(f"  Remaining:          {remaining}")
 print(f"  Last sprint rate:   {last_velocity*100:.0f}% ({DATA['Sprint 3']['nodes_done']}/{DATA['Sprint 3']['nodes_planned']})")
 if remaining == 0:
-    print(f"  -> All nodes complete! Ready for Demo Day polish. ✓")
+    print(f"  -> All nodes complete! Ready for Demo Day polish. OK")
 elif sprints_needed <= 1:
     print(f"  -> On track: ~{sprints_needed:.1f} sprints to clear remaining nodes.")
 else:
@@ -1135,7 +1135,7 @@ print("  Rule: a sprint with more than 2 known failures is not done.")
 print("  Rule: test_pct < 80% triggers a test-debt sprint before new features.")
 ```
 
-> **Watch out!** The projection formula assumes your last sprint's velocity holds constant. Real project velocity rarely stays constant — it often drops in the final sprint due to integration work and debugging. If you are already at 80% velocity, the projection is optimistic. Use the projection as a floor, not a ceiling.
+> **Watch out!** The projection formula assumes your last sprint's velocity holds constant. Real project velocity rarely stays constant; it often drops in the final sprint due to integration work and debugging. If you are already at 80% velocity, the projection is optimistic. Use the projection as a floor, not a ceiling.
 
 ### Critical Thinking Questions
 
@@ -1145,9 +1145,9 @@ print("  Rule: test_pct < 80% triggers a test-debt sprint before new features.")
 
 ---
 
-## Model 2: The Red-Green Discipline — Writing Tests Before Code
+## Model 2: The Red-Green Discipline - Writing Tests Before Code
 
-A failing test is not a sign of failure — it is a specification. Before a feature exists, the only accurate representation of "we plan to build this" is a test that currently fails. This model makes that discipline concrete by treating the set of failing tests as the literal sprint backlog, so the sprint goal is visible and measurable at every moment.
+A failing test is not a sign of failure: it is a specification. Before a feature exists, the only accurate representation of "we plan to build this" is a test that currently fails. This model makes that discipline concrete by treating the set of failing tests as the literal sprint backlog, so the sprint goal is visible and measurable at every moment.
 
 The Evaluator's job is to write **failing tests** before the Builder writes the code they test. A failing test is a specification: it states precisely what the code must do before the code exists. The cell below demonstrates the discipline by running a test suite against a deliberately incomplete interpreter, showing which tests fail (red), which pass (green), and what the gap is.
 
@@ -1206,35 +1206,35 @@ passing = [t for t in TESTS if IMPLEMENTED.get(t[1], False)]
 failing = [t for t in TESTS if not IMPLEMENTED.get(t[1], False)]
 
 print("=" * 55)
-print(f"  TEST RESULTS — Sprint {sum(IMPLEMENTED.values())}/{len(IMPLEMENTED)} features")
+print(f"  TEST RESULTS, Sprint {sum(IMPLEMENTED.values())}/{len(IMPLEMENTED)} features")
 print("=" * 55)
 print()
-print("  ✓ PASSING")
+print("  OK PASSING")
 for desc, feat, expected in passing:
-    print(f"    ✓  {desc}")
+    print(f"    OK  {desc}")
 
 print()
-print("  ✗ FAILING (specification written, not yet implemented)")
+print("  FAIL FAILING (specification written, not yet implemented)")
 for desc, feat, expected in failing:
     label = f"[{feat}]"
-    print(f"    ✗  {desc:<35} {label}")
+    print(f"    FAIL  {desc:<35} {label}")
 
 print()
 print(f"  Summary: {len(passing)}/{len(TESTS)} tests passing ({len(passing)/len(TESTS)*100:.0f}%)")
 print()
 if len(failing) == 0:
-    print("  All tests green. Sprint goal met. ✓")
+    print("  All tests green. Sprint goal met. OK")
 elif len(failing) <= 3:
     print(f"  {len(failing)} test(s) remaining. Sprint finish is this session.")
 else:
     print(f"  {len(failing)} tests still failing. Evaluate sprint scope with Coordinator.")
 print()
-print("  Key: failing tests ARE the sprint backlog. Each ✗ is the next task.")
+print("  Key: failing tests ARE the sprint backlog. Each FAIL is the next task.")
 ```
 
 ### Critical Thinking Questions
 
-4. The test for `FunDecl` has `expected_output = None` — no known output yet, just a known requirement. What does this represent in the red-green discipline, and why is it still worth writing the test?
+4. The test for `FunDecl` has `expected_output = None` (no known output yet, just a known requirement. What does this represent in the red-green discipline, and why is it still worth writing the test?
 5. If the Evaluator writes 5 new failing tests at the start of the sprint, and the Builder closes 3 of them, what is the sprint's velocity? Is a sprint with 2 remaining failing tests "done"?
 6. The test suite acts as executable documentation of the language's semantics. Which is more authoritative: a test that passes, or the corresponding entry in `SEMANTICS.md`? What should you do when they disagree?
 

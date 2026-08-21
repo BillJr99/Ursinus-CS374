@@ -21,7 +21,7 @@ By the end of this tutorial, you will have:
 - Added at least one extension to the baseline interpreter (e.g., lists, pattern matching, or a type checker)
 - Delivered a working REPL and file-runner that can run all provided example programs
 
-> **Tutorial Goal:** By the end of this tutorial, you will have built a fully working interpreter for the Mini programming language — complete with variables, functions, closures, recursion, and a REPL. Each phase builds directly on the previous one, so follow them in order.
+> **Tutorial Goal:** By the end of this tutorial, you will have built a fully working interpreter for the Mini programming language, complete with variables, functions, closures, recursion, and a REPL. Each phase builds directly on the previous one, so follow them in order.
 >
 > **Time estimate:** 8-12 hours total (all 10 phases)
 >
@@ -29,7 +29,7 @@ By the end of this tutorial, you will have:
 
 ---
 
-## Phase 1: Design — Example Programs First
+## Phase 1: Design, Example Programs First
 
 Before writing a single line of interpreter code, we need to know what our language looks like from the *outside*. The best way to do this is to write example programs in Mini and ask: "What do I want this to mean?" Only after we have a clear picture of the surface syntax do we design the token set and grammar.
 
@@ -37,7 +37,7 @@ This phase is about **language design by example**. Every decision you make abou
 
 ### 1.1 Example Programs
 
-**Example 1 — Hello World and arithmetic**
+**Example 1: Hello World and arithmetic**
 
 ```mini
 let x = 10;
@@ -47,7 +47,7 @@ print z;
 print "Hello, Mini!";
 ```
 
-**Example 2 — Fibonacci (recursive)**
+**Example 2: Fibonacci (recursive)**
 
 ```mini
 fun fib(n) {
@@ -59,7 +59,7 @@ fun fib(n) {
 print fib(10);
 ```
 
-**Example 3 — Factorial (iterative with while)**
+**Example 3: Factorial (iterative with while)**
 
 ```mini
 fun factorial(n) {
@@ -74,7 +74,7 @@ fun factorial(n) {
 print factorial(6);
 ```
 
-**Example 4 — Conditionals and booleans**
+**Example 4: Conditionals and booleans**
 
 ```mini
 let age = 20;
@@ -86,7 +86,7 @@ if true and not false {
 }
 ```
 
-**Example 5 — Closures (functions returning functions)**
+**Example 5: Closures (functions returning functions)**
 
 ```mini
 fun make_adder(n) {
@@ -97,7 +97,7 @@ print add5(10);
 print add5(20);
 ```
 
-**Example 6 — Higher-order functions**
+**Example 6: Higher-order functions**
 
 ```mini
 fun apply(f, x) {
@@ -116,7 +116,7 @@ print apply(double, 8);
 
 > **CTQ 1.1:** Look at Example 5. The inner `fun(x) -> x + n` refers to `n`, which is defined in `make_adder`'s scope. After `make_adder` returns, does `n` still exist? What language feature makes this work?
 
-> **CTQ 1.2:** In Example 4, `if` is used as an *expression* (its value is assigned to `status`). What does this mean for the parser — can we use the same `if` rule for both statements and expressions?
+> **CTQ 1.2:** In Example 4, `if` is used as an *expression* (its value is assigned to `status`). What does this mean for the parser; can we use the same `if` rule for both statements and expressions?
 
 > **CTQ 1.3:** Why does Example 3 require reassigning `result` and `i` inside the loop? What would need to change if variables were immutable?
 
@@ -174,7 +174,7 @@ Now that we have seen real programs, every token below has a concrete justificat
 
 ## Phase 2: Lexer
 
-The **lexer** (also called a *scanner* or *tokenizer*) transforms raw source text into a flat list of `Token` objects. The parser never sees individual characters — it only sees tokens.
+The **lexer** (also called a *scanner* or *tokenizer*) transforms raw source text into a flat list of `Token` objects. The parser never sees individual characters; it only sees tokens.
 
 ### 2.1 Token Dataclass and Constants
 
@@ -381,7 +381,7 @@ class Lexer:
         return tokens
 ```
 
-### 2.3 Try It — Tokenize a Mini Program
+### 2.3 Try It, Tokenize a Mini Program
 
 ```python
 # Run this cell to see the lexer in action.
@@ -476,7 +476,7 @@ args         = ( expr ( "," expr )* )?
 
 > **Key design decisions:**
 > - `cmp_expr` allows only *one* comparison (no chaining `a < b < c`).
-> - `^` is right-associative — handled carefully in the parser.
+> - `^` is right-associative, handled carefully in the parser.
 > - `fun(params) -> expr` is a **lambda** (expression body); `fun(params) { ... }` is a named function definition at statement level or an anonymous closure in expression position.
 > - `if` appears as both a statement and an expression (when used inside `primary`).
 
@@ -496,7 +496,7 @@ graph TD
     F --> I[unary: 3]
 ```
 
-The multiplication `2 * 3` is deeper in the tree, so it evaluates first — this is how precedence emerges naturally from the grammar hierarchy.
+The multiplication `2 * 3` is deeper in the tree, so it evaluates first; this is how precedence emerges naturally from the grammar hierarchy.
 
 > **CTQ 3.1:** Why does the grammar have separate `add_expr` and `mul_expr` rules instead of one `binary_expr` rule? Trace through what would happen if you tried to combine them.
 
@@ -520,7 +520,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
-# Base marker classes — no fields, just for isinstance checks
+# Base marker classes - no fields, just for isinstance checks
 class Node: pass
 class Expr(Node): pass
 class Stmt(Node): pass
@@ -718,7 +718,7 @@ def pretty_print(node: Node, indent: int = 0) -> None:
 
 ## Phase 5: Parser
 
-The **parser** consumes the flat list of tokens and builds the AST. We use **recursive descent**, where each grammar rule becomes a method. The parser never looks at characters — it only calls token-level helpers.
+The **parser** consumes the flat list of tokens and builds the AST. We use **recursive descent**, where each grammar rule becomes a method. The parser never looks at characters; it only calls token-level helpers.
 
 ### 5.1 Parser Infrastructure
 
@@ -1007,7 +1007,7 @@ def parse(source: str) -> Program:
     return Parser(tokens).parse_program()
 ```
 
-### 5.5 Demo — Parse the Fibonacci Function
+### 5.5 Demo, Parse the Fibonacci Function
 
 ```python
 # Add this after the Parser class definition in parser_mini.py
@@ -1091,7 +1091,7 @@ class Environment:
 ### 6.2 Three-Frame Example
 
 ```python
-# Demonstrate nested environments — run this standalone
+# Demonstrate nested environments - run this standalone
 
 from environment import Environment
 
@@ -1110,18 +1110,18 @@ inner_env = func_env.child()
 inner_env.define("temp", 99)
 
 # Lookup walks the chain upward
-print(inner_env.lookup("temp"))  # 99  — found in inner_env
-print(inner_env.lookup("a"))     # 1   — found in func_env
-print(inner_env.lookup("x"))     # 10  — found in global_env
+print(inner_env.lookup("temp"))  # 99  - found in inner_env
+print(inner_env.lookup("a"))     # 1   - found in func_env
+print(inner_env.lookup("x"))     # 10  - found in global_env
 
 # Assign walks the chain and mutates the correct frame
 inner_env.assign("a", 42)
-print(func_env.lookup("a"))      # 42  — updated in func_env
+print(func_env.lookup("a"))      # 42  - updated in func_env
 
 # Define creates in the *current* frame, even if same name exists above
 inner_env.define("x", 999)
-print(inner_env.lookup("x"))     # 999 — shadows global x
-print(global_env.lookup("x"))    # 10  — global unchanged
+print(inner_env.lookup("x"))     # 999 - shadows global x
+print(global_env.lookup("x"))    # 10  - global unchanged
 ```
 
 > **CTQ 6.1:** What is the difference between `define` and `assign`? Give a Mini code example where using one instead of the other would produce the wrong behavior.
@@ -1699,7 +1699,7 @@ run_source('print reduce(fun(a, b) -> a + b, 0, range(1, 11));', interp)
 
 > **CTQ 9.3:** `head([])` as currently written would crash with a Python error rather than raising a `RuntimeError_`. Fix the `head` definition so it raises a proper Mini runtime error.
 
-**Try It Exercise 9.1:** Write a Mini program that uses `cons`, `head`, and `tail` to implement a recursive `my_sum` function — without using `reduce` or any Python built-ins.
+**Try It Exercise 9.1:** Write a Mini program that uses `cons`, `head`, and `tail` to implement a recursive `my_sum` function, without using `reduce` or any Python built-ins.
 
 **Try It Exercise 9.2:** Add a `type_of(x)` built-in that returns a string: `"number"`, `"string"`, `"bool"`, `"nil"`, `"list"`, or `"function"`. This is invaluable for debugging Mini programs.
 
@@ -1711,16 +1711,16 @@ With all phases complete, this final phase gives you a systematic way to verify 
 
 ### 10.1 Checklist of 10 Things to Verify
 
-1. **Lexical scoping** — Inner functions see outer-scope variables; sibling functions do not share locals.
-2. **Closures capture by reference** — A returned closure correctly reflects mutations to captured variables.
-3. **Recursion correctness** — `fib(10)` returns `55`; `factorial(6)` returns `720`.
-4. **Tail recursion pitfall** — Mini does *not* optimize tail calls (Python doesn't either). For `fib(40)`, Python will hit its default recursion limit. Document this limitation clearly in your README.
-5. **Mutual recursion with forward references** — Two functions that call each other both work correctly when both definitions precede any calls.
-6. **String escapes** — `"\n"`, `"\t"`, `"\\"`, and `"\""` produce the correct Python characters.
-7. **Division by zero** — `1 / 0` raises a `RuntimeError_` with a clear message, not an uncaught Python `ZeroDivisionError`.
-8. **Type errors** — `"hello" - 1` raises a `RuntimeError_`, not an uncaught Python `TypeError`.
-9. **Early return from nested loops** — A `return` inside a `while` inside a `fun` exits the entire function, not just the loop body.
-10. **Built-ins are first-class values** — `map` can be passed as an argument: `let m = map; print m(fun(x) -> x+1, range(3));` works.
+1. **Lexical scoping**: Inner functions see outer-scope variables; sibling functions do not share locals.
+2. **Closures capture by reference**: A returned closure correctly reflects mutations to captured variables.
+3. **Recursion correctness**: `fib(10)` returns `55`; `factorial(6)` returns `720`.
+4. **Tail recursion pitfall**: Mini does *not* optimize tail calls (Python doesn't either). For `fib(40)`, Python will hit its default recursion limit. Document this limitation clearly in your README.
+5. **Mutual recursion with forward references**: Two functions that call each other both work correctly when both definitions precede any calls.
+6. **String escapes**: `"\n"`, `"\t"`, `"\\"`, and `"\""` produce the correct Python characters.
+7. **Division by zero**: `1 / 0` raises a `RuntimeError_` with a clear message, not an uncaught Python `ZeroDivisionError`.
+8. **Type errors**: `"hello" - 1` raises a `RuntimeError_`, not an uncaught Python `TypeError`.
+9. **Early return from nested loops**: A `return` inside a `while` inside a `fun` exits the entire function, not just the loop body.
+10. **Built-ins are first-class values**: `map` can be passed as an argument: `let m = map; print m(fun(x) -> x+1, range(3));` works.
 
 ### 10.2 Complete Test Suite
 
@@ -1975,23 +1975,23 @@ python test_mini.py
 You now have a complete working interpreter for Mini. The following extensions are described in the **Extensions Menu** of the [Team Language Project](https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage) and build directly on this foundation:
 
 **Language features to add:**
-- **List indexing** — `lst[i]` read and `lst[i] = v` write; requires new AST nodes `IndexExpr` and `IndexAssign`, plus updates to the parser's `parse_call` and the evaluator.
-- **String slicing** — `s[i:j]`; a natural extension of list indexing.
-- **Pattern matching** — Add a `match expr { case pattern: block ... }` construct to the grammar and evaluator.
-- **Tail-call optimization** — Convert the interpreter to a trampoline-style loop to avoid Python stack overflow on deeply recursive Mini programs.
-- **Module system** — Add an `import "file.mini"` statement to split programs across multiple files.
+- **List indexing**: `lst[i]` read and `lst[i] = v` write; requires new AST nodes `IndexExpr` and `IndexAssign`, plus updates to the parser's `parse_call` and the evaluator.
+- **String slicing**: `s[i:j]`; a natural extension of list indexing.
+- **Pattern matching**: Add a `match expr { case pattern: block ... }` construct to the grammar and evaluator.
+- **Tail-call optimization**: Convert the interpreter to a trampoline-style loop to avoid Python stack overflow on deeply recursive Mini programs.
+- **Module system**: Add an `import "file.mini"` statement to split programs across multiple files.
 
 **Compiler backends:**
-- **Bytecode compiler + stack VM** — Compile the AST to a custom instruction set and build a virtual machine to execute it. Dramatically faster than tree-walking.
-- **Python transpiler** — Walk the AST and emit Python source code instead of interpreting. Allows Mini programs to be packaged as `.py` files.
-- **Static type checker** — Add a Hindley-Milner type inference pass that runs before evaluation to catch type errors at compile time.
+- **Bytecode compiler + stack VM**: Compile the AST to a custom instruction set and build a virtual machine to execute it. Dramatically faster than tree-walking.
+- **Python transpiler**: Walk the AST and emit Python source code instead of interpreting. Allows Mini programs to be packaged as `.py` files.
+- **Static type checker**: Add a Hindley-Milner type inference pass that runs before evaluation to catch type errors at compile time.
 
 **Tooling:**
-- **Source formatter** — Walk the AST and emit normalized, consistently indented Mini source (an "unparser").
-- **Interactive debugger** — Add a `breakpoint;` statement that drops into a mini-REPL inside the running program.
-- **Language Server Protocol (LSP) server** — Expose go-to-definition, hover documentation, and diagnostics to editors like VS Code.
+- **Source formatter**: Walk the AST and emit normalized, consistently indented Mini source (an "unparser").
+- **Interactive debugger**: Add a `breakpoint;` statement that drops into a mini-REPL inside the running program.
+- **Language Server Protocol (LSP) server**: Expose go-to-definition, hover documentation, and diagnostics to editors like VS Code.
 
-> **CTQ 10.1:** The `test_early_return_from_nested_while` test validates that `return` inside a `while` exits the entire function. Trace through the Python call stack to explain exactly how `ReturnSignal` achieves this — specifically, what happens when `raise ReturnSignal(...)` is executed inside `_eval_block`, called from `eval(WhileStmt, ...)`, called from `_eval_block_or_expr`, called from `_apply`.
+> **CTQ 10.1:** The `test_early_return_from_nested_while` test validates that `return` inside a `while` exits the entire function. Trace through the Python call stack to explain exactly how `ReturnSignal` achieves this, specifically, what happens when `raise ReturnSignal(...)` is executed inside `_eval_block`, called from `eval(WhileStmt, ...)`, called from `_eval_block_or_expr`, called from `_apply`.
 
 > **CTQ 10.2:** The test suite uses `io.StringIO` to capture `print` output. Is this a good testing strategy? What would be a cleaner approach that does not depend on stdout redirection?
 
@@ -1999,13 +1999,13 @@ You now have a complete working interpreter for Mini. The following extensions a
 
 ---
 
-*End of Tutorial — Building the Mini Language: A Complete Guide*
+*End of Tutorial, Building the Mini Language: A Complete Guide*
 
 # From the Language Design Studio: Grammar v0 Starter
 
 The feature-checklist and EBNF-skeleton builder below came from the Sprint 0 class session. It is a tool you run while drafting your grammar, so it lives with the project guide.
 
-## Model 2: Grammar v0 Starter — Feature Checklist
+## Model 2: Grammar v0 Starter - Feature Checklist
 
 The cell below walks through a feature checklist and emits a starter grammar in EBNF. Your team modifies it; the point is to make sure no feature is forgotten.
 
@@ -2083,7 +2083,7 @@ def emit_grammar(f):
     lines.append("")
 
     # Expression ladder (precedence, lowest to highest)
-    lines.append("(* Expression ladder — lower rules bind more loosely *)")
+    lines.append("(* Expression ladder; lower rules bind more loosely *)")
     lines.append("expr      ::= or_expr")
     if f["short_circuit"]:
         lines.append("or_expr   ::= and_expr ( 'or' and_expr )*")
@@ -2130,7 +2130,7 @@ print("  Each True flag = at minimum one new grammar rule + one new AST node.")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **Watch out!** Adding a feature flag to `True` in the skeleton does not implement the feature — it only declares intent. The real cost shows up in two places: (1) every new grammar rule becomes a new parsing function your Builder must write and test, and (2) every new grammar rule introduces at least one new AST node that your Evaluator must handle. Teams commonly underestimate Sprint 1 scope by counting features rather than counting grammar rules plus AST nodes.
+> **Watch out!** Adding a feature flag to `True` in the skeleton does not implement the feature; it only declares intent. The real cost shows up in two places: (1) every new grammar rule becomes a new parsing function your Builder must write and test, and (2) every new grammar rule introduces at least one new AST node that your Evaluator must handle. Teams commonly underestimate Sprint 1 scope by counting features rather than counting grammar rules plus AST nodes.
 
 ### Critical Thinking Questions
 
@@ -2147,5 +2147,5 @@ A team's niche is dice-game scripting, and they are debating whether `3d6` shoul
 
 ---
 
-A hospital keeps a patient chart that tracks every procedure, every medication, every result. Without it, different doctors treating the same patient would have no shared source of truth. Your node inventory is that chart for your interpreter: every AST node your team agrees on becomes a row, and empty cells in the "evaluator method" column show exactly where the implementation is incomplete. This model generates a starter inventory — your job is to fill in the blank rows before Sprint 1 ends.
+A hospital keeps a patient chart that tracks every procedure, every medication, every result. Without it, different doctors treating the same patient would have no shared source of truth. Your node inventory is that chart for your interpreter: every AST node your team agrees on becomes a row, and empty cells in the "evaluator method" column show exactly where the implementation is incomplete. This model generates a starter inventory; your job is to fill in the blank rows before Sprint 1 ends.
 

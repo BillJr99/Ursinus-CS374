@@ -243,7 +243,7 @@ print(row(header))
 print(row(separator))
 for node_class, fields, grammar_rule, eval_method in NODE_INVENTORY:
     field_str = ", ".join(fields)
-    status = "✓" if eval_method != "TODO" else "TODO"
+    status = "OK" if eval_method != "TODO" else "TODO"
     print(row([node_class, field_str[:38], grammar_rule[:33], f"{eval_method} {status}"]))
 
 print()

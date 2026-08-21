@@ -32,10 +32,10 @@ Hindley-Milner (HM) type inference deduces the type of every expression without 
 
 The algorithm has four components, built in order:
 
-1. **Type terms** — the language of types: `Int`, `Bool`, `α` (type variable), `α -> β` (function type)
-2. **Substitution** — mapping from type variable names to types; `apply(subst, type)` replaces variables
-3. **Unification** — given two types, find the most general substitution making them equal
-4. **Algorithm W** — walk the AST, generate and solve type constraints, return the principal type
+1. **Type terms**: the language of types: `Int`, `Bool`, `α` (type variable), `α -> β` (function type)
+2. **Substitution**: mapping from type variable names to types; `apply(subst, type)` replaces variables
+3. **Unification**: given two types, find the most general substitution making them equal
+4. **Algorithm W**: walk the AST, generate and solve type constraints, return the principal type
 
 ---
 
@@ -426,7 +426,7 @@ try:
             s5 = unify(tt, te, s4)
             return (s5, apply(s5, tt))
 
-        # Let statement (monomorphic for now — Phase 5 adds polymorphism)
+        # Let statement (monomorphic for now - Phase 5 adds polymorphism)
         if tag == 'let':
             _, name, val = expr
             s1, t1 = infer(val, env, subst)
@@ -652,7 +652,7 @@ try:
 
         raise ValueError(f"unknown: {expr!r}")
 
-    # Test: let id = λx. x in (id(1), id(true)) — must type-check
+    # Test: let id = λx. x in (id(1), id(true)) - must type-check
     # id(1) uses id: Int -> Int
     # id(true) uses id: Bool -> Bool
     prog = ('let_poly', 'id',
@@ -669,7 +669,7 @@ try:
     s, t = infer_poly(prog2, {})
     print(f"let id=λx.x in id(true) -> {t}")
 
-    # Self-application (should fail — occurs check):
+    # Self-application (should fail - occurs check):
     try:
         infer_poly(('fun', ['f'], ('call', ('var', 'f'), [('var', 'f')])), {})
     except TypeError as e:
@@ -788,7 +788,7 @@ Here is the minimal complete HM inferencer that handles the Mini language's expr
 
 ## Further Reading
 
-- Damas, Luis and Milner, Robin. "Principal Type-Schemes for Functional Programs" (POPL 1982). The original HM paper — 9 pages, completely readable.
+- Damas, Luis and Milner, Robin. "Principal Type-Schemes for Functional Programs" (POPL 1982). The original HM paper; 9 pages, completely readable.
 - Cardelli, Luca. "Basic Polymorphic Typechecking" (1987, free online). A tutorial implementation much like this one, in Pascal.
 - The Tree-Walking Interpreter assignment's static-typing direction (https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Interpreter): apply this tutorial to your language's AST.
 - Pierce, Benjamin C. *Types and Programming Languages*, Chapters 22-23. The rigorous treatment.

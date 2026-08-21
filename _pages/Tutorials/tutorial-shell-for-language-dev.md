@@ -31,7 +31,7 @@ This tutorial teaches the shell skills you need to build, test, and ship your CS
 
 **Work through it at a terminal, not in a chair.** Each step below ends with a **Try it** box: a small, concrete thing to run against your own interpreter before moving on. By the last step you will have an executable interpreter, a test harness that reports PASS/FAIL, a Makefile that standardizes how your language is invoked, and a CI job that fails the build when a test regresses.
 
-**What you need before you start.** A working interpreter you can run — even one that only prints a token stream is enough to follow along — and a terminal in the [course development environment]({{ site.baseurl }}/Tutorials/DevEnvironment).
+**What you need before you start.** A working interpreter you can run (even one that only prints a token stream is enough to follow along) and a terminal in the [course development environment]({{ site.baseurl }}/Tutorials/DevEnvironment).
 
 **The running example.** Your interpreter is invoked as `python3 mylang.py <sourcefile>`, your source files use the extension `.ml`, test cases live in `tests/`, and expected outputs live in `expected/`. Adapt the paths to match your actual layout as you go.
 
@@ -39,7 +39,7 @@ This tutorial teaches the shell skills you need to build, test, and ship your CS
 |---|---|---|
 | 1 | An interpreter you can run directly, with meaningful exit codes | 15 min |
 | 2 | Output captured and diffed against expected results | 15 min |
-| 3 | `test_runner.sh` — a harness that runs every test and reports PASS/FAIL | 30 min |
+| 3 | `test_runner.sh`, a harness that runs every test and reports PASS/FAIL | 30 min |
 | 4 | A `Makefile` so `make test` is the only command anyone needs | 20 min |
 | 5 | A debugging toolkit of shell one-liners | 20 min |
 | 6 | Environment-variable configuration and a CI job | 25 min |
@@ -86,7 +86,7 @@ Now you can invoke it without spelling out `python3`:
 
 The `./` prefix is required because the current directory is not on your `PATH` by default. If you copy the file somewhere on your `PATH` (e.g., `~/.local/bin/`), you can drop the `./` entirely.
 
-### Exit codes — why they matter
+### Exit codes, why they matter
 
 Your interpreter should call `sys.exit()` with a meaningful code before it terminates:
 
@@ -101,7 +101,7 @@ def main():
         sys.exit(0)   # zero = success
 ```
 
-Exit code `0` means success. Any non-zero code means failure. The shell, CI systems, and your test harness all read this code to decide whether the run passed. If you forget to set it, Python exits with `0` even when your interpreter crashed internally — your test harness will then falsely report every run as a pass.
+Exit code `0` means success. Any non-zero code means failure. The shell, CI systems, and your test harness all read this code to decide whether the run passed. If you forget to set it, Python exits with `0` even when your interpreter crashed internally; your test harness will then falsely report every run as a pass.
 
 Check the exit code of the last command with `$?`:
 
@@ -112,7 +112,7 @@ echo $?          # prints 1 if your interpreter exited with sys.exit(1)
 
 ---
 
-> **Try it.** Add a shebang to your interpreter, `chmod +x` it, and run it as `./mylang.py` on a test program. Then run it on a program with a deliberate syntax error and check `echo $?` — if it prints `0`, your interpreter is lying about failure, and every harness you build later will believe it. Fix that now with `sys.exit(1)`.
+> **Try it.** Add a shebang to your interpreter, `chmod +x` it, and run it as `./mylang.py` on a test program. Then run it on a program with a deliberate syntax error and check `echo $?`; if it prints `0`, your interpreter is lying about failure, and every harness you build later will believe it. Fix that now with `sys.exit(1)`.
 
 ---
 
@@ -175,7 +175,7 @@ python3 mylang.py tests/fibonacci.ml | sort        # sort output lines
 
 ---
 
-> **Try it.** Pick one test program, run it, and save the output as its expected file. Now change one line of your evaluator so the result is wrong, and run the `diff` again — you should see exactly what changed. Undo the change. That diff is the whole idea behind Step 3.
+> **Try it.** Pick one test program, run it, and save the output as its expected file. Now change one line of your evaluator so the result is wrong, and run the `diff` again; you should see exactly what changed. Undo the change. That diff is the whole idea behind Step 3.
 
 ---
 
@@ -218,17 +218,17 @@ chmod +x test_runner.sh
 
 ### Line-by-line explanation
 
-**`for test in tests/*.ml`** — The shell expands the glob `tests/*.ml` into a list of matching file paths before the loop starts. Each iteration assigns one path to the variable `test`.
+**`for test in tests/*.ml`**: The shell expands the glob `tests/*.ml` into a list of matching file paths before the loop starts. Each iteration assigns one path to the variable `test`.
 
-**`name=$(basename "$test" .ml)`** — `$()` runs a command in a subshell and captures its stdout as a string. `basename` strips the directory prefix and, when given a second argument, also strips that suffix. So `tests/fibonacci.ml` becomes `fibonacci`.
+**`name=$(basename "$test" .ml)`**: `$()` runs a command in a subshell and captures its stdout as a string. `basename` strips the directory prefix and, when given a second argument, also strips that suffix. So `tests/fibonacci.ml` becomes `fibonacci`.
 
-**`actual=$(python3 mylang.py "$test" 2>&1)`** — Runs your interpreter and captures both stdout and stderr into the variable `actual`. The quotes around `"$test"` prevent word-splitting if the filename contains spaces.
+**`actual=$(python3 mylang.py "$test" 2>&1)`**: Runs your interpreter and captures both stdout and stderr into the variable `actual`. The quotes around `"$test"` prevent word-splitting if the filename contains spaces.
 
-**`diff -q <(echo "$actual") "$expected" > /dev/null 2>&1`** — `diff -q` exits with `0` if the files are identical and `1` if they differ, but prints nothing (`-q` is "quiet" mode). We discard any remaining output with `> /dev/null 2>&1`. The condition `[ -f "$expected" ]` guards against test cases that do not yet have a corresponding expected file.
+**`diff -q <(echo "$actual") "$expected" > /dev/null 2>&1`**: `diff -q` exits with `0` if the files are identical and `1` if they differ, but prints nothing (`-q` is "quiet" mode). We discard any remaining output with `> /dev/null 2>&1`. The condition `[ -f "$expected" ]` guards against test cases that do not yet have a corresponding expected file.
 
-**`((PASS++))`** — Arithmetic in bash uses `(( ))`. This increments the counter.
+**`((PASS++))`**: Arithmetic in bash uses `(( ))`. This increments the counter.
 
-**`[ $FAIL -eq 0 ]`** — This is the last command in the script, so its exit code becomes the script's exit code. If `FAIL` is zero the condition is true and the script exits `0`. If any tests failed it exits `1`. CI tools pick this up automatically.
+**`[ $FAIL -eq 0 ]`**: This is the last command in the script, so its exit code becomes the script's exit code. If `FAIL` is zero the condition is true and the script exits `0`. If any tests failed it exits `1`. CI tools pick this up automatically.
 
 ### Creating the expected/ directory
 
@@ -246,17 +246,17 @@ Commit both `tests/` and `expected/` to git so the test harness has something to
 
 ---
 
-> **Try it.** Save `test_runner.sh`, `chmod +x` it, and run it. Every test should report PASS. Now break one on purpose and confirm the harness reports FAIL *and* exits non-zero (`echo $?`) — a harness that always exits `0` will make CI green no matter what.
+> **Try it.** Save `test_runner.sh`, `chmod +x` it, and run it. Every test should report PASS. Now break one on purpose and confirm the harness reports FAIL *and* exits non-zero (`echo $?`); a harness that always exits `0` will make CI green no matter what.
 
 ---
 
 ## Step 4: Standardize the Commands with a Makefile
 
-A `Makefile` gives every contributor — including you after a vacation — a single consistent interface. `make run FILE=tests/fib.ml`, `make test`, `make clean` all just work.
+A `Makefile` gives every contributor (including you after a vacation) a single consistent interface. `make run FILE=tests/fib.ml`, `make test`, `make clean` all just work.
 
 ### Complete Makefile
 
-Save this as `Makefile` at the root of your project. **Indented lines must use a real tab character, not spaces** — Make requires this.
+Save this as `Makefile` at the root of your project. **Indented lines must use a real tab character, not spaces**; Make requires this.
 
 ```makefile
 INTERP = python3 mylang.py
@@ -296,21 +296,21 @@ make clean                          # remove __pycache__ directories
 
 ### Makefile concept reference
 
-**`$(wildcard pattern)`** — expands to all files matching `pattern`. Unlike shell globbing, this works inside variable assignments.
+**`$(wildcard pattern)`**: expands to all files matching `pattern`. Unlike shell globbing, this works inside variable assignments.
 
-**`$(notdir paths)`** — strips the directory prefix from each path in the list. `tests/fibonacci.ml` becomes `fibonacci.ml`.
+**`$(notdir paths)`**: strips the directory prefix from each path in the list. `tests/fibonacci.ml` becomes `fibonacci.ml`.
 
-**`$(basename paths)`** — strips the file extension. `fibonacci.ml` becomes `fibonacci`. Combining with `notdir` gives you bare test names.
+**`$(basename paths)`**: strips the file extension. `fibonacci.ml` becomes `fibonacci`. Combining with `notdir` gives you bare test names.
 
-**`$(addprefix prefix, list)`** — prepends `prefix` to every word in `list`. `$(addprefix test-, fibonacci sorting)` produces `test-fibonacci test-sorting`.
+**`$(addprefix prefix, list)`**: prepends `prefix` to every word in `list`. `$(addprefix test-, fibonacci sorting)` produces `test-fibonacci test-sorting`.
 
-**Pattern rule `test-%`** — the `%` wildcard matches any string. When make needs to build `test-fibonacci`, it matches this rule with `%` bound to `fibonacci`. Inside the recipe, `$*` expands to the matched stem (`fibonacci`).
+**Pattern rule `test-%`**: the `%` wildcard matches any string. When make needs to build `test-fibonacci`, it matches this rule with `%` bound to `fibonacci`. Inside the recipe, `$*` expands to the matched stem (`fibonacci`).
 
-**`@` prefix** — suppresses echoing the command itself before running it. Without `@`, make prints each command line before executing it; `@` hides it so your output is cleaner.
+**`@` prefix**: suppresses echoing the command itself before running it. Without `@`, make prints each command line before executing it; `@` hides it so your output is cleaner.
 
-**`$<` and `$@`** — `$@` is the target name; `$<` is the first prerequisite. Useful in compilation rules (e.g., compiling `.c` to `.o`) but not needed in this Makefile.
+**`$<` and `$@`**: `$@` is the target name; `$<` is the first prerequisite. Useful in compilation rules (e.g., compiling `.c` to `.o`) but not needed in this Makefile.
 
-**`.PHONY`** — declares that `run`, `test`, `generate-expected`, and `clean` are not real files. Without this, if a file named `test` existed in the directory, `make test` would do nothing because `test` would appear up to date.
+**`.PHONY`**: declares that `run`, `test`, `generate-expected`, and `clean` are not real files. Without this, if a file named `test` existed in the directory, `make test` would do nothing because `test` would appear up to date.
 
 ---
 
@@ -484,11 +484,11 @@ jobs:
       - run: chmod +x test_runner.sh && ./test_runner.sh
 ```
 
-No additional configuration needed — the exit code from the script tells GitHub whether the job passed or failed.
+No additional configuration needed; the exit code from the script tells GitHub whether the job passed or failed.
 
 ---
 
-> **Try it.** Add a `DEBUG` check to your interpreter that prints the token stream when `DEBUG=1` is set, and confirm `DEBUG=1 python3 mylang.py tests/scoping.ml` behaves differently from the plain invocation. Then commit the CI workflow and watch the job run on a push — including one push where a test is deliberately broken, so you see it fail.
+> **Try it.** Add a `DEBUG` check to your interpreter that prints the token stream when `DEBUG=1` is set, and confirm `DEBUG=1 python3 mylang.py tests/scoping.ml` behaves differently from the plain invocation. Then commit the CI workflow and watch the job run on a push, including one push where a test is deliberately broken, so you see it fail.
 
 ---
 
@@ -544,7 +544,7 @@ The engine walks left to right, and each group records the *span* of text it con
 | `level` | `[A-Z]+` | `WARN` | (20, 24) |
 | `msg` | `.*` | `disk usage 91%` | (25, 39) |
 
-Two details deserve attention. First, `[A-Z]+` is greedy, yet it stops cleanly after `WARN`: the next character is a space, which is not in the class `[A-Z]`, so the quantifier has nothing more it is *allowed* to take — the class boundary does the work, and no backtracking is needed. Second, `.*` in `msg` is also greedy and *does* swallow spaces, running to the end of the line (`.` matches every character except newline).
+Two details deserve attention. First, `[A-Z]+` is greedy, yet it stops cleanly after `WARN`: the next character is a space, which is not in the class `[A-Z]`, so the quantifier has nothing more it is *allowed* to take: the class boundary does the work, and no backtracking is needed. Second, `.*` in `msg` is also greedy and *does* swallow spaces, running to the end of the line (`.` matches every character except newline).
 
 ```python
 import re
@@ -599,9 +599,9 @@ The next character is a space, which is not in `[A-Z]`, so the greedy `+` has no
 
 ---
 
-This final model has two purposes: to make greedy-versus-reluctant matching concrete so it never surprises you again, and to close the theoretical loop by showing exactly where regular expressions run out of power. Both lessons point to the same underlying cause — a finite automaton has no stack, so it cannot count or remember how deeply it has nested.
+This final model has two purposes: to make greedy-versus-reluctant matching concrete so it never surprises you again, and to close the theoretical loop by showing exactly where regular expressions run out of power. Both lessons point to the same underlying cause: a finite automaton has no stack, so it cannot count or remember how deeply it has nested.
 
-> **Watch out!** Regular expressions **cannot match balanced (nested) parentheses** in general — for example, the language $\{(^n)^n \mid n \geq 0\}$ (equal numbers of open and close parens) is context-free, not regular. No matter how clever your regex, there exists a depth $n$ large enough to fool it. When you need to match nested structure, you need a parser built from a context-free grammar — exactly what the next unit covers.
+> **Watch out!** Regular expressions **cannot match balanced (nested) parentheses** in general: for example, the language $\{(^n)^n \mid n \geq 0\}$ (equal numbers of open and close parens) is context-free, not regular. No matter how clever your regex, there exists a depth $n$ large enough to fool it. When you need to match nested structure, you need a parser built from a context-free grammar, exactly what the next unit covers.
 
 ### Named Groups and the Lexer Connection
 
@@ -665,7 +665,7 @@ for tok in lex(src):
 
 ---
 
-Capture groups are what turn a regex from a yes/no detector into a *parser of flat records*: each group carves out one field of the matched text, and named groups label the fields. Nothing exercises this like log triage — the daily chore of turning thousands of text lines into structured data you can count, filter, and sort.
+Capture groups are what turn a regex from a yes/no detector into a *parser of flat records*: each group carves out one field of the matched text, and named groups label the fields. Nothing exercises this like log triage: the daily chore of turning thousands of text lines into structured data you can count, filter, and sort.
 
 ### Character classes and anchors behave as you expect
 
@@ -677,16 +677,16 @@ grep -nE "[0-9]+\.[0-9]+" lexer.py   # a float literal; note the escaped dot
 grep -nE "[[:alpha:]_][[:alnum:]_]*" lexer.py   # POSIX class = an identifier
 ```
 
-Two portability notes worth knowing now rather than at 2am: `\d` and `\w` are **not** POSIX and may not work in every `grep`; the portable spellings are `[0-9]` and `[[:alnum:]_]`. And `.` still means "any character," so a literal dot needs escaping — `[0-9]+\.[0-9]+` matches `3.14`, while `[0-9]+.[0-9]+` would also match `3x14`.
+Two portability notes worth knowing now rather than at 2am: `\d` and `\w` are **not** POSIX and may not work in every `grep`; the portable spellings are `[0-9]` and `[[:alnum:]_]`. And `.` still means "any character," so a literal dot needs escaping: `[0-9]+\.[0-9]+` matches `3.14`, while `[0-9]+.[0-9]+` would also match `3x14`.
 
 **Check yourself.** You run `grep -n "lexer|parser" src/main.py` and get no output, though the file plainly contains both words. What went wrong?
 
 <details><summary>Answer</summary>
 
-Plain `grep` uses BRE, where `|` is a literal character — it searched for the string `lexer|parser`. Use `grep -nE`, or escape it as `lexer\|parser`.
+Plain `grep` uses BRE, where `|` is a literal character; it searched for the string `lexer|parser`. Use `grep -nE`, or escape it as `lexer\|parser`.
 
 </details>
 
-> **Watch out!** `grep` is line-oriented, so it cannot match a pattern that spans a newline. When you find yourself wanting that — "find every function whose body contains `raise`" — you have left `grep`'s regular-language territory and want a parser. That is the same boundary this activity's final section draws between regular expressions and context-free grammars, and it shows up in your tools as well as in your theory.
+> **Watch out!** `grep` is line-oriented, so it cannot match a pattern that spans a newline. When you find yourself wanting that ("find every function whose body contains `raise`") you have left `grep`'s regular-language territory and want a parser. That is the same boundary this activity's final section draws between regular expressions and context-free grammars, and it shows up in your tools as well as in your theory.
 
 

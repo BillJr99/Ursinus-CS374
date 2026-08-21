@@ -12,7 +12,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 -->
 
-# Tutorial: Build a Complete Interpreter in Python — Step by Step
+# Tutorial: Build a Complete Interpreter in Python, Step by Step
 
 ## Learning Goals
 
@@ -721,7 +721,7 @@ match xs with
 | h :: t -> h + sum t
 ```
 
-**Tail-call optimization:** The `eval_App` call above will blow Python's stack on deeply recursive functions. Trampolining converts tail calls to iteration — research "trampoline in Python" for a clean implementation.
+**Tail-call optimization:** The `eval_App` call above will blow Python's stack on deeply recursive functions. Trampolining converts tail calls to iteration, research "trampoline in Python" for a clean implementation.
 
 **Print / IO:** Add a `print` built-in function to the global environment.
 
@@ -731,15 +731,15 @@ match xs with
 
 | Concept | Where it appears |
 |---|---|
-| Lexical analysis | `Lexer.next_token()` — character-by-character |
-| Token types | `TK_*` constants — the vocabulary |
+| Lexical analysis | `Lexer.next_token()`; character-by-character |
+| Token types | `TK_*` constants, the vocabulary |
 | Recursive descent | Each grammar rule -> one `parse_*` method |
 | Operator precedence | Call hierarchy: `parse_expr > parse_cmp > parse_arith > parse_term > parse_app > parse_atom` |
 | Abstract Syntax Tree | `Num`, `BinOp`, `Let`, `Fun`, `App`, etc. |
-| Tree-walking evaluation | `evaluate()` — dispatches by node type |
-| Lexical scoping | `Environment` linked list — each `let` creates a child |
+| Tree-walking evaluation | `evaluate()`, dispatches by node type |
+| Lexical scoping | `Environment` linked list, each `let` creates a child |
 | Closures | `Closure` captures the defining `env` |
-| Recursion | `LetRec` — value evaluated in an environment that includes the binding |
+| Recursion | `LetRec`, value evaluated in an environment that includes the binding |
 
 ---
 
@@ -753,7 +753,7 @@ match xs with
 
 4. **Add a built-in `print`** function by adding a `Builtin` value class and pre-populating the global environment with `print = Builtin(lambda x: (print(x), x)[1])`.
 
-5. **Implement a pretty-printer** that converts an AST back to Mini source code. This is an `Unparser` visitor — the inverse of the parser. Use it to verify your parser: `parse(unparse(parse(src)))` should equal `parse(src)` for well-formed programs.
+5. **Implement a pretty-printer** that converts an AST back to Mini source code. This is an `Unparser` visitor, the inverse of the parser. Use it to verify your parser: `parse(unparse(parse(src)))` should equal `parse(src)` for well-formed programs.
 
 ---
 
@@ -761,15 +761,15 @@ match xs with
 
 - Nystrom, Robert. *Crafting Interpreters* (free online). The Lox interpreter follows this exact arc; Chapters 4-11 correspond to the stages above.
 - Krishnamurthi, Shriram. *Programming Languages: Application and Interpretation* (PLAI) (free online). Chapters 1-8 cover the same interpreter with formal semantics.
-- Abelson and Sussman. *Structure and Interpretation of Computer Programs* (SICP) (free online). Chapter 4 builds a metacircular evaluator in Scheme — an interpreter written in the language it interprets.
+- Abelson and Sussman. *Structure and Interpretation of Computer Programs* (SICP) (free online). Chapter 4 builds a metacircular evaluator in Scheme, an interpreter written in the language it interprets.
 
 ---
 
-# Advanced: A Metacircular Scheme Evaluator — Scheme in Python
+# Advanced: A Metacircular Scheme Evaluator, Scheme in Python
 
-This advanced section deepens the same lexer -> parser -> environment -> evaluator architecture you built for Mini above, and it backs Direction G of the Functional assignment (contributing to mal — Make-a-Lisp) for students heading that way.
+This advanced section deepens the same lexer -> parser -> environment -> evaluator architecture you built for Mini above, and it backs Direction G of the Functional assignment (contributing to mal: Make-a-Lisp) for students heading that way.
 
-An interpreter written in the very language it interprets sounds like a paradox, but it is actually one of the most clarifying ideas in computer science — it proves that the language's evaluation rules are self-consistent and complete. Think of it like a dictionary that defines every word using other words in the same dictionary: the circularity is a feature, not a bug, because it shows the system is closed. Building this evaluator in Python forces every semantic choice to become explicit code, revealing the machinery that the Mini interpreter you just built already contains.
+An interpreter written in the very language it interprets sounds like a paradox, but it is actually one of the most clarifying ideas in computer science: it proves that the language's evaluation rules are self-consistent and complete. Think of it like a dictionary that defines every word using other words in the same dictionary: the circularity is a feature, not a bug, because it shows the system is closed. Building this evaluator in Python forces every semantic choice to become explicit code, revealing the machinery that the Mini interpreter you just built already contains.
 
 ## Learning Goals
 
@@ -787,9 +787,9 @@ By the end of this section, you will be able to:
 >
 > If any of these feel shaky, review them first.
 
-> **"To understand the evaluator is to understand computation."** — SICP
+> **"To understand the evaluator is to understand computation."**, SICP
 
-A **metacircular evaluator** is an interpreter for a language written in (or very close to) that language itself. In SICP Chapter 4, Abelson and Sussman build a Scheme interpreter *in Scheme*, revealing that the evaluation rules almost write themselves — because the host language and the implemented language share the same underlying ideas. Here, we build a Scheme interpreter in Python. Python is close enough that the translation is direct; different enough that we must make every semantic choice explicit.
+A **metacircular evaluator** is an interpreter for a language written in (or very close to) that language itself. In SICP Chapter 4, Abelson and Sussman build a Scheme interpreter *in Scheme*, revealing that the evaluation rules almost write themselves, because the host language and the implemented language share the same underlying ideas. Here, we build a Scheme interpreter in Python. Python is close enough that the translation is direct; different enough that we must make every semantic choice explicit.
 
 You have just built a Mini-language interpreter in this tutorial. That experience carries over completely. The arc of this section: **Scheme code as data (s-expressions)** -> **the environment model** -> **the evaluator dispatch loop** -> **the global environment** -> **tail-call optimization via trampoline**.
 
@@ -799,17 +799,17 @@ By the end you will have a working evaluator that can run recursive Scheme progr
 
 ---
 
-## Part I: S-Expressions — Code as Data
+## Part I: S-Expressions, Code as Data
 
 ### Model 1: S-Expressions
 
-In most languages, source code is text and data is something else entirely. Scheme collapses this distinction: a program is a list, and lists are data. This means a Scheme program can construct and run another Scheme program using the same `car`, `cdr`, and `cons` operations it uses on ordinary lists. Before you can build the evaluator, you need to be comfortable reading nested Python lists as Scheme programs — the translation table in this model is your Rosetta Stone.
+In most languages, source code is text and data is something else entirely. Scheme collapses this distinction: a program is a list, and lists are data. This means a Scheme program can construct and run another Scheme program using the same `car`, `cdr`, and `cons` operations it uses on ordinary lists. Before you can build the evaluator, you need to be comfortable reading nested Python lists as Scheme programs; the translation table in this model is your Rosetta Stone.
 
 > **Watch out!** In our representation, Scheme symbols (like variable names `x`, `y`, operator names `+`) and Scheme strings (like `"hello"`) are both Python `str` values. The evaluator distinguishes them by context: a string that starts with `"` is a literal; anything else is a symbol to look up. This is a shortcut that would not work in a production system, but it simplifies the parser significantly.
 
 Scheme's defining design choice: **program text and data share the same representation.** Every Scheme expression is an *s-expression* (symbolic expression): either an **atom** (number, boolean, string, or symbol) or a **pair** `(head . tail)`, where tail is usually another pair, recursively, giving a list. The surface syntax `(op arg1 arg2 ...)` is just a printed list.
 
-This is not a curiosity — it is what makes Scheme's macros, `eval`, and `quote` work: a program can construct and execute another program using the same list operations it uses on ordinary data.
+This is not a curiosity; it is what makes Scheme's macros, `eval`, and `quote` work: a program can construct and execute another program using the same list operations it uses on ordinary data.
 
 #### Mapping Scheme to Python
 
@@ -824,7 +824,7 @@ For our interpreter we represent s-expressions as nested Python lists of atoms. 
 | `(let ((x 5)) (+ x 1))` | `['let', [['x', 5]], ['+', 'x', 1]]` |
 | `'foo` | `['quote', 'foo']` |
 
-Atoms map to: Python `int`/`float`, `bool`, `str` (for Scheme strings), or Python `str` (for Scheme symbols — we distinguish symbol from string by context).
+Atoms map to: Python `int`/`float`, `bool`, `str` (for Scheme strings), or Python `str` (for Scheme symbols; we distinguish symbol from string by context).
 
 #### The Parser
 
@@ -901,7 +901,7 @@ for src in examples:
 
 ---
 
-#### Questions to Consider — Model 1
+#### Questions to Consider, Model 1
 
 **Question 1.** What Python type represents a Scheme pair/list in our encoding? What Python type represents a Scheme symbol? How does the evaluator distinguish a symbol `"x"` (which should be looked up) from a Scheme string `"hello"` (which is a literal value)?
 
@@ -915,7 +915,7 @@ for src in examples:
 
 ### Model 2: The Environment as a Linked Chain of Frames
 
-Scoping rules determine which variable binding wins when the same name exists in multiple contexts. Lexical scoping — the rule Scheme and Python both use — answers "which binding?" by looking at where the code was written, not where it was called. The linked chain of frames implements this: each frame holds the bindings introduced at one scope level, and the `outer` pointer to the enclosing scope forms the lookup chain. This structure is the heart of closures.
+Scoping rules determine which variable binding wins when the same name exists in multiple contexts. Lexical scoping (the rule Scheme and Python both use) answers "which binding?" by looking at where the code was written, not where it was called. The linked chain of frames implements this: each frame holds the bindings introduced at one scope level, and the `outer` pointer to the enclosing scope forms the lookup chain. This structure is the heart of closures.
 
 An **environment** in our interpreter is a dictionary that may have a pointer to an **outer** (enclosing) environment. Variable lookup walks the chain until the name is found or the outermost frame is exhausted.
 
@@ -974,7 +974,7 @@ When the body `(+ x y)` is evaluated in the call frame, `x` resolves immediately
 
 ---
 
-#### Questions to Consider — Model 2
+#### Questions to Consider, Model 2
 
 **Question 4.** What happens when `find` reaches the outermost environment (where `outer is None`) and the variable still has not been found? Write the exact exception that would be raised for `(+ x undefined-var)`.
 
@@ -994,11 +994,11 @@ Draw the frames that exist when `(+ x y)` is being evaluated. Label every `outer
 
 ## Part III: The Evaluator Core
 
-### Model 3: `scheme_eval` — Dispatch on Form
+### Model 3: `scheme_eval`, Dispatch on Form
 
-The entire evaluator fits in one function because every Scheme expression falls into one of three categories: a self-evaluating atom (numbers, booleans), a symbol to look up, or a list. Lists are further divided into special forms (keywords like `if`, `define`, `lambda` that have their own evaluation rules) and procedure calls. This dispatch-on-shape pattern is the same pattern you used in the Mini evaluator above — seeing it made explicit here should feel familiar.
+The entire evaluator fits in one function because every Scheme expression falls into one of three categories: a self-evaluating atom (numbers, booleans), a symbol to look up, or a list. Lists are further divided into special forms (keywords like `if`, `define`, `lambda` that have their own evaluation rules) and procedure calls. This dispatch-on-shape pattern is the same pattern you used in the Mini evaluator above; seeing it made explicit here should feel familiar.
 
-> **Watch out!** In Scheme, only `#f` (the boolean false) is falsy. Everything else — including `0`, the empty list, and the empty string — is truthy. The line `branch = x[2] if test is not False else ...` implements this rule. Students frequently miss this and write `if not test`, which would treat `0` as false and produce wrong results for numeric conditions.
+> **Watch out!** In Scheme, only `#f` (the boolean false) is falsy. Everything else (including `0`, the empty list, and the empty string) is truthy. The line `branch = x[2] if test is not False else ...` implements this rule. Students frequently miss this and write `if not test`, which would treat `0` as false and produce wrong results for numeric conditions.
 
 The evaluator is a single function that **dispatches** on the type and shape of the expression. Atoms evaluate to themselves or to their binding. Lists beginning with a keyword are **special forms** handled directly. Any other list is a **procedure call**.
 
@@ -1042,7 +1042,7 @@ class Procedure:
     def __init__(self, params, body, env):
         self.params = params
         self.body   = body
-        self.env    = env           # lexical environment — the closure
+        self.env    = env           # lexical environment - the closure
 
     def __call__(self, args):
         """Create a new frame on the *defining* environment, then evaluate body."""
@@ -1232,7 +1232,7 @@ for src in tests:
 
 ---
 
-#### Questions to Consider — Model 3
+#### Questions to Consider, Model 3
 
 **Question 7.** Why does `define` store into `env` directly with `env[x[1]] = ...` while `set!` uses `env.find(x[1])[x[1]] = ...`? What would happen if `set!` used `env[x[1]] = ...` instead? Give a concrete example where the behavior would differ.
 
@@ -1255,9 +1255,9 @@ Does this work in our evaluator? Trace through why `fact` is visible inside its 
 
 ## Part IV: The Global Environment
 
-### Model 4: `make_global_env` — The Built-In World
+### Model 4: `make_global_env`, The Built-In World
 
-Every language has a layer of operations that the interpreter cannot define in terms of itself — the bedrock primitives. In Scheme these are things like `+`, `cons`, `car`, and `display`. In our interpreter they are Python lambdas sitting in the global environment frame. Everything else the user writes builds on top of this layer, which is why getting the primitive set right matters: it is the entire foundation.
+Every language has a layer of operations that the interpreter cannot define in terms of itself: the bedrock primitives. In Scheme these are things like `+`, `cons`, `car`, and `display`. In our interpreter they are Python lambdas sitting in the global environment frame. Everything else the user writes builds on top of this layer, which is why getting the primitive set right matters: it is the entire foundation.
 
 The global environment pre-loads all the primitive operations. In real Scheme these are implemented in a low-level language for speed; in our interpreter they are just Python lambdas.
 
@@ -1344,7 +1344,7 @@ def scheme_list_to_python(pair):
     return result
 
 # --- Test the global environment ---
-# (Re-define tokenizer, parser, Env, Procedure, scheme_eval here — abbreviated)
+# (Re-define tokenizer, parser, Env, Procedure, scheme_eval here - abbreviated)
 import re
 
 class SchemeError(Exception): pass
@@ -1456,7 +1456,7 @@ print("(list 1 2 3 4) as Python:", scheme_list_to_python(lst))
 
 ---
 
-#### Questions to Consider — Model 4
+#### Questions to Consider, Model 4
 
 **Question 10.** Our `cons` returns a Python 2-tuple `(head, tail)`, not a Python list. This means `(list 1 2 3)` produces `(1, (2, (3, None)))`. Name two operations from Model 3 that would break if we used Python lists instead of tuples for pairs. Why would the `null?` check fail?
 
@@ -1466,11 +1466,11 @@ print("(list 1 2 3 4) as Python:", scheme_list_to_python(lst))
 
 ### Model 5: The Stack Overflow Problem and the Trampoline
 
-A properly tail-recursive Scheme program should run in constant stack space — that is the Scheme specification's guarantee. But our Python evaluator grows a Python stack frame for every recursive `scheme_eval` call, even when the Scheme call is in tail position. The trampoline fixes this without changing Python's runtime: instead of recursing, tail calls return a "do this next" object (a `Thunk`), and a top-level loop bounces on those thunks until a real value appears. It converts recursion into iteration by making "what to do next" explicit.
+A properly tail-recursive Scheme program should run in constant stack space; that is the Scheme specification's guarantee. But our Python evaluator grows a Python stack frame for every recursive `scheme_eval` call, even when the Scheme call is in tail position. The trampoline fixes this without changing Python's runtime: instead of recursing, tail calls return a "do this next" object (a `Thunk`), and a top-level loop bounces on those thunks until a real value appears. It converts recursion into iteration by making "what to do next" explicit.
 
 > **Watch out!** The TCO evaluator uses a `while True` loop with `continue` for self-tail-calls. This is only an optimization for calls where the current function calls itself. Calls to a *different* procedure still need to update `x` and `env` and `continue` the loop, which is what the `Procedure call` branch does. Missing the `continue` after updating `env` and `x` would send execution to the bottom of the loop body instead of restarting from the top.
 
-Python has a default recursion limit of about 1000 frames. A naive Scheme-in-Python evaluator will hit this limit when evaluating deeply recursive Scheme programs — even if the Scheme program is *tail recursive* and should need no stack at all.
+Python has a default recursion limit of about 1000 frames. A naive Scheme-in-Python evaluator will hit this limit when evaluating deeply recursive Scheme programs, even if the Scheme program is *tail recursive* and should need no stack at all.
 
 Consider:
 
@@ -1502,7 +1502,7 @@ def trampoline(val):
     return val
 
 # In scheme_eval_tco we return Thunk objects at tail positions.
-# Here is the key part of the TCO evaluator — only the changed branches shown:
+# Here is the key part of the TCO evaluator - only the changed branches shown:
 
 def scheme_eval_tco(x, env):
     """
@@ -1524,7 +1524,7 @@ def scheme_eval_tco(x, env):
         if head == 'quote':
             return x[1]
 
-        # (if ...) — only the taken branch is a tail position
+        # (if ...) - only the taken branch is a tail position
         if head == 'if':
             test = trampoline(scheme_eval_tco(x[1], env))
             branch = x[2] if test is not False else (x[3] if len(x) > 3 else False)
@@ -1546,7 +1546,7 @@ def scheme_eval_tco(x, env):
             body = x[2] if len(x)==3 else ['begin']+x[2:]
             return ProcedureTCO(x[1], body, env)
 
-        # (begin ...) — last expression is in tail position
+        # (begin ...) - last expression is in tail position
         if head == 'begin':
             for expr in x[1:-1]:
                 trampoline(scheme_eval_tco(expr, env))
@@ -1660,7 +1660,7 @@ print("sum 0..1000 =>", run(prog2 + "(sum-iter 1000 0)"))
 
 ---
 
-#### Questions to Consider — Model 5
+#### Questions to Consider, Model 5
 
 **Question 11.** In the expression `(if test then-branch else-branch)`, which sub-expressions are in **tail position** and which are not? Justify your answer by explaining what computation (if any) must happen *after* that sub-expression returns.
 
@@ -1820,9 +1820,9 @@ Without `define`, a lambda cannot refer to itself by name. The **Y combinator** 
 
 Answer these questions in your course notebook after completing this section.
 
-**Reflection 1.** The word "metacircular" implies the evaluator is defined in terms of itself. Our evaluator is written in Python, not Scheme — so in what sense is it still "metacircular"? What would it take to port our evaluator from Python into the Scheme subset our evaluator understands, and what would that accomplish?
+**Reflection 1.** The word "metacircular" implies the evaluator is defined in terms of itself. Our evaluator is written in Python, not Scheme; so in what sense is it still "metacircular"? What would it take to port our evaluator from Python into the Scheme subset our evaluator understands, and what would that accomplish?
 
-**Reflection 2.** The course's project assignments ask you to build and extend a language interpreter. Identify **three specific features** from this evaluator — the `Env` chain, `Procedure` as a closure, or TCO via trampoline — that map directly to something you will need in your own interpreter. For each, write one sentence explaining the connection.
+**Reflection 2.** The course's project assignments ask you to build and extend a language interpreter. Identify **three specific features** from this evaluator (the `Env` chain, `Procedure` as a closure, or TCO via trampoline) that map directly to something you will need in your own interpreter. For each, write one sentence explaining the connection.
 
 **Reflection 3.** Our evaluator has no type system: `(+ 1 "hello")` raises a Python `TypeError` that leaks through the abstraction boundary. Describe at minimum **two changes** you would make to add a static type system to this evaluator. Consider: where would type annotations appear in the s-expression representation? Where in `scheme_eval` would you insert a type-checking pass? What new data structure would represent a type error vs. a value?
 
@@ -1830,17 +1830,17 @@ Answer these questions in your course notebook after completing this section.
 
 ## Further Reading on Metacircular Evaluation
 
-- **Runnable example archive** — [SchemeInterpreter.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeInterpreter.zip): a complete reference implementation of this section's evaluator, worth exploring after you have worked through this section yourself.
+- **Runnable example archive**: [SchemeInterpreter.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeInterpreter.zip): a complete reference implementation of this section's evaluator, worth exploring after you have worked through this section yourself.
 
-- **SICP Chapter 4** — Abelson & Sussman, *Structure and Interpretation of Computer Programs*, 2nd ed. The original metacircular evaluator. MIT Press open access: [https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf)
+- **SICP Chapter 4**: Abelson & Sussman, *Structure and Interpretation of Computer Programs*, 2nd ed. The original metacircular evaluator. MIT Press open access: [https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf)
 
-- **"The Art of the Interpreter"** — Guy Steele & Gerald Sussman (1978). The foundational paper on meta-circular evaluation, environments, and the relationship between interpreters and compilers. [MIT AI Memo 452.](https://dspace.mit.edu/handle/1721.1/6094)
+- **"The Art of the Interpreter"**: Guy Steele & Gerald Sussman (1978). The foundational paper on meta-circular evaluation, environments, and the relationship between interpreters and compilers. [MIT AI Memo 452.](https://dspace.mit.edu/handle/1721.1/6094)
 
-- **Norvig's `lis.py`** — Peter Norvig's "How to Write a (Lisp) Interpreter in Python." Norvig's version is compact and elegant; ours extends it with TCO and a fuller special-form set. Search for "Norvig lis.py" to find his blog post.
+- **Norvig's `lis.py`**: Peter Norvig's "How to Write a (Lisp) Interpreter in Python." Norvig's version is compact and elegant; ours extends it with TCO and a fuller special-form set. Search for "Norvig lis.py" to find his blog post.
 
-- **R7RS Scheme specification** — The current small Scheme standard. Section 4 (Expressions) maps directly to our `scheme_eval` dispatch table. Available at [https://small.r7rs.org/](https://small.r7rs.org/).
+- **R7RS Scheme specification**: The current small Scheme standard. Section 4 (Expressions) maps directly to our `scheme_eval` dispatch table. Available at [https://small.r7rs.org/](https://small.r7rs.org/).
 
-- **"Proper Tail Recursion and Space Efficiency"** — Will Clinger (PLDI 1998). A careful treatment of what tail-call optimization guarantees and how to implement it correctly.
+- **"Proper Tail Recursion and Space Efficiency"**: Will Clinger (PLDI 1998). A careful treatment of what tail-call optimization guarantees and how to implement it correctly.
 
 # From the Closures Activity: Closures in Your Interpreter
 
@@ -1887,7 +1887,7 @@ class Closure:
     def __init__(self, params, body, env):
         self.params = params
         self.body   = body
-        self.env    = env   # THE CAPTURED ENVIRONMENT — static scope lives here
+        self.env    = env   # THE CAPTURED ENVIRONMENT - static scope lives here
 
 class ReturnSignal(Exception):
     def __init__(self, value): self.value = value
@@ -1917,13 +1917,13 @@ def eval_call(callee_val, arg_vals, evaluate_body, env):
 # -----------------------------------------------------------------------
 # STEP-BY-STEP TRACE: what happens when we define and call make_adder(5)
 #
-# Step 1 (DEFINITION — execute_fundef called):
+# Step 1 (DEFINITION - execute_fundef called):
 #   current env = global_env  { }
 #   closure = Closure(params=["n"], body=..., env=global_env)
 #   global_env.define("make_adder", closure)
 #   Result: global_env = { make_adder -> <Closure env=global_env> }
 #
-# Step 2 (CALL make_adder(5) — eval_call called):
+# Step 2 (CALL make_adder(5) - eval_call called):
 #   fn       = global_env.lookup("make_adder")  -> the Closure from Step 1
 #   arg_vals = [5]
 #   local    = Environment(parent=fn.env)        # parent = global_env (lexical!)
@@ -1943,7 +1943,7 @@ def eval_call(callee_val, arg_vals, evaluate_body, env):
 #   body evaluates x + n:
 #     call_env.lookup("x") -> 3 (found in call_env)
 #     call_env.lookup("n") -> not in call_env -> tries parent (local) -> 5
-#   return 3 + 5 = 8  ✓
+#   return 3 + 5 = 8  OK
 #
 # The key: Step 3 uses fn.env (local, where n=5) as parent, NOT the caller's env.
 # That single parent= choice IS lexical scope.
@@ -1974,7 +1974,7 @@ print(f"make_adder captured env has 'make_adder': {'make_adder' in ma.env._vars}
 
 ---
 
-For a function to call itself recursively, it must be able to look up its own name at the moment it runs. This is not automatic — it requires the function's name to be bound in the environment *before* the function body executes. Think of it like a business that must be registered with the government before it can issue contracts referencing itself. This model shows the precise ordering: bind the name first, then use the closure, so that recursive lookup through the captured environment succeeds.
+For a function to call itself recursively, it must be able to look up its own name at the moment it runs. This is not automatic; it requires the function's name to be bound in the environment *before* the function body executes. Think of it like a business that must be registered with the government before it can issue contracts referencing itself. This model shows the precise ordering: bind the name first, then use the closure, so that recursive lookup through the captured environment succeeds.
 
 ## Model 3: Closures Enable Recursion
 
@@ -2025,7 +2025,7 @@ print(f"fact(10) = {global_env.lookup('fact')(10)}")
 
 ---
 
-Every closure question becomes answerable the moment you draw the boxes. Here we take the classic **counter factory** — the "hello world" of stateful closures — and draw every environment box and arrow it creates, then verify the picture by peeking at Python's actual closure cells.
+Every closure question becomes answerable the moment you draw the boxes. Here we take the classic **counter factory** (the "hello world" of stateful closures) and draw every environment box and arrow it creates, then verify the picture by peeking at Python's actual closure cells.
 
 ## Model 4: The Counter Factory, Drawn as Environment Boxes
 
@@ -2048,7 +2048,7 @@ c1(); c1(); c2()
 Step by step:
 
 1. **Call #1 to `make_counter`** creates environment box **E1** (parent: global) holding `count = 0`.
-2. The `def increment` inside that call creates **closure A** = ⟨code of `increment`, E1⟩, which is returned and bound to `c1`. `make_counter` has returned, but E1 survives — closure A still points to it (lifetime follows reachability).
+2. The `def increment` inside that call creates **closure A** = ⟨code of `increment`, E1⟩, which is returned and bound to `c1`. `make_counter` has returned, but E1 survives: closure A still points to it (lifetime follows reachability).
 3. **Call #2** repeats the story with a *fresh* box **E2** and **closure B**, bound to `c2`.
 4. **`c1()`** creates a call frame whose parent is **E1** (the captured environment, not the caller's!). `nonlocal count` makes `count += 1` an *assignment into E1*: E1's count becomes 1. The second `c1()` makes it 2.
 5. **`c2()`** assigns into **E2**: its count becomes 1. E1 is untouched.
@@ -2096,13 +2096,13 @@ def make_counter():
 c1 = make_counter()
 c2 = make_counter()
 
-print(c1(), c1())     # 1 2  — both assignments land in E1
-print(c2())           # 1    — E2 is a separate box
+print(c1(), c1())     # 1 2  - both assignments land in E1
+print(c2())           # 1    - E2 is a separate box
 
 # Verify the boxes are real: Python exposes them as closure "cells"
 print("c1's captured count:", c1.__closure__[0].cell_contents)   # 2
 print("c2's captured count:", c2.__closure__[0].cell_contents)   # 1
-print("same box?", c1.__closure__[0] is c2.__closure__[0])       # False — E1 is not E2
+print("same box?", c1.__closure__[0] is c2.__closure__[0])       # False - E1 is not E2
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 

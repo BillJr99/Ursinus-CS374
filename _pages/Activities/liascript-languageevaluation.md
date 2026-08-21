@@ -77,9 +77,9 @@ print()
 for a, b in [(1, 2), (1.0, 2.0), ("a", "b"), ([1], [2])]:
     try:
         result = a + b
-        print(f"  {type(a).__name__} + {type(b).__name__} = {result!r}   ✓")
+        print(f"  {type(a).__name__} + {type(b).__name__} = {result!r}   OK")
     except TypeError as e:
-        print(f"  {type(a).__name__} + {type(b).__name__} -> TypeError: {e}  ✗")
+        print(f"  {type(a).__name__} + {type(b).__name__} -> TypeError: {e}  FAIL")
 
 print()
 
@@ -87,9 +87,9 @@ print()
 for a, b in [(3, 4), (3.0, 4.0), ("ha", 3), ([1, 2], 3), ([1, 2], [3, 4])]:
     try:
         result = a * b
-        print(f"  {type(a).__name__} * {type(b).__name__} = {result!r}   ✓")
+        print(f"  {type(a).__name__} * {type(b).__name__} = {result!r}   OK")
     except TypeError as e:
-        print(f"  {type(a).__name__} * {type(b).__name__} -> TypeError: {e}  ✗")
+        print(f"  {type(a).__name__} * {type(b).__name__} -> TypeError: {e}  FAIL")
 
 print()
 print("=== '==' Comparison Orthogonality ===")
@@ -106,23 +106,23 @@ print()
 print("=== Container + Operator Asymmetry ===")
 # sets use | for union, not +
 s1, s2 = {1, 2}, {2, 3}
-print(f"  set | set = {s1 | s2}   (union)  ✓")
+print(f"  set | set = {s1 | s2}   (union)  OK")
 try:
     _ = s1 + s2
 except TypeError as e:
-    print(f"  set + set -> TypeError: {e}  ✗")
+    print(f"  set + set -> TypeError: {e}  FAIL")
 
 # dicts: | works in Python 3.9+, + does not
 d1, d2 = {"a": 1}, {"b": 2}
 try:
     merged = d1 | d2
-    print(f"  dict | dict = {merged}  ✓")
+    print(f"  dict | dict = {merged}  OK")
 except TypeError as e:
-    print(f"  dict | dict -> TypeError: {e}  ✗")
+    print(f"  dict | dict -> TypeError: {e}  FAIL")
 try:
     _ = d1 + d2
 except TypeError as e:
-    print(f"  dict + dict -> TypeError: {e}  ✗")
+    print(f"  dict + dict -> TypeError: {e}  FAIL")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 

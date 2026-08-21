@@ -4,7 +4,7 @@ email:
 version:  0.0.1
 language: en
 narrator: US English Female
-comment:  From source to executable — the complete compile-link pipeline, ELF/EXE format, object files, and how interpreted languages differ.
+comment:  From source to executable) the complete compile-link pipeline, ELF/EXE format, object files, and how interpreted languages differ.
 import:   https://raw.githubusercontent.com/liaScript/mermaid_template/master/README.md
 link:     https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css
 -->
@@ -23,7 +23,7 @@ By the end of this tutorial, you will have:
 
 > **"Every program you run went through a pipeline you've never seen."**
 >
-> When you type `gcc hello.c -o hello`, a remarkable chain of tools transforms text into a binary that the operating system can map directly into memory and execute. This tutorial traces that chain step by step — from C source to ELF binary — and then contrasts it with how interpreted languages (Python, JavaScript) work instead.
+> When you type `gcc hello.c -o hello`, a remarkable chain of tools transforms text into a binary that the operating system can map directly into memory and execute. This tutorial traces that chain step by step - from C source to ELF binary - and then contrasts it with how interpreted languages (Python, JavaScript) work instead.
 
 ---
 
@@ -35,19 +35,19 @@ The complete pipeline from C source to running process:
 Source (.c)
     |
     v  C preprocessor (cpp)
-Preprocessed (.i)     — macros expanded, includes substituted
+Preprocessed (.i)     - macros expanded, includes substituted
     |
     v  C compiler (cc1)
-Assembly (.s)         — human-readable machine code mnemonics
+Assembly (.s)         - human-readable machine code mnemonics
     |
     v  Assembler (as)
-Object file (.o)      — machine code + symbol table + relocation records
+Object file (.o)      - machine code + symbol table + relocation records
     |
     v  Linker (ld)
-Executable (ELF/EXE)  — all objects combined, addresses resolved
+Executable (ELF/EXE); all objects combined, addresses resolved
     |
     v  OS loader
-Process               — loaded into virtual memory, started at entry point
+Process               - loaded into virtual memory, started at entry point
 ```
 
 ```bash
@@ -68,7 +68,7 @@ gcc hello.o -o hello           # link to executable
 
 ## Part 1: The Preprocessor
 
-The C preprocessor (`cpp`) handles `#include`, `#define`, `#ifdef`, and `#pragma` — it's a text substitution engine that runs *before* the compiler sees any code.
+The C preprocessor (`cpp`) handles `#include`, `#define`, `#ifdef`, and `#pragma`; it's a text substitution engine that runs *before* the compiler sees any code.
 
 ```c
 /* hello.c */
@@ -94,13 +94,13 @@ After preprocessing (`gcc -E hello.c`), `#include <stdio.h>` is replaced by thou
 | `#ifdef / #ifndef` | Conditional compilation |
 | `#pragma once` | Include guard (modern, portable alternative to `#ifndef HEADER_H_`) |
 
-**Why preprocessing matters for language design:** The C preprocessor is essentially a *macro system* at the text level — the same problem as unhygienic macros in Lisp. Languages that adopted later (Rust, D) replaced it with hygienic macro systems that operate on AST nodes instead of text.
+**Why preprocessing matters for language design:** The C preprocessor is essentially a *macro system* at the text level, the same problem as unhygienic macros in Lisp. Languages that adopted later (Rust, D) replaced it with hygienic macro systems that operate on AST nodes instead of text.
 
 ---
 
-## Part 2: Assembly — The Compiler's Output
+## Part 2: Assembly, The Compiler's Output
 
-The compiler transforms C into **assembly language** — human-readable mnemonics for machine instructions:
+The compiler transforms C into **assembly language**, human-readable mnemonics for machine instructions:
 
 ```c
 /* add.c */
@@ -109,7 +109,7 @@ int add(int a, int b) {
 }
 ```
 
-Compiles to (`gcc -S -O0 add.c -o add.s` — no optimization):
+Compiles to (`gcc -S -O0 add.c -o add.s`, no optimization):
 
 ```asm
 add:
@@ -156,13 +156,13 @@ High address
 Low address
 ```
 
-**Key insight:** The call stack you see in debuggers is this structure. When a function returns, `ret` pops the return address from the stack and jumps to it — this is why stack overflow crashes programs (the stack pointer goes past the stack's memory limit).
+**Key insight:** The call stack you see in debuggers is this structure. When a function returns, `ret` pops the return address from the stack and jumps to it; this is why stack overflow crashes programs (the stack pointer goes past the stack's memory limit).
 
 ---
 
 ## Part 3: Object Files and Symbol Tables
 
-The assembler converts assembly to **object files** (`.o`) — binary files containing machine code but with *unresolved references* (symbols).
+The assembler converts assembly to **object files** (`.o`), binary files containing machine code but with *unresolved references* (symbols).
 
 ```bash
 # Inspect an object file
@@ -188,7 +188,7 @@ An object file has multiple **sections**:
 ```
 Symbol table example for main.o that calls printf:
   T main       0x0000  (defined here, in .text at offset 0)
-  U printf     -----   (undefined — must be resolved by linker)
+  U printf     -----   (undefined - must be resolved by linker)
 ```
 
 **Relocation records** tell the linker "at byte offset X in .text, fill in the address of symbol Y":
@@ -202,7 +202,7 @@ Relocation:
 
 ---
 
-## Part 4: The Linker — Combining Object Files
+## Part 4: The Linker, Combining Object Files
 
 The **linker** (`ld`, usually invoked via `gcc`) takes multiple object files (and libraries) and produces an executable by:
 
@@ -243,7 +243,7 @@ ldd /bin/ls
 
 ## Part 5: The ELF Format (Linux/macOS Executable)
 
-**ELF** (Executable and Linkable Format) is the binary format used by Linux, macOS (Mach-O is similar), and most Unix systems. Windows uses **PE** (Portable Executable) format — structurally very similar.
+**ELF** (Executable and Linkable Format) is the binary format used by Linux, macOS (Mach-O is similar), and most Unix systems. Windows uses **PE** (Portable Executable) format, structurally very similar.
 
 ```
 ELF File Layout:
@@ -274,7 +274,7 @@ ELF File Layout:
 **Reading an ELF file:**
 
 ```bash
-# The "magic number" — all ELF files start with these 4 bytes:
+# The "magic number" - all ELF files start with these 4 bytes:
 xxd hello | head -1
 # 7f 45 4c 46  -> \x7f E L F
 
@@ -317,7 +317,7 @@ The C runtime (`crt0.o` / `crt1.o`) provides `_start`, which sets up argc/argv, 
 
 ---
 
-## Part 6: The OS Loader — From File to Process
+## Part 6: The OS Loader, From File to Process
 
 When you run `./hello`, the OS executes a **loader** (`execve` syscall on Linux) that:
 
@@ -333,7 +333,7 @@ When you run `./hello`, the OS executes a **loader** (`execve` syscall on Linux)
 **Virtual Memory Layout (typical Linux x86-64 process):**
 
 ```
-0xFFFFFFFFFFFFFFFF  (kernel space — not accessible from user mode)
+0xFFFFFFFFFFFFFFFF  (kernel space - not accessible from user mode)
 0x00007FFFFFFFFFFF  +
                     |  Stack (grows downward)
                     |  [argc, argv, environment variables]
@@ -368,7 +368,7 @@ cat /proc/$(pgrep hello)/maps
 
 ## Part 7: The PE/EXE Format (Windows)
 
-Windows executables use **PE** (Portable Executable) format — structurally similar to ELF but with different field names and conventions:
+Windows executables use **PE** (Portable Executable) format, structurally similar to ELF but with different field names and conventions:
 
 ```
 PE File Layout:
@@ -475,7 +475,7 @@ CPython bytecode output for `fib`:
 
 ```python  
 import sys
-print(sys.getsizeof(42))     # 28 bytes — not 4!
+print(sys.getsizeof(42))     # 28 bytes - not 4!
 print(sys.getsizeof(True))   # 28 bytes
 print(sys.getsizeof("hi"))   # 51 bytes
 # Python ints are Python objects with: refcount + type pointer + value
@@ -507,7 +507,7 @@ This is called **Just-In-Time (JIT) compilation**: start interpreted, profile wh
 Here is a minimal C program that illustrates the full pipeline:
 
 ```c
-/* mini_calc.c — compile with: gcc -O2 -o mini_calc mini_calc.c */
+/* mini_calc.c - compile with: gcc -O2 -o mini_calc mini_calc.c */
 #include <stdio.h>
 
 /* This function will be in .text */
@@ -560,8 +560,8 @@ size mini_calc
 Understanding why `#include` works the way it does:
 
 ```c
-/* math_utils.h — DECLARATION only (interface) */
-#ifndef MATH_UTILS_H    /* include guard — prevents double-inclusion */
+/* math_utils.h - DECLARATION only (interface) */
+#ifndef MATH_UTILS_H    /* include guard - prevents double-inclusion */
 #define MATH_UTILS_H
 
 int add(int a, int b);      /* function declaration */
@@ -570,7 +570,7 @@ typedef struct { int x, y; } Point;
 
 #endif
 
-/* math_utils.c — DEFINITION (implementation) */
+/* math_utils.c - DEFINITION (implementation) */
 #include "math_utils.h"
 
 int call_count = 0;         /* definition: reserves storage */
@@ -580,7 +580,7 @@ int add(int a, int b) {     /* definition: provides code */
     return a + b;
 }
 
-/* main.c — uses math_utils */
+/* main.c - uses math_utils */
 #include "math_utils.h"     /* paste the declarations */
 #include <stdio.h>
 
@@ -632,26 +632,26 @@ Process   (running in virtual address space)
 
 ## Exercises
 
-### Exercise 1 — Inspect Your Own Compiler (20 min)
+### Exercise 1: Inspect Your Own Compiler (20 min)
 
 Run `gcc -save-temps hello.c -o hello` on a simple C program. Examine each intermediate file: `.i`, `.s`, `.o`, and the final binary. Using `objdump -h hello.o`, identify which section contains each piece of data.
 
-### Exercise 2 — Symbol Hunt (15 min)
+### Exercise 2: Symbol Hunt (15 min)
 
 Write a C program with: one initialized global int, one uninitialized global int, one string literal, and one function. Predict which section each goes in. Verify with `nm` and `objdump -h`.
 
-### Exercise 3 — Linking Error Diagnosis (20 min)
+### Exercise 3: Linking Error Diagnosis (20 min)
 
 Create two `.c` files where one calls a function defined in the other. Compile each to `.o` separately, then:
 1. Try linking only one `.o` (observe the undefined reference error)
 2. Link both (should succeed)
 3. Add a second definition of the function in a third `.c` file and try linking all three (observe the multiple definition error)
 
-### Exercise 4 — Python Bytecode (15 min)
+### Exercise 4: Python Bytecode (15 min)
 
 Use `dis.dis()` to disassemble a Python function you've written. Identify: LOAD_FAST vs LOAD_GLOBAL, CALL_FUNCTION, and any JUMP instructions. Map each bytecode instruction back to a line of source code.
 
-### Exercise 5 — Compare Memory Sizes (15 min)
+### Exercise 5: Compare Memory Sizes (15 min)
 
 Write a C program that uses `sizeof` to print the size of `int`, `long`, `double`, `char*`, and a struct. Then write an equivalent Python program using `sys.getsizeof`. Why are the Python sizes so much larger? Explain in terms of Python's object model.
 
@@ -659,10 +659,10 @@ Write a C program that uses `sizeof` to print the size of `int`, `long`, `double
 
 ## Further Reading
 
-- **"Computer Systems: A Programmer's Perspective"** — Bryant & O'Hallaron: the canonical source on ELF, linking, and the memory system (Chapters 7-9)
-- **"Linkers and Loaders"** — John Levine (free online): deep dive into the linker
-- **ELF specification** — https://refspecs.linuxfoundation.org/elf/elf.pdf
-- **`man elf`** — the Linux manual page for the ELF format
-- **"Inside the Python Virtual Machine"** — free online: CPython bytecode in detail
-- **V8 blog** — https://v8.dev/blog: how JavaScript JIT compilation works
-- **`objdump`, `readelf`, `nm`, `ldd`** — the four essential binary analysis tools; try `man objdump`
+- **"Computer Systems: A Programmer's Perspective"**: Bryant & O'Hallaron: the canonical source on ELF, linking, and the memory system (Chapters 7-9)
+- **"Linkers and Loaders"**: John Levine (free online): deep dive into the linker
+- **ELF specification**: https://refspecs.linuxfoundation.org/elf/elf.pdf
+- **`man elf`**: the Linux manual page for the ELF format
+- **"Inside the Python Virtual Machine"**: free online: CPython bytecode in detail
+- **V8 blog**: https://v8.dev/blog: how JavaScript JIT compilation works
+- **`objdump`, `readelf`, `nm`, `ldd`**: the four essential binary analysis tools; try `man objdump`

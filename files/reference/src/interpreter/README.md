@@ -43,7 +43,7 @@ Interpreter().run(parse('let x = 2; print x * (x + 1);'))   # prints 6
    truthy. `while x { ... }` with numeric `x` works.
 2. **Short-circuit:** `and`/`or` return the deciding **operand value**
    (`0 or 7` is `7`); the right operand is never evaluated when the left
-   decides — the bomb test `let safe = true or (1 / 0);` passes. `not`
+   decides; the bomb test `let safe = true or (1 / 0);` passes. `not`
    always returns a boolean.
 3. **Arithmetic:** `+ - * /` require numbers; `+` also concatenates two
    strings (`"a" + 1` is a `LangTypeError` naming both types). `/` is true
