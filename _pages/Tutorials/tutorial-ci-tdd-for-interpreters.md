@@ -1098,17 +1098,17 @@ completed_so_far = 0
 for sprint, d in DATA.items():
     velocity = d["nodes_done"] / d["nodes_planned"] if d["nodes_planned"] else 0
     test_pct  = d["tests_passing"] / d["tests_total"] * 100 if d["tests_total"] else 0
-    bar_v     = "█" * d["nodes_done"] + "░" * (d["nodes_planned"] - d["nodes_done"])
-    bar_t     = "█" * (d["tests_passing"] // 2) + "░" * ((d["tests_total"] - d["tests_passing"]) // 2)
+    bar_v     = "#" * d["nodes_done"] + "." * (d["nodes_planned"] - d["nodes_done"])
+    bar_t     = "#" * (d["tests_passing"] // 2) + "." * ((d["tests_total"] - d["tests_passing"]) // 2)
 
-    print(f"── {sprint} ──────────────────────────────────")
+    print(f"-- {sprint} ----------------------------------")
     print(f"  Nodes:   [{bar_v}]  {d['nodes_done']}/{d['nodes_planned']} ({velocity*100:.0f}%)")
     print(f"  Tests:   [{bar_t}]  {d['tests_passing']}/{d['tests_total']} ({test_pct:.0f}%)")
     print(f"  Samples: {d['sample_programs_running']} running")
     if d["known_failures"]:
         print(f"  Known failures ({len(d['known_failures'])}):")
         for f in d["known_failures"]:
-            print(f"    • {f}")
+            print(f"    * {f}")
     else:
         print(f"  Known failures: none ✓")
     completed_so_far += d["nodes_done"]
@@ -1118,7 +1118,7 @@ remaining = TOTAL_NODES - completed_so_far
 last_velocity = DATA["Sprint 3"]["nodes_done"] / DATA["Sprint 3"]["nodes_planned"]
 sprints_needed = remaining / (last_velocity * DATA["Sprint 3"]["nodes_planned"]) if last_velocity > 0 else float("inf")
 
-print("── Projection ─────────────────────────────────────")
+print("-- Projection -------------------------------------")
 print(f"  Total nodes:        {TOTAL_NODES}")
 print(f"  Completed so far:   {completed_so_far}")
 print(f"  Remaining:          {remaining}")
@@ -1155,7 +1155,7 @@ The Evaluator's job is to write **failing tests** before the Builder writes the 
 # Demonstrate red-green testing: tests written first, implementation following.
 # Edit the 'implemented' set to simulate different sprint states.
 
-# ── Sprint State ──────────────────────────────────────────────────────────────
+# -- Sprint State --------------------------------------------------------------
 # Set each feature to True when it is implemented in your interpreter.
 IMPLEMENTED = {
     "NumLit":     True,
@@ -1175,7 +1175,7 @@ IMPLEMENTED = {
     "StringConcat": False, # "a" + "b"
 }
 
-# ── Test Registry ─────────────────────────────────────────────────────────────
+# -- Test Registry -------------------------------------------------------------
 # Each test: (description, required_feature, expected_output)
 TESTS = [
     ("Integer literal",          "NumLit",       "42"),
@@ -1201,7 +1201,7 @@ TESTS = [
     ("String concat 'a'+'b'",    "StringConcat", "ab"),
 ]
 
-# ── Run and Report ─────────────────────────────────────────────────────────────
+# -- Run and Report -------------------------------------------------------------
 passing = [t for t in TESTS if IMPLEMENTED.get(t[1], False)]
 failing = [t for t in TESTS if not IMPLEMENTED.get(t[1], False)]
 

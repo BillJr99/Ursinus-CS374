@@ -315,7 +315,7 @@ schedule:
   readings:
   - rtitle: "Reading Exercise / Discussion: attempt the Regular Expressions and Finite Automata exercises before class"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Participation/ReadingExercises"
-  - rtitle: "Allison, Ch. 3 §3.1–3.2: Regular Expressions and Their Equivalence to Finite Automata"
+  - rtitle: "Allison, Ch. 3 §3.1-3.2: Regular Expressions and Their Equivalence to Finite Automata"
   - rtitle: "Allison, Ch. 4: The Pumping Lemma — proving a language is not regular (required for the Regex assignment's Part 4 theory questions; we work one example in class today)"
   - rtitle: "The Shell for Language Development - the grep section, which puts today's patterns to work on your own source tree"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ShellForLanguageDev"
@@ -336,7 +336,7 @@ schedule:
     points: "15"
     rubricpath: "_pages/Assignments/lab-regexworkshop.md"
   readings:
-  - rtitle: "Allison, Ch. 2 §2.1–2.2: Deterministic and Non-Deterministic Finite Automata"
+  - rtitle: "Allison, Ch. 2 §2.1-2.2: Deterministic and Non-Deterministic Finite Automata"
   - rtitle: "Allison, Ch. 4 §4.2: Decision Algorithms (Is the Language Empty?)"
 - week: "4"
   date: "1"
@@ -437,7 +437,7 @@ schedule:
   readings:
   - rtitle: "Reading Exercise / Discussion: attempt the Tree-Walking Interpretation, Binding, and Scope exercises before class"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Participation/ReadingExercises"
-  - rtitle: "Allison, Ch. 6 §6.1–6.2: Context-Free Grammars, Derivation Trees, and Expression Trees"
+  - rtitle: "Allison, Ch. 6 §6.1-6.2: Context-Free Grammars, Derivation Trees, and Expression Trees"
   - rtitle: "Optional depth - tutorial: PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer and Parser assignments)"
     rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-ply-lexer-parser.md"
 - week: "9"

@@ -877,7 +877,7 @@ show("Standard precedence (left assoc)", PREC_STANDARD, tokens2)
 
 This model brings everything together into a working parser you can run. The mutual call chain `parse_expr -> parse_addsub -> parse_muldiv -> parse_unary -> parse_primary -> parse_expr` encodes the entire precedence hierarchy: a function only returns to its caller after fully resolving everything at the current or tighter tiers. Notice how parentheses are handled in `parse_primary` with a single call to `parse_expr` — that one line gives parentheses the power to override every precedence level.
 
-A self-contained recursive descent parser for `+`, `-`, `*`, `/` and parentheses. The mutual recursion `expr → addsub → muldiv → unary → primary → … → expr` gives precedence without any table.
+A self-contained recursive descent parser for `+`, `-`, `*`, `/` and parentheses. The mutual recursion `expr → addsub → muldiv → unary → primary → ... → expr` gives precedence without any table.
 
 ```python
 # Model 3: Complete recursive-descent expression parser (stand-alone)
@@ -1081,7 +1081,7 @@ def pratt_parse(src):
     except SyntaxError as e:
         return f"SyntaxError: {e}"
 
-# ── Recursive descent (same tokenizer) ──────────────────────────────────
+# -- Recursive descent (same tokenizer) ----------------------------------
 class RDParser:
     def __init__(self, src):
         self.tokens = tokenize(src); self.pos = 0

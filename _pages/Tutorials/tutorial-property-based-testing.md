@@ -90,7 +90,7 @@ exprs = st.recursive(
 )
 ```
 
-`max_leaves` bounds how big trees get. Start small (10–25) while developing; raise it once your code passes.
+`max_leaves` bounds how big trees get. Start small (10-25) while developing; raise it once your code passes.
 
 > **Tip:** if your node classes are frozen dataclasses with structural equality (the default for `@dataclass`), `ast1 == ast2` compares whole trees for you — which is exactly what the round-trip law needs.
 

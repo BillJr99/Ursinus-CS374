@@ -704,7 +704,7 @@ Purity forbids a function from leaving traces on the world — which makes it tr
 ## Further Reading
 
 - **"Why Functional Programming Matters"** — John Hughes (1990): the classic argument that *composition* is the point: https://www.cs.kent.ac.uk/people/staff/dat/miranda/whyfp90.pdf
-- **SICP Sections 1.1–1.3** — Abelson & Sussman: the functional core
+- **SICP Sections 1.1-1.3** — Abelson & Sussman: the functional core
 - **Python `functools` documentation**: `reduce`, `partial`, `lru_cache`
 - **Haskell Tour** — for seeing what pure FP looks like at full scale: https://www.haskell.org/tutorial/
 - **"Structure and Interpretation of Computer Programs"** — online at https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf

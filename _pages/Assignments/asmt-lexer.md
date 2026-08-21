@@ -30,7 +30,7 @@ info:
       progressing: peek and advance work correctly for most inputs, but edge cases fail — e.g., repeated peek calls return different tokens, or EOF is not handled gracefully
       proficient: The Lexer class implements peek, advance, and expect correctly — peek is idempotent, both return an EOF token at end of input, expect raises a located LexError on mismatch — demonstrating that the component is ready to be imported unchanged by the parser; the lexer has no side effects at import time
     - weight: 30
-      description: "Error Handling, Positions, and Test Suite (Goals 3–5: escape sequences, precise error positions, collect-all mode, and a fully tested deliverable)"
+      description: "Error Handling, Positions, and Test Suite (Goals 3-5: escape sequences, precise error positions, collect-all mode, and a fully tested deliverable)"
       preemerging: Lexical errors crash Python with an unhandled exception, positions are absent, and no test suite exists
       beginning: Errors are caught and reported, but positions are missing or incorrect, and the test suite covers only a handful of token types
       progressing: Errors include line and column, the test suite covers most token types, but error recovery (collect-all mode) is missing or incorrect, and escape sequences are not fully tested
@@ -54,7 +54,7 @@ This assignment turns the class tokenizer into a **component**: the first perman
 
 This is one assignment with one deliverable and one rubric, built in your choice of **direction**:
 
-- **Hand-rolled lexer (the core direction).** Build the Lexer yourself in Python atop `re`, exactly as scaffolded in Parts 1–3 below. This is the direction most students take, and it is the one the step-by-step scaffolding assumes.
+- **Hand-rolled lexer (the core direction).** Build the Lexer yourself in Python atop `re`, exactly as scaffolded in Parts 1-3 below. This is the direction most students take, and it is the one the step-by-step scaffolding assumes.
 - **Generator-toolchain lexer (Flex or PLY).** Build the same component with an industrial lexer generator — Flex (C) or PLY (Python) — the tools that produce the scanners inside major compilers. This direction substitutes the *vehicle* of Parts 1 and 2 (the `TOKEN_SPEC` list, the `tokenize` generator, and the hand-written class internals) with a generator specification; the interface contract, Part 3's error/position/test requirements, the deliverable structure, and the rubric all apply equivalently. See **[The Generator-Toolchain Direction](#the-generator-toolchain-direction-flex-or-ply)** below for the full mapping.
 
 Either way you submit a token specification, a working lexer component behind the `peek`/`advance`/`expect` contract, and positioned errors with a full test suite — graded on the same 30/40/30 rubric.
@@ -92,7 +92,7 @@ See the course schedule for the assigned and due dates. Your starting point is t
 | Checkpoint | You should have |
 |------------|----------------|
 | On assignment | `Token` dataclass and a six-rule `tokenize` generator working (grown from your mini lexer) |
-| Checkpoint 1 | Parts 1–2a: full `TOKEN_SPEC` passing all maximal-munch cases, and the core `Lexer` class with `peek`/`advance`/`expect` working |
+| Checkpoint 1 | Parts 1-2a: full `TOKEN_SPEC` passing all maximal-munch cases, and the core `Lexer` class with `peek`/`advance`/`expect` working |
 | Checkpoint 2 | Parts 2b–2c: string escapes and JSON configuration (both dialects) |
 | Due date | Part 3 error modes with precise positions and the full test suite complete; readme written; ZIP assembled and submitted |
 

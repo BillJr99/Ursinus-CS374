@@ -42,7 +42,7 @@ Reference: PLAI (Programming Languages: Application and Interpretation) Ch. 7
 > - Writing and calling Python functions, including lambda expressions
 > - Basic Python data structures (lists, dicts) and comprehensions
 > - The concept of *scope* — that a variable defined inside a function is not visible outside it
-> - Python's `dataclass` decorator (used in Models 4–5); a quick review: `@dataclass` auto-generates `__init__` from field annotations
+> - Python's `dataclass` decorator (used in Models 4-5); a quick review: `@dataclass` auto-generates `__init__` from field annotations
 >
 > You do **not** need prior exposure to Scheme or Haskell, though the tutorial will introduce small snippets of each. If you have never seen Scheme syntax before, note that `(f a b)` means "call function `f` with arguments `a` and `b`" — the function name comes first, inside the parentheses.
 
@@ -483,7 +483,7 @@ Write a test that demonstrates the difference — construct an expression where 
 
 ### Reflection Prompt
 
-In Python, `if` is a statement; in Haskell, `if` is an expression. What practical difference does this make when writing code? Write 3–4 sentences considering: where you can place an `if`, how it affects composability (e.g., can you use `if` inside a list comprehension, as a function argument, or inside another expression directly?), and whether you think expression-based `if` or statement-based `if` leads to clearer code in typical programming tasks.
+In Python, `if` is a statement; in Haskell, `if` is an expression. What practical difference does this make when writing code? Write 3-4 sentences considering: where you can place an `if`, how it affects composability (e.g., can you use `if` inside a list comprehension, as a function argument, or inside another expression directly?), and whether you think expression-based `if` or statement-based `if` leads to clearer code in typical programming tasks.
 
 ---
 
@@ -1011,7 +1011,7 @@ for idx, op in tc.source_map[:8]:
 #### 7. Further Reading
 
 - Nystrom, Robert. *Crafting Interpreters* (available free online). Part III covers bytecode compilation with a full stack machine (Clox); the code in this module is a simplified version of that approach.
-- Thain, Douglas. *Introduction to Compilers and Language Design*. Chapters 8–10 cover intermediate representations, code generation, and optimization in depth.
+- Thain, Douglas. *Introduction to Compilers and Language Design*. Chapters 8-10 cover intermediate representations, code generation, and optimization in depth.
 - Gamma, Erich et al. *Design Patterns* (Addison-Wesley, 1995). Chapter on the Visitor pattern — the pattern that makes the transpiler architecture here work cleanly.
 - Cooper, Keith and Linda Torczon. *Engineering a Compiler* (2nd ed., Morgan Kaufmann, 2011). The most complete modern treatment of code generation, register allocation, and optimization.
 - Pereira, Fernando and Jens Palsberg. "Register Allocation After Classical SSA Elimination is NP-Complete." *FoSSaCS*, 2005. A glimpse at why real compilers are hard, even after you have a correct code generator.

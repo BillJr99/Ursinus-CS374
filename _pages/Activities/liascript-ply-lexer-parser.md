@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Interactive Lexing and Parsing with PLY (Python Lex-Yacc)
 
-> **Note:** this activity’s code cells install PLY at runtime; in the browser CodeRunner this may fail without network access — download and run locally if cells error. This activity is a companion to the [Flex and Bison tutorial](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md).
+> **Note:** this activity's code cells install PLY at runtime; in the browser CodeRunner this may fail without network access — download and run locally if cells error. This activity is a companion to the [Flex and Bison tutorial](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md).
 
 PLY (Python Lex-Yacc) is Flex and Bison reimplemented in pure Python: you write the same declarative grammar rules and get the same LALR(1) parsing power, but without a C toolchain, a build step, or generated `.c` files to manage. Think of it as Flex/Bison with Python as the host language — the concepts translate one-to-one, and every rule you write here has a direct counterpart in a `.l` or `.y` file. That makes PLY ideal for rapid prototyping in this course: you can explore a grammar idea, run it instantly in the browser, and see the token stream or AST before committing to a full C-based toolchain.
 
@@ -50,7 +50,7 @@ By the end of this activity you will be able to:
 - Translate a Flex/Bison grammar to its PLY equivalent
 - Implement basic error recovery and diagnostics in a parser
 
-**How to use this activity.** Work in groups of 3–4. Read each Model carefully, run the code, observe the output, and then answer the Critical Thinking Questions (CTQs) before moving to the next Model. The Exercises at the end require you to write new code.
+**How to use this activity.** Work in groups of 3-4. Read each Model carefully, run the code, observe the output, and then answer the Critical Thinking Questions (CTQs) before moving to the next Model. The Exercises at the end require you to write new code.
 
 ---
 
@@ -235,7 +235,7 @@ Now that the lexer can produce tokens, you need a parser to enforce grammatical 
 
 A **parser** checks that a token stream conforms to a grammar and (optionally) computes a value or builds a data structure. PLY implements **LALR(1)** parsing — the same algorithm used inside GNU Bison.
 
-Each grammar rule is a Python function whose **docstring** is the production. The body sets `p[0]` (the left-hand side) from the indexed components `p[1]`, `p[2]`, … (the right-hand side symbols, left to right).
+Each grammar rule is a Python function whose **docstring** is the production. The body sets `p[0]` (the left-hand side) from the indexed components `p[1]`, `p[2]`, ... (the right-hand side symbols, left to right).
 
 **Operator precedence** is declared as a tuple of tuples. Earlier entries have *lower* precedence; later entries have *higher* precedence. This exactly mirrors the `%left` / `%right` / `%nonassoc` declarations in a Bison file.
 

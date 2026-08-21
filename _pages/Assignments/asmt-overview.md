@@ -73,7 +73,7 @@ Set up the course Docker container by following the [Development Environment tut
 2. Enter the container and run it **inside the container**: `python3 warmup_check.py`. Include the full transcript — the container prompt, `python3 --version`, and the script's banner output — in your submission.
 3. Complete Step 3 of Route B (editor/IDE) as written; VS Code with the Dev Containers extension, opened inside the course container, is the recommended answer and satisfies all three bullets.
 
-Route A students skip Steps 1–2 of Route B on the host: the tutorial's toolchain verification plus the in-container `warmup_check.py` transcript covers them.
+Route A students skip Steps 1-2 of Route B on the host: the tutorial's toolchain verification plus the in-container `warmup_check.py` transcript covers them.
 
 ### Route B: native install
 
@@ -206,7 +206,7 @@ Complete each step and capture the terminal output:
 
 ## Part 2: Language Autobiography
 
-The purpose of this section is to capture your relationship with programming languages at the start of the course, as a baseline you will revisit in your final report. Write approximately one page (400–600 words), addressing all four prompts below.
+The purpose of this section is to capture your relationship with programming languages at the start of the course, as a baseline you will revisit in your final report. Write approximately one page (400-600 words), addressing all four prompts below.
 
 **Prompt 1: Your language history.**
 List every programming language and formal notation you have used — count regex, SQL, spreadsheets, HTML, configuration languages, shell scripts. For each, write one sentence explaining what it was good at, from your perspective as a user. Do not worry about precision; candid impressions count more than textbook accuracy here.

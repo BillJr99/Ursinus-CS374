@@ -465,9 +465,9 @@ Here is the NFA for "ends in `ab`" (CTQ 2's machine, built the easy way — with
 
 ```
         a,b
-       ┌───┐
-       │   ▼
-   ──► (q0) ──a──► (q1) ──b──► ((q2))
+       +---+
+       |   v
+   --> (q0) --a--> (q1) --b--> ((q2))
 ```
 
 `q0` on `a` has **two** choices: stay in `q0` or move to `q1`. That is the nondeterminism. Subset construction removes it by making each DFA state a *set* of NFA states — "all the places the NFA could be right now."
@@ -491,27 +491,27 @@ Thompson's construction builds an NFA from a regex compositionally: every operat
 **1. Literals.** `a`, `b`, `c` are each a two-state fragment:
 
 ```
-   (1) ──a──► ((2))        (3) ──b──► ((4))        (5) ──c──► ((6))
+   (1) --a--> ((2))        (3) --b--> ((4))        (5) --c--> ((6))
 ```
 
 **2. Alternation `b|c`.** Add a new start and a new accept, with `ε` branches into each side and `ε` exits out:
 
 ```
               ε      b      ε
-        ┌──► (3) ────────► (4) ──┐
-   (7) ─┤                        ├──► ((8))
-        └──► (5) ────────► (6) ──┘
+        +--> (3) --------> (4) --+
+   (7) -+                        |--> ((8))
+        `--> (5) --------> (6) --+
               ε      c      ε
 ```
 
 **3. Star `(b|c)*`.** Wrap it: `ε` to skip entirely, and `ε` from the old accept back to the old start to repeat:
 
 ```
-                    ┌─────── ε ───────┐
-                    │                 │
-   (9) ──ε──► (7) ──┴─[ b|c ]─► (8) ──┴──ε──► ((10))
-    │                                            ▲
-    └──────────────── ε ─────────────────────────┘
+                    +------- ε -------+
+                    |                 |
+   (9) --ε--> (7) --+-[ b|c ]-> (8) --+--ε--> ((10))
+    |                                            ^
+    `---------------- ε -------------------------+
 ```
 
 The outer `ε` from `9` straight to `10` is what makes zero repetitions legal; the back edge from `8` to `7` is what makes many legal.
@@ -519,7 +519,7 @@ The outer `ε` from `9` straight to `10` is what makes zero repetitions legal; t
 **4. Concatenation `a` then `(b|c)*`.** Join with an `ε` from `a`'s accept to the star's start:
 
 ```
-   (1) ──a──► (2) ──ε──► (9) ──[ (b|c)* ]──► ((10))
+   (1) --a--> (2) --ε--> (9) --[ (b|c)* ]--> ((10))
 ```
 
 Ten states, and every one of them is forced — no creativity anywhere. That mechanical quality is the point: it is why a program can do this, which is exactly what `lab-automata.md` asks you to implement. Count the `ε` transitions and notice how many are pure bookkeeping; a real implementation usually removes them afterward with an ε-closure pass.

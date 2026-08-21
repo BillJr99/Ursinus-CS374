@@ -198,7 +198,7 @@ The string `if A then if B then other else other` has two trees: the `else` can 
 
 ---
 
-## Practice — Allison, Ch. 6 §6.1–6.2: Derivation Trees and Ambiguous Grammars
+## Practice — Allison, Ch. 6 §6.1-6.2: Derivation Trees and Ambiguous Grammars
 
 > *Exercises adapted from topics covered in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 

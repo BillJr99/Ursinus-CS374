@@ -77,16 +77,16 @@ NUM(1)  OP(+)  NUM(2)  OP(*)  NUM(3)
 
 ```
 expr
-└─ additive
-   ├─ multiplicative
-   │  └─ primary → NUM(1)
-   ├─ OP(+)
-   └─ additive
-      └─ multiplicative
-         ├─ primary → NUM(2)
-         ├─ OP(*)
-         └─ multiplicative
-            └─ primary → NUM(3)
+`- additive
+   |- multiplicative
+   |  `- primary → NUM(1)
+   |- OP(+)
+   `- additive
+      `- multiplicative
+         |- primary → NUM(2)
+         |- OP(*)
+         `- multiplicative
+            `- primary → NUM(3)
 ```
 The parse tree has 10+ nodes, most of them grammar scaffolding.
 
@@ -94,10 +94,10 @@ The parse tree has 10+ nodes, most of them grammar scaffolding.
 
 ```
 BinOp('+')
-├─ Num(1)
-└─ BinOp('*')
-   ├─ Num(2)
-   └─ Num(3)
+|- Num(1)
+`- BinOp('*')
+   |- Num(2)
+   `- Num(3)
 ```
 Only 5 nodes remain. The `*` is a child of `+`, which correctly encodes that multiplication binds tighter — `2 * 3` is evaluated first. No nonterminals, no parentheses, no grammar-level noise.
 

@@ -51,11 +51,11 @@ A DFA accepting binary strings with an **even number of 1s**:
 
 ```
             0                0
-          ┌───┐            ┌───┐
-          ▼   │            ▼   │
-   ──► ((even)) ──1──►  (odd)
-          ▲                 │
-          └───────1─────────┘
+          +---+            +---+
+          v   |            v   |
+   --> ((even)) --1-->  (odd)
+          ^                 |
+          `-------1---------+
 ```
 
 Two states suffice because the machine only needs to remember one bit: the parity so far.

@@ -355,7 +355,7 @@ for r in query(db, Compound("member", (Mx, lst(a("p"),a("q"),a("r")))), Mx):
 
 ### Reflection prompt (for the advanced section)
 
-Take 5–10 minutes individually to respond to the following prompt in your notebook:
+Take 5-10 minutes individually to respond to the following prompt in your notebook:
 
 > Logic programming inverts the usual programming model: instead of describing *how* to compute, you describe *what is true* and let the engine search. Choose one concept from today — unification, backtracking, bidirectionality, or the connection to type inference — and explain in your own words: (1) what makes it surprising or powerful, (2) a situation in your prior programming experience where this concept would have simplified your code, and (3) a limitation of logic programming that makes it unsuitable as a *general-purpose* language.
 

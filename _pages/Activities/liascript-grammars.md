@@ -18,7 +18,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 By the end of this activity, you will be able to:
 
-- Classify a grammar into its Chomsky hierarchy level (Type 0–3) by examining the shape of its productions and identifying the corresponding recognizing machine
+- Classify a grammar into its Chomsky hierarchy level (Type 0-3) by examining the shape of its productions and identifying the corresponding recognizing machine
 - Explain why programming language lexers use regular (Type 3) grammars and parsers use context-free (Type 2) grammars, citing the limitations of each class
 - Construct a context-free grammar for a given language and produce a derivation sequence for a specific target string
 - Demonstrate why certain languages (such as $a^n b^n c^n$) require a more powerful grammar class than context-free, by identifying what information no pushdown automaton can track

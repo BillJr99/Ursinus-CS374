@@ -578,7 +578,7 @@ for desc, term_str, expected in tests:
             result, steps = reduce_normal(term)
             print(f"  ✓ {desc}: {result} ({steps} steps)")
         else:
-            print(f"  ○ {desc}: (code test)")
+            print(f"  o {desc}: (code test)")
     except Exception as e:
         print(f"  ✗ {desc}: {e}")
 ```
@@ -629,7 +629,7 @@ By the end of this section, you will be able to:
 >
 > This section assumes you are comfortable with:
 >
-> - **Lambda calculus syntax and beta-reduction** — you can apply a lambda term to an argument step by step (Parts 1–4 of this tutorial)
+> - **Lambda calculus syntax and beta-reduction** — you can apply a lambda term to an argument step by step (Parts 1-4 of this tutorial)
 > - **Higher-order functions** — a function that takes another function as an argument and returns a function
 > - **Python lambdas** — `lambda n: n * 2` is a valid Python callable; you can nest lambdas and call them immediately
 > - **Named combinators (recommended but not required)** — familiarity with I, K, and the Church encodings from Part 5 helps
@@ -971,7 +971,7 @@ By the end of this section, you will be able to:
 > - **Currying** — you understand that `lambda a: lambda b: a` is a two-argument function written as two nested one-argument functions
 > - **Python lambdas** — `lambda x: x + 1` is valid Python and returns a callable
 >
-> If any of these feel shaky, review Parts 1–5 of this tutorial before continuing. Combinators are built directly on top of that material; every reduction rule here is just beta-reduction with no bound variables.
+> If any of these feel shaky, review Parts 1-5 of this tutorial before continuing. Combinators are built directly on top of that material; every reduction rule here is just beta-reduction with no bound variables.
 
 *"To every combination there corresponds a unique bird."* — Raymond Smullyan, *To Mock a Mockingbird* (1985)
 
@@ -998,7 +998,7 @@ Before diving into the rules, orient yourself: in the lambda calculus you had *v
 
 **Combinatory terms** are built from:
 
-- **Constants**: the combinators themselves (I, K, S, B, C, W, M, …)
+- **Constants**: the combinators themselves (I, K, S, B, C, W, M, ...)
 - **Application**: writing two terms next to each other, left-associative
 
 That is the entire syntax. There are no variables and no abstractions. A **reduction rule** for each combinator states how it consumes arguments from the right:

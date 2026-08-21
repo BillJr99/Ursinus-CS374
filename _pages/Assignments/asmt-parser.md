@@ -25,13 +25,13 @@ info:
       progressing: The grammar covers all constructs and is mostly unambiguous, but the precedence ladder is incomplete (e.g., comparison operators at the wrong level) or associativity is not explicit; most theory questions are answered but one trace or conflict explanation has a mechanical error
       proficient: The grammar is complete, unambiguous, and matches the implemented parser exactly — every precedence level is a separate non-terminal, associativity is enforced by structure, and the dangling-else resolution is stated explicitly — and the parsing theory questions are answered correctly, with the shift-reduce and reduce-reduce conflicts explained in terms of stack actions, a correct hand-executed shift-reduce trace, and the left-recursion contrast stated — demonstrating mastery of formal language specification in both the top-down and bottom-up views
     - weight: 40
-      description: "Recursive Descent Parser (Goals 2–3: implement a recursive descent parser with the full precedence ladder and correct associativity)"
+      description: "Recursive Descent Parser (Goals 2-3: implement a recursive descent parser with the full precedence ladder and correct associativity)"
       preemerging: The parser fails to run or fails most provided programs due to major structural errors
       beginning: The parser runs but fails on several test programs — e.g., it cannot parse nested constructs, or associativity is wrong at one or more tiers
       progressing: The parser passes the provided test programs but fails on edge cases — e.g., it right-associates `and`/`or` instead of left-associating as the grammar specifies, or it crashes on certain valid inputs
       proficient: A correct parser passes all provided and hidden test programs with correct precedence and associativity at every tier; parenthesized subexpressions, nested blocks, and if-else chains parse correctly; and the parser is built by importing the Lexer unchanged — demonstrating that Goals 2 and 3 are met end-to-end
     - weight: 30
-      description: "AST Design, Tooling, and Error Reporting (Goals 4–5: produce a dataclass AST with pretty-printer/unparser, and report errors with positions)"
+      description: "AST Design, Tooling, and Error Reporting (Goals 4-5: produce a dataclass AST with pretty-printer/unparser, and report errors with positions)"
       preemerging: No AST node classes exist, or the tree structure does not reflect the program's meaning
       beginning: Node classes exist but the pretty-printer or unparser is missing, or error messages lack positions
       progressing: Node classes, pretty-printer, and unparser work for most constructs; errors include positions; but the round-trip property is verified only on fixed examples, not with a property-based generator
@@ -66,7 +66,7 @@ This assignment builds the second permanent component of your pipeline: a parser
 
 This is one assignment with one deliverable shape — a formal EBNF grammar, a working parser, and AST tooling with positioned errors — built in your choice of **direction**:
 
-- **Recursive descent (the core direction).** Hand-write the parser tier by tier atop your Lexer, exactly as scaffolded in Parts 1–3 below. This is the direction the step-by-step scaffolding assumes, and the component it produces is imported unchanged by the Interpreter assignment.
+- **Recursive descent (the core direction).** Hand-write the parser tier by tier atop your Lexer, exactly as scaffolded in Parts 1-3 below. This is the direction the step-by-step scaffolding assumes, and the component it produces is imported unchanged by the Interpreter assignment.
 - **Generator toolchain (Bison or PLY).** Write the same grammar as a Bison `.y` file (or PLY `yacc` module) with semantic actions that build the AST, letting the LALR machinery replace the hand-written ladder. See **[Direction A](#direction-a-generator-toolchain-bison-or-ply)**.
 - **Mini-Notation music parser.** Parse a real live-coding pattern notation — the mini-notation shared by TidalCycles and Strudel — into an AST, and give it meaning as timed events validated against the production reference at strudel.cc. See **[Direction B](#direction-b-the-mini-notation-music-parser)**. This is the Parser stop on the [music and live-coding path]({{ site.baseurl }}/Projects/TeamLanguage#the-music-and-live-coding-path).
 
@@ -448,7 +448,7 @@ In this direction you parse a production language: the **mini-notation** shared 
 
 Do **not** transcribe Strudel's own parser; derive the grammar and semantics yourself, then use Strudel strictly as an *oracle* to test against.
 
-> **Scope note.** Direction B is the most ambitious direction of the three — budget roughly 25–35 hours end to end — and it is recommended mainly for students planning the music direction of the team project. A **reduced-scope variant earns full credit**: B.2 (SLOW and DEGRADE) and B.3 (alternation `<a b c>`, with its displayed equation) are required; B.4 (Euclidean rhythms) and B.5 (polymeter) become optional extensions beyond full credit. If you take the reduced scope, say so in your readme and build your B.6 validation table from the features you implemented.
+> **Scope note.** Direction B is the most ambitious direction of the three — budget roughly 25-35 hours end to end — and it is recommended mainly for students planning the music direction of the team project. A **reduced-scope variant earns full credit**: B.2 (SLOW and DEGRADE) and B.3 (alternation `<a b c>`, with its displayed equation) are required; B.4 (Euclidean rhythms) and B.5 (polymeter) become optional extensions beyond full credit. If you take the reduced scope, say so in your readme and build your B.6 validation table from the features you implemented.
 
 **B.1 — Grammar first (Part 1 equivalent).** Write the complete EBNF grammar for your extended mini-notation — sequences, rests, groups, `*`, `/`, `?`, plus the three constructs below — with one sentence per non-terminal explaining its placement. The grammar must remain conflict-free LALR(1); your readme cites specific states from the `.output` automaton to show where each new construct lives.
 
@@ -460,7 +460,7 @@ $$
 \mathcal{E}[\![\, \texttt{ALT}(c_1, \ldots, c_k) \,]\!](t_0, t_1, c) \;=\; \mathcal{E}[\![\, c_{(c \bmod k) + 1} \,]\!](t_0, t_1, c)
 $$
 
-Add `LANGLE`/`RANGLE` tokens, an `atom` production, an `N_ALT` node, and the evaluator case. Transcript: `bd <sn cp hh>` across cycles 0–3, demonstrating rotation and wraparound. If you introduce a conflict along the way, keep the broken `.output` excerpt — diagnosing it is worth describing in your readme.
+Add `LANGLE`/`RANGLE` tokens, an `atom` production, an `N_ALT` node, and the evaluator case. Transcript: `bd <sn cp hh>` across cycles 0-3, demonstrating rotation and wraparound. If you introduce a conflict along the way, keep the broken `.output` excerpt — diagnosing it is worth describing in your readme.
 
 **B.4 — Euclidean rhythms.** `bd(3,8)` distributes $$k = 3$$ onsets as evenly as possible among $$n = 8$$ steps — Toussaint showed these onset sets reproduce rhythm timelines from musical traditions worldwide ($$E(3,8)$$ is the Cuban tresillo). An onset occurs at step $$i$$ exactly when
 
@@ -470,7 +470,7 @@ $$
 
 Verify the rule by hand for $$E(3,8)$$ (steps 0, 3, 6 → `x..x..x.`) and one other $$(k, n)$$ pair before implementing, and include the hand-verification in your readme with a two-or-three-sentence argument for why the rule yields exactly $$k$$ onsets. Syntactically, Euclid is a postfix modifier among the `term` productions: `term LPAREN NUMBER COMMA NUMBER RPAREN`. Transcripts: `bd(3,8)` and `bd(5,8)`, each matching its hand-computed onset set.
 
-**B.5 — Polymeter.** `{a b, c d e}` runs its subsequences simultaneously at a common step rate, so different lengths drift and realign; `{a b, c d e}%4` fixes four steps per cycle. **Specify the semantics yourself, precisely, in displayed-equation style before writing code** — the specification is a graded artifact, and discovering your first draft was ambiguous is an intended outcome. Use strudel.cc to interrogate the corner cases (what happens on cycle 1? which subsequence sets the default step count?). Add the brace/comma/percent tokens, the productions, an `N_POLY` node, and your specification's evaluator case. Transcript: `{bd sn, hh hh hh}` across cycles 0–2, annotated to show drift and realignment.
+**B.5 — Polymeter.** `{a b, c d e}` runs its subsequences simultaneously at a common step rate, so different lengths drift and realign; `{a b, c d e}%4` fixes four steps per cycle. **Specify the semantics yourself, precisely, in displayed-equation style before writing code** — the specification is a graded artifact, and discovering your first draft was ambiguous is an intended outcome. Use strudel.cc to interrogate the corner cases (what happens on cycle 1? which subsequence sets the default step count?). Add the brace/comma/percent tokens, the productions, an `N_POLY` node, and your specification's evaluator case. Transcript: `{bd sn, hh hh hh}` across cycles 0-2, annotated to show drift and realignment.
 
 **B.6 — Validation against the reference (Part 3 equivalent).** In place of the unparser and round-trip verification, deliver a tree printer (the pretty-printer requirement, unchanged), location-prefixed parse errors, and a **validation table** of at least eight patterns collectively exercising every feature — including at least two that nest new constructs inside one another (`<bd(3,8) sn>`, `{bd <sn cp>, hh*2}`). For each pattern, record your evaluator's event list against the spans Strudel highlights at strudel.cc, and investigate every discrepancy to a conclusion: grammar difference, semantic difference, or bug (yours or, occasionally and delightfully, theirs).
 

@@ -102,7 +102,7 @@ FEEDBACK = [
     ("Instructor",  "risk",     "SEMANTICS.md says null returns default-value, but the code raises"),
 ]
 
-# ── Triage rules ──────────────────────────────────────────────────────────────
+# -- Triage rules --------------------------------------------------------------
 # Each "risk" and "question" becomes a backlog item.
 # Classify into: FIX (blocks demo), DISCLOSE (acknowledged, out of scope), FUTURE
 

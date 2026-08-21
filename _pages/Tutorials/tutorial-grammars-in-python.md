@@ -204,7 +204,7 @@ report("Balanced parentheses", grammar_bp)
 > - **Step 2:** At each step, write which production rule you used (e.g., `E -> T E'`).
 > - **Step 3:** In one sentence, explain what `E' -> + T E' | ε` accomplishes compared to `E -> E + T | T`. Focus on where the recursion sits (first position vs. last position).
 
-> **CTQ 4.15** The detector only finds *direct* left recursion (A → A…). Indirect left recursion would require A → B… and B → A….
+> **CTQ 4.15** The detector only finds *direct* left recursion (A → A...). Indirect left recursion would require A → B... and B → A....
 >
 > - **Step 1:** Write a small example grammar with indirect left recursion between two nonterminals `A` and `B`. Show the two production rules that create the cycle.
 > - **Step 2:** Trace what a recursive descent parser does when it tries to parse a string under your indirect grammar. Where does the infinite loop occur?
@@ -393,7 +393,7 @@ def expand(form, grammar, leftmost=True):
         import traceback; traceback.print_exc()
 
 def show_derivation(start, grammar, label):
-    print(f"── {label} derivation from {start} ──")
+    print(f"-- {label} derivation from {start} --")
     form = [start]
     print("  " + " ".join(form))
     for step in expand(form, grammar, leftmost=(label=="Leftmost")):
@@ -541,11 +541,11 @@ def evaluate(t):
 
 # String: 2 + 3 * 4
 
-# ── Ambiguous grammar: could group either way ──────────────────────────
+# -- Ambiguous grammar: could group either way --------------------------
 ambig_tree_A = node("+", leaf(2), node("*", leaf(3), leaf(4)))  # correct
 ambig_tree_B = node("*", node("+", leaf(2), leaf(3)), leaf(4))  # also valid under naive grammar
 
-# ── Unambiguous (layered) grammar: only one tree possible ──────────────
+# -- Unambiguous (layered) grammar: only one tree possible --------------
 # E -> E + T | T    T -> T * F | F    F -> num
 unambig_tree = node("+", leaf(2), node("*", leaf(3), leaf(4)))
 

@@ -759,8 +759,8 @@ match xs with
 
 ## Further Reading
 
-- Nystrom, Robert. *Crafting Interpreters* (free online). The Lox interpreter follows this exact arc; Chapters 4–11 correspond to the stages above.
-- Krishnamurthi, Shriram. *Programming Languages: Application and Interpretation* (PLAI) (free online). Chapters 1–8 cover the same interpreter with formal semantics.
+- Nystrom, Robert. *Crafting Interpreters* (free online). The Lox interpreter follows this exact arc; Chapters 4-11 correspond to the stages above.
+- Krishnamurthi, Shriram. *Programming Languages: Application and Interpretation* (PLAI) (free online). Chapters 1-8 cover the same interpreter with formal semantics.
 - Abelson and Sussman. *Structure and Interpretation of Computer Programs* (SICP) (free online). Chapter 4 builds a metacircular evaluator in Scheme — an interpreter written in the language it interprets.
 
 ---

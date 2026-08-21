@@ -23,7 +23,7 @@ By the end of this tutorial, you will have:
 
 > **Tutorial Goal:** By the end of this tutorial, you will have built a fully working interpreter for the Mini programming language — complete with variables, functions, closures, recursion, and a REPL. Each phase builds directly on the previous one, so follow them in order.
 >
-> **Time estimate:** 8–12 hours total (all 10 phases)
+> **Time estimate:** 8-12 hours total (all 10 phases)
 >
 > **Prerequisites:** Python 3.10+, familiarity with Python classes and recursion
 
@@ -2013,7 +2013,7 @@ The cell below walks through a feature checklist and emits a starter grammar in 
 # Grammar v0 feature checklist + EBNF skeleton generator.
 # Edit the feature flags to match your team's decisions, then run.
 
-# ── Feature flags ─────────────────────────────────────────────────────────────
+# -- Feature flags -------------------------------------------------------------
 FEATURES = {
     # Core (required)
     "variables":        True,   # let x = expr
@@ -2041,7 +2041,7 @@ FEATURES = {
     "_niche_desc":      "3d6 → roll 3 six-sided dice and sum",
 }
 
-# ── EBNF skeleton builder ─────────────────────────────────────────────────────
+# -- EBNF skeleton builder -----------------------------------------------------
 
 def emit_grammar(f):
     lines = [

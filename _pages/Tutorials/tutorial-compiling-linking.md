@@ -33,20 +33,20 @@ The complete pipeline from C source to running process:
 
 ```
 Source (.c)
-    │
-    ▼  C preprocessor (cpp)
+    |
+    v  C preprocessor (cpp)
 Preprocessed (.i)     — macros expanded, includes substituted
-    │
-    ▼  C compiler (cc1)
+    |
+    v  C compiler (cc1)
 Assembly (.s)         — human-readable machine code mnemonics
-    │
-    ▼  Assembler (as)
+    |
+    v  Assembler (as)
 Object file (.o)      — machine code + symbol table + relocation records
-    │
-    ▼  Linker (ld)
+    |
+    v  Linker (ld)
 Executable (ELF/EXE)  — all objects combined, addresses resolved
-    │
-    ▼  OS loader
+    |
+    v  OS loader
 Process               — loaded into virtual memory, started at entry point
 ```
 
@@ -142,17 +142,17 @@ add:
 
 ```
 High address
-┌─────────────────────┐
-│   caller's frame    │  ← RBP (after prologue)
-├─────────────────────┤
-│  return address     │  ← pushed by CALL instruction
-├─────────────────────┤  ← RBP points here (our frame)
-│  saved RBP          │  ← pushed by push %rbp
-├─────────────────────┤
-│  local variable a   │  ← -4(%rbp)
-├─────────────────────┤
-│  local variable b   │  ← -8(%rbp)
-└─────────────────────┘  ← RSP (stack pointer)
++---------------------+
+|   caller's frame    |  ← RBP (after prologue)
+|---------------------+
+|  return address     |  ← pushed by CALL instruction
+|---------------------+  ← RBP points here (our frame)
+|  saved RBP          |  ← pushed by push %rbp
+|---------------------+
+|  local variable a   |  ← -4(%rbp)
+|---------------------+
+|  local variable b   |  ← -8(%rbp)
+`---------------------+  ← RSP (stack pointer)
 Low address
 ```
 
@@ -247,28 +247,28 @@ ldd /bin/ls
 
 ```
 ELF File Layout:
-┌─────────────────────────────────┐
-│  ELF Header (64 bytes)          │  magic number, arch, entry point address
-├─────────────────────────────────┤
-│  Program Header Table           │  describes segments (for OS loader)
-│   LOAD segment 1: .text .rodata │  read+execute, maps to virtual address
-│   LOAD segment 2: .data .bss    │  read+write
-│   DYNAMIC segment               │  dynamic linking info
-├─────────────────────────────────┤
-│  .text section                  │  machine code
-├─────────────────────────────────┤
-│  .rodata section                │  string literals, const data
-├─────────────────────────────────┤
-│  .data section                  │  initialized globals
-├─────────────────────────────────┤
-│  .bss section                   │  (just a size; zero-filled at load)
-├─────────────────────────────────┤
-│  .symtab / .strtab              │  symbol table (stripped in release)
-├─────────────────────────────────┤
-│  .debug_info, .debug_line       │  DWARF debug info (if -g was used)
-├─────────────────────────────────┤
-│  Section Header Table           │  metadata about each section
-└─────────────────────────────────┘
++---------------------------------+
+|  ELF Header (64 bytes)          |  magic number, arch, entry point address
+|---------------------------------+
+|  Program Header Table           |  describes segments (for OS loader)
+|   LOAD segment 1: .text .rodata |  read+execute, maps to virtual address
+|   LOAD segment 2: .data .bss    |  read+write
+|   DYNAMIC segment               |  dynamic linking info
+|---------------------------------+
+|  .text section                  |  machine code
+|---------------------------------+
+|  .rodata section                |  string literals, const data
+|---------------------------------+
+|  .data section                  |  initialized globals
+|---------------------------------+
+|  .bss section                   |  (just a size; zero-filled at load)
+|---------------------------------+
+|  .symtab / .strtab              |  symbol table (stripped in release)
+|---------------------------------+
+|  .debug_info, .debug_line       |  DWARF debug info (if -g was used)
+|---------------------------------+
+|  Section Header Table           |  metadata about each section
+`---------------------------------+
 ```
 
 **Reading an ELF file:**
@@ -334,25 +334,25 @@ When you run `./hello`, the OS executes a **loader** (`execve` syscall on Linux)
 
 ```
 0xFFFFFFFFFFFFFFFF  (kernel space — not accessible from user mode)
-0x00007FFFFFFFFFFF  ┐
-                    │  Stack (grows downward)
-                    │  [argc, argv, environment variables]
-0x00007FFF_XXXX     ┘
+0x00007FFFFFFFFFFF  +
+                    |  Stack (grows downward)
+                    |  [argc, argv, environment variables]
+0x00007FFF_XXXX     +
                     
-0x00007F00_XXXX     ┐
-                    │  Shared libraries (.so files)
-                    │  libc.so, ld.so, etc.
-0x00007EFF_XXXX     ┘
+0x00007F00_XXXX     +
+                    |  Shared libraries (.so files)
+                    |  libc.so, ld.so, etc.
+0x00007EFF_XXXX     +
                     
-0x00600000          ┐
-0x00601000          │  .data (initialized globals, read-write)
-                    │  .bss  (zero-initialized globals)
-0x00602000          ┘
+0x00600000          +
+0x00601000          |  .data (initialized globals, read-write)
+                    |  .bss  (zero-initialized globals)
+0x00602000          +
                     
-0x00400000          ┐
-0x00401000          │  .text (code, read-only + executable)
-                    │  .rodata (string literals, read-only)
-0x00402000          ┘
+0x00400000          +
+0x00401000          |  .text (code, read-only + executable)
+                    |  .rodata (string literals, read-only)
+0x00402000          +
 ```
 
 ```bash
@@ -372,27 +372,27 @@ Windows executables use **PE** (Portable Executable) format — structurally sim
 
 ```
 PE File Layout:
-┌──────────────────────────────────┐
-│  DOS Header (64 bytes)           │  starts with "MZ" magic number
-│  DOS Stub ("This program cannot  │  tiny DOS program (prints error on DOS)
-│  be run in DOS mode")            │
-├──────────────────────────────────┤
-│  PE Header ("PE\0\0" signature)  │  COFF header + optional header
-│   Machine: IMAGE_FILE_MACHINE_   │  AMD64 or ARM64
-│   Sections: 5                    │
-│   Characteristics: EXECUTABLE    │
-├──────────────────────────────────┤
-│  Section Table                   │  metadata for each section
-├──────────────────────────────────┤
-│  .text                           │  machine code
-│  .rdata                          │  read-only data (const, imports)
-│  .data                           │  initialized globals
-│  .bss / (folded into .data)      │  zero-initialized globals
-│  .idata                          │  import directory (DLL imports)
-│  .edata                          │  export directory
-│  .rsrc                           │  resources (icons, strings, dialogs)
-│  .reloc                          │  base relocation table
-└──────────────────────────────────┘
++----------------------------------+
+|  DOS Header (64 bytes)           |  starts with "MZ" magic number
+|  DOS Stub ("This program cannot  |  tiny DOS program (prints error on DOS)
+|  be run in DOS mode")            |
+|----------------------------------+
+|  PE Header ("PE\0\0" signature)  |  COFF header + optional header
+|   Machine: IMAGE_FILE_MACHINE_   |  AMD64 or ARM64
+|   Sections: 5                    |
+|   Characteristics: EXECUTABLE    |
+|----------------------------------+
+|  Section Table                   |  metadata for each section
+|----------------------------------+
+|  .text                           |  machine code
+|  .rdata                          |  read-only data (const, imports)
+|  .data                           |  initialized globals
+|  .bss / (folded into .data)      |  zero-initialized globals
+|  .idata                          |  import directory (DLL imports)
+|  .edata                          |  export directory
+|  .rsrc                           |  resources (icons, strings, dialogs)
+|  .reloc                          |  base relocation table
+`----------------------------------+
 ```
 
 **Differences from ELF:**
@@ -417,14 +417,14 @@ When you run `python3 script.py`, no ELF is produced. Instead:
 
 ```
 script.py
-    │
-    ▼  Python lexer/parser
+    |
+    v  Python lexer/parser
 AST (Abstract Syntax Tree)
-    │
-    ▼  Python compiler (compile())
+    |
+    v  Python compiler (compile())
 Bytecode (.pyc)          ← cached in __pycache__/
-    │
-    ▼  CPython interpreter (ceval.c)
+    |
+    v  CPython interpreter (ceval.c)
 Values (Python objects)
 ```
 
@@ -487,18 +487,18 @@ V8 (Chrome/Node.js) goes further:
 
 ```
 JavaScript source
-    │
-    ▼  Parser
+    |
+    v  Parser
 AST
-    │
-    ▼  Ignition (bytecode interpreter)
+    |
+    v  Ignition (bytecode interpreter)
 Bytecode            ← runs initially
-    │
-    ▼  TurboFan (JIT compiler, when "hot")
+    |
+    v  TurboFan (JIT compiler, when "hot")
 Native machine code ← recompiles frequently-executed functions
 ```
 
-This is called **Just-In-Time (JIT) compilation**: start interpreted, profile which functions are hot, then compile those to native code. V8 can achieve 50–80% of C++ performance for some workloads.
+This is called **Just-In-Time (JIT) compilation**: start interpreted, profile which functions are hot, then compile those to native code. V8 can achieve 50-80% of C++ performance for some workloads.
 
 ---
 
@@ -609,20 +609,20 @@ gcc math_utils.o main.o -o program
 
 ```
 hello.c
-  │  #include → paste headers, expand #define
-  ▼
+  |  #include → paste headers, expand #define
+  v
 hello.i   (preprocessed source)
-  │  parse → AST → IR → code generation
-  ▼
+  |  parse → AST → IR → code generation
+  v
 hello.s   (x86-64 assembly)
-  │  assemble each instruction
-  ▼
+  |  assemble each instruction
+  v
 hello.o   (ELF object: .text .data .bss .symtab .rel.text)
-  │  merge sections, resolve symbols, fill relocations
-  ▼
+  |  merge sections, resolve symbols, fill relocations
+  v
 hello     (ELF executable: all sections, addresses assigned)
-  │  mmap segments into virtual memory, run _start
-  ▼
+  |  mmap segments into virtual memory, run _start
+  v
 Process   (running in virtual address space)
 ```
 

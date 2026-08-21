@@ -146,7 +146,7 @@ Write a `re.compile`d pattern for each, named as shown, with **at least three po
 - Match: `3`, `-3`, `+3.14`, `0.5`, `-0.001`
 - No match: `.5`, `3.`, `--3`, `3..14`, `abc`
 
-**P4 — `TIME_12H`:** A 12-hour clock time. Hour is 1–12. Minutes are optional but, if present, must be two digits. Meridiem (`AM` or `PM`) is required and separated by a space.
+**P4 — `TIME_12H`:** A 12-hour clock time. Hour is 1-12. Minutes are optional but, if present, must be two digits. Meridiem (`AM` or `PM`) is required and separated by a space.
 - Match: `8 AM`, `12:00 PM`, `1:30 AM`, `11:59 PM`
 - No match: `13:00 AM`, `0:00 AM`, `8:5 PM`, `8AM`, `8:00`
 
@@ -154,11 +154,11 @@ Write a `re.compile`d pattern for each, named as shown, with **at least three po
 - Match: `user@example.com`, `bill.j@ursinus.edu`, `x@y.z`
 - No match: `@example.com`, `user@`, `user@com`, `user @example.com`
 
-**P6 — `US_PHONE`:** A US phone number in the format `(NXX) NXX-XXXX` where N is 2–9.
+**P6 — `US_PHONE`:** A US phone number in the format `(NXX) NXX-XXXX` where N is 2-9.
 - Match: `(215) 555-1234`, `(800) 123-4567`
 - No match: `215-555-1234`, `(015) 555-1234`, `(215)555-1234`
 
-**P7 — `ISO_DATE`:** An ISO 8601 date `YYYY-MM-DD`. Month 01–12, day 01–31 (exact day-of-month validation is beyond regex — just validate the format and ranges).
+**P7 — `ISO_DATE`:** An ISO 8601 date `YYYY-MM-DD`. Month 01-12, day 01-31 (exact day-of-month validation is beyond regex — just validate the format and ranges).
 - Match: `2026-09-18`, `2000-01-01`, `1999-12-31`
 - No match: `26-09-18`, `2026-9-18`, `2026-13-01`, `2026-00-15`
 
@@ -166,7 +166,7 @@ Write a `re.compile`d pattern for each, named as shown, with **at least three po
 - Match: `#fff`, `#FFF`, `#1a2b3c`, `#ABC`
 - No match: `#gg1122`, `fff`, `#1234`, `#12345g`
 
-**P9 — `IPV4_ADDRESS`:** An IPv4 address: four groups of 1–3 digits separated by dots. (Exact 0–255 range validation is encouraged but not required — validate format and that each octet is 1–3 digits.)
+**P9 — `IPV4_ADDRESS`:** An IPv4 address: four groups of 1-3 digits separated by dots. (Exact 0-255 range validation is encouraged but not required — validate format and that each octet is 1-3 digits.)
 - Match: `192.168.1.1`, `10.0.0.0`, `255.255.255.255`, `0.0.0.0`
 - No match: `192.168.1`, `192.168.1.1.1`, `abc.def.ghi.jkl`
 

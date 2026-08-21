@@ -791,4 +791,4 @@ Here is the minimal complete HM inferencer that handles the Mini language's expr
 - Damas, Luis and Milner, Robin. "Principal Type-Schemes for Functional Programs" (POPL 1982). The original HM paper — 9 pages, completely readable.
 - Cardelli, Luca. "Basic Polymorphic Typechecking" (1987, free online). A tutorial implementation much like this one, in Pascal.
 - The Tree-Walking Interpreter assignment's static-typing direction (https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Interpreter): apply this tutorial to your language's AST.
-- Pierce, Benjamin C. *Types and Programming Languages*, Chapters 22–23. The rigorous treatment.
+- Pierce, Benjamin C. *Types and Programming Languages*, Chapters 22-23. The rigorous treatment.

@@ -339,7 +339,7 @@ import time
 
 T = TypeVar('T')
 
-# ── Type annotations ────────────────────────────────────────────────────────
+# -- Type annotations --------------------------------------------------------
 # Annotations do not change runtime behavior in Python, but they document
 # intent and enable type-checker tools (mypy, pyright) to catch errors early.
 
@@ -375,7 +375,7 @@ tokens = tokenize("2 + foo * 3")
 print("Tokenize result:", tokens)
 print()
 
-# ── Generators ───────────────────────────────────────────────────────────────
+# -- Generators ---------------------------------------------------------------
 # A generator function uses 'yield' instead of 'return'.
 # It produces values lazily — only when the caller asks for the next one.
 # This is ideal for token streams: no need to materialise the whole list.
@@ -425,7 +425,7 @@ def take(n: int, it) -> List:
 print("First 5 integers from 10:", take(5, integers_from(10)))
 print()
 
-# ── Context managers ─────────────────────────────────────────────────────────
+# -- Context managers ---------------------------------------------------------
 # 'with' guarantees cleanup (the __exit__ method) even if an exception occurs.
 # @contextmanager lets you write a generator-based context manager.
 

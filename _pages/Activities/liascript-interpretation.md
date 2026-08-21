@@ -93,7 +93,7 @@ This is the complete evaluator. Every line is consequential. Read it, trace it, 
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
-# ─── AST Node Definitions ───────────────────────────────────────────────────
+# --- AST Node Definitions ---------------------------------------------------
 @dataclass
 class Num:
     value: float
@@ -113,7 +113,7 @@ class BinOp:
     left: Any
     right: Any
 
-# ─── The Evaluator ──────────────────────────────────────────────────────────
+# --- The Evaluator ----------------------------------------------------------
 def evaluate(node, env):
     if isinstance(node, Num):
         return node.value
@@ -138,7 +138,7 @@ def evaluate(node, env):
         raise ValueError(f"unknown operator {node.op!r}")
     raise TypeError(f"cannot evaluate {node!r}")
 
-# ─── Test ────────────────────────────────────────────────────────────────────
+# --- Test --------------------------------------------------------------------
 env = {"price": 5.0, "qty": 3}
 
 # 3 + price * 2   (tree encodes precedence: * is deeper)
@@ -161,13 +161,13 @@ Suppose the AST is `BinOp("+", Num(1), BinOp("*", Num(2), Num(3)))` and `env = {
 
 ```
 evaluate( BinOp("+", Num(1), BinOp("*", Num(2), Num(3))), env )
-  │ It's a BinOp("+"), so evaluate children first (post-order):
-  ├─ evaluate( Num(1), env )
-  │    It's a Num → return 1                              ← left = 1
-  └─ evaluate( BinOp("*", Num(2), Num(3)), env )
-       │ It's a BinOp("*"), evaluate children:
-       ├─ evaluate( Num(2), env ) → return 2             ← left = 2
-       └─ evaluate( Num(3), env ) → return 3             ← right = 3
+  | It's a BinOp("+"), so evaluate children first (post-order):
+  |- evaluate( Num(1), env )
+  |    It's a Num → return 1                              ← left = 1
+  `- evaluate( BinOp("*", Num(2), Num(3)), env )
+       | It's a BinOp("*"), evaluate children:
+       |- evaluate( Num(2), env ) → return 2             ← left = 2
+       `- evaluate( Num(3), env ) → return 3             ← right = 3
        2 * 3 = 6 → return 6                              ← right = 6
   1 + 6 = 7 → return 7
 ```

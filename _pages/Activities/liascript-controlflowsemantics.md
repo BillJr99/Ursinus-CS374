@@ -452,7 +452,7 @@ In a tree-walking interpreter, executing the program's `while` loop one million 
 from dataclasses import dataclass, field
 from typing import Any, List, Optional
 
-# ─── AST nodes ────────────────────────────────────────────────────────────────
+# --- AST nodes ----------------------------------------------------------------
 @dataclass
 class Num:     value: float
 @dataclass
@@ -470,7 +470,7 @@ class If:      cond: Any; then_: Any; else_: Any = None
 @dataclass
 class While:   cond: Any; body: Any
 
-# ─── Evaluator ────────────────────────────────────────────────────────────────
+# --- Evaluator ----------------------------------------------------------------
 def evaluate(node, env):
     if isinstance(node, Num):   return node.value
     if isinstance(node, Var):
@@ -488,7 +488,7 @@ def truthy(val):
     if isinstance(val, (int, float)): return val != 0
     return val is not None
 
-# ─── Executor ────────────────────────────────────────────────────────────────
+# --- Executor ----------------------------------------------------------------
 def execute(stmt, env):
     if isinstance(stmt, Assign):
         env[stmt.name] = evaluate(stmt.expr, env)
@@ -509,7 +509,7 @@ def execute(stmt, env):
     else:
         raise TypeError(f"unknown stmt node: {stmt!r}")
 
-# ─── Test: n = 5; total = 0; while n > 0: total += n; n -= 1; print total ───
+# --- Test: n = 5; total = 0; while n > 0: total += n; n -= 1; print total ---
 env = {}
 program = Block([
     Assign("n",     Num(5)),
@@ -603,7 +603,7 @@ def evaluate(node, env):
         L, R = evaluate(node.left, env), evaluate(node.right, env)
         return {"+": L+R, "-": L-R, "*": L*R, "/": L/R}[node.op]
 
-# ─── Simulate a REPL session ────────────────────────────────────────────────
+# --- Simulate a REPL session ------------------------------------------------
 env = {}
 repl_input = [
     "x = 10",

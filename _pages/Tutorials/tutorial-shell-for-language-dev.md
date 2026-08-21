@@ -534,7 +534,7 @@ The engine walks left to right, and each group records the *span* of text it con
 ```
 2026-09-18 08:10:22 WARN disk usage 91%
 0.........1.........2.........3........
-└──date──┘ └─time─┘ └lv┘ └─────msg────┘
+`--date--+ `-time-+ `lv+ `-----msg----+
 ```
 
 | Group | Sub-pattern | Text captured | Span (start, end) |

@@ -123,7 +123,7 @@ x.foo();                  // tsc: no error — 'any' silences the check
 
 > **Intuition:** Imagine hiring for a job. A nominal hiring process checks your official job title on your resume — if it doesn't say "Senior Engineer," you don't qualify, even if you can do everything the role requires. A structural hiring process checks your skills — if you can write code, debug systems, and design architecture, you qualify, regardless of what your title says. Nominal typing is the first process; structural typing is the second. Python's duck typing takes this to the extreme: it doesn't even check at hire time, it just tries the work and fails if you can't do it.
 
-The axes in Sections 1–2 concern *when* and *how strictly* types are checked. A separate design question is how the type system decides whether one type is *compatible* with another: two classes that have the same methods but no shared parent — should a function that accepts one also accept the other? Two philosophies govern the answer:
+The axes in Sections 1-2 concern *when* and *how strictly* types are checked. A separate design question is how the type system decides whether one type is *compatible* with another: two classes that have the same methods but no shared parent — should a function that accepts one also accept the other? Two philosophies govern the answer:
 
 **Nominal typing** — compatibility is determined by *name* (and explicit declaration).
 

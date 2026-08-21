@@ -84,7 +84,7 @@ Run `python simulator.py 0110` (accept) and `python simulator.py 101` (reject), 
 
 ### Suggested Pacing
 
-This lab is handed out once the class sessions on regular expressions and finite automata are behind you; see the course schedule for the assigned and due dates. One focused session with your partner covers Parts 1–2; the paper constructions fit in a second short sitting:
+This lab is handed out once the class sessions on regular expressions and finite automata are behind you; see the course schedule for the assigned and due dates. One focused session with your partner covers Parts 1-2; the paper constructions fit in a second short sitting:
 
 | Checkpoint | You should have |
 |------------|----------------|

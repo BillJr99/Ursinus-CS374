@@ -606,7 +606,7 @@ If an optimizer replaces the first with the second (constant folding), how much 
 
 - Gabriel Lebec, "Lambda as JS, or A Flock of Functions" — https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript — a direct visual preview of the lambda-calculus unit; Church encodings in JavaScript with beautiful diagrams.
 
-- *Types and Programming Languages* (Pierce) — the graduate-level type theory text; Chapters 3–10 align with this course's type-systems unit. Challenging but rewarding.
+- *Types and Programming Languages* (Pierce) — the graduate-level type theory text; Chapters 3-10 align with this course's type-systems unit. Challenging but rewarding.
 
 - Peter Norvig, "Lispy" — a Scheme interpreter in Python in 90 lines: http://norvig.com/lispy.html — if you finish the exercises early, read this; it is a compressed version of the entire second half of this course.
 

@@ -87,7 +87,7 @@ print b;                 # line P2
 
 ## Model 1 Code Cell: The Paper Machine, Executed
 
-Run this cell to confirm your paper-machine answers from questions 1–4.
+Run this cell to confirm your paper-machine answers from questions 1-4.
 
 **This cell contains the canonical `Environment` class — the one complete build in this activity.** Later models extend or exercise this same class rather than re-printing it; keep it handy to paste into the later code cells.
 

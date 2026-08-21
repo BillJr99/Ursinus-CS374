@@ -26,7 +26,7 @@ info:
       progressing: All required node types are defined with correct fields and a useful __repr__, but source-position information is missing from most nodes
       proficient: All required node types are defined as dataclasses with every field documented and source-position (line/col) stored where it aids error reporting — demonstrating Goal 1 by providing a complete, parser-consistent node hierarchy with a visitor dispatch table or isinstance chain ready for the evaluator
     - weight: 30
-      description: "Tree-Walking Evaluator (Goals 2–3: implement a tree-walking evaluator with strong dynamic typing and an Environment class for nested scopes)"
+      description: "Tree-Walking Evaluator (Goals 2-3: implement a tree-walking evaluator with strong dynamic typing and an Environment class for nested scopes)"
       preemerging: The evaluator fails to run or fails most provided programs due to major structural errors such as missing cases or infinite loops
       beginning: The evaluator runs but fails on several programs — e.g., nested scopes leak, type errors are not raised, or short-circuit logic evaluates both branches always
       progressing: The evaluator passes the provided programs but fails on hidden edge cases — e.g., a scope is not discarded after a block, or division by zero crashes Python instead of raising a language error
@@ -416,7 +416,7 @@ Every rejection is reported as `Type error at line L, col C: ...`, naming both c
 
 ## Part 5: Making the Semantics Precise (15 points) — Choose Your Direction
 
-Parts 1–4 give your language a working evaluator and a static checking stage. Part 5 makes its semantics *precise*, in your choice of **direction** — one Part 5, one deliverable, the same 15-point rubric row applied equivalently:
+Parts 1-4 give your language a working evaluator and a static checking stage. Part 5 makes its semantics *precise*, in your choice of **direction** — one Part 5, one deliverable, the same 15-point rubric row applied equivalently:
 
 - **Staged dynamic errors and SEMANTICS.md (the core direction).** Build the language-level error hierarchy and document every semantic rule, as scaffolded in Steps 5a–5c below.
 - **Full type inference (Hindley-Milner).** Grow Part 4's annotation checker into whole-program *inference* that deduces types with no annotations at all, the way Haskell, OCaml, and Rust do. This direction substitutes Steps 5b and 5c (SEMANTICS.md and the differential programs) with the inference engine described in the **[typing direction](#part-5-direction-full-type-inference-hindley-milner)** section; Step 5a's error hierarchy is still required, since lexical, syntax, and name errors still need staged reporting. The total remains 100 points.

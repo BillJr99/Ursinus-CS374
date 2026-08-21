@@ -504,15 +504,15 @@ Add `%option debug` to your flex file and set the environment variable `FLEXDBG=
 
 ```
 mylan/
-├── Makefile
-├── lexer.l      (Flex)
-├── parser.y     (Bison)
-├── ast.h
-├── ast.c
-├── eval.c
-├── symtable.h
-├── symtable.c
-└── main.c       (optional: if main is not in parser.y)
+|-- Makefile
+|-- lexer.l      (Flex)
+|-- parser.y     (Bison)
+|-- ast.h
+|-- ast.c
+|-- eval.c
+|-- symtable.h
+|-- symtable.c
+`-- main.c       (optional: if main is not in parser.y)
 ```
 
 ```makefile

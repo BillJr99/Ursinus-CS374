@@ -46,7 +46,7 @@ If Docker cannot run on your machine at all, skip to **Step 9: The Native Fallba
 
 Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop/) for macOS or Windows, or [Docker Engine](https://docs.docker.com/engine/install/) on Linux. Accept the defaults.
 
-**Disk note:** Docker Desktop plus the course image needs roughly **3–5 GB** of free disk. If your laptop is tight on space, clear room first — a half-downloaded image is the most confusing failure mode in this tutorial.
+**Disk note:** Docker Desktop plus the course image needs roughly **3-5 GB** of free disk. If your laptop is tight on space, clear room first — a half-downloaded image is the most confusing failure mode in this tutorial.
 
 Start Docker Desktop (on Linux, ensure the daemon is running and your user is in the `docker` group), then verify from a terminal:
 

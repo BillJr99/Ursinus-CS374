@@ -425,9 +425,9 @@ Maximal munch means the lexer matches the longest possible token. For input `<=`
    - Input: `"hello\nworld"`
    - Your STRING pattern is `"(?:[^"\\]|\\.)*"`. Trace through each character:
      - Position 0: `"` — starts the string
-     - Position 1–5: `hello` — match `[^"\\]` (not quote or backslash)
-     - Position 6–7: `\n` — match `\\.` (backslash followed by any char)
-     - Position 8–12: `world` — match `[^"\\]` again
+     - Position 1-5: `hello` — match `[^"\\]` (not quote or backslash)
+     - Position 6-7: `\n` — match `\\.` (backslash followed by any char)
+     - Position 8-12: `world` — match `[^"\\]` again
      - Position 13: `"` — end the string
    - Confirm: the entire 14-character string is one STRING token, not broken up.
 

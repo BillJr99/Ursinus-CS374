@@ -145,7 +145,7 @@ oa = syntax_overhead(toks_a)
 ob = syntax_overhead(toks_b)
 print("=== Syntactic overhead comparison ===")
 print(f"  {'Metric':<15} {'A (Python)':<15} {'B (C-style)':<15}")
-print(f"  {'─'*15} {'─'*15} {'─'*15}")
+print(f"  {'-'*15} {'-'*15} {'-'*15}")
 for key in oa:
     print(f"  {key:<15} {oa[key]:<15} {ob[key]:<15}")
 
@@ -201,12 +201,12 @@ The node inventory is the living specification of your interpreter. Every AST no
 # Format: (NodeClass, fields, grammar_rule, evaluator_method)
 # Leave evaluator_method as "TODO" until it is implemented.
 NODE_INVENTORY = [
-    # ── Literals ──────────────────────────────────────────────────────────────
+    # -- Literals --------------------------------------------------------------
     ("NumLit",     ["value: float"],                   "primary → NUMBER",           "eval_numlit"),
     ("StrLit",     ["value: str"],                     "primary → STRING",           "eval_strlit"),
     ("BoolLit",    ["value: bool"],                    "primary → 'true'|'false'",   "eval_boollit"),
 
-    # ── Expressions ──────────────────────────────────────────────────────────
+    # -- Expressions ----------------------------------------------------------
     ("BinOp",      ["op: str", "left: Node", "right: Node"],
                                                        "add_expr / mul_expr / compare", "eval_binop"),
     ("UnaryOp",    ["op: str", "operand: Node"],       "unary",                      "eval_unaryop"),
@@ -215,9 +215,9 @@ NODE_INVENTORY = [
     ("NotOp",      ["operand: Node"],                  "not_expr",                   "eval_notop"),
     ("VarRef",     ["name: str"],                      "primary → IDENT",            "eval_varref"),
     ("Assign",     ["name: str", "value: Node"],       "let_stmt / assign_stmt",     "eval_assign"),
-    ("Call",       ["callee: str", "args: list[Node]"],"primary → IDENT '(' … ')'", "eval_call"),
+    ("Call",       ["callee: str", "args: list[Node]"],"primary → IDENT '(' ... ')'", "eval_call"),
 
-    # ── Statements ───────────────────────────────────────────────────────────
+    # -- Statements -----------------------------------------------------------
     ("LetStmt",    ["name: str", "init: Node"],        "let_stmt",                   "eval_letstmt"),
     ("IfStmt",     ["cond: Node", "then_: Block", "else_: Block|None"],
                                                        "if_stmt",                    "eval_ifstmt"),
@@ -227,7 +227,7 @@ NODE_INVENTORY = [
     ("ReturnStmt", ["value: Node|None"],               "return_stmt",                "eval_returnstmt"),
     ("FunDecl",    ["name: str", "params: list[str]", "body: Block"],
                                                        "fun_decl",                   "eval_fundecl"),
-    # ── Add your niche feature node here ─────────────────────────────────────
+    # -- Add your niche feature node here -------------------------------------
     ("NicheNode",  ["(your fields here)"],             "(your grammar rule)",        "TODO"),
 ]
 
@@ -296,12 +296,12 @@ RISKS = [
 print("=== Risk Pre-Mortem Matrix ===")
 print()
 print(f"  {'Score':<6} {'P':<3} {'I':<3} {'Risk':<45} {'First Experiment'}")
-print(f"  {'─'*6} {'─'*3} {'─'*3} {'─'*45} {'─'*30}")
+print(f"  {'-'*6} {'-'*3} {'-'*3} {'-'*45} {'-'*30}")
 
 sorted_risks = sorted(RISKS, key=lambda r: r[1]*r[2], reverse=True)
 for desc, prob, impact, mitigation in sorted_risks:
     score = prob * impact
-    bar = "█" * score + "░" * (25 - score)
+    bar = "#" * score + "." * (25 - score)
     print(f"  {score:<6} {prob:<3} {impact:<3} {desc[:43]:<45} {mitigation[:28]}")
 
 print()

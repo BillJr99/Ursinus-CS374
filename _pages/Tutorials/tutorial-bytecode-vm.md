@@ -53,7 +53,7 @@ When you have a parsed AST, you have three main options for executing it:
 | **Bytecode VM** | Compile AST → flat instruction list; run in a dispatch loop | Small (compile once) | Medium (tight loop, cache-friendly) | Portable (bytecode is platform-independent) |
 | **Native compiler** | Compile AST → machine code | Large (codegen, linking) | Fast (no interpretation overhead) | Not portable (x86 vs ARM vs RISC-V) |
 
-Bytecode VMs hit the sweet spot: they are much faster than tree-walkers in practice (2–10×) and require far less effort to implement than a native compiler.
+Bytecode VMs hit the sweet spot: they are much faster than tree-walkers in practice (2-10×) and require far less effort to implement than a native compiler.
 
 ### Real-World Bytecode VMs
 
@@ -95,18 +95,18 @@ You will see instructions like `LOAD_FAST`, `BINARY_OP`, `RETURN_VALUE`. These m
 
 ```
 Source code
-    │
-    ▼
-  Lexer  ──► Token stream
-    │
-    ▼
-  Parser ──► AST (tree structure)
-    │
-    ▼
- Compiler ──► Bytecode (flat list of instructions)   ← compile once
-    │
-    ▼
-    VM     ──► Result                                ← run many times
+    |
+    v
+  Lexer  --> Token stream
+    |
+    v
+  Parser --> AST (tree structure)
+    |
+    v
+ Compiler --> Bytecode (flat list of instructions)   ← compile once
+    |
+    v
+    VM     --> Result                                ← run many times
 ```
 
 The compiler runs once. The VM runs the same bytecode repeatedly — or, in the case of a REPL, compiles each expression and immediately runs it. The bytecode can also be serialized to disk (like `.pyc` files) so that compilation cost is paid only when the source changes.
@@ -124,7 +124,7 @@ try:
     from enum import IntEnum, auto
 
     class Opcode(IntEnum):
-        # ── Stack manipulation ────────────────────────────────────
+        # -- Stack manipulation ------------------------------------
         PUSH_INT   = auto()   # push integer constant (operand = value)
         PUSH_FLOAT = auto()   # push float constant
         PUSH_STR   = auto()   # push string constant
@@ -134,7 +134,7 @@ try:
         DUP        = auto()   # duplicate top of stack
         SWAP       = auto()   # swap top two stack values
 
-        # ── Arithmetic ────────────────────────────────────────────
+        # -- Arithmetic --------------------------------------------
         ADD  = auto()
         SUB  = auto()
         MUL  = auto()
@@ -143,7 +143,7 @@ try:
         NEG  = auto()   # unary negation
         POW  = auto()
 
-        # ── Comparison (push bool result) ─────────────────────────
+        # -- Comparison (push bool result) -------------------------
         EQ   = auto()
         NEQ  = auto()
         LT   = auto()
@@ -151,29 +151,29 @@ try:
         GT   = auto()
         GE   = auto()
 
-        # ── Logic ─────────────────────────────────────────────────
+        # -- Logic -------------------------------------------------
         AND  = auto()   # non-short-circuit bitwise AND (short-circuit via jumps)
         OR   = auto()   # non-short-circuit bitwise OR
         NOT  = auto()
 
-        # ── Variable access ───────────────────────────────────────
+        # -- Variable access ---------------------------------------
         LOAD_NAME   = auto()   # operand = name string; push globals[name]
         STORE_NAME  = auto()   # operand = name string; globals[name] = pop()
         LOAD_LOCAL  = auto()   # operand = slot index; push locals[slot]
         STORE_LOCAL = auto()   # operand = slot index; locals[slot] = pop()
 
-        # ── Control flow ──────────────────────────────────────────
+        # -- Control flow ------------------------------------------
         JUMP          = auto()   # unconditional; operand = target index
         JUMP_IF_FALSE = auto()   # pop; jump if falsy
         JUMP_IF_TRUE  = auto()   # pop; jump if truthy
 
-        # ── Functions ─────────────────────────────────────────────
+        # -- Functions ---------------------------------------------
         MAKE_FUNCTION  = auto()  # wrap a Chunk into a Function object
         MAKE_CLOSURE   = auto()  # like MAKE_FUNCTION but also captures upvalues
         CALL           = auto()  # operand = arg count; pops args + function
         RETURN         = auto()  # pop return value, restore caller frame
 
-        # ── Built-ins ─────────────────────────────────────────────
+        # -- Built-ins ---------------------------------------------
         PRINT        = auto()    # pop and print
         LOAD_BUILTIN = auto()    # operand = builtin name
 
@@ -273,7 +273,7 @@ try:
     from dataclasses import dataclass
     from typing import Any, List, Optional
 
-    # ── Literal values ────────────────────────────────────────────
+    # -- Literal values --------------------------------------------
     @dataclass
     class Num:
         value: float
@@ -290,7 +290,7 @@ try:
     class Nil:
         pass
 
-    # ── Variables ─────────────────────────────────────────────────
+    # -- Variables -------------------------------------------------
     @dataclass
     class Name:
         name: str
@@ -300,7 +300,7 @@ try:
         name: str
         value: Any  # expression
 
-    # ── Arithmetic / logic ────────────────────────────────────────
+    # -- Arithmetic / logic ----------------------------------------
     @dataclass
     class BinOp:
         op:    str   # "+", "-", "*", "/", "%", "**",
@@ -314,7 +314,7 @@ try:
         op:    str   # "-", "not"
         operand: Any
 
-    # ── Control flow ──────────────────────────────────────────────
+    # -- Control flow ----------------------------------------------
     @dataclass
     class If:
         condition: Any
@@ -330,7 +330,7 @@ try:
     class Return:
         value: Any
 
-    # ── Functions ─────────────────────────────────────────────────
+    # -- Functions -------------------------------------------------
     @dataclass
     class FunDecl:
         name:   str
@@ -342,7 +342,7 @@ try:
         callee: Any
         args:   List[Any]
 
-    # ── Statements ────────────────────────────────────────────────
+    # -- Statements ------------------------------------------------
     @dataclass
     class Print:
         value: Any
@@ -364,7 +364,7 @@ try:
     from typing import Any, List, Dict, Optional
     from enum import IntEnum, auto
 
-    # ── Re-define Opcode (standalone cell) ────────────────────────
+    # -- Re-define Opcode (standalone cell) ------------------------
     class Opcode(IntEnum):
         PUSH_INT=1; PUSH_FLOAT=2; PUSH_STR=3; PUSH_BOOL=4; PUSH_NIL=5
         POP=6; DUP=7; SWAP=8
@@ -395,7 +395,7 @@ try:
             self.instructions[idx].operand = operand
         def __len__(self): return len(self.instructions)
 
-    # ── Minimal AST (re-define for standalone cell) ───────────────
+    # -- Minimal AST (re-define for standalone cell) ---------------
     @dataclass
     class Num: value: float
     @dataclass
@@ -427,7 +427,7 @@ try:
     @dataclass
     class Block: stmts: List[Any]
 
-    # ── Compiler ──────────────────────────────────────────────────
+    # -- Compiler --------------------------------------------------
     _BINOP_OPCODES = {
         "+": Opcode.ADD, "-": Opcode.SUB, "*": Opcode.MUL,
         "/": Opcode.DIV, "%": Opcode.MOD, "**": Opcode.POW,
@@ -448,7 +448,7 @@ try:
             """Compile one AST node, leaving its value on the stack (for expressions)
             or not (for statements that use POP or STORE_NAME)."""
             match node:
-                # ── Literals ──────────────────────────────────────
+                # -- Literals --------------------------------------
                 case Num(value=v) if isinstance(v, int):
                     self.chunk.emit(Opcode.PUSH_INT, v)
                 case Num(value=v):
@@ -460,16 +460,16 @@ try:
                 case Nil():
                     self.chunk.emit(Opcode.PUSH_NIL)
 
-                # ── Variable read ──────────────────────────────────
+                # -- Variable read ----------------------------------
                 case Name(name=n):
                     self.chunk.emit(Opcode.LOAD_NAME, n)
 
-                # ── Assignment ────────────────────────────────────
+                # -- Assignment ------------------------------------
                 case Assign(name=n, value=v):
                     self.compile(v)
                     self.chunk.emit(Opcode.STORE_NAME, n)
 
-                # ── Binary operations ─────────────────────────────
+                # -- Binary operations -----------------------------
                 case BinOp(op="and", left=l, right=r):
                     # Short-circuit: if left is falsy, skip right
                     self.compile(l)
@@ -493,7 +493,7 @@ try:
                     self.compile(r)
                     self.chunk.emit(_BINOP_OPCODES[op])
 
-                # ── Unary operations ──────────────────────────────
+                # -- Unary operations ------------------------------
                 case UnaryOp(op="-", operand=e):
                     self.compile(e)
                     self.chunk.emit(Opcode.NEG)
@@ -501,7 +501,7 @@ try:
                     self.compile(e)
                     self.chunk.emit(Opcode.NOT)
 
-                # ── If / else ─────────────────────────────────────
+                # -- If / else -------------------------------------
                 case If(condition=cond, then_body=then_b, else_body=else_b):
                     self.compile(cond)
                     # Jump over then-branch if condition is false
@@ -515,7 +515,7 @@ try:
                     # Patch the end-jump to land here (after else)
                     self.chunk.patch(jump_end, len(self.chunk))
 
-                # ── While loop ────────────────────────────────────
+                # -- While loop ------------------------------------
                 case While(condition=cond, body=body):
                     loop_start = len(self.chunk)
                     self.compile(cond)
@@ -524,7 +524,7 @@ try:
                     self.chunk.emit(Opcode.JUMP, loop_start)   # back-edge
                     self.chunk.patch(exit_jump, len(self.chunk))
 
-                # ── Function declaration ──────────────────────────
+                # -- Function declaration --------------------------
                 case FunDecl(name=name, params=params, body=body):
                     inner = Compiler(name)
                     # Compile params as STORE_LOCAL into the new chunk
@@ -537,31 +537,31 @@ try:
                     self.chunk.emit(Opcode.MAKE_FUNCTION, inner.chunk)
                     self.chunk.emit(Opcode.STORE_NAME, name)
 
-                # ── Function call ─────────────────────────────────
+                # -- Function call ---------------------------------
                 case Call(callee=callee, args=args):
                     self.compile(callee)
                     for a in args:
                         self.compile(a)
                     self.chunk.emit(Opcode.CALL, len(args))
 
-                # ── Return ────────────────────────────────────────
+                # -- Return ----------------------------------------
                 case Return(value=v):
                     self.compile(v)
                     self.chunk.emit(Opcode.RETURN)
 
-                # ── Print statement ───────────────────────────────
+                # -- Print statement -------------------------------
                 case Print(value=v):
                     self.compile(v)
                     self.chunk.emit(Opcode.PRINT)
 
-                # ── Block ─────────────────────────────────────────
+                # -- Block -----------------------------------------
                 case Block(stmts=stmts):
                     self.compile_stmts(stmts)
 
                 case _:
                     raise NotImplementedError(f"Compiler: unknown node {node!r}")
 
-    # ── Demo: compile  if x > 0 { print(x); } ──────────────────
+    # -- Demo: compile  if x > 0 { print(x); } ------------------
     prog = [
         Assign("x", Num(5)),
         If(
@@ -649,7 +649,7 @@ try:
             self.ip += 1
             return instr
 
-    # ── Function object (defined here, used by VM) ────────────────
+    # -- Function object (defined here, used by VM) ----------------
     @dataclass
     class Function:
         name:   str
@@ -725,12 +725,12 @@ try:
             self.frames:  List[CallFrame] = []
             self.globals: Dict[str, Any]  = {}
 
-        # ── Stack helpers ──────────────────────────────────────────
+        # -- Stack helpers ------------------------------------------
         def push(self, v: Any):  self.stack.append(v)
         def pop(self)  -> Any:   return self.stack.pop()
         def peek(self) -> Any:   return self.stack[-1]
 
-        # ── Entry point ────────────────────────────────────────────
+        # -- Entry point --------------------------------------------
         def run(self, chunk: Chunk) -> Any:
             frame = CallFrame(chunk)
             self.frames.append(frame)
@@ -738,7 +738,7 @@ try:
             self.frames.pop()
             return result
 
-        # ── Main dispatch loop ─────────────────────────────────────
+        # -- Main dispatch loop -------------------------------------
         def _execute(self) -> Any:
             while True:
                 frame = self.frames[-1]
@@ -748,14 +748,14 @@ try:
 
                 op = Opcode(instr.opcode)
 
-                # ── Push literals ──────────────────────────────────
+                # -- Push literals ----------------------------------
                 if   op == Opcode.PUSH_INT:   self.push(instr.operand)
                 elif op == Opcode.PUSH_FLOAT: self.push(instr.operand)
                 elif op == Opcode.PUSH_STR:   self.push(instr.operand)
                 elif op == Opcode.PUSH_BOOL:  self.push(bool(instr.operand))
                 elif op == Opcode.PUSH_NIL:   self.push(None)
 
-                # ── Stack manipulation ─────────────────────────────
+                # -- Stack manipulation -----------------------------
                 elif op == Opcode.POP:
                     self.pop()
                 elif op == Opcode.DUP:
@@ -764,7 +764,7 @@ try:
                     a = self.pop(); b = self.pop()
                     self.push(a); self.push(b)
 
-                # ── Arithmetic ─────────────────────────────────────
+                # -- Arithmetic -------------------------------------
                 elif op == Opcode.ADD:
                     r = self.pop(); l = self.pop(); self.push(l + r)
                 elif op == Opcode.SUB:
@@ -782,7 +782,7 @@ try:
                 elif op == Opcode.NEG:
                     self.push(-self.pop())
 
-                # ── Comparisons ────────────────────────────────────
+                # -- Comparisons ------------------------------------
                 elif op == Opcode.EQ:
                     r = self.pop(); l = self.pop(); self.push(l == r)
                 elif op == Opcode.NEQ:
@@ -796,7 +796,7 @@ try:
                 elif op == Opcode.GE:
                     r = self.pop(); l = self.pop(); self.push(l >= r)
 
-                # ── Logic ──────────────────────────────────────────
+                # -- Logic ------------------------------------------
                 elif op == Opcode.NOT:
                     self.push(not self.pop())
                 elif op == Opcode.AND:
@@ -804,7 +804,7 @@ try:
                 elif op == Opcode.OR:
                     r = self.pop(); l = self.pop(); self.push(l or r)
 
-                # ── Variable access ────────────────────────────────
+                # -- Variable access --------------------------------
                 elif op == Opcode.LOAD_NAME:
                     name = instr.operand
                     if name in frame.locals:   self.push(frame.locals[name])
@@ -820,7 +820,7 @@ try:
                 elif op == Opcode.STORE_LOCAL:
                     frame.locals[instr.operand] = self.pop()
 
-                # ── Control flow ───────────────────────────────────
+                # -- Control flow -----------------------------------
                 elif op == Opcode.JUMP:
                     frame.ip = instr.operand
                 elif op == Opcode.JUMP_IF_FALSE:
@@ -830,7 +830,7 @@ try:
                     if self.pop():
                         frame.ip = instr.operand
 
-                # ── Functions ──────────────────────────────────────
+                # -- Functions --------------------------------------
                 elif op == Opcode.MAKE_FUNCTION:
                     inner_chunk = instr.operand
                     fn = Function(inner_chunk.name, [], inner_chunk)
@@ -855,18 +855,18 @@ try:
                     if len(self.frames) == 0:
                         return ret_val
 
-                # ── Built-ins ──────────────────────────────────────
+                # -- Built-ins --------------------------------------
                 elif op == Opcode.PRINT:
                     print(self.pop())
 
                 else:
                     raise VMError(f"Unknown opcode: {op}")
 
-    # ── Demo: trace execution of 2 * (3 + 4) ──────────────────────
+    # -- Demo: trace execution of 2 * (3 + 4) ----------------------
     print("Tracing: 2 * (3 + 4)")
     print()
     print("  Instruction        Stack after")
-    print("  ─────────────────  ──────────────────")
+    print("  -----------------  ------------------")
 
     steps = [
         (Opcode.PUSH_INT, 2,  "[2]"),
@@ -906,7 +906,7 @@ try:
     from typing import Any, List, Dict, Optional
     from enum import IntEnum
 
-    # ── (all definitions from Phase 2 and Phase 3 combined) ───────
+    # -- (all definitions from Phase 2 and Phase 3 combined) -------
     class Opcode(IntEnum):
         PUSH_INT=1; PUSH_FLOAT=2; PUSH_STR=3; PUSH_BOOL=4; PUSH_NIL=5
         POP=6; DUP=7; SWAP=8
@@ -1112,7 +1112,7 @@ try:
                 elif op == Opcode.PRINT: print(self.pop())
                 else: raise VMError(f"Unknown opcode {op}")
 
-    # ── End-to-end test: while loop summing 1..5 ──────────────────
+    # -- End-to-end test: while loop summing 1..5 ------------------
     prog = [
         Assign("sum", Num(0)),
         Assign("i",   Num(1)),
@@ -1209,7 +1209,7 @@ try:
         upvalues: List[Upvalue] = field(default_factory=list)
         def __repr__(self): return f"<function {self.name}/{len(self.params)}>"
 
-    # ── Demonstrate upvalue closing ────────────────────────────────
+    # -- Demonstrate upvalue closing --------------------------------
     # Simulate: the enclosing frame has a local variable `count = 0`
     shared_cell = [0]               # the "slot" in the enclosing frame
 
@@ -1237,7 +1237,7 @@ try:
     from typing import Any, List, Dict, Optional
     from enum import IntEnum
 
-    # ── Simplified closure-aware VM ────────────────────────────────
+    # -- Simplified closure-aware VM --------------------------------
     # We model closures using Python's own closures for clarity.
     # In a real VM, you would use the Upvalue mechanism from above.
 
@@ -1394,7 +1394,7 @@ try:
             if isinstance(instr.operand, Chunk):
                 disassemble(instr.operand, indent + 2)
 
-    # ── Build the fib chunk by hand ────────────────────────────────
+    # -- Build the fib chunk by hand --------------------------------
     #
     # fun fib(n) {
     #   if n <= 1 { return n; }
@@ -1643,7 +1643,7 @@ try:
                 elif op==Opcode.PRINT: print(self.pop())
                 else: raise RuntimeError(f"Unknown opcode {op}")
 
-    # ── compile_and_run glue function ─────────────────────────────
+    # -- compile_and_run glue function -----------------------------
     def compile_and_run(stmts, verbose=False):
         c = Compiler()
         c.compile_stmts(stmts)
@@ -1656,7 +1656,7 @@ try:
         vm.run(c.chunk)
         return vm
 
-    # ── Test 1: fibonacci ─────────────────────────────────────────
+    # -- Test 1: fibonacci -----------------------------------------
     fib_prog = [
         FunDecl("fib", ["n"], [
             If(
@@ -1686,7 +1686,7 @@ One of the key selling points of a bytecode VM is speed. Let us measure the diff
 try:
     import time
 
-    # ── Tree-walking interpreter (reference) ──────────────────────
+    # -- Tree-walking interpreter (reference) ----------------------
     class TreeWalker:
         def __init__(self):
             self.env = {}
@@ -1886,7 +1886,7 @@ try:
 
     N = 22  # use 22 instead of 30 to keep the demo fast in a browser sandbox
 
-    # ── Time the tree-walker ───────────────────────────────────────
+    # -- Time the tree-walker ---------------------------------------
     tw = TreeWalker()
     for stmt in fib_ast:
         tw.eval(stmt, tw.env)
@@ -1895,7 +1895,7 @@ try:
     tw_result = tw.env["fib"](N)
     tw_time = time.perf_counter() - t0
 
-    # ── Time the bytecode VM ───────────────────────────────────────
+    # -- Time the bytecode VM ---------------------------------------
     c2 = Compiler2(); c2.compile_stmts(fib_ast)
     vm2 = VM2(); vm2.run(c2.chunk)
 
@@ -1939,7 +1939,7 @@ Before submitting your bytecode VM implementation, verify all of the following:
 
 **Just-in-Time Compilation** — modern VMs (V8, LuaJIT, PyPy) profile which bytecode sequences run most frequently ("hot paths") and compile those sequences to native machine code at runtime. The key insight is that the JIT can specialize on observed types: if `ADD` has only ever seen integers, the JIT emits a single native `ADD` instruction instead of a general dispatch. Python 3.13's "copy-and-patch" JIT uses exactly this approach.
 
-**Register-Based VMs** — Lua 5.0 used a stack-based VM; Lua 5.1 switched to a **register-based** VM, which reduces instruction count by 20–30% by keeping intermediate values in named registers rather than pushing and popping them. The CPython team is exploring a register-based bytecode for CPython 3.14+.
+**Register-Based VMs** — Lua 5.0 used a stack-based VM; Lua 5.1 switched to a **register-based** VM, which reduces instruction count by 20-30% by keeping intermediate values in named registers rather than pushing and popping them. The CPython team is exploring a register-based bytecode for CPython 3.14+.
 
 ---
 
@@ -2277,7 +2277,7 @@ print(f"  {pretty(optimized)}")
 
 > **CTQ 3.3** CSE requires checking if two expressions are "the same." The `expr_key` function produces a canonical string. What's wrong with this approach if expressions contain variable names that were renamed by earlier passes?
 
-> **Watch out!** CSE introduces new variable bindings (`_cse1`, `_cse2`, …). If you run CSE before constant propagation, those new variables will block the propagation pass from recognizing constants. If you run CSE after constant propagation, some sub-expressions that *looked* identical before may differ because their variables were replaced by different constants. Order matters — design your pipeline intentionally.
+> **Watch out!** CSE introduces new variable bindings (`_cse1`, `_cse2`, ...). If you run CSE before constant propagation, those new variables will block the propagation pass from recognizing constants. If you run CSE after constant propagation, some sub-expressions that *looked* identical before may differ because their variables were replaced by different constants. Order matters — design your pipeline intentionally.
 
 ---
 

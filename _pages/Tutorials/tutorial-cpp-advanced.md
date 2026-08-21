@@ -989,20 +989,20 @@ When a class has virtual functions, the compiler adds a hidden pointer (the **vp
 
 ```
 Object layout in memory:
-┌─────────────────────────────────────┐
-│  vptr ──────────────────────────────┼──→  vtable for Shape
-├─────────────────────────────────────┤       ┌───────────────────────────────┐
-│  member fields...                   │       │ [0]  &Shape::area      (pure) │
-└─────────────────────────────────────┘       │ [1]  &Shape::perimeter (pure) │
-                                              │ [2]  &Shape::describe         │
-Object layout for Circle:                     └───────────────────────────────┘
-┌─────────────────────────────────────┐
-│  vptr ──────────────────────────────┼──→  vtable for Circle
-├─────────────────────────────────────┤       ┌───────────────────────────────┐
-│  radius (double)                    │       │ [0]  &Circle::area            │
-└─────────────────────────────────────┘       │ [1]  &Circle::perimeter       │
-                                              │ [2]  &Shape::describe         │
-                                              └───────────────────────────────┘
++-------------------------------------+
+|  vptr ------------------------------+--→  vtable for Shape
+|-------------------------------------+       +-------------------------------+
+|  member fields...                   |       | [0]  &Shape::area      (pure) |
+`-------------------------------------+       | [1]  &Shape::perimeter (pure) |
+                                              | [2]  &Shape::describe         |
+Object layout for Circle:                     `-------------------------------+
++-------------------------------------+
+|  vptr ------------------------------+--→  vtable for Circle
+|-------------------------------------+       +-------------------------------+
+|  radius (double)                    |       | [0]  &Circle::area            |
+`-------------------------------------+       | [1]  &Circle::perimeter       |
+                                              | [2]  &Shape::describe         |
+                                              `-------------------------------+
 ```
 
 ```cpp
@@ -1210,7 +1210,7 @@ except Exception as e:
 
 2. **Why virtual destructors?** Suppose `Shape` does not have a `virtual` destructor. You write `Shape* s = new Circle(3.0); delete s;`. What happens? Write out the exact sequence of destructor calls in both cases (virtual vs non-virtual).
 
-3. **`std::function` overhead.** `std::function` uses *small-buffer optimization (SBO)*: callables that fit in ~24–48 bytes are stored inline (no heap allocation). Larger callables are heap-allocated. Given `auto big_lambda = [captured_array = std::array<char, 128>{}](int x){ return x; };`, will `std::function<int(int)> f = big_lambda;` trigger a heap allocation? How would you verify this?
+3. **`std::function` overhead.** `std::function` uses *small-buffer optimization (SBO)*: callables that fit in ~24-48 bytes are stored inline (no heap allocation). Larger callables are heap-allocated. Given `auto big_lambda = [captured_array = std::array<char, 128>{}](int x){ return x; };`, will `std::function<int(int)> f = big_lambda;` trigger a heap allocation? How would you verify this?
 
 4. **`std::variant` vs inheritance.** `std::variant<Circle, Rectangle>` and a base-class hierarchy both model "a shape that is either a Circle or a Rectangle". List two advantages of the `variant` approach and two advantages of the virtual-function approach. (Hint: open/closed extensibility, separate compilation, pattern matching.)
 
@@ -1483,7 +1483,7 @@ Coroutines are functions that can be suspended and resumed. C++20 provides the m
   The definitive online reference for every C++ standard library component. When the standard says "effects as if," cppreference shows the actual complexity, iterator invalidation rules, and example code. Bookmark it.
 
 - **Scott Meyers — "Effective Modern C++" (O'Reilly, 2014)**
-  42 specific items covering `auto`, smart pointers, move semantics, lambdas, and concurrency. Items 1–9 (type deduction), 18–22 (smart pointers), and 23–30 (move semantics) map directly to this tutorial. Read it after you feel comfortable with the concepts here.
+  42 specific items covering `auto`, smart pointers, move semantics, lambdas, and concurrency. Items 1-9 (type deduction), 18-22 (smart pointers), and 23-30 (move semantics) map directly to this tutorial. Read it after you feel comfortable with the concepts here.
 
 - **"C++ Templates: The Complete Guide" — Vandevoorde, Josuttis, Gregor (2nd ed.)**
   Deep dive into template mechanics: instantiation, argument deduction, SFINAE, variadic templates, and expression templates. Essential for library authors.
@@ -1500,7 +1500,7 @@ Coroutines are functions that can be suspended and resumed. C++20 provides the m
 
 > **"Which C++ feature most surprised you, and how does it connect to a concept from programming language theory?"**
 
-Write 2–3 paragraphs addressing the following:
+Write 2-3 paragraphs addressing the following:
 
 1. **The surprising feature.** Pick one concept from this tutorial — move semantics, type erasure, `constexpr`, Concepts, RAII, or another — that you did not expect to work the way it does. Describe precisely what surprised you.
 
@@ -1625,7 +1625,7 @@ for name, ctype, example in type_map:
 
 **Key insight:** `ctypes` marshals Python values into C-compatible binary representations automatically for simple types. For complex types (structs, arrays, function pointers), you must describe the layout explicitly.
 
-> **Critical Thinking Questions 1–3**
+> **Critical Thinking Questions 1-3**
 
 **CTQ 1.** `strlen` expects a `const char *` — a pointer to a null-terminated byte array. Why does `ctypes` require `b"Hello"` (bytes) rather than `"Hello"` (str)? What does Python's str store internally that C's `char *` does not?
 
@@ -1707,7 +1707,7 @@ print(f"  sizeof = {ctypes.sizeof(arr)} bytes ({ctypes.sizeof(ctypes.c_int)} × 
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **Critical Thinking Questions 4–6**
+> **Critical Thinking Questions 4-6**
 
 **CTQ 4.** The `Padded` struct has `sizeof` greater than 1+4+2=7. The compiler adds **padding** between fields to align them to their natural alignment. Why does alignment matter? What hardware problem does misaligned access cause on x86? On ARM?
 
@@ -1799,7 +1799,7 @@ print(f"  Direct test of callback: my_handler(10, 3) = {cb.c_ptr(10, 3)}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **Critical Thinking Questions 7–9**
+> **Critical Thinking Questions 7-9**
 
 **CTQ 7.** `COMPARATOR = ctypes.CFUNCTYPE(c_int, c_void_p, c_void_p)` describes the function signature. What would happen if you passed a Python function with the wrong signature (e.g., one that takes only one argument instead of two)?
 
@@ -1887,7 +1887,7 @@ for cls, fn, params in examples:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **Critical Thinking Questions 10–12**
+> **Critical Thinking Questions 10-12**
 
 **CTQ 10.** C's simple symbol names (`strlen`) mean that a shared library can only export one `strlen`. C++ name mangling allows overloaded functions (`foo(int)` and `foo(double)`) to coexist in the same library. What does this tell you about C's type system at the ABI level?
 
@@ -2037,7 +2037,7 @@ print("  print n;   # 5")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **Critical Thinking Questions 13–15**
+> **Critical Thinking Questions 13-15**
 
 **CTQ 13.** The `FFIRegistry` uses a "Python" pseudo-library for safe built-ins and C libraries for native code. What is the advantage of keeping these in the same `FfiCall` AST node vs. having separate `NativeFn` and `PythonFn` nodes?
 

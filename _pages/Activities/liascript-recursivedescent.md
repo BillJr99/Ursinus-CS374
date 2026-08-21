@@ -555,7 +555,7 @@ The code cell below is a **self-contained recursive descent parser** for a mini-
 
 import re
 
-# ── Lexer ────────────────────────────────────────────────────────────────────
+# -- Lexer --------------------------------------------------------------------
 
 TOKEN_RE = re.compile(
     r'(?P<FLOAT>\d+\.\d*|\.\d+)|'
@@ -586,7 +586,7 @@ def tokenize(src):
     tokens.append(Token("EOF", "", line))
     return tokens
 
-# ── Parser ───────────────────────────────────────────────────────────────────
+# -- Parser -------------------------------------------------------------------
 
 class Parser:
     def __init__(self, src):
@@ -703,7 +703,7 @@ class Parser:
             f"expected a factor, got {tok.type}({tok.lexeme!r}) at line {tok.line}"
         )
 
-# ── Demo program ─────────────────────────────────────────────────────────────
+# -- Demo program -------------------------------------------------------------
 
 src = """
 x = 2 + 3 * 4;
@@ -756,7 +756,7 @@ pprint.pprint(ast)
 
 import re
 
-# ── Layer 1: Lexer ────────────────────────────────────────────────────────────
+# -- Layer 1: Lexer ------------------------------------------------------------
 # Intuition: break the input string into meaningful chunks.
 # We use a list of regex patterns and try each one at the current position.
 
@@ -796,7 +796,7 @@ def lex_calc(src):
     tokens.append(Token("EOF", "", line, 0))
     return tokens
 
-# ── Layer 2: Parser ───────────────────────────────────────────────────────────
+# -- Layer 2: Parser -----------------------------------------------------------
 # Intuition: turn the flat token list into a nested tree (the AST).
 # Each grammar rule becomes one method; the nesting of calls mirrors the grammar.
 
@@ -867,7 +867,7 @@ class CalcParser:
             )
         return ast
 
-# ── Layer 3: Evaluator ────────────────────────────────────────────────────────
+# -- Layer 3: Evaluator --------------------------------------------------------
 # Intuition: walk the AST and compute the result.
 # Each node type has a case; the recursive calls mirror the tree structure.
 
@@ -889,14 +889,14 @@ def evaluate(node):
             return lval / rval
     raise ValueError(f"unknown AST node kind: {kind!r}")
 
-# ── Convenience wrapper ────────────────────────────────────────────────────────
+# -- Convenience wrapper --------------------------------------------------------
 
 def calc(src):
     """Parse and evaluate a calculator expression string."""
     ast = CalcParser(src).parse()
     return evaluate(ast)
 
-# ── Test suite ────────────────────────────────────────────────────────────────
+# -- Test suite ----------------------------------------------------------------
 
 test_cases = [
     ("2 + 3",           5.0),
@@ -922,7 +922,7 @@ for expr, expected in test_cases:
 print()
 print("All tests passed!" if all_pass else "Some tests FAILED.")
 
-# ── Show the AST for one expression ──────────────────────────────────────────
+# -- Show the AST for one expression ------------------------------------------
 
 print()
 print("AST for '2 + 3 * 4':")

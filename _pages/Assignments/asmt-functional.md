@@ -86,7 +86,7 @@ This is one assignment with one deliverable and one rubric. Parts 1 and 2 below 
 
 Every direction is worth the same 50 points, graded on the same direction-depth rubric row, and ends in the same deliverable shape: working code, tests, and a writeup section that connects the direction back to the core. Choose by interest — none is the "easy" one.
 
-> **Scope note:** this assignment runs alongside your team project's build sprints, so budget the direction at roughly **6–8 hours** and pick a bounded slice you can finish well — the depth checklists in each direction mark the line between "complete" and "extension." If you completed the **Lambda Calculus lab**, Direction C is a natural continuation: the lab's by-hand reductions and Church encodings are exactly the behavior your reducer must reproduce in code.
+> **Scope note:** this assignment runs alongside your team project's build sprints, so budget the direction at roughly **6-8 hours** and pick a bounded slice you can finish well — the depth checklists in each direction mark the line between "complete" and "extension." If you completed the **Lambda Calculus lab**, Direction C is a natural continuation: the lab's by-hand reductions and Church encodings are exactly the behavior your reducer must reproduce in code.
 
 ---
 
@@ -123,7 +123,7 @@ Notice what is *absent*: no loop, no accumulator variable, no assignment. If you
 
 ### Suggested Pacing
 
-See the course schedule for the assigned and due dates. If a break falls inside the window, complete the core Parts 1–2 before it so the direction work is what travels with you, and remember your team project's sprints run in parallel:
+See the course schedule for the assigned and due dates. If a break falls inside the window, complete the core Parts 1-2 before it so the direction work is what travels with you, and remember your team project's sprints run in parallel:
 
 | Checkpoint | You should have |
 |------------|----------------|
@@ -638,7 +638,7 @@ Something else you care about is negotiable — bring it to the scope-approval c
 
 ### G.1: Issue selection and scope approval (first 3 days)
 
-Find your target: a triaged open issue, a gap in the documentation, a missing test, or a small feature request with maintainer interest. In `contribution.md`, record: the issue or gap (with links), why it is *functional-paradigm* work (which core ideas from Parts 1–2 it exercises), and your one-sentence minimum viable scope. **Bring this to the instructor for approval within 3 days of hand-out** — the approval exists to protect you from scope that cannot land in the assignment window.
+Find your target: a triaged open issue, a gap in the documentation, a missing test, or a small feature request with maintainer interest. In `contribution.md`, record: the issue or gap (with links), why it is *functional-paradigm* work (which core ideas from Parts 1-2 it exercises), and your one-sentence minimum viable scope. **Bring this to the instructor for approval within 3 days of hand-out** — the approval exists to protect you from scope that cannot land in the assignment window.
 
 ### G.2: Specification first
 
@@ -658,7 +658,7 @@ Submit the pull request and engage with what comes back: respond to review comme
 - Specification-first evidence exists: the failing test (or documentation checklist) is preserved in its original form, dated before the fix.
 - The pull request is public, linked, and includes tests and documentation, following the upstream project's contributing guidelines.
 - The maintainer exchange is documented — or, if none occurred within a week, the attempt is documented and a written self-review against the project's standards stands in its place.
-- The writeup connects the contribution back to the core: which of Parts 1–2's pure-function and fold disciplines the upstream code exercises, with specific examples from the code you touched.
+- The writeup connects the contribution back to the core: which of Parts 1-2's pure-function and fold disciplines the upstream code exercises, with specific examples from the code you touched.
 
 ---
 

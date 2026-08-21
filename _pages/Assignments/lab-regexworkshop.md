@@ -50,7 +50,7 @@ This **lab** is the on-ramp for the Regular Expressions assignment, handed out t
 
 Create `patterns.py` with the `check()` harness from the Regex assignment's Part 1 (copy it verbatim — this lab is where you get it working, so the assignment starts from a running state). Then write and test these three patterns from the assignment's pattern library, each with **at least three positive and two negative cases**:
 
-- **P1 `COURSE_CODE`** — department code of 2–4 capital letters, optional hyphen, three digits (`CS374`, `MATH-111` accept; `cs374`, `CS37` reject).
+- **P1 `COURSE_CODE`** — department code of 2-4 capital letters, optional hyphen, three digits (`CS374`, `MATH-111` accept; `cs374`, `CS37` reject).
 - **P2 `INTEGER`** — an optionally signed integer with no leading zeros (`42`, `-7`, `0` accept; `007`, `4.2` reject). Anchor it — `"42abc"` must not pass.
 - **P3 `IDENTIFIER`** — a letter or underscore followed by letters, digits, or underscores (`x`, `_tmp`, `total_1` accept; `1st`, `foo-bar` reject).
 
