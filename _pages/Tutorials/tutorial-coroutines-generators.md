@@ -93,7 +93,7 @@ print()
 
 print("  First 7 values (pulled on demand):")
 for i, val in enumerate(gen):
-    print(f"    next() #{i+1} → {val}")
+    print(f"    next() #{i+1} -> {val}")
     if i >= 6:
         break
 
@@ -191,10 +191,10 @@ def safe_counter():
 
 sc = safe_counter()
 for _ in range(4):
-    print(f"  next() → {next(sc)}")
+    print(f"  next() -> {next(sc)}")
 sc.throw(ValueError, "manual reset!")
 for _ in range(3):
-    print(f"  next() → {next(sc)}")
+    print(f"  next() -> {next(sc)}")
 sc.close()
 
 print()
@@ -907,7 +907,7 @@ loop.run(main_coro)
 - **Talk:** David Beazley, "Python Concurrency from the Ground Up" (PyCon 2015)
 - **Talk:** David Beazley, "Generators: The Final Frontier" (PyCon 2014) — builds an event loop from scratch
 - **Paper:** Moura & Ierusalimschy (2009), "Revisiting Coroutines" — theory of semi-coroutines vs full coroutines
-- **Book:** *Crafting Interpreters* — Nystrom, Chapter 26 (closures → generators is a natural extension)
+- **Book:** *Crafting Interpreters* — Nystrom, Chapter 26 (closures -> generators is a natural extension)
 
 ---
 

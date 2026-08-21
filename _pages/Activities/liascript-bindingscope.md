@@ -163,7 +163,7 @@ print(outer())                      # ('inner', 'outer')
 
 > **Watch out!** Students often confuse **shadowing** with **assignment**. When `demo()` writes `x = 99`, it does *not* change the global `x` — it creates a brand-new local binding that happens to share the same name. The global `x` still equals `10` after `demo()` returns. Shadowing is about creating a second binding in an inner region; assignment is about updating an existing binding. These are completely different operations with completely different effects on the enclosing scope.
 
-**Step-by-step trace of name lookup under static scope** (for the `demo()` → `show()` call above):
+**Step-by-step trace of name lookup under static scope** (for the `demo()` -> `show()` call above):
 
 1. `demo()` is called. Python creates a new local frame for `demo`. It executes `x = 99`, binding `x` to `99` **in `demo`'s local frame only**.
 2. `show()` is called from inside `demo`. Python creates a new local frame for `show`. It has no local `x`.
@@ -224,7 +224,7 @@ Python does not merely distinguish "local" from "global" — it has four distinc
 
 ## Model 3: Python's LEGB Rule
 
-Python resolves names in order: **L**ocal → **E**nclosing → **G**lobal → **B**uilt-in.
+Python resolves names in order: **L**ocal -> **E**nclosing -> **G**lobal -> **B**uilt-in.
 
 ```python
 # LEGB Rule in action

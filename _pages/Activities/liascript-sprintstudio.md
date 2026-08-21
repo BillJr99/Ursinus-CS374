@@ -137,13 +137,13 @@ print()
 print(f"  🔴 FIX BEFORE DEMO DAY ({len(buckets['FIX'])} items)")
 for team, kind, text in buckets["FIX"]:
     print(f"    [{team}] {text}")
-    print(f"           → Assign to: ___  Due: ___  Done when: ___")
+    print(f"           -> Assign to: ___  Due: ___  Done when: ___")
 
 print()
 print(f"  🟡 DISCLOSE AT DEMO DAY ({len(buckets['DISCLOSE'])} items)")
 for team, kind, text in buckets["DISCLOSE"]:
     print(f"    [{team}] {text}")
-    print(f"           → Disclosure wording: ___")
+    print(f"           -> Disclosure wording: ___")
 
 print()
 print(f"  🔵 FUTURE WORK ({len(buckets['FUTURE'])} items)")
@@ -193,7 +193,7 @@ def check(label, result, guidance=""):
     status = "✓" if result else "✗"
     print(f"  {status}  {label}")
     if not result and guidance:
-        print(f"        → {guidance}")
+        print(f"        -> {guidance}")
     return result
 
 print("=" * 55)
@@ -254,11 +254,11 @@ passed = sum(results)
 total  = len(results)
 print(f"  {passed}/{total} checks passed")
 if passed == total:
-    print("  → Ready for Demo Day. ✓")
+    print("  -> Ready for Demo Day. ✓")
 elif passed >= total - 1:
-    print("  → One item remaining. Fix it today.")
+    print("  -> One item remaining. Fix it today.")
 else:
-    print(f"  → {total - passed} items remaining. Triage them now.")
+    print(f"  -> {total - passed} items remaining. Triage them now.")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 

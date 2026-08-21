@@ -223,21 +223,21 @@ The "dangling else" ambiguity occurs because:
 [(X)] The grammar does not specify which `if` an `else` belongs to when they are nested
 [( )] The parser cannot distinguish `if` from `else` tokens
 
-1. *Derivation tree practice.* For the unambiguous ladder grammar (expr → term { ("+"|"-") term }, term → factor { ("*"|"/") factor }, factor → NUMBER | "(" expr ")"), draw the unique derivation tree for `3 - 1 - 1`. Show both the tree and the bottom-up evaluation order.
+1. *Derivation tree practice.* For the unambiguous ladder grammar (expr -> term { ("+"|"-") term }, term -> factor { ("*"|"/") factor }, factor -> NUMBER | "(" expr ")"), draw the unique derivation tree for `3 - 1 - 1`. Show both the tree and the bottom-up evaluation order.
 
-2. *Leftmost vs. rightmost derivation.* Using the grammar `S → S + S | id`, give both the leftmost and the rightmost derivation for `id + id + id`. Show that this grammar has more than two parse trees for this string.
+2. *Leftmost vs. rightmost derivation.* Using the grammar `S -> S + S | id`, give both the leftmost and the rightmost derivation for `id + id + id`. Show that this grammar has more than two parse trees for this string.
 
 3. *Eliminate ambiguity.* The following grammar for `if/else` is ambiguous:
    ```
-   stmt → "if" expr "then" stmt
+   stmt -> "if" expr "then" stmt
          | "if" expr "then" stmt "else" stmt
          | OTHER
    ```
    Write an unambiguous version that implements the "nearest enclosing if" convention (each `else` matches the most recent unmatched `if`). Demonstrate on `if e1 then if e2 then s1 else s2`.
 
-4. *Associativity in parse trees.* Show that the grammar `E → E - E | NUMBER` produces two parse trees for `5 - 3 - 1`. Modify the grammar to enforce left-associativity and draw the single parse tree that results.
+4. *Associativity in parse trees.* Show that the grammar `E -> E - E | NUMBER` produces two parse trees for `5 - 3 - 1`. Modify the grammar to enforce left-associativity and draw the single parse tree that results.
 
-5. *EBNF to BNF.* Convert the EBNF rule `expr → term { ("+" | "-") term }` to standard BNF (no `{...}` or `[...]`). How does the BNF version encode left-associativity? Compare the derivation trees produced by both versions for `1 + 2 + 3`.
+5. *EBNF to BNF.* Convert the EBNF rule `expr -> term { ("+" | "-") term }` to standard BNF (no `{...}` or `[...]`). How does the BNF version encode left-associativity? Compare the derivation trees produced by both versions for `1 + 2 + 3`.
 
 ---
 

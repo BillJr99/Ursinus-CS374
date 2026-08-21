@@ -156,15 +156,15 @@ try:
 
     # Drop root reference to a — triggers cascading collection
     print("\nDropping root reference to a:")
-    rc.dec_ref(a)        # a's refcount → 0, collect a; b's refcount → 1
+    rc.dec_ref(a)        # a's refcount -> 0, collect a; b's refcount -> 1
     print("Live after drop a:", rc.live_count())
 
     print("\nDropping root reference to b:")
-    rc.dec_ref(b)        # b's refcount → 0, collect b; c's refcount → 1
+    rc.dec_ref(b)        # b's refcount -> 0, collect b; c's refcount -> 1
     print("Live after drop b:", rc.live_count())
 
     print("\nDropping root reference to c:")
-    rc.dec_ref(c)        # c's refcount → 0, collect c
+    rc.dec_ref(c)        # c's refcount -> 0, collect c
     print("Live after drop c:", rc.live_count())
 
 except Exception as e:
@@ -187,8 +187,8 @@ try:
 
     print("Cycle live:", rc2.live_count())
     print("Dropping roots...")
-    rc2.dec_ref(a)   # a refcount → 1 (b still points to it) — NOT collected!
-    rc2.dec_ref(b)   # b refcount → 1 (a still points to it) — NOT collected!
+    rc2.dec_ref(a)   # a refcount -> 1 (b still points to it) — NOT collected!
+    rc2.dec_ref(b)   # b refcount -> 1 (a still points to it) — NOT collected!
     print("After dropping roots:", rc2.live_count(), "(cycle leaked!)")
 
 except Exception as e:
@@ -270,7 +270,7 @@ try:
     # Demonstrate mark-and-sweep
     ms = MSHeap(16)
 
-    # Create a small tree: root → a → b, root → c (b and c share d)
+    # Create a small tree: root -> a -> b, root -> c (b and c share d)
     d = ms.alloc('leaf', value=99)
     b = ms.alloc('node', left=d, right=None)
     c = ms.alloc('node', left=d, right=None)
@@ -290,7 +290,7 @@ try:
     print("\nCycle collection:")
     x = ms.alloc('cyclic', peer=None)
     y = ms.alloc('cyclic', peer=x)
-    ms.memory[x]['peer'] = y   # x ↔ y cycle (neither reachable from root)
+    ms.memory[x]['peer'] = y   # x <-> y cycle (neither reachable from root)
     print(f"Live with cycle: {ms.live_count()}")
     ms.collect()
     print(f"Live after GC: {ms.live_count()} (cycle collected!)")
@@ -316,7 +316,7 @@ try:
             self.to_start = semi_size
             self.memory = {}   # addr -> obj
             self.bump = self.from_start   # bump pointer in from-space
-            self.roots = {}    # name -> addr (variable name → heap address)
+            self.roots = {}    # name -> addr (variable name -> heap address)
 
         def alloc(self, obj_type, **fields):
             if self.bump >= self.from_start + self.semi_size:

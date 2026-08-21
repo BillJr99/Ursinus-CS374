@@ -62,7 +62,7 @@ info:
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-sprintstudio.md"
     - rtitle: "Music and Live-Coding Track Guide (for Direction B: deliverable equivalence table and the text-events-only route)"
       rlink: "/Projects/TeamLanguage#the-music-and-live-coding-path"
-    - rtitle: "Make-a-Lisp (mal) — incremental scaffold with a built-in test harness (Direction A option)"
+    - rtitle: "Make-a-Lisp (mal): incremental scaffold with a built-in test harness (Direction A option)"
       rlink: "https://github.com/kanaka/mal"
     - rtitle: "A Syntax Highlighter for Your Language with tree-sitter (Extensions Menu)"
       rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/SyntaxHighlighter"
@@ -100,12 +100,12 @@ The project is worth **100 points** total, earned at two graded milestones (prop
 
 | Milestone (see the course schedule for dates) | What happens | Points |
 |---|---|---|
-| Project hand-out | Design phase begins: form teams of 3, pick a niche, draft the design scorecard | — |
+| Project hand-out | Design phase begins: form teams of 3, pick a niche, draft the design scorecard | - |
 | Design-phase studio check | Design-phase milestone: team, niche, design scorecard, and the **draft team charter** (submitted as the design-phase milestone; 3 points, assessed within Class Activities and Participation) | 3 |
 | **Sprint 0 kickoff** | **Proposal due, presented in class — includes the signed team charter** | **25** |
 | Sprint 1 increment checkpoint (see schedule) | Integrate components, with an in-class working-time session; checkpoint includes the charter re-read and confidential peer pulse (3 points, assessed within Class Activities and Participation) | 3 |
-| Sprint 2 studio | Gallery walk and peer review | — |
-| Sprint 3 studio | Release hardening | — |
+| Sprint 2 studio | Gallery walk and peer review | - |
+| Sprint 3 studio | Release hardening | - |
 | **Demo Day (last class meeting)** | **Demo Day and final submission** | **75** |
 
 Demo Day is the **last class meeting**. There is no final exam, and no work is accepted after the last class.
@@ -142,7 +142,7 @@ The required scope maps naturally: patterns and tracks are your non-numeric type
 
 The distinctive feature is required; the Extensions Menu is where teams go deeper. Adopting one or more extensions is a way to raise the ceiling of your language — depth here is credited through the project rubric (chiefly *Implementation Correctness and Integration*, *Evaluation and Testing*, and *Language Design and Documentation*), not through separate point values. An extension counts only when it is documented in your language reference, covered by at least two dedicated test programs, and demonstrated. A fully working extension with tests scores far better than two half-working ones without: scope what you adopt in your proposal's sprint plan.
 
-### Static Type Inference (Hindley–Milner)
+### Static Type Inference (Hindley-Milner)
 
 Add a type-checking pass that runs before evaluation and infers types for every expression without user-written annotations, reporting type errors with positions and the conflicting types. Implement let-polymorphism so a polymorphic utility (such as an identity function) works at multiple types in one program. Include a test program that is correctly rejected.
 
@@ -314,9 +314,9 @@ The music path follows the course's own arc — the same required assignments, i
 
 1. **[Music Languages and Live Coding](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-languagedesign.md)** (activity) — meet TidalCycles and Strudel as *language designs*: embedded versus external DSLs, a formal model of patterns, and the timed-event semantics the rest of the path builds on.
 2. **[Flex and Yacc](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-parsertable.md)** (activity) — build a working flex/yacc pipeline for a subset of the mini-notation in class. (Relatedly, the [Lexer assignment]({{ site.baseurl }}/Assignments/Lexer)'s generator-toolchain direction is a natural on-ramp: choosing Flex or PLY there puts the tools of the mini-notation pipeline in your hands early. It pairs well with what follows, but it is not required for it.)
-3. **[The Parser and AST]({{ site.baseurl }}/Assignments/Parser) → the Mini-Notation direction** — grow the in-class mini-notation subset toward the real language: alternation, Euclidean rhythms, and polymeter, parsed into an AST, evaluated to timed events, and validated against the Strudel reference implementation (or against printed event lists alone).
-4. **[Functional Programming]({{ site.baseurl }}/Assignments/Functional) → the Parallel Functional direction** — purity buys parallelism: the same core parts as everyone (pure functions, higher-order combinators, recursive structures with fold), then a complete MapReduce pipeline measured and analyzed against Amdahl's Law — the same pure-map/associative-reduce discipline pattern engines like Strudel run on.
-5. **[Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) → the Music and Live-Coding direction** (capstone) — design, specify, build, and demonstrate a small live-coding language with your team. The closing demonstration may be a live edit-and-rerun session over printed event output — rendered sound is optional here as everywhere on the path.
+3. **[The Parser and AST]({{ site.baseurl }}/Assignments/Parser) -> the Mini-Notation direction** — grow the in-class mini-notation subset toward the real language: alternation, Euclidean rhythms, and polymeter, parsed into an AST, evaluated to timed events, and validated against the Strudel reference implementation (or against printed event lists alone).
+4. **[Functional Programming]({{ site.baseurl }}/Assignments/Functional) -> the Parallel Functional direction** — purity buys parallelism: the same core parts as everyone (pure functions, higher-order combinators, recursive structures with fold), then a complete MapReduce pipeline measured and analyzed against Amdahl's Law — the same pure-map/associative-reduce discipline pattern engines like Strudel run on.
+5. **[Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) -> the Music and Live-Coding direction** (capstone) — design, specify, build, and demonstrate a small live-coding language with your team. The closing demonstration may be a live edit-and-rerun session over printed event output — rendered sound is optional here as everywhere on the path.
 
 Assignments without a music direction listed here (Warmup, Regex, the Automata lab, Lexer, Interpreter, and the rest) are simply taken as they stand — they build the skills every direction draws on. And the choices are independent: you can take the Mini-Notation direction in the Parser assignment and any direction you like in Functional, or vice versa. The path above is the coherent musical route, not a package deal.
 
@@ -371,7 +371,7 @@ Strong work has these qualities:
 - **A stranger succeeds without you in the room.** The decisive test for every stage of this guide is the cold test: someone who was not on your team — or the teammate who did *not* do the work — follows the public record alone and it works. "Setup was tested by the teammate who did not write it" is already in the project rubric; this guide extends the same discipline to installation and the README.
 - **The README opens like an elevator pitch, not a lab report.** The first screen answers three questions: what is this language and what is its niche, how do I install it, and what does a first program look like — with its output shown. Details (the full grammar, the semantics, the extension guides) are linked, not inlined.
 - **The repository tells the team's story by itself.** Issues and pull requests show the sprints, the decision log shows the contested calls, and the README's credits section names who built what. A visitor — a grader, a recruiter, a future you — can reconstruct the process without asking anyone.
-- **The portfolio entry is specific.** A weak story says "We built a programming language for class." A strong story says: "Our team of three designed and shipped a query language over in-memory lists with a Hindley–Milner type checker. I built the parser and the AST layer, property-tested with Hypothesis, and wrote the differential test harness that caught three semantics bugs before Demo Day."
+- **The portfolio entry is specific.** A weak story says "We built a programming language for class." A strong story says: "Our team of three designed and shipped a query language over in-memory lists with a Hindley-Milner type checker. I built the parser and the AST layer, property-tested with Hypothesis, and wrote the differential test harness that caught three semantics bugs before Demo Day."
 
 Weak work has a private repository, a README that assumes the reader attended the class, an install path nobody has tried cold, and no trace of the project anywhere under your own name.
 

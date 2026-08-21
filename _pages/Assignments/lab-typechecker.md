@@ -30,7 +30,7 @@ info:
   readings:
     - rtitle: "Type Systems Activity"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-types.md"
-    - rtitle: "Core Tutorial: Typing Disciplines — Strong vs. Weak, Static vs. Dynamic, and Gradual Typing"
+    - rtitle: "Core Tutorial: Typing Disciplines, Strong vs. Weak, Static vs. Dynamic, and Gradual Typing"
       rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypingDisciplines"
 
 tags:
@@ -134,7 +134,7 @@ for l, op, r in [(3.0, "+", 4.0), ("ab", "+", "cd"), (3.0, "+", "cd"),
         result = eval_binop(op, l, r)
         print(f"  {l!r} {op} {r!r} = {result!r}")
     except (TypeError, ZeroDivisionError) as e:
-        print(f"  {l!r} {op} {r!r} → {type(e).__name__}: {e}")
+        print(f"  {l!r} {op} {r!r} -> {type(e).__name__}: {e}")
 ```
 
 #### Critical Thinking Questions
@@ -191,7 +191,7 @@ Three checks, three passes, one final value. Now the same trace for `(3.0 + 4.0)
 |------|----------------|-------------------|--------------------|-----------------|--------|
 | 1 | `3.0 + 4.0` | `3.0` : number | `4.0` : number | `+` licensed | `7.0` |
 | 2 | `"total: " + 12.0` | `"total: "` : string | `12.0` : number | `+` **not** licensed for string, number | **TypeError** |
-| 3 | `... < ...` | — | — | never reached | — |
+| 3 | `... < ...` | - | - | never reached | - |
 
 Step 1 completed *before* the error: its work is done and cannot be undone. The `<` at step 3 never runs at all. That is dynamic checking in one picture: checks are interleaved with execution, so an error stops the program mid-flight rather than before takeoff.
 
@@ -297,7 +297,7 @@ def type_str(t):
     return {TInt: "int", TFloat: "float", TStr: "str",
             TBool: "bool", TUnknown: "?"}[type(t)]
 
-# "Type environment": name → type
+# "Type environment": name -> type
 type_env = {}
 
 def infer(expr, env):
@@ -361,21 +361,21 @@ The `infer` function walks this AST top-down, building a **type environment** (a
 
 | Step | Node visited | Type environment before | Result type deduced |
 |------|-------------|------------------------|---------------------|
-| 1 | `let a = ("int",)` | `{}` (empty) | literal `("int",)` → `TInt` |
-| 2 | Extend env with `a: TInt`; recurse into body | `{a: TInt}` | — |
-| 3 | `let b = ("add", ("var","a"), ("int",))` | `{a: TInt}` | look up `a` → `TInt`; literal → `TInt`; `TInt + TInt` → `TInt` |
-| 4 | Extend env with `b: TInt`; recurse into body | `{a: TInt, b: TInt}` | — |
-| 5 | `let c = ("lt", ("var","b"), ("int",))` | `{a: TInt, b: TInt}` | look up `b` → `TInt`; literal → `TInt`; same type → `TBool` |
-| 6 | Extend env with `c: TBool`; body is `("var","c")` | `{a: TInt, b: TInt, c: TBool}` | look up `c` → `TBool` |
-| **Final** | whole program | — | **`TBool`** |
+| 1 | `let a = ("int",)` | `{}` (empty) | literal `("int",)` -> `TInt` |
+| 2 | Extend env with `a: TInt`; recurse into body | `{a: TInt}` | - |
+| 3 | `let b = ("add", ("var","a"), ("int",))` | `{a: TInt}` | look up `a` -> `TInt`; literal -> `TInt`; `TInt + TInt` -> `TInt` |
+| 4 | Extend env with `b: TInt`; recurse into body | `{a: TInt, b: TInt}` | - |
+| 5 | `let c = ("lt", ("var","b"), ("int",))` | `{a: TInt, b: TInt}` | look up `b` -> `TInt`; literal -> `TInt`; same type -> `TBool` |
+| 6 | Extend env with `c: TBool`; body is `("var","c")` | `{a: TInt, b: TInt, c: TBool}` | look up `c` -> `TBool` |
+| **Final** | whole program | - | **`TBool`** |
 
 Now trace the *error* program: `let a = 2; a + "hello"`
 
 | Step | Node visited | Type environment | Result |
 |------|-------------|-----------------|--------|
 | 1 | `let a = ("int",)` | `{}` | `TInt` |
-| 2 | Extend env; recurse into body `("add", ("var","a"), ("str",))` | `{a: TInt}` | — |
-| 3 | left: look up `a` → `TInt`; right: `("str",)` → `TStr` | `{a: TInt}` | `TInt + TStr` → **TypeError**: `cannot add int and str` |
+| 2 | Extend env; recurse into body `("add", ("var","a"), ("str",))` | `{a: TInt}` | - |
+| 3 | left: look up `a` -> `TInt`; right: `("str",)` -> `TStr` | `{a: TInt}` | `TInt + TStr` -> **TypeError**: `cannot add int and str` |
 
 Notice that the error is reported at the `add` node (step 3), but the root cause is the choice made at step 1. This distance between the error location and the root cause is a recurring challenge in type inference systems — and why good inference error messages are hard to write.
 
@@ -383,7 +383,7 @@ Notice that the error is reported at the `add` node (step 3), but the root cause
 
 11. The inference trace shows `let a: int`, `let b: int`, `let c: bool`. These are determined entirely from the *values* (literals), with no type annotations written. Is this static or dynamic typing? Explain.
 12. When inference encounters `a + "hello"`, it reports the error at the `add` expression. But the *root cause* is that `a` was given an int value. How far is the reported error from the root cause, and what does this say about inference error message quality?
-13. What would need to change to support `let a = 2; let b = a + 3.0;`? (Hint: numeric type widening — `int + float → float`.) Modify the `infer` function to allow this.
+13. What would need to change to support `let a = 2; let b = a + 3.0;`? (Hint: numeric type widening — `int + float -> float`.) Modify the `infer` function to allow this.
 
 ---
 
@@ -404,8 +404,8 @@ The intended arithmetic: `(19.99 + 5.00) * 1.06 = 24.99 * 1.06 = 26.49`. What th
 | Step | Expression | What a weak language does | Value after | What a strong language does |
 |------|-----------|----------------------------|-------------|------------------------------|
 | 1 | `subtotal = "19.99"` | stores the string | `"19.99"` (string) | the same — the mistake is still latent |
-| 2 | `subtotal + 5.00` | coerces `5.00` → `"5"`, then *concatenates* | `"19.995"` (string) | **TypeError: cannot add string and number** — stops here |
-| 3 | `"19.995" * 1.06` | coerces `"19.995"` → `19.995`, then multiplies | `21.1947` (number) | never reached |
+| 2 | `subtotal + 5.00` | coerces `5.00` -> `"5"`, then *concatenates* | `"19.995"` (string) | **TypeError: cannot add string and number** — stops here |
+| 3 | `"19.995" * 1.06` | coerces `"19.995"` -> `19.995`, then multiplies | `21.1947` (number) | never reached |
 | 4 | charge the customer | charges `$21.19` with no error anywhere | wrong by `$5.30` | bug reported at step 2, with a line number |
 
 Note the direction flip: at step 2 the `+` coerced the *number toward the string*, but at step 3 the `*` coerced the *string toward the number*. The same pair of types flowed in opposite directions depending on the operator — that inconsistency, not any single conversion, is what makes weak typing treacherous. And notice what is missing from the weak column: any error, at any step. The only symptom is money.
@@ -466,7 +466,7 @@ Silent coercion lets a type mistake flow through the program as plausible-lookin
 #### Critical Thinking Questions
 
 14. Walk the postmortem table: at which step did the *type* first go wrong, and at which step did the *money* first go wrong? Why is it significant that these are different steps?
-15. Step 2 coerced number → string, but step 3 coerced string → number. Write the coercion rule a language designer would have to publish to justify both choices at once. Does the result sound principled or accidental?
+15. Step 2 coerced number -> string, but step 3 coerced string -> number. Write the coercion rule a language designer would have to publish to justify both choices at once. Does the result sound principled or accidental?
 16. The weak-mode run produces no error at any point; the bug would surface only as customer complaints. Name two other places in the software pipeline (besides the language's type system) where this bug could have been caught, and what each catch would cost compared to a step-2 TypeError.
 17. For your project language: which, if any, of these coercions will you allow? Record the decision in `SEMANTICS.md`, citing this postmortem as evidence for or against.
 

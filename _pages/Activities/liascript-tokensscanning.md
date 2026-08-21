@@ -471,20 +471,20 @@ Input: `count2 = count2 + 12 >= limit`
 
 | Pos | Remaining input | Patterns that match here | Longest wins | Token emitted |
 |-----|-----------------|--------------------------|--------------|---------------|
-| 0 | `count2 = ...` | `IDENT` → `count2` (6 chars) | `count2` | `IDENT("count2")` |
-| 6 | `_= count2 ...` | `WHITESPACE` → ` ` | ` ` | *(skipped)* |
-| 7 | `= count2 ...` | `EQ` → `=` (1). `EQEQ` needs `==`, fails | `=` | `EQ("=")` |
+| 0 | `count2 = ...` | `IDENT` -> `count2` (6 chars) | `count2` | `IDENT("count2")` |
+| 6 | `_= count2 ...` | `WHITESPACE` -> ` ` | ` ` | *(skipped)* |
+| 7 | `= count2 ...` | `EQ` -> `=` (1). `EQEQ` needs `==`, fails | `=` | `EQ("=")` |
 | 8 | `_count2 + ...` | `WHITESPACE` | ` ` | *(skipped)* |
-| 9 | `count2 + 12 ...` | `IDENT` → `count2` (6) | `count2` | `IDENT("count2")` |
+| 9 | `count2 + 12 ...` | `IDENT` -> `count2` (6) | `count2` | `IDENT("count2")` |
 | 15 | `_+ 12 ...` | `WHITESPACE` | ` ` | *(skipped)* |
-| 16 | `+ 12 >= ...` | `PLUS` → `+` (1) | `+` | `PLUS("+")` |
+| 16 | `+ 12 >= ...` | `PLUS` -> `+` (1) | `+` | `PLUS("+")` |
 | 17 | `_12 >= ...` | `WHITESPACE` | ` ` | *(skipped)* |
-| 18 | `12 >= limit` | `INT` → `12` (2). `FLOAT` needs a `.`, fails | `12` | `INT("12")` |
+| 18 | `12 >= limit` | `INT` -> `12` (2). `FLOAT` needs a `.`, fails | `12` | `INT("12")` |
 | 20 | `_>= limit` | `WHITESPACE` | ` ` | *(skipped)* |
-| 21 | `>= limit` | **`GE` → `>=` (2)** and `GT` → `>` (1) | `>=` (longer) | `GE(">=")` |
+| 21 | `>= limit` | **`GE` -> `>=` (2)** and `GT` -> `>` (1) | `>=` (longer) | `GE(">=")` |
 | 23 | `_limit` | `WHITESPACE` | ` ` | *(skipped)* |
-| 24 | `limit` | `IDENT` → `limit` (5) | `limit` | `IDENT("limit")` |
-| 29 | *(end)* | — | — | `EOF` |
+| 24 | `limit` | `IDENT` -> `limit` (5) | `limit` | `IDENT("limit")` |
+| 29 | *(end)* | - | - | `EOF` |
 
 **Seven tokens** plus `EOF`: `IDENT EQ IDENT PLUS INT GE IDENT`.
 

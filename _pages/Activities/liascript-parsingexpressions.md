@@ -74,9 +74,9 @@ Before writing any parser code, you need a *correct grammar* to implement. You b
 
 > **Recap — from the *Recursive Descent Parsing* activity:**
 >
-> - A naive rule like `expr → expr "+" expr | expr "*" expr | NUMBER` describes the right language but is **ambiguous** — it says nothing about precedence.
+> - A naive rule like `expr -> expr "+" expr | expr "*" expr | NUMBER` describes the right language but is **ambiguous** — it says nothing about precedence.
 > - The cure is one nonterminal per precedence level: lower-precedence operators sit closer to `expr`, higher-precedence operators sit deeper in the ladder.
-> - Left recursion (`expr → expr "+" term`) encodes left-associativity but sends a top-down parser into infinite recursion before it consumes a single token; the EBNF repetition `expr → term { ("+" | "-") term }` says the same thing in a form descent can run.
+> - Left recursion (`expr -> expr "+" term`) encodes left-associativity but sends a top-down parser into infinite recursion before it consumes a single token; the EBNF repetition `expr -> term { ("+" | "-") term }` says the same thing in a form descent can run.
 > - In code, `{ ... }` becomes a `while` loop that **folds left** — the running node always becomes the *left* child of the new node — so `7 - 2 - 1` parses as `(7 - 2) - 1`.
 >
 > If any bullet feels shaky, review that activity before continuing.
@@ -84,16 +84,16 @@ Before writing any parser code, you need a *correct grammar* to implement. You b
 ### The Final EBNF Grammar
 
 ```ebnf
-program  → statement* EOF
-statement→ "let" IDENT "=" expr ";"
+program  -> statement* EOF
+statement-> "let" IDENT "=" expr ";"
           | "print" expr ";"
           | "while" "(" expr ")" "{" statement* "}"
           | "if" "(" expr ")" "{" statement* "}" [ "else" "{" statement* "}" ]
           | IDENT "=" expr ";"
-expr     → term   { ("+" | "-") term   }
-term     → factor { ("*" | "/") factor }
-factor   → "-" factor | primary
-primary  → NUMBER | FLOAT | STRING | "true" | "false"
+expr     -> term   { ("+" | "-") term   }
+term     -> factor { ("*" | "/") factor }
+factor   -> "-" factor | primary
+primary  -> NUMBER | FLOAT | STRING | "true" | "false"
           | IDENT | "(" expr ")"
 ```
 
@@ -176,7 +176,7 @@ for src in expressions:
 
 **CTQ 0.1** Run the parser on `7 - 2 - 1`. The tree should be `(-, (-, 7, 2), 1)`, which evaluates to `4`. If the tree were `(-, 7, (-, 2, 1))` instead, what value would it produce? Which is "correct" for subtraction, and what does this tell you about the importance of left-associativity?
 
-**CTQ 0.2** The grammar has `factor → "-" factor` (unary minus, right-recursive). This rule *is* right-recursive, but it doesn't cause infinite loops in a recursive-descent parser. Why not?
+**CTQ 0.2** The grammar has `factor -> "-" factor` (unary minus, right-recursive). This rule *is* right-recursive, but it doesn't cause infinite loops in a recursive-descent parser. Why not?
 
 **CTQ 0.3** Add a `parse_factor` method that handles unary negation: if the current token is `-`, consume it and recursively call `parse_factor`; otherwise call `parse_primary`. Test on `-3`, `--3`, and `-(2 + 3)`.
 
@@ -317,7 +317,7 @@ Answer CTQ 1 yourself before reading. The column that matters is `node` — watc
 | before the loop | `7` | `- 2 - 1` | `parse_muldiv()` returned the bare `7` |
 | iteration 1, after wrap | `(- 7 2)` | `- 1` | saw `-`, parsed `2`, wrapped: old `node` became the **left** child |
 | iteration 2, after wrap | `(- (- 7 2) 1)` | *(none)* | saw `-`, parsed `1`, wrapped again: the whole subtree became the left child |
-| loop exits | `(- (- 7 2) 1)` | — | next token is not `+` or `-` |
+| loop exits | `(- (- 7 2) 1)` | - | next token is not `+` or `-` |
 
 The tree, leaning left:
 

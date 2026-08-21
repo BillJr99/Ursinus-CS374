@@ -302,7 +302,7 @@ print(safe_head([]))          # Nothing
 
 print()
 print("=== Chaining with and_then (flatMap) ===")
-# Process: parse → divide → take head
+# Process: parse -> divide -> take head
 def pipeline(s: str, divisor: float) -> Option:
     return (parse_positive_int(s)
             .map(float)
@@ -765,7 +765,7 @@ def exit_function():
 def raise_error(message: str):
     raise InterpreterError(message, list(call_stack))
 
-# Simulate a call chain: main → foo → bar → baz → error
+# Simulate a call chain: main -> foo -> bar -> baz -> error
 def baz():
     enter_function("baz")
     try:

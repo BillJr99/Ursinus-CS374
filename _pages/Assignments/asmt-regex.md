@@ -94,7 +94,7 @@ See the course schedule for the assigned and due dates. A suggested sequence:
 
 | Checkpoint | You should have |
 |------------|----------------|
-| On assignment | `check()` harness working (from the Regex Workshop lab); patterns P1–P3 passing |
+| On assignment | `check()` harness working (from the Regex Workshop lab); patterns P1-P3 passing |
 | Checkpoint 1 | Part 1 complete: all ten patterns with test cases |
 | Lab due | Part 2 complete: mini lexer (grown from the lab's skeleton) passing the ordering table |
 | Checkpoint 2 | Part 3 complete: transformer and log parser producing the sample output |

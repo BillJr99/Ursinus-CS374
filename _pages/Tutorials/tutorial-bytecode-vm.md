@@ -50,8 +50,8 @@ When you have a parsed AST, you have three main options for executing it:
 | Strategy | How it works | Startup cost | Runtime speed | Portability |
 |---|---|---|---|---|
 | **Tree-walking interpreter** | Recursively evaluate AST nodes | None | Slow (pointer-chasing, branching per node) | Portable (runs on any host with the interpreter) |
-| **Bytecode VM** | Compile AST → flat instruction list; run in a dispatch loop | Small (compile once) | Medium (tight loop, cache-friendly) | Portable (bytecode is platform-independent) |
-| **Native compiler** | Compile AST → machine code | Large (codegen, linking) | Fast (no interpretation overhead) | Not portable (x86 vs ARM vs RISC-V) |
+| **Bytecode VM** | Compile AST -> flat instruction list; run in a dispatch loop | Small (compile once) | Medium (tight loop, cache-friendly) | Portable (bytecode is platform-independent) |
+| **Native compiler** | Compile AST -> machine code | Large (codegen, linking) | Fast (no interpretation overhead) | Not portable (x86 vs ARM vs RISC-V) |
 
 Bytecode VMs hit the sweet spot: they are much faster than tree-walkers in practice (2-10×) and require far less effort to implement than a native compiler.
 
@@ -103,10 +103,10 @@ Source code
   Parser --> AST (tree structure)
     |
     v
- Compiler --> Bytecode (flat list of instructions)   ← compile once
+ Compiler --> Bytecode (flat list of instructions)   <- compile once
     |
     v
-    VM     --> Result                                ← run many times
+    VM     --> Result                                <- run many times
 ```
 
 The compiler runs once. The VM runs the same bytecode repeatedly — or, in the case of a REPL, compiles each expression and immediately runs it. The bytecode can also be serialized to disk (like `.pyc` files) so that compilation cost is paid only when the source changes.
@@ -260,7 +260,7 @@ This flat sequence is what the VM actually executes — no tree traversal, no re
 
 ---
 
-## Phase 2: The Compiler (AST → Bytecode)
+## Phase 2: The Compiler (AST -> Bytecode)
 
 The compiler walks the AST exactly once and emits instructions in **post-order**: compile the operands first, then emit the operator. This naturally produces the right stack layout.
 
@@ -1951,7 +1951,7 @@ You have now built every layer of a bytecode VM:
 |---|---|---|
 | 0 | Motivation and comparison table | Execution strategy trade-offs |
 | 1 | `Opcode` enum and `Instruction`/`Chunk` dataclasses | Instruction set architecture |
-| 2 | `Compiler` (AST → `Chunk`) | Post-order traversal; patch-back for forward jumps |
+| 2 | `Compiler` (AST -> `Chunk`) | Post-order traversal; patch-back for forward jumps |
 | 3 | `VM` (dispatch loop, value stack, call stack) | Stack machine execution model |
 | 4 | `Upvalue` and `MAKE_CLOSURE` | Closing over live stack slots |
 | 5 | `disassemble`, `compile_and_run`, performance timing | Tooling and integration |
@@ -2005,7 +2005,7 @@ def f():
     print("side effect!")
     return 0
 
-# INVALID: cannot fold f() + 0 → 0 (removes the print side effect)
+# INVALID: cannot fold f() + 0 -> 0 (removes the print side effect)
 x = f() + 0    # prints "side effect!" and gives x=0
 # "optimized": x = 0   # WRONG — side effect gone!
 
@@ -2143,18 +2143,18 @@ def pretty(node) -> str:
 
 # Test cases
 tests = [
-    # let x = 3 in let y = x + 2 in x * y  → let x=3 in let y=5 in 15
+    # let x = 3 in let y = x + 2 in x * y  -> let x=3 in let y=5 in 15
     Let('x', Num(3), Let('y', BinOp('+', Var('x'), Num(2)),
                         BinOp('*', Var('x'), Var('y')))),
-    # if (2 > 0) then 42 else 0  → 42  (dead code eliminated)
+    # if (2 > 0) then 42 else 0  -> 42  (dead code eliminated)
     If(BinOp('>', Num(2), Num(0)), Num(42), Num(0)),
-    # (x + 0) * 1  → x
+    # (x + 0) * 1  -> x
     BinOp('*', BinOp('+', Var('x'), Num(0)), Num(1)),
 ]
 
 for t in tests:
     result = fold_and_propagate(t, {})
-    print(f"{pretty(t):50} → {pretty(result)}")
+    print(f"{pretty(t):50} -> {pretty(result)}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
@@ -2201,7 +2201,7 @@ def fresh_name():
 
 def cse(node, seen: dict):
     """
-    seen: maps (expr_key) → variable_name
+    seen: maps (expr_key) -> variable_name
     Returns (optimized_node, bindings_to_wrap)
     """
     key = expr_key(node)
@@ -2337,7 +2337,7 @@ def substitute(node, var: str, replacement):
         case _: return node
 
 def inline(node, fn_env: dict, inline_limit=5):
-    """Inline small functions. fn_env maps name → Lambda."""
+    """Inline small functions. fn_env maps name -> Lambda."""
     match node:
         case App(func=Var(name=n), arg=a) if n in fn_env:
             lam = fn_env[n]
@@ -2369,7 +2369,7 @@ def pretty(node) -> str:
         case App(func=f, arg=a):            return f"{pretty(f)}({pretty(a)})"
         case Let(name=n, value=v, body=b):  return f"let {n}={pretty(v)} in {pretty(b)}"
 
-# double = λx. x + x  — inline double(5) → 5 + 5
+# double = λx. x + x  — inline double(5) -> 5 + 5
 double = Lambda('x', BinOp('+', Var('x'), Var('x')))
 fn_env = {'double': double}
 
@@ -2378,7 +2378,7 @@ inlined = inline(expr, fn_env)
 print(f"Before: {pretty(expr)}")
 print(f"After:  {pretty(inlined)}")
 
-# Compose with constant folding: double(3+2) → (3+2)+(3+2) → 10
+# Compose with constant folding: double(3+2) -> (3+2)+(3+2) -> 10
 from functools import reduce
 expr2 = App(Var('double'), BinOp('+', Num(3), Num(2)))
 inlined2 = inline(expr2, fn_env)
@@ -2525,9 +2525,9 @@ Extend `fold_and_propagate` from Model 2 to handle comparison operators (`>`, `<
 ##### Exercise 2 — Strength Reduction (20 min)
 
 **Strength reduction** replaces expensive operations with cheaper ones:
-- `x * 2` → `x + x` (addition is faster than multiplication on some CPUs)
-- `x * 4` → `x << 2` (shift is faster than multiplication by a power of 2)
-- `x / 2` → `x >> 1` (for integer division)
+- `x * 2` -> `x + x` (addition is faster than multiplication on some CPUs)
+- `x * 4` -> `x << 2` (shift is faster than multiplication by a power of 2)
+- `x / 2` -> `x >> 1` (for integer division)
 
 Implement `strength_reduce(node)` as a tree transformation. Test on `y * 8` and `z / 4`.
 
@@ -2537,7 +2537,7 @@ Write `eliminate_dead_code(node, live_vars: set)` that removes let-bindings whos
 
 ```
 let x = expensive_computation() in 42
-→ 42  (if x is never used)
+-> 42  (if x is never used)
 ```
 
 But be careful: only eliminate if the binding expression is pure!

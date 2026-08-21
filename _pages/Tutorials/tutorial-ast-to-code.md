@@ -1047,13 +1047,13 @@ class UnaryOp:
     op: str; operand: Any
 
 def constant_fold(node):
-    """Simplify constant sub-expressions: 2+3 → 5, 1*x → x, etc."""
+    """Simplify constant sub-expressions: 2+3 -> 5, 1*x -> x, etc."""
     match node:
         case Num() | Var():
             return node
 
         case UnaryOp(op='-', operand=Num(value=v)):
-            return Num(-v)   # -5 → Num(-5)
+            return Num(-v)   # -5 -> Num(-5)
 
         case UnaryOp(op=op, operand=o):
             return UnaryOp(op, constant_fold(o))
@@ -1068,7 +1068,7 @@ def constant_fold(node):
                     case '-': return Num(l.value - r.value)
                     case '*': return Num(l.value * r.value)
                     case '/' if r.value != 0: return Num(l.value / r.value)
-            # Algebraic identities: x * 1 → x, x + 0 → x, etc.
+            # Algebraic identities: x * 1 -> x, x + 0 -> x, etc.
             if isinstance(r, Num):
                 if r.value == 0 and op == '+': return l
                 if r.value == 0 and op == '-': return l
@@ -1089,17 +1089,17 @@ def pretty(node):
 
 # Test constant folding
 tests = [
-    BinOp('+', Num(2), Num(3)),                          # 2+3 → 5
-    BinOp('*', Num(1), Var('x')),                         # 1*x → x
-    BinOp('+', Var('x'), Num(0)),                         # x+0 → x
-    BinOp('*', Num(2), BinOp('+', Num(3), Num(4))),       # 2*(3+4) → 2*7 → 14
-    BinOp('+', BinOp('*', Num(2), Num(3)), Var('y')),     # (2*3)+y → 6+y
-    UnaryOp('-', Num(5)),                                  # -5 → Num(-5)
+    BinOp('+', Num(2), Num(3)),                          # 2+3 -> 5
+    BinOp('*', Num(1), Var('x')),                         # 1*x -> x
+    BinOp('+', Var('x'), Num(0)),                         # x+0 -> x
+    BinOp('*', Num(2), BinOp('+', Num(3), Num(4))),       # 2*(3+4) -> 2*7 -> 14
+    BinOp('+', BinOp('*', Num(2), Num(3)), Var('y')),     # (2*3)+y -> 6+y
+    UnaryOp('-', Num(5)),                                  # -5 -> Num(-5)
 ]
 
 for t in tests:
     folded = constant_fold(t)
-    print(f"{pretty(t):30} → {pretty(folded)}")
+    print(f"{pretty(t):30} -> {pretty(folded)}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
@@ -1107,9 +1107,9 @@ for t in tests:
 
 > **CTQ 4.1** Constant folding is safe for pure expressions. Why is it *unsafe* to fold `f() + 0` to `f()` if `f` has side effects?
 
-> **CTQ 4.2** The folding rule `x * 0 → 0` is an algebraic simplification. Why does this rule require checking `l.value == 0` rather than checking `isinstance(l, Num) and l.value == 0`? (They're the same — but why does the type check matter for correctness?)
+> **CTQ 4.2** The folding rule `x * 0 -> 0` is an algebraic simplification. Why does this rule require checking `l.value == 0` rather than checking `isinstance(l, Num) and l.value == 0`? (They're the same — but why does the type check matter for correctness?)
 
-> **CTQ 4.3** Dead code elimination is another tree transformation: `if true { body1 } else { body2 }` → `body1`. How would you extend `constant_fold` to handle this case?
+> **CTQ 4.3** Dead code elimination is another tree transformation: `if true { body1 } else { body2 }` -> `body1`. How would you extend `constant_fold` to handle this case?
 
 ---
 

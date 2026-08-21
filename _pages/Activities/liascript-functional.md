@@ -28,7 +28,7 @@ By the end of this activity, you will be able to:
 
 With the interpreter core complete through *Control Flow Semantics*, the course turns from building languages to inhabiting one paradigm deeply. We practice **functional programming** in Python — `lambda`, `map`, `filter`, `reduce` — with the discipline of **purity** and **immutability**, because the functional toolkit is both a daily professional skill (data pipelines, modern Java/JavaScript/Rust) and the bridge to Scheme and the lambda calculus ahead.
 
-Arc: **purity and why it pays → the big three combinators → higher-order thinking → currying and partial application → recursion without loops**
+Arc: **purity and why it pays -> the big three combinators -> higher-order thinking -> currying and partial application -> recursion without loops**
 
 > **Before You Begin:** This activity assumes you can:
 > - Write and call Python functions, including functions that take other functions as arguments
@@ -71,7 +71,7 @@ Before diving in, here is a plain-English glossary of the terms this activity us
 **A pure function's output depends only on its inputs, and it changes nothing outside itself.** No mutation of arguments, no global reads or writes, no printing, no randomness. Purity buys three concrete powers:
 
 1. **Substitution** — a call can be replaced by its result anywhere (referential transparency)
-2. **Testability** — no setup, no teardown: just input → expected output
+2. **Testability** — no setup, no teardown: just input -> expected output
 3. **Parallel safety** — no shared state means no interference
 
 **Immutability is purity's partner.** Functional style does not modify a list; it produces a new one.
@@ -238,7 +238,7 @@ print(f"generator sum: {sum(gen)}")
 
 Before moving on to higher-order functions, pause and run one pipeline entirely *by hand*. If you can produce every intermediate list on paper, `map`/`filter`/`reduce` stop being magic incantations and become bookkeeping you happen not to write yourself.
 
-## Model 3: Tracing a Map–Filter–Reduce Pipeline by Hand
+## Model 3: Tracing a Map-Filter-Reduce Pipeline by Hand
 
 **Worked example.** Trace the scores pipeline from Section 2, one stage at a time:
 
@@ -291,7 +291,7 @@ print(f"total = {total}, mean = {total / len(passing):.1f}")
 In the pipeline trace, the score 54 becomes 59 after the map stage and then vanishes. Which statement is accurate?
 
 [( )] `map` removed it because it was below 70
-[(X)] `map` transformed it (54 → 59) and `filter` discarded it because 59 < 70
+[(X)] `map` transformed it (54 -> 59) and `filter` discarded it because 59 < 70
 [( )] `reduce` skipped it while folding
 [( )] It was removed before the map stage ran
 
@@ -361,7 +361,7 @@ A composed pipeline like `clean` reads as a single gesture, but the machine exec
 
 | Step | Function applied | Input value | Output value |
 |------|------------------|-------------|--------------|
-| start | — | `"  Hello World  "` | — |
+| start | - | `"  Hello World  "` | - |
 | 1 | `str.strip` | `"  Hello World  "` | `"Hello World"` |
 | 2 | `str.lower` | `"Hello World"` | `"hello world"` |
 | 3 | `s.replace(' ', '_')` | `"hello world"` | `"hello_world"` |
@@ -543,7 +543,7 @@ print(f"rsum({nums}) = {rsum(nums)}")
 
 Model 6 pushes recursion in two new directions: *mutual* recursion (two functions that call each other) and *structural* recursion (recursing along the shape of nested data, not a numeric counter). You will also see a fully functional merge sort — no mutation anywhere. Before diving in, study the worked example below that shows how to translate an imperative loop into a functional composition step by step.
 
-**Worked Example: Imperative → Functional**
+**Worked Example: Imperative -> Functional**
 
 Suppose you have this imperative code that sums the squares of all even numbers in a list:
 
@@ -558,9 +558,9 @@ for x in nums:
 Here is how to transform it step by step into a functional composition:
 
 **Step 1 — Identify the three loop concerns separately:**
-- *Filter*: keep only even numbers → `x % 2 == 0`
-- *Transform*: square each kept number → `x ** 2`
-- *Aggregate*: sum the results → `+`
+- *Filter*: keep only even numbers -> `x % 2 == 0`
+- *Transform*: square each kept number -> `x ** 2`
+- *Aggregate*: sum the results -> `+`
 
 **Step 2 — Write each concern as a lambda:**
 
@@ -660,7 +660,7 @@ Which of the following is a *pure* function?
 ---
 
 ---
-**🛑 In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+**In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
 
 ## Exercises (Homework — ~95 minutes total)
 

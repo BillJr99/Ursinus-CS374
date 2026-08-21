@@ -115,8 +115,8 @@ See the course schedule for the assigned and due dates — this is the most subs
 | Grammar lab due | Part 1's grammar complete via the lab; theory questions (Step 1c) drafted |
 | Skeleton lab due | `parse_primary` and `parse_unary` working via the lab; expression ladder underway |
 | Checkpoint | Expression ladder complete through `parse_expr` with passing tree-shape tests (Step 2b) |
-| Checkpoint | Statements, blocks, and the worked `while` example parsing (Steps 2c–2d) |
-| Checkpoint | Pretty-printer and unparser working (Steps 3a–3b) |
+| Checkpoint | Statements, blocks, and the worked `while` example parsing (Steps 2c-2d) |
+| Checkpoint | Pretty-printer and unparser working (Steps 3a-3b) |
 | Due date | Round-trip verification and error reports complete; readme and ZIP submitted |
 
 ---
@@ -186,7 +186,7 @@ Answer these in your readme — they exercise the Table-Driven and LR Parsing se
 
 1. **The dangling else, bottom-up.** An LR parser generator reports a **shift-reduce conflict** at the token `ELSE` for a grammar like yours. Explain, in terms of the parser's stack and the two available actions, what the conflict *is* — what does shifting choose, and what does reducing choose? Then give the two standard resolutions (a precedence/`%prec`-style declaration favoring shift, or grammar surgery into `matched`/`unmatched` productions) and state which one your grammar's Step 1b convention corresponds to.
 2. **Manufacture a reduce-reduce conflict.** Consider adding this pair of productions to your grammar: `const_stmt ::= LET IDENT EQ INT SEMICOLON` alongside the existing `let_stmt ::= LET IDENT EQ expr SEMICOLON`. Explain why an LR parser hits a **reduce-reduce conflict** on input like `let x = 42;` (which completed right-hand side matches the stack?), and restructure the productions to eliminate the conflict while keeping both language features.
-3. **One shift-reduce trace.** Using the toy grammar `E ::= E + T | T` and `T ::= INT`, execute the shift-reduce parse of `1 + 2 + 3` as a stack–input–action table (the format from the Table-Driven and LR Parsing session; expect about ten rows). Note the step where the parser reduces `E + T` to `E` *before* shifting the second `+` — and state which associativity that choice enforces.
+3. **One shift-reduce trace.** Using the toy grammar `E ::= E + T | T` and `T ::= INT`, execute the shift-reduce parse of `1 + 2 + 3` as a stack-input-action table (the format from the Table-Driven and LR Parsing session; expect about ten rows). Note the step where the parser reduces `E + T` to `E` *before* shifting the second `+` — and state which associativity that choice enforces.
 4. **Left recursion, both worlds.** The toy grammar above is left-recursive. State in one sentence each: why that grammar would send your recursive descent parser into an infinite loop, and why the LR parser handles it without complaint.
 
 ---
@@ -356,8 +356,8 @@ Write `unparse(node) -> str` that regenerates valid source code from the AST. Ru
 - Insert parentheses around a `BinOp` subexpression only when necessary to preserve the tree's meaning given standard precedence.
 - The rule: a child `BinOp` needs parentheses when its operator's precedence is *lower* than its parent's, or when it is the right child of a left-associative operator at the same precedence level.
 
-Example: `unparse(BinOp("+", Num(2), BinOp("*", Num(3), Num(4))))` → `"2 + 3 * 4"` (no parentheses needed).  
-Example: `unparse(BinOp("*", Num(2), BinOp("+", Num(3), Num(4))))` → `"2 * (3 + 4)"` (parentheses required).
+Example: `unparse(BinOp("+", Num(2), BinOp("*", Num(3), Num(4))))` -> `"2 + 3 * 4"` (no parentheses needed).  
+Example: `unparse(BinOp("*", Num(2), BinOp("+", Num(3), Num(4))))` -> `"2 * (3 + 4)"` (parentheses required).
 
 ### Step 3c: Round-Trip Verification
 
@@ -432,7 +432,7 @@ In this direction the LALR machinery of Bison (C) or PLY (Python) replaces the h
 
 **A.1 — Grammar file and declarations.** Write `parser.y` (Bison) or the PLY grammar module for the full language of Part 1. Declare a `%union` (Bison) with fields for numeric values, strings, and your AST node pointer, and type your tokens accordingly (`%token <dval> NUMBER`, `%token <sval> IDENT STRING`, and so on). Declare operator associativity and precedence with `%left`, `%right`, and `%nonassoc` — comparisons are `%nonassoc` to enforce the same no-chaining rule the core direction's grammar encodes structurally.
 
-**A.2 — Conflict-free productions.** Write the productions bottom-up, tightest binding first — `primary` → `unary` → `muldiv` → `addsub` → `comparison` → `and` → `or` — plus the statement, block, and program rules. Your precedence declarations must resolve every shift-reduce conflict: run `bison -v` (or inspect PLY's `parser.out`) and confirm **zero unresolved conflicts**. The dangling-else resolution of Step 1b still applies — document how the generator resolves it (the default shift is exactly "else binds to the nearest if") and cite the relevant state in the `.output`/`parser.out` automaton in your readme.
+**A.2 — Conflict-free productions.** Write the productions bottom-up, tightest binding first — `primary` -> `unary` -> `muldiv` -> `addsub` -> `comparison` -> `and` -> `or` — plus the statement, block, and program rules. Your precedence declarations must resolve every shift-reduce conflict: run `bison -v` (or inspect PLY's `parser.out`) and confirm **zero unresolved conflicts**. The dangling-else resolution of Step 1b still applies — document how the generator resolves it (the default shift is exactly "else binds to the nearest if") and cite the relevant state in the `.output`/`parser.out` automaton in your readme.
 
 **A.3 — AST-building actions.** Each production's semantic action builds exactly one AST node and nothing more — no evaluation inside the parser. In Python/PLY, build the same dataclass nodes from Step 2a; in C, use a tagged-union node struct with one constructor function per node type. The syntax/semantics boundary is part of the grade.
 
@@ -468,7 +468,7 @@ $$
 (i \cdot k) \bmod n \;<\; k
 $$
 
-Verify the rule by hand for $$E(3,8)$$ (steps 0, 3, 6 → `x..x..x.`) and one other $$(k, n)$$ pair before implementing, and include the hand-verification in your readme with a two-or-three-sentence argument for why the rule yields exactly $$k$$ onsets. Syntactically, Euclid is a postfix modifier among the `term` productions: `term LPAREN NUMBER COMMA NUMBER RPAREN`. Transcripts: `bd(3,8)` and `bd(5,8)`, each matching its hand-computed onset set.
+Verify the rule by hand for $$E(3,8)$$ (steps 0, 3, 6 -> `x..x..x.`) and one other $$(k, n)$$ pair before implementing, and include the hand-verification in your readme with a two-or-three-sentence argument for why the rule yields exactly $$k$$ onsets. Syntactically, Euclid is a postfix modifier among the `term` productions: `term LPAREN NUMBER COMMA NUMBER RPAREN`. Transcripts: `bd(3,8)` and `bd(5,8)`, each matching its hand-computed onset set.
 
 **B.5 — Polymeter.** `{a b, c d e}` runs its subsequences simultaneously at a common step rate, so different lengths drift and realign; `{a b, c d e}%4` fixes four steps per cycle. **Specify the semantics yourself, precisely, in displayed-equation style before writing code** — the specification is a graded artifact, and discovering your first draft was ambiguous is an intended outcome. Use strudel.cc to interrogate the corner cases (what happens on cycle 1? which subsequence sets the default step count?). Add the brace/comma/percent tokens, the productions, an `N_POLY` node, and your specification's evaluator case. Transcript: `{bd sn, hh hh hh}` across cycles 0-2, annotated to show drift and realignment.
 

@@ -316,7 +316,7 @@ void shared_ptr_demo() {
         std::cout << "use_count inside block: " << a.use_count() << "\n";
     }  // b and c destroyed; refcount drops to 1
     std::cout << "use_count after block: " << a.use_count() << "\n";
-}  // a destroyed; refcount = 0 → Node(1) deleted
+}  // a destroyed; refcount = 0 -> Node(1) deleted
 
 // --- Cycle problem: two nodes pointing at each other ---
 void cycle_demo() {
@@ -402,7 +402,7 @@ try:
 
     obj.release()                 # original ptr goes out of scope
     ref1.release()                # ref1 goes out of scope
-    ref2.release()                # ref2 goes out of scope → freed
+    ref2.release()                # ref2 goes out of scope -> freed
 
     print()
     print("=== Python's own refcount (sys.getrefcount adds 1 for the call arg) ===")
@@ -493,7 +493,7 @@ void lvalue_rvalue_demo() {
     int& lr = x;         // lvalue reference — binds to lvalue
     // int& bad = 42;    // ERROR: cannot bind lvalue ref to rvalue
     int&& rr = 42;       // rvalue reference — binds to rvalue
-    int&& rr2 = x + 1;   // x+1 is a temporary → rvalue reference OK
+    int&& rr2 = x + 1;   // x+1 is a temporary -> rvalue reference OK
 
     std::string s = "hello";
     std::string&& rs = s + " world"; // s + " world" is a temporary
@@ -832,7 +832,7 @@ void sequence_containers() {
     v.insert(v.begin()+2, 99);  // O(n) — shifts elements right
 
     // deque: double-ended queue, O(1) push_front AND push_back
-    // but non-contiguous memory → worse cache performance than vector
+    // but non-contiguous memory -> worse cache performance than vector
     std::deque<int> dq = {10, 20, 30};
     dq.push_front(5);   // O(1)
     dq.push_back(40);   // O(1)
@@ -955,10 +955,10 @@ void stl_algorithms() {
 
 | Category        | Read | Write | Multi-pass | Bidirectional | Random |
 |-----------------|:----:|:-----:|:----------:|:-------------:|:------:|
-| Input           | Yes  | —     | No         | —             | —      |
-| Output          | —    | Yes   | No         | —             | —      |
-| Forward         | Yes  | Yes   | Yes        | —             | —      |
-| Bidirectional   | Yes  | Yes   | Yes        | Yes           | —      |
+| Input           | Yes  | -     | No         | -             | -      |
+| Output          | -    | Yes   | No         | -             | -      |
+| Forward         | Yes  | Yes   | Yes        | -             | -      |
+| Bidirectional   | Yes  | Yes   | Yes        | Yes           | -      |
 | Random Access   | Yes  | Yes   | Yes        | Yes           | Yes    |
 
 `vector` and `deque` provide random-access iterators. `list`, `map`, and `set` provide bidirectional iterators. `forward_list` provides forward iterators. `istream_iterator` and `ostream_iterator` are input/output iterators.
@@ -990,14 +990,14 @@ When a class has virtual functions, the compiler adds a hidden pointer (the **vp
 ```
 Object layout in memory:
 +-------------------------------------+
-|  vptr ------------------------------+--→  vtable for Shape
+|  vptr ------------------------------+-->  vtable for Shape
 |-------------------------------------+       +-------------------------------+
 |  member fields...                   |       | [0]  &Shape::area      (pure) |
 `-------------------------------------+       | [1]  &Shape::perimeter (pure) |
                                               | [2]  &Shape::describe         |
 Object layout for Circle:                     `-------------------------------+
 +-------------------------------------+
-|  vptr ------------------------------+--→  vtable for Circle
+|  vptr ------------------------------+-->  vtable for Circle
 |-------------------------------------+       +-------------------------------+
 |  radius (double)                    |       | [0]  &Circle::area            |
 `-------------------------------------+       | [1]  &Circle::perimeter       |
@@ -1507,7 +1507,7 @@ Write 2-3 paragraphs addressing the following:
 2. **The PL theory connection.** Map your chosen feature to a concept from the programming languages theory portion of this course:
    - *Ownership types / affine types*: `unique_ptr`'s move-only semantics correspond to **affine types** (used at most once). Rust formalizes this as its ownership system. How does C++'s approach differ from Rust's compile-time enforcement?
    - *Parametric polymorphism*: Templates are C++'s mechanism for parametric polymorphism — the same construct studied in Hindley-Milner type theory (Haskell's `forall a. a -> a`). But C++ templates use *duck typing at instantiation time* rather than type-class constraints. How do C++20 Concepts close this gap?
-   - *Type erasure and existential types*: `std::function<int(int)>` hides the concrete callable type. In type theory, this corresponds to an **existential type** `∃T. (T, T→int)` — there exists some type T, along with a value of T and a function from T to int. How does `std::any` differ — what existential does it represent?
+   - *Type erasure and existential types*: `std::function<int(int)>` hides the concrete callable type. In type theory, this corresponds to an **existential type** `∃T. (T, T->int)` — there exists some type T, along with a value of T and a function from T to int. How does `std::any` differ — what existential does it represent?
    - *Lazy evaluation*: C++20 ranges are lazy in the same sense as Haskell's list combinators. Both defer computation until the value is demanded. What does this say about the relationship between the iterator protocol and **thunks** in lazy languages?
 
 3. **Design tradeoff.** Every C++ feature has a cost. Does your chosen feature introduce runtime overhead? Compile-time overhead? Code complexity? How does the C++ design philosophy of **zero-cost abstractions** justify or limit the feature's design?
@@ -1666,7 +1666,7 @@ print(f"  sizeof(Point) = {ctypes.sizeof(Point)} bytes")
 print(f"  offset(x) = {Point.x.offset}, offset(y) = {Point.y.offset}")
 
 r = Rect(Point(0.0, 0.0), Point(10.0, 5.0))
-print(f"\n  Rect: ({r.top_left.x},{r.top_left.y}) → ({r.bottom_right.x},{r.bottom_right.y})")
+print(f"\n  Rect: ({r.top_left.x},{r.top_left.y}) -> ({r.bottom_right.x},{r.bottom_right.y})")
 print(f"  sizeof(Rect) = {ctypes.sizeof(Rect)} bytes")
 
 print()

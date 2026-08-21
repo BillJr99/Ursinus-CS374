@@ -46,7 +46,7 @@ The parser is where the grammar becomes a program, and **recursive descent** is 
 > Every grammar rule becomes **exactly one Python function**. The function's body is a direct, mechanical translation of the production's right-hand side.
 >
 > ```
-> Rule:  expr → term ( ('+' | '-') term )*
+> Rule:  expr -> term ( ('+' | '-') term )*
 >
 > Becomes:
 >   def parse_expr():
@@ -92,9 +92,9 @@ Let's take a concrete expression grammar and trace exactly how each production b
 **Step 0 — Start with the grammar:**
 
 ```
-expr   → term  ( ('+' | '-') term  )*
-term   → factor ( ('*' | '/') factor )*
-factor → NUMBER | '(' expr ')'
+expr   -> term  ( ('+' | '-') term  )*
+term   -> factor ( ('*' | '/') factor )*
+factor -> NUMBER | '(' expr ')'
 ```
 
 **Step 1 — Each nonterminal becomes a function skeleton:**
@@ -107,10 +107,10 @@ def parse_factor(): ...   # handles factor
 
 **Step 2 — Fill in each rule mechanically:**
 
-`expr → term ( ('+' | '-') term )*`
-- Start with one `term` → call `parse_term()`
-- The `(...)* ` is EBNF repetition → use a `while` loop
-- Inside the loop, the alternation `'+' | '-'` → `if peek() in ('+', '-')`
+`expr -> term ( ('+' | '-') term )*`
+- Start with one `term` -> call `parse_term()`
+- The `(...)* ` is EBNF repetition -> use a `while` loop
+- Inside the loop, the alternation `'+' | '-'` -> `if peek() in ('+', '-')`
 
 ```python
 def parse_expr():
@@ -122,7 +122,7 @@ def parse_expr():
     return node
 ```
 
-**Step 3 — Do the same for `term → factor ( ('*' | '/') factor )*`:**
+**Step 3 — Do the same for `term -> factor ( ('*' | '/') factor )*`:**
 
 ```python
 def parse_term():
@@ -134,7 +134,7 @@ def parse_term():
     return node
 ```
 
-**Step 4 — For `factor → NUMBER | '(' expr ')'`, the alternation uses lookahead:**
+**Step 4 — For `factor -> NUMBER | '(' expr ')'`, the alternation uses lookahead:**
 
 ```python
 def parse_factor():
@@ -344,15 +344,15 @@ for source in ["print 42;", "let x = 7;", "let x 7;"]:
 
 > **Watch out! Left recursion will infinite-loop your parser.**
 >
-> The grammar `E → E + T | T` is **left-recursive**: `parse_E` calls `parse_E` as its very first action, before consuming any input. This causes infinite recursion and a stack overflow.
+> The grammar `E -> E + T | T` is **left-recursive**: `parse_E` calls `parse_E` as its very first action, before consuming any input. This causes infinite recursion and a stack overflow.
 >
-> **Transform it to:** `E → T E'` where `E' → + T E' | ε`
+> **Transform it to:** `E -> T E'` where `E' -> + T E' | ε`
 >
-> Or equivalently in EBNF (which is what we use in practice): `E → T { '+' T }`
+> Or equivalently in EBNF (which is what we use in practice): `E -> T { '+' T }`
 >
 > The EBNF version uses a `while` loop in code — no recursion, no infinite loop, same left-associative tree.
 >
-> **The rule:** If your grammar has `A → A something`, rewrite it as `A → something { something }`.
+> **The rule:** If your grammar has `A -> A something`, rewrite it as `A -> something { something }`.
 
 Recall the expression ladder's rule `E -> E + T | T`. Translate it naively: `parse_E` immediately calls `parse_E`, which immediately calls `parse_E`... infinite recursion before consuming a single token. **Left-recursive productions cannot be parsed by recursive descent directly.** The standard repair converts left recursion into EBNF repetition, which the translation table turns into a loop:
 
@@ -366,7 +366,7 @@ The two grammars accept the same strings; the loop version builds the *same left
 >
 > Most recursive descent parsers only look at the **current token** to decide which rule to apply. This is called **LL(1)** — "Left-to-right scan, Leftmost derivation, 1 token of lookahead."
 >
-> If your grammar requires looking 2+ tokens ahead, your grammar probably needs refactoring, not your parser. For example, a grammar like `stmt → IDENT '=' expr | IDENT '(' args ')'` requires seeing the token *after* the IDENT to decide which rule to use. The fix is usually to left-factor: `stmt → IDENT stmt_tail` where `stmt_tail → '=' expr | '(' args ')'`.
+> If your grammar requires looking 2+ tokens ahead, your grammar probably needs refactoring, not your parser. For example, a grammar like `stmt -> IDENT '=' expr | IDENT '(' args ')'` requires seeing the token *after* the IDENT to decide which rule to use. The fix is usually to left-factor: `stmt -> IDENT stmt_tail` where `stmt_tail -> '=' expr | '(' args ')'`.
 >
 > **The rule:** If you find yourself writing `peek_ahead(2)`, refactor the grammar first.
 
@@ -394,7 +394,7 @@ These exercises build confidence in the grammar-to-code mapping and the call str
 
 > *Exercises adapted from the recursive descent parsing technique covered in standard compiler texts, including Douglas Thain's *Introduction to Compilers and Language Design* (Chapter 4).*
 
-A recursive descent parser for `expr → term { '+' term }` will call `parse_term()` how many times for input `1 + 2 + 3`?
+A recursive descent parser for `expr -> term { '+' term }` will call `parse_term()` how many times for input `1 + 2 + 3`?
 
 [( )] Once (parse_term is called one time total)
 [( )] Twice (once per `+` operator)
@@ -403,8 +403,8 @@ A recursive descent parser for `expr → term { '+' term }` will call `parse_ter
 
 When parsing a statement like `if ( cond ) stmt`, the parser's call sequence is:
 
-[( )] `parse_if_stmt()` → `parse_cond()` → `parse_stmt()`
-[( )] `parse_stmt()` → `parse_cond()` → `parse_if_stmt()`
+[( )] `parse_if_stmt()` -> `parse_cond()` -> `parse_stmt()`
+[( )] `parse_stmt()` -> `parse_cond()` -> `parse_if_stmt()`
 [(X)] `parse_stmt()` calls `parse_if_stmt()` when it sees `if` at the start; `parse_if_stmt()` then calls `parse_cond()` and `parse_stmt()` for its sub-parts
 [( )] All three functions are called in parallel by the lexer
 
@@ -412,8 +412,8 @@ When parsing a statement like `if ( cond ) stmt`, the parser's call sequence is:
    
    Grammar:
    ```
-   expr → term { '+' term }
-   term → INT
+   expr -> term { '+' term }
+   term -> INT
    ```
    
    Input tokens: `1 + 2`
@@ -425,13 +425,13 @@ When parsing a statement like `if ( cond ) stmt`, the parser's call sequence is:
      call parse_term()
        consume INT('1')
        pos=1, return 1
-     pos=1, peek()='+' → loop condition true
+     pos=1, peek()='+' -> loop condition true
      consume '+'
      pos=2, peek()='2'
      call parse_term()
        consume INT('2')
        pos=3, return 3
-     pos=3, peek()=EOF → loop condition false
+     pos=3, peek()=EOF -> loop condition false
      return tree for (1 + 2)
    ```
    
@@ -441,15 +441,15 @@ When parsing a statement like `if ( cond ) stmt`, the parser's call sequence is:
    
    Grammar:
    ```
-   stmt → 'print' expr | 'let' IDENT '=' expr
-   expr → INT
+   stmt -> 'print' expr | 'let' IDENT '=' expr
+   expr -> INT
    ```
    
    Input: `let x = 42`
    
    Trace:
    - `parse_stmt()` is called
-   - `peek()` is `'let'` → checks first alternative ('print') — fails because lookahead is 'let' not 'print'
+   - `peek()` is `'let'` -> checks first alternative ('print') — fails because lookahead is 'let' not 'print'
    - Checks second alternative ('let') — succeeds because lookahead matches
    - Calls the path for 'let IDENT = expr'
    - Show which function made which token consumption decision
@@ -459,9 +459,9 @@ When parsing a statement like `if ( cond ) stmt`, the parser's call sequence is:
    
    Grammar:
    ```
-   stmt_list → { stmt }
-   stmt → 'print' expr
-   expr → INT
+   stmt_list -> { stmt }
+   stmt -> 'print' expr
+   expr -> INT
    ```
    
    Input: empty (just EOF)
@@ -487,7 +487,7 @@ When parsing a statement like `if ( cond ) stmt`, the parser's call sequence is:
    
    **Bad grammar** (left-recursive):
    ```
-   expr → expr '+' term | term
+   expr -> expr '+' term | term
    ```
    
    **Corresponding (broken) code:**
@@ -503,12 +503,12 @@ When parsing a statement like `if ( cond ) stmt`, the parser's call sequence is:
    
    Now show the **fixed grammar** (using a while loop):
    ```
-   expr → term { '+' term }
+   expr -> term { '+' term }
    ```
    
    Trace the same input `1`:
    - `parse_expr(0)` calls `parse_term(0)`
-   - Token consumed; the while loop condition checks for `+` → not found
+   - Token consumed; the while loop condition checks for `+` -> not found
    - Loop exits and returns
    
    Explain: why does the fixed version consume a token before recursing, avoiding infinite recursion?
@@ -517,9 +517,9 @@ When parsing a statement like `if ( cond ) stmt`, the parser's call sequence is:
    
    Grammar:
    ```
-   program → stmt*
-   stmt → 'let' IDENT '=' expr ';'
-   expr → INT { '+' INT }
+   program -> stmt*
+   stmt -> 'let' IDENT '=' expr ';'
+   expr -> INT { '+' INT }
    ```
    
    Input: `let x = 1 + 2 ;`
@@ -536,7 +536,7 @@ When parsing a statement like `if ( cond ) stmt`, the parser's call sequence is:
 
 ## Model 3: Complete Recursive Descent Parser
 
-> **Intuition:** The code cell below is a **self-contained recursive descent parser** — it includes its own tokenizer (lexer) and parser together, with no external dependencies. The grammar it parses supports variable assignments, `if`/`while` statements, arithmetic with full precedence (`*` and `/` bind tighter than `+` and `-`), and `print`. Read the parser functions top-to-bottom and notice that the call graph between functions exactly mirrors the grammar's nesting. The `parse_expr` → `parse_term` → `parse_factor` chain is how precedence is encoded: deeper in the call stack = higher precedence.
+> **Intuition:** The code cell below is a **self-contained recursive descent parser** — it includes its own tokenizer (lexer) and parser together, with no external dependencies. The grammar it parses supports variable assignments, `if`/`while` statements, arithmetic with full precedence (`*` and `/` bind tighter than `+` and `-`), and `print`. Read the parser functions top-to-bottom and notice that the call graph between functions exactly mirrors the grammar's nesting. The `parse_expr` -> `parse_term` -> `parse_factor` chain is how precedence is encoded: deeper in the call stack = higher precedence.
 
 The code cell below is a **self-contained recursive descent parser** for a mini-language that includes: variable assignments, `if`/`while` statements, arithmetic expressions with full precedence (add/subtract at one level, multiply/divide at a higher level), and `print`. It tokenizes its own input so you can run it immediately, then parses a short multi-statement program and prints the resulting AST as nested tuples.
 
@@ -947,7 +947,7 @@ print("meaning * is evaluated first -- this is how precedence is encoded in the 
 ---
 
 ---
-**🛑 In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+**In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
 
 ## Going Deeper (Optional Pointers)
 

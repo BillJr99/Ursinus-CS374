@@ -79,7 +79,7 @@ for a, b in [(1, 2), (1.0, 2.0), ("a", "b"), ([1], [2])]:
         result = a + b
         print(f"  {type(a).__name__} + {type(b).__name__} = {result!r}   ✓")
     except TypeError as e:
-        print(f"  {type(a).__name__} + {type(b).__name__} → TypeError: {e}  ✗")
+        print(f"  {type(a).__name__} + {type(b).__name__} -> TypeError: {e}  ✗")
 
 print()
 
@@ -89,7 +89,7 @@ for a, b in [(3, 4), (3.0, 4.0), ("ha", 3), ([1, 2], 3), ([1, 2], [3, 4])]:
         result = a * b
         print(f"  {type(a).__name__} * {type(b).__name__} = {result!r}   ✓")
     except TypeError as e:
-        print(f"  {type(a).__name__} * {type(b).__name__} → TypeError: {e}  ✗")
+        print(f"  {type(a).__name__} * {type(b).__name__} -> TypeError: {e}  ✗")
 
 print()
 print("=== '==' Comparison Orthogonality ===")
@@ -100,7 +100,7 @@ comparisons = [
 ]
 for a, b in comparisons:
     result = (a == b)
-    print(f"  {a!r} == {b!r}  →  {result}")
+    print(f"  {a!r} == {b!r}  ->  {result}")
 
 print()
 print("=== Container + Operator Asymmetry ===")
@@ -110,7 +110,7 @@ print(f"  set | set = {s1 | s2}   (union)  ✓")
 try:
     _ = s1 + s2
 except TypeError as e:
-    print(f"  set + set → TypeError: {e}  ✗")
+    print(f"  set + set -> TypeError: {e}  ✗")
 
 # dicts: | works in Python 3.9+, + does not
 d1, d2 = {"a": 1}, {"b": 2}
@@ -118,11 +118,11 @@ try:
     merged = d1 | d2
     print(f"  dict | dict = {merged}  ✓")
 except TypeError as e:
-    print(f"  dict | dict → TypeError: {e}  ✗")
+    print(f"  dict | dict -> TypeError: {e}  ✗")
 try:
     _ = d1 + d2
 except TypeError as e:
-    print(f"  dict + dict → TypeError: {e}  ✗")
+    print(f"  dict + dict -> TypeError: {e}  ✗")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
@@ -188,7 +188,7 @@ user = find_user_java_style(db, "bob")
 try:
     print(f"  bob's age: {user['age']}")  # NullPointerException equivalent
 except TypeError as e:
-    print(f"  bob lookup → crash: {e}  (the null dereference)")
+    print(f"  bob lookup -> crash: {e}  (the null dereference)")
 
 print()
 print("=== Design 2: Optional type (Kotlin / Swift / Rust Option) ===")
@@ -325,11 +325,11 @@ for a, b in [(10, 2), (10, 0), ("10", 2)]:
     try:
         print(f"  safe_divide({a!r}, {b!r}) = {safe_divide(a, b)}")
     except (TypeError, ZeroDivisionError) as e:
-        print(f"  safe_divide({a!r}, {b!r}) → {type(e).__name__}: {e}")
+        print(f"  safe_divide({a!r}, {b!r}) -> {type(e).__name__}: {e}")
     try:
         print(f"  unsafe_divide({a!r}, {b!r}) = {unsafe_divide(a, b)}")
     except Exception as e:
-        print(f"  unsafe_divide({a!r}, {b!r}) → {type(e).__name__}: {e}")
+        print(f"  unsafe_divide({a!r}, {b!r}) -> {type(e).__name__}: {e}")
 
 print()
 print("=== Dynamic Dispatch (writability UP, reliability cost) ===")
@@ -351,7 +351,7 @@ for obj in [Duck(), Dog(), Rock()]:
     try:
         print(f"  {type(obj).__name__}.sound() = {make_sound(obj)!r}")
     except AttributeError as e:
-        print(f"  {type(obj).__name__}.sound() → AttributeError: {e}")
+        print(f"  {type(obj).__name__}.sound() -> AttributeError: {e}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 

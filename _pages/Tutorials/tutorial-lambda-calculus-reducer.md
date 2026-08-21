@@ -204,7 +204,7 @@ print(substitute(lam("x", var("x")), "x", var("y")))  # (λx. x)
 print(substitute(lam("z", var("x")), "x", var("y")))  # (λz. y)
 
 # THE HARD CASE — capture would occur without alpha-renaming:
-# (λy. x)[x := y]  ← naively gives λy. y, but should give λw. y for fresh w
+# (λy. x)[x := y]  <- naively gives λy. y, but should give λw. y for fresh w
 result = substitute(lam("y", var("x")), "x", var("y"))
 print(result)  # (λv_1. y) or similar — y is not captured
 # Verify: the bound variable name is NOT 'y'
@@ -246,7 +246,7 @@ def beta_step(term):
 
 # Test
 redex = app(lam("x", app(var("x"), var("x"))), var("y"))
-# (λx. x x) y  →β  y y
+# (λx. x x) y  ->β  y y
 print(beta_step(redex))   # (y y)
 
 # identity applied to z
@@ -823,7 +823,7 @@ y f = let x = f x in x
 -- equivalently: y f = f (y f)
 
 -- But Haskell's type system rejects the standard λ-calculus Y because
--- it would require an infinite type (α = α → α).
+-- it would require an infinite type (α = α -> α).
 -- Instead, use fix from Data.Function:
 import Data.Function (fix)
 

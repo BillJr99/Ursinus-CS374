@@ -78,17 +78,17 @@ def run_nfa(machine, s, trace=False):
         for state in current:
             nxt |= machine["delta"].get((state, ch), frozenset())
         current = nxt
-        if trace: print(f"  '{ch}' → {{{', '.join(sorted(current))}}}")
+        if trace: print(f"  '{ch}' -> {{{', '.join(sorted(current))}}}")
         if not current:
             if trace: print(f"  DEAD STATE (all paths exhausted)")
             return False
     accepted = bool(current & machine["accept"])
-    if trace: print(f"  → {'ACCEPT' if accepted else 'REJECT'}")
+    if trace: print(f"  -> {'ACCEPT' if accepted else 'REJECT'}")
     return accepted
 
 print("=== NFA: ends-in-ab ===")
 for s in ["ab", "aab", "abab", "ba", "a", "b", "aabb", ""]:
-    print(f"  {s!r:7} → {run_nfa(ENDS_IN_AB_NFA, s)}")
+    print(f"  {s!r:7} -> {run_nfa(ENDS_IN_AB_NFA, s)}")
 
 print("\n=== Trace of 'aab' ===")
 run_nfa(ENDS_IN_AB_NFA, "aab", trace=True)
@@ -106,7 +106,7 @@ run_nfa(ENDS_IN_AB_NFA, "aab", trace=True)
 
 ---
 
-## Model 4: Subset Construction — NFA → DFA
+## Model 4: Subset Construction — NFA -> DFA
 
 The subset construction is the key insight that connects NFAs to DFAs. Each DFA state corresponds to a *frozenset* of NFA states — "the set of places the NFA could be after reading this much input." The algorithm simply performs a reachability search over those sets, building the DFA transition table as it goes. Once you see the code, you will notice that Model 3's simulation was already doing this implicitly on every input string.
 
@@ -117,7 +117,7 @@ The subset construction is the key insight that connects NFAs to DFAs. Each DFA 
 def subset_construction(nfa):
     """Convert NFA to DFA via subset construction."""
     start = nfa["start"]  # already a frozenset
-    dfa_states = {}       # frozenset → dict of transitions
+    dfa_states = {}       # frozenset -> dict of transitions
     worklist = [start]
     visited = {start}
 
@@ -164,7 +164,7 @@ dfa = subset_construction(ENDS_IN_AB_NFA)
 print("=== Subset Construction Result ===")
 print(f"DFA states ({len(dfa['delta_sets'])} total):")
 for state_set, transitions in sorted(dfa['delta_sets'].items(), key=str):
-    is_start  = "→" if state_set == dfa["start"] else " "
+    is_start  = "->" if state_set == dfa["start"] else " "
     is_accept = "*" if state_set in dfa["accept"] else " "
     state_name = "{" + ",".join(sorted(state_set)) + "}"
     print(f"  {is_start}{is_accept} {state_name}: {dict(sorted((k,'{'+','.join(sorted(v))+'}') for k,v in transitions.items()))}")
@@ -226,7 +226,7 @@ The "ends-with-b" DFA has exactly two states: *not-ending-in-b* (start) and *jus
 ```python
 # DFA: strings over {a, b} that end with 'b'.
 # State 0: start / "last char was not b"
-# State 1: "last char was b"  ← accepting
+# State 1: "last char was b"  <- accepting
 # Adapted from Allison, Figure 2-1.
 
 ENDS_WITH_B = {
@@ -247,9 +247,9 @@ def run_dfa(machine, s, trace=False):
             if trace: print(f"  '{ch}': DEAD STATE")
             return False
         state = row[ch]
-        if trace: print(f"  '{ch}' → {state}")
+        if trace: print(f"  '{ch}' -> {state}")
     ok = state in machine["accept"]
-    if trace: print(f"  final: {state} → {'ACCEPT' if ok else 'REJECT'}")
+    if trace: print(f"  final: {state} -> {'ACCEPT' if ok else 'REJECT'}")
     return ok
 
 tests = [("b",True),("ab",True),("ba",False),("abb",True),
@@ -260,7 +260,7 @@ for s, expected in tests:
     got = run_dfa(ENDS_WITH_B, s)
     ok  = (got == expected)
     all_pass = all_pass and ok
-    print(f"  {'PASS' if ok else 'FAIL'}  {s!r:8} → {got}")
+    print(f"  {'PASS' if ok else 'FAIL'}  {s!r:8} -> {got}")
 print(f"\nAll {len(tests)} tests passed: {all_pass}")
 print("\n=== Trace of 'aab' ===")
 run_dfa(ENDS_WITH_B, "aab", trace=True)
@@ -393,7 +393,7 @@ a_bits = [1,0,1,1]; b_bits = [1,0,0,1]; carry = 0
 for i,(ba,bb) in enumerate(zip(a_bits, b_bits)):
     total = ba + bb + carry
     out   = total % 2; carry = total // 2
-    print(f"  col {i}: ({ba}+{bb}+carry_in={carry-(total//2-carry)}) → sum_bit={out}, carry_out={carry}")
+    print(f"  col {i}: ({ba}+{bb}+carry_in={carry-(total//2-carry)}) -> sum_bit={out}, carry_out={carry}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 

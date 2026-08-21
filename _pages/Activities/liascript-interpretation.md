@@ -59,7 +59,7 @@ Before writing the evaluator, place it on the map. There are two fundamentally d
 | Cost model | Pays a small translation tax on every execution of every node | Pays translation once, then runs at full speed |
 | Change the source? | Just run again | Recompile first |
 
-The pipeline you have built so far — lexer → parser → AST — is **identical for both**. They diverge only at this step: a compiler of your class language would consume the very same AST your parser produces and emit instructions instead of values. (That path is walked in the *Table-Driven and LR Parsing* session's compile–link–load model and the *Build a Bytecode VM* tutorial.) Everything you learn today about evaluation order and environments applies to both worlds.
+The pipeline you have built so far — lexer -> parser -> AST — is **identical for both**. They diverge only at this step: a compiler of your class language would consume the very same AST your parser produces and emit instructions instead of values. (That path is walked in the *Table-Driven and LR Parsing* session's compile-link-load model and the *Build a Bytecode VM* tutorial.) Everything you learn today about evaluation order and environments applies to both worlds.
 
 Quick check — a tree-walking interpreter and a compiler for the same language both receive the AST for `x * (y + 1)`. What does each produce from it?
 
@@ -163,13 +163,13 @@ Suppose the AST is `BinOp("+", Num(1), BinOp("*", Num(2), Num(3)))` and `env = {
 evaluate( BinOp("+", Num(1), BinOp("*", Num(2), Num(3))), env )
   | It's a BinOp("+"), so evaluate children first (post-order):
   |- evaluate( Num(1), env )
-  |    It's a Num → return 1                              ← left = 1
+  |    It's a Num -> return 1                              <- left = 1
   `- evaluate( BinOp("*", Num(2), Num(3)), env )
        | It's a BinOp("*"), evaluate children:
-       |- evaluate( Num(2), env ) → return 2             ← left = 2
-       `- evaluate( Num(3), env ) → return 3             ← right = 3
-       2 * 3 = 6 → return 6                              ← right = 6
-  1 + 6 = 7 → return 7
+       |- evaluate( Num(2), env ) -> return 2             <- left = 2
+       `- evaluate( Num(3), env ) -> return 3             <- right = 3
+       2 * 3 = 6 -> return 6                              <- right = 6
+  1 + 6 = 7 -> return 7
 ```
 
 **Key observations:** (1) Multiplication finishes entirely before addition sees any result. (2) The environment is threaded through every call but never consulted for `Num` nodes. (3) Operator precedence was *already encoded* in the tree structure by the parser — the evaluator never re-derives it.
@@ -219,11 +219,11 @@ def evaluate_traced(node, env):
 
 def _eval_inner(node, env, indent):
     if isinstance(node, Num):
-        print(f"{indent}Num({node.value}) → {node.value}")
+        print(f"{indent}Num({node.value}) -> {node.value}")
         return node.value
     if isinstance(node, Var):
         val = env[node.name]
-        print(f"{indent}Var({node.name!r}) → {val}  [lookup in env]")
+        print(f"{indent}Var({node.name!r}) -> {val}  [lookup in env]")
         return val
     if isinstance(node, BinOp):
         print(f"{indent}BinOp({node.op!r}) — evaluating children...")

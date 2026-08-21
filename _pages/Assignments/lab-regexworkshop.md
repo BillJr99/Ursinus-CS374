@@ -60,7 +60,7 @@ Use raw strings throughout, and write one sentence per pattern explaining each n
 
 Create `mini_lexer.py`: a single compiled alternation built from an ordered `TOKEN_SPEC` list with named groups, driven by `re.finditer`. Your skeleton needs only three rules — `LET` (the keyword `let`), `IDENT` (Part 1's identifier pattern), and `NUMBER` (Part 1's integer pattern) — plus skipped whitespace and gap detection: any character between matches that no rule claims is reported with its position, not silently dropped.
 
-Verify against this worked example: `let x = 42` → `LET("let")`, `IDENT("x")`, *gap report for `=`*, `NUMBER("42")`. Then confirm the ordering lesson that the Regex assignment's Part 2 builds on: `lets` must come out as one `IDENT`, not `LET` + `IDENT("s")` — if it splits, your keyword rule is missing its boundary check or is ordered after the identifier rule.
+Verify against this worked example: `let x = 42` -> `LET("let")`, `IDENT("x")`, *gap report for `=`*, `NUMBER("42")`. Then confirm the ordering lesson that the Regex assignment's Part 2 builds on: `lets` must come out as one `IDENT`, not `LET` + `IDENT("s")` — if it splits, your keyword rule is missing its boundary check or is ordered after the identifier rule.
 
 ---
 

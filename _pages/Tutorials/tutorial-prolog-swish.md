@@ -15,7 +15,7 @@ info:
 readings:
   - rtitle: "The Power of Prolog (Markus Triska)"
     rlink: "https://www.metalevel.at/prolog"
-  - rtitle: "SWISH — SWI-Prolog in the Browser"
+  - rtitle: "SWISH: SWI-Prolog in the Browser"
     rlink: "https://swish.swi-prolog.org/"
   - rtitle: "The Ninety-Nine Prolog Problems"
     rlink: "https://www.metalevel.at/prolog/99"

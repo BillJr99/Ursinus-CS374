@@ -64,7 +64,7 @@ int main() { return yylex(); }
 
 A flex file has three sections separated by `%%`:
 1. **Definitions**: `%option` directives, named patterns, C headers
-2. **Rules**: pattern → action pairs
+2. **Rules**: pattern -> action pairs
 3. **User code**: C functions, including `main` if desired
 
 Build and test:
@@ -608,37 +608,37 @@ function LR-PARSE(tokens):
 Before reading the bison output, run the algorithm yourself on a tiny grammar. The code below simulates a shift-reduce parser for simple arithmetic expressions (`n + n * n`) with an explicit stack and action trace — the same algorithm bison generates for the calculator, just with a hand-written action table instead of a generated one.
 
 ```python
-# Shift-reduce parser trace for: E → E+T | T,  T → T*F | F,  F → (E) | n
-# ACTION table and GOTO table are encoded as dicts (state, symbol) → action.
+# Shift-reduce parser trace for: E -> E+T | T,  T -> T*F | F,  F -> (E) | n
+# ACTION table and GOTO table are encoded as dicts (state, symbol) -> action.
 # Actions: ("shift", next_state), ("reduce", rule), "accept", "error"
 
-# Grammar rules: name → (symbols_to_pop, nonterminal_to_push)
+# Grammar rules: name -> (symbols_to_pop, nonterminal_to_push)
 RULES = {
-    "E→E+T": (3, "E"),  # pop E, +, T  → push E
-    "E→T":   (1, "E"),
-    "T→T*F": (3, "T"),
-    "T→F":   (1, "T"),
-    "F→n":   (1, "F"),
-    "F→(E)": (3, "F"),  # pop (, E, )  → push F
+    "E->E+T": (3, "E"),  # pop E, +, T  -> push E
+    "E->T":   (1, "E"),
+    "T->T*F": (3, "T"),
+    "T->F":   (1, "T"),
+    "F->n":   (1, "F"),
+    "F->(E)": (3, "F"),  # pop (, E, )  -> push F
 }
 
 # Minimal LR(0) action table for this grammar (hand-constructed, state 0-11)
 ACTION = {
     (0,"n"):  ("shift",5),  (0,"("):  ("shift",4),
     (1,"+"):  ("shift",6),  (1,"$"):  "accept",
-    (2,"+"):  ("reduce","E→T"), (2,"*"): ("shift",7), (2,"$"): ("reduce","E→T"),
-    (3,"+"):  ("reduce","T→F"), (3,"*"): ("reduce","T→F"), (3,"$"): ("reduce","T→F"),
+    (2,"+"):  ("reduce","E->T"), (2,"*"): ("shift",7), (2,"$"): ("reduce","E->T"),
+    (3,"+"):  ("reduce","T->F"), (3,"*"): ("reduce","T->F"), (3,"$"): ("reduce","T->F"),
     (4,"n"):  ("shift",5),  (4,"("):  ("shift",4),
-    (5,"+"):  ("reduce","F→n"), (5,"*"): ("reduce","F→n"), (5,"$"): ("reduce","F→n"),
+    (5,"+"):  ("reduce","F->n"), (5,"*"): ("reduce","F->n"), (5,"$"): ("reduce","F->n"),
     (6,"n"):  ("shift",5),  (6,"("):  ("shift",4),
     (7,"n"):  ("shift",5),  (7,"("):  ("shift",4),
     (8,"+"):  ("shift",6),  (8,")"):  ("shift",11),
-    (9,"+"):  ("reduce","E→E+T"), (9,"*"): ("shift",7),
-              (9,")"): ("reduce","E→E+T"), (9,"$"): ("reduce","E→E+T"),
-    (10,"+"): ("reduce","T→T*F"), (10,"*"): ("reduce","T→T*F"),
-              (10,")"): ("reduce","T→T*F"), (10,"$"): ("reduce","T→T*F"),
-    (11,"+"): ("reduce","F→(E)"), (11,"*"): ("reduce","F→(E)"),
-              (11,")"): ("reduce","F→(E)"), (11,"$"): ("reduce","F→(E)"),
+    (9,"+"):  ("reduce","E->E+T"), (9,"*"): ("shift",7),
+              (9,")"): ("reduce","E->E+T"), (9,"$"): ("reduce","E->E+T"),
+    (10,"+"): ("reduce","T->T*F"), (10,"*"): ("reduce","T->T*F"),
+              (10,")"): ("reduce","T->T*F"), (10,"$"): ("reduce","T->T*F"),
+    (11,"+"): ("reduce","F->(E)"), (11,"*"): ("reduce","F->(E)"),
+              (11,")"): ("reduce","F->(E)"), (11,"$"): ("reduce","F->(E)"),
 }
 GOTO = {
     (0,"E"):1, (0,"T"):2, (0,"F"):3,
@@ -671,7 +671,7 @@ def lr_parse(tokens):
             return
         elif action[0] == "shift":
             _, next_state = action
-            print(f"{disp_stack:35} {disp_rest:18} SHIFT  {tok} → state {next_state}")
+            print(f"{disp_stack:35} {disp_rest:18} SHIFT  {tok} -> state {next_state}")
             sym_stack.append(tok); stack.append(next_state); pos += 1
         elif action[0] == "reduce":
             rule = action[1]
@@ -693,8 +693,8 @@ lr_parse(["n", "*", "n", "+", "n"])
 ### Questions to Consider
 
 - In the first trace (`n + n * n`), at what point does the parser shift `*` instead of reducing the first `n + n`? What state and lookahead determine this decision?
-- In the RULES table, `"E→E+T": (3, "E")` pops 3 symbols. What are those 3 symbols, and why does popping them from the stack correspond to "recognizing a complete E+T"?
-- If you added `"E→E+E"` to the grammar (making addition left-recursive in a second way), which `ACTION` table entry would conflict with an existing one? This is a shift/reduce conflict — identify the state and the competing actions.
+- In the RULES table, `"E->E+T": (3, "E")` pops 3 symbols. What are those 3 symbols, and why does popping them from the stack correspond to "recognizing a complete E+T"?
+- If you added `"E->E+E"` to the grammar (making addition left-recursive in a second way), which `ACTION` table entry would conflict with an existing one? This is a shift/reduce conflict — identify the state and the competing actions.
 
 ---
 

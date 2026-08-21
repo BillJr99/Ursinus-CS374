@@ -32,7 +32,7 @@ Hindley-Milner (HM) type inference deduces the type of every expression without 
 
 The algorithm has four components, built in order:
 
-1. **Type terms** — the language of types: `Int`, `Bool`, `α` (type variable), `α → β` (function type)
+1. **Type terms** — the language of types: `Int`, `Bool`, `α` (type variable), `α -> β` (function type)
 2. **Substitution** — mapping from type variable names to types; `apply(subst, type)` replaces variables
 3. **Unification** — given two types, find the most general substitution making them equal
 4. **Algorithm W** — walk the AST, generate and solve type constraints, return the principal type
@@ -66,7 +66,7 @@ try:
     class TFun:
         param: Any
         ret:   Any
-        def __str__(self): return f"({self.param} → {self.ret})"
+        def __str__(self): return f"({self.param} -> {self.ret})"
 
     @dataclass(frozen=True)
     class TList:
@@ -116,7 +116,7 @@ try:
     @dataclass(frozen=True)
     class TFun:
         param: object; ret: object
-        def __str__(self): return f"({self.param} → {self.ret})"
+        def __str__(self): return f"({self.param} -> {self.ret})"
     @dataclass(frozen=True)
     class TList:
         elem: object
@@ -158,15 +158,15 @@ try:
     print("Before apply:", t)
     print("After apply:", apply(s, t))
 
-    # Chain resolution: α0 → α1 → Int
+    # Chain resolution: α0 -> α1 -> Int
     s2 = {"α0": TVar("α1"), "α1": TInt}
-    print("Chain: α0 in {α0→α1, α1→Int}:", apply(s2, TVar("α0")))
+    print("Chain: α0 in {α0->α1, α1->Int}:", apply(s2, TVar("α0")))
 
     # Composition
-    s_a = {"α0": TVar("α1")}     # first: substitute α0 → α1
-    s_b = {"α1": TInt}           # then: substitute α1 → Int
+    s_a = {"α0": TVar("α1")}     # first: substitute α0 -> α1
+    s_b = {"α1": TInt}           # then: substitute α1 -> Int
     composed = compose(s_b, s_a)
-    print("compose({α1→Int}, {α0→α1}):", composed)
+    print("compose({α1->Int}, {α0->α1}):", composed)
     print("α0 after compose:", apply(composed, TVar("α0")))
 
 except Exception as e:
@@ -201,7 +201,7 @@ try:
     @dataclass(frozen=True)
     class TFun:
         param: object; ret: object
-        def __str__(self): return f"({self.param} → {self.ret})"
+        def __str__(self): return f"({self.param} -> {self.ret})"
     @dataclass(frozen=True)
     class TList:
         elem: object
@@ -268,7 +268,7 @@ try:
 
     # 2. Unify function types
     s = unify(TFun(TVar("α0"), TVar("α1")), TFun(TInt, TBool))
-    print("unify(α0→α1, Int→Bool):", s)
+    print("unify(α0->α1, Int->Bool):", s)
 
     # 3. Occurs check failure
     try:
@@ -285,7 +285,7 @@ try:
     # 5. Unify with substitution already in place
     s = {"α0": TInt}
     s2 = unify(TVar("α0"), TVar("α1"), s)
-    print("unify α0 α1 with {α0→Int}:", s2, "→ α1 =", apply(s2, TVar("α1")))
+    print("unify α0 α1 with {α0->Int}:", s2, "-> α1 =", apply(s2, TVar("α1")))
 
 except Exception as e:
     print(f"[hm:unify] {e}")
@@ -322,7 +322,7 @@ try:
     @dataclass(frozen=True)
     class TFun:
         param: object; ret: object
-        def __str__(self): return f"({self.param} → {self.ret})"
+        def __str__(self): return f"({self.param} -> {self.ret})"
     @dataclass(frozen=True)
     class TList:
         elem: object
@@ -386,7 +386,7 @@ try:
                 t = t.instantiate()
             return (subst, apply(subst, t))
 
-        # Unary minus: operand must be Int → result Int
+        # Unary minus: operand must be Int -> result Int
         if tag == 'neg':
             _, e = expr
             s1, t1 = infer(e, env, subst)
@@ -455,7 +455,7 @@ try:
                 s, t = infer(arg, env, s)
                 arg_types.append(t)
             ret = TVar(fresh())
-            # Build expected type: arg1 → arg2 → ... → ret
+            # Build expected type: arg1 -> arg2 -> ... -> ret
             expected = ret
             for t in reversed(arg_types):
                 expected = TFun(t, expected)
@@ -467,27 +467,27 @@ try:
     # --- Tests ---
     env = {}
 
-    # let x = 42  → x: Int
+    # let x = 42  -> x: Int
     s, t = infer(('let', 'x', ('int', 42)), env)
-    print(f"let x = 42 → {t}")
+    print(f"let x = 42 -> {t}")
 
-    # 1 + 2 → Int
+    # 1 + 2 -> Int
     s, t = infer(('binop', '+', ('int', 1), ('int', 2)), env)
-    print(f"1 + 2 → {t}")
+    print(f"1 + 2 -> {t}")
 
-    # (λx. x + 1) → (Int → Int)
+    # (λx. x + 1) -> (Int -> Int)
     s, t = infer(('fun', ['x'], ('binop', '+', ('var', 'x'), ('int', 1))), env)
-    print(f"λx. x+1 → {apply(s, t)}")
+    print(f"λx. x+1 -> {apply(s, t)}")
 
-    # (λx. x)(5) → Int
+    # (λx. x)(5) -> Int
     s, t = infer(('call',
                   ('fun', ['x'], ('var', 'x')),
                   [('int', 5)]), env)
-    print(f"(λx. x)(5) → {apply(s, t)}")
+    print(f"(λx. x)(5) -> {apply(s, t)}")
 
-    # if true then 1 else 2 → Int
+    # if true then 1 else 2 -> Int
     s, t = infer(('if', ('bool', True), ('int', 1), ('int', 2)), env)
-    print(f"if true then 1 else 2 → {t}")
+    print(f"if true then 1 else 2 -> {t}")
 
     # Type error: if 1 then 2 else 3
     try:
@@ -510,7 +510,7 @@ except Exception as e:
 
 ## Phase 5: Let-Polymorphism
 
-Without polymorphism, `let id = λx. x in id(1); id(true)` fails: the first call forces `x: Int`, and the second call on the same `id` then fails with type `Bool`. **Let-polymorphism** (Milner's key insight) generalizes the type of `id` before adding it to the environment: `id: ∀α. α → α`. Each use of `id` gets a fresh copy of `α`.
+Without polymorphism, `let id = λx. x in id(1); id(true)` fails: the first call forces `x: Int`, and the second call on the same `id` then fails with type `Bool`. **Let-polymorphism** (Milner's key insight) generalizes the type of `id` before adding it to the environment: `id: ∀α. α -> α`. Each use of `id` gets a fresh copy of `α`.
 
 ```python
 try:
@@ -531,7 +531,7 @@ try:
     @dataclass(frozen=True)
     class TFun:
         param: object; ret: object
-        def __str__(self): return f"({self.param} → {self.ret})"
+        def __str__(self): return f"({self.param} -> {self.ret})"
     TInt = TCon("Int"); TBool = TCon("Bool")
 
     def apply(s, t):
@@ -653,21 +653,21 @@ try:
         raise ValueError(f"unknown: {expr!r}")
 
     # Test: let id = λx. x in (id(1), id(true)) — must type-check
-    # id(1) uses id: Int → Int
-    # id(true) uses id: Bool → Bool
+    # id(1) uses id: Int -> Int
+    # id(true) uses id: Bool -> Bool
     prog = ('let_poly', 'id',
             ('fun', ['x'], ('var', 'x')),
             ('call', ('var', 'id'), [('int', 42)]))
 
     s, t = infer_poly(prog, {})
-    print(f"let id=λx.x in id(42) → {t}")
+    print(f"let id=λx.x in id(42) -> {t}")
 
     # Using id at Bool:
     prog2 = ('let_poly', 'id',
              ('fun', ['x'], ('var', 'x')),
              ('call', ('var', 'id'), [('bool', True)]))
     s, t = infer_poly(prog2, {})
-    print(f"let id=λx.x in id(true) → {t}")
+    print(f"let id=λx.x in id(true) -> {t}")
 
     # Self-application (should fail — occurs check):
     try:
@@ -756,15 +756,15 @@ Here is the minimal complete HM inferencer that handles the Mini language's expr
 | `BoolLit` | `TBool` |
 | `NilLit` | `TList(fresh())` |
 | `Var(name)` | lookup in env; instantiate if TypeScheme |
-| `BinOp('+', l, r)` | unify l=Int, r=Int → Int (or overloaded for Str) |
-| `BinOp('<', l, r)` | unify l=r=fresh TV → Bool |
-| `BinOp('and', l, r)` | unify l=r=Bool → Bool |
-| `UnaryOp('-', e)` | unify e=Int → Int |
-| `UnaryOp('not', e)` | unify e=Bool → Bool |
-| `IfStmt(c, t, e)` | unify c=Bool, unify t=e → unified type |
+| `BinOp('+', l, r)` | unify l=Int, r=Int -> Int (or overloaded for Str) |
+| `BinOp('<', l, r)` | unify l=r=fresh TV -> Bool |
+| `BinOp('and', l, r)` | unify l=r=Bool -> Bool |
+| `UnaryOp('-', e)` | unify e=Int -> Int |
+| `UnaryOp('not', e)` | unify e=Bool -> Bool |
+| `IfStmt(c, t, e)` | unify c=Bool, unify t=e -> unified type |
 | `LetStmt(x, val)` | infer val; generalize; add to env |
-| `FunExpr(params, body)` | fresh vars for params; infer body → TFun |
-| `Call(f, args)` | infer f; infer args; unify f = arg1→...→ret |
+| `FunExpr(params, body)` | fresh vars for params; infer body -> TFun |
+| `Call(f, args)` | infer f; infer args; unify f = arg1->...->ret |
 | `ReturnStmt(e)` | infer e (return type handled at function level) |
 | `PrintStmt(e)` | infer e (any type); return TNil |
 
@@ -780,7 +780,7 @@ Here is the minimal complete HM inferencer that handles the Mini language's expr
 
 3. **Generalizing too early.** Generalize only in `let` bindings, not at every variable use. Generalizing inside a function body produces unsound polymorphism.
 
-4. **Missing occurs check.** Without it, `id(id)` would produce a circular type `α = α → α`, and `apply` would loop forever.
+4. **Missing occurs check.** Without it, `id(id)` would produce a circular type `α = α -> α`, and `apply` would loop forever.
 
 5. **Mutating the environment.** The type environment should be immutable (use `{**env, name: scheme}` for extension); mutations cause inference to fail on later branches.
 

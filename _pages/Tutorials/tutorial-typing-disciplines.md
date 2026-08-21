@@ -631,13 +631,13 @@ Questions to consider:
 1. Without blame tracking, what would the error message look like if `f_typed` simply called `int(x)` and raised `ValueError` on a string? Why is knowing the **call site** more useful than knowing the **function body line** where the failure occurred?
 2. TypeScript compiles to JavaScript and erases all types. mypy-annotated Python runs without any runtime checks. Given this, what happens when a TypeScript function typed `(n: number) => number` is called from JavaScript with a string? Does blame semantics apply?
 3. If `f` is a typed function called from **untyped** code, should blame go to the **caller** or the **callee** when a type mismatch occurs? Justify your answer using the principle that blame should be assigned to the party that made a promise it did not keep.
-4. The `Proxy` above only tracks a single `blame_label`. In a real system, typed values can pass through many boundaries (typed → untyped → typed → untyped). How might you extend `Proxy` to track a **chain** of blame labels rather than just one?
+4. The `Proxy` above only tracks a single `blame_label`. In a real system, typed values can pass through many boundaries (typed -> untyped -> typed -> untyped). How might you extend `Proxy` to track a **chain** of blame labels rather than just one?
 
 ### Try it: exercises
 
 **Exercise 1: Extend the mini checker with `Let`.** Add a `Let` node to the `infer` function above. `Let(name, ty, val, body)` optionally annotates `name` with type `ty` (which may be `None`, meaning `DYN`). The checker should: (a) infer the type of `val`; (b) check that the inferred type is consistent with `ty` if `ty` is not `None`; (c) add `name` to the environment with the annotated type (or `DYN` if unannotated); (d) infer and return the type of `body`. Write two test cases: one that passes (annotated correctly) and one that fails (annotation mismatch).
 
-**Exercise 2: Non-transitivity and blame chains.** The consistency relation is not transitive: `consistent(INT, DYN)` and `consistent(DYN, STR)` are both true, but `consistent(INT, STR)` is false. Construct a three-module scenario (a typed module A, an untyped module B, and a typed module C) where a value flows from A through B to C. Describe precisely: (a) what check is inserted at the A→B boundary; (b) what check is inserted at the B→C boundary; (c) why non-transitivity means the B→C check can fail even when the A→B check succeeded.
+**Exercise 2: Non-transitivity and blame chains.** The consistency relation is not transitive: `consistent(INT, DYN)` and `consistent(DYN, STR)` are both true, but `consistent(INT, STR)` is false. Construct a three-module scenario (a typed module A, an untyped module B, and a typed module C) where a value flows from A through B to C. Describe precisely: (a) what check is inserted at the A->B boundary; (b) what check is inserted at the B->C boundary; (c) why non-transitivity means the B->C check can fail even when the A->B check succeeded.
 
 ---
 

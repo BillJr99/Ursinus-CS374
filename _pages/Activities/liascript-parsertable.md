@@ -144,7 +144,7 @@ Now read the table straight off the states. A dot before a **terminal** means *s
 
 `FOLLOW(E) = { + ) $ }` and `FOLLOW(T) = FOLLOW(F) = { * + ) $ }`.
 
-| State | `num` | `*` | `+` | `$` | → E | → T | → F |
+| State | `num` | `*` | `+` | `$` | -> E | -> T | -> F |
 |---|---|---|---|---|---|---|---|
 | 0 | s4 | | | | 1 | 2 | 3 |
 | 1 | | | s6 | **accept** | | | |
@@ -395,7 +395,7 @@ Which statement about the pipeline is correct?
 ---
 
 ---
-**🛑 In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+**In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
 
 ## Model 4 (At Home): LL(1) Parse Table Construction and Table-Driven Parser
 
@@ -532,7 +532,7 @@ def ll1_parse(tokens, grammar, table, start='E'):
             if current in table[top]:
                 production = table[top][current]
                 prod_str = ' '.join(production) if production != [EPSILON] else 'ε'
-                trace.append((stack_str, input_str, f'{top} → {prod_str}'))
+                trace.append((stack_str, input_str, f'{top} -> {prod_str}'))
                 stack.pop()
                 if production != [EPSILON]:
                     for sym in reversed(production):
@@ -765,12 +765,12 @@ In an LR(0) shift-reduce parser, the stack corresponds to:
 
 3. *PDA to CFG.* The language $\{ww^R \mid w \in \{a,b\}^*\}$ (strings that are palindromes) is context-free. Write a CFG for it, then describe how a PDA would recognize it. What is the key operation the PDA performs at the midpoint?
 
-4. *Shift-reduce as PDA.* A shift-reduce parser is a PDA in disguise. For the simple grammar `E → E + T | T` and `T → id`, trace the shift-reduce actions on input `id + id`:
+4. *Shift-reduce as PDA.* A shift-reduce parser is a PDA in disguise. For the simple grammar `E -> E + T | T` and `T -> id`, trace the shift-reduce actions on input `id + id`:
    - List each action (SHIFT or REDUCE) and the stack contents after each step
    - Identify the two "PDA states" (reading input vs. reducing)
    - Explain what is pushed and popped at each reduction step
 
-5. *Grammar to PDA.* Given a context-free grammar, there is a standard algorithm to construct a PDA that recognizes the same language (the "top-down PDA"). Apply it to the grammar `S → aSb | ε`. Write out the PDA's transition rules and trace it on `aabb`.
+5. *Grammar to PDA.* Given a context-free grammar, there is a standard algorithm to construct a PDA that recognizes the same language (the "top-down PDA"). Apply it to the grammar `S -> aSb | ε`. Write out the PDA's transition rules and trace it on `aabb`.
 
 ---
 

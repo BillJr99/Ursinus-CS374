@@ -267,7 +267,7 @@ def t_error(t):
 
 lexer = lex.lex()
 
-# --- Precedence (low → high) ---
+# --- Precedence (low -> high) ---
 precedence = (
     ('left', 'PLUS', 'MINUS'),      # lowest
     ('left', 'TIMES', 'DIVIDE'),    # higher
@@ -470,7 +470,7 @@ for src in sources:
 
 ---
 
-## Model 5: A Complete Mini Language — Flex/Bison → PLY Translation
+## Model 5: A Complete Mini Language — Flex/Bison -> PLY Translation
 
 This model ties everything together into a small but complete language — lexer, parser, AST, and evaluator all working as a unit. Its main purpose is to make the Flex/Bison-to-PLY translation concrete: inline comments in the code label every PLY construct with its Bison or Flex counterpart, so you can cross-reference the two tool families side by side. After working through this model you should be able to take a `.l`/`.y` grammar you have already written and port it to PLY, or vice versa, with confidence.
 
@@ -635,10 +635,10 @@ def evaluate(node, env=None):
 
 # ===== TEST PROGRAMS =====
 tests = [
-    "let x = 3 in let y = 4 in x + y",      # nested let → 7.0
-    "if 5 < 10 6 else 0",                    # if-else → 6.0
-    "print 3 + 4 * 2",                       # print → 11.0
-    "let a = 2 in let b = 3 in a * b + 1",  # → 7.0
+    "let x = 3 in let y = 4 in x + y",      # nested let -> 7.0
+    "if 5 < 10 6 else 0",                    # if-else -> 6.0
+    "print 3 + 4 * 2",                       # print -> 11.0
+    "let a = 2 in let b = 3 in a * b + 1",  # -> 7.0
 ]
 
 for prog in tests:

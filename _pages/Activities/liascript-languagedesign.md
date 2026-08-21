@@ -152,11 +152,11 @@ for key in oa:
 print()
 print("=== Niche-driven design question ===")
 print("  If your niche is 'beginner scripting for middle schoolers':")
-print("    → Variant A: fewer symbols to type, English-like")
-print("    → Variant B: matches C/Java they will encounter next, prepares them")
+print("    -> Variant A: fewer symbols to type, English-like")
+print("    -> Variant B: matches C/Java they will encounter next, prepares them")
 print()
 print("  If your niche is 'scripting for existing C++ developers':")
-print("    → Variant B: familiar, zero learning overhead on syntax")
+print("    -> Variant B: familiar, zero learning overhead on syntax")
 print()
 print("  The right answer depends on the niche. Name your niche first.")
 ```
@@ -202,9 +202,9 @@ The node inventory is the living specification of your interpreter. Every AST no
 # Leave evaluator_method as "TODO" until it is implemented.
 NODE_INVENTORY = [
     # -- Literals --------------------------------------------------------------
-    ("NumLit",     ["value: float"],                   "primary → NUMBER",           "eval_numlit"),
-    ("StrLit",     ["value: str"],                     "primary → STRING",           "eval_strlit"),
-    ("BoolLit",    ["value: bool"],                    "primary → 'true'|'false'",   "eval_boollit"),
+    ("NumLit",     ["value: float"],                   "primary -> NUMBER",           "eval_numlit"),
+    ("StrLit",     ["value: str"],                     "primary -> STRING",           "eval_strlit"),
+    ("BoolLit",    ["value: bool"],                    "primary -> 'true'|'false'",   "eval_boollit"),
 
     # -- Expressions ----------------------------------------------------------
     ("BinOp",      ["op: str", "left: Node", "right: Node"],
@@ -213,9 +213,9 @@ NODE_INVENTORY = [
     ("LogicOp",    ["op: str", "left: Node", "right: Node"],
                                                        "or_expr / and_expr",         "eval_logicop"),
     ("NotOp",      ["operand: Node"],                  "not_expr",                   "eval_notop"),
-    ("VarRef",     ["name: str"],                      "primary → IDENT",            "eval_varref"),
+    ("VarRef",     ["name: str"],                      "primary -> IDENT",            "eval_varref"),
     ("Assign",     ["name: str", "value: Node"],       "let_stmt / assign_stmt",     "eval_assign"),
-    ("Call",       ["callee: str", "args: list[Node]"],"primary → IDENT '(' ... ')'", "eval_call"),
+    ("Call",       ["callee: str", "args: list[Node]"],"primary -> IDENT '(' ... ')'", "eval_call"),
 
     # -- Statements -----------------------------------------------------------
     ("LetStmt",    ["name: str", "init: Node"],        "let_stmt",                   "eval_letstmt"),
@@ -250,7 +250,7 @@ print()
 todo_count = sum(1 for _, _, _, m in NODE_INVENTORY if m == "TODO")
 done_count = len(NODE_INVENTORY) - todo_count
 print(f"  Implemented: {done_count}/{len(NODE_INVENTORY)} nodes")
-print(f"  TODO:        {todo_count}/{len(NODE_INVENTORY)} nodes  ← these are your sprint backlog")
+print(f"  TODO:        {todo_count}/{len(NODE_INVENTORY)} nodes  <- these are your sprint backlog")
 print()
 print("  Sprint 1 goal: zero TODOs for core nodes (Lit, BinOp, VarRef, Assign, If, While)")
 print("  Sprint 2 goal: zero TODOs for functions and your niche feature")
@@ -351,7 +351,7 @@ The Coordinator is allocating Sprint 1 tasks. The niche feature (dice rolls) is 
 5. *SEMANTICS.md skeleton.* Using your prior assignment documentation, populate a `SEMANTICS.md` with at minimum: truthiness policy, division by zero policy, scoping rules (lexical or dynamic, block or function scope), variable-before-assignment behavior, and your null/absent-value policy. Each section: the rule, an example program, and the expected output.
 
 ---
-**🛑 In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+**In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
 
 ## Reflection Prompt
 

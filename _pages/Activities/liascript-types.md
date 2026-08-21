@@ -101,13 +101,13 @@ print("=== Python Type Behavior ===")
 try:
     result = "5" - 1   # JavaScript would give 4; Python refuses
 except TypeError as e:
-    print(f"'5' - 1 → TypeError: {e}")
+    print(f"'5' - 1 -> TypeError: {e}")
 
 # String + number: also refused
 try:
     result = "hello" + 42
 except TypeError as e:
-    print(f"'hello' + 42 → TypeError: {e}")
+    print(f"'hello' + 42 -> TypeError: {e}")
 
 # Dynamic: no compile-time check; type errors only happen at runtime
 def risky(x):
@@ -119,7 +119,7 @@ print(f"risky('ab') = {risky('ab')}")  # string * 2 = "abab" — licensed!
 try:
     print(risky([1, 2]) + 1)   # list * 2 works, but list + 1 fails at runtime
 except TypeError as e:
-    print(f"risky([1,2]) + 1 → TypeError: {e}")
+    print(f"risky([1,2]) + 1 -> TypeError: {e}")
 
 # The "hidden path" problem:
 def categorize(x):
@@ -178,7 +178,7 @@ except ValidationError as e:
     print(e)                    # line: Input should be a valid integer ...
 ```
 
-Both behaviors from the *Type Systems* axes show up here, made concrete. pydantic is **strong** — it refuses `"seven"` as an `int` — yet it performs **deliberate, declared coercion** (`"7"` → `7`): coercion you opted into by choosing pydantic, not the silent coercion of a weakly typed language. Turn coercion off entirely with strict mode (`model_config = ConfigDict(strict=True)`), and `"7"` is rejected too.
+Both behaviors from the *Type Systems* axes show up here, made concrete. pydantic is **strong** — it refuses `"seven"` as an `int` — yet it performs **deliberate, declared coercion** (`"7"` -> `7`): coercion you opted into by choosing pydantic, not the silent coercion of a weakly typed language. Turn coercion off entirely with strict mode (`model_config = ConfigDict(strict=True)`), and `"7"` is rejected too.
 
 ## Validators: When a "Type" Encodes an Invariant
 
@@ -225,7 +225,7 @@ This is the same **check-before-you-compute** gatekeeper you will write into you
 # Part III: Synthesis and Practice
 
 ---
-**🛑 In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+**In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
 
 ## 3. Exercises
 

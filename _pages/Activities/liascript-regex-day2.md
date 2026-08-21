@@ -72,8 +72,8 @@ Matching is not always a single left-to-right sweep. Whenever the pattern offers
 
 | Step | `a*` currently holds | Rest of pattern needs | Rest of input is | Outcome |
 |------|----------------------|-----------------------|------------------|---------|
-| 1 | `"aaa"` (greedy maximum) | `ab` | `"b"` | `a` vs `b` fails → **backtrack** |
-| 2 | `"aa"` (gave one back) | `ab` | `"ab"` | `ab` = `ab` → **MATCH** |
+| 1 | `"aaa"` (greedy maximum) | `ab` | `"b"` | `a` vs `b` fails -> **backtrack** |
+| 2 | `"aa"` (gave one back) | `ab` | `"ab"` | `ab` = `ab` -> **MATCH** |
 
 Two attempts, one backtrack. Now trace the same pattern against `"ab"` yourself before running the cell: `a*` first holds `"a"`, the rest of the pattern needs `ab` but only `"b"` remains — fail; backtrack so `a*` holds `""`, the rest of the input is `"ab"` — match on the second attempt again.
 

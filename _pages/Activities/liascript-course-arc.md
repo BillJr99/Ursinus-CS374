@@ -189,7 +189,7 @@ print("Notice: ('+', 3.0, ('*', 4.0, 2.0)) -- multiplication binds tighter!")
 
 **Critical Thinking Questions (CTQs)**
 
-> **CTQ 5** The grammar has `term → factor (('*'|'/') factor)*` nested inside `expr → term (('+'|'-') term)*`. How does this nesting enforce that `*` has higher precedence than `+`?
+> **CTQ 5** The grammar has `term -> factor (('*'|'/') factor)*` nested inside `expr -> term (('+'|'-') term)*`. How does this nesting enforce that `*` has higher precedence than `+`?
 
 > **CTQ 6** The `parse_expr` method calls `parse_term`, which calls `parse_factor`. This is "recursive descent." What happens when `parse_factor` sees `(`? Trace through the parsing of `(3 + 4) * 2` step by step.
 
@@ -400,7 +400,7 @@ print(">>> By Demo Day, you will have added YOUR OWN features.")
 
 The blueprints, the materials, the inspector, and the construction crew all have to work together in a specific order — you cannot frame walls before the foundation cures. The language implementation pipeline enforces the same discipline: raw source text flows through a scanner, then a parser, then a type checker, then an interpreter, with each stage handing a well-defined data structure to the next. This model shows all four stages in sequence so you can see, for the first time, how everything you have explored today fits into a single chain.
 
-## Model 5: The Full Pipeline — Scanning → Parsing → Typing → Interpreting
+## Model 5: The Full Pipeline — Scanning -> Parsing -> Typing -> Interpreting
 
 Every programming language implementation is a **pipeline**: source text enters one end, and meaning comes out the other. The stages are scanning (breaking text into tokens), parsing (building an AST from tokens), type-checking (verifying the AST is well-typed), and interpreting or compiling (producing a result). The code below shows all four stages working together.
 
@@ -536,7 +536,7 @@ In Model 1, `TRUE = lambda x: lambda y: x`. What is the type of `TRUE` in Haskel
 
 ---
 
-In Model 2, the grammar has `expr → term (('+'|'-') term)*`. What does the `*` mean?
+In Model 2, the grammar has `expr -> term (('+'|'-') term)*`. What does the `*` mean?
 
 [( )] The `+` and `-` operators are optional and can appear at most once
 [(X)] Zero or more occurrences of `(('+'|'-') term)` — the expression can have any number of additions or subtractions

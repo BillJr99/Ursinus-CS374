@@ -131,15 +131,15 @@ def evaluate(node, env):
 
 # Test 1: false condition — else branch evaluated, then_ (Bomb) skipped
 result1 = evaluate(Cond(False, Bomb(), Num(42)), {})
-print(f"false → else: {result1}")  # 42
+print(f"false -> else: {result1}")  # 42
 
 # Test 2: true condition — then_ evaluated, else_ (Bomb) skipped
 result2 = evaluate(Cond(True, Num(99), Bomb()), {})
-print(f"true → then: {result2}")   # 99
+print(f"true -> then: {result2}")   # 99
 
 # Test 3: both branches safe
 result3 = evaluate(Cond(Num(0), Num(1), Num(2)), {})
-print(f"0 → else: {result3}")  # 2 (0 is falsy)
+print(f"0 -> else: {result3}")  # 2 (0 is falsy)
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
@@ -248,14 +248,14 @@ You now know *that* `and`/`or` short-circuit, but there is a second independent 
 ```python
 # Python's short-circuit with value-preserving semantics
 print("Python 'and' returns operand:")
-print(f"  True and 'hello'  → {True and 'hello'!r}")
-print(f"  False and 'hello' → {False and 'hello'!r}")
-print(f"  0 and 'hello'     → {0 and 'hello'!r}")
+print(f"  True and 'hello'  -> {True and 'hello'!r}")
+print(f"  False and 'hello' -> {False and 'hello'!r}")
+print(f"  0 and 'hello'     -> {0 and 'hello'!r}")
 
 print("\nPython 'or' returns operand:")
-print(f"  '' or 'default'   → {('' or 'default')!r}")
-print(f"  0 or 42           → {(0 or 42)!r}")
-print(f"  'x' or 'default'  → {('x' or 'default')!r}")
+print(f"  '' or 'default'   -> {('' or 'default')!r}")
+print(f"  0 or 42           -> {(0 or 42)!r}")
+print(f"  'x' or 'default'  -> {('x' or 'default')!r}")
 
 print("\nCommon Python idiom: default values")
 name = ""
@@ -528,7 +528,7 @@ print(f"env after: {env}")     # n=0, total=15
 
 ### Critical Thinking Questions
 
-8. Predict the output before running; then run. If they differ, the bug hunt order is: lexer → parser tree (use pretty-printer!) → evaluator. Why that order?
+8. Predict the output before running; then run. If they differ, the bug hunt order is: lexer -> parser tree (use pretty-printer!) -> evaluator. Why that order?
 9. Print the environment after execution. Should `n` still exist after the loop? Defend your language's answer; both choices are defensible.
 10. Add a `truthy(0.0)` call and a `truthy(None)` call to the test. What do they return? How does your `truthy` definition match Python's? Where do they differ?
 
@@ -545,7 +545,7 @@ from dataclasses import dataclass
 from typing import Any
 import re
 
-# Minimal tokenizer → parser → evaluator pipeline for the REPL
+# Minimal tokenizer -> parser -> evaluator pipeline for the REPL
 @dataclass
 class Num:  value: float
 @dataclass
@@ -637,7 +637,7 @@ print(f"\nFinal environment: {env}")
 ---
 
 ---
-**🛑 In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+**In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
 
 ## 3. Exercises
 

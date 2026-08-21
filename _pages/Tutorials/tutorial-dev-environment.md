@@ -230,8 +230,8 @@ git config user.email "you@example.com"
 
 **Choice 1 — HTTPS with a personal access token (PAT). Recommended default.**
 
-1. On GitHub: **Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token.**
-2. Scope it tightly: *Only select repositories* → `cs374-work`; Repository permissions → **Contents: Read and write**. Set an expiration at or beyond the end of the semester.
+1. On GitHub: **Settings -> Developer settings -> Personal access tokens -> Fine-grained tokens -> Generate new token.**
+2. Scope it tightly: *Only select repositories* -> `cs374-work`; Repository permissions -> **Contents: Read and write**. Set an expiration at or beyond the end of the semester.
 3. Copy the token (it is shown once).
 4. When `git push` prompts for a password, paste the token. To avoid retyping it every session, cache it in memory for the session:
 
@@ -417,6 +417,6 @@ Verify with `flex --version` and `bison --version` as in Step 4.
 | Verify toolchain | `python3 --version && pytest --version && flex --version && bison --version` |
 | One-repo git identity | `git config user.name "..."` / `git config user.email "..."` (in `/workspace`) |
 | Cache the PAT for a session | `git config credential.helper 'cache --timeout=7200'` |
-| The daily loop | start → work → `pytest` → `git add -A && git commit` → `git push` |
+| The daily loop | start -> work -> `pytest` -> `git add -A && git commit` -> `git push` |
 | Fresh environment | exit, then `docker compose run --rm cs374` again |
 | Native fallback | `uv venv && uv add pytest hypothesis ply` (+ OS flex/bison only if needed) |

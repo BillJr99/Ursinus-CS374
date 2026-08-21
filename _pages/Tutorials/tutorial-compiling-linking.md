@@ -143,16 +143,16 @@ add:
 ```
 High address
 +---------------------+
-|   caller's frame    |  ← RBP (after prologue)
+|   caller's frame    |  <- RBP (after prologue)
 |---------------------+
-|  return address     |  ← pushed by CALL instruction
-|---------------------+  ← RBP points here (our frame)
-|  saved RBP          |  ← pushed by push %rbp
+|  return address     |  <- pushed by CALL instruction
+|---------------------+  <- RBP points here (our frame)
+|  saved RBP          |  <- pushed by push %rbp
 |---------------------+
-|  local variable a   |  ← -4(%rbp)
+|  local variable a   |  <- -4(%rbp)
 |---------------------+
-|  local variable b   |  ← -8(%rbp)
-`---------------------+  ← RSP (stack pointer)
+|  local variable b   |  <- -8(%rbp)
+`---------------------+  <- RSP (stack pointer)
 Low address
 ```
 
@@ -206,7 +206,7 @@ Relocation:
 
 The **linker** (`ld`, usually invoked via `gcc`) takes multiple object files (and libraries) and produces an executable by:
 
-1. **Merging sections**: All `.text` sections → one `.text` segment; all `.data` → one `.data` segment
+1. **Merging sections**: All `.text` sections -> one `.text` segment; all `.data` -> one `.data` segment
 2. **Symbol resolution**: For each `U` (undefined) symbol, find which other `.o` file defines it
 3. **Relocation**: Fill in all the placeholder addresses with actual virtual addresses
 
@@ -217,7 +217,7 @@ libc.a:   contains printf.o which defines printf
 Linker:
   1. Merge .text sections: main code + printf code
   2. Assign virtual addresses: .text starts at 0x401000
-  3. Resolve: main's call to printf → patch with printf's address
+  3. Resolve: main's call to printf -> patch with printf's address
   4. Output executable ELF with all addresses filled in
 ```
 
@@ -235,8 +235,8 @@ Linker:
 # See what dynamic libraries a program needs:
 ldd /bin/ls
 # linux-vdso.so.1 (virtual syscall library)
-# libselinux.so.1 → /lib/x86_64-linux-gnu/libselinux.so.1
-# libc.so.6 → /lib/x86_64-linux-gnu/libc.so.6
+# libselinux.so.1 -> /lib/x86_64-linux-gnu/libselinux.so.1
+# libc.so.6 -> /lib/x86_64-linux-gnu/libc.so.6
 ```
 
 ---
@@ -276,7 +276,7 @@ ELF File Layout:
 ```bash
 # The "magic number" — all ELF files start with these 4 bytes:
 xxd hello | head -1
-# 7f 45 4c 46  → \x7f E L F
+# 7f 45 4c 46  -> \x7f E L F
 
 # Full ELF header:
 readelf -h hello
@@ -285,9 +285,9 @@ readelf -h hello
 # Data:    2's complement, little endian
 # Type:    EXEC (executable file)
 # Machine: Advanced Micro Devices X86-64
-# Entry:   0x401060  ← this is where execution starts (_start, not main!)
-# PH off:  64       ← program header table offset
-# SH off:  ...      ← section header table offset
+# Entry:   0x401060  <- this is where execution starts (_start, not main!)
+# PH off:  64       <- program header table offset
+# SH off:  ...      <- section header table offset
 
 # Sections:
 readelf -S hello
@@ -323,8 +323,8 @@ When you run `./hello`, the OS executes a **loader** (`execve` syscall on Linux)
 
 1. **Reads the ELF header** to find segment info
 2. **Maps segments into virtual memory** using `mmap`:
-   - `.text` → read+execute (shared between multiple running instances)
-   - `.data` + `.bss` → read+write (private per process)
+   - `.text` -> read+execute (shared between multiple running instances)
+   - `.data` + `.bss` -> read+write (private per process)
 3. **Maps the stack** (a region of anonymous memory)
 4. **Loads shared libraries** (`.so` files listed in `.dynamic`) via the *dynamic linker* (`ld.so`)
 5. **Resolves dynamic symbols** (fills in the Global Offset Table / Procedure Linkage Table)
@@ -422,7 +422,7 @@ script.py
 AST (Abstract Syntax Tree)
     |
     v  Python compiler (compile())
-Bytecode (.pyc)          ← cached in __pycache__/
+Bytecode (.pyc)          <- cached in __pycache__/
     |
     v  CPython interpreter (ceval.c)
 Values (Python objects)
@@ -492,10 +492,10 @@ JavaScript source
 AST
     |
     v  Ignition (bytecode interpreter)
-Bytecode            ← runs initially
+Bytecode            <- runs initially
     |
     v  TurboFan (JIT compiler, when "hot")
-Native machine code ← recompiles frequently-executed functions
+Native machine code <- recompiles frequently-executed functions
 ```
 
 This is called **Just-In-Time (JIT) compilation**: start interpreted, profile which functions are hot, then compile those to native code. V8 can achieve 50-80% of C++ performance for some workloads.
@@ -609,10 +609,10 @@ gcc math_utils.o main.o -o program
 
 ```
 hello.c
-  |  #include → paste headers, expand #define
+  |  #include -> paste headers, expand #define
   v
 hello.i   (preprocessed source)
-  |  parse → AST → IR → code generation
+  |  parse -> AST -> IR -> code generation
   v
 hello.s   (x86-64 assembly)
   |  assemble each instruction

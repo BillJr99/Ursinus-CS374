@@ -40,17 +40,17 @@ info:
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-scheme.md"
     - rtitle: "Lambda Calculus Part 2 Activity"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-lambdacalculus2.md"
-    - rtitle: "The Power of Prolog (Markus Triska) — Direction F"
+    - rtitle: "The Power of Prolog (Markus Triska): Direction F"
       rlink: "https://www.metalevel.at/prolog"
-    - rtitle: "SWISH — SWI-Prolog in the Browser (Direction F)"
+    - rtitle: "SWISH: SWI-Prolog in the Browser (Direction F)"
       rlink: "https://swish.swi-prolog.org/"
     - rtitle: "Prolog in the Browser with SWISH (Tutorial)"
       rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/Prolog"
-    - rtitle: "Make-a-Lisp (mal) — Direction G target"
+    - rtitle: "Make-a-Lisp (mal): Direction G target"
       rlink: "https://github.com/kanaka/mal"
-    - rtitle: "Strudel (TidalCycles) — Direction G target"
+    - rtitle: "Strudel (TidalCycles): Direction G target"
       rlink: "https://github.com/tidalcycles/strudel"
-    - rtitle: "tree-sitter — Direction G target"
+    - rtitle: "tree-sitter: Direction G target"
       rlink: "https://tree-sitter.github.io/tree-sitter/"
 
 tags:
@@ -146,19 +146,19 @@ Implement and test each function. Each must be accompanied by its type signature
 
 **`total_length(words: list[str]) -> int`**  
 Return the total number of characters across all words longer than three letters.  
-Example: `total_length(["hi", "hello", "world", "it"])` → `10` (hello=5, world=5).
+Example: `total_length(["hi", "hello", "world", "it"])` -> `10` (hello=5, world=5).
 
 **`product_of_odds(nums: list[int]) -> int`**  
 Return the product of all odd numbers. Define and document the empty-product case (return `1` for the empty list — this is mathematically the multiplicative identity).  
-Example: `product_of_odds([1, 2, 3, 4, 5])` → `15`.
+Example: `product_of_odds([1, 2, 3, 4, 5])` -> `15`.
 
 **`longest(words: list[str]) -> str`**  
 Return the longest word via a single `reduce`. On a tie, return the first one encountered (left-to-right). Raise `ValueError` if the list is empty.  
-Example: `longest(["cat", "elephant", "dog"])` → `"elephant"`.
+Example: `longest(["cat", "elephant", "dog"])` -> `"elephant"`.
 
 **`flatten_once(lists: list[list]) -> list`**  
 Flatten one level of nesting using `reduce`. Do not use `itertools`.  
-Example: `flatten_once([[1,2], [3], [4,5]])` → `[1, 2, 3, 4, 5]`.
+Example: `flatten_once([[1,2], [3], [4,5]])` -> `[1, 2, 3, 4, 5]`.
 
 ### Step 1b: Function Composition
 
@@ -180,13 +180,13 @@ Implement `my_map(f, xs)` and `my_reduce(f, xs, seed)` recursively — **no loop
 
 ```python
 def my_map(f, xs):
-    """Base case: empty list → []. Recursive: f(head) consed onto my_map(f, tail)."""
+    """Base case: empty list -> []. Recursive: f(head) consed onto my_map(f, tail)."""
     if not xs:
         return []
     return [f(xs[0])] + my_map(f, xs[1:])
 
 def my_reduce(f, xs, seed):
-    """Base case: empty list → seed. Recursive: apply f to seed and head, recurse on tail."""
+    """Base case: empty list -> seed. Recursive: apply f to seed and head, recurse on tail."""
     if not xs:
         return seed
     return my_reduce(f, xs[1:], f(seed, xs[0]))
@@ -235,7 +235,7 @@ class BTree:
 
 **`tree_map(f, tree: Optional[BTree]) -> Optional[BTree]`**  
 Apply `f` to every node's value, returning a new tree with the same structure. The original tree must not be modified (pure function).  
-Example: `tree_map(lambda x: x*2, BTree(1, BTree(2), BTree(3)))` → `BTree(2, BTree(4), BTree(6))`.
+Example: `tree_map(lambda x: x*2, BTree(1, BTree(2), BTree(3)))` -> `BTree(2, BTree(4), BTree(6))`.
 
 **`tree_fold(f, tree: Optional[BTree], seed)`**  
 Reduce the tree to a single value by applying `f(left_result, value, right_result)`. For a `None` node, return `seed`.  
@@ -248,8 +248,8 @@ Implement in terms of `tree_fold`. The depth of `None` is `0`; the depth of a le
 Return all node values in in-order traversal (left, root, right), implemented using `tree_fold`.
 
 **Test trees to use:**
-- Empty: `None` → all functions return seed/identity value
-- Single node: `BTree(42)` → map doubles it, fold sums it, depth is 1
+- Empty: `None` -> all functions return seed/identity value
+- Single node: `BTree(42)` -> map doubles it, fold sums it, depth is 1
 - Full tree: `BTree(1, BTree(2, BTree(4), BTree(5)), BTree(3))`
 - Right-skewed: `BTree(1, None, BTree(2, None, BTree(3)))`
 
@@ -269,7 +269,7 @@ Apply `f` to every element, returning a new linked list.
 
 **`list_fold(f, node: Optional[LLNode], seed)`**  
 Left fold: accumulate from left to right.  
-Example: `list_fold(lambda acc, x: acc + x, LLNode(1, LLNode(2, LLNode(3))), 0)` → `6`.
+Example: `list_fold(lambda acc, x: acc + x, LLNode(1, LLNode(2, LLNode(3))), 0)` -> `6`.
 
 **`list_to_python(node: Optional[LLNode]) -> list`**  
 Convert to a Python list, implemented via `list_fold`.
@@ -391,7 +391,7 @@ In a **direct-style** interpreter, every recursive call returns a value that sit
 
 ### B.1: The CPS transform
 
-Start from a small direct-style interpreter — a miniature of the one you built in the Interpreter assignment, with dataclass AST nodes `Num`, `Bool`, `Var`, `BinOp`, `If`, `Let`, `Lam`, `App`, an `Env` chain, and a `Closure` value. Write it first (it is under sixty lines; reuse your Interpreter assignment's structure) and smoke-test it on `(λx. x + 1)(41)` → `42.0` and `let y = 10 in y * y` → `100.0` before touching anything. Then transform `interp(expr, env)` into `interp_k(expr, env, k)`. The mechanical rule:
+Start from a small direct-style interpreter — a miniature of the one you built in the Interpreter assignment, with dataclass AST nodes `Num`, `Bool`, `Var`, `BinOp`, `If`, `Let`, `Lam`, `App`, an `Env` chain, and a `Closure` value. Write it first (it is under sixty lines; reuse your Interpreter assignment's structure) and smoke-test it on `(λx. x + 1)(41)` -> `42.0` and `let y = 10 in y * y` -> `100.0` before touching anything. Then transform `interp(expr, env)` into `interp_k(expr, env, k)`. The mechanical rule:
 
 > Wherever direct style writes `return f(x)`, CPS writes `f_k(x, env, k)`.  
 > Wherever direct style writes `v = f(x); use(v)`, CPS writes `f_k(x, env, lambda v: use_k(v, env, k))`.
@@ -420,8 +420,8 @@ Verify with a chain of 2,000 nested `Let` bindings — comfortably past Python's
 
 Add a `Callcc(fun)` AST node. In the CPS interpreter, the current continuation is *exactly* the `k` in hand: wrap it in a `Continuation` object that, when called, raises a `ContinuationEscape` carrying the value; the top-level `run` driver catches the escape and resumes. Demonstrate, as hand-built ASTs run through `run`:
 
-1. `call/cc` whose function ignores the continuation behaves as a normal call — `Callcc(Lam("k", Num(42)))` → `42`.
-2. Invoking the continuation escapes immediately — `Callcc(Lam("k", App(Var("k"), Num(7))))` → `7`.
+1. `call/cc` whose function ignores the continuation behaves as a normal call — `Callcc(Lam("k", Num(42)))` -> `42`.
+2. Invoking the continuation escapes immediately — `Callcc(Lam("k", App(Var("k"), Num(7))))` -> `7`.
 3. After an escape, pending computation is discarded — bind `call/cc(λk. k(5))` in a `Let` whose body multiplies by 1000, and document which value your implementation produces and why.
 
 ### B.4: One control structure from scratch

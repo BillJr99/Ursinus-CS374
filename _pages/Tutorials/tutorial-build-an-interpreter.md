@@ -733,7 +733,7 @@ match xs with
 |---|---|
 | Lexical analysis | `Lexer.next_token()` — character-by-character |
 | Token types | `TK_*` constants — the vocabulary |
-| Recursive descent | Each grammar rule → one `parse_*` method |
+| Recursive descent | Each grammar rule -> one `parse_*` method |
 | Operator precedence | Call hierarchy: `parse_expr > parse_cmp > parse_arith > parse_term > parse_app > parse_atom` |
 | Abstract Syntax Tree | `Num`, `BinOp`, `Let`, `Fun`, `App`, etc. |
 | Tree-walking evaluation | `evaluate()` — dispatches by node type |
@@ -767,7 +767,7 @@ match xs with
 
 # Advanced: A Metacircular Scheme Evaluator — Scheme in Python
 
-This advanced section deepens the same lexer → parser → environment → evaluator architecture you built for Mini above, and it backs Direction G of the Functional assignment (contributing to mal — Make-a-Lisp) for students heading that way.
+This advanced section deepens the same lexer -> parser -> environment -> evaluator architecture you built for Mini above, and it backs Direction G of the Functional assignment (contributing to mal — Make-a-Lisp) for students heading that way.
 
 An interpreter written in the very language it interprets sounds like a paradox, but it is actually one of the most clarifying ideas in computer science — it proves that the language's evaluation rules are self-consistent and complete. Think of it like a dictionary that defines every word using other words in the same dictionary: the circularity is a feature, not a bug, because it shows the system is closed. Building this evaluator in Python forces every semantic choice to become explicit code, revealing the machinery that the Mini interpreter you just built already contains.
 
@@ -791,7 +791,7 @@ By the end of this section, you will be able to:
 
 A **metacircular evaluator** is an interpreter for a language written in (or very close to) that language itself. In SICP Chapter 4, Abelson and Sussman build a Scheme interpreter *in Scheme*, revealing that the evaluation rules almost write themselves — because the host language and the implemented language share the same underlying ideas. Here, we build a Scheme interpreter in Python. Python is close enough that the translation is direct; different enough that we must make every semantic choice explicit.
 
-You have just built a Mini-language interpreter in this tutorial. That experience carries over completely. The arc of this section: **Scheme code as data (s-expressions)** → **the environment model** → **the evaluator dispatch loop** → **the global environment** → **tail-call optimization via trampoline**.
+You have just built a Mini-language interpreter in this tutorial. That experience carries over completely. The arc of this section: **Scheme code as data (s-expressions)** -> **the environment model** -> **the evaluator dispatch loop** -> **the global environment** -> **tail-call optimization via trampoline**.
 
 By the end you will have a working evaluator that can run recursive Scheme programs of arbitrary depth.
 
@@ -1704,7 +1704,7 @@ Answer these to check your understanding before moving on.
 
 ## Part VII: Exercises
 
-Work through these exercises at your own pace. Each builds directly on the evaluator code from Parts I–V.
+Work through these exercises at your own pace. Each builds directly on the evaluator code from Parts I-V.
 
 ---
 
@@ -2019,7 +2019,7 @@ print(f"fact(10) = {global_env.lookup('fact')(10)}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **CTQ 4.1** `execute_fundef` defines the name in the *current* environment before any calls. When `fact_body` runs and looks up `'fact'`, it finds the closure in `global_env`. Trace the environment chain: call frame → captured `global_env` → finds `fact`. What would break if we didn't define the name until after creating the closure?
+> **CTQ 4.1** `execute_fundef` defines the name in the *current* environment before any calls. When `fact_body` runs and looks up `'fact'`, it finds the closure in `global_env`. Trace the environment chain: call frame -> captured `global_env` -> finds `fact`. What would break if we didn't define the name until after creating the closure?
 
 > **CTQ 4.2** `make_adder` creates a new closure for each call. `fact` is a single closure that calls itself. Draw the environment chain for `fact(3)` calling `fact(2)` calling `fact(1)` calling `fact(0)`. How deep does the chain grow?
 
@@ -2078,7 +2078,7 @@ And the same history as a table:
 
 | Action | E1's `count` | E2's `count` | Return value |
 |--------|--------------|--------------|--------------|
-| `c1 = make_counter()` | 0 | — | closure A |
+| `c1 = make_counter()` | 0 | - | closure A |
 | `c2 = make_counter()` | 0 | 0 | closure B |
 | `c1()` | 1 | 0 | 1 |
 | `c1()` | 2 | 0 | 2 |

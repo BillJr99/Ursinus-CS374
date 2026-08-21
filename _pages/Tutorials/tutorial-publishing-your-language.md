@@ -15,7 +15,7 @@ info:
 readings:
   - rtitle: "Python Packaging User Guide"
     rlink: "https://packaging.python.org/en/latest/"
-  - rtitle: "npm Documentation — Creating a Package"
+  - rtitle: "npm Documentation: Creating a Package"
     rlink: "https://docs.npmjs.com/creating-a-nodejs-package"
   - rtitle: "GitHub Container Registry Documentation"
     rlink: "https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry"
@@ -47,9 +47,9 @@ Before diving into the tooling, agree on version numbers. All three ecosystems (
 
 | Change | Version bump | Example |
 |---|---|---|
-| New feature, backward compatible | Minor | 0.1.0 → 0.2.0 |
-| Bug fix | Patch | 0.1.0 → 0.1.1 |
-| Breaking change | Major | 0.1.0 → 1.0.0 |
+| New feature, backward compatible | Minor | 0.1.0 -> 0.2.0 |
+| Bug fix | Patch | 0.1.0 -> 0.1.1 |
+| Breaking change | Major | 0.1.0 -> 1.0.0 |
 
 Start at `0.1.0`. You are allowed to break things in the `0.x` range. When you feel the language is stable, bump to `1.0.0`.
 
@@ -294,7 +294,7 @@ Your `src/index.js` should export a `transpile` function:
 ```javascript
 // src/index.js
 function transpile(source) {
-  // your lexer → parser → code generator pipeline
+  // your lexer -> parser -> code generator pipeline
   // returns a string of JavaScript (or other target)
 }
 
@@ -452,7 +452,7 @@ docker push ghcr.io/YOUR_GITHUB_USERNAME/mylang:0.1.0
 
 **Step 4: Make the image public**
 
-By default, new packages on ghcr.io are private. Go to your GitHub profile → Packages → select your image → Package settings → Change visibility → Public.
+By default, new packages on ghcr.io are private. Go to your GitHub profile -> Packages -> select your image -> Package settings -> Change visibility -> Public.
 
 After making it public, anyone can pull and run your language with:
 

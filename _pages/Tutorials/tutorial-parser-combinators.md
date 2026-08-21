@@ -33,7 +33,7 @@ A **parser combinator library** builds parsers by composing small parser values 
 A **parser** is a value of type:
 
 ```
-Parser[A] = str × int → (A × int) | None
+Parser[A] = str × int -> (A × int) | None
 ```
 
 Given the full input string and a current position, it returns either `(value, next_position)` or `None` (failure). The entire combinator library is built on this representation.
@@ -755,7 +755,7 @@ except Exception as e:
 
 | Concept | Python implementation | Haskell Parsec |
 |---|---|---|
-| Parser type | `fn(str, int) → (A, int) \| None` | `Parsec s u a` |
+| Parser type | `fn(str, int) -> (A, int) \| None` | `Parsec s u a` |
 | Atomic | `char`, `satisfy`, `regex`, `lit` | `char`, `satisfy`, `string` |
 | Sequence | `seq(p, q)` | `p >> q`, `do` |
 | Choice | `alt(p, q)` | `p <\|> q` |
@@ -877,7 +877,7 @@ show("Standard precedence (left assoc)", PREC_STANDARD, tokens2)
 
 This model brings everything together into a working parser you can run. The mutual call chain `parse_expr -> parse_addsub -> parse_muldiv -> parse_unary -> parse_primary -> parse_expr` encodes the entire precedence hierarchy: a function only returns to its caller after fully resolving everything at the current or tighter tiers. Notice how parentheses are handled in `parse_primary` with a single call to `parse_expr` — that one line gives parentheses the power to override every precedence level.
 
-A self-contained recursive descent parser for `+`, `-`, `*`, `/` and parentheses. The mutual recursion `expr → addsub → muldiv → unary → primary → ... → expr` gives precedence without any table.
+A self-contained recursive descent parser for `+`, `-`, `*`, `/` and parentheses. The mutual recursion `expr -> addsub -> muldiv -> unary -> primary -> ... -> expr` gives precedence without any table.
 
 ```python
 # Model 3: Complete recursive-descent expression parser (stand-alone)
@@ -1051,7 +1051,7 @@ class PrattParser:
         try:
             op  = tok[1]
             bp  = LBP[op]
-            right = self.expression(bp)   # same bp → left assoc
+            right = self.expression(bp)   # same bp -> left assoc
             return (op, left, right)
         except Exception as e:
             print(f"[pratt:led] {e}")

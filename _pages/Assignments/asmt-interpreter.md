@@ -58,7 +58,7 @@ info:
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-controlflowsemantics.md"
     - rtitle: "Property-Based Testing Your Language with Hypothesis (Tutorial)"
       rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PropertyBasedTesting"
-    - rtitle: "Advent of Code 2019, Day 2 — Intcode (Part 5 Intcode direction)"
+    - rtitle: "Advent of Code 2019, Day 2: Intcode (Part 5 Intcode direction)"
       rlink: "https://adventofcode.com/2019/day/2"
 
 tags:
@@ -112,13 +112,13 @@ See the course schedule for the assigned and due dates — this is the longest a
 
 | Checkpoint | You should have |
 |------------|----------------|
-| On assignment | Part 1 complete: all node dataclasses and the dispatch skeleton (Steps 1a–1b) |
-| Checkpoint 1 | Expression evaluation and short-circuit logic with the bomb test passing (Steps 2a–2b) |
+| On assignment | Part 1 complete: all node dataclasses and the dispatch skeleton (Steps 1a-1b) |
+| Checkpoint 1 | Expression evaluation and short-circuit logic with the bomb test passing (Steps 2a-2b) |
 | Environments lab due | `Environment` and statement evaluation (grown from the lab); shadowing program prints `51` then `2` (Step 2c) |
 | Checkpoint 2 | Break/continue signals and the file runner with staged errors (Step 2d, Step 3a) |
 | Type Checker lab due | REPL with persistent environment and recovery; the checker core in place from the lab (Step 3b, Part 4) |
 | Checkpoint 3 | Checker complete across all constructs; error hierarchy in place (Part 4, Step 5a) |
-| Due date | `SEMANTICS.md`, differential programs, REPL transcript; ZIP submitted (Steps 5b–5c) |
+| Due date | `SEMANTICS.md`, differential programs, REPL transcript; ZIP submitted (Steps 5b-5c) |
 
 ---
 
@@ -366,9 +366,9 @@ When a property fails, Hypothesis shrinks to the minimal offending program. In y
 
 `python mylang.py program.ml` should:
 1. Read the source file.
-2. Lex it, catching `LexError` → print `"Lexical error at line L, col C: <message>"` and exit.
-3. Parse it, catching `ParseError` → print `"Syntax error at line L, col C: expected X, found Y"` and exit.
-4. Evaluate it, catching `LangNameError`, `LangTypeError`, `LangZeroDivisionError`, and `LangRuntimeError` → print `"Runtime error at line L: <message>"` and exit.
+2. Lex it, catching `LexError` -> print `"Lexical error at line L, col C: <message>"` and exit.
+3. Parse it, catching `ParseError` -> print `"Syntax error at line L, col C: expected X, found Y"` and exit.
+4. Evaluate it, catching `LangNameError`, `LangTypeError`, `LangZeroDivisionError`, and `LangRuntimeError` -> print `"Runtime error at line L: <message>"` and exit.
 
 The stage label (`Lexical error`, `Syntax error`, `Runtime error`) must appear in every message.
 
@@ -404,7 +404,7 @@ Lexical error at line 1, col 1: unexpected character '@'
 
 ## Part 4: The Small Static Type Checker (15 points)
 
-Your evaluator enforces types *dynamically* — a type error surfaces only when the offending expression is actually evaluated. Part 4 adds a **small static type checker** that catches a useful class of those errors *before evaluation ever begins*, running as its own pipeline stage: lex → parse → **check** → evaluate. This is deliberately not full type inference — it checks what is *declared*, and the **Type Checker Starter lab** builds its core with a partner before this part is due.
+Your evaluator enforces types *dynamically* — a type error surfaces only when the offending expression is actually evaluated. Part 4 adds a **small static type checker** that catches a useful class of those errors *before evaluation ever begins*, running as its own pipeline stage: lex -> parse -> **check** -> evaluate. This is deliberately not full type inference — it checks what is *declared*, and the **Type Checker Starter lab** builds its core with a partner before this part is due.
 
 Your language's `define` statements and function definitions carry (or are extended to carry) type annotations — `let x: Num = 42;`, `fun f(a: Num, b: Str) -> Bool { ... }`. The checker walks the AST once, maintaining a type environment that mirrors your `Environment` class, and verifies:
 
@@ -418,7 +418,7 @@ Every rejection is reported as `Type error at line L, col C: ...`, naming both c
 
 Parts 1-4 give your language a working evaluator and a static checking stage. Part 5 makes its semantics *precise*, in your choice of **direction** — one Part 5, one deliverable, the same 15-point rubric row applied equivalently:
 
-- **Staged dynamic errors and SEMANTICS.md (the core direction).** Build the language-level error hierarchy and document every semantic rule, as scaffolded in Steps 5a–5c below.
+- **Staged dynamic errors and SEMANTICS.md (the core direction).** Build the language-level error hierarchy and document every semantic rule, as scaffolded in Steps 5a-5c below.
 - **Full type inference (Hindley-Milner).** Grow Part 4's annotation checker into whole-program *inference* that deduces types with no annotations at all, the way Haskell, OCaml, and Rust do. This direction substitutes Steps 5b and 5c (SEMANTICS.md and the differential programs) with the inference engine described in the **[typing direction](#part-5-direction-full-type-inference-hindley-milner)** section; Step 5a's error hierarchy is still required, since lexical, syntax, and name errors still need staged reporting. The total remains 100 points.
 - **A contrasting execution model — the Intcode VM.** Your tree-walker interprets an AST directly. A *virtual machine* instead executes a flat list of numeric opcodes — the model behind CPython's bytecode, the JVM, and WebAssembly. In this direction you implement the **[Advent of Code 2019 Intcode](https://adventofcode.com/2019/day/2)** machine, whose operational semantics is small enough to specify completely yet rich enough to be Turing-capable, and you make that semantics *precise* by writing each opcode as a state-transition rule. This direction substitutes Steps 5b and 5c with the **[Intcode direction](#part-5-direction-a-contrasting-execution-model-the-intcode-vm)** section; Step 5a's error hierarchy is still required (malformed programs and illegal opcodes are staged errors). The self-checking AoC inputs are your oracle, and a required differential test pins your VM's arithmetic against your tree-walker's on shared operations.
 
@@ -467,11 +467,11 @@ Five programs are provided whose outputs depend on your semantics decisions. Run
 
 {: #part-5-direction-full-type-inference-hindley-milner}
 
-This direction replaces Steps 5b–5c by growing Part 4's annotation checker into whole-program *inference* — still its own pipeline stage after parsing and before evaluation, but now deducing types where no annotations exist at all. It is the same machinery (unification and Algorithm-W-style inference) that lets Haskell, OCaml, and Rust deduce types without annotations, scoped here to your language's constructs. Your Part 4 checker is the foundation: its type environment, its staged error reporting, and its operator rules all carry forward — what changes is that unknown types become type *variables* to be solved rather than gaps to be documented.
+This direction replaces Steps 5b-5c by growing Part 4's annotation checker into whole-program *inference* — still its own pipeline stage after parsing and before evaluation, but now deducing types where no annotations exist at all. It is the same machinery (unification and Algorithm-W-style inference) that lets Haskell, OCaml, and Rust deduce types without annotations, scoped here to your language's constructs. Your Part 4 checker is the foundation: its type environment, its staged error reporting, and its operator rules all carry forward — what changes is that unknown types become type *variables* to be solved rather than gaps to be documented.
 
 ### Background
 
-A **type** is a type variable `α, β, ...` (unknown, to be solved), a type constant (`Num`, `Bool`, `Str`), or — if your checker covers functions — a function type `τ₁ → τ₂`. A **substitution** maps type variables to types. **Unification** of two types finds the most general substitution that makes them equal, or fails — and that failure *is* the type error. The inference algorithm walks the AST, generating fresh type variables constrained by each node's structure and unifying to solve.
+A **type** is a type variable `α, β, ...` (unknown, to be solved), a type constant (`Num`, `Bool`, `Str`), or — if your checker covers functions — a function type `τ₁ -> τ₂`. A **substitution** maps type variables to types. **Unification** of two types finds the most general substitution that makes them equal, or fails — and that failure *is* the type error. The inference algorithm walks the AST, generating fresh type variables constrained by each node's structure and unifying to solve.
 
 ### T.1 — Type terms, substitution, and unification (`types.py`)
 
@@ -521,7 +521,7 @@ Intcode's operational semantics is small enough to write down completely, which 
 
 Before writing code, write `INTCODE.md`: for **each** opcode, state its rule as a transition on the machine state. For example, opcode 1 (add):
 
-> `add`: with parameters `a, b, c`, set `mem[c] ← value(a) + value(b)`, then `pc ← pc + 4`.
+> `add`: with parameters `a, b, c`, set `mem[c] <- value(a) + value(b)`, then `pc <- pc + 4`.
 
 Cover opcodes `1` (add), `2` (multiply), `3` (input), `4` (output), `5` (jump-if-true), `6` (jump-if-false), `7` (less-than), `8` (equals), and `99` (halt), plus the **parameter modes** (0 = position, 1 = immediate, and — for the full machine — 2 = relative, with opcode `9` adjusting the relative base). State what an unknown opcode does: it is a staged error (`LangRuntimeError`), not a crash.
 

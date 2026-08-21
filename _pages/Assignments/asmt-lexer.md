@@ -93,7 +93,7 @@ See the course schedule for the assigned and due dates. Your starting point is t
 |------------|----------------|
 | On assignment | `Token` dataclass and a six-rule `tokenize` generator working (grown from your mini lexer) |
 | Checkpoint 1 | Parts 1-2a: full `TOKEN_SPEC` passing all maximal-munch cases, and the core `Lexer` class with `peek`/`advance`/`expect` working |
-| Checkpoint 2 | Parts 2b–2c: string escapes and JSON configuration (both dialects) |
+| Checkpoint 2 | Parts 2b-2c: string escapes and JSON configuration (both dialects) |
 | Due date | Part 3 error modes with precise positions and the full test suite complete; readme written; ZIP assembled and submitted |
 
 ---
@@ -153,7 +153,7 @@ Define a `TOKEN_SPEC` list of `(token_name, regex_pattern)` pairs that covers, a
 | `COLON` | `:` | Type annotations, e.g. `let x: Num = 42;` |
 | `COMMA` | `,` | Parameter and argument lists |
 
-**Maximal-munch test cases you must pass:** `iffy` → `IDENT("iffy")` (not `IF` + `IDENT("ffy")`); `<=` → `LE` (not `LT` + `EQ`); `==` → `EQEQ` (not two `EQ`s); `whiles` → `IDENT("whiles")`; `notable` → `IDENT("notable")` (not `NOT` + `IDENT("able")`); `->` → `ARROW` (not `MINUS` + `GT`); `!=` → `NEQ` (not `BANG` + `EQ`).
+**Maximal-munch test cases you must pass:** `iffy` -> `IDENT("iffy")` (not `IF` + `IDENT("ffy")`); `<=` -> `LE` (not `LT` + `EQ`); `==` -> `EQEQ` (not two `EQ`s); `whiles` -> `IDENT("whiles")`; `notable` -> `IDENT("notable")` (not `NOT` + `IDENT("able")`); `->` -> `ARROW` (not `MINUS` + `GT`); `!=` -> `NEQ` (not `BANG` + `EQ`).
 
 ### Step 1b: Token Dataclass
 
@@ -303,17 +303,17 @@ Build `test_lexer.py` with at least the following test cases. Each test must ass
 - All operators: PLUS, MINUS, STAR, SLASH, EQ, EQEQ, NEQ, LT, LE, GT, GE, LPAREN, RPAREN, LBRACE, RBRACE, SEMICOLON
 
 **Maximal-munch cases:**
-- `iffy` → single IDENT, not IF + IDENT
-- `whiles` → single IDENT
-- `<=` → LE, not LT + EQ
-- `==` → EQEQ, not EQ + EQ
-- `!=` → NEQ, not two tokens
+- `iffy` -> single IDENT, not IF + IDENT
+- `whiles` -> single IDENT
+- `<=` -> LE, not LT + EQ
+- `==` -> EQEQ, not EQ + EQ
+- `!=` -> NEQ, not two tokens
 
 **String escape cases:**
-- `"no escapes"` → value equals `no escapes`
-- `"tab\there"` → value contains a real tab
-- `"line\nbreak"` → value contains a real newline
-- `"quote\"end"` → value contains a double-quote
+- `"no escapes"` -> value equals `no escapes`
+- `"tab\there"` -> value contains a real tab
+- `"line\nbreak"` -> value contains a real newline
+- `"quote\"end"` -> value contains a double-quote
 
 **Deliberate error programs (five required):**
 1. A program with `@` — expect `LexError at line 1, col ...`
@@ -338,7 +338,7 @@ Write a Flex `.l` file (or a PLY `tokens`/`t_*` module) covering the full token 
 - **Multi-character operators** — `<=`, `>=`, `==`, `!=` as single tokens, listed so they win over their single-character prefixes.
 - **Comments and whitespace** — `#` to end of line, skipped; whitespace skipped with newlines counted (`%option yylineno` in Flex; track `t.lexer.lineno` in PLY).
 
-The pass criteria are the same maximal-munch cases from Step 1a: `iffy` → `IDENT`, `whiles` → `IDENT`, `<=` → `LE`, `==` → `EQEQ`.
+The pass criteria are the same maximal-munch cases from Step 1a: `iffy` -> `IDENT`, `whiles` -> `IDENT`, `<=` -> `LE`, `==` -> `EQEQ`.
 
 ### Part 2 equivalent: the component wrapper
 

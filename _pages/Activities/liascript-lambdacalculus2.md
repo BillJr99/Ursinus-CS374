@@ -113,9 +113,9 @@ $$
 ```
 NOT TRUE
 = (λb. b FALSE TRUE) (λx.λy. x)
-→β (λx.λy. x) FALSE TRUE
-→β (λy. FALSE) TRUE
-→β FALSE  ✓
+->β (λx.λy. x) FALSE TRUE
+->β (λy. FALSE) TRUE
+->β FALSE  ✓
 ```
 
 **Step-by-step reduction: AND TRUE FALSE**
@@ -123,11 +123,11 @@ NOT TRUE
 ```
 AND TRUE FALSE
 = (λp.λq. p q p) TRUE FALSE
-→β (λq. TRUE q TRUE) FALSE
-→β TRUE FALSE TRUE
+->β (λq. TRUE q TRUE) FALSE
+->β TRUE FALSE TRUE
 = (λx.λy. x) FALSE TRUE
-→β (λy. FALSE) TRUE
-→β FALSE  ✓
+->β (λy. FALSE) TRUE
+->β FALSE  ✓
 ```
 
 **Decode helper — "peek inside" a Church boolean:**
@@ -228,9 +228,9 @@ Read PLUS aloud: "apply $f$ $n$ times to $x$, then $m$ more times." Read MULT: "
 ```
 SUCC ZERO
 = (λn.λf.λx. f (n f x)) (λf.λx. x)
-→β λf.λx. f ((λf.λx. x) f x)
-→β λf.λx. f ((λx. x) x)
-→β λf.λx. f x
+->β λf.λx. f ((λf.λx. x) f x)
+->β λf.λx. f ((λx. x) x)
+->β λf.λx. f x
 = ONE  ✓
 ```
 
@@ -243,22 +243,22 @@ SUCC ZERO
 PLUS TWO THREE
 = (λm.λn.λf.λx. m f (n f x)) (λf.λx. f (f x)) (λf.λx. f (f (f x)))
 
-→β  (λn.λf.λx. TWO f (n f x)) THREE            substitute m := TWO
-→β  λf.λx. TWO f (THREE f x)                   substitute n := THREE
+->β  (λn.λf.λx. TWO f (n f x)) THREE            substitute m := TWO
+->β  λf.λx. TWO f (THREE f x)                   substitute n := THREE
 
     -- expand THREE f x first:
     THREE f x = (λf.λx. f (f (f x))) f x
-    →β (λx. f (f (f x))) x
-    →β f (f (f x))
+    ->β (λx. f (f (f x))) x
+    ->β f (f (f x))
 
-→   λf.λx. TWO f (f (f (f x)))
+->   λf.λx. TWO f (f (f (f x)))
 
     -- now expand TWO f applied to that:
     TWO f (f (f (f x))) = (λf.λx. f (f x)) f (f (f (f x)))
-    →β (λx. f (f x)) (f (f (f x)))
-    →β f (f (f (f (f x))))
+    ->β (λx. f (f x)) (f (f (f x)))
+    ->β f (f (f (f (f x))))
 
-→   λf.λx. f (f (f (f (f x))))
+->   λf.λx. f (f (f (f (f x))))
 =   FIVE  ✓                                    five applications of f
 ```
 
@@ -420,7 +420,7 @@ print(f"3 - 4 = {church_to_int(MINUS(THREE)(FOUR))}")   # 0 (floored)
 
 ### Critical Thinking Questions
 
-> **CTQ 4.1** The pair-based predecessor works by shifting: `(0,0) → (1,0) → (2,1) → (3,2)`. After applying shift $n$ times to $(0,0)$, what is the SND? Why does `PRED(ZERO)` return ZERO rather than negative one?
+> **CTQ 4.1** The pair-based predecessor works by shifting: `(0,0) -> (1,0) -> (2,1) -> (3,2)`. After applying shift $n$ times to $(0,0)$, what is the SND? Why does `PRED(ZERO)` return ZERO rather than negative one?
 
 > **CTQ 4.2** Subtraction `m - n` is defined as "apply PRED n times to m." What is `3 - 5` under this definition? This is called *monus* (truncated subtraction). Is this a bug or a deliberate design choice?
 
@@ -429,7 +429,7 @@ print(f"3 - 4 = {church_to_int(MINUS(THREE)(FOUR))}")   # 0 (floored)
 ---
 
 ---
-**🛑 In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+**In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
 
 ## 4. Exercises
 

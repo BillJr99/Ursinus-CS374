@@ -125,8 +125,8 @@ For DFAs, `delta` is a nested object: `delta[state][symbol]` gives the next stat
 }
 ```
 
-Trace on `"0110"`: even → even → odd → even → even. Accepts. ✓  
-Trace on `"101"`: even → odd → even → odd. Rejects. ✓
+Trace on `"0110"`: even -> even -> odd -> even -> even. Accepts. yes  
+Trace on `"101"`: even -> odd -> even -> odd. Rejects. yes
 
 ### Step 1a: Loader and DFA Simulator
 
@@ -142,7 +142,7 @@ Test against the parity machine above (provided) with **at least four accepted s
 Design, encode as JSON, and annotate each state with one sentence explaining what it "remembers":
 
 **DFA — Ends in ab:** strings over `{a, b}` that end with the suffix `ab`.  
-Worked example: `"aab"` → accept; `"ba"` → reject; `"ab"` → accept; `""` → reject.  
+Worked example: `"aab"` -> accept; `"ba"` -> reject; `"ab"` -> accept; `""` -> reject.  
 Hint: you need at least three states — track what suffix of `ab` has been seen most recently.
 
 Test with at least four accepted and four rejected strings.
@@ -169,7 +169,7 @@ For NFAs, `delta` maps `"state,symbol"` string keys to *lists* of states. The sp
 
 Implement `eps_closure(machine, states) -> frozenset` — a small graph reachability computation: start with the given set of states and repeatedly follow `"eps"` transitions until no new states are discovered, handling cycles (a state may epsilon-transition back to itself or to a predecessor).
 
-**Example:** If `q0 -ε→ q1`, `q1 -ε→ q2`, and `q2 -ε→ q0`, then `eps_closure(m, {"q0"}) = {"q0", "q1", "q2"}`.
+**Example:** If `q0 -ε-> q1`, `q1 -ε-> q2`, and `q2 -ε-> q0`, then `eps_closure(m, {"q0"}) = {"q0", "q1", "q2"}`.
 
 Then implement `run_nfa(machine, s) -> bool`:
 1. Compute the epsilon-closure of `{start}` as the initial set of active states.
@@ -181,7 +181,7 @@ Then implement `run_nfa(machine, s) -> bool`:
 Design, encode, and test with **at least four accepted and four rejected strings**:
 
 **NFA — Contains aa:** strings over `{a, b}` containing the substring `aa` somewhere.  
-Worked example: `"baaab"` → accept; `"ababab"` → reject.  
+Worked example: `"baaab"` -> accept; `"ababab"` -> reject.  
 Hint: nondeterministically guess where `aa` occurs — your design should genuinely use nondeterminism, not be a DFA in disguise.
 
 ---
@@ -210,7 +210,7 @@ Apply Thompson's construction to the regular expression `a(b|c)*` — show each 
 4. Fragment for `(b|c)*` (Kleene star).
 5. Concatenation: `a` then `(b|c)*`.
 
-For reference, the fragment rules: a single character is start → accept labeled with that character; concatenation connects A's accept to B's start with ε; union adds a new start with ε to both fragments and ε from both accepts to a new shared accept; Kleene star adds a new start with ε to the fragment's start and to a new accept, with ε from the fragment's accept back to its start and on to the new accept.
+For reference, the fragment rules: a single character is start -> accept labeled with that character; concatenation connects A's accept to B's start with ε; union adds a new start with ε to both fragments and ε from both accepts to a new shared accept; Kleene star adds a new start with ε to the fragment's start and to a new accept, with ε from the fragment's accept back to its start and on to the new accept.
 
 ---
 

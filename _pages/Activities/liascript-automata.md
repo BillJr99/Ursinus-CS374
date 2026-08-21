@@ -79,7 +79,7 @@ CTQ 1 asks for this trace. Do it first; then check. The point of writing it as a
 
 | Step | State before | Symbol read | Transition used | State after |
 |------|--------------|-------------|-----------------|-------------|
-| 0 | — | *(start)* | — | `even` |
+| 0 | - | *(start)* | - | `even` |
 | 1 | `even` | `1` | `even --1--> odd` | `odd` |
 | 2 | `odd` | `0` | `odd --0--> odd` | `odd` |
 | 3 | `odd` | `1` | `odd --1--> even` | `even` |
@@ -118,15 +118,15 @@ def run_dfa(machine, s, trace=False):
             if trace: print(f"  '{ch}': DEAD (no transition)")
             return False
         state = machine["delta"][state][ch]
-        if trace: print(f"  '{ch}' → {state}")
+        if trace: print(f"  '{ch}' -> {state}")
     accepted = state in machine["accept"]
-    if trace: print(f"  final: {state} → {'ACCEPT' if accepted else 'REJECT'}")
+    if trace: print(f"  final: {state} -> {'ACCEPT' if accepted else 'REJECT'}")
     return accepted
 
 # Test the parity DFA
 print("=== Even-ones DFA ===")
 for s in ["", "1", "11", "1011", "0000", "10101", "abc"]:
-    print(f"  {s!r:9} → {run_dfa(EVEN_ONES, s)}")
+    print(f"  {s!r:9} -> {run_dfa(EVEN_ONES, s)}")
 
 # Trace one input
 print("\n=== Trace of '1011' ===")
@@ -144,7 +144,7 @@ ENDS_IN_AB_DFA = {
 }
 print("\n=== Ends-in-ab DFA ===")
 for s in ["ab", "aab", "abab", "ba", "a", "b", "aabb", ""]:
-    print(f"  {s!r:7} → {run_dfa(ENDS_IN_AB_DFA, s)}")
+    print(f"  {s!r:7} -> {run_dfa(ENDS_IN_AB_DFA, s)}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 

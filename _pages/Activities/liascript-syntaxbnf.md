@@ -100,7 +100,7 @@ Do CTQ 1 as a team first. One rule application per line, and the rule used named
 = -42
 ```
 
-Six steps. **CTQ 2's formula:** one step for `<signed>`, one for the sign, then for a $d$-digit number you need $d$ applications of a `<number>` rule and $d$ applications of `<digit>` — so $2 + 2d$ steps in total. For `-42` that is $2 + 4 = 6$ ✓, and for `-12345` it predicts $2 + 10 = 12$.
+Six steps. **CTQ 2's formula:** one step for `<signed>`, one for the sign, then for a $d$-digit number you need $d$ applications of a `<number>` rule and $d$ applications of `<digit>` — so $2 + 2d$ steps in total. For `-42` that is $2 + 4 = 6$ yes, and for `-12345` it predicts $2 + 10 = 12$.
 
 **CTQ 3, answered.** `4-2` cannot be derived because the only rule that produces a `-` is `<sign> -> -`, and `<sign>` appears exactly once in `<signed> -> <sign> <number>` — at the very front. There is no production anywhere that puts a `-` *between* digits, so no sequence of rule applications can reach it. This grammar describes signed numerals, not subtraction; the string `4-2` belongs to a different language.
 4. Modify the grammar so that a signed number may also be written with no digits after the sign... wait, should it? Decide as a team whether `-` alone should be a signed integer, and notice that you are now doing *language design*.
@@ -420,7 +420,7 @@ In a recognizer function for `IDENT "=" expr`, if the input is `x = 2 + 3`, whic
 [( )] The rule accepts any input as long as the characters `=` appears somewhere
 [( )] IDENT, `=`, and expr all must match *exactly once* each, in any order
 
-For the grammar rule `expr → term { ('+' | '-') term }`, the { ... } repetition becomes a `while` loop in code. The loop continues as long as:
+For the grammar rule `expr -> term { ('+' | '-') term }`, the { ... } repetition becomes a `while` loop in code. The loop continues as long as:
 
 [( )] There are more tokens
 [(X)] The next token is `+` or `-` (i.e., matches one of the alternatives inside the braces)
@@ -428,7 +428,7 @@ For the grammar rule `expr → term { ('+' | '-') term }`, the { ... } repetitio
 [( )] End of input is not reached
 
 1. **Write a recognizer from a grammar rule.**
-   Grammar: `identifier → LETTER { LETTER | DIGIT | '_' }`
+   Grammar: `identifier -> LETTER { LETTER | DIGIT | '_' }`
    Write a Python function `recognize_identifier(tokens, pos)` that:
    - Checks if `tokens[pos]` is a LETTER
    - Loops while `tokens[pos+i]` is a LETTER, DIGIT, or underscore
@@ -438,7 +438,7 @@ For the grammar rule `expr → term { ('+' | '-') term }`, the { ... } repetitio
    Test: `recognize_identifier(['1','2','x'], 0)` should return None (first token not a LETTER).
 
 2. **Trace a recognizer on input.**
-   Grammar: `list → INT { ',' INT }`
+   Grammar: `list -> INT { ',' INT }`
    Function (provided):
    ```python
    def recognize_list(tokens, pos):
@@ -453,13 +453,13 @@ For the grammar rule `expr → term { ('+' | '-') term }`, the { ... } repetitio
    ```
    
    Trace on input `['INT', ',', 'INT', ',', 'INT']`:
-   - Initial: `pos = 0`, first token is INT → advance to `pos = 1`
-   - Loop iteration 1: token at `pos=1` is `,` → advance to `pos=2`, check `pos+1=3` is INT → advance to `pos=3`
-   - Loop iteration 2: token at `pos=3` is `,` → advance to `pos=4`, check `pos+1=5` is beyond bounds → return 4
+   - Initial: `pos = 0`, first token is INT -> advance to `pos = 1`
+   - Loop iteration 1: token at `pos=1` is `,` -> advance to `pos=2`, check `pos+1=3` is INT -> advance to `pos=3`
+   - Loop iteration 2: token at `pos=3` is `,` -> advance to `pos=4`, check `pos+1=5` is beyond bounds -> return 4
    - Result: recognizer returns 4, but there are 5 tokens. Explain: why does it stop early?
 
 3. **Implement optional groups.**
-   Grammar: `declaration → 'let' IDENT [ '=' expr ]` (where `[ ]` means optional)
+   Grammar: `declaration -> 'let' IDENT [ '=' expr ]` (where `[ ]` means optional)
    
    Write `recognize_declaration(tokens, pos)` that:
    - Expects `let` at current position
@@ -472,19 +472,19 @@ For the grammar rule `expr → term { ('+' | '-') term }`, the { ... } repetitio
 4. **Precedence via rule nesting.**
    Grammar:
    ```
-   expr → term { '+' term }
-   term → factor { '*' factor }
-   factor → INT | '(' expr ')'
+   expr -> term { '+' term }
+   term -> factor { '*' factor }
+   factor -> INT | '(' expr ')'
    ```
    
    Write all three recognizer functions. Trace on input `['INT', '+', 'INT', '*', 'INT']`:
    - Call `recognize_expr` at position 0
-   - Inside: calls `recognize_term` → calls `recognize_factor` → consumes INT at 0 → returns 1
-   - Loop in expr: token at 1 is `+` → loop body calls `recognize_term` again → which eventually consumes tokens 2-4 (INT * INT)
+   - Inside: calls `recognize_term` -> calls `recognize_factor` -> consumes INT at 0 -> returns 1
+   - Loop in expr: token at 1 is `+` -> loop body calls `recognize_term` again -> which eventually consumes tokens 2-4 (INT * INT)
    - Final result: which function recognized the entire input, and did the tree reflect correct precedence (multiplication before addition)?
 
 5. **Error position reporting.**
-   Grammar: `statement → 'print' expr ';'`
+   Grammar: `statement -> 'print' expr ';'`
    
    Function:
    ```python

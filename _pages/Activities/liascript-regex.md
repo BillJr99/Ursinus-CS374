@@ -160,7 +160,7 @@ for pattern, tests in patterns:
     print(f"\nPattern: {pattern!r}")
     for s in tests:
         m = re.fullmatch(pattern, s)
-        print(f"  {s!r:12} → {'MATCH' if m else 'no match'}")
+        print(f"  {s!r:12} -> {'MATCH' if m else 'no match'}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 

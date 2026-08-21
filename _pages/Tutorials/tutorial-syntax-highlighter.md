@@ -13,11 +13,11 @@ info:
     - To demo editor support for a language you invented
 
 readings:
-  - rtitle: "tree-sitter — Creating Parsers"
+  - rtitle: "tree-sitter: Creating Parsers"
     rlink: "https://tree-sitter.github.io/tree-sitter/creating-parsers"
-  - rtitle: "tree-sitter — Playground"
+  - rtitle: "tree-sitter: Playground"
     rlink: "https://tree-sitter.github.io/tree-sitter/playground"
-  - rtitle: "VS Code — Syntax Highlight Guide"
+  - rtitle: "VS Code: Syntax Highlight Guide"
     rlink: "https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide"
 
 tags:

@@ -73,7 +73,7 @@ Interpreters are unusually hard to debug manually. When you run a program and ge
 Consider the typical debugging loop without automated tests:
 
 ```
-Edit interpreter → run one example program → see wrong output → guess what changed → repeat
+Edit interpreter -> run one example program -> see wrong output -> guess what changed -> repeat
 ```
 
 This breaks down as soon as you have more than a handful of language features. Adding closures should not break arithmetic. Adding a `while` loop should not break `let` bindings. Without a test suite you will not discover these regressions until a demo.
@@ -112,13 +112,13 @@ GitHub Actions runs your test suite every time you push a commit. The benefits f
 The most important architectural decision for testability is keeping the three stages of interpretation as separate, stateless functions:
 
 ```python
-# lexer.py  — source text → token list
+# lexer.py  — source text -> token list
 def tokenize(source: str) -> list[Token]: ...
 
-# parser.py — token list → AST
+# parser.py — token list -> AST
 def parse(tokens: list[Token]) -> ASTNode: ...
 
-# evaluator.py — AST + environment → value
+# evaluator.py — AST + environment -> value
 def evaluate(ast: ASTNode, env: Environment) -> Value: ...
 
 # mylang.py — convenience entry point
@@ -1124,11 +1124,11 @@ print(f"  Completed so far:   {completed_so_far}")
 print(f"  Remaining:          {remaining}")
 print(f"  Last sprint rate:   {last_velocity*100:.0f}% ({DATA['Sprint 3']['nodes_done']}/{DATA['Sprint 3']['nodes_planned']})")
 if remaining == 0:
-    print(f"  → All nodes complete! Ready for Demo Day polish. ✓")
+    print(f"  -> All nodes complete! Ready for Demo Day polish. ✓")
 elif sprints_needed <= 1:
-    print(f"  → On track: ~{sprints_needed:.1f} sprints to clear remaining nodes.")
+    print(f"  -> On track: ~{sprints_needed:.1f} sprints to clear remaining nodes.")
 else:
-    print(f"  → WARNING: at current rate, ~{sprints_needed:.1f} more sprints needed. Re-scope now.")
+    print(f"  -> WARNING: at current rate, ~{sprints_needed:.1f} more sprints needed. Re-scope now.")
 
 print()
 print("  Rule: a sprint with more than 2 known failures is not done.")
@@ -1166,9 +1166,9 @@ IMPLEMENTED = {
     "LetStmt":    True,
     "VarRef":     True,
     "IfStmt":     True,
-    "WhileStmt":  False,   # ← not yet implemented
-    "FunDecl":    False,   # ← not yet implemented
-    "Call":       False,   # ← not yet implemented
+    "WhileStmt":  False,   # <- not yet implemented
+    "FunDecl":    False,   # <- not yet implemented
+    "Call":       False,   # <- not yet implemented
     "ReturnStmt": False,
     "PrintStmt":  True,
     "LogicOp":    False,   # short-circuit

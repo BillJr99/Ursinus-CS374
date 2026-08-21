@@ -434,7 +434,7 @@ def trace_program():
     print(f"Exit block:             {glob}\n")
 
     # Step 8: print total
-    print(f"print total → {glob.lookup('total')}\n")
+    print(f"print total -> {glob.lookup('total')}\n")
 
     # Step 9: demonstrate NameError after block exits
     try:

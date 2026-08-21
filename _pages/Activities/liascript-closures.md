@@ -28,7 +28,7 @@ By the end of this activity, you will be able to:
 
 With your team's language now underway from the *Language Design Workshop* kickoff, every thread of the semester knots together today: when a language with **first-class functions** and **static scope** lets a function escape the scope where it was born, the function must carry its birthplace with it — and what it carries is exactly the environment model you built in *Environments and Variable Storage*. That bundle of code plus captured environment is a **closure** — the mechanism behind `make_adder`, behind every Church encoding, and behind the `FunDef` node your interpreter will support.
 
-Arc: **the problem closures solve → the mechanism drawn precisely → closures in your interpreter → the loop-variable trap → objects vs closures**
+Arc: **the problem closures solve -> the mechanism drawn precisely -> closures in your interpreter -> the loop-variable trap -> objects vs closures**
 
 > **Before You Begin:** This activity assumes you can:
 > - Define what an environment (scope chain) is, and trace a simple variable lookup through nested scopes
@@ -278,10 +278,10 @@ The broken version's history as a timeline — the trap is a *timing* bug, becau
 
 | Loop step | Shared box's `i` | Closures created so far | What each would return *if called now* |
 |-----------|------------------|-------------------------|----------------------------------------|
-| iteration 0 | 0 | lam0 | lam0 → 0 |
-| iteration 1 | 1 | lam0, lam1 | both → 1 |
-| iteration 2 | 2 | lam0, lam1, lam2 | all → 2 |
-| after the loop (calls happen here) | 2 | all three | **all → 2** |
+| iteration 0 | 0 | lam0 | lam0 -> 0 |
+| iteration 1 | 1 | lam0, lam1 | both -> 1 |
+| iteration 2 | 2 | lam0, lam1, lam2 | all -> 2 |
+| after the loop (calls happen here) | 2 | all three | **all -> 2** |
 
 ```python  liascript
 # Evidence for the diagrams: inspect the closure cells directly
@@ -333,7 +333,7 @@ Two closures created by separate calls to `make_adder(5)` and `make_adder(3)` re
 ---
 
 ---
-**🛑 In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+**In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
 
 # Going Deeper (at home): Closures vs. Objects
 

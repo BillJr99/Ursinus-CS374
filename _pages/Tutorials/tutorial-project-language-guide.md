@@ -162,7 +162,7 @@ Now that we have seen real programs, every token below has a concrete justificat
 | TRUE       | `true`                               | `true`         |
 | FALSE      | `false`                              | `false`        |
 | NIL        | `nil`                                | `nil`          |
-| EOF        | *(end of input)*                     | —              |
+| EOF        | *(end of input)*                     | -              |
 
 > **Note:** Keywords (`if`, `else`, `while`, `let`, `fun`, `return`, `print`, `true`, `false`, `nil`, `and`, `or`, `not`) are recognized by the lexer *after* reading an identifier. A `KEYWORDS` dictionary maps keyword strings to their token kinds.
 
@@ -428,7 +428,7 @@ Token(LBRACE, '{', line=2)
 
 ## Phase 3: Grammar (EBNF)
 
-The grammar defines the *structure* of valid programs. We write it in Extended Backus–Naur Form (EBNF). Our grammar must be free of left recursion (since we will build a **recursive descent** parser) and must reflect the operator precedence we want.
+The grammar defines the *structure* of valid programs. We write it in Extended Backus-Naur Form (EBNF). Our grammar must be free of left recursion (since we will build a **recursive descent** parser) and must reflect the operator precedence we want.
 
 ### 3.1 Full EBNF for Mini
 
@@ -1379,7 +1379,7 @@ class Interpreter:
 ### 7.3 Fibonacci Step-by-Step
 
 ```python
-# Full pipeline: lex → parse → evaluate fib(10)
+# Full pipeline: lex -> parse -> evaluate fib(10)
 # Combine all prior modules (lexer.py, ast_nodes.py, environment.py,
 # parser_mini.py, interpreter.py) into one directory, then run this.
 
@@ -2038,7 +2038,7 @@ FEATURES = {
 
     # Niche feature name and description (edit these):
     "_niche_name":      "dice_roll",       # e.g., "dice_roll", "turtle_move"
-    "_niche_desc":      "3d6 → roll 3 six-sided dice and sum",
+    "_niche_desc":      "3d6 -> roll 3 six-sided dice and sum",
 }
 
 # -- EBNF skeleton builder -----------------------------------------------------

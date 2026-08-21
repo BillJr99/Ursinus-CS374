@@ -67,7 +67,7 @@ Before we dive into the formal rules, here is a translation table. Every lambda 
 |-----------------|-------------------|---------|
 | `λx.e` | `lambda x: e` | A function taking x, returning e |
 | `(f a)` | `f(a)` | Apply function f to argument a |
-| `[x → a]e` | (substitution) | Replace x with a in e |
+| `[x -> a]e` | (substitution) | Replace x with a in e |
 
 ---
 
@@ -130,8 +130,8 @@ Step by step:
 
 ```
 (λx.x) z
-→β  [x := z] x      # substitute z for every free x in the body
-→β  z               # the body was just x, now replaced by z
+->β  [x := z] x      # substitute z for every free x in the body
+->β  z               # the body was just x, now replaced by z
 ```
 
 Result: `z`. The identity function returns its argument unchanged.
@@ -146,10 +146,10 @@ Step by step (remember: application is left-associative, so this is $(((\lambda 
 
 ```
 (λx.λy.x) A B
-→β  [x := A] (λy.x)   B    # substitute A for x in body (λy.x)
-→β  (λy.A) B               # after substitution, body is (λy.A)
-→β  [y := B] A             # substitute B for y in body A
-→β  A                      # y never appeared in body, so B is discarded
+->β  [x := A] (λy.x)   B    # substitute A for x in body (λy.x)
+->β  (λy.A) B               # after substitution, body is (λy.A)
+->β  [y := B] A             # substitute B for y in body A
+->β  A                      # y never appeared in body, so B is discarded
 ```
 
 Result: `A`. This function selects its first argument and ignores its second.
@@ -174,10 +174,10 @@ Step by step:
 
 ```
 (λf.λx. f(f x)) g a
-→β  [f := g] (λx. f(f x))   a   # substitute g for f in body
-→β  (λx. g(g x)) a              # body now has g in place of f
-→β  [x := a] g(g x)             # substitute a for x in body
-→β  g(g a)                      # x replaced by a in both places
+->β  [f := g] (λx. f(f x))   a   # substitute g for f in body
+->β  (λx. g(g x)) a              # body now has g in place of f
+->β  [x := a] g(g x)             # substitute a for x in body
+->β  g(g a)                      # x replaced by a in both places
 ```
 
 Result: `g(g a)`. This applies `g` twice to `a` — exactly what `twice(g)(a)` does in Python.
@@ -219,8 +219,8 @@ The result correctly returns the *free* $y$, whatever it refers to outside. Capt
 
 ```
 (λx.λy.x) y
-→β  [x := y] (λy.x)    # naively substitute y for x
-→β  λy.y               # WRONG: the free y is now captured by λy!
+->β  [x := y] (λy.x)    # naively substitute y for x
+->β  λy.y               # WRONG: the free y is now captured by λy!
 ```
 This says "a function that ignores its argument and returns ... its argument." That is the identity function, not the constant function. We changed the meaning!
 
@@ -229,8 +229,8 @@ This says "a function that ignores its argument and returns ... its argument." T
 ```
 (λx.λy.x) y
 =α  (λx.λz.x) y        # rename bound y to fresh z (safe because z is not free in argument)
-→β  [x := y] (λz.x)    # now substitute y for x
-→β  λz.y               # correct: a function that ignores z and returns the free y
+->β  [x := y] (λz.x)    # now substitute y for x
+->β  λz.y               # correct: a function that ignores z and returns the free y
 ```
 
 The reduction $(\lambda x. \lambda y.\, x\, y)\; y \rightarrow \lambda y.\, y\, y$ is wrong because:
@@ -302,7 +302,7 @@ def subst(expr, var_name, replacement):
             # Capture risk! Alpha-rename the bound variable first
             new_param = fresh(expr[1])
             renamed_body = subst(expr[2], expr[1], var(new_param))
-            print(f"  [α-rename] {expr[1]} → {new_param} to avoid capture")
+            print(f"  [α-rename] {expr[1]} -> {new_param} to avoid capture")
             return lam(new_param, subst(renamed_body, var_name, replacement))
         else:
             return lam(expr[1], subst(expr[2], var_name, replacement))
@@ -316,7 +316,7 @@ def step(expr):
     if tag == 'app':
         f, a = expr[1], expr[2]
         if f[0] == 'lam':
-            # This is a redex: (λx.body) arg → body[x := arg]
+            # This is a redex: (λx.body) arg -> body[x := arg]
             result = subst(f[2], f[1], a)
             return result, True
         # Try to reduce the function part, then the argument
@@ -429,9 +429,9 @@ def reduce_one(expr, depth=0):
     """Try one beta-reduction step. Return (new_expr, True) if reduced."""
     if isinstance(expr, App):
         if isinstance(expr.fun, Lam):
-            # Beta reduction: (λx.body) arg → [x:=arg] body
+            # Beta reduction: (λx.body) arg -> [x:=arg] body
             result = subst(expr.fun.body, expr.fun.param, expr.arg)
-            print(f"  →β {result}")
+            print(f"  ->β {result}")
             return result, True
         # Try reducing inside
         new_fun, r1 = reduce_one(expr.fun)
@@ -563,7 +563,7 @@ print("De Bruijn indices for λx.λy.x:")
 print(" ", to_debruijn(lam('x', lam('y', var('x')))))
 print("De Bruijn indices for λa.λb.a:")
 print(" ", to_debruijn(lam('a', lam('b', var('a')))))
-print("They match → alpha-equivalent.")
+print("They match -> alpha-equivalent.")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
@@ -676,7 +676,7 @@ print("  unreachable subexpressions, enabling infinite data structures.")
 # Part IV: Synthesis and Practice
 
 ---
-**🛑 In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+**In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
 
 ## 4. Exercises
 

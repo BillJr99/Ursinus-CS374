@@ -204,7 +204,7 @@ report("Balanced parentheses", grammar_bp)
 > - **Step 2:** At each step, write which production rule you used (e.g., `E -> T E'`).
 > - **Step 3:** In one sentence, explain what `E' -> + T E' | ε` accomplishes compared to `E -> E + T | T`. Focus on where the recursion sits (first position vs. last position).
 
-> **CTQ 4.15** The detector only finds *direct* left recursion (A → A...). Indirect left recursion would require A → B... and B → A....
+> **CTQ 4.15** The detector only finds *direct* left recursion (A -> A...). Indirect left recursion would require A -> B... and B -> A....
 >
 > - **Step 1:** Write a small example grammar with indirect left recursion between two nonterminals `A` and `B`. Show the two production rules that create the cycle.
 > - **Step 2:** Trace what a recursive descent parser does when it tries to parse a string under your indirect grammar. Where does the infinite loop occur?
@@ -671,5 +671,5 @@ for tokens, expected, label in test_cases:
 ---
 
 ---
-**🛑 In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+**In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
 

@@ -26,7 +26,7 @@ By the end of this activity, you will be able to:
 - Build an AST by hand for a given arithmetic or assignment expression, annotating each node with its type and children
 - Apply tree transformations (constant folding, dead-code elimination) and explain how each transformation preserves program semantics
 
-In *Tokens and Scanning: Building a Lexer* you turned characters into tokens; this session builds the structure those tokens are destined for: the **abstract syntax tree (AST)**, the central data structure of every language implementation and the hinge of your whole project. The recursive-descent parser you build in the *Recursive Descent Parsing* activity constructs exactly these nodes — here you learn to build, walk, and transform them by hand first. The arc: **parse trees vs. ASTs → node classes → building trees in the parser → walking trees (printing today, evaluating soon) → transforming trees (optimizing)**
+In *Tokens and Scanning: Building a Lexer* you turned characters into tokens; this session builds the structure those tokens are destined for: the **abstract syntax tree (AST)**, the central data structure of every language implementation and the hinge of your whole project. The recursive-descent parser you build in the *Recursive Descent Parsing* activity constructs exactly these nodes — here you learn to build, walk, and transform them by hand first. The arc: **parse trees vs. ASTs -> node classes -> building trees in the parser -> walking trees (printing today, evaluating soon) -> transforming trees (optimizing)**
 
 > **Before You Begin:** This activity assumes you can:
 > - Use Python dataclasses (`@dataclass`, typed fields, `field(...)`)
@@ -63,7 +63,7 @@ FunDef(name, params, body)   Call(callee, args)
 
 The set of node classes *is* your language's semantic inventory: if a construct has no node, your language cannot mean it.
 
-> **Watch out!** Students often confuse the **parse tree** with the **AST**. The parse tree is a record of the grammar derivation — it includes every intermediate nonterminal and every piece of punctuation. The AST keeps *only meaning-bearing* nodes. Parentheses disappear entirely (their effect lives in the tree shape), and long single-child chains like `expr → additive → multiplicative → primary → Num` collapse to a single `Num` node. If your AST looks like your grammar, it is probably not abstract enough.
+> **Watch out!** Students often confuse the **parse tree** with the **AST**. The parse tree is a record of the grammar derivation — it includes every intermediate nonterminal and every piece of punctuation. The AST keeps *only meaning-bearing* nodes. Parentheses disappear entirely (their effect lives in the tree shape), and long single-child chains like `expr -> additive -> multiplicative -> primary -> Num` collapse to a single `Num` node. If your AST looks like your grammar, it is probably not abstract enough.
 
 **Worked example — tracing `1 + 2 * 3` from tokens to AST:**
 
@@ -79,14 +79,14 @@ NUM(1)  OP(+)  NUM(2)  OP(*)  NUM(3)
 expr
 `- additive
    |- multiplicative
-   |  `- primary → NUM(1)
+   |  `- primary -> NUM(1)
    |- OP(+)
    `- additive
       `- multiplicative
-         |- primary → NUM(2)
+         |- primary -> NUM(2)
          |- OP(*)
          `- multiplicative
-            `- primary → NUM(3)
+            `- primary -> NUM(3)
 ```
 The parse tree has 10+ nodes, most of them grammar scaffolding.
 
@@ -514,7 +514,7 @@ print(f"5-(3-1) unparse: {unparse(t4)}")
 ---
 
 ---
-**🛑 In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+**In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
 
 ## Exercises (Homework — ~90 minutes total)
 
@@ -533,8 +533,8 @@ Write `count_nodes` and `depth` as tree walks. Report both for three programs: a
 ### Exercise 4 — Constant Folding (20 min)
 
 Extend `constant_fold` from Model 3 to handle:
-- Boolean constant folding: `true and false → false`, `true or x → true`
-- Dead code elimination: `if true { body1 } else { body2 }` → `body1`
+- Boolean constant folding: `true and false -> false`, `true or x -> true`
+- Dead code elimination: `if true { body1 } else { body2 }` -> `body1`
 Test on at least 5 cases, including one where folding is NOT safe (function call with side effects).
 
 ### Exercise 5 — Python's ast Module (15 min)
@@ -552,9 +552,9 @@ These models adapt code from *Foundations of Computing* by Chuck Allison (Fresh 
 ## Model 6: Prefix, Infix, and Postfix — Three Views of One Tree
 
 An expression tree encodes *both* the values *and* the operator order, but different traversal orders produce different notation styles:
-- **Preorder** (root → left → right): prefix / Polish notation — operator comes first
-- **Inorder** (left → root → right): infix — operator is between operands (needs parentheses for unambiguity)
-- **Postorder** (left → right → root): postfix / reverse Polish — operator comes last, used by stack machines
+- **Preorder** (root -> left -> right): prefix / Polish notation — operator comes first
+- **Inorder** (left -> root -> right): infix — operator is between operands (needs parentheses for unambiguity)
+- **Postorder** (left -> right -> root): postfix / reverse Polish — operator comes last, used by stack machines
 
 Understanding this connection makes the AST concrete: it is not just a compiler data structure; it is a *notation* for expressions, and different tree walks serialize it differently.
 
@@ -577,19 +577,19 @@ class ExprNode:
         return self.left is None and self.right is None
 
 def to_prefix(node: ExprNode) -> str:
-    """Preorder traversal → prefix (Polish) notation."""
+    """Preorder traversal -> prefix (Polish) notation."""
     if node.is_leaf():
         return node.value
     return f"{node.value} {to_prefix(node.left)} {to_prefix(node.right)}"
 
 def to_infix(node: ExprNode) -> str:
-    """Inorder traversal → infix notation (with parentheses for clarity)."""
+    """Inorder traversal -> infix notation (with parentheses for clarity)."""
     if node.is_leaf():
         return node.value
     return f"({to_infix(node.left)} {node.value} {to_infix(node.right)})"
 
 def to_postfix(node: ExprNode) -> str:
-    """Postorder traversal → postfix (Reverse Polish) notation."""
+    """Postorder traversal -> postfix (Reverse Polish) notation."""
     if node.is_leaf():
         return node.value
     return f"{to_postfix(node.left)} {to_postfix(node.right)} {node.value}"
@@ -614,7 +614,7 @@ tree1 = ExprNode('*',
             ExprNode('+', ExprNode('1'), ExprNode('2')),
             ExprNode('3'))
 
-# Build the tree for  1 + 2 * 3   (multiplication binds tighter → * is deeper)
+# Build the tree for  1 + 2 * 3   (multiplication binds tighter -> * is deeper)
 #      +
 #     / \
 #    1   *
@@ -683,7 +683,7 @@ In an expression tree for `a + b * c`, the root node contains:
 
 ## Reflection Prompt
 
-The AST is the third representation of the same program (characters → tokens → tree), each one closer to meaning and farther from what the programmer typed. What is gained and what is honestly lost at each translation? The tree is now the interface between the front end (lexer, parser) and the back end (evaluator, optimizer, compiler): what does this separation buy you as a language implementer?
+The AST is the third representation of the same program (characters -> tokens -> tree), each one closer to meaning and farther from what the programmer typed. What is gained and what is honestly lost at each translation? The tree is now the interface between the front end (lexer, parser) and the back end (evaluator, optimizer, compiler): what does this separation buy you as a language implementer?
 
 ---
 

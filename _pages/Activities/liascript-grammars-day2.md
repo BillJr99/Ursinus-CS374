@@ -216,9 +216,9 @@ A derivation tree (parse tree) for a grammar:
    - (c) Strings of the form $a^n b^n c^n$
    - (d) All Python programs that terminate
 
-4. *Ambiguity.* Show that the grammar `S → S + S | S * S | id` is ambiguous by giving two different parse trees for `id + id * id`. Then write an unambiguous grammar for the same language.
+4. *Ambiguity.* Show that the grammar `S -> S + S | S * S | id` is ambiguous by giving two different parse trees for `id + id * id`. Then write an unambiguous grammar for the same language.
 
-5. *Chomsky Normal Form.* Convert the grammar `S → aSb | ε` to Chomsky Normal Form (CNF), where every rule is either `A → BC` or `A → a`. What does this reveal about the structure of $a^n b^n$?
+5. *Chomsky Normal Form.* Convert the grammar `S -> aSb | ε` to Chomsky Normal Form (CNF), where every rule is either `A -> BC` or `A -> a`. What does this reveal about the structure of $a^n b^n$?
 
 ---
 

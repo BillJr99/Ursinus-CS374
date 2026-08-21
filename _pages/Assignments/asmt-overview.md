@@ -38,7 +38,7 @@ info:
     - rtitle: "Welcome Activity"
       rlink: "https://www.billmongan.com/Ursinus-CS374-Overview"
     - rtitle: "Thain, Chapter 1"
-    - rtitle: "uv — the Python environment manager we standardize on (Part 1.5)"
+    - rtitle: "uv: the Python environment manager we standardize on (Part 1.5)"
       rlink: "https://docs.astral.sh/uv/"
     - rtitle: "Setup (Route A): The Course Development Environment - Docker, Git, and GitHub (Tutorial)"
       rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/DevEnvironment"
@@ -87,7 +87,7 @@ If the version is earlier than 3.10, install a newer version or use a virtual en
 
 **Step 2: Run the starter script.**
 
-Download `warmup_check.py` from the course site (or copy it from below) and run it. It exercises `re`, `json`, and `match`/`case`, and prints a confirmation banner if all three pass. Note: on Windows consoles that garble the ✓/✗ characters, run with `PYTHONIOENCODING=utf-8` or read the True/False values instead.
+Download `warmup_check.py` from the course site (or copy it from below) and run it. It exercises `re`, `json`, and `match`/`case`, and prints a confirmation banner if all three pass. Note: on Windows consoles that garble the yes/no characters, run with `PYTHONIOENCODING=utf-8` or read the True/False values instead.
 
 ```python
 # warmup_check.py — CS374 environment verification script
@@ -110,7 +110,7 @@ def check_re():
     tokens = [(m.lastgroup, m.group()) for m in pattern.finditer("1 + 2")
               if m.lastgroup != "WS"]
     ok = tokens == [("NUM", "1"), ("PLUS", "+"), ("NUM", "2")]
-    print(f"[{'✓' if ok else '✗'}] re module: tokenized '1 + 2' → {tokens}")
+    print(f"[{'✓' if ok else '✗'}] re module: tokenized '1 + 2' -> {tokens}")
     return ok
 
 def check_json():
