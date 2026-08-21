@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-scheme.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-scheme.md
+comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-scheme.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-scheme.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -430,7 +430,7 @@ print("Expected: 4 + 16 = 20")
 
 # Part IV: Writing Real Scheme (in class)
 
-Everything above simulated Scheme semantics in Python so the cells could run here. Now write the real thing. **This section is the in-class hands-on:** open [try.scheme.org](https://try.scheme.org) in a browser tab; it gives you a full Scheme REPL with nothing to install. (Alternatives: download and run the course archives [SchemeSumList.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeSumList.zip) and [QuickSortScheme.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/QuickSortScheme.zip).)
+Everything above simulated Scheme semantics in Python so the cells could run here. Now write the real thing. **This section is the in-class hands-on:** open [try.scheme.org](https://try.scheme.org) in a browser tab; it gives you a full Scheme REPL with nothing to install. (Alternatives: download and run the course archives [SchemeSumList.zip](https://www.billmongan.com/Ursinus-CS374/files/replit/SchemeSumList.zip) and [QuickSortScheme.zip](https://www.billmongan.com/Ursinus-CS374/files/replit/QuickSortScheme.zip).)
 
 Complete the three tasks below in genuine Scheme. Type each definition into the REPL, then run the test calls and check your output against the expected transcript.
 
@@ -540,7 +540,7 @@ Answer these in your course notebook if you work through the metacircular evalua
 
 ### Further reading on metacircular evaluation
 
-- **Runnable example archive**: [SchemeInterpreter.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeInterpreter.zip): a complete reference implementation of this activity's evaluator, worth exploring after you have attempted the activity yourself.
+- **Runnable example archive**: [SchemeInterpreter.zip](https://www.billmongan.com/Ursinus-CS374/files/replit/SchemeInterpreter.zip): a complete reference implementation of this activity's evaluator, worth exploring after you have attempted the activity yourself.
 
 - **SICP Chapter 4**: Abelson & Sussman, *Structure and Interpretation of Computer Programs*, 2nd ed. The original metacircular evaluator. MIT Press open access: [https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf)
 

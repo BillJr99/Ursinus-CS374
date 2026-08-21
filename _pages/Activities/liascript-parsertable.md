@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-parsertable.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-parsertable.md
+comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-parsertable.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-parsertable.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -821,7 +821,7 @@ In your notebook: the LR table is compiled knowledge, decisions made once, ahead
 
 The deep-dive appendices that used to follow this activity now live on the Tutorials shelf:
 
-> **Going further:** the Flex/Yacc material that used to live here is covered in depth in the dedicated tutorial: [Flex and Bison from Zero to a Working Language](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md): installing Flex and Bison, a complete `.l`/`.y` walkthrough of a calculator language with variables, and an appendix on LR(0) item-set construction and how Yacc builds and resolves its parse tables. The ready-to-build mini-notation scaffold lives in the course examples at [files/examples/mininote/](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/examples/mininote/). Explore them when your project or curiosity calls for it.
+> **Going further:** the Flex/Yacc material that used to live here is covered in depth in the dedicated tutorial: [Flex and Bison from Zero to a Working Language](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md): installing Flex and Bison, a complete `.l`/`.y` walkthrough of a calculator language with variables, and an appendix on LR(0) item-set construction and how Yacc builds and resolves its parse tables. The ready-to-build mini-notation scaffold lives in the course examples at [files/examples/mininote/](https://www.billmongan.com/Ursinus-CS374/files/examples/mininote/). Explore them when your project or curiosity calls for it.
 
 > **Going further:** the material that used to live here (compiling expressions to bytecode and executing them on a stack machine) is covered in depth in the dedicated tutorial: [Building a Bytecode VM for Mini](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md). Explore it when your project or curiosity calls for it.
 

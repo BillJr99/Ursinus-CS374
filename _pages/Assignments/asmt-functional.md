@@ -45,7 +45,7 @@ info:
     - rtitle: "SWISH: SWI-Prolog in the Browser (Direction F)"
       rlink: "https://swish.swi-prolog.org/"
     - rtitle: "Prolog in the Browser with SWISH (Tutorial)"
-      rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/Prolog"
+      rlink: "https://www.billmongan.com/Ursinus-CS374/Tutorials/Prolog"
     - rtitle: "Make-a-Lisp (mal): Direction G target"
       rlink: "https://github.com/kanaka/mal"
     - rtitle: "Strudel (TidalCycles): Direction G target"

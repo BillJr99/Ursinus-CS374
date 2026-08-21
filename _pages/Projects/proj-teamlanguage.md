@@ -61,15 +61,15 @@ info:
     - rtitle: "Sprint Studio Protocol"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-sprintstudio.md"
     - rtitle: "Music and Live-Coding Track Guide (for Direction B: deliverable equivalence table and the text-events-only route)"
-      rlink: "/Projects/TeamLanguage#the-music-and-live-coding-path"
+      rlink: "https://www.billmongan.com/Ursinus-CS374/Projects/TeamLanguage#the-music-and-live-coding-path"
     - rtitle: "Make-a-Lisp (mal): incremental scaffold with a built-in test harness (Direction A option)"
       rlink: "https://github.com/kanaka/mal"
     - rtitle: "A Syntax Highlighter for Your Language with tree-sitter (Extensions Menu)"
-      rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/SyntaxHighlighter"
+      rlink: "https://www.billmongan.com/Ursinus-CS374/Tutorials/SyntaxHighlighter"
     - rtitle: "ShipIt Guide: Repo Hygiene, README, Packaging, and Your Portfolio (required self-check before Demo Day)"
-      rlink: "/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist"
+      rlink: "https://www.billmongan.com/Ursinus-CS374/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist"
     - rtitle: "Demo Day Guide: External Guests and Technical Interview Practice"
-      rlink: "/Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice"
+      rlink: "https://www.billmongan.com/Ursinus-CS374/Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice"
 
 tags:
   - final-project
@@ -354,9 +354,9 @@ There is no track to join and no deadline to declare by: **each direction is cho
 
 ### Background Reading and References
 
-- [Publishing Your Language: pip, npm, and Docker](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PublishingYourLanguage)
-- [CI and TDD for Interpreters](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CITDDForInterpreters)
-- [Team Language Project](https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage)
+- [Publishing Your Language: pip, npm, and Docker]({{ site.baseurl }}/Tutorials/PublishingYourLanguage)
+- [CI and TDD for Interpreters]({{ site.baseurl }}/Tutorials/CITDDForInterpreters)
+- [Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage)
 
 This guide is not separately graded; its checklist is assessed within the Team Language Project's **Documentation and Reproducibility** dimension.
 
@@ -486,7 +486,7 @@ Answer these as a team during release hardening, and individually as part of you
 ### Background Reading and References
 
 - [Sprint Studio Protocol](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-sprintstudio.md)
-- [Team Language Project](https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage)
+- [Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage)
 - [ShipIt Guide: Repo Hygiene, README, Packaging, and Your Portfolio]({{ site.baseurl }}/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist)
 
 This guide is not separately graded; the presentation is assessed within the Team Language Project's **Demo Day Presentation** dimension, and the mock-interview rehearsal is credited as **class participation**.

@@ -31,7 +31,7 @@ info:
     - rtitle: "Type Systems Activity"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-types.md"
     - rtitle: "Core Tutorial: Typing Disciplines, Strong vs. Weak, Static vs. Dynamic, and Gradual Typing"
-      rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypingDisciplines"
+      rlink: "https://www.billmongan.com/Ursinus-CS374/Tutorials/TypingDisciplines"
 
 tags:
   - interpreter

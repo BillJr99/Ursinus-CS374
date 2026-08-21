@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-types.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-types.md
+comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-types.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-types.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -220,7 +220,7 @@ This is the same **check-before-you-compute** gatekeeper you will write into you
 ---
 
 
-> **The interpreter half of this topic is in the lab.** Building the runtime type checker, tracing it on a compound expression, doing type inference by hand, and the type-error postmortem all live in the [Type Checker Starter lab](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/TypeChecker); that is the assignment this session sets up.
+> **The interpreter half of this topic is in the lab.** Building the runtime type checker, tracing it on a compound expression, doing type inference by hand, and the type-error postmortem all live in the [Type Checker Starter lab](https://www.billmongan.com/Ursinus-CS374/Assignments/TypeCheckerLab); that is the assignment this session sets up.
 
 # Part III: Synthesis and Practice
 
@@ -258,7 +258,7 @@ The core lesson above stands on its own. The deep-dive appendices that used to f
 
 > **Going further:** the material that used to live here (Robinson unification, substitutions and the occurs check, Algorithm W, Hindley-Milner type inference, and let-polymorphism) is covered in depth in the dedicated tutorial: [Implementing Hindley-Milner Type Inference](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-type-inference.md). Explore it when your project or curiosity calls for it.
 
-> **Going further:** the material that used to live here (the static/dynamic and strong/weak axes in depth, Python annotations and `mypy`, type erasure, product and sum types, structural vs. nominal typing, and gradual typing with the consistency relation and blame) is covered in depth in the dedicated guide: [Typing Disciplines: Strong vs. Weak, Static vs. Dynamic, and Gradual Typing](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypingDisciplines). Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here (the static/dynamic and strong/weak axes in depth, Python annotations and `mypy`, type erasure, product and sum types, structural vs. nominal typing, and gradual typing with the consistency relation and blame) is covered in depth in the dedicated guide: [Typing Disciplines: Strong vs. Weak, Static vs. Dynamic, and Gradual Typing](https://www.billmongan.com/Ursinus-CS374/Tutorials/TypingDisciplines). Explore it when your project or curiosity calls for it.
 
 ---
 

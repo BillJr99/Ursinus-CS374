@@ -44,7 +44,7 @@ info:
     - rtitle: "Abstract Syntax Trees Activity"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-ast.md"
     - rtitle: "Property-Based Testing Your Language with Hypothesis (Tutorial)"
-      rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PropertyBasedTesting"
+      rlink: "https://www.billmongan.com/Ursinus-CS374/Tutorials/PropertyBasedTesting"
     - rtitle: "Hypothesis Documentation"
       rlink: "https://hypothesis.readthedocs.io/"
 
