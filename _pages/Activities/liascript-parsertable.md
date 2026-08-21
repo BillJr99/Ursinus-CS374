@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Table-Driven and LR Parsing
 
-Table-driven parsers — LL(1) and LR — replace moment-to-moment grammar reasoning with a lookup. Think of a parsing table like a GPS route precomputed from every intersection: instead of rethinking the best path each time you reach a fork, you simply consult the table and execute the move it prescribes. The table was built once, offline, from the grammar's FIRST and FOLLOW sets; at parse time all the "thinking" has already been done. This makes table-driven parsers fast, systematic, and amenable to machine generation — which is exactly why industrial parser generators emit them.
+Table-driven parsers, LL(1) and LR, replace moment-to-moment grammar reasoning with a lookup. Think of a parsing table like a GPS route precomputed from every intersection: instead of rethinking the best path each time you reach a fork, you simply consult the table and execute the move it prescribes. The table was built once, offline, from the grammar's FIRST and FOLLOW sets; at parse time all the "thinking" has already been done. This makes table-driven parsers fast, systematic, and amenable to machine generation, which is exactly why industrial parser generators emit them.
 
 ## Learning Goals
 
@@ -31,7 +31,7 @@ By the end of this activity, you will be able to:
 > This activity assumes you can:
 > - Read and write grammars in BNF (Backus-Naur Form), including how `|` separates alternatives and how nonterminals recursively expand
 > - Explain what FIRST and FOLLOW sets are and why they matter for predicting which production to apply
-> - Describe how a recursive-descent parser works — one function per nonterminal, calling itself when it encounters a nonterminal in the production
+> - Describe how a recursive-descent parser works: one function per nonterminal, calling itself when it encounters a nonterminal in the production
 >
 > If any of these feel shaky, revisit the recursive-descent and grammar modules before continuing.
 
@@ -76,13 +76,13 @@ In the trace above, the single token `2` is reduced through `F -> num`, `T -> F`
 [( )] The token `2` is ambiguous until it has been reduced
 [( )] Reductions shrink the stack so it cannot overflow
 
-In the second-to-last row, the stack `E + T` with input `$` is reduced using the production `E -> E +` [[T]] — after which the stack holds only the start symbol and the parser accepts.
+In the second-to-last row, the stack `E + T` with input `$` is reduced using the production `E -> E +` [[T]], after which the stack holds only the start symbol and the parser accepts.
 
 ---
 
 ## Worked Example: Building the Table by Hand
 
-The trace above used a table without saying where the table came from. That is the gap this section closes: an LR parser is a stack plus a *table*, and the table is not magic — it is a finite automaton over **items**, and you can build it with a pencil.
+The trace above used a table without saying where the table came from. That is the gap this section closes: an LR parser is a stack plus a *table*, and the table is not magic: it is a finite automaton over **items**, and you can build it with a pencil.
 
 An **item** is a production with a dot marking how much of the right-hand side we have already seen. `T -> T . * F` means "we are partway through `T -> T * F`; we have the `T`, we expect a `*` next."
 
@@ -114,7 +114,7 @@ Start from the single item `E' -> . E`. The **closure** rule says: if the dot si
 
 That set of seven items **is** state `I0`. Notice what closure means: standing at the very beginning of the input, the parser is simultaneously "about to parse an E, and a T, and an F, and a num, and a `(`." It commits to nothing until it sees a token.
 
-### Step 2: GOTO — one transition, worked
+### Step 2: GOTO, one transition, worked
 
 `GOTO(I, X)` advances the dot past `X` in every item that has the dot before `X`, then takes the closure. Take `GOTO(I0, T)`:
 
@@ -122,7 +122,7 @@ That set of seven items **is** state `I0`. Notice what closure means: standing a
 - Advance the dot: `E -> T .` and `T -> T . * F`
 - Closure adds nothing (no dot sits before a non-terminal)
 
-So `I2 = { E -> T . , T -> T . * F }`. **This one state is the whole precedence story.** It contains a completed item (`E -> T .`, meaning "reduce") *and* an item expecting more input (`T -> T . * F`, meaning "shift the `*`"). Which one fires depends entirely on the lookahead token — and that is exactly the shift-reduce decision CTQ 2 asks about, sitting in a single state you just built by hand.
+So `I2 = { E -> T . , T -> T . * F }`. **This one state is the whole precedence story.** It contains a completed item (`E -> T .`, meaning "reduce") *and* an item expecting more input (`T -> T . * F`, meaning "shift the `*`"). Which one fires depends entirely on the lookahead token, and that is exactly the shift-reduce decision CTQ 2 asks about, sitting in a single state you just built by hand.
 
 Repeating this for every state and every symbol gives twelve states. Here are the ones you need:
 
@@ -144,7 +144,7 @@ Now read the table straight off the states. A dot before a **terminal** means *s
 
 `FOLLOW(E) = { + ) $ }` and `FOLLOW(T) = FOLLOW(F) = { * + ) $ }`.
 
-| State | `num` | `*` | `+` | `$` | → E | → T | → F |
+| State | `num` | `*` | `+` | `$` | -> E | -> T | -> F |
 |---|---|---|---|---|---|---|---|
 | 0 | s4 | | | | 1 | 2 | 3 |
 | 1 | | | s6 | **accept** | | | |
@@ -156,15 +156,15 @@ Now read the table straight off the states. A dot before a **terminal** means *s
 | 8 | | s7 | r1 | r1 | | | |
 | 9 | | r3 | r3 | r3 | | | |
 
-Look at **row 2**: on `*` the parser shifts, on `+` or `$` it reduces `E -> T`. That single row is where `*` binds tighter than `+`. Nobody decided it at parse time — it fell out of the item set. Compare that to recursive descent, where the same precedence lives in the *shape of your function calls*.
+Look at **row 2**: on `*` the parser shifts, on `+` or `$` it reduces `E -> T`. That single row is where `*` binds tighter than `+`. Nobody decided it at parse time; it fell out of the item set. Compare that to recursive descent, where the same precedence lives in the *shape of your function calls*.
 
-> **Check yourself.** In row 8 (`E -> E + T .` and `T -> T . * F`), why is there an `s7` under `*` rather than a reduce? Because `T . * F` is still expecting a `*` — reducing `E -> E + T` first would build `(2+3)*4` instead of `2+(3*4)`. That is CTQ 2's answer, visible in one table cell.
+> **Check yourself.** In row 8 (`E -> E + T .` and `T -> T . * F`), why is there an `s7` under `*` rather than a reduce? Because `T . * F` is still expecting a `*`; reducing `E -> E + T` first would build `(2+3)*4` instead of `2+(3*4)`. That is CTQ 2's answer, visible in one table cell.
 
 ---
 
 ## Model 1: Drive the Machine
 
-The example above walked through `2 + 3` step by step. Now your team will execute the same algorithm on a slightly more complex input and confront a key decision: when two tokens compete for precedence, the lookahead token is what breaks the tie. The table already encodes that decision — your job here is to discover *why* the lookahead is necessary by watching what goes wrong without it.
+The example above walked through `2 + 3` step by step. Now your team will execute the same algorithm on a slightly more complex input and confront a key decision: when two tokens compete for precedence, the lookahead token is what breaks the tie. The table already encodes that decision; your job here is to discover *why* the lookahead is necessary by watching what goes wrong without it.
 
 ### Critical Thinking Questions
 
@@ -173,13 +173,13 @@ The example above walked through `2 + 3` step by step. Now your team will execut
 3. Identify, in your question 1 table, the exact row where the tree for `2 * 3` finished forming. Bottom-up means the subtree existed before its parent; point to the evidence.
 4. Recursive descent could not run `E -> E + T`; the LR machine prefers it. In one sentence each, say where the "memory of the left context" lives in each technique (the call stack versus the explicit stack).
 
-> **Watch out!** LR parsers read left-to-right but reduce from the right end of the stack — this confuses students about which "direction" they should be thinking. The key is that a reduction always fires on the *top* of the stack (the rightmost symbols currently seen), not on the leftmost. "LR" means Left-to-right scan, Rightmost derivation in reverse — the tree you are building is a rightmost derivation discovered backwards, bottom-up.
+> **Watch out!** LR parsers read left-to-right but reduce from the right end of the stack; this confuses students about which "direction" they should be thinking. The key is that a reduction always fires on the *top* of the stack (the rightmost symbols currently seen), not on the leftmost. "LR" means Left-to-right scan, Rightmost derivation in reverse: the tree you are building is a rightmost derivation discovered backwards, bottom-up.
 
 ---
 
 # Part II: Conflicts and Choices
 
-A parsing table cell with two entries is a conflict: the grammar gave the parser two equally valid moves at the same point, and it cannot choose without additional information. Conflicts are not crashes — they are diagnostic messages telling you that the grammar (or the language) is ambiguous or requires more lookahead than the parser class provides.
+A parsing table cell with two entries is a conflict: the grammar gave the parser two equally valid moves at the same point, and it cannot choose without additional information. Conflicts are not crashes; they are diagnostic messages telling you that the grammar (or the language) is ambiguous or requires more lookahead than the parser class provides.
 
 ## 2. When the Table Cannot Decide
 
@@ -192,13 +192,13 @@ A parser generator reports a shift-reduce conflict on the team's grammar at the 
 [(X)] Recognize the dangling else ambiguity and either restructure the grammar or accept the tool's default of shifting, documenting the choice
 [( )] Delete the else construct
 
-> **Watch out!** A conflict in the parsing table — whether LL(1) or LR — means the grammar is not in the class the table was built for. For LL(1) tables specifically, any cell with more than one entry means the grammar is not LL(1) and the table-driven parser is undefined for that grammar. The right response is always to diagnose *why* the conflict arose (ambiguity? left recursion? missing factoring?) rather than picking an entry arbitrarily.
+> **Watch out!** A conflict in the parsing table (whether LL(1) or LR) means the grammar is not in the class the table was built for. For LL(1) tables specifically, any cell with more than one entry means the grammar is not LL(1) and the table-driven parser is undefined for that grammar. The right response is always to diagnose *why* the conflict arose (ambiguity? left recursion? missing factoring?) rather than picking an entry arbitrarily.
 
 ---
 
 ## Model 2: Technology Selection
 
-Now that you have seen how the machinery works, the practical question is whether to build it yourself or let a generator do it. This is not a trivial decision — the choice affects error messages, grammar expressiveness, and how much work it takes to change the language later. Real-world production compilers have landed on both sides of this debate.
+Now that you have seen how the machinery works, the practical question is whether to build it yourself or let a generator do it. This is not a trivial decision: the choice affects error messages, grammar expressiveness, and how much work it takes to change the language later. Real-world production compilers have landed on both sides of this debate.
 
 Your project must choose its parsing technology; most teams hand-write recursive descent, and you should know what you are declining.
 
@@ -221,9 +221,9 @@ Your project grammar contains the left-recursive list rule `args -> args "," exp
 
 ## Model 3: FIRST and FOLLOW Sets
 
-Before you can build a parse table, you need to know two things about every nonterminal: what tokens can start a phrase derived from it (FIRST), and what tokens can legally appear right after it in any sentential form (FOLLOW). The code below computes both sets automatically for a grammar you provide — run it, then use the output to answer the questions that follow.
+Before you can build a parse table, you need to know two things about every nonterminal: what tokens can start a phrase derived from it (FIRST), and what tokens can legally appear right after it in any sentential form (FOLLOW). The code below computes both sets automatically for a grammar you provide; run it, then use the output to answer the questions that follow.
 
-**FIRST(A)** is the set of terminals that can begin any string derived from A. **FOLLOW(A)** is the set of terminals (and `$`) that can appear immediately after A in some sentential form. Together they power LL(1) table construction: the parse table entry for nonterminal A on lookahead token t is the production to use when t ∈ FIRST(RHS) — or when ε is derivable from RHS and t ∈ FOLLOW(A).
+**FIRST(A)** is the set of terminals that can begin any string derived from A. **FOLLOW(A)** is the set of terminals (and `$`) that can appear immediately after A in some sentential form. Together they power LL(1) table construction: the parse table entry for nonterminal A on lookahead token t is the production to use when t ∈ FIRST(RHS), or when ε is derivable from RHS and t ∈ FOLLOW(A).
 
 ```python
 {% raw %}
@@ -327,7 +327,7 @@ def compute_follow(grammar, first):
     return follow
 
 # Grammar: E -> E + T | T,  T -> T * F | F,  F -> ( E ) | num
-# (Left-recursive — fine for LR; LL(1) needs a rewritten version)
+# (Left-recursive - fine for LR; LL(1) needs a rewritten version)
 # LL(1)-compatible version:
 #   E  -> T E'
 #   E' -> + T E' | epsilon
@@ -362,18 +362,18 @@ for nt in grammar:
 
 ### Critical Thinking Questions
 
-8. `FIRST(E')` contains `+` and `ε`. Explain *why* `ε` is in `FIRST(E')` by tracing the grammar rule for `E'`. Then explain what a parser does when it sees a lookahead not in `FIRST(E')` — does it error immediately, or consult `FOLLOW`?
+8. `FIRST(E')` contains `+` and `ε`. Explain *why* `ε` is in `FIRST(E')` by tracing the grammar rule for `E'`. Then explain what a parser does when it sees a lookahead not in `FIRST(E')`: does it error immediately, or consult `FOLLOW`?
 9. `FOLLOW(E')` should equal `FOLLOW(E)`. Verify this from the printed output and justify it from the grammar rule `E -> T E'`: when does the parser need to know what follows `E'`?
 10. The original left-recursive grammar (`E -> E + T | T`) cannot be used directly for LL(1) parsing. Explain why, in terms of what the parser would have to do on the first token when predicting `E`.
 11. Add a new production `E' -> - T E'` (subtraction) to the grammar dict and re-run. Predict before running: which FIRST set changes, which FOLLOW sets change, and whether an LL(1) conflict arises.
 
-> **Watch out!** When a nonterminal A can derive ε (i.e., ε ∈ FIRST(A)), computing the parse table for any production that contains A requires you to also consult FOLLOW(A) — not just FIRST(A). Students commonly skip this step and then wonder why the table rejects valid inputs. The rule is: if ε ∈ FIRST(α) for production `B -> α`, add that production to `table[B][t]` for every `t ∈ FOLLOW(B)` as well.
+> **Watch out!** When a nonterminal A can derive ε (i.e., ε ∈ FIRST(A)), computing the parse table for any production that contains A requires you to also consult FOLLOW(A), not just FIRST(A). Students commonly skip this step and then wonder why the table rejects valid inputs. The rule is: if ε ∈ FIRST(α) for production `B -> α`, add that production to `table[B][t]` for every `t ∈ FOLLOW(B)` as well.
 
-## Model: From Source to Running Program — Compile, Link, Load
+## Model: From Source to Running Program, Compile, Link, Load
 
 Today's generated parsers are one station on an industrial assembly line, and this ten-minute model walks the rest of it. Your interpreter runs programs directly from the tree; a compiled language like C takes three more steps between source text and running behavior:
 
-1. **Compile.** Each source file is translated *separately* into an **object file** — machine code plus a **symbol table** listing the names it defines (`main`, `parse_expr`) and the names it uses but cannot find (`printf`, `yylex`). An object file is a puzzle piece with labeled tabs and labeled holes.
+1. **Compile.** Each source file is translated *separately* into an **object file**: machine code plus a **symbol table** listing the names it defines (`main`, `parse_expr`) and the names it uses but cannot find (`printf`, `yylex`). An object file is a puzzle piece with labeled tabs and labeled holes.
 2. **Link.** The **linker** fits the pieces together: every "uses" hole must be filled by exactly one "defines" tab, drawn from your other object files or from libraries. Two definitions of the same name is a *duplicate symbol* error; zero is the famous *undefined reference*. **Static linking** copies library code into the executable; **dynamic linking** leaves a note to find it later.
 3. **Load.** When you run the program, the **loader** places the executable into memory, resolves the dynamic-library notes against `.so`/`.dll` files on the system, and jumps to the entry point. Only now does behavior exist.
 
@@ -390,16 +390,16 @@ Which statement about the pipeline is correct?
 - [( )] The loader recompiles the program each time it runs
 - [( )] Static and dynamic linking differ only in file size, never in behavior
 
-> **Going deeper:** the full story — object-file formats, symbol tables you can inspect with `nm`, linker maps, and dynamic loading — is the [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-compiling-linking.md) tutorial.
+> **Going deeper:** the full story (object-file formats, symbol tables you can inspect with `nm`, linker maps, and dynamic loading) is the [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-compiling-linking.md) tutorial.
 
 ---
 
 ---
-**🛑 In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+**In-class work stops here.** Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
 
 ## Model 4 (At Home): LL(1) Parse Table Construction and Table-Driven Parser
 
-Armed with FIRST and FOLLOW, building the LL(1) table is a purely mechanical process: iterate over every production, look at what tokens can start it, and fill in the corresponding table cells. The table-driven parser then replaces the call stack of recursive descent with an explicit stack and a loop — same logic, different bookkeeping.
+Armed with FIRST and FOLLOW, building the LL(1) table is a purely mechanical process: iterate over every production, look at what tokens can start it, and fill in the corresponding table cells. The table-driven parser then replaces the call stack of recursive descent with an explicit stack and a loop, same logic, different bookkeeping.
 
 With FIRST and FOLLOW sets in hand, the LL(1) parse table is mechanical: for each production `A -> α`, add it to table[A][t] for every `t ∈ FIRST(α) - {ε}`, and for every `t ∈ FOLLOW(A)` if `ε ∈ FIRST(α)`. A conflict (two entries in one cell) means the grammar is not LL(1).
 
@@ -532,7 +532,7 @@ def ll1_parse(tokens, grammar, table, start='E'):
             if current in table[top]:
                 production = table[top][current]
                 prod_str = ' '.join(production) if production != [EPSILON] else 'ε'
-                trace.append((stack_str, input_str, f'{top} → {prod_str}'))
+                trace.append((stack_str, input_str, f'{top} -> {prod_str}'))
                 stack.pop()
                 if production != [EPSILON]:
                     for sym in reversed(production):
@@ -569,7 +569,7 @@ if conflicts:
     for c in conflicts:
         print(f"  {c}")
 else:
-    print("\nNo conflicts — grammar is LL(1).")
+    print("\nNo conflicts - grammar is LL(1).")
 
 # Run the parser on 'num + num * num $'
 tokens_input = ['num', '+', 'num', '*', 'num', '$']
@@ -586,7 +586,7 @@ print(f"\nResult: {'ACCEPTED' if accepted else 'REJECTED'}")
 ### Critical Thinking Questions
 
 12. The table cell `table['E'']['num']` is empty (no entry). Look at the FOLLOW set of `E'` and explain: what action should the parser take when the stack top is `E'` and the lookahead is something in `FOLLOW(E')` but not `FIRST(E')`?
-13. Trace the parse of `num + num * num` by hand using the printed table before running — predict the first five rows of the trace. After running, compare with your prediction and identify any step you got wrong.
+13. Trace the parse of `num + num * num` by hand using the printed table before running; predict the first five rows of the trace. After running, compare with your prediction and identify any step you got wrong.
 14. An LL(1) grammar has *at most one* entry per table cell. If you added the production `E' -> - T E'` to the grammar, which cell would now have two entries, and what conflict type would that be?
 15. The table-driven parser and a recursive-descent parser for the same LL(1) grammar compute *identical* derivations. The table version uses an explicit stack while descent uses the call stack. Identify one practical engineering advantage of each approach.
 
@@ -594,7 +594,7 @@ print(f"\nResult: {'ACCEPTED' if accepted else 'REJECTED'}")
 
 ## Model 5 (At Home): Shift-Reduce Conflicts Explained
 
-You have seen what a conflict is in the abstract; now see concrete examples. The code below simulates two classic conflict scenarios — the dangling else (shift-reduce) and indistinguishable nonterminals (reduce-reduce) — and shows how declared operator precedence can resolve the first kind without restructuring the grammar.
+You have seen what a conflict is in the abstract; now see concrete examples. The code below simulates two classic conflict scenarios, the dangling else (shift-reduce) and indistinguishable nonterminals (reduce-reduce), and shows how declared operator precedence can resolve the first kind without restructuring the grammar.
 
 A **shift-reduce conflict** occurs when the LR parser, in some configuration (stack + lookahead), can either (a) shift the lookahead token onto the stack, or (b) reduce the stack top using a completed production. The canonical example is the **dangling else**, but conflicts arise whenever a grammar is ambiguous or requires more than the available lookahead.
 
@@ -725,7 +725,7 @@ for ctype, cause, example, fix in conflicts:
 
 ---
 
-## Practice — Allison, Ch. 5: Pushdown Automata (Readings 5.1 and 5.2)
+## Practice: Allison, Ch. 5: Pushdown Automata (Readings 5.1 and 5.2)
 
 These exercises cover pushdown automata (PDAs) and their relationship to context-free grammars. PDAs are the theoretical model underlying LR and LL parsers; understanding them deepens your intuition for shift-reduce parsing.
 
@@ -765,18 +765,18 @@ In an LR(0) shift-reduce parser, the stack corresponds to:
 
 3. *PDA to CFG.* The language $\{ww^R \mid w \in \{a,b\}^*\}$ (strings that are palindromes) is context-free. Write a CFG for it, then describe how a PDA would recognize it. What is the key operation the PDA performs at the midpoint?
 
-4. *Shift-reduce as PDA.* A shift-reduce parser is a PDA in disguise. For the simple grammar `E → E + T | T` and `T → id`, trace the shift-reduce actions on input `id + id`:
+4. *Shift-reduce as PDA.* A shift-reduce parser is a PDA in disguise. For the simple grammar `E -> E + T | T` and `T -> id`, trace the shift-reduce actions on input `id + id`:
    - List each action (SHIFT or REDUCE) and the stack contents after each step
    - Identify the two "PDA states" (reading input vs. reducing)
    - Explain what is pushed and popped at each reduction step
 
-5. *Grammar to PDA.* Given a context-free grammar, there is a standard algorithm to construct a PDA that recognizes the same language (the "top-down PDA"). Apply it to the grammar `S → aSb | ε`. Write out the PDA's transition rules and trace it on `aabb`.
+5. *Grammar to PDA.* Given a context-free grammar, there is a standard algorithm to construct a PDA that recognizes the same language (the "top-down PDA"). Apply it to the grammar `S -> aSb | ε`. Write out the PDA's transition rules and trace it on `aabb`.
 
 ---
 
 ---
 
-## Answer Key: Model 1, CTQ 1 — the full parse of `2 * 3 + 4`
+## Answer Key: Model 1, CTQ 1, the full parse of `2 * 3 + 4`
 
 Attempt this as a team **before** you read it. Fourteen rows, using the ACTION/GOTO table you built above. Stack entries are written `symbol(state)`; state 0 is always at the bottom.
 
@@ -797,9 +797,9 @@ Attempt this as a team **before** you read it. Fourteen rows, using the ACTION/G
 | 13 | `0 E(1) +(6) T(8)` | `$` | reduce `E -> E + T`, goto 1 |
 | 14 | `0 E(1)` | `$` | **accept** |
 
-**CTQ 3 answered from this table:** the subtree for `2 * 3` finishes at **row 7**, where `T -> T * F` reduces three stack symbols into one `T`. Everything above row 7 is that subtree being built; everything below is it being used. The parent `E -> E + T` does not reduce until row 13 — six rows *after* its own child existed. That is what "bottom-up" means, and the row numbers are the evidence.
+**CTQ 3 answered from this table:** the subtree for `2 * 3` finishes at **row 7**, where `T -> T * F` reduces three stack symbols into one `T`. Everything above row 7 is that subtree being built; everything below is it being used. The parent `E -> E + T` does not reduce until row 13, six rows *after* its own child existed. That is what "bottom-up" means, and the row numbers are the evidence.
 
-**Contrast with row 4.** At `0 T(2)` with `*` next, the parser shifts instead of reducing `E -> T`. Had it reduced, `2` would have become a complete `E` and the `*` would have had to attach to it — yielding `(2) * (3 + 4)`. Precedence is decided in exactly one table cell.
+**Contrast with row 4.** At `0 T(2)` with `*` next, the parser shifts instead of reducing `E -> T`. Had it reduced, `2` would have become a complete `E` and the `*` would have had to attach to it, yielding `(2) * (3 + 4)`. Precedence is decided in exactly one table cell.
 
 ---
 
@@ -821,12 +821,12 @@ In your notebook: the LR table is compiled knowledge, decisions made once, ahead
 
 The deep-dive appendices that used to follow this activity now live on the Tutorials shelf:
 
-> **Going further:** the Flex/Yacc material that used to live here is covered in depth in the dedicated tutorial: [Flex and Bison from Zero to a Working Language](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md) — installing Flex and Bison, a complete `.l`/`.y` walkthrough of a calculator language with variables, and an appendix on LR(0) item-set construction and how Yacc builds and resolves its parse tables. The ready-to-build mini-notation scaffold lives in the course examples at [files/examples/mininote/](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/examples/mininote/). Explore them when your project or curiosity calls for it.
+> **Going further:** the Flex/Yacc material that used to live here is covered in depth in the dedicated tutorial: [Flex and Bison from Zero to a Working Language](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md): installing Flex and Bison, a complete `.l`/`.y` walkthrough of a calculator language with variables, and an appendix on LR(0) item-set construction and how Yacc builds and resolves its parse tables. The ready-to-build mini-notation scaffold lives in the course examples at [files/examples/mininote/](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/examples/mininote/). Explore them when your project or curiosity calls for it.
 
-> **Going further:** the material that used to live here — compiling expressions to bytecode and executing them on a stack machine — is covered in depth in the dedicated tutorial: [Building a Bytecode VM for Mini](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md). Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here (compiling expressions to bytecode and executing them on a stack machine) is covered in depth in the dedicated tutorial: [Building a Bytecode VM for Mini](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md). Explore it when your project or curiosity calls for it.
 
-> **Going further:** the material that used to live here — object files, symbol tables, static and dynamic linking, loaders, and the path from source to executable — is covered in depth in the dedicated tutorial: [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-compiling-linking.md). Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here (object files, symbol tables, static and dynamic linking, loaders, and the path from source to executable) is covered in depth in the dedicated tutorial: [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-compiling-linking.md). Explore it when your project or curiosity calls for it.
 
 ---
 
-Up next: the *Tree-Walking Interpretation* activity finally gives parsed programs their meaning — the front end is complete.
+Up next: the *Tree-Walking Interpretation* activity finally gives parsed programs their meaning; the front end is complete.

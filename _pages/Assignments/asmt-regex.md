@@ -5,7 +5,7 @@ title: "CS374: Principles of Programming Languages - Regular Expressions"
 
 info:
   coursenum: CS374
-  purpose: "To build a working command of regular expressions — writing tested pattern libraries, a finditer-based mini lexer, and realistic data extraction — plus the vocabulary to reason about why a pattern behaves the way it does."
+  purpose: "To build a working command of regular expressions: writing tested pattern libraries, a finditer-based mini lexer, and realistic data extraction, plus the vocabulary to reason about why a pattern behaves the way it does."
   tilt:
     task: "Work through four scaffolded parts: a ten-pattern library, a re.finditer mini lexer, a regex text transformer and log parser, and a written analysis of regex limits."
     criteria: "Assessed on the correctness of your patterns, mini lexer, and log parser and the depth of your greedy/lazy, anchors, and Chomsky-limits analysis, each part worth 25 points; see the rubric below for the full breakdown."
@@ -61,7 +61,7 @@ In this assignment you will build fluency with regular expressions in four scaff
 
 ### Environment and Setup
 
-You need Python 3.10+ (`python --version` to confirm) and nothing else — `re` and `json` are in the standard library. Create the files you will submit up front, so each part has a home:
+You need Python 3.10+ (`python --version` to confirm) and nothing else: `re` and `json` are in the standard library. Create the files you will submit up front, so each part has a home:
 
 ```
 patterns.py      # Part 1
@@ -74,7 +74,7 @@ readme.md        # Part 4 answers
 
 ### Your First 30 Minutes
 
-Copy the `check()` harness from Part 1 into `patterns.py`, then write and test exactly one pattern — P1, `COURSE_CODE`:
+Copy the `check()` harness from Part 1 into `patterns.py`, then write and test exactly one pattern, P1, `COURSE_CODE`:
 
 ```python
 COURSE_CODE = r"[A-Z]{2,4}-?\d{3}"
@@ -84,7 +84,7 @@ check("COURSE_CODE", COURSE_CODE,
       should_not_match=["cs374", "CS3741"])
 ```
 
-Run `python patterns.py` and confirm you see a `PASS` line. Then break it on purpose: remove the `-?` and rerun to watch `check()` report the failure. That edit-run-read-failure loop is the whole workflow for Part 1 — once it works for one pattern, the remaining nine are repetitions of the same cycle.
+Run `python patterns.py` and confirm you see a `PASS` line. Then break it on purpose: remove the `-?` and rerun to watch `check()` report the failure. That edit-run-read-failure loop is the whole workflow for Part 1; once it works for one pattern, the remaining nine are repetitions of the same cycle.
 
 This assignment is handed out alongside the dedicated Regular Expressions class session and the **Regex Workshop lab**, which is due mid-assignment and completes your first patterns and the mini-lexer skeleton for you. Bring your lab artifacts into Parts 1 and 2 directly: the lab is a head start on this assignment, not separate work.
 
@@ -94,7 +94,7 @@ See the course schedule for the assigned and due dates. A suggested sequence:
 
 | Checkpoint | You should have |
 |------------|----------------|
-| On assignment | `check()` harness working (from the Regex Workshop lab); patterns P1–P3 passing |
+| On assignment | `check()` harness working (from the Regex Workshop lab); patterns P1-P3 passing |
 | Checkpoint 1 | Part 1 complete: all ten patterns with test cases |
 | Lab due | Part 2 complete: mini lexer (grown from the lab's skeleton) passing the ordering table |
 | Checkpoint 2 | Part 3 complete: transformer and log parser producing the sample output |
@@ -128,49 +128,49 @@ def check(name: str, pattern: str, should_match: list, should_not_match: list):
         print(f"PASS {name} ({len(should_match)} positive, {len(should_not_match)} negative)")
 ```
 
-Note: `fullmatch` requires the pattern to match the *entire* string. This is intentional — anchoring the test exposes patterns that are too permissive.
+Note: `fullmatch` requires the pattern to match the *entire* string. This is intentional: anchoring the test exposes patterns that are too permissive.
 
 ### Required Patterns (10 total)
 
 Write a `re.compile`d pattern for each, named as shown, with **at least three positive and two negative test cases** via `check()`.
 
-**P1 — `COURSE_CODE`:** Ursinus course codes: two to four capital letters, an optional hyphen, then exactly three digits.
+**P1 `COURSE_CODE`:** Ursinus course codes: two to four capital letters, an optional hyphen, then exactly three digits.
 - Match: `CS374`, `MATH111`, `BIO-101`, `ENGL-201`
 - No match: `cs374`, `CS3741`, `CS-37`, `374`
 
-**P2 — `IDENTIFIER`:** A legal programming identifier: starts with a letter or underscore, followed by any combination of letters, digits, and underscores. Must match the full string.
+**P2 `IDENTIFIER`:** A legal programming identifier: starts with a letter or underscore, followed by any combination of letters, digits, and underscores. Must match the full string.
 - Match: `foo`, `_bar`, `x1`, `my_var_2`
 - No match: `1foo`, `-x`, `foo bar`, `"x"`
 
-**P3 — `DECIMAL`:** A decimal number with an optional sign and optional fractional part. The integer part is required; a bare `.` or a number like `3.` (trailing dot without digits) is not valid.
+**P3 `DECIMAL`:** A decimal number with an optional sign and optional fractional part. The integer part is required; a bare `.` or a number like `3.` (trailing dot without digits) is not valid.
 - Match: `3`, `-3`, `+3.14`, `0.5`, `-0.001`
 - No match: `.5`, `3.`, `--3`, `3..14`, `abc`
 
-**P4 — `TIME_12H`:** A 12-hour clock time. Hour is 1–12. Minutes are optional but, if present, must be two digits. Meridiem (`AM` or `PM`) is required and separated by a space.
+**P4 `TIME_12H`:** A 12-hour clock time. Hour is 1-12. Minutes are optional but, if present, must be two digits. Meridiem (`AM` or `PM`) is required and separated by a space.
 - Match: `8 AM`, `12:00 PM`, `1:30 AM`, `11:59 PM`
 - No match: `13:00 AM`, `0:00 AM`, `8:5 PM`, `8AM`, `8:00`
 
-**P5 — `EMAIL`:** A practical (not RFC-compliant) email address: one or more word characters or dots before `@`, then a domain of word characters and dots with at least one dot.
+**P5 `EMAIL`:** A practical (not RFC-compliant) email address: one or more word characters or dots before `@`, then a domain of word characters and dots with at least one dot.
 - Match: `user@example.com`, `bill.j@ursinus.edu`, `x@y.z`
 - No match: `@example.com`, `user@`, `user@com`, `user @example.com`
 
-**P6 — `US_PHONE`:** A US phone number in the format `(NXX) NXX-XXXX` where N is 2–9.
+**P6 `US_PHONE`:** A US phone number in the format `(NXX) NXX-XXXX` where N is 2-9.
 - Match: `(215) 555-1234`, `(800) 123-4567`
 - No match: `215-555-1234`, `(015) 555-1234`, `(215)555-1234`
 
-**P7 — `ISO_DATE`:** An ISO 8601 date `YYYY-MM-DD`. Month 01–12, day 01–31 (exact day-of-month validation is beyond regex — just validate the format and ranges).
+**P7 `ISO_DATE`:** An ISO 8601 date `YYYY-MM-DD`. Month 01-12, day 01-31 (exact day-of-month validation is beyond regex; just validate the format and ranges).
 - Match: `2026-09-18`, `2000-01-01`, `1999-12-31`
 - No match: `26-09-18`, `2026-9-18`, `2026-13-01`, `2026-00-15`
 
-**P8 — `HEX_COLOR`:** A CSS hex color: a `#` followed by exactly 3 or 6 hex digits (case-insensitive).
+**P8 `HEX_COLOR`:** A CSS hex color: a `#` followed by exactly 3 or 6 hex digits (case-insensitive).
 - Match: `#fff`, `#FFF`, `#1a2b3c`, `#ABC`
 - No match: `#gg1122`, `fff`, `#1234`, `#12345g`
 
-**P9 — `IPV4_ADDRESS`:** An IPv4 address: four groups of 1–3 digits separated by dots. (Exact 0–255 range validation is encouraged but not required — validate format and that each octet is 1–3 digits.)
+**P9 `IPV4_ADDRESS`:** An IPv4 address: four groups of 1-3 digits separated by dots. (Exact 0-255 range validation is encouraged but not required; validate format and that each octet is 1-3 digits.)
 - Match: `192.168.1.1`, `10.0.0.0`, `255.255.255.255`, `0.0.0.0`
 - No match: `192.168.1`, `192.168.1.1.1`, `abc.def.ghi.jkl`
 
-**P10 — `MARKDOWN_LINK`:** A Markdown hyperlink `[text](url)` where text is any non-`]` characters and url is any non-`)` characters.
+**P10 `MARKDOWN_LINK`:** A Markdown hyperlink `[text](url)` where text is any non-`]` characters and url is any non-`)` characters.
 - Match: `[Google](https://google.com)`, `[CS374](../index.html)`, `[x](y)`
 - No match: `[Google]`, `(https://google.com)`, `Google(https://google.com)`
 
@@ -368,14 +368,14 @@ In one paragraph, explain why no regular expression can validate balanced nested
 ## Deliverables
 
 Submit a ZIP containing:
-- `patterns.py` — all ten patterns with the check() harness and test calls
-- `mini_lexer.py` — the mini lexer with extended TOKEN_SPEC
-- `transformer.py` — the text transformer
-- `log_parser.py` — the log parser
-- `config.json` — the log parser configuration
-- `errors.txt` — the generated errors file from the provided log
-- `test_output.txt` — output of running all four modules
-- `readme.md` — approximately one page including the four analysis answers and the limits paragraph
+- `patterns.py`: all ten patterns with the check() harness and test calls
+- `mini_lexer.py`: the mini lexer with extended TOKEN_SPEC
+- `transformer.py`: the text transformer
+- `log_parser.py`: the log parser
+- `config.json`: the log parser configuration
+- `errors.txt`: the generated errors file from the provided log
+- `test_output.txt`: output of running all four modules
+- `readme.md`: approximately one page including the four analysis answers and the limits paragraph
 
 Ensure reproducibility by listing your Python version.
 
@@ -400,4 +400,4 @@ Ensure reproducibility by listing your Python version.
 - After completing Part 2, what are the limits of a regex-only lexer? Name one thing this `finditer` loop cannot do that a hand-written scanner with `peek`/`advance` can - you will build exactly that in the Lexer assignment.
 - If collaboration with a buddy was permitted, did you work with a buddy on this assignment? If so, who? If not, do you certify that this submission represents your own original work? Please identify any and all portions of your submission that were not originally written by you.
 - AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
-- Approximately how many hours it took you to finish this assignment (I will not judge you for this at all — I am simply using it to gauge if the assignments are too easy or hard)?
+- Approximately how many hours it took you to finish this assignment (I will not judge you for this at all; I am simply using it to gauge if the assignments are too easy or hard)?

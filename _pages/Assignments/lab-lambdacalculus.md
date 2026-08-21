@@ -5,7 +5,7 @@ title: "CS374: Principles of Programming Languages - Lab: Lambda Calculus"
 
 info:
   coursenum: CS374
-  purpose: "To evaluate lambda calculus expressions by hand with a partner — beta reduction with capture-avoiding substitution, and Church encodings of booleans and numerals — the theory floor beneath functional programming."
+  purpose: "To evaluate lambda calculus expressions by hand with a partner: beta reduction with capture-avoiding substitution, and Church encodings of booleans and numerals, the theory floor beneath functional programming."
   tilt:
     task: "With a partner, carry out step-by-step beta reductions including a capture-avoidance case, and verify Church-encoded booleans and numerals by reduction."
     criteria: "Assessed on correct, fully-shown reduction sequences and correct Church-encoding verifications, weighted 55/45 across the two parts; see the rubric below for the full breakdown."
@@ -43,9 +43,9 @@ tags:
 
 ---
 
-This **lab** is entirely on paper: you and a partner evaluate lambda calculus expressions by hand, the way the Lambda Calculus class sessions do on the board. It stands alone — nothing imports it — but it is deliberate preparation for two things: the Functional Programming assignment's **Direction C** (Church encodings in code — the reductions you write here are the test cases your reducer must reproduce) and the closures material, where "a function that captures a variable" stops being mysterious once you have alpha-renamed by hand. Budget **two to three hours**.
+This **lab** is entirely on paper: you and a partner evaluate lambda calculus expressions by hand, the way the Lambda Calculus class sessions do on the board. It stands alone (nothing imports it) but it is deliberate preparation for two things: the Functional Programming assignment's **Direction C** (Church encodings in code; the reductions you write here are the test cases your reducer must reproduce) and the closures material, where "a function that captures a variable" stops being mysterious once you have alpha-renamed by hand. Budget **two to three hours**.
 
-**Pair policy:** this lab may be completed **in pairs** — reduce independently, then reconcile line by line; disagreements are where the learning is. Both partners submit the same document, each naming the other, and both earn the same grade. (You may also work alone.)
+**Pair policy:** this lab may be completed **in pairs**: reduce independently, then reconcile line by line; disagreements are where the learning is. Both partners submit the same document, each naming the other, and both earn the same grade. (You may also work alone.)
 
 ---
 
@@ -55,9 +55,9 @@ In `reductions.md`, reduce each expression to normal form, **one beta-step per l
 
 1. `(λx. x) y`
 2. `(λx. λy. x) a b`
-3. `(λf. λx. f (f x)) (λz. z + 1) 0` — treat `+` and numerals as constants.
-4. **The capture case:** `(λx. λy. x) y` — blind substitution captures the free `y`; alpha-rename first and add one sentence explaining what would have gone wrong without it.
-5. `(λx. x x) (λx. x x)` — reduce three steps, then state what this term tells you about termination. Then answer: given `(λx. z) ((λx. x x) (λx. x x))`, which evaluation order (normal or applicative) terminates, and what does that imply about lazy evaluation?
+3. `(λf. λx. f (f x)) (λz. z + 1) 0`: treat `+` and numerals as constants.
+4. **The capture case:** `(λx. λy. x) y`: blind substitution captures the free `y`; alpha-rename first and add one sentence explaining what would have gone wrong without it.
+5. `(λx. x x) (λx. x x)`: reduce three steps, then state what this term tells you about termination. Then answer: given `(λx. z) ((λx. x x) (λx. x x))`, which evaluation order (normal or applicative) terminates, and what does that imply about lazy evaluation?
 
 ## Part 2: Church Encodings (45 points)
 
@@ -66,7 +66,7 @@ Using `TRUE = λt. λf. t`, `FALSE = λt. λf. f`, `AND = λp. λq. p q p`, and 
 1. Verify `AND TRUE FALSE` reduces to `FALSE`, showing every step.
 2. Verify `AND TRUE TRUE` reduces to `TRUE`.
 3. Verify `SUCC ONE` reduces to a term alpha-equivalent to `TWO = λf. λx. f (f x)`.
-4. Close with a short answer: a Church numeral *is* a higher-order function — "apply `f`, `n` times." Name the Python or Scheme idiom from the Functional Programming sessions that does exactly this, and one place your team language or interpreter could use the same trick.
+4. Close with a short answer: a Church numeral *is* a higher-order function, "apply `f`, `n` times." Name the Python or Scheme idiom from the Functional Programming sessions that does exactly this, and one place your team language or interpreter could use the same trick.
 
 ---
 
@@ -87,4 +87,4 @@ Submit `reductions.md` (or a scanned/photographed handwritten equivalent, legibl
 - Which reduction did you and your partner disagree on, and what settled it?
 - If you worked in a pair, who did what. If you worked alone, note that instead.
 - AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
-- Approximately how many hours it took you to finish this lab (I will not judge you for this at all — I am simply using it to gauge if the labs are too easy or hard)?
+- Approximately how many hours it took you to finish this lab (I will not judge you for this at all; I am simply using it to gauge if the labs are too easy or hard)?

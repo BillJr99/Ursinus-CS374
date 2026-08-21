@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Finite Automata
 
-Think of a turnstile at a subway station. It has exactly two states — **locked** and **unlocked** — and two transitions: inserting a coin moves it from locked to unlocked, and pushing moves it from unlocked back to locked. That tiny machine already captures the essence of a finite automaton: a fixed set of states, arrows triggered by input symbols, and a yes/no verdict at the end. The remarkable fact you will discover today is that this humble model is *exactly* as powerful as every pattern you wrote in the *Regular Expressions* activity.
+Think of a turnstile at a subway station. It has exactly two states (**locked** and **unlocked**) and two transitions: inserting a coin moves it from locked to unlocked, and pushing moves it from unlocked back to locked. That tiny machine already captures the essence of a finite automaton: a fixed set of states, arrows triggered by input symbols, and a yes/no verdict at the end. The remarkable fact you will discover today is that this humble model is *exactly* as powerful as every pattern you wrote in the *Regular Expressions* activity.
 
 ## Learning Goals
 
@@ -28,7 +28,7 @@ By the end of this activity, you will be able to:
 
 A regular expression *describes* a set of strings; a **finite automaton** *recognizes* one, a machine so simple it is just states and arrows, yet exactly as powerful as the regex notation. Over two days we build the machine view: **DFAs $\rightarrow$ NFAs $\rightarrow$ their surprising equivalence $\rightarrow$ simulation in Python**, the theory under your next assignment and the engine inside every lexer, including yours.
 
-> **Before You Begin** — make sure you can:
+> **Before You Begin**, make sure you can:
 > - Describe what a regular expression *denotes* (the set of strings it matches), not just write one
 > - Create and look up values in a Python `dict`, including a dict whose values are themselves dicts
 > - Trace a simple `for` loop by hand, tracking the value of one variable through each iteration
@@ -51,11 +51,11 @@ A DFA accepting binary strings with an **even number of 1s**:
 
 ```
             0                0
-          ┌───┐            ┌───┐
-          ▼   │            ▼   │
-   ──► ((even)) ──1──►  (odd)
-          ▲                 │
-          └───────1─────────┘
+          +---+            +---+
+          v   |            v   |
+   --> ((even)) --1-->  (odd)
+          ^                 |
+          `-------1---------+
 ```
 
 Two states suffice because the machine only needs to remember one bit: the parity so far.
@@ -64,7 +64,7 @@ Two states suffice because the machine only needs to remember one bit: the parit
 
 ## Model 1: Trace and Design
 
-Before writing any code, you need to be comfortable *tracing* a DFA by hand — following the arrows one symbol at a time. The parity machine above is the ideal warm-up: it has only two states, so every transition is obvious, yet it handles an infinite set of strings correctly. Once tracing feels mechanical, designing your own DFA becomes a matter of asking "what is the minimum information I need to remember at each step?"
+Before writing any code, you need to be comfortable *tracing* a DFA by hand, following the arrows one symbol at a time. The parity machine above is the ideal warm-up: it has only two states, so every transition is obvious, yet it handles an infinite set of strings correctly. Once tracing feels mechanical, designing your own DFA becomes a matter of asking "what is the minimum information I need to remember at each step?"
 
 ### Critical Thinking Questions
 
@@ -79,7 +79,7 @@ CTQ 1 asks for this trace. Do it first; then check. The point of writing it as a
 
 | Step | State before | Symbol read | Transition used | State after |
 |------|--------------|-------------|-----------------|-------------|
-| 0 | — | *(start)* | — | `even` |
+| 0 | - | *(start)* | - | `even` |
 | 1 | `even` | `1` | `even --1--> odd` | `odd` |
 | 2 | `odd` | `0` | `odd --0--> odd` | `odd` |
 | 3 | `odd` | `1` | `odd --1--> even` | `even` |
@@ -87,14 +87,14 @@ CTQ 1 asks for this trace. Do it first; then check. The point of writing it as a
 
 Final state `odd`, which is **not** an accepting state, so `1011` is **rejected**. It has three `1`s, and this machine accepts an even count.
 
-Two habits worth forming from this small table. First, the `0` transitions are self-loops — reading a `0` never changes the answer, which is the machine *saying* that zeros are irrelevant to parity. A DFA's self-loops are always a claim about what the machine chooses to ignore. Second, the state after step 4 is the entire memory of the computation: the machine has forgotten that it read `1011` and remembers only "odd so far." That is the whole limitation you will run into in CTQ 4.
+Two habits worth forming from this small table. First, the `0` transitions are self-loops: reading a `0` never changes the answer, which is the machine *saying* that zeros are irrelevant to parity. A DFA's self-loops are always a claim about what the machine chooses to ignore. Second, the state after step 4 is the entire memory of the computation: the machine has forgotten that it read `1011` and remembers only "odd so far." That is the whole limitation you will run into in CTQ 4.
 
 
 > The worked answers to this session's models are in the **Answer Key** at the end of this page. Attempt them with your team first.
 
-## Model 2: DFA Simulation — A Dictionary and a Loop
+## Model 2: DFA Simulation, A Dictionary and a Loop
 
-The formal five-tuple maps almost directly onto a Python data structure: states become string keys, the transition function becomes a `dict` of `dict`s, and the entire simulation is a loop that does one dictionary lookup per character. Reading this code, notice that the *logic* never changes — only the data describing the machine does. That separation between the runner and the machine description is exactly the architecture your lexer assignment will use.
+The formal five-tuple maps almost directly onto a Python data structure: states become string keys, the transition function becomes a `dict` of `dict`s, and the entire simulation is a loop that does one dictionary lookup per character. Reading this code, notice that the *logic* never changes; only the data describing the machine does. That separation between the runner and the machine description is exactly the architecture your lexer assignment will use.
 
 ```python
 # DFA as data: states are strings, delta is a dict of dicts.
@@ -118,15 +118,15 @@ def run_dfa(machine, s, trace=False):
             if trace: print(f"  '{ch}': DEAD (no transition)")
             return False
         state = machine["delta"][state][ch]
-        if trace: print(f"  '{ch}' → {state}")
+        if trace: print(f"  '{ch}' -> {state}")
     accepted = state in machine["accept"]
-    if trace: print(f"  final: {state} → {'ACCEPT' if accepted else 'REJECT'}")
+    if trace: print(f"  final: {state} -> {'ACCEPT' if accepted else 'REJECT'}")
     return accepted
 
 # Test the parity DFA
 print("=== Even-ones DFA ===")
 for s in ["", "1", "11", "1011", "0000", "10101", "abc"]:
-    print(f"  {s!r:9} → {run_dfa(EVEN_ONES, s)}")
+    print(f"  {s!r:9} -> {run_dfa(EVEN_ONES, s)}")
 
 # Trace one input
 print("\n=== Trace of '1011' ===")
@@ -144,7 +144,7 @@ ENDS_IN_AB_DFA = {
 }
 print("\n=== Ends-in-ab DFA ===")
 for s in ["ab", "aab", "abab", "ba", "a", "b", "aabb", ""]:
-    print(f"  {s!r:7} → {run_dfa(ENDS_IN_AB_DFA, s)}")
+    print(f"  {s!r:7} -> {run_dfa(ENDS_IN_AB_DFA, s)}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 

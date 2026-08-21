@@ -38,7 +38,7 @@ cc -o mininote mininote.tab.c lex.yy.c ast.c eval.c main.c
 ```
 
 Run `bison -v mininote.y` to also generate `mininote.output`, the full
-LALR(1) automaton — every state and item set — which the activity walks
+LALR(1) automaton (every state and item set) which the activity walks
 you through reading.
 
 ## Adapting to PLY (Python)
@@ -53,7 +53,7 @@ almost line for line:
   docstring is the BNF (e.g. `'term : term STAR NUMBER'`) and whose body
   assigns `p[0]` the way the yacc action assigns `$$` from `$1..$3`.
 - The tagged-union `Node` in `ast.h` becomes a small class hierarchy or
-  dataclasses — the same seven constructors.
+  dataclasses: the same seven constructors.
 
 You can equally well hand-roll a recursive descent parser for this
 grammar after eliminating the left recursion in `sequence` and `term`.
@@ -62,10 +62,10 @@ grammar after eliminating the left recursion in `sequence` and `term`.
 
 Try these (also in `samples.txt`):
 
-1. `bd sn` — a two-step sequence splitting the cycle in half
-2. `bd [sn sn] hh*2 ~` — grouping, fast-repeat, and a rest
-3. `[bd sn]*2` — a group repeated: four events in one cycle
-4. `bd sn? hh/2 cp` — degrade (`?`) and slow (`/2`); see Gaps below
+1. `bd sn`: a two-step sequence splitting the cycle in half
+2. `bd [sn sn] hh*2 ~`: grouping, fast-repeat, and a rest
+3. `[bd sn]*2`: a group repeated: four events in one cycle
+4. `bd sn? hh/2 cp`: degrade (`?`) and slow (`/2`); see Gaps below
 
 ## Gaps relative to the activity
 
@@ -74,7 +74,7 @@ Try these (also in `samples.txt`):
   supplies straightforward implementations to make the example build.
 - The `N_SLOW` and `N_DEGRADE` cases in `eval.c` are deliberately left
   unimplemented (they print a "not yet implemented" notice), exactly as
-  scaffolded in the activity — implementing them is Exercises 2 and 3.
+  scaffolded in the activity; implementing them is Exercises 2 and 3.
   Sample pattern 4 above parses fine but reports those notices when
   evaluated.
 - The activity's compile-chain comment links with `-lfl`; because the

@@ -18,7 +18,7 @@ Companion to the *Grammars and the Chomsky Hierarchy* and *Derivations, Parse Tr
 
 Those two class sessions are about reasoning: what a grammar *is*, why an ambiguous one admits two trees, and how layering nonterminals encodes precedence. You do that reasoning with a pencil, in your team, on paper.
 
-This page is the other half — the runnable versions. Every model below was originally embedded in one of those sessions, and each one is a small Python program you execute rather than discuss: representing a grammar as a dictionary, detecting left recursion mechanically, generating derivations, and comparing the trees an ambiguous grammar produces against the trees a layered one produces.
+This page is the other half: the runnable versions. Every model below was originally embedded in one of those sessions, and each one is a small Python program you execute rather than discuss: representing a grammar as a dictionary, detecting left recursion mechanically, generating derivations, and comparing the trees an ambiguous grammar produces against the trees a layered one produces.
 
 **Run these at your own pace, after the session that introduces the idea.** They are not required unless an assignment says so, but two of them are genuinely useful scaffolding: the left-recursion detector tells you whether a grammar you wrote can be parsed by recursive descent, and the ambiguity comparison is the fastest way to check your own grammar design before you build a parser on top of it.
 
@@ -48,7 +48,7 @@ E
   => 2 + 3 * 4       (F -> 4)
 ```
 
-The `*` sub-expression is deeper in the derivation (and in the tree), which means it is evaluated first — that is **how layered grammars encode precedence**.
+The `*` sub-expression is deeper in the derivation (and in the tree), which means it is evaluated first; that is **how layered grammars encode precedence**.
 
 ```python
 # Model 3: CFG as a Python dict + membership checker
@@ -130,7 +130,7 @@ for s in tests:
 
 Before converting a grammar to recursive descent we need to know which nonterminals are directly left-recursive. A nonterminal $A$ is directly left-recursive if it has a production $A \rightarrow A\,\alpha$ for some $\alpha$.
 
-**Worked example — left-recursion elimination:**
+**Worked example, left-recursion elimination:**
 
 The standard left-recursive rule `E -> E + T | T` and its right-recursive equivalent `E -> T E'` with `E' -> + T E' | ε` express the *same language* but have very different parser behavior. Here is why they are equivalent:
 
@@ -143,7 +143,7 @@ Right-recursive generates:
      => T + T + T         (E' -> epsilon)
 ```
 
-Same strings, same left-to-right order, but the right-recursive version never calls itself as its very first action — so recursive descent can handle it.
+Same strings, same left-to-right order, but the right-recursive version never calls itself as its very first action, so recursive descent can handle it.
 
 ```python
 # Model 4: Detecting direct left recursion in a grammar dict
@@ -204,7 +204,7 @@ report("Balanced parentheses", grammar_bp)
 > - **Step 2:** At each step, write which production rule you used (e.g., `E -> T E'`).
 > - **Step 3:** In one sentence, explain what `E' -> + T E' | ε` accomplishes compared to `E -> E + T | T`. Focus on where the recursion sits (first position vs. last position).
 
-> **CTQ 4.15** The detector only finds *direct* left recursion (A → A…). Indirect left recursion would require A → B… and B → A….
+> **CTQ 4.15** The detector only finds *direct* left recursion (A -> A...). Indirect left recursion would require A -> B... and B -> A....
 >
 > - **Step 1:** Write a small example grammar with indirect left recursion between two nonterminals `A` and `B`. Show the two production rules that create the cycle.
 > - **Step 2:** Trace what a recursive descent parser does when it tries to parse a string under your indirect grammar. Where does the infinite loop occur?
@@ -220,7 +220,7 @@ report("Balanced parentheses", grammar_bp)
 
 ## Model 5: Parse Trees as Python Dicts (Runnable)
 
-A parse tree is a nested dictionary `{"node": label, "children": [...]}`. Building one by hand for `2 + 3 * 4` under the layered grammar and pretty-printing it shows directly that the `*` subtree is nested *inside* the `+` subtree — operator precedence made structurally explicit.
+A parse tree is a nested dictionary `{"node": label, "children": [...]}`. Building one by hand for `2 + 3 * 4` under the layered grammar and pretty-printing it shows directly that the `*` subtree is nested *inside* the `+` subtree, operator precedence made structurally explicit.
 
 **Parse tree for `2 + 3 * 4` under the layered grammar (the CORRECT interpretation):**
 
@@ -250,7 +250,7 @@ This tree computes `3 * 4` first (it is deeper), then adds `2`. Result: 14.
     2   3   4
 ```
 
-This tree computes `2 + 3` first, then multiplies by `4`. Result: 20. Same string, different structure, different value — this is the harm of an ambiguous grammar.
+This tree computes `2 + 3` first, then multiplies by `4`. Result: 20. Same string, different structure, different value; this is the harm of an ambiguous grammar.
 
 **Two different parse trees prove ambiguity.** A grammar is **ambiguous** if any string in its language has two or more distinct parse trees. Ambiguity is not just an aesthetic problem: it means the grammar gives two different computation orders for the same expression. Every parser you write must work from an *unambiguous* grammar; the layered `E/T/F` structure is the standard fix.
 
@@ -351,11 +351,11 @@ print(f"Right-assoc 7-(2-1) = {evaluate(right_tree)}")  # 6
 
 # From the Derivations and Ambiguity Activity: Runnable Models
 
-The three models below were previously embedded in the *Derivations, Parse Trees, Ambiguity, and Precedence* class session. The session itself is pencil work — drawing two trees for one string, writing derivations by hand. These are the mechanical versions: a derivation tracer, an ambiguity detector, and a side-by-side comparison of the trees an ambiguous grammar produces against the trees a layered one produces.
+The three models below were previously embedded in the *Derivations, Parse Trees, Ambiguity, and Precedence* class session. The session itself is pencil work: drawing two trees for one string, writing derivations by hand. These are the mechanical versions: a derivation tracer, an ambiguity detector, and a side-by-side comparison of the trees an ambiguous grammar produces against the trees a layered one produces.
 
 ## Model 4: Derivation Tracer (Runnable)
 
-*Intuition: A leftmost derivation and a rightmost derivation of the same string take different paths through the grammar, but they always arrive at the same parse tree. Running the tracer below lets you watch both paths step by step and confirm they converge. Pay attention to how many steps each takes — it turns out they must be equal, and understanding why solidifies your mental model of what a derivation actually is.*
+*Intuition: A leftmost derivation and a rightmost derivation of the same string take different paths through the grammar, but they always arrive at the same parse tree. Running the tracer below lets you watch both paths step by step and confirm they converge. Pay attention to how many steps each takes; it turns out they must be equal, and understanding why solidifies your mental model of what a derivation actually is.*
 
 A leftmost derivation always expands the leftmost nonterminal at each step; a rightmost derivation always expands the rightmost one. Watching them side by side makes it concrete that **both derivations produce the same parse tree** even though the step sequences differ.
 
@@ -393,7 +393,7 @@ def expand(form, grammar, leftmost=True):
         import traceback; traceback.print_exc()
 
 def show_derivation(start, grammar, label):
-    print(f"── {label} derivation from {start} ──")
+    print(f"-- {label} derivation from {start} --")
     form = [start]
     print("  " + " ".join(form))
     for step in expand(form, grammar, leftmost=(label=="Leftmost")):
@@ -409,13 +409,13 @@ show_derivation("E", GRAMMAR, "Rightmost")
 
 8. Both derivations start from `E` and end at the same terminal string. What is that string? (Read the last printed line of each derivation.)
 9. Count the number of steps in the leftmost versus rightmost derivation. Are they the same? Explain why the number of steps must always be equal for a given derivation of a given string.
-10. The tracer always picks the first production for each nonterminal. Modify the grammar so `F -> ["num"]` is listed *before* `F -> ["(", "E", ")"]` (swap the two entries). Predict how the derivation changes — will it be shorter, longer, or the same length?
+10. The tracer always picks the first production for each nonterminal. Modify the grammar so `F -> ["num"]` is listed *before* `F -> ["(", "E", ")"]` (swap the two entries). Predict how the derivation changes; will it be shorter, longer, or the same length?
 
 ---
 
 ## Model 5: Ambiguity Detector (Runnable)
 
-*Intuition: To prove a grammar is ambiguous, you only need one witness — a single string that has two distinct parse trees. The code below systematically generates all parse trees up to a depth limit for the naive grammar `E -> E + E | id` and checks whether any string gets more than one. For `a + b + c` it finds two, which is the formal proof that the grammar is ambiguous.*
+*Intuition: To prove a grammar is ambiguous, you only need one witness: a single string that has two distinct parse trees. The code below systematically generates all parse trees up to a depth limit for the naive grammar `E -> E + E | id` and checks whether any string gets more than one. For `a + b + c` it finds two, which is the formal proof that the grammar is ambiguous.*
 
 An ambiguous grammar lets the same string be derived via two *different* leftmost derivations, which means two different parse trees. The detector below generates all parse trees up to a size bound for a naive expression grammar and reports strings that have more than one tree.
 
@@ -541,11 +541,11 @@ def evaluate(t):
 
 # String: 2 + 3 * 4
 
-# ── Ambiguous grammar: could group either way ──────────────────────────
+# -- Ambiguous grammar: could group either way --------------------------
 ambig_tree_A = node("+", leaf(2), node("*", leaf(3), leaf(4)))  # correct
 ambig_tree_B = node("*", node("+", leaf(2), leaf(3)), leaf(4))  # also valid under naive grammar
 
-# ── Unambiguous (layered) grammar: only one tree possible ──────────────
+# -- Unambiguous (layered) grammar: only one tree possible --------------
 # E -> E + T | T    T -> T * F | F    F -> num
 unambig_tree = node("+", leaf(2), node("*", leaf(3), leaf(4)))
 
@@ -574,7 +574,7 @@ print(f"Right-assoc 5-(2-1) = {evaluate(right_assoc)}")  # 4  (wrong for subtrac
 
 ### Critical Thinking Questions
 
-14. In `ambig_tree_B`, the `*` node is the root and `+` is its left child. Under the *layered* grammar `E -> E + T | T`, explain precisely why this tree is *not derivable* — which rule is violated?
+14. In `ambig_tree_B`, the `*` node is the root and `+` is its left child. Under the *layered* grammar `E -> E + T | T`, explain precisely why this tree is *not derivable*; which rule is violated?
 15. The unambiguous grammar encodes left-associativity through *left recursion* (`E -> E + T`). If you changed this rule to `E -> T + E`, what would change about associativity? Verify with `5 - 2 - 1`.
 16. Look at `left_assoc` versus `right_assoc` for `5 - 2 - 1`. The values are 2 and 4. Now consider a purely additive expression `5 + 2 + 1`. Would left vs. right associativity produce different values? What does this tell you about when associativity "matters"?
 
@@ -582,9 +582,9 @@ print(f"Right-assoc 5-(2-1) = {evaluate(right_assoc)}")  # 4  (wrong for subtrac
 
 ## Model 4: Grammar as a Python Data Structure
 
-A grammar written on paper and a grammar stored as a Python dictionary are the same thing — the dictionary just makes the structure explicit enough to run. This model shows how the recursive structure of a grammar translates directly into mutually recursive functions, one per nonterminal. Notice especially how left recursion is avoided: instead of `expr -> expr "+" term`, the grammar uses a separate `expr_rest` rule.
+A grammar written on paper and a grammar stored as a Python dictionary are the same thing; the dictionary just makes the structure explicit enough to run. This model shows how the recursive structure of a grammar translates directly into mutually recursive functions, one per nonterminal. Notice especially how left recursion is avoided: instead of `expr -> expr "+" term`, the grammar uses a separate `expr_rest` rule.
 
-> **Watch out!** **Left recursion** — a rule of the form `A -> A ...` — causes an infinite loop in top-down (recursive descent) parsers because the parser calls itself immediately without consuming any input. The standard fix is to rewrite the rule using a right-recursive helper or an explicit `_rest` nonterminal, as this grammar does.
+> **Watch out!** **Left recursion** (a rule of the form `A -> A ...`) causes an infinite loop in top-down (recursive descent) parsers because the parser calls itself immediately without consuming any input. The standard fix is to rewrite the rule using a right-recursive helper or an explicit `_rest` nonterminal, as this grammar does.
 
 A grammar is just data: a mapping from nonterminal names to lists of alternatives, where each alternative is a list of symbols. Terminals are plain strings; nonterminals are wrapped to distinguish them. The checker below walks a token sequence against an arithmetic-expression grammar and reports whether it is valid.
 
@@ -664,12 +664,12 @@ for tokens, expected, label in test_cases:
 ### Critical Thinking Questions
 
 10. The grammar stores `expr_rest` and `term_rest` as separate rules to encode left-associative repetition without left recursion. Why is left recursion (`expr -> expr "+" term`) a problem for a top-down recognizer like this one? Describe the infinite loop that would occur.
-11. `match_alt` returns `(False, pos)` — the *original* position — on failure, not the furthest position reached. Why does restoring the original position matter when there are multiple alternatives?
+11. `match_alt` returns `(False, pos)` (the *original* position) on failure, not the furthest position reached. Why does restoring the original position matter when there are multiple alternatives?
 12. The grammar currently uses token strings like `"NUM"`, `"+"`, `"*"`. Sketch how you would extend this representation to carry actual lexemes (e.g., distinguish integer literal `3` from float `3.14`) without rewriting the entire matching engine.
 13. The checker only returns True/False. What would a *parse tree* version return instead, and what would one node of that tree look like as a Python value?
 
 ---
 
 ---
-**🛑 In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+**In-class work stops here.** Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
 

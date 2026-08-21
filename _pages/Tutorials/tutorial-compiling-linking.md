@@ -4,7 +4,7 @@ email:
 version:  0.0.1
 language: en
 narrator: US English Female
-comment:  From source to executable — the complete compile-link pipeline, ELF/EXE format, object files, and how interpreted languages differ.
+comment:  From source to executable) the complete compile-link pipeline, ELF/EXE format, object files, and how interpreted languages differ.
 import:   https://raw.githubusercontent.com/liaScript/mermaid_template/master/README.md
 link:     https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css
 -->
@@ -23,7 +23,7 @@ By the end of this tutorial, you will have:
 
 > **"Every program you run went through a pipeline you've never seen."**
 >
-> When you type `gcc hello.c -o hello`, a remarkable chain of tools transforms text into a binary that the operating system can map directly into memory and execute. This tutorial traces that chain step by step — from C source to ELF binary — and then contrasts it with how interpreted languages (Python, JavaScript) work instead.
+> When you type `gcc hello.c -o hello`, a remarkable chain of tools transforms text into a binary that the operating system can map directly into memory and execute. This tutorial traces that chain step by step - from C source to ELF binary - and then contrasts it with how interpreted languages (Python, JavaScript) work instead.
 
 ---
 
@@ -33,21 +33,21 @@ The complete pipeline from C source to running process:
 
 ```
 Source (.c)
-    │
-    ▼  C preprocessor (cpp)
-Preprocessed (.i)     — macros expanded, includes substituted
-    │
-    ▼  C compiler (cc1)
-Assembly (.s)         — human-readable machine code mnemonics
-    │
-    ▼  Assembler (as)
-Object file (.o)      — machine code + symbol table + relocation records
-    │
-    ▼  Linker (ld)
-Executable (ELF/EXE)  — all objects combined, addresses resolved
-    │
-    ▼  OS loader
-Process               — loaded into virtual memory, started at entry point
+    |
+    v  C preprocessor (cpp)
+Preprocessed (.i)     - macros expanded, includes substituted
+    |
+    v  C compiler (cc1)
+Assembly (.s)         - human-readable machine code mnemonics
+    |
+    v  Assembler (as)
+Object file (.o)      - machine code + symbol table + relocation records
+    |
+    v  Linker (ld)
+Executable (ELF/EXE); all objects combined, addresses resolved
+    |
+    v  OS loader
+Process               - loaded into virtual memory, started at entry point
 ```
 
 ```bash
@@ -68,7 +68,7 @@ gcc hello.o -o hello           # link to executable
 
 ## Part 1: The Preprocessor
 
-The C preprocessor (`cpp`) handles `#include`, `#define`, `#ifdef`, and `#pragma` — it's a text substitution engine that runs *before* the compiler sees any code.
+The C preprocessor (`cpp`) handles `#include`, `#define`, `#ifdef`, and `#pragma`; it's a text substitution engine that runs *before* the compiler sees any code.
 
 ```c
 /* hello.c */
@@ -94,13 +94,13 @@ After preprocessing (`gcc -E hello.c`), `#include <stdio.h>` is replaced by thou
 | `#ifdef / #ifndef` | Conditional compilation |
 | `#pragma once` | Include guard (modern, portable alternative to `#ifndef HEADER_H_`) |
 
-**Why preprocessing matters for language design:** The C preprocessor is essentially a *macro system* at the text level — the same problem as unhygienic macros in Lisp. Languages that adopted later (Rust, D) replaced it with hygienic macro systems that operate on AST nodes instead of text.
+**Why preprocessing matters for language design:** The C preprocessor is essentially a *macro system* at the text level, the same problem as unhygienic macros in Lisp. Languages that adopted later (Rust, D) replaced it with hygienic macro systems that operate on AST nodes instead of text.
 
 ---
 
-## Part 2: Assembly — The Compiler's Output
+## Part 2: Assembly, The Compiler's Output
 
-The compiler transforms C into **assembly language** — human-readable mnemonics for machine instructions:
+The compiler transforms C into **assembly language**, human-readable mnemonics for machine instructions:
 
 ```c
 /* add.c */
@@ -109,7 +109,7 @@ int add(int a, int b) {
 }
 ```
 
-Compiles to (`gcc -S -O0 add.c -o add.s` — no optimization):
+Compiles to (`gcc -S -O0 add.c -o add.s`, no optimization):
 
 ```asm
 add:
@@ -142,27 +142,27 @@ add:
 
 ```
 High address
-┌─────────────────────┐
-│   caller's frame    │  ← RBP (after prologue)
-├─────────────────────┤
-│  return address     │  ← pushed by CALL instruction
-├─────────────────────┤  ← RBP points here (our frame)
-│  saved RBP          │  ← pushed by push %rbp
-├─────────────────────┤
-│  local variable a   │  ← -4(%rbp)
-├─────────────────────┤
-│  local variable b   │  ← -8(%rbp)
-└─────────────────────┘  ← RSP (stack pointer)
++---------------------+
+|   caller's frame    |  <- RBP (after prologue)
+|---------------------+
+|  return address     |  <- pushed by CALL instruction
+|---------------------+  <- RBP points here (our frame)
+|  saved RBP          |  <- pushed by push %rbp
+|---------------------+
+|  local variable a   |  <- -4(%rbp)
+|---------------------+
+|  local variable b   |  <- -8(%rbp)
+`---------------------+  <- RSP (stack pointer)
 Low address
 ```
 
-**Key insight:** The call stack you see in debuggers is this structure. When a function returns, `ret` pops the return address from the stack and jumps to it — this is why stack overflow crashes programs (the stack pointer goes past the stack's memory limit).
+**Key insight:** The call stack you see in debuggers is this structure. When a function returns, `ret` pops the return address from the stack and jumps to it; this is why stack overflow crashes programs (the stack pointer goes past the stack's memory limit).
 
 ---
 
 ## Part 3: Object Files and Symbol Tables
 
-The assembler converts assembly to **object files** (`.o`) — binary files containing machine code but with *unresolved references* (symbols).
+The assembler converts assembly to **object files** (`.o`), binary files containing machine code but with *unresolved references* (symbols).
 
 ```bash
 # Inspect an object file
@@ -188,7 +188,7 @@ An object file has multiple **sections**:
 ```
 Symbol table example for main.o that calls printf:
   T main       0x0000  (defined here, in .text at offset 0)
-  U printf     -----   (undefined — must be resolved by linker)
+  U printf     -----   (undefined - must be resolved by linker)
 ```
 
 **Relocation records** tell the linker "at byte offset X in .text, fill in the address of symbol Y":
@@ -202,11 +202,11 @@ Relocation:
 
 ---
 
-## Part 4: The Linker — Combining Object Files
+## Part 4: The Linker, Combining Object Files
 
 The **linker** (`ld`, usually invoked via `gcc`) takes multiple object files (and libraries) and produces an executable by:
 
-1. **Merging sections**: All `.text` sections → one `.text` segment; all `.data` → one `.data` segment
+1. **Merging sections**: All `.text` sections -> one `.text` segment; all `.data` -> one `.data` segment
 2. **Symbol resolution**: For each `U` (undefined) symbol, find which other `.o` file defines it
 3. **Relocation**: Fill in all the placeholder addresses with actual virtual addresses
 
@@ -217,7 +217,7 @@ libc.a:   contains printf.o which defines printf
 Linker:
   1. Merge .text sections: main code + printf code
   2. Assign virtual addresses: .text starts at 0x401000
-  3. Resolve: main's call to printf → patch with printf's address
+  3. Resolve: main's call to printf -> patch with printf's address
   4. Output executable ELF with all addresses filled in
 ```
 
@@ -235,48 +235,48 @@ Linker:
 # See what dynamic libraries a program needs:
 ldd /bin/ls
 # linux-vdso.so.1 (virtual syscall library)
-# libselinux.so.1 → /lib/x86_64-linux-gnu/libselinux.so.1
-# libc.so.6 → /lib/x86_64-linux-gnu/libc.so.6
+# libselinux.so.1 -> /lib/x86_64-linux-gnu/libselinux.so.1
+# libc.so.6 -> /lib/x86_64-linux-gnu/libc.so.6
 ```
 
 ---
 
 ## Part 5: The ELF Format (Linux/macOS Executable)
 
-**ELF** (Executable and Linkable Format) is the binary format used by Linux, macOS (Mach-O is similar), and most Unix systems. Windows uses **PE** (Portable Executable) format — structurally very similar.
+**ELF** (Executable and Linkable Format) is the binary format used by Linux, macOS (Mach-O is similar), and most Unix systems. Windows uses **PE** (Portable Executable) format, structurally very similar.
 
 ```
 ELF File Layout:
-┌─────────────────────────────────┐
-│  ELF Header (64 bytes)          │  magic number, arch, entry point address
-├─────────────────────────────────┤
-│  Program Header Table           │  describes segments (for OS loader)
-│   LOAD segment 1: .text .rodata │  read+execute, maps to virtual address
-│   LOAD segment 2: .data .bss    │  read+write
-│   DYNAMIC segment               │  dynamic linking info
-├─────────────────────────────────┤
-│  .text section                  │  machine code
-├─────────────────────────────────┤
-│  .rodata section                │  string literals, const data
-├─────────────────────────────────┤
-│  .data section                  │  initialized globals
-├─────────────────────────────────┤
-│  .bss section                   │  (just a size; zero-filled at load)
-├─────────────────────────────────┤
-│  .symtab / .strtab              │  symbol table (stripped in release)
-├─────────────────────────────────┤
-│  .debug_info, .debug_line       │  DWARF debug info (if -g was used)
-├─────────────────────────────────┤
-│  Section Header Table           │  metadata about each section
-└─────────────────────────────────┘
++---------------------------------+
+|  ELF Header (64 bytes)          |  magic number, arch, entry point address
+|---------------------------------+
+|  Program Header Table           |  describes segments (for OS loader)
+|   LOAD segment 1: .text .rodata |  read+execute, maps to virtual address
+|   LOAD segment 2: .data .bss    |  read+write
+|   DYNAMIC segment               |  dynamic linking info
+|---------------------------------+
+|  .text section                  |  machine code
+|---------------------------------+
+|  .rodata section                |  string literals, const data
+|---------------------------------+
+|  .data section                  |  initialized globals
+|---------------------------------+
+|  .bss section                   |  (just a size; zero-filled at load)
+|---------------------------------+
+|  .symtab / .strtab              |  symbol table (stripped in release)
+|---------------------------------+
+|  .debug_info, .debug_line       |  DWARF debug info (if -g was used)
+|---------------------------------+
+|  Section Header Table           |  metadata about each section
+`---------------------------------+
 ```
 
 **Reading an ELF file:**
 
 ```bash
-# The "magic number" — all ELF files start with these 4 bytes:
+# The "magic number" - all ELF files start with these 4 bytes:
 xxd hello | head -1
-# 7f 45 4c 46  → \x7f E L F
+# 7f 45 4c 46  -> \x7f E L F
 
 # Full ELF header:
 readelf -h hello
@@ -285,9 +285,9 @@ readelf -h hello
 # Data:    2's complement, little endian
 # Type:    EXEC (executable file)
 # Machine: Advanced Micro Devices X86-64
-# Entry:   0x401060  ← this is where execution starts (_start, not main!)
-# PH off:  64       ← program header table offset
-# SH off:  ...      ← section header table offset
+# Entry:   0x401060  <- this is where execution starts (_start, not main!)
+# PH off:  64       <- program header table offset
+# SH off:  ...      <- section header table offset
 
 # Sections:
 readelf -S hello
@@ -317,14 +317,14 @@ The C runtime (`crt0.o` / `crt1.o`) provides `_start`, which sets up argc/argv, 
 
 ---
 
-## Part 6: The OS Loader — From File to Process
+## Part 6: The OS Loader, From File to Process
 
 When you run `./hello`, the OS executes a **loader** (`execve` syscall on Linux) that:
 
 1. **Reads the ELF header** to find segment info
 2. **Maps segments into virtual memory** using `mmap`:
-   - `.text` → read+execute (shared between multiple running instances)
-   - `.data` + `.bss` → read+write (private per process)
+   - `.text` -> read+execute (shared between multiple running instances)
+   - `.data` + `.bss` -> read+write (private per process)
 3. **Maps the stack** (a region of anonymous memory)
 4. **Loads shared libraries** (`.so` files listed in `.dynamic`) via the *dynamic linker* (`ld.so`)
 5. **Resolves dynamic symbols** (fills in the Global Offset Table / Procedure Linkage Table)
@@ -333,26 +333,26 @@ When you run `./hello`, the OS executes a **loader** (`execve` syscall on Linux)
 **Virtual Memory Layout (typical Linux x86-64 process):**
 
 ```
-0xFFFFFFFFFFFFFFFF  (kernel space — not accessible from user mode)
-0x00007FFFFFFFFFFF  ┐
-                    │  Stack (grows downward)
-                    │  [argc, argv, environment variables]
-0x00007FFF_XXXX     ┘
+0xFFFFFFFFFFFFFFFF  (kernel space - not accessible from user mode)
+0x00007FFFFFFFFFFF  +
+                    |  Stack (grows downward)
+                    |  [argc, argv, environment variables]
+0x00007FFF_XXXX     +
                     
-0x00007F00_XXXX     ┐
-                    │  Shared libraries (.so files)
-                    │  libc.so, ld.so, etc.
-0x00007EFF_XXXX     ┘
+0x00007F00_XXXX     +
+                    |  Shared libraries (.so files)
+                    |  libc.so, ld.so, etc.
+0x00007EFF_XXXX     +
                     
-0x00600000          ┐
-0x00601000          │  .data (initialized globals, read-write)
-                    │  .bss  (zero-initialized globals)
-0x00602000          ┘
+0x00600000          +
+0x00601000          |  .data (initialized globals, read-write)
+                    |  .bss  (zero-initialized globals)
+0x00602000          +
                     
-0x00400000          ┐
-0x00401000          │  .text (code, read-only + executable)
-                    │  .rodata (string literals, read-only)
-0x00402000          ┘
+0x00400000          +
+0x00401000          |  .text (code, read-only + executable)
+                    |  .rodata (string literals, read-only)
+0x00402000          +
 ```
 
 ```bash
@@ -368,31 +368,31 @@ cat /proc/$(pgrep hello)/maps
 
 ## Part 7: The PE/EXE Format (Windows)
 
-Windows executables use **PE** (Portable Executable) format — structurally similar to ELF but with different field names and conventions:
+Windows executables use **PE** (Portable Executable) format, structurally similar to ELF but with different field names and conventions:
 
 ```
 PE File Layout:
-┌──────────────────────────────────┐
-│  DOS Header (64 bytes)           │  starts with "MZ" magic number
-│  DOS Stub ("This program cannot  │  tiny DOS program (prints error on DOS)
-│  be run in DOS mode")            │
-├──────────────────────────────────┤
-│  PE Header ("PE\0\0" signature)  │  COFF header + optional header
-│   Machine: IMAGE_FILE_MACHINE_   │  AMD64 or ARM64
-│   Sections: 5                    │
-│   Characteristics: EXECUTABLE    │
-├──────────────────────────────────┤
-│  Section Table                   │  metadata for each section
-├──────────────────────────────────┤
-│  .text                           │  machine code
-│  .rdata                          │  read-only data (const, imports)
-│  .data                           │  initialized globals
-│  .bss / (folded into .data)      │  zero-initialized globals
-│  .idata                          │  import directory (DLL imports)
-│  .edata                          │  export directory
-│  .rsrc                           │  resources (icons, strings, dialogs)
-│  .reloc                          │  base relocation table
-└──────────────────────────────────┘
++----------------------------------+
+|  DOS Header (64 bytes)           |  starts with "MZ" magic number
+|  DOS Stub ("This program cannot  |  tiny DOS program (prints error on DOS)
+|  be run in DOS mode")            |
+|----------------------------------+
+|  PE Header ("PE\0\0" signature)  |  COFF header + optional header
+|   Machine: IMAGE_FILE_MACHINE_   |  AMD64 or ARM64
+|   Sections: 5                    |
+|   Characteristics: EXECUTABLE    |
+|----------------------------------+
+|  Section Table                   |  metadata for each section
+|----------------------------------+
+|  .text                           |  machine code
+|  .rdata                          |  read-only data (const, imports)
+|  .data                           |  initialized globals
+|  .bss / (folded into .data)      |  zero-initialized globals
+|  .idata                          |  import directory (DLL imports)
+|  .edata                          |  export directory
+|  .rsrc                           |  resources (icons, strings, dialogs)
+|  .reloc                          |  base relocation table
+`----------------------------------+
 ```
 
 **Differences from ELF:**
@@ -417,14 +417,14 @@ When you run `python3 script.py`, no ELF is produced. Instead:
 
 ```
 script.py
-    │
-    ▼  Python lexer/parser
+    |
+    v  Python lexer/parser
 AST (Abstract Syntax Tree)
-    │
-    ▼  Python compiler (compile())
-Bytecode (.pyc)          ← cached in __pycache__/
-    │
-    ▼  CPython interpreter (ceval.c)
+    |
+    v  Python compiler (compile())
+Bytecode (.pyc)          <- cached in __pycache__/
+    |
+    v  CPython interpreter (ceval.c)
 Values (Python objects)
 ```
 
@@ -475,7 +475,7 @@ CPython bytecode output for `fib`:
 
 ```python  
 import sys
-print(sys.getsizeof(42))     # 28 bytes — not 4!
+print(sys.getsizeof(42))     # 28 bytes - not 4!
 print(sys.getsizeof(True))   # 28 bytes
 print(sys.getsizeof("hi"))   # 51 bytes
 # Python ints are Python objects with: refcount + type pointer + value
@@ -487,18 +487,18 @@ V8 (Chrome/Node.js) goes further:
 
 ```
 JavaScript source
-    │
-    ▼  Parser
+    |
+    v  Parser
 AST
-    │
-    ▼  Ignition (bytecode interpreter)
-Bytecode            ← runs initially
-    │
-    ▼  TurboFan (JIT compiler, when "hot")
-Native machine code ← recompiles frequently-executed functions
+    |
+    v  Ignition (bytecode interpreter)
+Bytecode            <- runs initially
+    |
+    v  TurboFan (JIT compiler, when "hot")
+Native machine code <- recompiles frequently-executed functions
 ```
 
-This is called **Just-In-Time (JIT) compilation**: start interpreted, profile which functions are hot, then compile those to native code. V8 can achieve 50–80% of C++ performance for some workloads.
+This is called **Just-In-Time (JIT) compilation**: start interpreted, profile which functions are hot, then compile those to native code. V8 can achieve 50-80% of C++ performance for some workloads.
 
 ---
 
@@ -507,7 +507,7 @@ This is called **Just-In-Time (JIT) compilation**: start interpreted, profile wh
 Here is a minimal C program that illustrates the full pipeline:
 
 ```c
-/* mini_calc.c — compile with: gcc -O2 -o mini_calc mini_calc.c */
+/* mini_calc.c - compile with: gcc -O2 -o mini_calc mini_calc.c */
 #include <stdio.h>
 
 /* This function will be in .text */
@@ -560,8 +560,8 @@ size mini_calc
 Understanding why `#include` works the way it does:
 
 ```c
-/* math_utils.h — DECLARATION only (interface) */
-#ifndef MATH_UTILS_H    /* include guard — prevents double-inclusion */
+/* math_utils.h - DECLARATION only (interface) */
+#ifndef MATH_UTILS_H    /* include guard - prevents double-inclusion */
 #define MATH_UTILS_H
 
 int add(int a, int b);      /* function declaration */
@@ -570,7 +570,7 @@ typedef struct { int x, y; } Point;
 
 #endif
 
-/* math_utils.c — DEFINITION (implementation) */
+/* math_utils.c - DEFINITION (implementation) */
 #include "math_utils.h"
 
 int call_count = 0;         /* definition: reserves storage */
@@ -580,7 +580,7 @@ int add(int a, int b) {     /* definition: provides code */
     return a + b;
 }
 
-/* main.c — uses math_utils */
+/* main.c - uses math_utils */
 #include "math_utils.h"     /* paste the declarations */
 #include <stdio.h>
 
@@ -609,20 +609,20 @@ gcc math_utils.o main.o -o program
 
 ```
 hello.c
-  │  #include → paste headers, expand #define
-  ▼
+  |  #include -> paste headers, expand #define
+  v
 hello.i   (preprocessed source)
-  │  parse → AST → IR → code generation
-  ▼
+  |  parse -> AST -> IR -> code generation
+  v
 hello.s   (x86-64 assembly)
-  │  assemble each instruction
-  ▼
+  |  assemble each instruction
+  v
 hello.o   (ELF object: .text .data .bss .symtab .rel.text)
-  │  merge sections, resolve symbols, fill relocations
-  ▼
+  |  merge sections, resolve symbols, fill relocations
+  v
 hello     (ELF executable: all sections, addresses assigned)
-  │  mmap segments into virtual memory, run _start
-  ▼
+  |  mmap segments into virtual memory, run _start
+  v
 Process   (running in virtual address space)
 ```
 
@@ -632,26 +632,26 @@ Process   (running in virtual address space)
 
 ## Exercises
 
-### Exercise 1 — Inspect Your Own Compiler (20 min)
+### Exercise 1: Inspect Your Own Compiler (20 min)
 
 Run `gcc -save-temps hello.c -o hello` on a simple C program. Examine each intermediate file: `.i`, `.s`, `.o`, and the final binary. Using `objdump -h hello.o`, identify which section contains each piece of data.
 
-### Exercise 2 — Symbol Hunt (15 min)
+### Exercise 2: Symbol Hunt (15 min)
 
 Write a C program with: one initialized global int, one uninitialized global int, one string literal, and one function. Predict which section each goes in. Verify with `nm` and `objdump -h`.
 
-### Exercise 3 — Linking Error Diagnosis (20 min)
+### Exercise 3: Linking Error Diagnosis (20 min)
 
 Create two `.c` files where one calls a function defined in the other. Compile each to `.o` separately, then:
 1. Try linking only one `.o` (observe the undefined reference error)
 2. Link both (should succeed)
 3. Add a second definition of the function in a third `.c` file and try linking all three (observe the multiple definition error)
 
-### Exercise 4 — Python Bytecode (15 min)
+### Exercise 4: Python Bytecode (15 min)
 
 Use `dis.dis()` to disassemble a Python function you've written. Identify: LOAD_FAST vs LOAD_GLOBAL, CALL_FUNCTION, and any JUMP instructions. Map each bytecode instruction back to a line of source code.
 
-### Exercise 5 — Compare Memory Sizes (15 min)
+### Exercise 5: Compare Memory Sizes (15 min)
 
 Write a C program that uses `sizeof` to print the size of `int`, `long`, `double`, `char*`, and a struct. Then write an equivalent Python program using `sys.getsizeof`. Why are the Python sizes so much larger? Explain in terms of Python's object model.
 
@@ -659,10 +659,10 @@ Write a C program that uses `sizeof` to print the size of `int`, `long`, `double
 
 ## Further Reading
 
-- **"Computer Systems: A Programmer's Perspective"** — Bryant & O'Hallaron: the canonical source on ELF, linking, and the memory system (Chapters 7-9)
-- **"Linkers and Loaders"** — John Levine (free online): deep dive into the linker
-- **ELF specification** — https://refspecs.linuxfoundation.org/elf/elf.pdf
-- **`man elf`** — the Linux manual page for the ELF format
-- **"Inside the Python Virtual Machine"** — free online: CPython bytecode in detail
-- **V8 blog** — https://v8.dev/blog: how JavaScript JIT compilation works
-- **`objdump`, `readelf`, `nm`, `ldd`** — the four essential binary analysis tools; try `man objdump`
+- **"Computer Systems: A Programmer's Perspective"**: Bryant & O'Hallaron: the canonical source on ELF, linking, and the memory system (Chapters 7-9)
+- **"Linkers and Loaders"**: John Levine (free online): deep dive into the linker
+- **ELF specification**: https://refspecs.linuxfoundation.org/elf/elf.pdf
+- **`man elf`**: the Linux manual page for the ELF format
+- **"Inside the Python Virtual Machine"**: free online: CPython bytecode in detail
+- **V8 blog**: https://v8.dev/blog: how JavaScript JIT compilation works
+- **`objdump`, `readelf`, `nm`, `ldd`**: the four essential binary analysis tools; try `man objdump`

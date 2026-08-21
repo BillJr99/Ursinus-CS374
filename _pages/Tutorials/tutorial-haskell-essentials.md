@@ -24,7 +24,7 @@ By the end of this tutorial, you will have:
 - Connected Haskell's lazy evaluation to the normal-order reduction strategy from the lambda calculus module
 - Read and modified a TidalCycles pattern to understand how Haskell's design choices show up in live-coding music code
 
-Haskell is the host language for TidalCycles, the live-coding music system we have been using throughout this course. It is also the language that most clearly embodies the lambda calculus — every Haskell function is a lambda term, the type system is Hindley-Milner, and lazy evaluation is the normal-order reduction strategy made practical. This tutorial gives you enough Haskell to read TidalCycles code, write simple Haskell programs, and understand why Haskell's design choices feel the way they do after our theory modules.
+Haskell is the host language for TidalCycles, the live-coding music system we have been using throughout this course. It is also the language that most clearly embodies the lambda calculus: every Haskell function is a lambda term, the type system is Hindley-Milner, and lazy evaluation is the normal-order reduction strategy made practical. This tutorial gives you enough Haskell to read TidalCycles code, write simple Haskell programs, and understand why Haskell's design choices feel the way they do after our theory modules.
 
 **What you need:**
 - GHCi, the Haskell interactive environment: `sudo apt install ghc` or `brew install ghc`
@@ -105,7 +105,7 @@ Prelude> add5 10           -- 15
 Prelude> square 9          -- 81
 ```
 
-**Key insight:** `add :: Int -> Int -> Int` is actually `add :: Int -> (Int -> Int)` — a function that takes an Int and returns a function. Application is left-associative: `add 3 4` means `(add 3) 4`.
+**Key insight:** `add :: Int -> Int -> Int` is actually `add :: Int -> (Int -> Int)`: a function that takes an Int and returns a function. Application is left-associative: `add 3 4` means `(add 3) 4`.
 
 ---
 
@@ -230,7 +230,7 @@ Prelude> (\x -> x * x) 5           -- 25
 
 -- Operator section: partially apply an operator
 Prelude> (*2) 5                     -- 10  (right section)
-Prelude> (2*) 5                     -- 10  (left section — same for *)
+Prelude> (2*) 5                     -- 10  (left section - same for *)
 Prelude> (2-) 5                     -- -3  (left section)
 Prelude> subtract 2 5               -- 3   (use subtract for right section of -)
 Prelude> map (*3) [1..5]            -- [3,6,9,12,15]
@@ -276,7 +276,7 @@ The constraint `Num a =>` in a type signature means "this works for any type `a`
 
 ## 3.2 Algebraic Data Types
 
-Haskell's data types are **algebraic** — built from sums (OR) and products (AND):
+Haskell's data types are **algebraic**, built from sums (OR) and products (AND):
 
 ```haskell
 -- A sum type: a Shape is EITHER a Circle OR a Rectangle
@@ -342,10 +342,10 @@ d1 $ sound "bd sn [cp cp] hh"
 ```
 
 desugars as:
-- `d1 :: ControlPattern -> IO ()` — sends a pattern to audio channel 1
-- `($) :: (a -> b) -> a -> b` — applies `sound ...` to `d1`
-- `sound :: String -> ControlPattern` — creates a pattern from a sample name string
-- `"bd sn [cp cp] hh"` — the mini-notation string (parsed by a Tidal parser)
+- `d1 :: ControlPattern -> IO ()`: sends a pattern to audio channel 1
+- `($) :: (a -> b) -> a -> b`: applies `sound ...` to `d1`
+- `sound :: String -> ControlPattern`: creates a pattern from a sample name string
+- `"bd sn [cp cp] hh"`: the mini-notation string (parsed by a Tidal parser)
 
 A more complex Tidal expression:
 
@@ -365,7 +365,7 @@ This is all lambda calculus! `every 4 (fast 2)` is $\lambda p.\ \texttt{every}\ 
 ## 4.2 Writing Your First Haskell Functions for Tidal
 
 ```haskell
--- pattern-utils.hs — utilities to use in TidalCycles
+-- pattern-utils.hs - utilities to use in TidalCycles
 
 -- A function that alternates between two patterns every n cycles:
 alternate :: Int -> a -> a -> [a]
@@ -403,9 +403,9 @@ euclidean k n = go k (n - k) (replicate k [True]) (replicate (n-k) [False])
 ## 5.1 Exercises
 
 1. **Rewrite in Haskell.** Translate the following Python into idiomatic Haskell:
-   - `[x**2 for x in range(1, 11)]` — list comprehension of squares
-   - `list(filter(lambda x: x % 2 == 0, range(1, 21)))` — even numbers
-   - `from functools import reduce; reduce(lambda a, b: a * b, range(1, 6))` — factorial via reduce
+   - `[x**2 for x in range(1, 11)]`: list comprehension of squares
+   - `list(filter(lambda x: x % 2 == 0, range(1, 21)))`: even numbers
+   - `from functools import reduce; reduce(lambda a, b: a * b, range(1, 6))`: factorial via reduce
 
 2. **Pattern match a tree.** Define a Haskell data type `Tree a = Leaf | Node a (Tree a) (Tree a)`. Implement: `depth :: Tree a -> Int`, `size :: Tree a -> Int`, `toList :: Tree a -> [a]` (in-order traversal). Test in GHCi.
 

@@ -28,7 +28,7 @@ tags:
 
 # Property-Based Testing Your Language with Hypothesis
 
-This tutorial is the companion to the property-based-testing steps in the **Parser** assignment (Step 3e) and the **Interpreter** assignment (Step 2e). It shows you how to let a library generate thousands of test programs for you and automatically shrink any failure to the smallest program that still breaks — which is exactly the kind of bug your hand-written examples miss.
+This tutorial is the companion to the property-based-testing steps in the **Parser** assignment (Step 3e) and the **Interpreter** assignment (Step 2e). It shows you how to let a library generate thousands of test programs for you and automatically shrink any failure to the smallest program that still breaks, which is exactly the kind of bug your hand-written examples miss.
 
 You already know Python and `pytest`. This tutorial bridges the gap between "my ten test cases pass" and "I have evidence the law holds for *every* program my generator can produce."
 
@@ -43,13 +43,13 @@ def test_round_trip_simple():
     assert parse(unparse(parse("2 + 3 * 4"))) == parse("2 + 3 * 4")
 ```
 
-you are checking one program — the one you thought of. But the bugs in a parser or evaluator live in the programs you *didn't* think of: a unary minus applied to a parenthesized subtraction, an operator sitting exactly at a precedence boundary, a right-associative chain nested twelve deep. You cannot enumerate those by hand.
+you are checking one program (the one you thought of. But the bugs in a parser or evaluator live in the programs you *didn't* think of: a unary minus applied to a parenthesized subtraction, an operator sitting exactly at a precedence boundary, a right-associative chain nested twelve deep. You cannot enumerate those by hand.
 
 **Property-based testing** flips the process around. Instead of writing examples, you:
 
 1. Describe a *space of inputs* (a generator).
 2. State a *property* (a law) that must hold for **every** input in that space.
-3. Let the library sample hundreds of inputs, and — when one fails — automatically **shrink** it to a minimal counterexample.
+3. Let the library sample hundreds of inputs, and) when one fails: automatically **shrink** it to a minimal counterexample.
 
 The library we use is [Hypothesis](https://hypothesis.readthedocs.io/), the standard property-based testing tool for Python.
 
@@ -63,7 +63,7 @@ uv add hypothesis      # or: pip install hypothesis
 
 ## Section 2: Generating ASTs with `recursive`
 
-The key to testing a language is generating *trees*, not strings — a random string is almost never a valid program, but a random AST always is (and you can `unparse` it to a valid string). Hypothesis builds recursive data with `st.recursive(base, extend)`: `base` is the strategy for leaves, and `extend` takes a strategy for children and returns a strategy for one-level-deeper trees.
+The key to testing a language is generating *trees*, not strings, a random string is almost never a valid program, but a random AST always is (and you can `unparse` it to a valid string). Hypothesis builds recursive data with `st.recursive(base, extend)`: `base` is the strategy for leaves, and `extend` takes a strategy for children and returns a strategy for one-level-deeper trees.
 
 Assume your AST node classes are `Num(value)`, `Var(name)`, and `BinOp(op, left, right)`:
 
@@ -90,9 +90,9 @@ exprs = st.recursive(
 )
 ```
 
-`max_leaves` bounds how big trees get. Start small (10–25) while developing; raise it once your code passes.
+`max_leaves` bounds how big trees get. Start small (10-25) while developing; raise it once your code passes.
 
-> **Tip:** if your node classes are frozen dataclasses with structural equality (the default for `@dataclass`), `ast1 == ast2` compares whole trees for you — which is exactly what the round-trip law needs.
+> **Tip:** if your node classes are frozen dataclasses with structural equality (the default for `@dataclass`), `ast1 == ast2` compares whole trees for you; which is exactly what the round-trip law needs.
 
 ---
 
@@ -109,7 +109,7 @@ def test_round_trip(tree):
     assert parse(unparse(tree)) == tree
 ```
 
-Run it with `pytest` — Hypothesis discovers `@given` tests automatically. On a first parser this usually fails, and Hypothesis prints something like:
+Run it with `pytest`: Hypothesis discovers `@given` tests automatically. On a first parser this usually fails, and Hypothesis prints something like:
 
 ```
 Falsifying example: test_round_trip(
@@ -117,7 +117,7 @@ Falsifying example: test_round_trip(
 )
 ```
 
-That is the **minimal** tree that breaks the law. `2 * (3 + 4)` shrank all the way down to `0 * (0 + 0)` — the numbers do not matter, the *shape* does. The bug is almost always in `unparse`: it failed to parenthesize a lower-precedence subtraction/addition under a higher-precedence multiplication. Fix the parenthesization rule and re-run.
+That is the **minimal** tree that breaks the law. `2 * (3 + 4)` shrank all the way down to `0 * (0 + 0)`, the numbers do not matter, the *shape* does. The bug is almost always in `unparse`: it failed to parenthesize a lower-precedence subtraction/addition under a higher-precedence multiplication. Fix the parenthesization rule and re-run.
 
 **What to report (Parser Step 3e):** the one shrunk counterexample you fixed, its root cause in one sentence, and the fix.
 
@@ -127,7 +127,7 @@ That is the **minimal** tree that breaks the law. `2 * (3 + 4)` shrank all the w
 
 The same generator, pointed at your evaluator, checks *meaning*. Restrict the generator to the nodes your evaluator supports, then state invariants:
 
-**Determinism** — same tree, same result, twice:
+**Determinism**, same tree, same result, twice:
 
 ```python
 from interpreter import eval_program, fresh_env
@@ -137,7 +137,7 @@ def test_deterministic(tree):
     assert eval_program(tree, fresh_env()) == eval_program(tree, fresh_env())
 ```
 
-**Scope restoration** — an inner `let` does not leak to the outer environment:
+**Scope restoration**, an inner `let` does not leak to the outer environment:
 
 ```python
 @given(exprs, st.sampled_from(["a", "b", "c"]))
@@ -148,7 +148,7 @@ def test_scope_restoration(expr, name):
     assert name not in env.names()
 ```
 
-**Short-circuit non-evaluation** — the right operand of `false and X` never runs. Give the right side an observable effect (dividing by zero is a convenient one — it raises if evaluated):
+**Short-circuit non-evaluation**: the right operand of `false and X` never runs. Give the right side an observable effect (dividing by zero is a convenient one; it raises if evaluated):
 
 ```python
 @given(exprs)
@@ -160,7 +160,7 @@ def test_short_circuit(rhs):
 
 Hypothesis will search for the operand shape that sneaks past a buggy short-circuit implementation.
 
-**What to report (Interpreter Step 2e):** at least three invariants (the first two required), and one that caught a real bug — or a reasoned all-clear with the properties and generator shown.
+**What to report (Interpreter Step 2e):** at least three invariants (the first two required), and one that caught a real bug, or a reasoned all-clear with the properties and generator shown.
 
 ---
 
@@ -175,4 +175,4 @@ Hypothesis will search for the operand shape that sneaks past a buggy short-circ
 
 ## Section 6: Reusing this in the Team Language Project
 
-Write your generators and invariant tests so they are parameterized by your node classes and evaluator entry point. When your team integrates the pipeline, the same three invariants — generalized to your team's language — become the backbone of its property-based test suite, and the round-trip generator becomes your parser's regression net. Property-based tests are one of the highest-value, lowest-effort ways to make your language demonstrably correct at Demo Day.
+Write your generators and invariant tests so they are parameterized by your node classes and evaluator entry point. When your team integrates the pipeline, the same three invariants (generalized to your team's language) become the backbone of its property-based test suite, and the round-trip generator becomes your parser's regression net. Property-based tests are one of the highest-value, lowest-effort ways to make your language demonstrably correct at Demo Day.

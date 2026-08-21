@@ -34,8 +34,8 @@ This README is the quickstart version.
    ```
 
 The bind mount in `docker-compose.yml` (and the `workspaceMount` in
-`devcontainer.json`) exposes **your cloned GitHub repo** — and nothing else on
-your machine — at `/workspace` inside the container. You edit, test, commit,
+`devcontainer.json`) exposes **your cloned GitHub repo** (and nothing else on
+your machine) at `/workspace` inside the container. You edit, test, commit,
 and push there; the files live on your disk and on GitHub, so the container
 itself is disposable.
 
@@ -46,7 +46,7 @@ itself is disposable.
 3. Run **Dev Containers: Reopen in Container** from the command palette.
 4. VS Code builds the image (first time takes a few minutes) and reopens your
    repo inside it, with the Python and GitLens extensions preinstalled.
-5. Open a terminal in VS Code — you are inside the container at `/workspace`.
+5. Open a terminal in VS Code; you are inside the container at `/workspace`.
 
 ## Route B: plain Docker Compose
 
@@ -84,14 +84,14 @@ If you cannot run Docker, install the tools directly:
    mininote scaffold), install the OS packages for flex/bison:
    - Debian/Ubuntu: `sudo apt install flex bison gcc make`
    - macOS: `xcode-select --install` then `brew install flex bison`
-   - Windows: use WSL2 (Ubuntu) and the Debian/Ubuntu line above — MSYS2
+   - Windows: use WSL2 (Ubuntu) and the Debian/Ubuntu line above; MSYS2
      works but WSL2 matches the course instructions exactly.
 
    Students who stay on the Python-only directions do not need flex/bison at all.
 
 ## Troubleshooting
 
-- `Cannot connect to the Docker daemon` — Docker Desktop is not running; start it.
-- Slow first build — normal; later builds reuse cached layers.
-- Push rejected / authentication failures — see the credential section of the
+- `Cannot connect to the Docker daemon`: Docker Desktop is not running; start it.
+- Slow first build: normal; later builds reuse cached layers.
+- Push rejected / authentication failures: see the credential section of the
   [Development Environment tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/DevEnvironment).

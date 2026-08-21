@@ -39,7 +39,7 @@ lx.expect("LET")  # -> Token if it matches; else raises a located LexError
   raises `LexError` when reached); `Lexer(src, error_mode="collect_all")`
   scans the whole source at construction and raises one `LexErrorList`
   carrying `.errors` (all of them) and `.tokens` (everything still
-  recognized — recovery evidence).
+  recognized, recovery evidence).
 - Every `LexError` has `.message`, `.line`, `.col` and prints as
   `LexError at line L, col C: <message>`.
 
@@ -53,7 +53,7 @@ COMMENT/WHITESPACE first (skipped); `FLOAT` before `INT`; every keyword
 
 ## Interface decisions beyond the assignment text
 
-- Added keyword tokens `AND`, `OR`, `NOT`, `BREAK`, `CONTINUE` — the Parser
+- Added keyword tokens `AND`, `OR`, `NOT`, `BREAK`, `CONTINUE`; the Parser
   grammar and Interpreter AST require them, and the same component must
   serve all three assignments.
 - Unknown string escapes (e.g. `\q`) raise a `LexError` rather than passing

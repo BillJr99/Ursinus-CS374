@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Parsing Expressions: Left Factoring, Precedence, and Iteration
 
-Expression parsing is the most common and most tricky part of building any language: without deliberate grammar design, `2 + 3 * 4` can parse as `(2 + 3) * 4 = 20` instead of the correct `2 + (3 * 4) = 14`. The solution — a layered grammar where each precedence level is its own rule — is elegant, but turning that grammar into a top-down parser requires eliminating left recursion, which this module does systematically. Two complementary strategies (recursive descent with tiered functions, and Pratt parsing with numeric binding powers) solve exactly the same problem; understanding both gives you the vocabulary to handle any operator grammar you will encounter in your career.
+Expression parsing is the most common and most tricky part of building any language: without deliberate grammar design, `2 + 3 * 4` can parse as `(2 + 3) * 4 = 20` instead of the correct `2 + (3 * 4) = 14`. The solution (a layered grammar where each precedence level is its own rule) is elegant, but turning that grammar into a top-down parser requires eliminating left recursion, which this module does systematically. Two complementary strategies (recursive descent with tiered functions, and Pratt parsing with numeric binding powers) solve exactly the same problem; understanding both gives you the vocabulary to handle any operator grammar you will encounter in your career.
 
 ## Learning Goals
 
@@ -28,11 +28,11 @@ By the end of this activity, you will be able to:
 
 This session is the heart of your parser: turning the layered expression grammar (the cure for ambiguity) into running code, with explicit, careful attention to the move students find hardest: rewriting left recursion as the iteration pattern `term { (op) term }` and folding the loop's results into a left-leaning structure. We build it slowly, one operator tier at a time, exactly as your assignment will. The arc: **the ladder restated for descent $\rightarrow$ one tier in code $\rightarrow$ chaining operators in the loop $\rightarrow$ the full ladder with parentheses and unary minus**.
 
-> **Before You Begin** — make sure you are comfortable with:
+> **Before You Begin**, make sure you are comfortable with:
 >
 > - **Recursive-descent parsing basics** (from the *Recursive Descent Parsing* activity): writing a function per grammar rule, calling `peek()` / `advance()` / `expect()`, and recognizing the shape `rule -> A B C`.
 > - **Operator precedence and associativity**: why `*` binds tighter than `+`, why `7 - 2 - 1` means `(7 - 2) - 1` (left-associative) rather than `7 - (2 - 1)`, and how a layered (unambiguous) grammar encodes both properties.
-> - **Python dataclasses for AST nodes**: the `@dataclass` decorator, field annotations, and constructing nested node objects — you will use these when the assignment upgrades tuples to typed nodes.
+> - **Python dataclasses for AST nodes**: the `@dataclass` decorator, field annotations, and constructing nested node objects; you will use these when the assignment upgrades tuples to typed nodes.
 
 ---
 
@@ -44,7 +44,7 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 # Part I: The Ladder, Descent-Ready
 
-The unambiguous layered grammar you saw earlier used left recursion (`E -> E + T`) to enforce left-associativity — but a recursive descent parser calling itself on the left immediately spirals into infinite recursion. Part I shows the mechanical fix: replace every left-recursive rule with an equivalent `while` loop, and show that the loop's left-fold behavior preserves exactly the same associativity the recursion would have produced.
+The unambiguous layered grammar you saw earlier used left recursion (`E -> E + T`) to enforce left-associativity, but a recursive descent parser calling itself on the left immediately spirals into infinite recursion. Part I shows the mechanical fix: replace every left-recursive rule with an equivalent `while` loop, and show that the loop's left-fold behavior preserves exactly the same associativity the recursion would have produced.
 
 ## 1. From Left Recursion to Loops, Tier by Tier
 
@@ -64,36 +64,36 @@ $$
 a - b - c \;\Rightarrow\; \texttt{(("-",("-",a,b),c))} \quad \text{left fold, left lean}
 $$
 
-> **Watch out!** Left recursion (`addsub -> addsub ("+" | "-") muldiv`) is fatal for top-down parsers: a recursive descent function that begins by calling itself will loop infinitely before consuming a single token. You **must** eliminate it — either by rewriting to the loop form shown above or by using a Pratt parser — before attempting a top-down implementation.
+> **Watch out!** Left recursion (`addsub -> addsub ("+" | "-") muldiv`) is fatal for top-down parsers: a recursive descent function that begins by calling itself will loop infinitely before consuming a single token. You **must** eliminate it (either by rewriting to the loop form shown above or by using a Pratt parser) before attempting a top-down implementation.
 
 ---
 
-## Model 0: The Expression Grammar — Recap and Final Form
+## Model 0: The Expression Grammar, Recap and Final Form
 
 Before writing any parser code, you need a *correct grammar* to implement. You built this grammar's ingredients piece by piece in the *Recursive Descent Parsing* activity; the recap box below compresses that construction, and the final ladder grammar your parser implements follows.
 
-> **Recap — from the *Recursive Descent Parsing* activity:**
+> **Recap, from the *Recursive Descent Parsing* activity:**
 >
-> - A naive rule like `expr → expr "+" expr | expr "*" expr | NUMBER` describes the right language but is **ambiguous** — it says nothing about precedence.
+> - A naive rule like `expr -> expr "+" expr | expr "*" expr | NUMBER` describes the right language but is **ambiguous**; it says nothing about precedence.
 > - The cure is one nonterminal per precedence level: lower-precedence operators sit closer to `expr`, higher-precedence operators sit deeper in the ladder.
-> - Left recursion (`expr → expr "+" term`) encodes left-associativity but sends a top-down parser into infinite recursion before it consumes a single token; the EBNF repetition `expr → term { ("+" | "-") term }` says the same thing in a form descent can run.
-> - In code, `{ ... }` becomes a `while` loop that **folds left** — the running node always becomes the *left* child of the new node — so `7 - 2 - 1` parses as `(7 - 2) - 1`.
+> - Left recursion (`expr -> expr "+" term`) encodes left-associativity but sends a top-down parser into infinite recursion before it consumes a single token; the EBNF repetition `expr -> term { ("+" | "-") term }` says the same thing in a form descent can run.
+> - In code, `{ ... }` becomes a `while` loop that **folds left** (the running node always becomes the *left* child of the new node) so `7 - 2 - 1` parses as `(7 - 2) - 1`.
 >
 > If any bullet feels shaky, review that activity before continuing.
 
 ### The Final EBNF Grammar
 
 ```ebnf
-program  → statement* EOF
-statement→ "let" IDENT "=" expr ";"
+program  -> statement* EOF
+statement-> "let" IDENT "=" expr ";"
           | "print" expr ";"
           | "while" "(" expr ")" "{" statement* "}"
           | "if" "(" expr ")" "{" statement* "}" [ "else" "{" statement* "}" ]
           | IDENT "=" expr ";"
-expr     → term   { ("+" | "-") term   }
-term     → factor { ("*" | "/") factor }
-factor   → "-" factor | primary
-primary  → NUMBER | FLOAT | STRING | "true" | "false"
+expr     -> term   { ("+" | "-") term   }
+term     -> factor { ("*" | "/") factor }
+factor   -> "-" factor | primary
+primary  -> NUMBER | FLOAT | STRING | "true" | "false"
           | IDENT | "(" expr ")"
 ```
 
@@ -176,7 +176,7 @@ for src in expressions:
 
 **CTQ 0.1** Run the parser on `7 - 2 - 1`. The tree should be `(-, (-, 7, 2), 1)`, which evaluates to `4`. If the tree were `(-, 7, (-, 2, 1))` instead, what value would it produce? Which is "correct" for subtraction, and what does this tell you about the importance of left-associativity?
 
-**CTQ 0.2** The grammar has `factor → "-" factor` (unary minus, right-recursive). This rule *is* right-recursive, but it doesn't cause infinite loops in a recursive-descent parser. Why not?
+**CTQ 0.2** The grammar has `factor -> "-" factor` (unary minus, right-recursive). This rule *is* right-recursive, but it doesn't cause infinite loops in a recursive-descent parser. Why not?
 
 **CTQ 0.3** Add a `parse_factor` method that handles unary negation: if the current token is `-`, consume it and recursively call `parse_factor`; otherwise call `parse_primary`. Test on `-3`, `--3`, and `-(2 + 3)`.
 
@@ -184,7 +184,7 @@ for src in expressions:
 
 ## Model 1: Trace the Loop
 
-This model asks you to simulate the `parse_addsub` loop by hand so you can see exactly where associativity comes from. The key insight is that the running `node` variable acts as a left-accumulator: each new operator wraps the *accumulated result so far* as its left child, producing a left-leaning tree. Changing which side receives the accumulator changes associativity — and therefore the numeric result.
+This model asks you to simulate the `parse_addsub` loop by hand so you can see exactly where associativity comes from. The key insight is that the running `node` variable acts as a left-accumulator: each new operator wraps the *accumulated result so far* as its left child, producing a left-leaning tree. Changing which side receives the accumulator changes associativity, and therefore the numeric result.
 
 Consider `addsub` parsing the token stream for `7 - 2 - 1`.
 
@@ -261,9 +261,9 @@ def parse_primary(self):
 
 # Part II: Stress and Extend
 
-Part II consolidates and extends what you built in Part I. You will first check your conceptual grip with a targeted multiple-choice question, then meet **Pratt parsing** — a second strategy that encodes precedence as numbers rather than as a chain of functions — and finally push the parser into new territory: right-associative operators, comparison tiers, and function-call syntax. These exercises mirror the exact extensions your project language will need, so treat them as early project work rather than isolated drills.
+Part II consolidates and extends what you built in Part I. You will first check your conceptual grip with a targeted multiple-choice question, then meet **Pratt parsing** (a second strategy that encodes precedence as numbers rather than as a chain of functions) and finally push the parser into new territory: right-associative operators, comparison tiers, and function-call syntax. These exercises mirror the exact extensions your project language will need, so treat them as early project work rather than isolated drills.
 
-> **Watch out!** Right-associative operators like `**` (exponentiation) cannot be handled by the `while`-loop (left-fold) pattern — that pattern is inherently left-associative. Instead, use the original right-recursive grammar rule `power -> unary [ "^" power ]` (a single optional recursive call, not a loop), which naturally builds a right-leaning tree. In a Pratt parser the equivalent move is to pass `bp - 1` rather than `bp` as the minimum binding power for the right-hand recursive call.
+> **Watch out!** Right-associative operators like `**` (exponentiation) cannot be handled by the `while`-loop (left-fold) pattern; that pattern is inherently left-associative. Instead, use the original right-recursive grammar rule `power -> unary [ "^" power ]` (a single optional recursive call, not a loop), which naturally builds a right-leaning tree. In a Pratt parser the equivalent move is to pass `bp - 1` rather than `bp` as the minimum binding power for the right-hand recursive call.
 
 ## 2. Owning the Pattern
 
@@ -310,14 +310,14 @@ Work the models above with your team before reading these. Each one answers a Cr
 
 ### Worked Example: `7 - 2 - 1`, one iteration at a time
 
-Answer CTQ 1 yourself before reading. The column that matters is `node` — watch it become its own left child.
+Answer CTQ 1 yourself before reading. The column that matters is `node`: watch it become its own left child.
 
 | Point in the loop | `node` (the accumulator) | Tokens left | What just happened |
 |---|---|---|---|
 | before the loop | `7` | `- 2 - 1` | `parse_muldiv()` returned the bare `7` |
 | iteration 1, after wrap | `(- 7 2)` | `- 1` | saw `-`, parsed `2`, wrapped: old `node` became the **left** child |
 | iteration 2, after wrap | `(- (- 7 2) 1)` | *(none)* | saw `-`, parsed `1`, wrapped again: the whole subtree became the left child |
-| loop exits | `(- (- 7 2) 1)` | — | next token is not `+` or `-` |
+| loop exits | `(- (- 7 2) 1)` | - | next token is not `+` or `-` |
 
 The tree, leaning left:
 
@@ -331,7 +331,7 @@ The tree, leaning left:
 
 Evaluated bottom-up: `(7 - 2) = 5`, then `5 - 1 = 4`. Correct.
 
-**CTQ 2, answered.** Swap the two children in the wrap — make the *new* operand the left child and the accumulator the right — and the same tokens build:
+**CTQ 2, answered.** Swap the two children in the wrap (make the *new* operand the left child and the accumulator the right) and the same tokens build:
 
 ```
         (-)
@@ -341,9 +341,9 @@ Evaluated bottom-up: `(7 - 2) = 5`, then `5 - 1 = 4`. Correct.
          2     7
 ```
 
-which evaluates as `1 - (2 - 7) = 6`. Wrong. Not a parse error, not a crash — a silently wrong number, from a one-line change in which side receives the accumulator.
+which evaluates as `1 - (2 - 7) = 6`. Wrong. Not a parse error, not a crash: a silently wrong number, from a one-line change in which side receives the accumulator.
 
-That is the point of the model: **associativity is not a property of the `-` operator, it is a property of which side of the wrap the accumulator lands on.** Right-associative operators (`**` in Python, `^` in many languages) are built by *recursing* instead of looping — `parse_pow()` calls itself for the right operand rather than accumulating in a `while` — which puts the growth on the right side of the tree instead of the left.
+That is the point of the model: **associativity is not a property of the `-` operator, it is a property of which side of the wrap the accumulator lands on.** Right-associative operators (`**` in Python, `^` in many languages) are built by *recursing* instead of looping (`parse_pow()` calls itself for the right operand rather than accumulating in a `while`), which puts the growth on the right side of the tree instead of the left.
 
 ---
 

@@ -18,11 +18,11 @@ tags:
 
 ---
 
-Reading about a grammar is not the same as writing one; reading about beta reduction is not the same as reducing a term until it stops. The fastest way to build real fluency with programming languages is to work their core objects by hand, and to do it *before* class, so that our POGIL session starts from something you have already wrestled with. This page is a bank of short, reading-linked exercises for each unit — one or two problems you can attempt in fifteen minutes with a pencil and a Python REPL.
+Reading about a grammar is not the same as writing one; reading about beta reduction is not the same as reducing a term until it stops. The fastest way to build real fluency with programming languages is to work their core objects by hand, and to do it *before* class, so that our POGIL session starts from something you have already wrestled with. This page is a bank of short, reading-linked exercises for each unit: one or two problems you can attempt in fifteen minutes with a pencil and a Python REPL.
 
 ## Purpose
 
-These exercises exist so that class begins where you are, not where the reading assumes you are. On the days marked **"Reading Exercise / Discussion"** on the schedule, come having attempted that unit's exercises; we will work through them together, compare approaches, and let the places you got stuck set the agenda. A genuine attempt that ran aground is worth more to the discussion than a blank page or a perfect one — the stuck points are the lesson.
+These exercises exist so that class begins where you are, not where the reading assumes you are. On the days marked **"Reading Exercise / Discussion"** on the schedule, come having attempted that unit's exercises; we will work through them together, compare approaches, and let the places you got stuck set the agenda. A genuine attempt that ran aground is worth more to the discussion than a blank page or a perfect one: the stuck points are the lesson.
 
 ## How to Use These
 
@@ -40,7 +40,7 @@ These exercises exist so that class begins where you are, not where the reading 
 
 ### Syntax, BNF/EBNF, and Grammars
 
-- Write a BNF grammar for a small language of your choice — for example, signed decimal numbers, or a boolean expression with `and`/`or`/`not`. Then extend it to EBNF and note what the EBNF made shorter.
+- Write a BNF grammar for a small language of your choice: for example, signed decimal numbers, or a boolean expression with `and`/`or`/`not`. Then extend it to EBNF and note what the EBNF made shorter.
 - Given a short grammar from the reading, produce a leftmost derivation of one string it generates, and a string it *cannot* generate; explain how you know.
 
 ### Derivations, Parse Trees, Ambiguity, and Precedence
@@ -56,7 +56,7 @@ These exercises exist so that class begins where you are, not where the reading 
 ### Tokens and Scanning
 
 - Hand-tokenize the line `x = 12 + foo(3)` into a token stream, giving each token a type and a value. Then predict what your scanner should do with `12foo` and with `= =` versus `==`.
-- Write the regular expressions your lexer would use for three token classes, and identify one pair whose patterns overlap — which rule wins, and why does order matter?
+- Write the regular expressions your lexer would use for three token classes, and identify one pair whose patterns overlap: which rule wins, and why does order matter?
 
 ### Recursive Descent Parsing
 
@@ -65,7 +65,7 @@ These exercises exist so that class begins where you are, not where the reading 
 
 ### Abstract Syntax Trees
 
-- Draw the AST — not the parse tree — for `3 + 4 * 5`, and say in one sentence what the AST threw away that the parse tree kept.
+- Draw the AST (not the parse tree) for `3 + 4 * 5`, and say in one sentence what the AST threw away that the parse tree kept.
 - Design the node types (as Python dataclasses or a `match`/`case` shape) you would use to represent `if`/`else` and function calls in your team's language.
 
 ### Tree-Walking Interpretation, Binding, and Scope
@@ -90,4 +90,4 @@ These exercises exist so that class begins where you are, not where the reading 
 
 ## See also
 
-- [Preparing for Each Class]({{ site.baseurl }}/Participation/PreparingForClass) — the routine these exercises fit into, and the participation rubric.
+- [Preparing for Each Class]({{ site.baseurl }}/Participation/PreparingForClass): the routine these exercises fit into, and the participation rubric.

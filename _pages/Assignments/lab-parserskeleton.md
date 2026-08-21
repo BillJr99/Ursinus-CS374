@@ -5,7 +5,7 @@ title: "CS374: Principles of Programming Languages - Lab: Parser Skeleton"
 
 info:
   coursenum: CS374
-  purpose: "To stand up the first two tiers of the recursive descent ladder with a partner — the peek/decide/consume pattern that every remaining parsing function repeats — so the Parser assignment's midpoint finds you already climbing."
+  purpose: "To stand up the first two tiers of the recursive descent ladder with a partner (the peek/decide/consume pattern that every remaining parsing function repeats) so the Parser assignment's midpoint finds you already climbing."
   tilt:
     task: "With a partner, implement parse_primary and parse_unary over the Lexer interface, with tree-shape tests and one positioned parse error."
     criteria: "Assessed on correct primary and unary parsing with passing tree-shape tests, and a positioned error on invalid input, weighted 70/30 across the two parts; see the rubric below for the full breakdown."
@@ -19,7 +19,7 @@ info:
       description: "The First Two Tiers (Goal 1)"
       preemerging: Neither tier runs, or the parser reads tokens without using the Lexer interface
       beginning: parse_primary handles literals but not identifiers or parenthesized expressions, or parse_unary cannot nest
-      progressing: Both tiers work for the provided cases but one edge fails — e.g., double negation, or a parenthesized expression as a unary operand
+      progressing: Both tiers work for the provided cases but one edge fails, e.g., double negation, or a parenthesized expression as a unary operand
       proficient: parse_primary handles number, string, boolean, identifier, and parenthesized expressions; parse_unary handles negation and logical not, nesting correctly (e.g., --x and not not x); both consume tokens only through peek/advance/expect; and the pattern is documented in one sentence per function
     - weight: 30
       description: "Tests and Errors (Goals 2-3)"
@@ -41,11 +41,11 @@ tags:
 
 ---
 
-This **lab** builds the bottom of the recursive descent ladder — `parse_primary` and `parse_unary` — the two functions whose pattern (look at `peek()`, decide, consume with `advance()` or `expect()`, return a node) every other tier of the Parser assignment repeats. Landing this mid-assignment means the Parser's hardest stretch starts from working code instead of a blank file. Budget **two to three hours** with a partner.
+This **lab** builds the bottom of the recursive descent ladder (`parse_primary` and `parse_unary`), the two functions whose pattern (look at `peek()`, decide, consume with `advance()` or `expect()`, return a node) every other tier of the Parser assignment repeats. Landing this mid-assignment means the Parser's hardest stretch starts from working code instead of a blank file. Budget **two to three hours** with a partner.
 
-Use your own Lexer or the released Reference Lexer — either satisfies the interface contract, and this lab makes a good first test of whichever you plan to build the Parser assignment on.
+Use your own Lexer or the released Reference Lexer: either satisfies the interface contract, and this lab makes a good first test of whichever you plan to build the Parser assignment on.
 
-**Pair policy:** this lab may be completed **in pairs** — driver/navigator works well, swapping between the two tiers. Both partners submit the same files, each naming the other, and both earn the same grade. (You may also work alone.) The Parser assignment remains individual work: you may both grow this shared skeleton there, but the remaining tiers are your own.
+**Pair policy:** this lab may be completed **in pairs**: driver/navigator works well, swapping between the two tiers. Both partners submit the same files, each naming the other, and both earn the same grade. (You may also work alone.) The Parser assignment remains individual work: you may both grow this shared skeleton there, but the remaining tiers are your own.
 
 See the course schedule for the assigned and due dates.
 
@@ -53,16 +53,16 @@ See the course schedule for the assigned and due dates.
 
 ## Part 1: The First Two Tiers (70 points)
 
-In `parser_skeleton.py`, define the AST node dataclasses you need (`Num`, `Str`, `Bool`, `Var`, `Unary`, plus a `Grouping` or pass-through for parentheses — match the node names your grammar work uses), then implement:
+In `parser_skeleton.py`, define the AST node dataclasses you need (`Num`, `Str`, `Bool`, `Var`, `Unary`, plus a `Grouping` or pass-through for parentheses; match the node names your grammar work uses), then implement:
 
-- **`parse_primary`** — number, string, and boolean literals; identifiers; and `( expression )` (for this lab, a parenthesized expression may recurse into `parse_unary` — the full expression ladder arrives in the Parser assignment).
-- **`parse_unary`** — `-` and `not`, right-associative and nesting (`--x`, `not not ok`), delegating to `parse_primary` at the bottom.
+- **`parse_primary`**: number, string, and boolean literals; identifiers; and `( expression )` (for this lab, a parenthesized expression may recurse into `parse_unary`; the full expression ladder arrives in the Parser assignment).
+- **`parse_unary`**: `-` and `not`, right-associative and nesting (`--x`, `not not ok`), delegating to `parse_primary` at the bottom.
 
-Both functions consume tokens **only** through the Lexer's `peek`/`advance`/`expect` — the discipline the whole ladder depends on.
+Both functions consume tokens **only** through the Lexer's `peek`/`advance`/`expect`, the discipline the whole ladder depends on.
 
 ## Part 2: Tests and Errors (30 points)
 
-In `test_skeleton.py`, write **tree-shape tests** — assert on node types and fields (`isinstance(node, Unary)`, `node.op == "-"`, `node.operand.value == 42`), never on printed strings — covering every primary form and at least two nested unary cases. Then make failure informative: parsing an input that cannot start an expression (e.g., `;`) must raise a `ParseError` stating what was expected, what was found, and the line and column from the offending token.
+In `test_skeleton.py`, write **tree-shape tests**: assert on node types and fields (`isinstance(node, Unary)`, `node.op == "-"`, `node.operand.value == 42`), never on printed strings, covering every primary form and at least two nested unary cases. Then make failure informative: parsing an input that cannot start an expression (e.g., `;`) must raise a `ParseError` stating what was expected, what was found, and the line and column from the offending token.
 
 ---
 
@@ -80,7 +80,7 @@ Submit a ZIP containing `parser_skeleton.py`, `test_skeleton.py` with its passin
 
 ## Reflection Prompts
 
-- State the peek/decide/consume pattern in your own words — and name which remaining tier of the Parser assignment you expect to repeat it most times.
+- State the peek/decide/consume pattern in your own words, and name which remaining tier of the Parser assignment you expect to repeat it most times.
 - If you worked in a pair, who did what, and name one thing your partner caught that you would have missed. If you worked alone, note that instead.
 - AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
-- Approximately how many hours it took you to finish this lab (I will not judge you for this at all — I am simply using it to gauge if the labs are too easy or hard)?
+- Approximately how many hours it took you to finish this lab (I will not judge you for this at all; I am simply using it to gauge if the labs are too easy or hard)?

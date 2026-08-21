@@ -1,4 +1,4 @@
-# CS374 Reference Implementations — Staged Pipeline Releases
+# CS374 Reference Implementations, Staged Pipeline Releases
 
 If an earlier stage of your language pipeline is broken, you should never be
 blocked on the next assignment. Each reference implementation below is
@@ -28,11 +28,11 @@ working pipeline up to that stage. Uncompressed copies live in `src/`
   current assignment. The current assignment is graded on the work it asks
   for, not on the stages beneath it.
 - **Your original grade stands.** Using the reference lexer for the Parser
-  assignment does not change your Lexer assignment grade — that grade was
+  assignment does not change your Lexer assignment grade; that grade was
   earned on its own deadline and stays as-is. The reference releases exist
   so one rough week doesn't cascade through the semester.
 - **Mix freely.** You may use the reference lexer with your own parser, or
-  your own lexer with the reference parser — the interfaces are exactly the
+  your own lexer with the reference parser; the interfaces are exactly the
   assignment contracts (`peek`/`advance`/`expect`; the AST node dataclasses).
 
 ## Requirements

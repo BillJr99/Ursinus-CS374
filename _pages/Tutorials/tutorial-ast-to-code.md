@@ -12,15 +12,15 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 -->
 
-# Tutorial: From AST to Code — Visitors and Transpilers
+# Tutorial: From AST to Code: Visitors and Transpilers
 
-An AST is more than the parser's output — it is a value your programs can analyze, rewrite, and translate. This tutorial has two halves. **Part 1** studies *expression-oriented* language design: what changes when `if`, `let`, and sequencing are expressions that produce values rather than statements that perform actions. **Part 2** builds on that foundation to cross the interpreter-to-compiler bridge: the **Visitor pattern** for AST traversals, three working **transpilers** (to Python, JavaScript, and Haskell), and **source maps** that connect generated code back to its source. **Prerequisites:** the *Abstract Syntax Trees* activity (node classes, `pretty`, constant folding); comfort writing Python classes. The stack-machine/bytecode branch of the same bridge lives in the companion tutorial [Build a Bytecode VM](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md).
+An AST is more than the parser's output, it is a value your programs can analyze, rewrite, and translate. This tutorial has two halves. **Part 1** studies *expression-oriented* language design: what changes when `if`, `let`, and sequencing are expressions that produce values rather than statements that perform actions. **Part 2** builds on that foundation to cross the interpreter-to-compiler bridge: the **Visitor pattern** for AST traversals, three working **transpilers** (to Python, JavaScript, and Haskell), and **source maps** that connect generated code back to its source. **Prerequisites:** the *Abstract Syntax Trees* activity (node classes, `pretty`, constant folding); comfort writing Python classes. The stack-machine/bytecode branch of the same bridge lives in the companion tutorial [Build a Bytecode VM](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md).
 
 ---
 
-## Part 1: Expressions as Values — Conditionals, `let`, and Sequencing
+## Part 1: Expressions as Values: Conditionals, `let`, and Sequencing
 
-> **Think about city zoning for a moment.** A well-planned city separates residential neighborhoods from industrial districts from commercial zones — not because mixing them is physically impossible, but because keeping related things together prevents conflicts and makes the city easier to navigate. Programming languages do the same thing with *modules*, *namespaces*, and *packages*. The way a language carves up code into named, bounded units reflects its philosophy about separation of concerns: who owns what, what is visible to whom, and how names from different places coexist without colliding. In this part of the tutorial, you will explore how expression structure — the building blocks *inside* those units — is designed in functional languages.
+> **Think about city zoning for a moment.** A well-planned city separates residential neighborhoods from industrial districts from commercial zones, not because mixing them is physically impossible, but because keeping related things together prevents conflicts and makes the city easier to navigate. Programming languages do the same thing with *modules*, *namespaces*, and *packages*. The way a language carves up code into named, bounded units reflects its philosophy about separation of concerns: who owns what, what is visible to whom, and how names from different places coexist without colliding. In this part of the tutorial, you will explore how expression structure, the building blocks *inside* those units (is designed in functional languages.
 
 ### Learning Goals
 
@@ -41,16 +41,16 @@ Reference: PLAI (Programming Languages: Application and Interpretation) Ch. 7
 >
 > - Writing and calling Python functions, including lambda expressions
 > - Basic Python data structures (lists, dicts) and comprehensions
-> - The concept of *scope* — that a variable defined inside a function is not visible outside it
-> - Python's `dataclass` decorator (used in Models 4–5); a quick review: `@dataclass` auto-generates `__init__` from field annotations
+> - The concept of *scope*) that a variable defined inside a function is not visible outside it
+> - Python's `dataclass` decorator (used in Models 4-5); a quick review: `@dataclass` auto-generates `__init__` from field annotations
 >
-> You do **not** need prior exposure to Scheme or Haskell, though the tutorial will introduce small snippets of each. If you have never seen Scheme syntax before, note that `(f a b)` means "call function `f` with arguments `a` and `b`" — the function name comes first, inside the parentheses.
+> You do **not** need prior exposure to Scheme or Haskell, though the tutorial will introduce small snippets of each. If you have never seen Scheme syntax before, note that `(f a b)` means "call function `f` with arguments `a` and `b`": the function name comes first, inside the parentheses.
 
 ---
 
 ### Model 1: Expressions vs Statements
 
-*Intuition:* Imagine a vending machine. You put in money (input), press a button (operation), and get a snack (value) — the whole interaction *produces something*. That is an expression. Now imagine a light switch: you flip it (action) and a side effect occurs (light changes), but the switch itself does not hand you a value. That is a statement. Most languages mix both, but functional languages lean heavily toward the vending-machine model — nearly everything hands back a value.
+*Intuition:* Imagine a vending machine. You put in money (input), press a button (operation), and get a snack (value); the whole interaction *produces something*. That is an expression. Now imagine a light switch: you flip it (action) and a side effect occurs (light changes), but the switch itself does not hand you a value. That is a statement. Most languages mix both, but functional languages lean heavily toward the vending-machine model; nearly everything hands back a value.
 
 > **Watch out!** Python's `if` is a *statement* by default, so you cannot write `x = if cond: 5 else 10` directly. Python provides the *ternary expression* `5 if cond else 10` as a separate syntax for cases where you need an expression. These are two distinct constructs in Python, but they are unified into one `if`-expression in Haskell and Scheme. Do not mix them up when answering the critical thinking questions.
 
@@ -59,7 +59,7 @@ In programming language theory, a key distinction is between **expressions** and
 - An **expression** is a syntactic form that *evaluates to a value*. For example, `3 + 4` evaluates to `7`.
 - A **statement** is a syntactic form that *performs an action* (a side effect) and does not necessarily produce a value. For example, a `print` call or an assignment statement.
 
-In many functional languages (Haskell, Scheme, ML), `if` is an **expression** — it always produces a value. In Python, `if` is a **statement** by default, although Python provides a *conditional expression* (the ternary operator) as well. Python 3.8+ also introduced the walrus operator (`:=`) as a limited form of assignment expression.
+In many functional languages (Haskell, Scheme, ML), `if` is an **expression**; it always produces a value. In Python, `if` is a **statement** by default, although Python provides a *conditional expression* (the ternary operator) as well. Python 3.8+ also introduced the walrus operator (`:=`) as a limited form of assignment expression.
 
 The code below demonstrates these distinctions in Python and shows how we can simulate a strict if-expression.
 
@@ -103,9 +103,9 @@ print(f"iif result: {result}")
 
 ### Model 2: Let Expressions and Local Binding
 
-*Intuition:* Think of a math proof that says "Let x = 5. Then x + 3 = 8." The word "let" introduces a local name that is only meaningful for the lines that follow — once the proof moves on, `x` is gone. Functional `let` works exactly the same way: it binds a name to a value for the duration of one sub-expression (the *body*), and nowhere else. This is fundamentally different from Python assignment, which drops the name into the surrounding function's scope and leaves it there.
+*Intuition:* Think of a math proof that says "Let x = 5. Then x + 3 = 8." The word "let" introduces a local name that is only meaningful for the lines that follow: once the proof moves on, `x` is gone. Functional `let` works exactly the same way: it binds a name to a value for the duration of one sub-expression (the *body*), and nowhere else. This is fundamentally different from Python assignment, which drops the name into the surrounding function's scope and leaves it there.
 
-> **Watch out!** The Python simulation uses a `lambda` as the `body` argument. This works, but it hides an important subtlety: the lambda's *parameters* act as the bound variables, not as normal function arguments. When you see `let({"x": 5}, lambda x: x + 1)`, read it as "in the scope where x = 5, evaluate x + 1" — not as "call a function with argument 5."
+> **Watch out!** The Python simulation uses a `lambda` as the `body` argument. This works, but it hides an important subtlety: the lambda's *parameters* act as the bound variables, not as normal function arguments. When you see `let({"x": 5}, lambda x: x + 1)`, read it as "in the scope where x = 5, evaluate x + 1"; not as "call a function with argument 5."
 
 In functional languages like Scheme and Haskell, `let` is an **expression** that introduces local variable bindings. For example, in Scheme:
 
@@ -153,7 +153,7 @@ print(f"doubled values > 8: {result3}")
 
 #### Critical Thinking Questions
 
-1. Why is `let` useful as an expression rather than a statement? How does treating `let` as an expression affect composability — can you nest `let` inside another expression?
+1. Why is `let` useful as an expression rather than a statement? How does treating `let` as an expression affect composability, can you nest `let` inside another expression?
 
 2. How does the `let` simulation above capture the semantics of `let` in functional languages? What role does the `body` lambda play? What is the environment in which `body` is evaluated?
 
@@ -165,9 +165,9 @@ print(f"doubled values > 8: {result3}")
 
 ### Model 3: Sequencing and Begin
 
-*Intuition:* A recipe says "first preheat the oven, then mix the batter, then bake." The *order* matters, even if each step has no meaningful return value on its own. In a pure expression language, "doing things in order" requires an explicit construct because expressions do not inherently sequence — they just produce values. Scheme's `begin` is that explicit sequencing construct: it evaluates expressions one after another and hands back whatever the last one produces.
+*Intuition:* A recipe says "first preheat the oven, then mix the batter, then bake." The *order* matters, even if each step has no meaningful return value on its own. In a pure expression language, "doing things in order" requires an explicit construct because expressions do not inherently sequence; they just produce values. Scheme's `begin` is that explicit sequencing construct: it evaluates expressions one after another and hands back whatever the last one produces.
 
-In purely functional languages, there are no statements and no side effects — every construct is an expression. But even functional languages need to do things in *order*, particularly when dealing with I/O or mutable state.
+In purely functional languages, there are no statements and no side effects; every construct is an expression. But even functional languages need to do things in *order*, particularly when dealing with I/O or mutable state.
 
 The `begin` form in Scheme sequences expressions and returns the value of the *last* one:
 
@@ -178,10 +178,10 @@ The `begin` form in Scheme sequences expressions and returns the value of the *l
   42)   ; returns 42
 ```
 
-Python's sequence of statements is the natural analog, but it is not an expression — you can't embed a sequence of statements inside a larger expression. The Python `begin` simulation below models Scheme's behavior explicitly.
+Python's sequence of statements is the natural analog, but it is not an expression; you can't embed a sequence of statements inside a larger expression. The Python `begin` simulation below models Scheme's behavior explicitly.
 
 ```python
-# Simulate Scheme's (begin e1 e2 ... en) — returns last value
+# Simulate Scheme's (begin e1 e2 ... en); returns last value
 def begin(*exprs):
     """Evaluate expressions in order, return the last value."""
     result = None
@@ -220,21 +220,21 @@ print(f"Squares: {squares}")
 
 3. In Python, how is sequencing expressed differently from a functional language like Scheme? Is Python's sequencing (a block of statements) usable inside an expression? Give an example of where this limitation is noticeable.
 
-4. What would happen if a language had no sequencing at all — only pure expressions with no side effects? What kinds of programs would be impossible or very difficult to write? What kinds of programs might actually be *easier* to reason about?
+4. What would happen if a language had no sequencing at all - only pure expressions with no side effects? What kinds of programs would be impossible or very difficult to write? What kinds of programs might actually be *easier* to reason about?
 
 ---
 
 ### Model 4: Building an Expression Evaluator
 
-*Intuition:* An evaluator is a program that reads a tree of expression nodes and collapses it into a single value — the way a calculator reduces `(3 + 4) * 2` to `14` step by step. The key ingredient is the *environment*: a dictionary mapping variable names to their current values. When you encounter a `Var` node, you look its name up in the environment. When you encounter a `LetExpr`, you extend the environment with a new binding for the duration of the body. The environment grows as you go *in* to nested expressions and shrinks (is discarded) as you come *out*.
+*Intuition:* An evaluator is a program that reads a tree of expression nodes and collapses it into a single value, the way a calculator reduces `(3 + 4) * 2` to `14` step by step. The key ingredient is the *environment*: a dictionary mapping variable names to their current values. When you encounter a `Var` node, you look its name up in the environment. When you encounter a `LetExpr`, you extend the environment with a new binding for the duration of the body. The environment grows as you go *in* to nested expressions and shrinks (is discarded) as you come *out*.
 
-> **Watch out!** In `eval_expr`, the `If` node evaluates its condition and then evaluates **only one branch** — the chosen one. This is different from how `BinOp` works: `BinOp` evaluates *both* sub-expressions before applying the operator. Keep this asymmetry in mind for the critical thinking questions about strict vs. lazy evaluation.
+> **Watch out!** In `eval_expr`, the `If` node evaluates its condition and then evaluates **only one branch**, the chosen one. This is different from how `BinOp` works: `BinOp` evaluates *both* sub-expressions before applying the operator. Keep this asymmetry in mind for the critical thinking questions about strict vs. lazy evaluation.
 
 PLAI Ch. 7 focuses on building an interpreter for a language with conditionals and let bindings. In this model, we implement a small evaluator for an expression language that includes arithmetic, booleans, conditionals (`If`), and local bindings (`LetExpr`).
 
 This interpreter models the *substitution model*: when we encounter a `LetExpr`, we extend the environment with the new binding rather than substituting directly. This is a key concept in interpreter design.
 
-Notice that `If` only evaluates **one** branch — the correct branch based on the condition. This is called *lazy* or *call-by-need* conditional evaluation.
+Notice that `If` only evaluates **one** branch, the correct branch based on the condition. This is called *lazy* or *call-by-need* conditional evaluation.
 
 ```python
 from dataclasses import dataclass
@@ -336,7 +336,7 @@ print(f"let y=x*2 in if y>10 then y else 0 where x=7: {eval_expr(program2, env)}
 
 ### Model 5: Short-Circuit Evaluation and Lazy Conditionals
 
-*Intuition:* Imagine a security guard who checks two ID requirements: "Must be over 18 AND must have a valid badge." If the visitor is clearly 10 years old, the guard does not bother asking for the badge — the first condition already determines the outcome. Python's `and`/`or` operators work the same way: they stop evaluating as soon as the result is certain. This is called *short-circuit* (or *lazy*) evaluation, and it is not just a performance trick — it is what makes patterns like `x is not None and x.value > 0` safe, because the right side is only reached when `x` is guaranteed non-None.
+*Intuition:* Imagine a security guard who checks two ID requirements: "Must be over 18 AND must have a valid badge." If the visitor is clearly 10 years old, the guard does not bother asking for the badge, the first condition already determines the outcome. Python's `and`/`or` operators work the same way: they stop evaluating as soon as the result is certain. This is called *short-circuit* (or *lazy*) evaluation, and it is not just a performance trick; it is what makes patterns like `x is not None and x.value > 0` safe, because the right side is only reached when `x` is guaranteed non-None.
 
 We saw in Model 4 that the `If` node only evaluates one branch. Python's `and` and `or` operators exhibit similar behavior: they use **short-circuit evaluation** (also called *lazy* or *non-strict* evaluation).
 
@@ -428,10 +428,10 @@ print(f"Result: {answer}")  # Only prints "evaluating THEN"
 
 **Question 3:** Consider the `BinOp` case in the expression evaluator from Model 4. Both `eval_expr(expr.left, env)` and `eval_expr(expr.right, env)` are called before performing the operation. What does this mean about the evaluator's strategy for `BinOp`?
 
-[( )] It uses lazy evaluation — operands are evaluated only when needed
-[(X)] It uses strict (eager) evaluation — both operands are always evaluated before the operation
-[( )] It uses short-circuit evaluation — the right operand may not be evaluated
-[( )] It uses call-by-name — operands are substituted unevaluated into the operation
+[( )] It uses lazy evaluation; operands are evaluated only when needed
+[(X)] It uses strict (eager) evaluation: both operands are always evaluated before the operation
+[( )] It uses short-circuit evaluation: the right operand may not be evaluated
+[( )] It uses call-by-name: operands are substituted unevaluated into the operation
 
 ---
 
@@ -456,8 +456,8 @@ Add a `While` loop to the expression evaluator from Model 4. Define a new datacl
 
 Extend the expression evaluator with two new constructs:
 
-- `NotExpr(expr)` — a unary operator that negates a boolean expression.
-- `CondExpr(clauses, else_expr)` — a multi-branch conditional, where `clauses` is a list of `(condition, result)` pairs. It evaluates each condition in order and returns the result of the first truthy one; if none match, it evaluates `else_expr`.
+- `NotExpr(expr)`: a unary operator that negates a boolean expression.
+- `CondExpr(clauses, else_expr)`: a multi-branch conditional, where `clauses` is a list of `(condition, result)` pairs. It evaluates each condition in order and returns the result of the first truthy one; if none match, it evaluates `else_expr`.
 
 Add both to `eval_expr` and write a test that uses `CondExpr` to classify a number as "negative", "zero", or "positive".
 
@@ -477,29 +477,29 @@ The `BinOp` case in the evaluator from Model 4 always evaluates both operands be
 
 Modify `eval_expr` so that `BinOp` with `op='and'` and `op='or'` use short-circuit evaluation: for `'and'`, if the left side is `False`, do not evaluate the right side; for `'or'`, if the left side is `True`, do not evaluate the right side.
 
-Write a test that demonstrates the difference — construct an expression where strict evaluation would raise a `ZeroDivisionError` but lazy/short-circuit evaluation succeeds.
+Write a test that demonstrates the difference: construct an expression where strict evaluation would raise a `ZeroDivisionError` but lazy/short-circuit evaluation succeeds.
 
 ---
 
 ### Reflection Prompt
 
-In Python, `if` is a statement; in Haskell, `if` is an expression. What practical difference does this make when writing code? Write 3–4 sentences considering: where you can place an `if`, how it affects composability (e.g., can you use `if` inside a list comprehension, as a function argument, or inside another expression directly?), and whether you think expression-based `if` or statement-based `if` leads to clearer code in typical programming tasks.
+In Python, `if` is a statement; in Haskell, `if` is an expression. What practical difference does this make when writing code? Write 3-4 sentences considering: where you can place an `if`, how it affects composability (e.g., can you use `if` inside a list comprehension, as a function argument, or inside another expression directly?), and whether you think expression-based `if` or statement-based `if` leads to clearer code in typical programming tasks.
 
 ---
 
 ### Further Reading
 
-- **PLAI Ch. 7** — Conditionals and Bindings: the primary reference for this part of the tutorial. Covers how interpreters handle `if` and `let` at the semantic level.
-- **"Structure and Interpretation of Computer Programs" (SICP) Ch. 1.1** — Expressions: introduces the expression-based model of computation in Scheme and motivates why everything being an expression simplifies reasoning.
-- **Python PEP 572** — Assignment Expressions (the walrus operator `:=`): the design rationale behind adding a limited expression-form assignment to Python, including discussion of the tradeoffs and rejected alternatives.
-- **Wadler, "Theorems for Free" (1989)** — A research paper explaining why purely expression-based (purely functional) languages have desirable mathematical properties, including the ability to reason about programs using equational reasoning.
+- **PLAI Ch. 7**: Conditionals and Bindings: the primary reference for this part of the tutorial. Covers how interpreters handle `if` and `let` at the semantic level.
+- **"Structure and Interpretation of Computer Programs" (SICP) Ch. 1.1**, Expressions: introduces the expression-based model of computation in Scheme and motivates why everything being an expression simplifies reasoning.
+- **Python PEP 572**, Assignment Expressions (the walrus operator `:=`): the design rationale behind adding a limited expression-form assignment to Python, including discussion of the tradeoffs and rejected alternatives.
+- **Wadler, "Theorems for Free" (1989)**, A research paper explaining why purely expression-based (purely functional) languages have desirable mathematical properties, including the ability to reason about programs using equational reasoning.
 
 
 ---
 
-## Part 2: From Interpreter to Compiler — the Visitor Pattern and Transpilers
+## Part 2: From Interpreter to Compiler: the Visitor Pattern and Transpilers
 
-Your tree-walking interpreter already does the hard work — it understands the meaning of every AST node. A compiler does the same traversal but instead of computing a value, it writes down instructions for someone else to execute later. The difference is not intelligence but timing: an interpreter acts now, a compiler acts once so that execution can happen many times fast. This tutorial builds transpiler backends on top of the same AST your interpreter already handles, making that timing difference concrete.
+Your tree-walking interpreter already does the hard work, it understands the meaning of every AST node. A compiler does the same traversal but instead of computing a value, it writes down instructions for someone else to execute later. The difference is not intelligence but timing: an interpreter acts now, a compiler acts once so that execution can happen many times fast. This tutorial builds transpiler backends on top of the same AST your interpreter already handles, making that timing difference concrete.
 
 #### Learning Goals
 
@@ -516,11 +516,11 @@ By the end of this tutorial, you will be able to:
 >
 > If any of these feel shaky, review them first.
 
-*"The difference between an interpreter and a compiler is not how smart they are about the language — it is when they do their work."*
+*"The difference between an interpreter and a compiler is not how smart they are about the language: it is when they do their work."*
 
-Your tree-walking interpreter evaluates an AST **at runtime**: it visits each node and immediately computes a value. A **compiler** walks the same AST but, instead of computing values, **emits instructions** — for a virtual machine, a real CPU, or another programming language. A **transpiler** (source-to-source compiler) emits valid code in a different high-level language. All three share the same frontend (lexer, parser, AST builder); they diverge only in what the AST traversal produces.
+Your tree-walking interpreter evaluates an AST **at runtime**: it visits each node and immediately computes a value. A **compiler** walks the same AST but, instead of computing values, **emits instructions**; for a virtual machine, a real CPU, or another programming language. A **transpiler** (source-to-source compiler) emits valid code in a different high-level language. All three share the same frontend (lexer, parser, AST builder); they diverge only in what the AST traversal produces.
 
-In this part we build the transpiler half of the bridge: starting from the interpreter you have already built, we add **transpilers** that emit valid Python, valid JavaScript, and valid Haskell. You will be able to run programs in your language by transpiling them — without writing a new frontend. (The bytecode/stack-machine half is the [Build a Bytecode VM](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md) tutorial.)
+In this part we build the transpiler half of the bridge: starting from the interpreter you have already built, we add **transpilers** that emit valid Python, valid JavaScript, and valid Haskell. You will be able to run programs in your language by transpiling them: without writing a new frontend. (The bytecode/stack-machine half is the [Build a Bytecode VM](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md) tutorial.)
 
 ---
 
@@ -556,7 +556,7 @@ print("AST nodes loaded.")
 
 #### 1. Why We Need the Visitor
 
-Imagine you need to add a type-checker, an optimizer, and a pretty-printer to your interpreter — all traversing the same AST. Without the Visitor pattern, you end up with three copies of the same `if isinstance(...)` dispatch logic, and every new AST node type means updating all three copies. The Visitor pattern solves this by making the traversal a single place and making each "what to do at each node" a separate, swappable object.
+Imagine you need to add a type-checker, an optimizer, and a pretty-printer to your interpreter, all traversing the same AST. Without the Visitor pattern, you end up with three copies of the same `if isinstance(...)` dispatch logic, and every new AST node type means updating all three copies. The Visitor pattern solves this by making the traversal a single place and making each "what to do at each node" a separate, swappable object.
 
 Your tree-walking interpreter is a set of `if isinstance(node, ...)` branches inside a single `evaluate` function. This works, but as soon as you want to **also** compile, and **also** type-check, and **also** transpile the same AST, you face a choice:
 
@@ -564,7 +564,7 @@ Your tree-walking interpreter is a set of `if isinstance(node, ...)` branches in
 - Bundle evaluate/emit/typecheck methods inside the AST node classes (breaks separation of concerns)
 - Use the **Visitor pattern**: define a `Visitor` interface where each node class calls back into the visitor
 
-The Visitor pattern separates the **what to do** (the visitor) from the **what to visit** (the AST). Adding a new operation (e.g., a type checker, an optimizer, a pretty-printer) requires adding a new visitor class — not modifying the AST.
+The Visitor pattern separates the **what to do** (the visitor) from the **what to visit** (the AST). Adding a new operation (e.g., a type checker, an optimizer, a pretty-printer) requires adding a new visitor class, not modifying the AST.
 
 ```python
 class Num:
@@ -634,7 +634,7 @@ print("Interpreter result:", interp.visit(ast))   # 7
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **Watch out!** `getattr(self, method_name, self.generic_visit)` dispatches to a method named `visit_ClassName`. This means the method name is determined by the Python class name of the AST node, not by any tag you set. If you rename `BinOp` to `BinaryOperation`, the dispatch will break silently — `generic_visit` will be called instead, likely raising a confusing error. Always keep AST class names stable once you build visitors over them.
+> **Watch out!** `getattr(self, method_name, self.generic_visit)` dispatches to a method named `visit_ClassName`. This means the method name is determined by the Python class name of the AST node, not by any tag you set. If you rename `BinOp` to `BinaryOperation`, the dispatch will break silently, `generic_visit` will be called instead, likely raising a confusing error. Always keep AST class names stable once you build visitors over them.
 
 ---
 
@@ -642,7 +642,7 @@ print("Interpreter result:", interp.visit(ast))   # 7
 
 #### 2. The Python Transpiler
 
-A transpiler is just a visitor that accumulates strings instead of values. Every `visit_*` method returns a fragment of source code, and the fragments compose exactly the way the original AST composes. This is why well-structured ASTs produce clean, readable transpiled output — the structure of the AST maps directly to the structure of the emitted code.
+A transpiler is just a visitor that accumulates strings instead of values. Every `visit_*` method returns a fragment of source code, and the fragments compose exactly the way the original AST composes. This is why well-structured ASTs produce clean, readable transpiled output; the structure of the AST maps directly to the structure of the emitted code.
 
 A transpiler is a visitor that **returns strings** instead of values.
 
@@ -725,9 +725,9 @@ print("Evaluated: ", result)   # should be 7
 
 #### 3. The JavaScript Transpiler
 
-The JavaScript transpiler demonstrates the key insight: the AST structure is language-neutral, but target-language quirks (like JavaScript's ternary operator `?:` for `if` expressions, or the need for `Math.trunc` for integer division) must be encoded per-target. Each new target language is a new visitor — no changes to the AST or the frontend.
+The JavaScript transpiler demonstrates the key insight: the AST structure is language-neutral, but target-language quirks (like JavaScript's ternary operator `?:` for `if` expressions, or the need for `Math.trunc` for integer division) must be encoded per-target. Each new target language is a new visitor: no changes to the AST or the frontend.
 
-> **Watch out!** JavaScript's `/` operator always returns a floating-point result, unlike Python's `//` (integer division). Our `Let` node uses `(lambda x: body)(value)` in Python but `((x) => body)(value)` in JavaScript. These look similar but behave differently for closures in edge cases — always test transpiler output with the target language's actual runtime.
+> **Watch out!** JavaScript's `/` operator always returns a floating-point result, unlike Python's `//` (integer division). Our `Let` node uses `(lambda x: body)(value)` in Python but `((x) => body)(value)` in JavaScript. These look similar but behave differently for closures in edge cases, always test transpiler output with the target language's actual runtime.
 
 The same AST, same visitor structure, different target language:
 
@@ -893,7 +893,7 @@ A transpiler differs from an interpreter in which fundamental way?
 
 ---
 
-> **The third backend — a bytecode compiler and virtual stack machine —** is developed step by step in the companion tutorial [Build a Bytecode VM](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md). The source-map section below uses a small, self-contained bytecode compiler for concreteness; you do not need the full VM tutorial to follow it.
+> **The third backend; a bytecode compiler and virtual stack machine, ** is developed step by step in the companion tutorial [Build a Bytecode VM](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md). The source-map section below uses a small, self-contained bytecode compiler for concreteness; you do not need the full VM tutorial to follow it.
 
 ---
 
@@ -996,7 +996,7 @@ for idx, op in tc.source_map[:8]:
 
 #### 6. Exercises
 
-1. **Extend the transpilers.** Add support for `FuncDef` and `Call` nodes to all three transpilers (Python, JavaScript, Haskell). Test with the AST for `(lambda x: x * x)(5)` — i.e., `Call(FuncDef("x", BinOp("*", Var("x"), Var("x"))), Num(5))`. All three transpilers should produce expressions that evaluate to 25 in their respective languages.
+1. **Extend the transpilers.** Add support for `FuncDef` and `Call` nodes to all three transpilers (Python, JavaScript, Haskell). Test with the AST for `(lambda x: x * x)(5)`, i.e., `Call(FuncDef("x", BinOp("*", Var("x"), Var("x"))), Num(5))`. All three transpilers should produce expressions that evaluate to 25 in their respective languages.
 
 2. **Boolean support.** Add `Bool(value)` and `And(left, right)` / `Or(left, right)` nodes to the AST. Extend all three transpilers. Python uses `and`/`or`; JavaScript uses `&&`/`||`; Haskell uses `&&`/`||`. Test with `And(Bool(True), Bool(False))`.
 
@@ -1011,8 +1011,8 @@ for idx, op in tc.source_map[:8]:
 #### 7. Further Reading
 
 - Nystrom, Robert. *Crafting Interpreters* (available free online). Part III covers bytecode compilation with a full stack machine (Clox); the code in this module is a simplified version of that approach.
-- Thain, Douglas. *Introduction to Compilers and Language Design*. Chapters 8–10 cover intermediate representations, code generation, and optimization in depth.
-- Gamma, Erich et al. *Design Patterns* (Addison-Wesley, 1995). Chapter on the Visitor pattern — the pattern that makes the transpiler architecture here work cleanly.
+- Thain, Douglas. *Introduction to Compilers and Language Design*. Chapters 8-10 cover intermediate representations, code generation, and optimization in depth.
+- Gamma, Erich et al. *Design Patterns* (Addison-Wesley, 1995). Chapter on the Visitor pattern, the pattern that makes the transpiler architecture here work cleanly.
 - Cooper, Keith and Linda Torczon. *Engineering a Compiler* (2nd ed., Morgan Kaufmann, 2011). The most complete modern treatment of code generation, register allocation, and optimization.
 - Pereira, Fernando and Jens Palsberg. "Register Allocation After Classical SSA Elimination is NP-Complete." *FoSSaCS*, 2005. A glimpse at why real compilers are hard, even after you have a correct code generator.
 
@@ -1020,9 +1020,9 @@ for idx, op in tc.source_map[:8]:
 
 Constant folding is the first optimizer most people write, and it is a tree transformation - exactly what this tutorial is about. It was previously embedded in the AST class session.
 
-## Model 3: Tree Transformations — Your First Optimizer
+## Model 3: Tree Transformations: Your First Optimizer
 
-*What problem does this solve?* A language implementer does not just read the AST — they sometimes want to *rewrite* it into a simpler or faster equivalent before evaluation. Constant folding is the canonical first optimization: if both children of a `BinOp` are `Num` nodes, there is no reason to wait until runtime to compute the result. This model introduces the pattern of a tree *transformation*: a function that takes a node and returns a (possibly different) node, recursing on children. The same pattern underlies dead-code elimination, inlining, and virtually every compiler optimization you will study.
+*What problem does this solve?* A language implementer does not just read the AST, they sometimes want to *rewrite* it into a simpler or faster equivalent before evaluation. Constant folding is the canonical first optimization: if both children of a `BinOp` are `Num` nodes, there is no reason to wait until runtime to compute the result. This model introduces the pattern of a tree *transformation*: a function that takes a node and returns a (possibly different) node, recursing on children. The same pattern underlies dead-code elimination, inlining, and virtually every compiler optimization you will study.
 
 Trees can be *transformed* as well as traversed. The simplest transformation is **constant folding**: evaluating constant sub-expressions at compile time.
 
@@ -1047,13 +1047,13 @@ class UnaryOp:
     op: str; operand: Any
 
 def constant_fold(node):
-    """Simplify constant sub-expressions: 2+3 → 5, 1*x → x, etc."""
+    """Simplify constant sub-expressions: 2+3 -> 5, 1*x -> x, etc."""
     match node:
         case Num() | Var():
             return node
 
         case UnaryOp(op='-', operand=Num(value=v)):
-            return Num(-v)   # -5 → Num(-5)
+            return Num(-v)   # -5 -> Num(-5)
 
         case UnaryOp(op=op, operand=o):
             return UnaryOp(op, constant_fold(o))
@@ -1068,7 +1068,7 @@ def constant_fold(node):
                     case '-': return Num(l.value - r.value)
                     case '*': return Num(l.value * r.value)
                     case '/' if r.value != 0: return Num(l.value / r.value)
-            # Algebraic identities: x * 1 → x, x + 0 → x, etc.
+            # Algebraic identities: x * 1 -> x, x + 0 -> x, etc.
             if isinstance(r, Num):
                 if r.value == 0 and op == '+': return l
                 if r.value == 0 and op == '-': return l
@@ -1089,27 +1089,27 @@ def pretty(node):
 
 # Test constant folding
 tests = [
-    BinOp('+', Num(2), Num(3)),                          # 2+3 → 5
-    BinOp('*', Num(1), Var('x')),                         # 1*x → x
-    BinOp('+', Var('x'), Num(0)),                         # x+0 → x
-    BinOp('*', Num(2), BinOp('+', Num(3), Num(4))),       # 2*(3+4) → 2*7 → 14
-    BinOp('+', BinOp('*', Num(2), Num(3)), Var('y')),     # (2*3)+y → 6+y
-    UnaryOp('-', Num(5)),                                  # -5 → Num(-5)
+    BinOp('+', Num(2), Num(3)),                          # 2+3 -> 5
+    BinOp('*', Num(1), Var('x')),                         # 1*x -> x
+    BinOp('+', Var('x'), Num(0)),                         # x+0 -> x
+    BinOp('*', Num(2), BinOp('+', Num(3), Num(4))),       # 2*(3+4) -> 2*7 -> 14
+    BinOp('+', BinOp('*', Num(2), Num(3)), Var('y')),     # (2*3)+y -> 6+y
+    UnaryOp('-', Num(5)),                                  # -5 -> Num(-5)
 ]
 
 for t in tests:
     folded = constant_fold(t)
-    print(f"{pretty(t):30} → {pretty(folded)}")
+    print(f"{pretty(t):30} -> {pretty(folded)}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **Watch out!** Constant folding is only safe for *pure* sub-expressions — ones with no side effects. It is tempting to fold `f() + 0` to `f()` because "adding zero does nothing," but that reasoning only applies when `f()` has no side effects. If `f()` prints to the screen or modifies a global, folding away the `+ 0` is correct *for the arithmetic* but changes the program's observable behavior in other ways. When in doubt, only fold sub-trees made entirely of `Num`, `Bool`, and `Str` nodes with no `Call` or `Var` nodes anywhere inside.
+> **Watch out!** Constant folding is only safe for *pure* sub-expressions; ones with no side effects. It is tempting to fold `f() + 0` to `f()` because "adding zero does nothing," but that reasoning only applies when `f()` has no side effects. If `f()` prints to the screen or modifies a global, folding away the `+ 0` is correct *for the arithmetic* but changes the program's observable behavior in other ways. When in doubt, only fold sub-trees made entirely of `Num`, `Bool`, and `Str` nodes with no `Call` or `Var` nodes anywhere inside.
 
 > **CTQ 4.1** Constant folding is safe for pure expressions. Why is it *unsafe* to fold `f() + 0` to `f()` if `f` has side effects?
 
-> **CTQ 4.2** The folding rule `x * 0 → 0` is an algebraic simplification. Why does this rule require checking `l.value == 0` rather than checking `isinstance(l, Num) and l.value == 0`? (They're the same — but why does the type check matter for correctness?)
+> **CTQ 4.2** The folding rule `x * 0 -> 0` is an algebraic simplification. Why does this rule require checking `l.value == 0` rather than checking `isinstance(l, Num) and l.value == 0`? (They're the same, but why does the type check matter for correctness?)
 
-> **CTQ 4.3** Dead code elimination is another tree transformation: `if true { body1 } else { body2 }` → `body1`. How would you extend `constant_fold` to handle this case?
+> **CTQ 4.3** Dead code elimination is another tree transformation: `if true { body1 } else { body2 }` -> `body1`. How would you extend `constant_fold` to handle this case?
 
 ---
 

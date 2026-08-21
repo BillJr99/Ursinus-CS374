@@ -62,20 +62,20 @@ for m in re.finditer(r"order", text, flags=re.IGNORECASE):
 
 ---
 
-Matching is not always a single left-to-right sweep. Whenever the pattern offers a choice — a star deciding how many repetitions to take, or an alternation deciding which branch to try — the engine makes the greedy choice first and *remembers the decision point*. If the rest of the pattern later fails, the engine **backtracks**: it returns to the most recent decision, tries the next alternative, and pushes forward again. Watching one backtracking match in slow motion demystifies greedy behavior now and prepares you for the automata view in the next module.
+Matching is not always a single left-to-right sweep. Whenever the pattern offers a choice (a star deciding how many repetitions to take, or an alternation deciding which branch to try) the engine makes the greedy choice first and *remembers the decision point*. If the rest of the pattern later fails, the engine **backtracks**: it returns to the most recent decision, tries the next alternative, and pushes forward again. Watching one backtracking match in slow motion demystifies greedy behavior now and prepares you for the automata view in the next module.
 
-> **Watch out!** Backtracking is invisible when a match succeeds quickly, but it is still happening. On pathological patterns (nested quantifiers like `(a+)+` against input that *almost* matches), the number of decision points explodes and matching can take exponential time — so-called *catastrophic backtracking*. Knowing where decisions accumulate is how you avoid writing such patterns.
+> **Watch out!** Backtracking is invisible when a match succeeds quickly, but it is still happening. On pathological patterns (nested quantifiers like `(a+)+` against input that *almost* matches), the number of decision points explodes and matching can take exponential time, so-called *catastrophic backtracking*. Knowing where decisions accumulate is how you avoid writing such patterns.
 
 ## Model 2: Watching the Engine Backtrack
 
-**Worked example.** Match the pattern `a*ab` against the string `"aaab"` using `re.fullmatch`. Read the pattern as: "any number of `a`s, then one more `a`, then a `b`." The greedy `a*` first swallows every `a` it can — one too many, as it turns out.
+**Worked example.** Match the pattern `a*ab` against the string `"aaab"` using `re.fullmatch`. Read the pattern as: "any number of `a`s, then one more `a`, then a `b`." The greedy `a*` first swallows every `a` it can, one too many, as it turns out.
 
 | Step | `a*` currently holds | Rest of pattern needs | Rest of input is | Outcome |
 |------|----------------------|-----------------------|------------------|---------|
-| 1 | `"aaa"` (greedy maximum) | `ab` | `"b"` | `a` vs `b` fails → **backtrack** |
-| 2 | `"aa"` (gave one back) | `ab` | `"ab"` | `ab` = `ab` → **MATCH** |
+| 1 | `"aaa"` (greedy maximum) | `ab` | `"b"` | `a` vs `b` fails -> **backtrack** |
+| 2 | `"aa"` (gave one back) | `ab` | `"ab"` | `ab` = `ab` -> **MATCH** |
 
-Two attempts, one backtrack. Now trace the same pattern against `"ab"` yourself before running the cell: `a*` first holds `"a"`, the rest of the pattern needs `ab` but only `"b"` remains — fail; backtrack so `a*` holds `""`, the rest of the input is `"ab"` — match on the second attempt again.
+Two attempts, one backtrack. Now trace the same pattern against `"ab"` yourself before running the cell: `a*` first holds `"a"`, the rest of the pattern needs `ab` but only `"b"` remains: fail; backtrack so `a*` holds `""`, the rest of the input is `"ab"`, match on the second attempt again.
 
 Run the cell below: it implements this specific pattern as an explicit search that narrates every decision, then confirms each verdict against Python's real engine.
 
@@ -121,18 +121,18 @@ Matching `a*ab` against `"aaab"`, the engine's first attempt lets `a*` consume a
 
 ---
 
-You have now seen how to match a single pattern; a real lexer must recognize *many* token types in a single pass over the source. The trick is to combine all token patterns into one master alternation and let Python's `finditer` do the scanning. Named groups let each alternative carry a label, so after a match you immediately know which token type fired — exactly the information a lexer needs to emit a token stream.
+You have now seen how to match a single pattern; a real lexer must recognize *many* token types in a single pass over the source. The trick is to combine all token patterns into one master alternation and let Python's `finditer` do the scanning. Named groups let each alternative carry a label, so after a match you immediately know which token type fired, exactly the information a lexer needs to emit a token stream.
 
 > **Watch out!** Quantifiers like `*`, `+`, and `?` are **greedy by default**: they consume as many characters as possible while still allowing the overall pattern to match. This is usually what you want in a lexer (match the longest token), but it can surprise you in other contexts. Append `?` to make a quantifier **non-greedy** (reluctant): `.*?` matches as *few* characters as possible. You will see this contrast demonstrated concretely in Model 3 (Greed).
 
 
-> **Named groups and the log-triage walkthrough moved to the shell tutorial.** Both are in [The Shell for Language Development](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ShellForLanguageDev), which is required prep for this session — named groups are how each token type gets its own label in your lexer.
+> **Named groups and the log-triage walkthrough moved to the shell tutorial.** Both are in [The Shell for Language Development](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ShellForLanguageDev), which is required prep for this session; named groups are how each token type gets its own label in your lexer.
 
 ## 3. Greed, and the Edge of the Regular World
 
 **Quantifiers are greedy by default**: `<.*>` against `<a><b>` matches the whole string, because `*` takes as much as possible while still permitting a match; the reluctant form `<.*?>` matches `<a>`. And the theoretical wall stands: regular expressions cannot match **arbitrarily nested** structure (balanced parentheses is $a^n b^n$ wearing makeup), because finite memory cannot count unboundedly.
 
-**Greedy vs reluctant — a concrete experiment:**
+**Greedy vs reluctant, a concrete experiment:**
 
 ```python
 import re
@@ -147,13 +147,13 @@ print("\nReluctant <.*?>:")
 for m in re.finditer(r"<.*?>", html):
     print(f"  match: {m.group()!r}")
 
-print("\nNested structure — why regex fails:")
+print("\nNested structure, why regex fails:")
 balanced = "(a(b)c)"
 print(f"  Testing {balanced!r}")
 # This pattern CANNOT correctly handle arbitrary nesting:
 bad_pattern = r"\([^()]*\)"
 print(f"  Simple pattern: {re.findall(bad_pattern, balanced)}")
-# finds "(b)" but not the outer "(a(b)c)" — proves finite memory limit
+# finds "(b)" but not the outer "(a(b)c)" - proves finite memory limit
 
 # For truly nested structures, you need a parser (CFG), not regex:
 import ast
@@ -209,8 +209,8 @@ In your notebook: regular expressions are simultaneously beloved (irreplaceable 
 - Douglas Thain. *Introduction to Compilers and Language Design*, Chapter 3.
 - Python `re` documentation and HOWTO: https://docs.python.org/3/library/re.html
 - Russ Cox. "Regular Expression Matching Can Be Simple And Fast" (online), a bridge to next module's automata.
-- [regex101.com](https://regex101.com) — interactive regex tester with explanation of each match step.
+- [regex101.com](https://regex101.com): interactive regex tester with explanation of each match step.
 
 ---
 
-Up next: the *Finite Automata* activity builds the machines that execute these patterns — and everything here feeds the Regular Expressions assignment.
+Up next: the *Finite Automata* activity builds the machines that execute these patterns, and everything here feeds the Regular Expressions assignment.
