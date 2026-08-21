@@ -291,8 +291,8 @@ Answer individually in your contribution statement:
 
 ### Background Reading and References
 
-- [Music Languages and Live Coding Activity](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-languagedesign.md)
-- [Flex and Yacc Activity](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-parsertable.md)
+- [Music Languages and Live Coding Activity]({{ site.activity_url }}liascript-languagedesign.md)
+- [Flex and Yacc Activity]({{ site.activity_url }}liascript-parsertable.md)
 
 This page is a guide, not a graded assignment. It describes the **music and live-coding path** through the course: the same required assignments everyone completes, taken through the music **directions** built into them. There is no separate set of deliverables and nothing to sign up for: each direction is a choice you make *inside* its assignment, when that assignment is handed out, one at a time.
 
@@ -312,8 +312,8 @@ In the spirit of Universal Design for Learning, the music path is a deliberate c
 
 The music path follows the course's own arc: the same required assignments, in the same order, with the music direction chosen where one is offered:
 
-1. **[Music Languages and Live Coding](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-languagedesign.md)** (activity): meet TidalCycles and Strudel as *language designs*: embedded versus external DSLs, a formal model of patterns, and the timed-event semantics the rest of the path builds on.
-2. **[Flex and Yacc](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-parsertable.md)** (activity): build a working flex/yacc pipeline for a subset of the mini-notation in class. (Relatedly, the [Lexer assignment]({{ site.baseurl }}/Assignments/Lexer)'s generator-toolchain direction is a natural on-ramp: choosing Flex or PLY there puts the tools of the mini-notation pipeline in your hands early. It pairs well with what follows, but it is not required for it.)
+1. **[Music Languages and Live Coding]({{ site.activity_url }}liascript-languagedesign.md)** (activity): meet TidalCycles and Strudel as *language designs*: embedded versus external DSLs, a formal model of patterns, and the timed-event semantics the rest of the path builds on.
+2. **[Flex and Yacc]({{ site.activity_url }}liascript-parsertable.md)** (activity): build a working flex/yacc pipeline for a subset of the mini-notation in class. (Relatedly, the [Lexer assignment]({{ site.baseurl }}/Assignments/Lexer)'s generator-toolchain direction is a natural on-ramp: choosing Flex or PLY there puts the tools of the mini-notation pipeline in your hands early. It pairs well with what follows, but it is not required for it.)
 3. **[The Parser and AST]({{ site.baseurl }}/Assignments/Parser) -> the Mini-Notation direction**: grow the in-class mini-notation subset toward the real language: alternation, Euclidean rhythms, and polymeter, parsed into an AST, evaluated to timed events, and validated against the Strudel reference implementation (or against printed event lists alone).
 4. **[Functional Programming]({{ site.baseurl }}/Assignments/Functional) -> the Parallel Functional direction**: purity buys parallelism: the same core parts as everyone (pure functions, higher-order combinators, recursive structures with fold), then a complete MapReduce pipeline measured and analyzed against Amdahl's Law: the same pure-map/associative-reduce discipline pattern engines like Strudel run on.
 5. **[Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) -> the Music and Live-Coding direction** (capstone): design, specify, build, and demonstrate a small live-coding language with your team. The closing demonstration may be a live edit-and-rerun session over printed event output; rendered sound is optional here as everywhere on the path.
@@ -485,7 +485,7 @@ Answer these as a team during release hardening, and individually as part of you
 
 ### Background Reading and References
 
-- [Sprint Studio Protocol](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-sprintstudio.md)
+- [Sprint Studio Protocol]({{ site.activity_url }}liascript-sprintstudio.md)
 - [Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage)
 - [ShipIt Guide: Repo Hygiene, README, Packaging, and Your Portfolio]({{ site.baseurl }}/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist)
 
