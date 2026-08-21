@@ -18,7 +18,7 @@ readings:
   - rtitle: "GitHub: Managing your personal access tokens"
     rlink: "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens"
   - rtitle: "Shell Skills for Language Development (Tutorial)"
-    rlink: "https://www.billmongan.com/Ursinus-CS374/Tutorials/ShellForLanguageDev"
+    rlink: "../Tutorials/ShellForLanguageDev"
 
 tags:
   - tools

@@ -61,15 +61,15 @@ info:
     - rtitle: "Sprint Studio Protocol"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-sprintstudio.md"
     - rtitle: "Music and Live-Coding Track Guide (for Direction B: deliverable equivalence table and the text-events-only route)"
-      rlink: "https://www.billmongan.com/Ursinus-CS374/Projects/TeamLanguage#the-music-and-live-coding-path"
+      rlink: "../Projects/TeamLanguage#the-music-and-live-coding-path"
     - rtitle: "Make-a-Lisp (mal): incremental scaffold with a built-in test harness (Direction A option)"
       rlink: "https://github.com/kanaka/mal"
     - rtitle: "A Syntax Highlighter for Your Language with tree-sitter (Extensions Menu)"
-      rlink: "https://www.billmongan.com/Ursinus-CS374/Tutorials/SyntaxHighlighter"
+      rlink: "../Tutorials/SyntaxHighlighter"
     - rtitle: "ShipIt Guide: Repo Hygiene, README, Packaging, and Your Portfolio (required self-check before Demo Day)"
-      rlink: "https://www.billmongan.com/Ursinus-CS374/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist"
+      rlink: "../Projects/TeamLanguage#shipping-your-language-the-shipit-checklist"
     - rtitle: "Demo Day Guide: External Guests and Technical Interview Practice"
-      rlink: "https://www.billmongan.com/Ursinus-CS374/Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice"
+      rlink: "../Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice"
 
 tags:
   - final-project
