@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-functional.md
+comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-functional.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-functional.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -719,7 +719,7 @@ The core lesson above stands on its own. The deep-dive appendices that used to f
 
 > **Going further:** the material that used to live here (treating parsers themselves as composable higher-order functions) is covered in depth in the dedicated tutorial: [Parser Combinators: Parsers as First-Class Values](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-parser-combinators.md). Explore it when your project or curiosity calls for it.
 
-> **Going further:** the continuation-passing style unit and the MapReduce/parallel-functional-programming unit that used to live here now live where they are assessed. **Directions B and E of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Functional) build on this material, read the tutorial pointer sections there before choosing those directions.**
+> **Going further:** the continuation-passing style unit and the MapReduce/parallel-functional-programming unit that used to live here now live where they are assessed. **Directions B and E of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374/Assignments/Functional) build on this material, read the tutorial pointer sections there before choosing those directions.**
 
 ---
 

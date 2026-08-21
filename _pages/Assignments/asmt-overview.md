@@ -41,9 +41,9 @@ info:
     - rtitle: "uv: the Python environment manager we standardize on (Part 1.5)"
       rlink: "https://docs.astral.sh/uv/"
     - rtitle: "Setup (Route A): The Course Development Environment - Docker, Git, and GitHub (Tutorial)"
-      rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/DevEnvironment"
+      rlink: "../Tutorials/DevEnvironment"
     - rtitle: "Setup (Part 1.5): Shell Skills for Language Development - the step-by-step tutorial article this assignment's shell work follows"
-      rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ShellForLanguageDev"
+      rlink: "../Tutorials/ShellForLanguageDev"
 
 tags:
   - intro

@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-languagedesign.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-languagedesign.md
+comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-languagedesign.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-languagedesign.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -370,7 +370,7 @@ In your notebook: you have criticized languages all semester; today you became a
 
 ## Going Deeper (Optional Pointers)
 
-The core studio above stands on its own. The deep-dive appendices that used to follow it now live on the [Tutorials shelf](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/); follow whichever pointer your project or curiosity calls for.
+The core studio above stands on its own. The deep-dive appendices that used to follow it now live on the [Tutorials shelf](https://www.billmongan.com/Ursinus-CS374/Tutorials/); follow whichever pointer your project or curiosity calls for.
 
 > **Going further:** the material that used to live here (the call stack and the heap, reference counting, reference cycles, mark-and-sweep and generational collection, and what memory management means for the closures and environments in your interpreter) is covered in depth in the dedicated tutorial: [Garbage Collection: Memory Management from First Principles](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-garbage-collection.md). Explore it when your project or curiosity calls for it.
 
@@ -380,7 +380,7 @@ The core studio above stands on its own. The deep-dive appendices that used to f
 
 > **Going further:** the complete worked path through designing and building a small language end to end (the same journey your team begins today) is covered in depth in the dedicated tutorial: [Building the Mini Language: A Complete Guide](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-project-language-guide.md). The expression-tree folds, the five-paradigm "same problem, different minds" gallery, and the modules-and-namespaces material are self-study topics; keywords: catamorphism / fold, programming paradigms comparison, module systems and namespaces. Explore them when your project or curiosity calls for it.
 
-> **Going further:** when your language works and you want the world to run it (packaging for pip and npm, and shipping a Docker image), the path is covered in depth in the dedicated guide: [Publishing Your Language: pip, npm, and Docker](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PublishingYourLanguage). Explore it as Demo Day approaches.
+> **Going further:** when your language works and you want the world to run it (packaging for pip and npm, and shipping a Docker image), the path is covered in depth in the dedicated guide: [Publishing Your Language: pip, npm, and Docker](https://www.billmongan.com/Ursinus-CS374/Tutorials/PublishingYourLanguage). Explore it as Demo Day approaches.
 
 > **Going further:** a few former appendices are now self-study topics: live-coding pattern languages and their pattern algebra (TidalCycles and Strudel), denotational semantics and fixed-point semantics of `while`, and concurrency models (actors, channels, software transactional memory); search those keywords when curiosity calls. Church numerals return in the Lambda Calculus activities and in [Implementing a Lambda Calculus Reducer](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md).
 

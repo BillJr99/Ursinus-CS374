@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-modernfeatures.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-modernfeatures.md
+comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-modernfeatures.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-modernfeatures.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -497,7 +497,7 @@ In your notebook: every feature today moved some check or transformation to an e
 
 The core lesson above stands on its own. The deep-dive appendices that used to follow it now live elsewhere:
 
-> **Going further:** the material that used to live here (macros and metaprogramming: C-style textual macros and their double-evaluation hazards, quasiquotation, and hygienic expansion) is now project material: the **Macros or Hygienic Quoting** entry in the [Team Language Project's Extensions Menu](https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage) specifies exactly what a credited macro extension must do, and [Building the Mini Language: A Complete Guide](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-project-language-guide.md) provides the interpreter foundation to build it on. Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here (macros and metaprogramming: C-style textual macros and their double-evaluation hazards, quasiquotation, and hygienic expansion) is now project material: the **Macros or Hygienic Quoting** entry in the [Team Language Project's Extensions Menu](https://www.billmongan.com/Ursinus-CS374/Projects/TeamLanguage) specifies exactly what a credited macro extension must do, and [Building the Mini Language: A Complete Guide](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-project-language-guide.md) provides the interpreter foundation to build it on. Explore it when your project or curiosity calls for it.
 
 > **Going further:** two former appendices are now self-study topics. *Objects and OOP from closures to vtables*, method resolution order (MRO) and the diamond problem, abstract base classes, and how vtables implement dynamic dispatch, is a rich afternoon with the Python data-model docs; search "C3 linearization," "Python MRO," and "abstract base class." *The expression problem* (why adding new node types is easy in OOP but adding new operations is easy in functional style, and never both) is the classic design tension behind your evaluator; search "expression problem Wadler" and revisit it when your team debates visitor vs. match.
 

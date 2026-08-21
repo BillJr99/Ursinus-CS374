@@ -57,7 +57,7 @@ info:
     - rtitle: "Control Flow Semantics Activity"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-controlflowsemantics.md"
     - rtitle: "Property-Based Testing Your Language with Hypothesis (Tutorial)"
-      rlink: "https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PropertyBasedTesting"
+      rlink: "../Tutorials/PropertyBasedTesting"
     - rtitle: "Advent of Code 2019, Day 2: Intcode (Part 5 Intcode direction)"
       rlink: "https://adventofcode.com/2019/day/2"
 

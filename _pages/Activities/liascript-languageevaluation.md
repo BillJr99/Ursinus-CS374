@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-languageevaluation.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-languageevaluation.md
+comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-languageevaluation.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-languageevaluation.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -390,7 +390,7 @@ In your notebook: recall the language feature that most confused you as a beginn
 
 ## Going Deeper (Optional Pointers)
 
-> **Going further:** the material that used to live here (logic programming with Prolog: family-tree facts and rules, Robinson unification, SLD resolution and backtracking, bidirectional list predicates, a complete mini-Prolog interpreter in Python, and the miniKanren connection) is covered in depth in the dedicated guide: [Prolog in the Browser with SWISH](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/Prolog), which backs **Direction F** of the Functional assignment (the mini-Prolog interpreter build now lives there as an advanced section). Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here (logic programming with Prolog: family-tree facts and rules, Robinson unification, SLD resolution and backtracking, bidirectional list predicates, a complete mini-Prolog interpreter in Python, and the miniKanren connection) is covered in depth in the dedicated guide: [Prolog in the Browser with SWISH](https://www.billmongan.com/Ursinus-CS374/Tutorials/Prolog), which backs **Direction F** of the Functional assignment (the mini-Prolog interpreter build now lives there as an advanced section). Explore it when your project or curiosity calls for it.
 
 ---
 

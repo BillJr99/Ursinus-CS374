@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://github.com/BillJr99/Ursinus-CS374-Fall2026/blob/gh-pages/_pages/Activities/liascript-regex.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-regex.md
+comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-regex.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-regex.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -113,7 +113,7 @@ grep -nE "TODO|FIXME"   notes.md    # ERE: reads like Python
 **Just use `-E`.** The escaping rules in BRE are a historical artifact, and every pattern you write in this course will already be in the syntax `-E` expects. (`egrep` is the same thing under an older name.)
 
 
-> Worked grep examples (character classes, anchors, and the POSIX-vs-Python portability traps) are in [The Shell for Language Development](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ShellForLanguageDev), required prep for today.
+> Worked grep examples (character classes, anchors, and the POSIX-vs-Python portability traps) are in [The Shell for Language Development](https://www.billmongan.com/Ursinus-CS374/Tutorials/ShellForLanguageDev), required prep for today.
 
 # Part I: Theory (Day 1)
 

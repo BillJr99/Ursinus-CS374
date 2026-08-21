@@ -20,7 +20,7 @@ FROM python:3.11-slim
 LABEL org.opencontainers.image.title="CS374 course development environment" \
       org.opencontainers.image.description="Python 3.11 with pytest/hypothesis/ply plus flex, bison, gcc, and make for the CS374 language-pipeline assignments and generator-toolchain directions" \
       org.opencontainers.image.authors="CS374 course staff" \
-      org.opencontainers.image.url="https://www.billmongan.com/Ursinus-CS374-Fall2026/"
+      org.opencontainers.image.url="https://www.billmongan.com/Ursinus-CS374/"
 
 # System packages (each one earns its place):
 #   flex, bison -- the scanner/parser generators used by the
