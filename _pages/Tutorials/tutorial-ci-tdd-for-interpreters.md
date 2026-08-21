@@ -7,7 +7,7 @@ info:
   coursenum: CS374
   goals:
     - To write a pytest test suite that tests your language interpreter end-to-end
-    - To apply test-driven development: write a failing test, then implement the feature to pass it
+    - "To apply test-driven development: write a failing test, then implement the feature to pass it"
     - To set up a GitHub Actions workflow that runs your test suite on every push
     - To use coverage reporting to identify untested interpreter paths
     - To structure your interpreter for testability (separating lexer, parser, evaluator)
