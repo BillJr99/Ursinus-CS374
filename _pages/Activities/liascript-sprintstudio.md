@@ -72,9 +72,9 @@ Hosts demonstrate honestly: at least one **known failure case** must be shown at
 
 ---
 
-## Model 3: Feedback Triage — Turning Gallery Walk Cards into Backlog
+## Model 3: Feedback Triage, Turning Gallery Walk Cards into Backlog
 
-Raw gallery walk feedback is like unprocessed ore — valuable but unusable until refined. Triage converts cards into decisions: this gets fixed before Demo Day, this gets disclosed honestly, this goes on the future-work list. The discipline is the middle bucket: admitting known limitations publicly is mature engineering, not weakness.
+Raw gallery walk feedback is like unprocessed ore: valuable but unusable until refined. Triage converts cards into decisions: this gets fixed before Demo Day, this gets disclosed honestly, this goes on the future-work list. The discipline is the middle bucket: admitting known limitations publicly is mature engineering, not weakness.
 
 > **Watch out!** "Disclose" does not mean "hide." It means you have a rehearsed, candid one-sentence description of the limitation ready for Demo Day. A question-and-answer session where a known bug surfaces without preparation is much worse than a proactive "our interpreter does not yet handle nested function calls, and here is why that is hard."
 
@@ -92,7 +92,7 @@ FEEDBACK = [
 
     ("Team Cobalt", "strength", "Niche feature (dice rolls) parses cleanly in three contexts"),
     ("Team Cobalt", "question", "Can you pass a function as an argument to another function?"),
-    ("Team Cobalt", "risk",     "REPL does not recover from a parse error — requires restart"),
+    ("Team Cobalt", "risk",     "REPL does not recover from a parse error - requires restart"),
 
     ("Team Jade",   "strength", "Sample programs are polished and diverse (five different patterns)"),
     ("Team Jade",   "question", "String equality: == or a separate 'equals' operator?"),
@@ -107,7 +107,7 @@ FEEDBACK = [
 # Classify into: FIX (blocks demo), DISCLOSE (acknowledged, out of scope), FUTURE
 
 def triage_item(text):
-    """Heuristic classifier — replace with your team's actual judgment."""
+    """Heuristic classifier - replace with your team's actual judgment."""
     crash_words = ["crash", "restart", "None", "raises", "fails", "breaks"]
     if any(w.lower() in text.lower() for w in crash_words):
         return "FIX"
@@ -272,7 +272,7 @@ else:
 
 ## Reflection Prompt
 
-In your notebook: compare the feedback your team received today with the error messages your language gives its users. Both are diagnostics offered to someone mid-effort. What makes each actionable or useless, and what will you change in one of them this week? Also: the stand-up discipline says "say the number." What is one domain — not software — where you have benefited from someone insisting on numbers over adjectives?
+In your notebook: compare the feedback your team received today with the error messages your language gives its users. Both are diagnostics offered to someone mid-effort. What makes each actionable or useless, and what will you change in one of them this week? Also: the stand-up discipline says "say the number." What is one domain (not software) where you have benefited from someone insisting on numbers over adjectives?
 
 ---
 
@@ -281,7 +281,7 @@ In your notebook: compare the feedback your team received today with the error m
 - The project specification's Demo Day rubric, reread tonight.
 - Robert Nystrom. *Crafting Interpreters*, the "Challenges" sections of your weakest chapter, as triage inspiration.
 - Tom DeMarco and Timothy Lister. *Peopleware*, Chapter 11: the cost of not measuring.
-- Kent Beck. *Test-Driven Development: By Example* — the red-green-refactor cycle your Evaluator role embodies.
+- Kent Beck. *Test-Driven Development: By Example*: the red-green-refactor cycle your Evaluator role embodies.
 
 ---
 

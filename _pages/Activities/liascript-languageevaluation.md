@@ -59,13 +59,13 @@ Before diving into definitions, consider why we need multiple lenses at all. Whe
 
 ---
 
-## Model 1: Orthogonality — Combining Features Without Surprises
+## Model 1: Orthogonality, Combining Features Without Surprises
 
-Imagine a language where every operator works on every type in a consistent, predictable way — no surprise exceptions, no "well, `+` works on strings but `*` only works on strings with integers, not with other strings." That ideal is called orthogonality. In practice, every real language falls short of it somewhere, and the gaps are exactly where programmers make mental-model mistakes. This model makes those gaps visible by running operator experiments directly.
+Imagine a language where every operator works on every type in a consistent, predictable way: no surprise exceptions, no "well, `+` works on strings but `*` only works on strings with integers, not with other strings." That ideal is called orthogonality. In practice, every real language falls short of it somewhere, and the gaps are exactly where programmers make mental-model mistakes. This model makes those gaps visible by running operator experiments directly.
 
-> **Watch out!** Students often conflate orthogonality with "the feature exists." The question is not whether Python supports string repetition (`"ha" * 3`) but whether the same rule applies uniformly everywhere. When you find a case where it does not, that is a special case the programmer must memorize — a direct hit on readability.
+> **Watch out!** Students often conflate orthogonality with "the feature exists." The question is not whether Python supports string repetition (`"ha" * 3`) but whether the same rule applies uniformly everywhere. When you find a case where it does not, that is a special case the programmer must memorize, a direct hit on readability.
 
-**Orthogonality** means that a small set of primitives can be combined uniformly: adding a new feature does not require dozens of special cases for where it *cannot* be used. C is famously non-orthogonal: you can have a pointer to a struct, a pointer to a function, an array of structs — but you cannot pass an array by value, return an array from a function, or use `==` to compare two structs. Python is more orthogonal (everything is an object, `+` works on many types) but still has asymmetries.
+**Orthogonality** means that a small set of primitives can be combined uniformly: adding a new feature does not require dozens of special cases for where it *cannot* be used. C is famously non-orthogonal: you can have a pointer to a struct, a pointer to a function, an array of structs, but you cannot pass an array by value, return an array from a function, or use `==` to compare two structs. Python is more orthogonal (everything is an object, `+` works on many types) but still has asymmetries.
 
 The cell below catalogs several "does it combine?" experiments so your team can observe orthogonality failures directly.
 
@@ -139,7 +139,7 @@ except TypeError as e:
 
 ## 2. There Is No Free Criterion
 
-Part I gave you four lenses; Part II shows why you cannot maximize all four at once. Every language design decision moves at least one criterion up and at least one criterion down — there is no free lunch. As you read through the examples below, resist the instinct to call one choice "wrong." Instead, ask: "Which criterion did the designer prioritize, and does that match the language's target use case?"
+Part I gave you four lenses; Part II shows why you cannot maximize all four at once. Every language design decision moves at least one criterion up and at least one criterion down; there is no free lunch. As you read through the examples below, resist the instinct to call one choice "wrong." Instead, ask: "Which criterion did the designer prioritize, and does that match the language's target use case?"
 
 > **Watch out!** It is tempting to conclude "Python is better than C because it has higher reliability." That claim ignores context. For a hard-real-time embedded system where memory layout matters, C's lower abstraction is a feature, not a bug. Criteria scores are always relative to the problem domain, not absolute.
 
@@ -162,7 +162,7 @@ A team adds implicit type coercion to their language so that `"3" + 4` yields `7
 
 ## Model 2: The Billion-Dollar Hindsight
 
-One of the most studied reliability failures in language design history is the null reference — the idea that a variable of any type can silently hold "nothing," and that nothing will only explode when you try to use it, potentially deep inside code far from where the bad value was introduced. This model walks through three different language-design responses to that problem, letting you directly compare the reliability-versus-writability tradeoffs each one makes.
+One of the most studied reliability failures in language design history is the null reference: the idea that a variable of any type can silently hold "nothing," and that nothing will only explode when you try to use it, potentially deep inside code far from where the bad value was introduced. This model walks through three different language-design responses to that problem, letting you directly compare the reliability-versus-writability tradeoffs each one makes.
 
 Tony Hoare called the null reference his "billion-dollar mistake" in a 2009 keynote. His argument: the null reference can be assigned to any pointer-typed variable and dereferenced into a crash, yet no type system of the era flagged the dereference as potentially unsafe. The result: null dereferences became one of the most common runtime errors in Java, C, and C++. Languages have responded differently.
 
@@ -175,7 +175,7 @@ print("  Null is a valid value of every reference type.")
 print("  Dereference crashes at runtime, possibly far from the assignment.")
 
 def find_user_java_style(db, user_id):
-    """Returns a dict or None — caller MUST check but nothing forces them to."""
+    """Returns a dict or None - caller MUST check but nothing forces them to."""
     return db.get(user_id)   # returns None if not found
 
 db = {"alice": {"age": 30}}
@@ -184,7 +184,7 @@ user = find_user_java_style(db, "alice")
 print(f"  alice found: {user['age']} years old")
 
 user = find_user_java_style(db, "bob")
-# The following would crash silently — representing Java-style null deref:
+# The following would crash silently - representing Java-style null deref:
 try:
     print(f"  bob's age: {user['age']}")  # NullPointerException equivalent
 except TypeError as e:
@@ -229,7 +229,7 @@ class Option:
 
     def unwrap(self):
         if not self._present:
-            raise ValueError("Called unwrap() on Nothing — explicit error, not a crash")
+            raise ValueError("Called unwrap() on Nothing - explicit error, not a crash")
         return self._value
 
     def unwrap_or(self, default):
@@ -259,14 +259,14 @@ print("  Design 3 (no null):       max ceremony, compiler-guaranteed safety")
 
 ### Critical Thinking Questions
 
-8. Express each of the three designs as a position in the reliability-versus-writability tradeoff. Which shifts the cost of absence-handling earliest — to the programmer at write time, to the compiler at compile time, or to the user at run time?
+8. Express each of the three designs as a position in the reliability-versus-writability tradeoff. Which shifts the cost of absence-handling earliest: to the programmer at write time, to the compiler at compile time, or to the user at run time?
 9. Your project language will have to decide what happens when a variable is used before assignment. Enumerate three possible designs (error at parse time, error at run time, default value) and score each on reliability and writability. Which does Python use? Which does Java use?
 10. Hoare's mistake survived fifty years because it was *convenient*. Name one convenience in a language you use that you now suspect is somebody's future billion-dollar regret. Use the four criteria to defend your suspicion.
 
 ---
 
 
-> **Cut for time.** The simplicity-versus-expressiveness comparison (including the Perl-golf demonstration) added length without adding a criterion beyond the four lenses in Part I. The point it made — that terseness and clarity are different axes, and that a language can optimize for either — is covered in Model 1's orthogonality discussion.
+> **Cut for time.** The simplicity-versus-expressiveness comparison (including the Perl-golf demonstration) added length without adding a criterion beyond the four lenses in Part I. The point it made (that terseness and clarity are different axes, and that a language can optimize for either) is covered in Model 1's orthogonality discussion.
 
 # Part III: Synthesis and Practice
 
@@ -283,7 +283,7 @@ try:
     print(f"  '3' + 4 = {result!r}")
 except TypeError as e:
     print(f"  Python refuses '3' + 4: {e}")
-    print("  JavaScript would give '34' (string concat) — silent wrong type")
+    print("  JavaScript would give '34' (string concat) - silent wrong type")
 
 print()
 print("=== List Comprehensions (writability UP, readability tradeoff) ===")
@@ -358,7 +358,7 @@ for obj in [Duck(), Dog(), Rock()]:
 ### Critical Thinking Questions
 
 5. For each of the four "feature choices" in the cell, identify which criterion it improves and which it weakens, using the vocabulary (readability/writability/reliability/cost).
-6. The list comprehension and `for`-loop produce identical results. A new programmer finds the loop more readable; an experienced Python programmer finds the comprehension more readable. What does this asymmetry reveal about readability as a criterion — is it absolute or relative to the reader?
+6. The list comprehension and `for`-loop produce identical results. A new programmer finds the loop more readable; an experienced Python programmer finds the comprehension more readable. What does this asymmetry reveal about readability as a criterion: is it absolute or relative to the reader?
 7. Duck typing (`make_sound`) defers the `Rock` error until `make_sound(Rock())` is actually called. In a large program, how far might that call be from the assignment `thing = Rock()`? Connect this to the "hidden path" problem from the types module.
 
 
@@ -383,15 +383,15 @@ In your notebook: recall the language feature that most confused you as a beginn
 - Douglas Thain. *Introduction to Compilers and Language Design*, Chapter 1.
 - Robert Sebesta. *Concepts of Programming Languages*, Chapter 1 (the canonical source of this framework; any edition, library reserve).
 - Tony Hoare. "Null References: The Billion Dollar Mistake" (talk, 2009, online).
-- Python PEP 20 — "The Zen of Python": `import this` in any Python interpreter.
+- Python PEP 20, "The Zen of Python": `import this` in any Python interpreter.
 - Gary Bernhardt. "Wat" (talk, 2012, online): four minutes of coercion comedy with a serious lesson.
 
 ---
 
 ## Going Deeper (Optional Pointers)
 
-> **Going further:** the material that used to live here — logic programming with Prolog: family-tree facts and rules, Robinson unification, SLD resolution and backtracking, bidirectional list predicates, a complete mini-Prolog interpreter in Python, and the miniKanren connection — is covered in depth in the dedicated guide: [Prolog in the Browser with SWISH](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/Prolog), which backs **Direction F** of the Functional assignment (the mini-Prolog interpreter build now lives there as an advanced section). Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here (logic programming with Prolog: family-tree facts and rules, Robinson unification, SLD resolution and backtracking, bidirectional list predicates, a complete mini-Prolog interpreter in Python, and the miniKanren connection) is covered in depth in the dedicated guide: [Prolog in the Browser with SWISH](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/Prolog), which backs **Direction F** of the Functional assignment (the mini-Prolog interpreter build now lives there as an advanced section). Explore it when your project or curiosity calls for it.
 
 ---
 
-Up next: the *Syntax and BNF/EBNF* activity begins the formal machinery — writing down, precisely, what programs are allowed to look like.
+Up next: the *Syntax and BNF/EBNF* activity begins the formal machinery: writing down, precisely, what programs are allowed to look like.

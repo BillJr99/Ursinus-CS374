@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Scheme: Code as Data
 
-Scheme is to programming languages what Latin is to the Romance languages — it exposes the pure, undiluted core that every other language is built from, stripped of the ornamental syntax that usually hides the machinery beneath. Studying Scheme in a PL course is not about learning yet another language; it is about seeing, perhaps for the first time, that a programming language can be so minimal that its programs and its data are literally the same thing. Once you have felt that, you will read every other language differently.
+Scheme is to programming languages what Latin is to the Romance languages: it exposes the pure, undiluted core that every other language is built from, stripped of the ornamental syntax that usually hides the machinery beneath. Studying Scheme in a PL course is not about learning yet another language; it is about seeing, perhaps for the first time, that a programming language can be so minimal that its programs and its data are literally the same thing. Once you have felt that, you will read every other language differently.
 
 ## Learning Goals
 
@@ -34,13 +34,13 @@ By the end of this activity, you will be able to:
 
 | Python | Scheme | Notes |
 |--------|--------|-------|
-| `def f(x): return x + 1` | `(define (f x) (+ x 1))` | Parentheses wrap everything — operator comes first |
+| `def f(x): return x + 1` | `(define (f x) (+ x 1))` | Parentheses wrap everything, operator comes first |
 | `if x > 0: ...` | `(if (> x 0) ...)` | Condition is just another expression in parens |
 | `[1, 2, 3]` | `'(1 2 3)` | The quote `'` tells Scheme: "data, do not evaluate" |
 | `f(a, b)` | `(f a b)` | Every call looks the same; no special infix operators |
 | `lambda x: x * 2` | `(lambda (x) (* x 2))` | Anonymous functions use the same `(operator operands)` shape |
 
-Today we study a language as an *artifact*: **Scheme** (we use its Racket dialect), a tiny functional language — where the higher-order style you practiced in *Functional Programming and Higher-Order Functions* is native — whose syntax is so uniform that programs and data share one shape, the parenthesized list. Scheme matters to this course twice over: it is functional programming distilled to essentials, and its **s-expression** syntax makes the lexer-parser machinery you built almost disappear, a designed contrast your team should feel. The arc: **s-expressions $\rightarrow$ evaluation rules $\rightarrow$ recursion as the only loop $\rightarrow$ code as data**.
+Today we study a language as an *artifact*: **Scheme** (we use its Racket dialect), a tiny functional language, where the higher-order style you practiced in *Functional Programming and Higher-Order Functions* is native, whose syntax is so uniform that programs and data share one shape, the parenthesized list. Scheme matters to this course twice over: it is functional programming distilled to essentials, and its **s-expression** syntax makes the lexer-parser machinery you built almost disappear, a designed contrast your team should feel. The arc: **s-expressions $\rightarrow$ evaluation rules $\rightarrow$ recursion as the only loop $\rightarrow$ code as data**.
 
 ---
 
@@ -86,7 +86,7 @@ This model makes the connection between Scheme's syntax and the Abstract Syntax 
 
 Scheme has no `while`; iteration is recursion, usually on lists, which are built from `cons` cells and dissected with `car` (first element) and `cdr` (the rest):
 
-> **Watch out!** `car` and `cdr` are Scheme's names for what most languages call `head` and `tail` (or `first` and `rest`). The names are historical accidents from 1950s IBM hardware register names. When you see `(car lst)` think "give me the first element"; when you see `(cdr lst)` think "give me everything except the first element." Calling `car` or `cdr` on an empty list `'()` is a runtime error — always check `(null? lst)` first in your base case.
+> **Watch out!** `car` and `cdr` are Scheme's names for what most languages call `head` and `tail` (or `first` and `rest`). The names are historical accidents from 1950s IBM hardware register names. When you see `(car lst)` think "give me the first element"; when you see `(cdr lst)` think "give me everything except the first element." Calling `car` or `cdr` on an empty list `'()` is a runtime error; always check `(null? lst)` first in your base case.
 
 ```scheme
 (define (sum lst)
@@ -108,7 +108,7 @@ The base-case-plus-recursive-case shape is the same one your `my_reduce` exercis
 
 ---
 
-Model 2 is where recursion becomes your only loop. Every pattern you know from Python `for`-loops — mapping a function over a list, filtering elements, accumulating a sum — can be expressed as a short recursive function that peels one element off the front of a list, does something with it, and recurs on the rest. Watch how `car` grabs the head and `cdr` returns the tail; those two operations are the entire engine.
+Model 2 is where recursion becomes your only loop. Every pattern you know from Python `for`-loops (mapping a function over a list, filtering elements, accumulating a sum) can be expressed as a short recursive function that peels one element off the front of a list, does something with it, and recurs on the rest. Watch how `car` grabs the head and `cdr` returns the tail; those two operations are the entire engine.
 
 ## Model 2: Run and Vary
 
@@ -138,13 +138,13 @@ In Scheme, the expression `(+ 1 2)` and the quoted form `'(+ 1 2)` differ in tha
 
 # Part III: Runnable Models
 
-Model 3 explores one of the most practically important differences between Scheme and Python: what happens when recursion goes very deep. Scheme guarantees that a tail-recursive function uses no more stack space than a simple loop, so algorithms that are naturally recursive — like traversing a million-element list — are not just elegant but efficient. Python offers no such guarantee, which is why Python programmers reach for `for`-loops even when recursion would be cleaner.
+Model 3 explores one of the most practically important differences between Scheme and Python: what happens when recursion goes very deep. Scheme guarantees that a tail-recursive function uses no more stack space than a simple loop, so algorithms that are naturally recursive (like traversing a million-element list) are not just elegant but efficient. Python offers no such guarantee, which is why Python programmers reach for `for`-loops even when recursion would be cleaner.
 
-> **Watch out!** `define` in Scheme is not assignment in the imperative sense. Writing `(define x 5)` does not create a mutable variable you update later — it introduces a name binding in the current environment. In functional Scheme style, you do not reassign `x`; instead, you pass updated values forward as function arguments (hence the accumulator pattern in tail recursion). If you find yourself wanting to write `(set! x (+ x 1))` inside a loop, stop and think about how to express the same idea with a recursive accumulator parameter.
+> **Watch out!** `define` in Scheme is not assignment in the imperative sense. Writing `(define x 5)` does not create a mutable variable you update later; it introduces a name binding in the current environment. In functional Scheme style, you do not reassign `x`; instead, you pass updated values forward as function arguments (hence the accumulator pattern in tail recursion). If you find yourself wanting to write `(set! x (+ x 1))` inside a loop, stop and think about how to express the same idea with a recursive accumulator parameter.
 
-## Model 3: Tail Recursion — Scheme vs Python
+## Model 3: Tail Recursion, Scheme vs Python
 
-**Tail recursion** occurs when a recursive call is the *last* operation in a function — no pending work remains after the call returns. Scheme (and Racket) *guarantee* tail-call optimization (TCO): a tail-recursive function consumes O(1) stack space. Python does **not** perform TCO; deep tail calls still overflow the call stack.
+**Tail recursion** occurs when a recursive call is the *last* operation in a function: no pending work remains after the call returns. Scheme (and Racket) *guarantee* tail-call optimization (TCO): a tail-recursive function consumes O(1) stack space. Python does **not** perform TCO; deep tail calls still overflow the call stack.
 
 The cell below demonstrates both a naive (non-tail) factorial and a tail-recursive accumulator version in Python, counting stack frames to make the difference concrete.
 
@@ -180,7 +180,7 @@ print()
 print("Python default recursion limit:", sys.getrecursionlimit())
 print()
 
-# Show that both reach the same depth — Python cannot collapse either
+# Show that both reach the same depth - Python cannot collapse either
 print("Frames used by naive  fact(20):", count_frames_naive(20))
 print("Frames used by tail   fact(20):", count_frames_tail(20))
 print()
@@ -222,9 +222,9 @@ Model 4 zooms in on a subtle but important question: when you write several name
 
 Scheme's **local binding forms** give names to intermediate values. They differ in *when* bindings become visible:
 
-- `let` — all right-hand sides are evaluated in the **outer** environment; bindings are parallel and independent.
-- `let*` — bindings are sequential; each RHS sees **all previous** bindings in the same `let*`.
-- `letrec` — all names are in scope for **all** right-hand sides (required for mutually recursive local functions).
+- `let`: all right-hand sides are evaluated in the **outer** environment; bindings are parallel and independent.
+- `let*`: bindings are sequential; each RHS sees **all previous** bindings in the same `let*`.
+- `letrec`: all names are in scope for **all** right-hand sides (required for mutually recursive local functions).
 
 The Python simulation below models each form's scoping rule explicitly so you can observe the difference.
 
@@ -267,7 +267,7 @@ def demo_letrec():
       (letrec ((even? (lambda (n) (if (= n 0) #t (odd?  (- n 1)))))
                (odd?  (lambda (n) (if (= n 0) #f (even? (- n 1))))))
         (even? 4))
-    Both names are in scope for BOTH RHS — needed for mutual recursion.
+    Both names are in scope for BOTH RHS, needed for mutual recursion.
     """
     # Python nested functions already implement letrec-like mutual visibility
     def even_q(n):
@@ -282,7 +282,7 @@ def demo_letrec():
 
     print(f"letrec: even?(4) = {even_q(4)}")
     print(f"letrec: odd?(7)  = {odd_q(7)}")
-    print("        Note: even? and odd? reference each other — impossible with let or let*")
+    print("        Note: even? and odd? reference each other - impossible with let or let*")
 
 demo_let()
 print()
@@ -302,7 +302,7 @@ print(f"let  swap: a={new_a_let}, b={new_b_let}  (correct parallel swap)")
 # let* swap: sequential, so new_a is visible when new_b is evaluated
 new_a_star = b           # new_a = 7
 new_b_star = new_a_star  # new_b sees new_a (7), not original a (3)
-print(f"let* swap: a={new_a_star}, b={new_b_star}  (WRONG — new_a leaked into new_b)")
+print(f"let* swap: a={new_a_star}, b={new_b_star}  (WRONG - new_a leaked into new_b)")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
@@ -430,11 +430,11 @@ print("Expected: 4 + 16 = 20")
 
 # Part IV: Writing Real Scheme (in class)
 
-Everything above simulated Scheme semantics in Python so the cells could run here. Now write the real thing. **This section is the in-class hands-on:** open [try.scheme.org](https://try.scheme.org) in a browser tab — it gives you a full Scheme REPL with nothing to install. (Alternatives: download and run the course archives [SchemeSumList.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeSumList.zip) and [QuickSortScheme.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/QuickSortScheme.zip).)
+Everything above simulated Scheme semantics in Python so the cells could run here. Now write the real thing. **This section is the in-class hands-on:** open [try.scheme.org](https://try.scheme.org) in a browser tab; it gives you a full Scheme REPL with nothing to install. (Alternatives: download and run the course archives [SchemeSumList.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeSumList.zip) and [QuickSortScheme.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/QuickSortScheme.zip).)
 
 Complete the three tasks below in genuine Scheme. Type each definition into the REPL, then run the test calls and check your output against the expected transcript.
 
-**Task 1 — `sum-list` by recursion.** Sum a list of numbers with no loop: the empty list sums to 0; otherwise add the `car` to the sum of the `cdr`.
+**Task 1. `sum-list` by recursion.** Sum a list of numbers with no loop: the empty list sums to 0; otherwise add the `car` to the sum of the `cdr`.
 
 ```scheme
 (define (sum-list lst)
@@ -454,7 +454,7 @@ Expected transcript:
 7
 ```
 
-**Task 2 — `my-map` from `cons`/`car`/`cdr`.** Rebuild `map` yourself: apply `f` to the `car`, `cons` the result onto the mapped `cdr`.
+**Task 2. `my-map` from `cons`/`car`/`cdr`.** Rebuild `map` yourself: apply `f` to the `car`, `cons` the result onto the mapped `cdr`.
 
 ```scheme
 (define (my-map f lst)
@@ -474,7 +474,7 @@ Expected transcript:
 ()
 ```
 
-**Task 3 — a two-branch `cond`.** Write `classify`, which returns the symbol `negative` for numbers below zero and `non-negative` otherwise, using `cond` with exactly two branches (a test branch and an `else` branch).
+**Task 3. a two-branch `cond`.** Write `classify`, which returns the symbol `negative` for numbers below zero and `non-negative` otherwise, using `cond` with exactly two branches (a test branch and an `else` branch).
 
 ```scheme
 (define (classify n)
@@ -495,7 +495,7 @@ non-negative
 (negative non-negative non-negative)
 ```
 
-If any output differs from the transcript, read the REPL's error message aloud to your group and fix the definition before moving on — debugging in the REPL *is* the exercise.
+If any output differs from the transcript, read the REPL's error message aloud to your group and fix the definition before moving on; debugging in the REPL *is* the exercise.
 
 ---
 
@@ -524,15 +524,15 @@ In your notebook: Scheme deletes nearly all syntax and gains the ability to trea
 
 ## Going Deeper (Optional Pointers)
 
-> **Going further:** the material that used to live here — the metacircular evaluator (Scheme in Python): s-expression parsing, environment chains, the evaluator core, the global environment, and tail-call optimization via trampoline — now lives as the advanced "Metacircular Scheme Evaluator" section of the dedicated tutorial: [Build a Complete Interpreter in Python — Step by Step](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md). The Interpreter assignment has you build the same architecture for the Mini language. Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here, the metacircular evaluator (Scheme in Python): s-expression parsing, environment chains, the evaluator core, the global environment, and tail-call optimization via trampoline, now lives as the advanced "Metacircular Scheme Evaluator" section of the dedicated tutorial: [Build a Complete Interpreter in Python: Step by Step](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md). The Interpreter assignment has you build the same architecture for the Mini language. Explore it when your project or curiosity calls for it.
 
 ### If you explore the evaluator: reflection prompts
 
 Answer these in your course notebook if you work through the metacircular evaluator tutorial.
 
-**Reflection 1.** The word "metacircular" implies the evaluator is defined in terms of itself. Our evaluator is written in Python, not Scheme — so in what sense is it still "metacircular"? What would it take to port our evaluator from Python into the Scheme subset our evaluator understands, and what would that accomplish?
+**Reflection 1.** The word "metacircular" implies the evaluator is defined in terms of itself. Our evaluator is written in Python, not Scheme; so in what sense is it still "metacircular"? What would it take to port our evaluator from Python into the Scheme subset our evaluator understands, and what would that accomplish?
 
-**Reflection 2.** The course final project asks you to extend a language interpreter. Identify **three specific features** from this evaluator — the `Env` chain, `Procedure` as a closure, or TCO via trampoline — that map directly to something you will need in your final project. For each, write one sentence explaining the connection.
+**Reflection 2.** The course final project asks you to extend a language interpreter. Identify **three specific features** from this evaluator (the `Env` chain, `Procedure` as a closure, or TCO via trampoline) that map directly to something you will need in your final project. For each, write one sentence explaining the connection.
 
 **Reflection 3.** Our evaluator has no type system: `(+ 1 "hello")` raises a Python `TypeError` that leaks through the abstraction boundary. Describe at minimum **two changes** you would make to add a static type system to this evaluator. Consider: where would type annotations appear in the s-expression representation? Where in `scheme_eval` would you insert a type-checking pass? What new data structure would represent a type error vs. a value?
 
@@ -540,18 +540,18 @@ Answer these in your course notebook if you work through the metacircular evalua
 
 ### Further reading on metacircular evaluation
 
-- **Runnable example archive** — [SchemeInterpreter.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeInterpreter.zip): a complete reference implementation of this activity's evaluator, worth exploring after you have attempted the activity yourself.
+- **Runnable example archive**: [SchemeInterpreter.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeInterpreter.zip): a complete reference implementation of this activity's evaluator, worth exploring after you have attempted the activity yourself.
 
-- **SICP Chapter 4** — Abelson & Sussman, *Structure and Interpretation of Computer Programs*, 2nd ed. The original metacircular evaluator. MIT Press open access: [https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf)
+- **SICP Chapter 4**: Abelson & Sussman, *Structure and Interpretation of Computer Programs*, 2nd ed. The original metacircular evaluator. MIT Press open access: [https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf)
 
-- **"The Art of the Interpreter"** — Guy Steele & Gerald Sussman (1978). The foundational paper on meta-circular evaluation, environments, and the relationship between interpreters and compilers. [MIT AI Memo 452.](https://dspace.mit.edu/handle/1721.1/6094)
+- **"The Art of the Interpreter"**: Guy Steele & Gerald Sussman (1978). The foundational paper on meta-circular evaluation, environments, and the relationship between interpreters and compilers. [MIT AI Memo 452.](https://dspace.mit.edu/handle/1721.1/6094)
 
-- **Norvig's `lis.py`** — Peter Norvig's "How to Write a (Lisp) Interpreter in Python." Norvig's version is compact and elegant; ours extends it with TCO and a fuller special-form set. Search for "Norvig lis.py" to find his blog post.
+- **Norvig's `lis.py`**: Peter Norvig's "How to Write a (Lisp) Interpreter in Python." Norvig's version is compact and elegant; ours extends it with TCO and a fuller special-form set. Search for "Norvig lis.py" to find his blog post.
 
-- **R7RS Scheme specification** — The current small Scheme standard. Section 4 (Expressions) maps directly to our `scheme_eval` dispatch table. Available at [https://small.r7rs.org/](https://small.r7rs.org/).
+- **R7RS Scheme specification**: The current small Scheme standard. Section 4 (Expressions) maps directly to our `scheme_eval` dispatch table. Available at [https://small.r7rs.org/](https://small.r7rs.org/).
 
-- **"Proper Tail Recursion and Space Efficiency"** — Will Clinger (PLDI 1998). A careful treatment of what tail-call optimization guarantees and how to implement it correctly.
+- **"Proper Tail Recursion and Space Efficiency"**: Will Clinger (PLDI 1998). A careful treatment of what tail-call optimization guarantees and how to implement it correctly.
 
 ---
 
-Up next: *The Lambda Calculus, Part 1* strips away even Scheme's parentheses to reach computation's core — and both feed the Functional assignment.
+Up next: *The Lambda Calculus, Part 1* strips away even Scheme's parentheses to reach computation's core, and both feed the Functional assignment.

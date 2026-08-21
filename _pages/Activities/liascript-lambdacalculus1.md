@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # The Lambda Calculus, Part 1: Syntax and Reduction
 
-The lambda calculus is a minimal formal system invented by Alonzo Church in the 1930s — it has only functions, application, and variables, yet it can compute anything a Turing machine can. Understanding lambda calculus is like learning to count using just a single mark on a page: it strips away all complexity to reveal the pure essence of computation. In this first part, you will learn to read, write, and reduce lambda expressions by hand — the foundational skill for everything that follows.
+The lambda calculus is a minimal formal system invented by Alonzo Church in the 1930s: it has only functions, application, and variables, yet it can compute anything a Turing machine can. Understanding lambda calculus is like learning to count using just a single mark on a page: it strips away all complexity to reveal the pure essence of computation. In this first part, you will learn to read, write, and reduce lambda expressions by hand, the foundational skill for everything that follows.
 
 ## Learning Goals
 
@@ -26,15 +26,15 @@ By the end of this activity, you will be able to:
 - Recognize when variable capture would occur during substitution and apply alpha-renaming to avoid it
 - Translate between lambda calculus notation and equivalent Python `lambda` expressions
 
-> **Before You Begin — Prerequisites**
+> **Before You Begin: Prerequisites**
 >
 > This activity works best if you are comfortable with the following. If any feel shaky, review them before the session.
 >
 > - **Functions as values**: In Python you can write `f = lambda x: x + 1` and pass `f` to another function as an argument. Lambda calculus is built entirely on this idea.
-> - **Substitution**: Evaluating `(lambda x: x * x)(5)` means replacing every `x` in the body with `5`. Lambda calculus makes this the *only* rule of computation — you will apply it by hand today.
+> - **Substitution**: Evaluating `(lambda x: x * x)(5)` means replacing every `x` in the body with `5`. Lambda calculus makes this the *only* rule of computation; you will apply it by hand today.
 > - **Recursive reduction**: Complex expressions simplify by applying the substitution rule repeatedly. Each application is one step; you will write out every step on the whiteboard.
 
-Lambda calculus was invented by Alonzo Church in the 1930s to answer a fundamental question: what does it mean to *compute*? Church showed that two symbols — λ (for "function") and · (for "apply") — are sufficient to compute anything that is computable. Every programming language you have ever used, including Python, is secretly a lambda calculus with extra syntax. By the end of this activity, you will have seen Python's entire evaluation model in eight lines of math.
+Lambda calculus was invented by Alonzo Church in the 1930s to answer a fundamental question: what does it mean to *compute*? Church showed that two symbols, λ (for "function") and · (for "apply"), are sufficient to compute anything that is computable. Every programming language you have ever used, including Python, is secretly a lambda calculus with extra syntax. By the end of this activity, you will have seen Python's entire evaluation model in eight lines of math.
 
 Beneath the Scheme of *Scheme: Code as Data*, beneath Python's `lambda`, beneath every functional language, sits a formal system from 1936 with **three forms of expression and one rule of computation**: Alonzo Church's **lambda calculus**, in which functions are the only thing that exists, and computing means substituting arguments into bodies. Today we learn to read it and to reduce expressions **by hand**, the way Church did, because by-hand reduction is the only way the system becomes real. The arc: **the three forms $\rightarrow$ free and bound variables $\rightarrow$ beta reduction by hand $\rightarrow$ alpha renaming when names collide**.
 
@@ -50,7 +50,7 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 ## Notation Bridge: Lambda Calculus vs. Python
 
-Before we dive into the formal rules, here is a translation table. Every lambda calculus expression you will encounter today has a direct Python equivalent. Keep this table handy — whenever a lambda expression looks unfamiliar, find its Python mirror here.
+Before we dive into the formal rules, here is a translation table. Every lambda calculus expression you will encounter today has a direct Python equivalent. Keep this table handy: whenever a lambda expression looks unfamiliar, find its Python mirror here.
 
 | Lambda Calculus | Python | Meaning |
 |---|---|---|
@@ -61,7 +61,7 @@ Before we dive into the formal rules, here is a translation table. Every lambda 
 
 > **Note for beginners**: In Python, `lambda x: x` is a function with no name that takes one argument `x` and returns `x`. Lambda calculus is the same idea, just written with a λ symbol and a dot instead of a colon. The table above maps every symbol one-to-one.
 
-**Core notation reference** — the three fundamental constructs of lambda calculus:
+**Core notation reference**: the three fundamental constructs of lambda calculus:
 
 | Lambda Notation | Python Equivalent | Meaning |
 |-----------------|-------------------|---------|
@@ -83,17 +83,17 @@ $$
 
 a **variable**; an **abstraction** (a function of one parameter $x$ with body $e$, written `λx.e`); or an **application** ($e_1$ applied to $e_2$). That is the entire grammar; there are no numbers, no booleans, no operators (Part 2 builds them all *from functions*). Conventions: application associates left ($f\,a\,b$ means $((f\,a)\,b)$), the body of a λ extends as far right as possible, and multi-parameter functions are nested single-parameter ones: $\lambda x y. e$ abbreviates $\lambda x. (\lambda y. e)$, the trick called **currying**, after Haskell Curry.
 
-> **Watch out**: `λx.λy.x` is a function that takes `x`, then returns *a function* that takes `y`, then returns `x`. You have to apply it TWICE to get a value out. This is called "currying" — named after Haskell Curry. In Python: `(lambda x: lambda y: x)(3)(99)` returns `3`. Calling `(lambda x: lambda y: x)(3)` alone gives you back a function, not a value.
+> **Watch out**: `λx.λy.x` is a function that takes `x`, then returns *a function* that takes `y`, then returns `x`. You have to apply it TWICE to get a value out. This is called "currying", named after Haskell Curry. In Python: `(lambda x: lambda y: x)(3)(99)` returns `3`. Calling `(lambda x: lambda y: x)(3)` alone gives you back a function, not a value.
 
 **Bound and free.** In $\lambda x.\, x\, y$: the $x$ in the body is **bound** by the λ; $y$ is **free** (it refers to something outside). Binding here is your scope module's lexical scoping, in its original mathematical form: a λ is a binder, its body is the scope.
 
-> **Watch out! — Application is left-associative.** `f a b` means `(f a) b`, NOT `f (a b)`. Concretely: `f` is applied to `a` first, producing a new function, and *that* function is applied to `b`. This matters most for curried functions: `(λx.λy.x) A B` is `((λx.λy.x) A) B`, and the first application peels off one λ, giving `(λy.A) B`, which then reduces to `A`. If you mistakenly group it as `(λx.λy.x) (A B)`, you get a completely different computation.
+> **Watch out! Application is left-associative.** `f a b` means `(f a) b`, NOT `f (a b)`. Concretely: `f` is applied to `a` first, producing a new function, and *that* function is applied to `b`. This matters most for curried functions: `(λx.λy.x) A B` is `((λx.λy.x) A) B`, and the first application peels off one λ, giving `(λy.A) B`, which then reduces to `A`. If you mistakenly group it as `(λx.λy.x) (A B)`, you get a completely different computation.
 
 ---
 
 ## Model 1: Parse by Eye
 
-> **Intuition**: Parsing lambda expressions is a mechanical skill: apply the two conventions (left-associative application, body extends right) until every sub-expression is explicitly parenthesized. A reliable strategy is to work outside-in — find the outermost application first, then recurse into each sub-expression. When you encounter a `λ`, its body runs all the way to the right end of the current parenthesization level.
+> **Intuition**: Parsing lambda expressions is a mechanical skill: apply the two conventions (left-associative application, body extends right) until every sub-expression is explicitly parenthesized. A reliable strategy is to work outside-in: find the outermost application first, then recurse into each sub-expression. When you encounter a `λ`, its body runs all the way to the right end of the current parenthesization level.
 
 ### Critical Thinking Questions
 
@@ -108,7 +108,7 @@ a **variable**; an **abstraction** (a function of one parameter $x$ with body $e
 
 ## 2. Beta Reduction
 
-> **Intuition**: Beta reduction is function application: find a function `(λx.body)` applied to an argument `a`, and replace every free occurrence of `x` in `body` with `a`. That is literally it. The word "beta" just names this one rule so we can refer to it precisely. Each step erases one `λ` from the expression and performs one substitution. When no more lambdas are applied to arguments, you have reached normal form — the answer.
+> **Intuition**: Beta reduction is function application: find a function `(λx.body)` applied to an argument `a`, and replace every free occurrence of `x` in `body` with `a`. That is literally it. The word "beta" just names this one rule so we can refer to it precisely. Each step erases one `λ` from the expression and performs one substitution. When no more lambdas are applied to arguments, you have reached normal form: the answer.
 
 **The one rule.** An application of an abstraction to an argument reduces by substituting:
 
@@ -118,7 +118,7 @@ $$
 
 read "$e$ with every *free* occurrence of $x$ replaced by $a$." A **redex** is any subexpression of that shape; an expression with no redexes is in **normal form**: the answer. Reduce stepwise, one redex at a time, drawing an arrow per step.
 
-> **Watch out**: β-reduction is purely syntactic substitution. `(λx.x*x) (2+3)` does NOT compute `2+3` first — it substitutes the unevaluated expression `(2+3)` for `x`, giving `(2+3)*(2+3)`. Whether arguments are evaluated before substitution (eager) or after (lazy) is the call-by-value vs call-by-name distinction. Python uses call-by-value (eager), so Python would compute `5` first and then substitute. Pure lambda calculus by default uses call-by-name (lazy).
+> **Watch out**: β-reduction is purely syntactic substitution. `(λx.x*x) (2+3)` does NOT compute `2+3` first; it substitutes the unevaluated expression `(2+3)` for `x`, giving `(2+3)*(2+3)`. Whether arguments are evaluated before substitution (eager) or after (lazy) is the call-by-value vs call-by-name distinction. Python uses call-by-value (eager), so Python would compute `5` first and then substitute. Pure lambda calculus by default uses call-by-name (lazy).
 
 ### Worked Example 1: Identity Function
 
@@ -180,15 +180,15 @@ Step by step:
 ->β  g(g a)                      # x replaced by a in both places
 ```
 
-Result: `g(g a)`. This applies `g` twice to `a` — exactly what `twice(g)(a)` does in Python.
+Result: `g(g a)`. This applies `g` twice to `a`, exactly what `twice(g)(a)` does in Python.
 
-> **Watch out! — The order of reduction matters for termination, but not for the final result.** If you reduce the same expression two different ways (choosing different redexes at each step), you may take a different number of steps, or one path may loop while the other terminates. However, the Church-Rosser theorem guarantees that if both paths reach a normal form, the normal forms are identical. A key corollary: always prefer normal-order (outermost-first) reduction when working by hand, because it is the strategy most likely to find a normal form if one exists.
+> **Watch out! The order of reduction matters for termination, but not for the final result.** If you reduce the same expression two different ways (choosing different redexes at each step), you may take a different number of steps, or one path may loop while the other terminates. However, the Church-Rosser theorem guarantees that if both paths reach a normal form, the normal forms are identical. A key corollary: always prefer normal-order (outermost-first) reduction when working by hand, because it is the strategy most likely to find a normal form if one exists.
 
 ---
 
 ## Model 2: Reduce by Hand
 
-> **Intuition**: Work through each reduction at the pace of one substitution per arrow. Before you write an arrow, identify: (1) which subexpression is the redex — a `(λx.body) arg` shape — and (2) what substitution you will perform. Write the result of the substitution, draw the arrow, and look for the next redex. The Omega term in Question 7 is the key insight: some expressions have no normal form, which means not every computation terminates.
+> **Intuition**: Work through each reduction at the pace of one substitution per arrow. Before you write an arrow, identify: (1) which subexpression is the redex (a `(λx.body) arg` shape) and (2) what substitution you will perform. Write the result of the substitution, draw the arrow, and look for the next redex. The Omega term in Question 7 is the key insight: some expressions have no normal form, which means not every computation terminates.
 
 ### Critical Thinking Questions
 
@@ -201,7 +201,7 @@ Result: `g(g a)`. This applies `g` twice to `a` — exactly what `twice(g)(a)` d
 
 ## 3. Alpha Renaming: When Names Collide
 
-> **Intuition**: The variable capture problem is subtle but important. Imagine you are substituting a free variable `y` into an expression that happens to bind `y` internally. The substituted `y` would fall under the inner binder and suddenly mean something different. The fix is simple: rename the inner binder to a fresh name before substituting. Think of it as "pick a local variable name that does not clash with anything in scope" — exactly what good programmers do to avoid shadowing bugs.
+> **Intuition**: The variable capture problem is subtle but important. Imagine you are substituting a free variable `y` into an expression that happens to bind `y` internally. The substituted `y` would fall under the inner binder and suddenly mean something different. The fix is simple: rename the inner binder to a fresh name before substituting. Think of it as "pick a local variable name that does not clash with anything in scope", exactly what good programmers do to avoid shadowing bugs.
 
 Substitution has one trap: **capture**. Reduce $(\lambda x. \lambda y.\, x)\; y$ naively and the free $y$ we substitute lands inside $\lambda y$, where it is suddenly, wrongly, bound: the meaning changed. The repair is **alpha renaming**: bound names are arbitrary ($\lambda y. e$ and $\lambda z. e[y := z]$ are the same function), so rename the binder first:
 
@@ -211,7 +211,7 @@ $$
 
 The result correctly returns the *free* $y$, whatever it refers to outside. Capture is the shadowing bug from your scope module, in formal dress, and alpha renaming is the formal version of "pick a fresh local name."
 
-> **Watch out**: Variable capture is a subtle bug. When you substitute a value that contains a free variable `y` into a body that binds `y`, the `y` in your value would accidentally become bound by the inner lambda. The fix — alpha renaming — is just like how Python avoids variable shadowing bugs: pick a fresh name for the inner binder that does not collide with anything free in the argument.
+> **Watch out**: Variable capture is a subtle bug. When you substitute a value that contains a free variable `y` into a body that binds `y`, the `y` in your value would accidentally become bound by the inner lambda. The fix (alpha renaming) is just like how Python avoids variable shadowing bugs: pick a fresh name for the inner binder that does not collide with anything free in the argument.
 
 ### Step-by-step capture example (WRONG, then RIGHT):
 
@@ -246,7 +246,7 @@ The reduction $(\lambda x. \lambda y.\, x\, y)\; y \rightarrow \lambda y.\, y\, 
 
 ## Model 3: Beta Reduction Step Tracer
 
-> **Intuition**: This tracer represents lambda expressions as nested Python tuples and implements the substitution rule explicitly. Before running it, predict what the output will be for the first two examples by applying the substitution rule by hand. Then run the code and compare. Pay special attention to the alpha-rename message in the capture example — this is the mechanism you applied manually in Section 3, now automated.
+> **Intuition**: This tracer represents lambda expressions as nested Python tuples and implements the substitution rule explicitly. Before running it, predict what the output will be for the first two examples by applying the substitution rule by hand. Then run the code and compare. Pay special attention to the alpha-rename message in the capture example: this is the mechanism you applied manually in Section 3, now automated.
 
 The tracer below parses a simple subset of the lambda calculus (no real substitution engine is needed for small examples) and prints each beta-reduction step. Study the output to see exactly what the substitution rule does.
 
@@ -296,7 +296,7 @@ def subst(expr, var_name, replacement):
         return replacement if expr[1] == var_name else expr
     elif tag == 'lam':
         if expr[1] == var_name:
-            # Bound by this lambda — no substitution inside
+            # Bound by this lambda - no substitution inside
             return expr
         elif expr[1] in free_vars(replacement):
             # Capture risk! Alpha-rename the bound variable first
@@ -386,7 +386,7 @@ print("Free vars in (λx.λy. x):", free_vars(lam('x', lam('y', var('x')))))
 
 ## Model 3b: Interactive Reduction Simulator
 
-> **Intuition**: This simulator uses Python dataclasses (`Var`, `Lam`, `App`) to represent the three syntactic forms as Python objects, making the structure of each expression explicit and inspectable. Use it to check your hand reductions from Model 2 — build the same expression you reduced on the whiteboard, run `normalize`, and verify the steps match. Notice that the `subst` function here does not implement full capture-avoiding renaming; compare this to Model 3 to see what is missing.
+> **Intuition**: This simulator uses Python dataclasses (`Var`, `Lam`, `App`) to represent the three syntactic forms as Python objects, making the structure of each expression explicit and inspectable. Use it to check your hand reductions from Model 2: build the same expression you reduced on the whiteboard, run `normalize`, and verify the steps match. Notice that the `subst` function here does not implement full capture-avoiding renaming; compare this to Model 3 to see what is missing.
 
 The simulator below lets you construct any lambda expression using the `Var`, `Lam`, and `App` building blocks, then watch each substitution step. Use it to check your hand reductions from Model 2. Build the expression you want, call `normalize(...)`, and compare to your whiteboard work.
 
@@ -473,9 +473,9 @@ normalize(App(App(Lam("f", Lam("x", App(Var("f"), App(Var("f"), Var("x"))))), Va
 
 ## Model 4: Alpha Equivalence Checker
 
-> **Intuition**: De Bruijn indices solve the alpha-equivalence problem elegantly: instead of naming bound variables, replace each one with a number saying "I am bound by the lambda that is this many steps outward." Under this scheme, `λx.x` and `λy.y` both become `λ_.#0` (the bound variable is index 0 — the immediately enclosing lambda). Two expressions are alpha-equivalent if and only if their de Bruijn representations are identical. Free variables keep their names because they refer to the *same* external binding regardless of renaming.
+> **Intuition**: De Bruijn indices solve the alpha-equivalence problem elegantly: instead of naming bound variables, replace each one with a number saying "I am bound by the lambda that is this many steps outward." Under this scheme, `λx.x` and `λy.y` both become `λ_.#0` (the bound variable is index 0, the immediately enclosing lambda). Two expressions are alpha-equivalent if and only if their de Bruijn representations are identical. Free variables keep their names because they refer to the *same* external binding regardless of renaming.
 
-Two lambda expressions are **alpha-equivalent** ($=_\alpha$) if one can be obtained from the other by consistently renaming bound variables. They are *semantically identical* — only the choice of parameter names differs.
+Two lambda expressions are **alpha-equivalent** ($=_\alpha$) if one can be obtained from the other by consistently renaming bound variables. They are *semantically identical*; only the choice of parameter names differs.
 
 ```python
 # Alpha-equivalence checker using de Bruijn indices.
@@ -534,7 +534,7 @@ pairs = [
      lam('a', lam('b', var('a'))),
      True),
 
-    ("λx.λy.x  vs  λx.λy.y  (K vs K' — pick first vs second)",
+    ("λx.λy.x  vs  λx.λy.y  (K vs K', pick first vs second)",
      lam('x', lam('y', var('x'))),
      lam('x', lam('y', var('y'))),
      False),
@@ -578,7 +578,7 @@ print("They match -> alpha-equivalent.")
 
 ## Model 5: Free vs Bound Variables and WHNF
 
-> **Intuition**: WHNF is the "good enough" answer for lazy evaluation. An expression is in WHNF when the outermost position is not a redex — it is either a variable, a lambda, or an application whose function is not a lambda. Haskell stops here rather than reducing everything inside, which is why it can represent infinite lists: the spine of the list is in WHNF (a cons cell whose tail is an unevaluated thunk), and you only reduce the tail when you actually ask for the next element.
+> **Intuition**: WHNF is the "good enough" answer for lazy evaluation. An expression is in WHNF when the outermost position is not a redex: it is either a variable, a lambda, or an application whose function is not a lambda. Haskell stops here rather than reducing everything inside, which is why it can represent infinite lists: the spine of the list is in WHNF (a cons cell whose tail is an unevaluated thunk), and you only reduce the tail when you actually ask for the next element.
 
 **Weak Head Normal Form (WHNF)** is a partial-normal form used by lazy languages (Haskell): an expression is in WHNF when its *outermost* constructor is not a redex, even if subexpressions remain unreduced. This is in contrast to full normal form where *no* redexes remain anywhere.
 
@@ -617,7 +617,7 @@ def is_whnf(expr):
         # A redex (λx.body) arg is NOT in WHNF
         if expr[1][0] == 'lam':
             return False
-        # Otherwise, the head is not a lambda — WHNF (even if args have redexes)
+        # Otherwise, the head is not a lambda - WHNF (even if args have redexes)
         return True
 
 def has_redex(expr):
@@ -641,25 +641,25 @@ def classify(expr, name):
     print(f"  Normal form? : {nf}")
     print()
 
-# λx.x  — identity: no free vars, x is bound; is a lambda so WHNF
+# λx.x  - identity: no free vars, x is bound; is a lambda so WHNF
 classify(lam('x', var('x')), "λx.x")
 
-# λx. x y  — y is free
+# λx. x y  - y is free
 classify(lam('x', app(var('x'), var('y'))), "λx.(x y)")
 
-# (λx.x) z  — outermost is a redex: NOT WHNF, NOT normal form
+# (λx.x) z  - outermost is a redex: NOT WHNF, NOT normal form
 classify(app(lam('x', var('x')), var('z')), "(λx.x) z")
 
-# f ((λx.x) z)  — outermost head is free var f: IS WHNF, but NOT normal form
+# f ((λx.x) z)  - outermost head is free var f: IS WHNF, but NOT normal form
 classify(app(var('f'), app(lam('x', var('x')), var('z'))), "f ((λx.x) z)")
 
-# λy. (λx.x) z  — lambda at top: IS WHNF; body has redex, so NOT full NF
+# λy. (λx.x) z  - lambda at top: IS WHNF; body has redex, so NOT full NF
 classify(lam('y', app(lam('x', var('x')), var('z'))), "λy.((λx.x) z)")
 
 print("Key distinction:")
-print("  Normal Form  — no redexes ANYWHERE in the expression.")
-print("  WHNF         — outermost position is not a redex (body may still have them).")
-print("  Lazy evaluation (Haskell) only reduces to WHNF — avoids evaluating")
+print("  Normal Form  - no redexes ANYWHERE in the expression.")
+print("  WHNF         - outermost position is not a redex (body may still have them).")
+print("  Lazy evaluation (Haskell) only reduces to WHNF: avoids evaluating")
 print("  unreachable subexpressions, enabling infinite data structures.")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
@@ -676,7 +676,7 @@ print("  unreachable subexpressions, enabling infinite data structures.")
 # Part IV: Synthesis and Practice
 
 ---
-**In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+**In-class work stops here.** Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
 
 ## 4. Exercises
 
@@ -698,7 +698,7 @@ In your notebook: Church built this system in 1936 to study what "computable" me
 - Raul Rojas. "A Tutorial Introduction to the Lambda Calculus" (online): short and gentle.
 - Henk Barendregt and Erik Barendsen. "Introduction to Lambda Calculus" (online notes), for the formal substitution definition.
 - Gabriel Lebec. "Lambda as JS, or A Flock of Functions" (talk and slides), which Part 2 follows: https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript
-- **Lambda-Py / pycombinator** — combinators and Church encodings in Python; run the calculus interactively in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html — experiment with the reductions from today's module without installing anything.
+- **Lambda-Py / pycombinator**; combinators and Church encodings in Python; run the calculus interactively in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html, experiment with the reductions from today's module without installing anything.
 
 ---
 
@@ -706,10 +706,10 @@ In your notebook: Church built this system in 1936 to study what "computable" me
 
 The core lesson above stands on its own. The deep-dive appendices that used to follow it now live elsewhere:
 
-> **Going further:** the material that used to live here — combinatory logic and the SKI calculus: the "flock of birds" (S, K, I, B, C, W and friends), deriving B and C from S and K, bracket abstraction, and point-free programming — is covered in depth as the advanced "Combinatory Logic and the SKI Calculus" section of the dedicated tutorial: [Implementing a Lambda Calculus Reducer](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md). **Direction D of the Functional assignment builds on this material.** Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here, combinatory logic and the SKI calculus: the "flock of birds" (S, K, I, B, C, W and friends), deriving B and C from S and K, bracket abstraction, and point-free programming (is covered in depth as the advanced "Combinatory Logic and the SKI Calculus" section of the dedicated tutorial: [Implementing a Lambda Calculus Reducer](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md). **Direction D of the Functional assignment builds on this material.** Explore it when your project or curiosity calls for it.
 
-> **Going further:** the material that used to live here — algebraic data types and pattern matching — is covered in the Modern Language Features activity (pattern matching, including matching on nested structures, in class) and the dedicated guide: [Typing Disciplines — Strong vs. Weak, Static vs. Dynamic, and Gradual Typing](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypingDisciplines) (product and sum types). The specific worked ADT examples from the old appendix — safe lookups, Maybe-style values, and symbolic differentiation over an expression tree — make a good self-study exercise. Explore them when your project or curiosity calls for it.
+> **Going further:** the material that used to live here) algebraic data types and pattern matching: is covered in the Modern Language Features activity (pattern matching, including matching on nested structures, in class) and the dedicated guide: [Typing Disciplines (Strong vs. Weak, Static vs. Dynamic, and Gradual Typing](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypingDisciplines) (product and sum types). The specific worked ADT examples from the old appendix) safe lookups, Maybe-style values, and symbolic differentiation over an expression tree, make a good self-study exercise. Explore them when your project or curiosity calls for it.
 
 ---
 
-Up next: *The Lambda Calculus, Part 2* builds booleans, numbers, and arithmetic from nothing but these functions — the Church encodings at the heart of the Functional assignment's Direction C.
+Up next: *The Lambda Calculus, Part 2* builds booleans, numbers, and arithmetic from nothing but these functions; the Church encodings at the heart of the Functional assignment's Direction C.

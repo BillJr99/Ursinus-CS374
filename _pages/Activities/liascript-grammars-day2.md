@@ -24,7 +24,7 @@ Day 1 established what a grammar *is* and where programming languages sit in the
 
 Your team will write CFGs for increasingly real constructs. For each, produce the grammar, one accepted example with its derivation, and one rejected near-miss.
 
-**Worked example — deriving `()()` from $S \rightarrow (S) \mid SS \mid \varepsilon$:**
+**Worked example, deriving `()()` from $S \rightarrow (S) \mid SS \mid \varepsilon$:**
 
 ```
 S
@@ -37,7 +37,7 @@ S
 
 This grammar treats the empty string as a sentence, which is a design choice: it makes `()()` and `((()))` valid but also accepts the empty program. Whether to allow the empty program is a language design decision, not a technical limitation.
 
-**Worked example — deriving `stmt;stmt` from $L \rightarrow L\,;\,stmt \mid stmt$:**
+**Worked example: deriving `stmt;stmt` from $L \rightarrow L\,;\,stmt \mid stmt$:**
 
 ```
 L
@@ -75,7 +75,7 @@ Note that this grammar is **left-recursive** (`L -> L ; stmt` starts with `L`). 
 > - **Step 1:** Write the rule. Which symbol on the right-hand side enables arbitrary nesting?
 > - **Step 2:** Derive a two-level nested if: `if cond then if cond then stmt`.
 > - **Step 3:** Connect to the recursion-is-memory insight from Model 1: what does each level of nesting correspond to in terms of the parser's call stack?
-> - **Step 4:** The "dangling else" ambiguity arises from `if E then S else S` — two different parse trees exist for `if a then if b then s1 else s2`. Describe, in words, the two trees and their different meanings.
+> - **Step 4:** The "dangling else" ambiguity arises from `if E then S else S`, two different parse trees exist for `if a then if b then s1 else s2`. Describe, in words, the two trees and their different meanings.
 
 ---
 
@@ -149,7 +149,7 @@ for s in ["ab", "aabb", "aaabbb", "aab", "ba", "abab"]:
 >
 > - **Confusing terminals and nonterminals.** Terminals are the actual symbols that appear in strings (like `+`, `3`, `int`, `(`). Nonterminals are the grammar variables (like `E`, `T`, `stmt`) that get rewritten. A finished derivation contains only terminals.
 > - **Writing left-recursive rules without realizing a recursive descent parser cannot handle them.** `E -> E + T` is mathematically valid and even the standard textbook form, but a hand-written recursive descent parser will loop forever on it. Always check for left recursion before implementing.
-> - **Forgetting that ambiguous grammars are valid as mathematical objects but break parsers.** An ambiguous grammar is not "wrong" in theory, but it means your parser will non-deterministically produce different ASTs for the same input — a catastrophic bug that is hard to diagnose.
+> - **Forgetting that ambiguous grammars are valid as mathematical objects but break parsers.** An ambiguous grammar is not "wrong" in theory, but it means your parser will non-deterministically produce different ASTs for the same input, a catastrophic bug that is hard to diagnose.
 > - **Thinking of grammars as "just syntax."** The structure of a parse tree determines operator precedence and associativity. The reason `*` binds tighter than `+` in every language you have used is that `T` is nested inside `E` in the grammar, not because a rule says "multiply first." If you get the grammar structure wrong, your interpreter will compute wrong answers silently.
 > - **Confusing left-recursive and right-recursive in terms of associativity.** Left-recursive rules (`E -> E + T`) produce left-associative trees (correct for `+`, `-`, `*`, `/`). Right-recursive rules produce right-associative trees (correct for `^` and assignment in many languages). Choosing the wrong recursion direction is a silent semantic bug.
 
@@ -174,12 +174,12 @@ The ideas in this activity connect directly to the next several topics in this c
 **Grammars in the wild:**
 
 - **JSON**: The [official JSON grammar](https://www.json.org/json-en.html) is a small context-free grammar with about 10 production rules. It covers objects, arrays, strings, numbers, and the four literal values. It is a beautiful example of a real-world CFG you can read in five minutes.
-- **Python**: The [Python reference grammar](https://docs.python.org/3/reference/grammar.html) uses PEG (Parsing Expression Grammars), a close cousin of CFGs. You will see rules like `funcdef: 'def' NAME parameters ':' suite` — exactly the form you practiced.
+- **Python**: The [Python reference grammar](https://docs.python.org/3/reference/grammar.html) uses PEG (Parsing Expression Grammars), a close cousin of CFGs. You will see rules like `funcdef: 'def' NAME parameters ':' suite`: exactly the form you practiced.
 - **HTML**: HTML is *not* context-free (attribute values can reference IDs that appear elsewhere in the document), which is part of why browsers have a hand-rolled parser rather than a generated one. This is a real instance of a semantic constraint being too powerful for a CFG.
 
 ---
 
-## Practice — Allison, Ch. 4 / Reading 4.2: Context-Free Languages
+## Practice, Allison, Ch. 4 / Reading 4.2: Context-Free Languages
 
 These exercises cover context-free grammars and the Chomsky hierarchy, drawn from Allison, Ch. 4 §4.2 and Ch. 6 §6.1.
 
@@ -224,7 +224,7 @@ A derivation tree (parse tree) for a grammar:
 
 ## Reflection Prompt
 
-In your notebook: the hierarchy says more expressive power costs more recognition machinery. Where else in computing (or in life) have you met this pattern — that the price of saying more is needing more memory to listen? Give two concrete examples from different domains.
+In your notebook: the hierarchy says more expressive power costs more recognition machinery. Where else in computing (or in life) have you met this pattern: that the price of saying more is needing more memory to listen? Give two concrete examples from different domains.
 
 ---
 
@@ -233,9 +233,9 @@ In your notebook: the hierarchy says more expressive power costs more recognitio
 - Douglas Thain. *Introduction to Compilers and Language Design*, Chapters 3 and 4.
 - Noam Chomsky. "Three Models for the Description of Language." *IRE Transactions on Information Theory* (1956).
 - Michael Sipser. *Introduction to the Theory of Computation*, Chapters 1 and 2, for proofs we waved at.
-- [The JSON Grammar](https://www.json.org/json-en.html) — a real, readable CFG in under 15 minutes.
-- [The Python Reference Grammar](https://docs.python.org/3/reference/grammar.html) — PEG variant; compare to what you wrote in Model 2.
+- [The JSON Grammar](https://www.json.org/json-en.html): a real, readable CFG in under 15 minutes.
+- [The Python Reference Grammar](https://docs.python.org/3/reference/grammar.html) (PEG variant; compare to what you wrote in Model 2.
 
 ---
 
-Up next: the *Derivations, Parse Trees, Ambiguity, and Precedence* activity puts these grammars to work generating — and mis-generating — programs.
+Up next: the *Derivations, Parse Trees, Ambiguity, and Precedence* activity puts these grammars to work generating) and mis-generating: programs.

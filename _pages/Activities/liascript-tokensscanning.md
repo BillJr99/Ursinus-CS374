@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tokens and Scanning: Building a Lexer
 
-Before a compiler can understand your program, it has to figure out where one meaningful chunk of text ends and the next one begins — just like a spell-checker must split a sentence into individual words before it can flag any of them as wrong. A **lexer** (also called a scanner) does exactly this: it reads a raw stream of characters and groups them into **tokens**, the smallest named units of meaning (a number, a keyword, an operator). Without this first step, the rest of the compiler has no footing — it would be trying to parse soup.
+Before a compiler can understand your program, it has to figure out where one meaningful chunk of text ends and the next one begins, just like a spell-checker must split a sentence into individual words before it can flag any of them as wrong. A **lexer** (also called a scanner) does exactly this: it reads a raw stream of characters and groups them into **tokens**, the smallest named units of meaning (a number, a keyword, an operator). Without this first step, the rest of the compiler has no footing; it would be trying to parse soup.
 
 ## Learning Goals
 
@@ -54,7 +54,7 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 ## Model 1: Be the Lexer
 
-Before writing any code, it helps to play the lexer yourself on a small example. This model asks you to walk through a single line of source text and decide, character by character, where each token begins and ends. The main challenge here is not ambiguity in meaning — it is ambiguity in *boundaries*: should `count2` be one token or two, and should `>=` be one token or two? Working through this by hand makes the rules you will later encode in regex feel inevitable rather than arbitrary.
+Before writing any code, it helps to play the lexer yourself on a small example. This model asks you to walk through a single line of source text and decide, character by character, where each token begins and ends. The main challenge here is not ambiguity in meaning; it is ambiguity in *boundaries*: should `count2` be one token or two, and should `>=` be one token or two? Working through this by hand makes the rules you will later encode in regex feel inevitable rather than arbitrary.
 
 Tokenize by hand: `count2 = count2 + 12 >= limit`
 
@@ -78,7 +78,7 @@ This lexer is the seed of your assignment and your project: a token specificatio
 
 ## Code Cell
 
-The lexer below translates the hand-tokenization rules from Model 1 into working Python. The key insight is that by joining all the individual regex patterns into one big alternation with `|`, Python's regex engine does the scanning in a single left-to-right pass — it tries each alternative in order, picks the first one that matches, and moves on. Priority (which pattern wins when two could match) is controlled entirely by the order of entries in `TOKEN_SPEC`.
+The lexer below translates the hand-tokenization rules from Model 1 into working Python. The key insight is that by joining all the individual regex patterns into one big alternation with `|`, Python's regex engine does the scanning in a single left-to-right pass: it tries each alternative in order, picks the first one that matches, and moves on. Priority (which pattern wins when two could match) is controlled entirely by the order of entries in `TOKEN_SPEC`.
 
 > **Watch out!** Whitespace is listed in `TOKEN_SPEC` as `SKIP` and is silently consumed. If you forget to include a whitespace pattern, the `MISMATCH` catch-all will fire on every space and your error messages will be buried in noise. Always verify that spaces and tabs are handled before testing with real programs.
 
@@ -143,7 +143,7 @@ for tok in tokenize(code):
 
 ## Model 2: Read the Machine You Built
 
-Now that the lexer runs, this model asks you to read it as a system — connecting each design decision back to the theory. You already know the code works; the goal here is to understand *why* it is structured the way it is so you can adapt it confidently when the rules change (as they will on your project).
+Now that the lexer runs, this model asks you to read it as a system, connecting each design decision back to the theory. You already know the code works; the goal here is to understand *why* it is structured the way it is so you can adapt it confidently when the rules change (as they will on your project).
 
 ### Critical Thinking Questions
 
@@ -151,7 +151,7 @@ Now that the lexer runs, this model asks you to read it as a system — connecti
 6. Why must `GE` (`>=`) appear before `GT` (`>`) in the spec, given how Python's `re` alternation chooses among same-position matches? Design the two-character experiment that proves the necessity, run it, and report.
 7. Keywords are matched with `\b(if|else|...)\b` *before* `IDENT`. Remove the `\b` anchors mentally: what goes wrong with the identifier `iffy`? Which scanning rule did the anchors enforce?
 
-> **Watch out!** Keywords must always appear *before* the general identifier pattern in your `TOKEN_SPEC`. If `IDENT` comes first, the regex engine will match `if` as an identifier and never reach the KEYWORD rule — because Python's `re` alternation returns the first match, not the longest. Getting this order wrong produces a lexer that accepts `if` as a variable name, breaking every conditional in your language silently.
+> **Watch out!** Keywords must always appear *before* the general identifier pattern in your `TOKEN_SPEC`. If `IDENT` comes first, the regex engine will match `if` as an identifier and never reach the KEYWORD rule, because Python's `re` alternation returns the first match, not the longest. Getting this order wrong produces a lexer that accepts `if` as a variable name, breaking every conditional in your language silently.
 
 8. The `MISMATCH` catch-all turns unknown characters into a `SyntaxError` with line and column. Feed the lexer a `$` and verify the message. Why is reporting *position* a kindness worth the bookkeeping?
 
@@ -159,9 +159,9 @@ Now that the lexer runs, this model asks you to read it as a system — connecti
 
 ## Model 3: Peek/Advance Lexer Interface
 
-The raw `tokenize()` generator works fine for printing, but a parser needs more control: it must be able to look at the next token *before* deciding whether to consume it. This model solves that problem by wrapping the generator in a `Lexer` class that buffers one token. The result is a clean, three-method interface (`peek`, `advance`, `expect`) that the parser will use exclusively — the generator becomes an implementation detail.
+The raw `tokenize()` generator works fine for printing, but a parser needs more control: it must be able to look at the next token *before* deciding whether to consume it. This model solves that problem by wrapping the generator in a `Lexer` class that buffers one token. The result is a clean, three-method interface (`peek`, `advance`, `expect`) that the parser will use exclusively; the generator becomes an implementation detail.
 
-A parser never calls `tokenize()` directly. It needs two operations: **peek** — look at the next token without consuming it — and **advance** — consume and return it. A third operation, **expect**, consumes a token and raises an error if its type does not match. The `Lexer` class below wraps the generator and buffers exactly one token to implement these three methods.
+A parser never calls `tokenize()` directly. It needs two operations: **peek**, look at the next token without consuming it, and **advance**, consume and return it. A third operation, **expect**, consumes a token and raises an error if its type does not match. The `Lexer` class below wraps the generator and buffers exactly one token to implement these three methods.
 
 ```python  liascript
 import re
@@ -270,14 +270,14 @@ print(f"let-binding: {kw.lexeme} {name.lexeme} {eq.lexeme} {val.lexeme}")
 ### Critical Thinking Questions
 
 9. The `Lexer` class stores exactly one token in `_buf`. Why is one token enough? Describe a parsing situation that would require *two* tokens of lookahead and explain how you would extend `_buf` to handle it.
-10. `peek()` is a pure read — it does not change the lexer's state. Why is that guarantee important for a parser that makes decisions (e.g., "is the next token a `(`?") before consuming?
+10. `peek()` is a pure read: it does not change the lexer's state. Why is that guarantee important for a parser that makes decisions (e.g., "is the next token a `(`?") before consuming?
 11. `expect()` raises `SyntaxError` if the type does not match. Compare this to a design where `expect()` returns `None` on mismatch instead of raising. What does the raising version give the parser author that the silent-return version does not?
 
 ---
 
-## Model 4: Real-World Lexer Features — String Literals
+## Model 4: Real-World Lexer Features, String Literals
 
-The lexer built so far handles numbers, keywords, and operators, but real programs also contain string literals — and strings introduce a new complication: the content inside the quotes can contain almost anything, including characters that normally end a token. This model extends the lexer with a STRING pattern that correctly handles escape sequences, and then confronts what happens when a string is never closed.
+The lexer built so far handles numbers, keywords, and operators, but real programs also contain string literals, and strings introduce a new complication: the content inside the quotes can contain almost anything, including characters that normally end a token. This model extends the lexer with a STRING pattern that correctly handles escape sequences, and then confronts what happens when a string is never closed.
 
 Production lexers must handle **string literals** (e.g., `"hello world"`) and **escape sequences** (e.g., `\"`, `\\`, `\n`). The tricky part: a naive `"[^"]*"` pattern breaks on `"say \"hi\""`. The correct pattern uses a negative lookbehind or a two-alternative trick: match either an escaped character or any non-quote, non-backslash character inside the delimiters.
 
@@ -350,7 +350,7 @@ bad = 'let x = "oops;'
 try:
     tokens = list(tokenize(bad))
     print("Tokens produced:", tokens)
-    print("Note: MISMATCH absorbed the quote — no STRING token formed.")
+    print("Note: MISMATCH absorbed the quote - no STRING token formed.")
 except SyntaxError as e:
     print(f"SyntaxError: {e}")
 ```
@@ -389,7 +389,7 @@ The parser asks the lexer for the next token and receives `Token(NUMBER, "12", 4
 
 ---
 
-## Practice — Allison, Ch. 2 §2.4: Hand-Traced Tokenization
+## Practice: Allison, Ch. 2 §2.4: Hand-Traced Tokenization
 
 These exercises build confidence in the maximal-munch rule and token ordering by tokenizing real programs on paper before writing code. They connect the formal lexer model to the practical parsing pipeline.
 
@@ -397,8 +397,8 @@ These exercises build confidence in the maximal-munch rule and token ordering by
 
 The lexer applies patterns in order, using maximal munch. For the input `x>=5`, if `IDENT` is listed before `GE` (`>=`) in TOKEN_SPEC, the result is:
 
-[( )] `IDENT("x"), GE, INT(5)` — the lexer is smart enough to lookahead and reorder
-[(X)] `IDENT("x"), GT, EQ, INT(5)` — `>=` is never recognized because `IDENT` greedily consumed `x`
+[( )] `IDENT("x"), GE, INT(5)`: the lexer is smart enough to lookahead and reorder
+[(X)] `IDENT("x"), GT, EQ, INT(5)`: `>=` is never recognized because `IDENT` greedily consumed `x`
 [( )] Undefined behavior; the order doesn't matter
 [( )] A `LexError` because ambiguous input
 
@@ -424,11 +424,11 @@ Maximal munch means the lexer matches the longest possible token. For input `<=`
 3. **String literals with escapes.**
    - Input: `"hello\nworld"`
    - Your STRING pattern is `"(?:[^"\\]|\\.)*"`. Trace through each character:
-     - Position 0: `"` — starts the string
-     - Position 1-5: `hello` — match `[^"\\]` (not quote or backslash)
-     - Position 6-7: `\n` — match `\\.` (backslash followed by any char)
-     - Position 8-12: `world` — match `[^"\\]` again
-     - Position 13: `"` — end the string
+     - Position 0: `"`, starts the string
+     - Position 1-5: `hello`, match `[^"\\]` (not quote or backslash)
+     - Position 6-7: `\n`, match `\\.` (backslash followed by any char)
+     - Position 8-12: `world`, match `[^"\\]` again
+     - Position 13: `"`, end the string
    - Confirm: the entire 14-character string is one STRING token, not broken up.
 
 4. **Identifying token breaks.**
@@ -457,7 +457,7 @@ In your notebook: the lexer absorbs whitespace and comments so later stages neve
 
 ---
 
-Up next: the *Abstract Syntax Trees* activity builds the structure your parser will produce — and this lexer is the heart of the Lexer assignment.
+Up next: the *Abstract Syntax Trees* activity builds the structure your parser will produce, and this lexer is the heart of the Lexer assignment.
 
 # Answer Key
 
@@ -465,7 +465,7 @@ Work the models above with your team before reading these. Each one answers a Cr
 
 ### Worked Example: maximal munch, position by position
 
-Do CTQ 1 as a team before reading this. Then check the boundaries — the interesting rows are the ones where more than one pattern matches and the *longest* wins.
+Do CTQ 1 as a team before reading this. Then check the boundaries: the interesting rows are the ones where more than one pattern matches and the *longest* wins.
 
 Input: `count2 = count2 + 12 >= limit`
 
@@ -490,13 +490,13 @@ Input: `count2 = count2 + 12 >= limit`
 
 Two rows carry the whole lesson:
 
-- **Position 21** is maximal munch doing real work. Both `GT` and `GE` match at that position. Take the *longest*, not the first one listed, and `>=` stays whole. This is CTQ 3: had the lexer emitted `GT` then `EQ`, the parser would see `a > = b`, which matches no production — and the error would surface as a mystifying *parse* error several stages away from the actual bug. Fix errors where the information still exists.
-- **Position 0** is CTQ 2. The identifier pattern is `[A-Za-z_][A-Za-z0-9_]*`, whose second half admits digits, so the match runs to the end of `count2` — six characters, not four. There is no point at which the scanner "notices" the `2` and stops, because stopping early would not be the longest match. The same mechanism is why `iffy` is one `IDENT` and not `IF` followed by `IDENT("fy")`: `IDENT` matches four characters where `IF` matches only two.
+- **Position 21** is maximal munch doing real work. Both `GT` and `GE` match at that position. Take the *longest*, not the first one listed, and `>=` stays whole. This is CTQ 3: had the lexer emitted `GT` then `EQ`, the parser would see `a > = b`, which matches no production, and the error would surface as a mystifying *parse* error several stages away from the actual bug. Fix errors where the information still exists.
+- **Position 0** is CTQ 2. The identifier pattern is `[A-Za-z_][A-Za-z0-9_]*`, whose second half admits digits, so the match runs to the end of `count2`, six characters, not four. There is no point at which the scanner "notices" the `2` and stops, because stopping early would not be the longest match. The same mechanism is why `iffy` is one `IDENT` and not `IF` followed by `IDENT("fy")`: `IDENT` matches four characters where `IF` matches only two.
 
-Notice what the table does *not* contain: any decision about meaning. The scanner never asks whether `count2` was declared, or whether adding an `INT` to an `IDENT` type-checks. It only asks "how far does a pattern reach from here?" — which is precisely why a regular expression is enough to do this job, and why the next stage needs a grammar instead.
+Notice what the table does *not* contain: any decision about meaning. The scanner never asks whether `count2` was declared, or whether adding an `INT` to an `IDENT` type-checks. It only asks "how far does a pattern reach from here?", which is precisely why a regular expression is enough to do this job, and why the next stage needs a grammar instead.
 
 
-> **Watch out!** The maximal munch rule always takes the *longest* possible match at the current position, not the first pattern that matches. This means `>=` is always one token, never two — and `iffy` is always one identifier, never the keyword `if` followed by `fy`. If your hand tokenization ever splits a run of identifier-legal characters mid-stream, you have violated maximal munch.
+> **Watch out!** The maximal munch rule always takes the *longest* possible match at the current position, not the first pattern that matches. This means `>=` is always one token, never two, and `iffy` is always one identifier, never the keyword `if` followed by `fy`. If your hand tokenization ever splits a run of identifier-legal characters mid-stream, you have violated maximal munch.
 
 ---
 

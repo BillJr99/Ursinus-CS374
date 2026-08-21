@@ -24,7 +24,7 @@ By the end of this activity, you will be able to:
 - Demonstrate why certain languages (such as $a^n b^n c^n$) require a more powerful grammar class than context-free, by identifying what information no pushdown automaton can track
 - Write a context-free grammar for a real programming construct (expressions, conditionals, or function calls) and verify it by deriving at least two distinct valid programs
 
-> **Before You Begin — Prerequisite Check**
+> **Before You Begin, Prerequisite Check**
 >
 > This activity assumes you are comfortable with BNF syntax from the *Syntax and BNF/EBNF* activity: you can read a rule like `expr ::= expr "+" term | term`, you know what "nonterminal" and "terminal" mean, and you have seen at least one derivation step. If any of those concepts are fuzzy, re-read your notes from that activity before proceeding.
 
@@ -32,7 +32,7 @@ By the end of this activity, you will be able to:
 
 A grammar is a **recipe for generating every valid sentence of a language**. Rules like `E -> E + T | T` describe all legal arithmetic expressions, not by listing them (there are infinitely many), but by giving a finite set of rewriting instructions. Your parser will be the mirror image: given a sentence like `3 + 4 * 5`, it traces backward through those same rules to reconstruct which recipe steps produced it.
 
-Every parser you have ever encountered — from the Python interpreter that runs your code, to the browser that renders this page, to the parser you will write in a few weeks — is powered by a grammar exactly like the ones in this activity. Understanding grammars is not an academic exercise. It is the technical foundation for every subsequent topic in this course: recursive descent, LL(1) tables, operator precedence, and abstract syntax trees all follow directly from the ideas you will work through today.
+Every parser you have ever encountered, from the Python interpreter that runs your code, to the browser that renders this page, to the parser you will write in a few weeks, is powered by a grammar exactly like the ones in this activity. Understanding grammars is not an academic exercise. It is the technical foundation for every subsequent topic in this course: recursive descent, LL(1) tables, operator precedence, and abstract syntax trees all follow directly from the ideas you will work through today.
 
 ---
 
@@ -71,7 +71,7 @@ Three languages over $\{a, b, c\}$:
 - $L_2 = \{ a^n b^n \mid n \ge 1 \}$: a's followed by the *same number* of b's.
 - $L_3 = \{ a^n b^n c^n \mid n \ge 1 \}$: equal counts of all three.
 
-**Worked example — deriving `aaabbb` from the Type 2 grammar $S \rightarrow aSb \mid ab$:**
+**Worked example, deriving `aaabbb` from the Type 2 grammar $S \rightarrow aSb \mid ab$:**
 
 Every step replaces the *only* nonterminal $S$ with one of its two right-hand sides. When we choose `aSb` we add one `a` on the left and one `b` on the right, keeping $S$ alive in the middle. When we choose `ab` we cash out with the innermost pair.
 
@@ -82,9 +82,9 @@ S
   => a a a b b b     (used S -> ab, the base case)
 ```
 
-The "memory" that keeps the `a` count equal to the `b` count is the **nesting depth of the recursion** — the call stack, when we implement this as a recursive descent parser.
+The "memory" that keeps the `a` count equal to the `b` count is the **nesting depth of the recursion**, the call stack, when we implement this as a recursive descent parser.
 
-**Worked example — why `aab` is rejected:**
+**Worked example, why `aab` is rejected:**
 
 ```
 S => aSb => aaSbb    (now need two more chars to close)

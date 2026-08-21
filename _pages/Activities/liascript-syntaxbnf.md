@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Syntax and BNF/EBNF
 
-Every programming language has rules about what programs are allowed to look like — rules that are too precise to describe in plain English. BNF (Backus-Naur Form) and its extension EBNF are the standard notations for writing those rules down exactly. Think of BNF like a recipe template: it describes the *structure* of a valid dish (a statement, an expression, a declaration) without pinning down the specific ingredients — and from a finite set of such templates you can generate infinitely many valid programs, just as a handful of recipe patterns can describe every possible meal. After judging languages by criteria in *Evaluating Languages*, today you learn the notation those languages are defined in.
+Every programming language has rules about what programs are allowed to look like, rules that are too precise to describe in plain English. BNF (Backus-Naur Form) and its extension EBNF are the standard notations for writing those rules down exactly. Think of BNF like a recipe template: it describes the *structure* of a valid dish (a statement, an expression, a declaration) without pinning down the specific ingredients, and from a finite set of such templates you can generate infinitely many valid programs, just as a handful of recipe patterns can describe every possible meal. After judging languages by criteria in *Evaluating Languages*, today you learn the notation those languages are defined in.
 
 ## Learning Goals
 
@@ -48,7 +48,7 @@ This part introduces the core BNF notation and gives you practice deriving strin
 
 ## 1. The Notation
 
-A grammar rule says "this category of thing can be built from these smaller pieces." You start with one big category (the start symbol) and keep substituting until only concrete tokens remain — that substitution sequence is a derivation. The key insight is that recursion lets a tiny grammar describe an infinite language.
+A grammar rule says "this category of thing can be built from these smaller pieces." You start with one big category (the start symbol) and keep substituting until only concrete tokens remain; that substitution sequence is a derivation. The key insight is that recursion lets a tiny grammar describe an infinite language.
 
 **A BNF grammar is a set of rewriting rules.** Each rule (a *production*) has the form
 
@@ -69,13 +69,13 @@ A tiny grammar for signed integers:
 
 Note the move that makes BNF powerful: `<digits>` is defined **recursively**, using itself, which is how a finite set of rules describes infinitely many strings. Repetition in BNF *is* recursion.
 
-> **Watch out!** Beginners often confuse **terminals** and **nonterminals**. Terminals (`0`, `1`, `+`, `-`) are the actual characters that appear in a valid program — you cannot substitute them further. Nonterminals (`<digit>`, `<digits>`, `<signed>`) are placeholders that must eventually be replaced. If you apply a rule to a terminal or forget to replace a nonterminal, your derivation is invalid.
+> **Watch out!** Beginners often confuse **terminals** and **nonterminals**. Terminals (`0`, `1`, `+`, `-`) are the actual characters that appear in a valid program; you cannot substitute them further. Nonterminals (`<digit>`, `<digits>`, `<signed>`) are placeholders that must eventually be replaced. If you apply a rule to a terminal or forget to replace a nonterminal, your derivation is invalid.
 
 ---
 
 ## Model 1: Derive It
 
-In this model you practice writing out a derivation step by step — the same mechanical process a parser performs automatically. Each step replaces exactly one nonterminal with one of its alternatives. Work slowly at first; the discipline of one-rule-at-a-time is what makes derivations checkable.
+In this model you practice writing out a derivation step by step, the same mechanical process a parser performs automatically. Each step replaces exactly one nonterminal with one of its alternatives. Work slowly at first; the discipline of one-rule-at-a-time is what makes derivations checkable.
 
 Using the grammar above, derive the string `-42`.
 
@@ -87,7 +87,7 @@ Using the grammar above, derive the string `-42`.
 
 ### Worked Example: deriving `-42`
 
-Do CTQ 1 as a team first. One rule application per line, and the rule used named on the right — that discipline is what makes a derivation checkable by someone else.
+Do CTQ 1 as a team first. One rule application per line, and the rule used named on the right; that discipline is what makes a derivation checkable by someone else.
 
 ```
 <signed>
@@ -100,18 +100,18 @@ Do CTQ 1 as a team first. One rule application per line, and the rule used named
 = -42
 ```
 
-Six steps. **CTQ 2's formula:** one step for `<signed>`, one for the sign, then for a $d$-digit number you need $d$ applications of a `<number>` rule and $d$ applications of `<digit>` — so $2 + 2d$ steps in total. For `-42` that is $2 + 4 = 6$ yes, and for `-12345` it predicts $2 + 10 = 12$.
+Six steps. **CTQ 2's formula:** one step for `<signed>`, one for the sign, then for a $d$-digit number you need $d$ applications of a `<number>` rule and $d$ applications of `<digit>`, so $2 + 2d$ steps in total. For `-42` that is $2 + 4 = 6$ yes, and for `-12345` it predicts $2 + 10 = 12$.
 
-**CTQ 3, answered.** `4-2` cannot be derived because the only rule that produces a `-` is `<sign> -> -`, and `<sign>` appears exactly once in `<signed> -> <sign> <number>` — at the very front. There is no production anywhere that puts a `-` *between* digits, so no sequence of rule applications can reach it. This grammar describes signed numerals, not subtraction; the string `4-2` belongs to a different language.
+**CTQ 3, answered.** `4-2` cannot be derived because the only rule that produces a `-` is `<sign> -> -`, and `<sign>` appears exactly once in `<signed> -> <sign> <number>`, at the very front. There is no production anywhere that puts a `-` *between* digits, so no sequence of rule applications can reach it. This grammar describes signed numerals, not subtraction; the string `4-2` belongs to a different language.
 4. Modify the grammar so that a signed number may also be written with no digits after the sign... wait, should it? Decide as a team whether `-` alone should be a signed integer, and notice that you are now doing *language design*.
 
 ---
 
 ## 2. EBNF: Conveniences, Not New Power
 
-EBNF doesn't make grammars more powerful — every EBNF grammar can be rewritten in plain BNF. What EBNF adds is readability: instead of a recursive rule with two alternatives, you write a loop symbol. More importantly, those symbols map almost one-to-one onto the code you will write when implementing a parser.
+EBNF doesn't make grammars more powerful; every EBNF grammar can be rewritten in plain BNF. What EBNF adds is readability: instead of a recursive rule with two alternatives, you write a loop symbol. More importantly, those symbols map almost one-to-one onto the code you will write when implementing a parser.
 
-> **Watch out!** In BNF and EBNF, the `|` symbol means **alternation** ("or" between two grammar choices) — it is *not* the bitwise OR operator you know from Python or C. Writing `"+" | "-"` in a grammar means "either a plus sign or a minus sign," not a bitwise operation on two values.
+> **Watch out!** In BNF and EBNF, the `|` symbol means **alternation** ("or" between two grammar choices); it is *not* the bitwise OR operator you know from Python or C. Writing `"+" | "-"` in a grammar means "either a plus sign or a minus sign," not a bitwise operation on two values.
 
 **EBNF adds shorthand for the recursion patterns BNF repeats endlessly.** Braces mean zero-or-more repetition, brackets mean optional, parentheses group:
 
@@ -138,7 +138,7 @@ Now that you can read and write basic grammars, this part applies that skill to 
 
 ## Model 2: Read a Real Rule
 
-Reading a grammar for a construct you already know well (like `if`) is a good way to check your understanding of the notation. As you work through this model, notice how design decisions you take for granted — where braces go, whether `else` is optional — are captured precisely in a single line of grammar.
+Reading a grammar for a construct you already know well (like `if`) is a good way to check your understanding of the notation. As you work through this model, notice how design decisions you take for granted (where braces go, whether `else` is optional) are captured precisely in a single line of grammar.
 
 Here is a plausible EBNF rule for a programming language's `if` statement:
 
@@ -187,7 +187,7 @@ for test in ["42", "-42", "+7", "4-2", "-", "", "007"]:
 
 ## Model 3: The Translation Pattern
 
-The code cell above shows the EBNF-to-code mapping at work: `[ sign ]` became an `if` statement and `{ digit }` became a `while` loop. This is not a coincidence — it is the systematic translation rule that you will apply throughout the parser project. Every optional construct becomes a conditional; every repeated construct becomes a loop.
+The code cell above shows the EBNF-to-code mapping at work: `[ sign ]` became an `if` statement and `{ digit }` became a `while` loop. This is not a coincidence; it is the systematic translation rule that you will apply throughout the parser project. Every optional construct becomes a conditional; every repeated construct becomes a loop.
 
 ### Critical Thinking Questions
 
@@ -197,15 +197,15 @@ The code cell above shows the EBNF-to-code mapping at work: `[ sign ]` became an
 ---
 
 
-> **The runnable version — a grammar as a Python dictionary — is in [Grammar Tooling in Python](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-grammars-in-python.md),** alongside the left-recursion detector and derivation tracer that use the same representation.
+> **The runnable version, a grammar as a Python dictionary, is in [Grammar Tooling in Python](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-grammars-in-python.md),** alongside the left-recursion detector and derivation tracer that use the same representation.
 
 # Part III: Synthesis and Practice (At Home)
 
 > These two models are at-home reinforcement, not in-class work. Do them before the next session.
 
-## Model 5 (At Home): BNF vs EBNF — Two Notations, One Language
+## Model 5 (At Home): BNF vs EBNF, Two Notations, One Language
 
-This model makes the equivalence between BNF and EBNF concrete by running both side by side on the same inputs. After this exercise you should be comfortable translating between the two forms — a skill you will need when reading language manuals (which often use BNF) and when writing parsers (where EBNF maps more directly to code).
+This model makes the equivalence between BNF and EBNF concrete by running both side by side on the same inputs. After this exercise you should be comfortable translating between the two forms, a skill you will need when reading language manuals (which often use BNF) and when writing parsers (where EBNF maps more directly to code).
 
 BNF encodes repetition as *recursion*, which forces an extra nonterminal and two alternatives for every repeated construct. EBNF adds `*` and `+` as sugar. The recognizer below demonstrates that both styles accept exactly the same strings for a comma-separated list grammar.
 
@@ -286,7 +286,7 @@ for tokens, expected, label in test_cases:
 
 ### Critical Thinking Questions
 
-14. Both columns should agree on every row. If they disagree, that is a bug in one recognizer — find it and explain the fix. (They should agree; this question asks you to *verify* equivalence, not just trust it.)
+14. Both columns should agree on every row. If they disagree, that is a bug in one recognizer; find it and explain the fix. (They should agree; this question asks you to *verify* equivalence, not just trust it.)
 15. The BNF version uses recursion; the EBNF version uses a `while` loop. Which is easier to read, and which maps more directly to the grammar notation? Does the answer change when the grammar has nested repetition?
 16. The BNF `list_tail` handles the empty case by returning `pos` unchanged. In a grammar with *two* optional suffixes, what would BNF require that EBNF avoids?
 
@@ -295,7 +295,7 @@ for tokens, expected, label in test_cases:
 
 ## Model 6 (At Home): FIRST Sets (Preview)
 
-So far you have been deriving strings by applying rules manually. A real parser has to make that choice automatically — when it sees the next token, it needs to know which rule to try. FIRST sets are the lookup table that answers that question: given a nonterminal and the next token, which alternative fires? This model gives you an early glimpse of that machinery before it is covered in depth later.
+So far you have been deriving strings by applying rules manually. A real parser has to make that choice automatically: when it sees the next token, it needs to know which rule to try. FIRST sets are the lookup table that answers that question: given a nonterminal and the next token, which alternative fires? This model gives you an early glimpse of that machinery before it is covered in depth later.
 
 The **FIRST set** of a grammar symbol is the set of terminals that can begin a string derivable from that symbol. Parsers use FIRST sets to decide which rule to apply without backtracking: if the next token is in `FIRST(A)`, try rule A. Computing FIRST sets is a fixed-point algorithm: start with the obvious cases (a terminal's FIRST is itself; an epsilon production contributes epsilon) and iterate until nothing changes.
 
@@ -396,7 +396,7 @@ for nt in ["expr", "expr_rest", "term", "term_rest", "factor"]:
 ---
 
 
-The exercises below ask you to write grammars from scratch, which is harder than reading them. Start by listing a few example strings the grammar should accept, then figure out what rule structure generates all of them. The final exercise seeds your project grammar — keep what you write.
+The exercises below ask you to write grammars from scratch, which is harder than reading them. Start by listing a few example strings the grammar should accept, then figure out what rule structure generates all of them. The final exercise seeds your project grammar; keep what you write.
 
 ## 3. Exercises
 
@@ -407,7 +407,7 @@ The exercises below ask you to write grammars from scratch, which is harder than
 
 ---
 
-## Practice (At Home) — Allison, Ch. 4: Hand-Traced Grammar Recognition
+## Practice (At Home): Allison, Ch. 4: Hand-Traced Grammar Recognition
 
 These exercises build confidence in the mapping between notation and code by writing small recognizer functions from grammar rules and tracing them on sample inputs. They directly support the *Recursive Descent Parsing* activity and the Parser assignment.
 
@@ -519,4 +519,4 @@ In your notebook: BNF was introduced in 1959 to define ALGOL and remains in ever
 
 ---
 
-Up next: the *Grammars and the Chomsky Hierarchy* activity places BNF in its theoretical home — and these grammar-writing skills feed directly into the Parser assignment.
+Up next: the *Grammars and the Chomsky Hierarchy* activity places BNF in its theoretical home, and these grammar-writing skills feed directly into the Parser assignment.

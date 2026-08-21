@@ -37,7 +37,7 @@ By the end of this activity, you will be able to:
 
 ---
 
-Everything you need to compute can be expressed with just functions. Lambda calculus has no numbers, no booleans, no if-statements — yet Church showed how to encode ALL of these as pure lambda terms. This activity builds that encoding from scratch in Python.
+Everything you need to compute can be expressed with just functions. Lambda calculus has no numbers, no booleans, no if-statements; yet Church showed how to encode ALL of these as pure lambda terms. This activity builds that encoding from scratch in Python.
 
 The calculus of *The Lambda Calculus, Part 1* had no numbers, no booleans, no data, and today we discover it needs none: **everything can be built from functions alone**. Following the same path as Gabriel Lebec's "A Flock of Functions" (our companion reading, in JavaScript), we build booleans, then numbers, then arithmetic, verifying each construction by hand and in Python. The arc: **named combinators $\rightarrow$ Church booleans $\rightarrow$ Church numerals $\rightarrow$ arithmetic as function surgery**.
 
@@ -104,9 +104,9 @@ $$
 \textbf{OR} = \lambda p. \lambda q.\, p\, p\, q
 $$
 
-> **Watch out!** Church booleans are functions, not values. `TRUE(a)(b)` returns `a` — that is the entire definition. The if-then-else `IF b t f = b(t)(f)` works because TRUE selects its first argument and FALSE selects its second. There is no special conditional syntax; the boolean *is* the branch selector.
+> **Watch out!** Church booleans are functions, not values. `TRUE(a)(b)` returns `a`: that is the entire definition. The if-then-else `IF b t f = b(t)(f)` works because TRUE selects its first argument and FALSE selects its second. There is no special conditional syntax; the boolean *is* the branch selector.
 
-> **Watch out!** Python's `lambda` returns single expressions. For multi-argument Church terms, use curried lambdas: `lambda x: lambda y: x` not `lambda x,y: x`. The curried form is what makes `TRUE(a)(b)` work — the first call returns another function that accepts `b`.
+> **Watch out!** Python's `lambda` returns single expressions. For multi-argument Church terms, use curried lambdas: `lambda x: lambda y: x` not `lambda x,y: x`. The curried form is what makes `TRUE(a)(b)` work, the first call returns another function that accepts `b`.
 
 **Step-by-step reduction: NOT TRUE**
 
@@ -130,7 +130,7 @@ AND TRUE FALSE
 ->β FALSE  ✓
 ```
 
-**Decode helper — "peek inside" a Church boolean:**
+**Decode helper, "peek inside" a Church boolean:**
 
 ```python  liascript
 TRUE  = lambda x: lambda y: x
@@ -146,7 +146,7 @@ print("church_to_bool(FALSE) =", church_to_bool(FALSE))
 
 Hand a Church boolean `True` and `False` (Python's built-ins) as its two arguments. Since TRUE selects its first argument it returns `True`; FALSE returns `False`. This is your window into the encoding.
 
-### Church Booleans — Runnable
+### Church Booleans; Runnable
 
 ```python  liascript
 # Church booleans: TRUE selects first, FALSE selects second.
@@ -198,7 +198,7 @@ print("if FALSE then 'yes' else 'no' =", FALSE("yes")("no"))
 
 # Part III: Numbers as Repetition
 
-> **Intuition before numerals:** Zero is "apply f zero times": `lambda f: lambda x: x`. One is "apply f once": `lambda f: lambda x: f(x)`. The number N is "apply f N times to x." Addition is "apply f m+n times." Multiplication is "apply (n copies of f) m times." The number *is* the iteration count — there are no digits stored anywhere.
+> **Intuition before numerals:** Zero is "apply f zero times": `lambda f: lambda x: x`. One is "apply f once": `lambda f: lambda x: f(x)`. The number N is "apply f N times to x." Addition is "apply f m+n times." Multiplication is "apply (n copies of f) m times." The number *is* the iteration count, there are no digits stored anywhere.
 
 ## 3. Church Numerals
 
@@ -237,7 +237,7 @@ SUCC ZERO
 
 **Step-by-step reduction: PLUS TWO THREE reduces to FIVE**
 
-`SUCC` shows the shape; addition shows why the encoding is more than a trick. Recall `PLUS = λm.λn.λf.λx. m f (n f x)` — "apply `f` `m` times on top of applying it `n` times."
+`SUCC` shows the shape; addition shows why the encoding is more than a trick. Recall `PLUS = λm.λn.λf.λx. m f (n f x)`: "apply `f` `m` times on top of applying it `n` times."
 
 ```
 PLUS TWO THREE
@@ -262,11 +262,11 @@ PLUS TWO THREE
 =   FIVE  ✓                                    five applications of f
 ```
 
-Count the `f`s at each stage: `THREE f x` contributes three, and `TWO f` wraps two more around them. Addition of Church numerals is literally **function composition counted** — `m + n` applications of `f` because you applied `f` `n` times and then `m` more times to the result. Nothing was added; things were nested.
+Count the `f`s at each stage: `THREE f x` contributes three, and `TWO f` wraps two more around them. Addition of Church numerals is literally **function composition counted**, `m + n` applications of `f` because you applied `f` `n` times and then `m` more times to the result. Nothing was added; things were nested.
 
 Try `MULT TWO THREE = λf.λx. m (n f) x` on your own with the same method and watch why it gives six: `n f` is "apply `f` three times" treated as a *single* function, and `m` applies **that** twice.
 
-**Decode helper — "peek inside" a Church numeral:**
+**Decode helper, "peek inside" a Church numeral:**
 
 ```python  liascript
 ZERO = lambda f: lambda x: x
@@ -287,7 +287,7 @@ Hand the numeral the successor function on Python ints and the seed 0. If the nu
 
 ---
 
-## Church Encodings — Runnable
+## Church Encodings - Runnable
 
 ```python  liascript
 # Church encodings, executable. Python lambdas ARE lambda calculus terms.
@@ -313,7 +313,7 @@ ZERO  = lambda f: lambda x: x
 SUCC  = lambda n: lambda f: lambda x: f(n(f)(x))
 PLUS  = lambda m: lambda n: lambda f: lambda x: m(f)(n(f)(x))
 MULT  = lambda m: lambda n: lambda f: m(n(f))
-EXP   = lambda m: lambda n: n(m)    # m^n — shockingly simple
+EXP   = lambda m: lambda n: n(m)    # m^n; shockingly simple
 
 ONE, TWO = SUCC(ZERO), SUCC(SUCC(ZERO))
 THREE    = PLUS(ONE)(TWO)
@@ -364,11 +364,11 @@ Under Church encoding, the expression `b(t)(e)` where b is a Church boolean impl
 
 # Part IV: Pairs and the Predecessor
 
-> **Intuition before pairs:** A pair stores two values. The pair itself is a function that takes a "selector": `lambda sel: sel(a)(b)`. FST passes `lambda x: lambda y: x` (which is TRUE/K) to extract the first element; SND passes `lambda x: lambda y: y` (which is FALSE/KI) to extract the second. You already built the selectors when you built booleans — pairs come for free.
+> **Intuition before pairs:** A pair stores two values. The pair itself is a function that takes a "selector": `lambda sel: sel(a)(b)`. FST passes `lambda x: lambda y: x` (which is TRUE/K) to extract the first element; SND passes `lambda x: lambda y: y` (which is FALSE/KI) to extract the second. You already built the selectors when you built booleans, pairs come for free.
 
 ## Model 4: Pairs and the Predecessor
 
-**Church pairs — building linked data from functions:**
+**Church pairs: building linked data from functions:**
 
 ```python  liascript
 # Church pairs: PAIR a b f = f a b
@@ -429,7 +429,7 @@ print(f"3 - 4 = {church_to_int(MINUS(THREE)(FOUR))}")   # 0 (floored)
 ---
 
 ---
-**In-class work stops here.** Everything below is homework and going-deeper material — attempt the exercises before the related assignment.
+**In-class work stops here.** Everything below is homework and going-deeper material; attempt the exercises before the related assignment.
 
 ## 4. Exercises
 
@@ -450,8 +450,8 @@ In your notebook: numbers, booleans, pairs, and conditionals all dissolved into 
 
 ## 5. Further Reading
 
-- Gabriel Lebec. "Lambda as JS, or A Flock of Functions": https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript (talk recording also online). This is the companion reading for today's module — every Python cell here mirrors a section of that talk.
-- **Lambda-Py / pycombinator** — combinators and Church encodings in Python; run every Church encoding from today interactively in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html
+- Gabriel Lebec. "Lambda as JS, or A Flock of Functions": https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript (talk recording also online). This is the companion reading for today's module: every Python cell here mirrors a section of that talk.
+- **Lambda-Py / pycombinator** (combinators and Church encodings in Python; run every Church encoding from today interactively in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html
 - Raymond Smullyan. *To Mock a Mockingbird* (1985): the combinator birds.
 - Raul Rojas. "A Tutorial Introduction to the Lambda Calculus" (online), sections on encodings.
 
@@ -459,12 +459,12 @@ In your notebook: numbers, booleans, pairs, and conditionals all dissolved into 
 
 ## Going Deeper (Optional Pointers)
 
-> **Going further:** the full Y-combinator derivation that used to live here — self-reference without names, the fixed-point equation $Y\ g = g\ (Y\ g)$, and the Z combinator for strict languages — now lives as the advanced section "Advanced: Deriving the Y Combinator" at the end of the dedicated tutorial: [Build a Lambda Calculus Reducer](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md). **Direction C of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Functional) builds on the Church encodings from this activity** — read that direction's section before choosing it.
+> **Going further:** the full Y-combinator derivation that used to live here) self-reference without names, the fixed-point equation $Y\ g = g\ (Y\ g)$, and the Z combinator for strict languages; now lives as the advanced section "Advanced: Deriving the Y Combinator" at the end of the dedicated tutorial: [Build a Lambda Calculus Reducer](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md). **Direction C of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Functional) builds on the Church encodings from this activity**: read that direction's section before choosing it.
 
-> **Going further:** the call-with-current-continuation appendix that used to live here — capturing "the rest of the computation" as a value, deriving break, return, exceptions, cooperative schedulers, generators, and backtracking from `call/cc` — now lives where it is assessed: **Direction B of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Functional) builds on this material** — read that direction's section before choosing it.
+> **Going further:** the call-with-current-continuation appendix that used to live here: capturing "the rest of the computation" as a value, deriving break, return, exceptions, cooperative schedulers, generators, and backtracking from `call/cc`, now lives where it is assessed: **Direction B of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Functional) builds on this material**; read that direction's section before choosing it.
 
-> **Going further:** the Curry-Howard correspondence appendix (programs as proofs: propositions as types, products and sums, the empty type and absurdity, a glimpse of dependent types) is a self-study topic — search "Curry-Howard correspondence" and see *Propositions as Types* by Philip Wadler when curiosity calls for it.
+> **Going further:** the Curry-Howard correspondence appendix (programs as proofs: propositions as types, products and sums, the empty type and absurdity, a glimpse of dependent types) is a self-study topic; search "Curry-Howard correspondence" and see *Propositions as Types* by Philip Wadler when curiosity calls for it.
 
 ---
 
-Up next: the *Language Design Workshop* kickoff — your team's language begins — while the Church encodings you built here power the Functional assignment.
+Up next: the *Language Design Workshop* kickoff (your team's language begins) while the Church encodings you built here power the Functional assignment.

@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tree-Walking Interpretation
 
-You have a lexer (*Tokens and Scanning*) that turns characters into tokens and a parser (*Recursive Descent Parsing*) that turns tokens into trees. Now comes the payoff: the **evaluator** turns those trees into *values* — it is the part that actually *runs* your program. Think of it as a universal translator: given any sentence in the source language (an AST node), it produces the meaning (a Python value) directly, by asking the same question recursively of every sub-sentence. After today, no magic remains between source code and output.
+You have a lexer (*Tokens and Scanning*) that turns characters into tokens and a parser (*Recursive Descent Parsing*) that turns tokens into trees. Now comes the payoff: the **evaluator** turns those trees into *values*; it is the part that actually *runs* your program. Think of it as a universal translator: given any sentence in the source language (an AST node), it produces the meaning (a Python value) directly, by asking the same question recursively of every sub-sentence. After today, no magic remains between source code and output.
 
 ## Learning Goals
 
@@ -59,9 +59,9 @@ Before writing the evaluator, place it on the map. There are two fundamentally d
 | Cost model | Pays a small translation tax on every execution of every node | Pays translation once, then runs at full speed |
 | Change the source? | Just run again | Recompile first |
 
-The pipeline you have built so far — lexer -> parser -> AST — is **identical for both**. They diverge only at this step: a compiler of your class language would consume the very same AST your parser produces and emit instructions instead of values. (That path is walked in the *Table-Driven and LR Parsing* session's compile-link-load model and the *Build a Bytecode VM* tutorial.) Everything you learn today about evaluation order and environments applies to both worlds.
+The pipeline you have built so far (lexer -> parser -> AST) is **identical for both**. They diverge only at this step: a compiler of your class language would consume the very same AST your parser produces and emit instructions instead of values. (That path is walked in the *Table-Driven and LR Parsing* session's compile-link-load model and the *Build a Bytecode VM* tutorial.) Everything you learn today about evaluation order and environments applies to both worlds.
 
-Quick check — a tree-walking interpreter and a compiler for the same language both receive the AST for `x * (y + 1)`. What does each produce from it?
+Quick check: a tree-walking interpreter and a compiler for the same language both receive the AST for `x * (y + 1)`. What does each produce from it?
 
 - [( )] Both produce the numeric answer
 - [(X)] The interpreter produces the numeric answer; the compiler produces code that will compute it when run
@@ -83,9 +83,9 @@ and so on for every node class: evaluate children first (post-order, exactly as 
 
 ---
 
-**Model 1 preview:** This model shows the minimal but complete core of a tree-walking evaluator. It handles numbers, variables, unary negation, and the four arithmetic operators. The key insight is that every case follows the same pattern — inspect the node type, recursively evaluate any children, then combine. Notice that the environment (`env`) is passed into every call so that variable lookups always reflect current state.
+**Model 1 preview:** This model shows the minimal but complete core of a tree-walking evaluator. It handles numbers, variables, unary negation, and the four arithmetic operators. The key insight is that every case follows the same pattern: inspect the node type, recursively evaluate any children, then combine. Notice that the environment (`env`) is passed into every call so that variable lookups always reflect current state.
 
-## Model 1: The Evaluator — Build it from Scratch
+## Model 1: The Evaluator, Build it from Scratch
 
 This is the complete evaluator. Every line is consequential. Read it, trace it, then run it:
 
@@ -155,7 +155,7 @@ print(f"-(price+1) = {evaluate(tree3, env)}")   # -6.0
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-**Step-by-step worked example — tracing `(+ 1 (* 2 3))`**
+**Step-by-step worked example, tracing `(+ 1 (* 2 3))`**
 
 Suppose the AST is `BinOp("+", Num(1), BinOp("*", Num(2), Num(3)))` and `env = {}`.
 
@@ -172,7 +172,7 @@ evaluate( BinOp("+", Num(1), BinOp("*", Num(2), Num(3))), env )
   1 + 6 = 7 -> return 7
 ```
 
-**Key observations:** (1) Multiplication finishes entirely before addition sees any result. (2) The environment is threaded through every call but never consulted for `Num` nodes. (3) Operator precedence was *already encoded* in the tree structure by the parser — the evaluator never re-derives it.
+**Key observations:** (1) Multiplication finishes entirely before addition sees any result. (2) The environment is threaded through every call but never consulted for `Num` nodes. (3) Operator precedence was *already encoded* in the tree structure by the parser; the evaluator never re-derives it.
 
 > **Watch out!** Students often try to evaluate the operator before the children (pre-order) by writing `result = node.op` and then recursing. That will fail: you need the children's *values* before you can apply the operator. Evaluation is always post-order for expressions.
 
@@ -185,7 +185,7 @@ evaluate( BinOp("+", Num(1), BinOp("*", Num(2), Num(3))), env )
 
 ---
 
-**Model 2 preview:** Model 1 was correct but silent. This model adds instrumented tracing so you can *see* the call tree printed as `evaluate` runs. It is the same recursion wearing a lab coat — each call announces itself before recursing and reports its result when it returns. Studying this output is the fastest way to build the mental model you need before writing evaluators for richer node types.
+**Model 2 preview:** Model 1 was correct but silent. This model adds instrumented tracing so you can *see* the call tree printed as `evaluate` runs. It is the same recursion wearing a lab coat: each call announces itself before recursing and reports its result when it returns. Studying this output is the fastest way to build the mental model you need before writing evaluators for richer node types.
 
 ## Model 2: Tracing Evaluation Step by Step
 
@@ -226,7 +226,7 @@ def _eval_inner(node, env, indent):
         print(f"{indent}Var({node.name!r}) -> {val}  [lookup in env]")
         return val
     if isinstance(node, BinOp):
-        print(f"{indent}BinOp({node.op!r}) — evaluating children...")
+        print(f"{indent}BinOp({node.op!r}) - evaluating children...")
         left  = evaluate_traced(node.left, env)
         right = evaluate_traced(node.right, env)
         ops = {"+": lambda a,b: a+b, "-": lambda a,b: a-b,
@@ -258,11 +258,11 @@ print(f"\nFinal result: {result}")
 
 > **Continued next session.** Statements, state, and the REPL are Day 2 of this topic: [Control Flow and Statement Semantics](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-controlflowsemantics.md).
 
-# Part III: Tree Traversal — Why Post-Order, Not Breadth-First
+# Part III: Tree Traversal, Why Post-Order, Not Breadth-First
 
-## Model 5: BFS vs DFS — Why Evaluators Use Post-Order
+## Model 5: BFS vs DFS, Why Evaluators Use Post-Order
 
-When you evaluate an AST, you always use *depth-first, post-order* traversal: left child first, right child next, then the current node. But why not breadth-first search? After all, BFS is the "level-by-level" traversal, and it seems simpler. This model shows both traversals on the same tree and makes the answer concrete: evaluating a node requires its children's *values*, which are only available after the children have been fully evaluated. BFS visits children of a node before it visits their children's children — it cannot satisfy the "children before parent" requirement of evaluation.
+When you evaluate an AST, you always use *depth-first, post-order* traversal: left child first, right child next, then the current node. But why not breadth-first search? After all, BFS is the "level-by-level" traversal, and it seems simpler. This model shows both traversals on the same tree and makes the answer concrete: evaluating a node requires its children's *values*, which are only available after the children have been fully evaluated. BFS visits children of a node before it visits their children's children; it cannot satisfy the "children before parent" requirement of evaluation.
 
 > *Adapted from [`bfs.py`](https://github.com/chuckallison/foundations-of-computing/blob/main/code/bfs.py) in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
@@ -359,11 +359,11 @@ print(f"\nEvaluated result: {eval_postorder(expr_tree)}  (expected 9.0)")
 
 **CTQ M5.2** Post-order guarantees that every node is processed *after all its descendants*. Is this property true of DFS pre-order as well? Give a concrete example of a case where pre-order evaluation fails for the same reason BFS fails.
 
-**CTQ M5.3** The `eval_postorder` function uses recursion — but the call stack is implicit. Rewrite it iteratively using an explicit stack, producing the same result. What is the relationship between the recursive call stack and the explicit stack you used?
+**CTQ M5.3** The `eval_postorder` function uses recursion, but the call stack is implicit. Rewrite it iteratively using an explicit stack, producing the same result. What is the relationship between the recursive call stack and the explicit stack you used?
 
 ---
 
-## Practice — Allison Reading 6.3
+## Practice: Allison Reading 6.3
 
 An evaluator that processes an AST uses which traversal order?
 
@@ -383,7 +383,7 @@ The BFS traversal of the tree for `(1 + 2) * 3` visits nodes in order:
 
 [( )] `1 2 + 3 *`
 [( )] `* + 3 1 2`
-[(X)] `* + 3 1 2` — root first, then level 1, then leaves
+[(X)] `* + 3 1 2`: root first, then level 1, then leaves
 [( )] `1 + 2 * 3`
 
 1. *Three traversals.* Build the expression tree for `a * b + c * d` (where `+` is the root). Write out all three traversal orders by hand, then verify with code.
@@ -416,7 +416,7 @@ In your notebook: you have now run a program in a language whose every component
 - Douglas Thain. *Introduction to Compilers and Language Design*, Chapter 5 and interpretation notes.
 - Robert Nystrom. *Crafting Interpreters*, "Evaluating Expressions" and "Statements and State" (online): our exact path, expanded.
 - Shriram Krishnamurthi. *PLAI*, the interpreter chapters, for the denotational view.
-- Python's `ast.NodeVisitor` — the standard library's version of the visitor pattern you just wrote by hand.
+- Python's `ast.NodeVisitor`: the standard library's version of the visitor pattern you just wrote by hand.
 
 ---
 
@@ -424,10 +424,10 @@ In your notebook: you have now run a program in a language whose every component
 
 The core lesson above stands on its own. The deep-dive appendices that used to follow it now live elsewhere:
 
-> **Going further:** the material that used to live here — the standalone start-to-finish pipeline (tokenizer, parser, evaluator, statement executor, error reporting, closures, and a complete REPL, assembled as one program) — is covered in depth in the dedicated tutorial: [Build a Complete Interpreter in Python — Step by Step](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md), the complete start-to-finish companion for the Interpreter assignment. Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here, the standalone start-to-finish pipeline (tokenizer, parser, evaluator, statement executor, error reporting, closures, and a complete REPL, assembled as one program), is covered in depth in the dedicated tutorial: [Build a Complete Interpreter in Python: Step by Step](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md), the complete start-to-finish companion for the Interpreter assignment. Explore it when your project or curiosity calls for it.
 
-> **Going further:** the operational-semantics appendix (specifying languages with inference rules: judgments, big-step and small-step rules, and derivation trees) is now a self-study topic — search "big-step operational semantics" or start with Chapter 3 of Benjamin Pierce's *Types and Programming Languages* when curiosity calls for it.
+> **Going further:** the operational-semantics appendix (specifying languages with inference rules: judgments, big-step and small-step rules, and derivation trees) is now a self-study topic; search "big-step operational semantics" or start with Chapter 3 of Benjamin Pierce's *Types and Programming Languages* when curiosity calls for it.
 
 ---
 
-Up next: the *Binding and Scope* activity confronts the first crack in this evaluator — one flat dictionary of variables — and together they anchor the Interpreter assignment.
+Up next: the *Binding and Scope* activity confronts the first crack in this evaluator (one flat dictionary of variables) and together they anchor the Interpreter assignment.

@@ -32,7 +32,7 @@ $$
 
 with a worst-case exponential blowup in state count ($2^{|Q|}$ subsets) as the price of determinism, a classic time-space-simplicity trade.
 
-> **Watch out!** NFAs and DFAs recognize *exactly the same class of languages* — neither is more powerful. NFAs are simply more *compact to write*: the ends-in-`ab` NFA needs 3 states while the equivalent DFA needs 4. The equivalence is proven by the subset construction, not assumed.
+> **Watch out!** NFAs and DFAs recognize *exactly the same class of languages*; neither is more powerful. NFAs are simply more *compact to write*: the ends-in-`ab` NFA needs 3 states while the equivalent DFA needs 4. The equivalence is proven by the subset construction, not assumed.
 
 An NFA has 4 states. The subset-construction DFA recognizing the same language has at most:
 
@@ -52,7 +52,7 @@ The NFA "ends in ab" has 3 states: start/loop (q0), saw-a (q1), saw-ab (q2). The
 
 ## Model 3: NFA Simulation
 
-Simulating an NFA does not require any magic or backtracking. Instead of tracking a single current state, the simulator tracks the *set* of all states the NFA could be in right now — every live path, simultaneously. Each input symbol advances every state in that set and unions the results. This is the subset construction running lazily, one character at a time, and it costs at most $O(k)$ work per symbol for a $k$-state NFA.
+Simulating an NFA does not require any magic or backtracking. Instead of tracking a single current state, the simulator tracks the *set* of all states the NFA could be in right now, every live path, simultaneously. Each input symbol advances every state in that set and unions the results. This is the subset construction running lazily, one character at a time, and it costs at most $O(k)$ work per symbol for a $k$-state NFA.
 
 ```python
 {% raw %}
@@ -96,7 +96,7 @@ run_nfa(ENDS_IN_AB_NFA, "aab", trace=True)
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **Watch out!** An NFA does not "guess" which path to take — that framing makes it sound like luck is involved. The machine *explores all paths simultaneously*, and it accepts if *any* of them reaches an accepting state. The simulation above makes this concrete: `current` is always a set, never a single lucky choice.
+> **Watch out!** An NFA does not "guess" which path to take; that framing makes it sound like luck is involved. The machine *explores all paths simultaneously*, and it accepts if *any* of them reaches an accepting state. The simulation above makes this concrete: `current` is always a set, never a single lucky choice.
 
 ### Critical Thinking Questions
 
@@ -106,9 +106,9 @@ run_nfa(ENDS_IN_AB_NFA, "aab", trace=True)
 
 ---
 
-## Model 4: Subset Construction — NFA -> DFA
+## Model 4: Subset Construction, NFA -> DFA
 
-The subset construction is the key insight that connects NFAs to DFAs. Each DFA state corresponds to a *frozenset* of NFA states — "the set of places the NFA could be after reading this much input." The algorithm simply performs a reachability search over those sets, building the DFA transition table as it goes. Once you see the code, you will notice that Model 3's simulation was already doing this implicitly on every input string.
+The subset construction is the key insight that connects NFAs to DFAs. Each DFA state corresponds to a *frozenset* of NFA states, "the set of places the NFA could be after reading this much input." The algorithm simply performs a reachability search over those sets, building the DFA transition table as it goes. Once you see the code, you will notice that Model 3's simulation was already doing this implicitly on every input string.
 
 ```python
 # Full subset construction: convert an NFA to an equivalent DFA.
@@ -191,7 +191,7 @@ for s in ["ab", "aab", "abab", "ba", "a", "b", ""]:
 
 ### Critical Thinking Questions
 
-11. How many DFA states did the subset construction produce for the ends-in-ab NFA? Was there exponential blowup? (For this NFA, the answer is no — why not?)
+11. How many DFA states did the subset construction produce for the ends-in-ab NFA? Was there exponential blowup? (For this NFA, the answer is no; why not?)
 12. The subset construction creates DFA states that are *sets* of NFA states. In what sense is this DFA tracking "where the NFA might be"?
 13. Sketch Thompson's construction (boxes and epsilon arrows) for the regex `a(b|c)*`. How many states does it produce, and why is an NFA the natural output of a regex compiler rather than a DFA?
 
@@ -211,15 +211,15 @@ for s in ["ab", "aab", "abab", "ba", "a", "b", ""]:
 
 ---
 
-# Part IV: Formal Language Theory in Practice — Adapted Examples
+# Part IV: Formal Language Theory in Practice, Adapted Examples
 
 These three models adapt Python programs from *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE). Each is rewritten to fit the dict representation used above; the ideas are Allison's and the code is adapted for CS374.
 
 ---
 
-## Model 5: Ends-With-b — A Concrete DFA Runner
+## Model 5: Ends-With-b, A Concrete DFA Runner
 
-The "ends-with-b" DFA has exactly two states: *not-ending-in-b* (start) and *just-saw-b* (accepting). Its transition table is small enough to verify by hand before running, making it ideal for building confidence in DFA tracing. The runner below is the same function as Model 2 applied to a new machine description — the runner never changes, only the data does.
+The "ends-with-b" DFA has exactly two states: *not-ending-in-b* (start) and *just-saw-b* (accepting). Its transition table is small enough to verify by hand before running, making it ideal for building confidence in DFA tracing. The runner below is the same function as Model 2 applied to a new machine description; the runner never changes, only the data does.
 
 > *Adapted from [`end_with_b.py`](https://github.com/chuckallison/foundations-of-computing/blob/main/code/end_with_b.py) in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
@@ -273,7 +273,7 @@ run_dfa(ENDS_WITH_B, "aab", trace=True)
 
 ---
 
-## Model 6: Is the Language Empty? — DFS Reachability
+## Model 6: Is the Language Empty? DFS Reachability
 
 A fundamental question about any finite automaton: *does it accept anything at all?* If no accepting state is reachable from the start state, the language is empty. This is a graph-reachability question solved by DFS: treat the NFA's transition graph as a directed graph and search for any accepting node, stopping as soon as one is found.
 
@@ -304,7 +304,7 @@ def language_is_empty(nfa):
                 stack.append(neighbor)
     return True              # no accepting state reachable: IS empty
 
-# Test 1: ends-in-ab NFA — language is NOT empty
+# Test 1: ends-in-ab NFA, language is NOT empty
 ENDS_IN_AB = {
     "start":  frozenset({"q0"}),
     "accept": frozenset({"q2"}),
@@ -314,13 +314,13 @@ ENDS_IN_AB = {
         ("q1","b"): frozenset({"q2"}),
     },
 }
-# Test 2: accepting state is unreachable — language IS empty
+# Test 2: accepting state is unreachable, language IS empty
 DEAD_ACCEPT = {
     "start":  frozenset({"s0"}),
     "accept": frozenset({"s2"}),
     "delta":  {("s0","a"): frozenset({"s1"})},
 }
-# Test 3: start state IS an accepting state — language contains the empty string
+# Test 3: start state IS an accepting state, language contains the empty string
 ACCEPTS_EPSILON = {
     "start":  frozenset({"q0"}),
     "accept": frozenset({"q0"}),
@@ -332,17 +332,17 @@ print(f"accepts-epsilon empty? {language_is_empty(ACCEPTS_EPSILON)}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-**CTQ M6.1** The DFS ignores *which symbol* labels each transition — it treats the NFA as a plain directed graph. Why is this correct for the emptiness question? What would need to change if we also wanted to find a *witness string* (the shortest string accepted)?
+**CTQ M6.1** The DFS ignores *which symbol* labels each transition; it treats the NFA as a plain directed graph. Why is this correct for the emptiness question? What would need to change if we also wanted to find a *witness string* (the shortest string accepted)?
 
 **CTQ M6.2** Replace the DFS stack with a `collections.deque` (BFS). Does the emptiness answer change? What does change, and when would BFS be preferable for finding a witness string?
 
-**CTQ M6.3** Construct an NFA with 10 states whose language is empty. Describe its structure in one sentence — what makes every accepting state unreachable?
+**CTQ M6.3** Construct an NFA with 10 states whose language is empty. Describe its structure in one sentence: what makes every accepting state unreachable?
 
 ---
 
 ## Model 7: Binary Addition as a Carry-State Machine
 
-Can a finite automaton *compute*? Yes — if it produces output on each transition rather than only a yes/no verdict at the end. This is a **Mealy machine**. Binary addition is the perfect case: the carry from one column is exactly one bit of state, so a 2-state machine handles addition of any length. Each step reads a pair of bits, outputs a sum bit, and transitions to the next carry state — $n$ steps for two $n$-bit numbers.
+Can a finite automaton *compute*? Yes: if it produces output on each transition rather than only a yes/no verdict at the end. This is a **Mealy machine**. Binary addition is the perfect case: the carry from one column is exactly one bit of state, so a 2-state machine handles addition of any length. Each step reads a pair of bits, outputs a sum bit, and transitions to the next carry state, $n$ steps for two $n$-bit numbers.
 
 > *Adapted from [`binadd.py`](https://github.com/chuckallison/foundations-of-computing/blob/main/code/binadd.py) in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
@@ -399,17 +399,17 @@ for i,(ba,bb) in enumerate(zip(a_bits, b_bits)):
 
 **CTQ M7.1** The `carry` variable is the machine's only state and takes exactly two values. Draw the Mealy machine: two nodes (labeled 0 and 1) with arrows labeled `(bit_a, bit_b) / sum_bit`. How many arrows does the complete diagram have?
 
-**CTQ M7.2** The machine handles numbers of any length using exactly 2 states. What would change — in the *number of states*, not the implementation — if you extended the machine to base-10 addition?
+**CTQ M7.2** The machine handles numbers of any length using exactly 2 states. What would change (in the *number of states*, not the implementation) if you extended the machine to base-10 addition?
 
 **CTQ M7.3** The machine processes bits least-significant first, which is natural for carry propagation. Redesign it to process most-significant first. What additional data structure do you need, and why?
 
 ---
 
-## Practice — Allison Readings 2.1 and 2.2
+## Practice: Allison Readings 2.1 and 2.2
 
 A DFA accepting binary strings representing multiples of 3 needs at minimum:
 
-[(X)] 3 states — one per remainder mod 3
+[(X)] 3 states, one per remainder mod 3
 [( )] 4 states
 [( )] 2 states (even/odd)
 [( )] Infinitely many states (since there are infinitely many multiples of 3)
@@ -425,7 +425,7 @@ An NFA with 5 states is converted to a DFA via the subset construction. The DFA 
 
 [( )] 5 states
 [( )] 10 states
-[(X)] 32 states — one per subset of the 5 NFA states
+[(X)] 32 states, one per subset of the 5 NFA states
 [( )] 25 states
 
 1. *Divisibility DFA.* Draw a DFA over $\{0,1\}$ that accepts binary numbers divisible by 3. Label each state with the remainder it represents. Verify on: `0` (0), `11` (3), `110` (6), `101` (5).
@@ -440,7 +440,7 @@ An NFA with 5 states is converted to a DFA via the subset construction. The DFA 
 
 ## Reflection Prompt
 
-In your notebook: the DFA's whole intelligence is choosing what little to remember (one parity bit, the last two characters). Describe one situation in your own studying or work where deliberately remembering *less*, but the right less, made you more effective. Also: the NFA/DFA equivalence says that nondeterminism is "free" at the cost of state explosion. Does this idea appear elsewhere in computer science — a conceptually clean but potentially expensive algorithm that compiles into a deterministic one?
+In your notebook: the DFA's whole intelligence is choosing what little to remember (one parity bit, the last two characters). Describe one situation in your own studying or work where deliberately remembering *less*, but the right less, made you more effective. Also: the NFA/DFA equivalence says that nondeterminism is "free" at the cost of state explosion. Does this idea appear elsewhere in computer science, a conceptually clean but potentially expensive algorithm that compiles into a deterministic one?
 
 ---
 
@@ -449,11 +449,11 @@ In your notebook: the DFA's whole intelligence is choosing what little to rememb
 - Douglas Thain. *Introduction to Compilers and Language Design*, Chapter 3.
 - Michael Sipser. *Introduction to the Theory of Computation*, Chapter 1.
 - Russ Cox. "Regular Expression Matching Can Be Simple And Fast" (online): Thompson's construction in production.
-- [Automata Tutor](https://automata.cs.ru.nl/) — interactive DFA/NFA design and verification tool.
+- [Automata Tutor](https://automata.cs.ru.nl/): interactive DFA/NFA design and verification tool.
 
 ---
 
-Up next: the *Tokens and Scanning* activity turns this machinery into a working lexer — and these constructions are the heart of the Automata assignment.
+Up next: the *Tokens and Scanning* activity turns this machinery into a working lexer, and these constructions are the heart of the Automata assignment.
 
 # Answer Key
 
@@ -461,7 +461,7 @@ Work the models above with your team before reading these. Each one answers a Cr
 
 ### Worked Example: subset construction, worked to completion
 
-Here is the NFA for "ends in `ab`" (CTQ 2's machine, built the easy way — with nondeterminism). State `q0` loops on everything and guesses when to start matching:
+Here is the NFA for "ends in `ab`" (CTQ 2's machine, built the easy way, with nondeterminism). State `q0` loops on everything and guesses when to start matching:
 
 ```
         a,b
@@ -470,7 +470,7 @@ Here is the NFA for "ends in `ab`" (CTQ 2's machine, built the easy way — with
    --> (q0) --a--> (q1) --b--> ((q2))
 ```
 
-`q0` on `a` has **two** choices: stay in `q0` or move to `q1`. That is the nondeterminism. Subset construction removes it by making each DFA state a *set* of NFA states — "all the places the NFA could be right now."
+`q0` on `a` has **two** choices: stay in `q0` or move to `q1`. That is the nondeterminism. Subset construction removes it by making each DFA state a *set* of NFA states, "all the places the NFA could be right now."
 
 Start from `{q0}` and repeatedly compute where each symbol leads:
 
@@ -480,7 +480,7 @@ Start from `{q0}` and repeatedly compute where each symbol leads:
 | `B = {q0, q1}` | `{q0, q1}` = B | `{q0, q2}` = **C** | no |
 | `C = {q0, q2}` | `{q0, q1}` = B | `{q0}` = A | **yes** (contains `q2`) |
 
-No new sets appear, so the construction is done: **three DFA states**, from three NFA states. Read the meaning off the sets — `A` = "have not just seen an `a`", `B` = "just saw an `a`, so a `b` would finish", `C` = "just finished an `ab`". That is exactly the "what does each state remember?" answer CTQ 2 asks for, and you did not have to guess it; the algorithm produced it.
+No new sets appear, so the construction is done: **three DFA states**, from three NFA states. Read the meaning off the sets: `A` = "have not just seen an `a`", `B` = "just saw an `a`, so a `b` would finish", `C` = "just finished an `ab`". That is exactly the "what does each state remember?" answer CTQ 2 asks for, and you did not have to guess it; the algorithm produced it.
 
 > Subset construction can blow up: $n$ NFA states admit up to $2^n$ subsets. Here we got 3 instead of 8 because most subsets were unreachable, which is the usual outcome in practice.
 
@@ -522,7 +522,7 @@ The outer `ε` from `9` straight to `10` is what makes zero repetitions legal; t
    (1) --a--> (2) --ε--> (9) --[ (b|c)* ]--> ((10))
 ```
 
-Ten states, and every one of them is forced — no creativity anywhere. That mechanical quality is the point: it is why a program can do this, which is exactly what `lab-automata.md` asks you to implement. Count the `ε` transitions and notice how many are pure bookkeeping; a real implementation usually removes them afterward with an ε-closure pass.
+Ten states, and every one of them is forced, no creativity anywhere. That mechanical quality is the point: it is why a program can do this, which is exactly what `lab-automata.md` asks you to implement. Count the `ε` transitions and notice how many are pure bookkeeping; a real implementation usually removes them afterward with an ε-closure pass.
 
 
 ---

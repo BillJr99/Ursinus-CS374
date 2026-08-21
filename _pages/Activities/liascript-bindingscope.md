@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Names, Binding, and Scope
 
-Every program you write is a web of names — `x`, `count`, `add`, `config` — and the language decides, sometimes before you even run the code, what each name means and where that meaning is visible. Scope is like the visibility rules at a party: you can only introduce yourself to people in the same room or outer rooms, not rooms you haven't entered yet. Understanding these rules is what separates a programmer who debugs by intuition from one who reasons about their code with confidence.
+Every program you write is a web of names (`x`, `count`, `add`, `config`) and the language decides, sometimes before you even run the code, what each name means and where that meaning is visible. Scope is like the visibility rules at a party: you can only introduce yourself to people in the same room or outer rooms, not rooms you haven't entered yet. Understanding these rules is what separates a programmer who debugs by intuition from one who reasons about their code with confidence.
 
 ## Learning Goals
 
@@ -53,7 +53,7 @@ Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Present
 
 ---
 
-This model establishes the central vocabulary: a **binding** is the attachment of a name to some attribute (a value, a type, a memory address), and the moment that attachment is made is the **binding time**. The earlier a binding is made, the more the language can check and optimize ahead of time; the later it is made, the more flexibility the programmer has at runtime. As you work through the table, ask yourself: could the language have determined this earlier — and what would it gain or lose by doing so?
+This model establishes the central vocabulary: a **binding** is the attachment of a name to some attribute (a value, a type, a memory address), and the moment that attachment is made is the **binding time**. The earlier a binding is made, the more the language can check and optimize ahead of time; the later it is made, the more flexibility the programmer has at runtime. As you work through the table, ask yourself: could the language have determined this earlier, and what would it gain or lose by doing so?
 
 ## Model 1: Binding Time Sort
 
@@ -90,7 +90,7 @@ print(f"After a = 200: a={a}, b={b}  (b unchanged)")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **Watch out!** A common mistake is to say "Python is dynamically typed, so Python has no binding times." Every language has binding times — Python just moves the *type* binding from compile time to run time. The object's type is fixed once created; what changes is which object the name points to. When you run `x = 42` and then `x = "hello"`, Python is not changing the number `42` into a string — it is re-binding the name `x` to a completely different object.
+> **Watch out!** A common mistake is to say "Python is dynamically typed, so Python has no binding times." Every language has binding times; Python just moves the *type* binding from compile time to run time. The object's type is fixed once created; what changes is which object the name points to. When you run `x = 42` and then `x = "hello"`, Python is not changing the number `42` into a string; it is re-binding the name `x` to a completely different object.
 
 ### Critical Thinking Questions
 
@@ -132,7 +132,7 @@ This model makes the static-versus-dynamic distinction concrete by showing the s
 
 ## Model 2: Be Both Resolvers
 
-**Python is statically scoped — verify it:**
+**Python is statically scoped. Verify it:**
 
 ```python
 # Static scope in action: Python resolves print(x) inside show() textually.
@@ -161,14 +161,14 @@ print(outer())                      # ('inner', 'outer')
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **Watch out!** Students often confuse **shadowing** with **assignment**. When `demo()` writes `x = 99`, it does *not* change the global `x` — it creates a brand-new local binding that happens to share the same name. The global `x` still equals `10` after `demo()` returns. Shadowing is about creating a second binding in an inner region; assignment is about updating an existing binding. These are completely different operations with completely different effects on the enclosing scope.
+> **Watch out!** Students often confuse **shadowing** with **assignment**. When `demo()` writes `x = 99`, it does *not* change the global `x`; it creates a brand-new local binding that happens to share the same name. The global `x` still equals `10` after `demo()` returns. Shadowing is about creating a second binding in an inner region; assignment is about updating an existing binding. These are completely different operations with completely different effects on the enclosing scope.
 
 **Step-by-step trace of name lookup under static scope** (for the `demo()` -> `show()` call above):
 
 1. `demo()` is called. Python creates a new local frame for `demo`. It executes `x = 99`, binding `x` to `99` **in `demo`'s local frame only**.
 2. `show()` is called from inside `demo`. Python creates a new local frame for `show`. It has no local `x`.
 3. `show` uses `x` in `print(...)`. Python walks **textual** enclosing regions: first `show`'s own locals (no `x`), then the **global module scope** (where `x = 10` lives). It finds `x = 10` there and uses it.
-4. Python never looks at `demo`'s frame when resolving `show`'s names — `demo` is not a textual enclosing region of `show`. Both `show` and `demo` are defined at the top level; they are siblings, not parent and child in the text.
+4. Python never looks at `demo`'s frame when resolving `show`'s names; `demo` is not a textual enclosing region of `show`. Both `show` and `demo` are defined at the top level; they are siblings, not parent and child in the text.
 5. After both calls return, the global `x` is still `10`, untouched.
 
 **Simulate dynamic scope in Python:**
@@ -208,7 +208,7 @@ A function `f` uses a variable `config` that it does not declare. Under **dynami
 
 [( )] The global `config` from when `f` was defined
 [(X)] The most recent `config` on the call stack when `f` executes
-[( )] An error — undefined variables are always errors
+[( )] An error, undefined variables are always errors
 [( )] The `config` in `f`'s textual enclosing scope
 
 ### Critical Thinking Questions
@@ -220,7 +220,7 @@ A function `f` uses a variable `config` that it does not declare. Under **dynami
 
 ---
 
-Python does not merely distinguish "local" from "global" — it has four distinct scope layers that are searched in a fixed order. This model traces that order and surfaces the single most common Python scope bug: assigning to a name inside a function makes Python treat that name as local *throughout the entire function*, even lines before the assignment. This behavior is surprising, but completely consistent once you understand the rule.
+Python does not merely distinguish "local" from "global"; it has four distinct scope layers that are searched in a fixed order. This model traces that order and surfaces the single most common Python scope bug: assigning to a name inside a function makes Python treat that name as local *throughout the entire function*, even lines before the assignment. This behavior is surprising, but completely consistent once you understand the rule.
 
 ## Model 3: Python's LEGB Rule
 
@@ -258,9 +258,9 @@ print(f"All built-ins: {len(dir(builtins))} names")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **Watch out!** Python scopes are **function-level**, not block-level. In Java or C, a variable declared inside an `if` block or `for` loop is local to that block. In Python, `if` blocks and `for` loops do **not** create a new scope — a variable introduced inside them belongs to the enclosing function (or module). So a variable first assigned inside an `if` body is accessible throughout the rest of the function. This surprises programmers coming from Java or C, and it means Python's `global` keyword is nothing like C's `global` storage class: Python's `global` is a declaration inside a function saying "when I write this name, go find it in the module scope, not here."
+> **Watch out!** Python scopes are **function-level**, not block-level. In Java or C, a variable declared inside an `if` block or `for` loop is local to that block. In Python, `if` blocks and `for` loops do **not** create a new scope: a variable introduced inside them belongs to the enclosing function (or module). So a variable first assigned inside an `if` body is accessible throughout the rest of the function. This surprises programmers coming from Java or C, and it means Python's `global` keyword is nothing like C's `global` storage class: Python's `global` is a declaration inside a function saying "when I write this name, go find it in the module scope, not here."
 
-**The `nonlocal` keyword — fixing the counter bug:**
+**The `nonlocal` keyword, fixing the counter bug:**
 
 ```python
 # Classic bug: cannot assign to enclosing scope without 'nonlocal'
@@ -300,28 +300,28 @@ print(c(), c(), c())        # 1 2 3
 
 # Part III: Lifetime, and Your Language
 
-Scope tells you *where in the code* a name is visible; lifetime tells you *how long in time* the storage for a value persists. These two concepts usually travel together — a local variable exists only while its function runs — but closures are a dramatic exception. When an inner function escapes its enclosing scope (by being returned or stored), it carries its enclosing bindings with it, keeping them alive indefinitely. This section shows both the power and the classic pitfall of that mechanism.
+Scope tells you *where in the code* a name is visible; lifetime tells you *how long in time* the storage for a value persists. These two concepts usually travel together (a local variable exists only while its function runs), but closures are a dramatic exception. When an inner function escapes its enclosing scope (by being returned or stored), it carries its enclosing bindings with it, keeping them alive indefinitely. This section shows both the power and the classic pitfall of that mechanism.
 
 ## 3. Scope Is Space; Lifetime Is Time
 
 **Scope is the region of *text* where a binding is visible; lifetime is the span of *execution* during which its storage exists.** The two usually align (a local lives while its block runs) but can diverge: a C `static` local has tiny scope and program-long lifetime, and, the divergence that matters most for your project, a **closure** keeps a binding *alive* after its scope has ended.
 
-**Lifetime divergence — closures keep bindings alive:**
+**Lifetime divergence, closures keep bindings alive:**
 
 ```python
 def make_adder(n):
     # n's SCOPE: the body of make_adder
     # n's LIFETIME: as long as the returned closure exists!
     def adder(x):
-        return x + n   # n is still alive — captured by closure
+        return x + n   # n is still alive, captured by closure
     return adder
 
 add5 = make_adder(5)
 add10 = make_adder(10)
 
 # make_adder has returned; its scope is gone, but n lives on
-print(add5(3))    # 8  — n=5 is still alive
-print(add10(3))   # 13 — n=10 is still alive
+print(add5(3))    # 8, n=5 is still alive
+print(add10(3))   # 13, n=10 is still alive
 
 # Python's closure mechanism: check what's captured
 print(add5.__closure__[0].cell_contents)   # 5
@@ -329,9 +329,9 @@ print(add10.__closure__[0].cell_contents)  # 10
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **Watch out!** The loop variable trap catches nearly every Python programmer eventually. When a `lambda` (or any closure) captures a name from an enclosing scope, it captures the **name**, not the value the name held at the moment the closure was created. By the time the loop finishes, `i` equals `4`, and every closure refers to that same `i`. This is not a bug in Python — it is the correct behavior of late binding — but it is different from what most people intend. The fix is to force **value capture** at creation time, either via a default argument (`i=i`) or a factory function that creates a fresh scope.
+> **Watch out!** The loop variable trap catches nearly every Python programmer eventually. When a `lambda` (or any closure) captures a name from an enclosing scope, it captures the **name**, not the value the name held at the moment the closure was created. By the time the loop finishes, `i` equals `4`, and every closure refers to that same `i`. This is not a bug in Python (it is the correct behavior of late binding) but it is different from what most people intend. The fix is to force **value capture** at creation time, either via a default argument (`i=i`) or a factory function that creates a fresh scope.
 
-**The loop variable trap — scope vs lifetime:**
+**The loop variable trap, scope vs lifetime:**
 
 ```python
 # Classic bug: all closures share the SAME variable
@@ -339,7 +339,7 @@ adders_broken = []
 for i in range(5):
     adders_broken.append(lambda x: x + i)   # i is captured by reference
 
-print("Broken:", [f(0) for f in adders_broken])  # [4,4,4,4,4] — all see final i=4
+print("Broken:", [f(0) for f in adders_broken])  # [4,4,4,4,4], all see final i=4
 
 # Fix 1: default argument captures VALUE at creation time
 adders_fixed1 = []
@@ -386,6 +386,6 @@ In your notebook: shadowing lets inner code reuse a name without consulting oute
 - Douglas Thain. *Introduction to Compilers and Language Design*, Chapter 7.
 - Robert Nystrom. *Crafting Interpreters*, "Statements and State" and "Closures" (online).
 - Robert Sebesta. *Concepts of Programming Languages*, the names/binding/scope chapter (any edition).
-- Python docs: [Execution model — naming and binding](https://docs.python.org/3/reference/executionmodel.html)
+- Python docs: [Execution model: naming and binding](https://docs.python.org/3/reference/executionmodel.html)
 
 Name-resolution mechanics continue hands-on in the *Environments and Variable Storage* activity. Together they are the scaffolding of the Interpreter assignment.

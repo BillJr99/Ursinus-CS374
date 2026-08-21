@@ -5,9 +5,9 @@ title: "CS374: Principles of Programming Languages - The Lexer"
 
 info:
   coursenum: CS374
-  purpose: "To turn the class tokenizer into the first permanent component of your language pipeline — a reusable Lexer with a stable peek/advance/expect interface that the Parser and team project import unchanged."
+  purpose: "To turn the class tokenizer into the first permanent component of your language pipeline: a reusable Lexer with a stable peek/advance/expect interface that the Parser and team project import unchanged."
   tilt:
-    task: "Specify an ordered token grammar, build a reusable Lexer component with peek/advance/expect, string escapes, and a configurable token specification — hand-rolled in Python or via the generator-toolchain direction (Flex or PLY) — then add positioned error reporting and a full test suite."
+    task: "Specify an ordered token grammar, build a reusable Lexer component with peek/advance/expect, string escapes, and a configurable token specification, hand-rolled in Python or via the generator-toolchain direction (Flex or PLY), then add positioned error reporting and a full test suite."
     criteria: "Assessed on a correctly ordered token spec, an idempotent side-effect-free Lexer interface, and precise error reporting with a full test suite, weighted 30/40/30 across the three parts; the rubric applies equivalently to whichever direction you choose. See the rubric below for the full breakdown."
   points: 100
   goals:
@@ -22,19 +22,19 @@ info:
       preemerging: Fewer than half the token types in the specification table are defined, or patterns are so incorrect that the lexer cannot tokenize even simple programs
       beginning: Most token types are defined but several patterns are wrong (e.g., keywords not prioritized over identifiers, or operators missing from the spec)
       progressing: All required token types are defined with correct patterns, but the specification has a minor ordering or coverage gap (e.g., multi-character operators not listed before single-character ones)
-      proficient: Every token type in the specification table is defined in the correct priority order — keywords before IDENT, multi-character operators before their single-character prefixes, whitespace and comments skipped — demonstrating mastery of ordered regular-expression rule specification; the spec is externalized in a loadable JSON file (or, in the generator-toolchain direction, expressed as an ordered Flex/PLY rule specification); and the lexing theory questions (Step 1d) are answered with mechanism-level reasoning about maximal munch, keyword handling, and the lexer/parser division of labor
+      proficient: Every token type in the specification table is defined in the correct priority order: keywords before IDENT, multi-character operators before their single-character prefixes, whitespace and comments skipped, demonstrating mastery of ordered regular-expression rule specification; the spec is externalized in a loadable JSON file (or, in the generator-toolchain direction, expressed as an ordered Flex/PLY rule specification); and the lexing theory questions (Step 1d) are answered with mechanism-level reasoning about maximal munch, keyword handling, and the lexer/parser division of labor
     - weight: 40
       description: "Lexer Implementation (Goal 2: harden the tokenizer into a reusable Lexer component with peek, advance, and expect)"
       preemerging: The Lexer class does not exist or the peek/advance interface is fundamentally broken
-      beginning: The Lexer class exists with peek and advance, but one or both are incorrect — e.g., peek consumes input, or advance skips tokens
-      progressing: peek and advance work correctly for most inputs, but edge cases fail — e.g., repeated peek calls return different tokens, or EOF is not handled gracefully
-      proficient: The Lexer class implements peek, advance, and expect correctly — peek is idempotent, both return an EOF token at end of input, expect raises a located LexError on mismatch — demonstrating that the component is ready to be imported unchanged by the parser; the lexer has no side effects at import time
+      beginning: The Lexer class exists with peek and advance, but one or both are incorrect, e.g., peek consumes input, or advance skips tokens
+      progressing: peek and advance work correctly for most inputs, but edge cases fail, e.g., repeated peek calls return different tokens, or EOF is not handled gracefully
+      proficient: The Lexer class implements peek, advance, and expect correctly: peek is idempotent, both return an EOF token at end of input, expect raises a located LexError on mismatch, demonstrating that the component is ready to be imported unchanged by the parser; the lexer has no side effects at import time
     - weight: 30
       description: "Error Handling, Positions, and Test Suite (Goals 3-5: escape sequences, precise error positions, collect-all mode, and a fully tested deliverable)"
       preemerging: Lexical errors crash Python with an unhandled exception, positions are absent, and no test suite exists
       beginning: Errors are caught and reported, but positions are missing or incorrect, and the test suite covers only a handful of token types
       progressing: Errors include line and column, the test suite covers most token types, but error recovery (collect-all mode) is missing or incorrect, and escape sequences are not fully tested
-      proficient: Every error includes line, column, and the offending text; collect-all mode gathers every error in a single pass without stopping; string-literal escape sequences are fully implemented; and the test suite covers all token types, all escape sequences, all maximal-munch cases, and at least five deliberate error programs with expected messages verified — demonstrating a deliverable that the team project can import unchanged
+      proficient: Every error includes line, column, and the offending text; collect-all mode gathers every error in a single pass without stopping; string-literal escape sequences are fully implemented; and the test suite covers all token types, all escape sequences, all maximal-munch cases, and at least five deliberate error programs with expected messages verified, demonstrating a deliverable that the team project can import unchanged
   readings:
     - rtitle: "Tokens and Scanning Activity"
       rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-tokensscanning.md"
@@ -55,9 +55,9 @@ This assignment turns the class tokenizer into a **component**: the first perman
 This is one assignment with one deliverable and one rubric, built in your choice of **direction**:
 
 - **Hand-rolled lexer (the core direction).** Build the Lexer yourself in Python atop `re`, exactly as scaffolded in Parts 1-3 below. This is the direction most students take, and it is the one the step-by-step scaffolding assumes.
-- **Generator-toolchain lexer (Flex or PLY).** Build the same component with an industrial lexer generator — Flex (C) or PLY (Python) — the tools that produce the scanners inside major compilers. This direction substitutes the *vehicle* of Parts 1 and 2 (the `TOKEN_SPEC` list, the `tokenize` generator, and the hand-written class internals) with a generator specification; the interface contract, Part 3's error/position/test requirements, the deliverable structure, and the rubric all apply equivalently. See **[The Generator-Toolchain Direction](#the-generator-toolchain-direction-flex-or-ply)** below for the full mapping.
+- **Generator-toolchain lexer (Flex or PLY).** Build the same component with an industrial lexer generator, Flex (C) or PLY (Python), the tools that produce the scanners inside major compilers. This direction substitutes the *vehicle* of Parts 1 and 2 (the `TOKEN_SPEC` list, the `tokenize` generator, and the hand-written class internals) with a generator specification; the interface contract, Part 3's error/position/test requirements, the deliverable structure, and the rubric all apply equivalently. See **[The Generator-Toolchain Direction](#the-generator-toolchain-direction-flex-or-ply)** below for the full mapping.
 
-Either way you submit a token specification, a working lexer component behind the `peek`/`advance`/`expect` contract, and positioned errors with a full test suite — graded on the same 30/40/30 rubric.
+Either way you submit a token specification, a working lexer component behind the `peek`/`advance`/`expect` contract, and positioned errors with a full test suite, graded on the same 30/40/30 rubric.
 
 ---
 
@@ -65,7 +65,7 @@ Either way you submit a token specification, a working lexer component behind th
 
 ### Environment and Setup
 
-You need Python 3.10+ (`python --version` — record it in your readme) and the standard library only (`re`, `json`, `dataclasses`). This assignment grows the class tokenizer — and the `finditer` mini lexer you built in the Regex assignment — into a component. Start from whichever of those you trust more, and create the deliverable files up front:
+You need Python 3.10+ (`python --version`; record it in your readme) and the standard library only (`re`, `json`, `dataclasses`). This assignment grows the class tokenizer (and the `finditer` mini lexer you built in the Regex assignment) into a component. Start from whichever of those you trust more, and create the deliverable files up front:
 
 ```
 lexer.py             # the Lexer module
@@ -76,18 +76,18 @@ test_lexer.py        # the test suite
 
 ### Your First 30 Minutes
 
-Define the `Token` dataclass from Step 1b and a `TOKEN_SPEC` with just six rules — `WHITESPACE`, `LET`, `IDENT`, `EQ`, `INT`, `SEMICOLON` — then write the `tokenize` generator from Step 1c and run it on the worked example:
+Define the `Token` dataclass from Step 1b and a `TOKEN_SPEC` with just six rules (`WHITESPACE`, `LET`, `IDENT`, `EQ`, `INT`, `SEMICOLON`), then write the `tokenize` generator from Step 1c and run it on the worked example:
 
 ```python
 for tok in tokenize("let x = 42;"):
     print(tok)
 ```
 
-Compare your output against the six-token listing in Step 1c, including line and column numbers. Then feed it `lets x = 42;` and confirm `lets` comes out as a single `IDENT` — if it comes out as `LET` + `IDENT("s")`, your keyword pattern is missing its boundary check, and it is far better to learn that now with six rules than later with twenty-nine.
+Compare your output against the six-token listing in Step 1c, including line and column numbers. Then feed it `lets x = 42;` and confirm `lets` comes out as a single `IDENT`; if it comes out as `LET` + `IDENT("s")`, your keyword pattern is missing its boundary check, and it is far better to learn that now with six rules than later with twenty-nine.
 
 ### Suggested Pacing
 
-See the course schedule for the assigned and due dates. Your starting point is the mini lexer you built in the **Regex Workshop lab** and grew in the Regex assignment — this assignment turns it into a permanent pipeline component. The Finite Automata Simulators lab runs alongside the start of this window; it is short by design, so plan its two to three hours into your week:
+See the course schedule for the assigned and due dates. Your starting point is the mini lexer you built in the **Regex Workshop lab** and grew in the Regex assignment; this assignment turns it into a permanent pipeline component. The Finite Automata Simulators lab runs alongside the start of this window; it is short by design, so plan its two to three hours into your week:
 
 | Checkpoint | You should have |
 |------------|----------------|
@@ -157,13 +157,13 @@ Define a `TOKEN_SPEC` list of `(token_name, regex_pattern)` pairs that covers, a
 
 ### Step 1b: Token Dataclass
 
-Define a `Token` dataclass (or namedtuple) with fields: `type` (string), `value` (string — the raw lexeme), `line` (int), `col` (int). The EOF token has type `"EOF"`, value `""`, and the line/col of the last character consumed.
+Define a `Token` dataclass (or namedtuple) with fields: `type` (string), `value` (string, the raw lexeme), `line` (int), `col` (int). The EOF token has type `"EOF"`, value `""`, and the line/col of the last character consumed.
 
 ### Step 1c: Baseline Tokenize Generator
 
 Write a `tokenize(source: str) -> Iterator[Token]` generator that applies `TOKEN_SPEC` using `re.match` at the current position, skipping WHITESPACE and COMMENT tokens, and advancing the position by the match length. Verify it against the provided test programs before wrapping it in a class.
 
-**Worked example** — source `"let x = 42;"`:
+**Worked example**, source `"let x = 42;"`:
 
 ```
 Token(LET,       "let", line=1, col=1)
@@ -178,9 +178,9 @@ Token(EOF,       "",    line=1, col=12)
 
 Three written questions from the Tokens and Scanning session, graded within Part 1's rubric row:
 
-1. **Maximal munch, precisely.** Your spec tokenizes `<==` as `LE` then `EQ` — not `LT` then `EQEQ`, and not three single-character tokens. State the two rules (longest match, then rule order) that force this outcome, and give one input where the two rules would *disagree* about the result if applied in the other priority.
+1. **Maximal munch, precisely.** Your spec tokenizes `<==` as `LE` then `EQ`, not `LT` then `EQEQ`, and not three single-character tokens. State the two rules (longest match, then rule order) that force this outcome, and give one input where the two rules would *disagree* about the result if applied in the other priority.
 2. **Why keywords aren't the lexer's problem twice.** `iffy` must lex as one `IDENT`, never `IF` + `IDENT("fy")`. Explain the two different mechanisms that can enforce this (rule ordering with boundary-aware patterns vs. lex-as-identifier-then-reclassify against a keyword table), and name one cost of each.
-3. **The division of labor.** `let 42 = x;` lexes without a single error. State in one sentence per stage why the lexer *must* accept it and which later pipeline stage rejects it — and what this says about what a token stream does and does not promise.
+3. **The division of labor.** `let 42 = x;` lexes without a single error. State in one sentence per stage why the lexer *must* accept it and which later pipeline stage rejects it, and what this says about what a token stream does and does not promise.
 
 ---
 
@@ -196,7 +196,7 @@ The parser will use exactly three methods:
 | `advance() -> Token` | Consume and return the next token. After calling advance, the next peek/advance returns the token after the one just returned. |
 | `expect(token_type: str) -> Token` | If the next token matches `token_type`, consume and return it. Otherwise raise `LexError` with the expected type, found type, and position. |
 
-At end of input, both `peek` and `advance` return the EOF token repeatedly — they never raise `StopIteration` or return `None`.
+At end of input, both `peek` and `advance` return the EOF token repeatedly: they never raise `StopIteration` or return `None`.
 
 ### Step 2a: Implement the Lexer Class
 
@@ -243,7 +243,7 @@ Extend the STRING pattern (or handle it as a special case) to support:
 | `\n` | newline (ASCII 10) |
 | `\t` | tab (ASCII 9) |
 
-Store **both** the raw lexeme (e.g., `"a\nb"` with a backslash-n) and the decoded value (with a real newline) in the Token. An unterminated string — one that reaches end-of-line or end-of-file without a closing `"` — must raise a `LexError` pointing at the *opening* quote's position, not at end of input.
+Store **both** the raw lexeme (e.g., `"a\nb"` with a backslash-n) and the decoded value (with a real newline) in the Token. An unterminated string (one that reaches end-of-line or end-of-file without a closing `"`) must raise a `LexError` pointing at the *opening* quote's position, not at end of input.
 
 **Worked example:**
 
@@ -270,7 +270,7 @@ Move TOKEN_SPEC to a JSON file with this structure:
 }
 ```
 
-Load and validate the config at `Lexer.__init__` time: every pattern must compile (catch `re.error` and raise `LexError` with the offending pattern). Demonstrate configurability with a **second JSON spec** in which the comment character is `//` and the assignment operator is `:=` — show the same `Lexer` class tokenizing a short program in that dialect.
+Load and validate the config at `Lexer.__init__` time: every pattern must compile (catch `re.error` and raise `LexError` with the offending pattern). Demonstrate configurability with a **second JSON spec** in which the comment character is `//` and the assignment operator is `:=`; show the same `Lexer` class tokenizing a short program in that dialect.
 
 ---
 
@@ -316,11 +316,11 @@ Build `test_lexer.py` with at least the following test cases. Each test must ass
 - `"quote\"end"` -> value contains a double-quote
 
 **Deliberate error programs (five required):**
-1. A program with `@` — expect `LexError at line 1, col ...`
-2. An unterminated string `"hello` — expect `LexError` at the opening quote
-3. A program with `$` in the middle — check position is mid-program, not line 1
-4. A collect-all run with two errors — verify both are reported
-5. A program with a valid token immediately after an error — verify recovery in collect-all mode
+1. A program with `@`: expect `LexError at line 1, col ...`
+2. An unterminated string `"hello`: expect `LexError` at the opening quote
+3. A program with `$` in the middle: check position is mid-program, not line 1
+4. A collect-all run with two errors: verify both are reported
+5. A program with a valid token immediately after an error: verify recovery in collect-all mode
 
 ---
 
@@ -330,43 +330,43 @@ If you choose this direction, you build the same component with an industrial le
 
 ### Part 1 equivalent: the rule specification
 
-Write a Flex `.l` file (or a PLY `tokens`/`t_*` module) covering the full token table from Step 1a. The ordering discipline is identical — generators resolve ties by rule order (Flex) or by function definition order and pattern length (PLY) — so the same bugs await you if keywords trail `IDENT` or `<` precedes `<=`. Your specification must handle:
+Write a Flex `.l` file (or a PLY `tokens`/`t_*` module) covering the full token table from Step 1a. The ordering discipline is identical: generators resolve ties by rule order (Flex) or by function definition order and pattern length (PLY), so the same bugs await you if keywords trail `IDENT` or `<` precedes `<=`. Your specification must handle:
 
-- **Numeric literals** — integers and floats (`[0-9]+\.[0-9]*` and `[0-9]*\.[0-9]+`), with FLOAT tried before INT.
+- **Numeric literals**: integers and floats (`[0-9]+\.[0-9]*` and `[0-9]*\.[0-9]+`), with FLOAT tried before INT.
 - **String literals** in double quotes with `\"`, `\\`, `\n`, `\t` escape sequences, decoded at scan time (in Flex, store the decoded string via `strdup`; in PLY, set `t.value` to the decoded text while keeping the raw lexeme available).
-- **Identifiers vs. keywords** — match `[a-zA-Z_][a-zA-Z0-9_]*` and check a keyword table, returning the keyword's own token type for `if`, `else`, `while`, `let`, `print`, `true`, `false`. This is the generator idiom for "keywords before IDENT," and your readme must explain why the keyword-table approach and the rule-ordering approach are equivalent.
-- **Multi-character operators** — `<=`, `>=`, `==`, `!=` as single tokens, listed so they win over their single-character prefixes.
-- **Comments and whitespace** — `#` to end of line, skipped; whitespace skipped with newlines counted (`%option yylineno` in Flex; track `t.lexer.lineno` in PLY).
+- **Identifiers vs. keywords**: match `[a-zA-Z_][a-zA-Z0-9_]*` and check a keyword table, returning the keyword's own token type for `if`, `else`, `while`, `let`, `print`, `true`, `false`. This is the generator idiom for "keywords before IDENT," and your readme must explain why the keyword-table approach and the rule-ordering approach are equivalent.
+- **Multi-character operators**: `<=`, `>=`, `==`, `!=` as single tokens, listed so they win over their single-character prefixes.
+- **Comments and whitespace**: `#` to end of line, skipped; whitespace skipped with newlines counted (`%option yylineno` in Flex; track `t.lexer.lineno` in PLY).
 
 The pass criteria are the same maximal-munch cases from Step 1a: `iffy` -> `IDENT`, `whiles` -> `IDENT`, `<=` -> `LE`, `==` -> `EQEQ`.
 
 ### Part 2 equivalent: the component wrapper
 
-The generated scanner hands you a next-token function (`yylex()` in Flex, `lexer.token()` in PLY). Your deliverable is still a **component with the interface contract**: wrap the generated scanner in a `Lexer` class (PLY) or a small driver module (Flex) exposing `peek`, `advance`, and `expect` with exactly the behaviors in the table above — idempotent `peek`, EOF tokens forever at end of input, and a located `LexError` from `expect` on mismatch. Demonstrate the same two consumption patterns from Step 2b agreeing. In place of Step 2d's JSON configuration, provide a **second rule specification** implementing the alternate dialect (`//` comments, `:=` assignment) and show the same wrapper driving both — the configurability requirement, met with the tools' own configuration medium.
+The generated scanner hands you a next-token function (`yylex()` in Flex, `lexer.token()` in PLY). Your deliverable is still a **component with the interface contract**: wrap the generated scanner in a `Lexer` class (PLY) or a small driver module (Flex) exposing `peek`, `advance`, and `expect` with exactly the behaviors in the table above: idempotent `peek`, EOF tokens forever at end of input, and a located `LexError` from `expect` on mismatch. Demonstrate the same two consumption patterns from Step 2b agreeing. In place of Step 2d's JSON configuration, provide a **second rule specification** implementing the alternate dialect (`//` comments, `:=` assignment) and show the same wrapper driving both, the configurability requirement, met with the tools' own configuration medium.
 
 ### Part 3 applies unchanged
 
-Precise line/column positions on every error, the fail-fast and collect-all modes, and the full test suite of Step 3c — token type coverage, maximal-munch cases, string escapes, and the five deliberate error programs — are required in this direction exactly as written. (In Flex, collect-all means your error rule records the offense and continues scanning rather than exiting.)
+Precise line/column positions on every error, the fail-fast and collect-all modes, and the full test suite of Step 3c (token type coverage, maximal-munch cases, string escapes, and the five deliberate error programs) are required in this direction exactly as written. (In Flex, collect-all means your error rule records the offense and continues scanning rather than exiting.)
 
 ### Where the toolchain goes next
 
-Flex is one half of a pair: its companion parser generator, Bison (or PLY's `yacc` module), turns a context-free grammar with precedence declarations into an LALR parser. That half is deliberately out of scope here — it is the natural continuation of this direction, and the **Parser assignment offers a matching generator-toolchain direction** where your Flex/PLY scanner feeds a Bison/PLY grammar. Choosing the generator direction now sets you up well for that one, but the two choices are independent: directions are chosen assignment by assignment.
+Flex is one half of a pair: its companion parser generator, Bison (or PLY's `yacc` module), turns a context-free grammar with precedence declarations into an LALR parser. That half is deliberately out of scope here; it is the natural continuation of this direction, and the **Parser assignment offers a matching generator-toolchain direction** where your Flex/PLY scanner feeds a Bison/PLY grammar. Choosing the generator direction now sets you up well for that one, but the two choices are independent: directions are chosen assignment by assignment.
 
 ---
 
 ## Deliverables
 
 Submit a ZIP containing:
-- `lexer.py` — the Lexer module (importable with no side effects)
-- `token_spec.json` — the default token specification
-- `token_spec_alt.json` — the alternate dialect specification (`//` comments, `:=` assignment)
-- `test_lexer.py` — the test suite with documented test cases
-- `test_output.txt` — the output of running `python test_lexer.py` (all tests passing)
-- `readme.md` — approximately one page documenting the Lexer interface for the parser author (future you), including the TOKEN_SPEC ordering rationale and the two error modes
+- `lexer.py`: the Lexer module (importable with no side effects)
+- `token_spec.json`: the default token specification
+- `token_spec_alt.json`: the alternate dialect specification (`//` comments, `:=` assignment)
+- `test_lexer.py`: the test suite with documented test cases
+- `test_output.txt`: the output of running `python test_lexer.py` (all tests passing)
+- `readme.md`: approximately one page documenting the Lexer interface for the parser author (future you), including the TOKEN_SPEC ordering rationale and the two error modes
 
 Ensure reproducibility by listing your Python version (`python --version`).
 
-**Generator-toolchain direction:** the deliverable structure is identical with the vehicle swapped — the `.l` file (plus a `Makefile` that builds the scanner from scratch) or the PLY lexer module in place of the hand-rolled internals; the default and alternate-dialect rule specifications in place of the two JSON files; the wrapper exposing `peek`/`advance`/`expect`; the same test suite and `test_output.txt`; and a readme that additionally records your toolchain versions (`flex --version`, or your PLY version) and explains the keyword-table idiom.
+**Generator-toolchain direction:** the deliverable structure is identical with the vehicle swapped: the `.l` file (plus a `Makefile` that builds the scanner from scratch) or the PLY lexer module in place of the hand-rolled internals; the default and alternate-dialect rule specifications in place of the two JSON files; the wrapper exposing `peek`/`advance`/`expect`; the same test suite and `test_output.txt`; and a readme that additionally records your toolchain versions (`flex --version`, or your PLY version) and explains the keyword-table idiom.
 
 ---
 
@@ -389,4 +389,4 @@ Ensure reproducibility by listing your Python version (`python --version`).
 - The `expect` method was designed for the parser's benefit. Explain why the parser needs `expect` rather than just calling `advance` and checking the type afterward.
 - If collaboration with a buddy was permitted, did you work with a buddy on this assignment? If so, who? If not, do you certify that this submission represents your own original work? Please identify any and all portions of your submission that were not originally written by you.
 - AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
-- Approximately how many hours it took you to finish this assignment (I will not judge you for this at all — I am simply using it to gauge if the assignments are too easy or hard)?
+- Approximately how many hours it took you to finish this assignment (I will not judge you for this at all; I am simply using it to gauge if the assignments are too easy or hard)?

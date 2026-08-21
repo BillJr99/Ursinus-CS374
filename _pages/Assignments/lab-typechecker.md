@@ -5,7 +5,7 @@ title: "CS374: Principles of Programming Languages - Lab: Type Checker Starter"
 
 info:
   coursenum: CS374
-  purpose: "To build the core of the Interpreter assignment's required static type checker with a partner — literal, variable, and operator checks over the class AST, running before any code is evaluated."
+  purpose: "To build the core of the Interpreter assignment's required static type checker with a partner: literal, variable, and operator checks over the class AST, running before any code is evaluated."
   tilt:
     task: "With a partner, implement a checker that walks the class AST with a type environment, verifying annotated declarations, variable uses, and operator applications, and reporting positioned type errors."
     criteria: "Assessed on a checker that accepts the well-typed programs and rejects each ill-typed program with a positioned two-type error message, plus a set of typing-rule statements written on paper, weighted 70/30 across the two parts; see the rubric below for the full breakdown."
@@ -41,7 +41,7 @@ tags:
 
 ---
 
-This **lab** builds the core of the Interpreter assignment's Part 4 — the small static type checker that runs between parsing and evaluation. Here you get the machinery working on the checker's three foundational cases (literals, variables, operators) with a partner; the assignment then extends it to call sites and return types on your own. Budget **two to three hours**.
+This **lab** builds the core of the Interpreter assignment's Part 4: the small static type checker that runs between parsing and evaluation. Here you get the machinery working on the checker's three foundational cases (literals, variables, operators) with a partner; the assignment then extends it to call sites and return types on your own. Budget **two to three hours**.
 
 **Pair policy:** this lab may be completed **in pairs**. Both partners submit the same files, each naming the other, and both earn the same grade. (You may also work alone.) The Interpreter assignment remains individual work: you may both carry this shared checker core into it, but the extension to calls and returns must be your own.
 
@@ -49,20 +49,20 @@ This **lab** builds the core of the Interpreter assignment's Part 4 — the smal
 
 ## Part 1: The Checker Core (70 points)
 
-Implement `check(program) -> None` in `typechecker.py`, walking the class AST (use your Parser assignment's AST nodes, or the reference AST) with a **type environment** — the same parent-chaining discipline as your Environments lab, but binding names to *types* rather than values:
+Implement `check(program) -> None` in `typechecker.py`, walking the class AST (use your Parser assignment's AST nodes, or the reference AST) with a **type environment**: the same parent-chaining discipline as your Environments lab, but binding names to *types* rather than values:
 
 - **Literals:** numbers are `Num`, strings are `Str`, booleans are `Bool`.
 - **Declarations:** `let x: Num = expr;` checks that `expr`'s type equals the annotation, then binds `x : Num` in the current scope. A mismatch is an error naming both types.
 - **Variables:** a use of `x` looks up its declared type; an undeclared use is a positioned error.
 - **Operators:** `+ - * /` require `Num` operands and yield `Num`; `< <= > >=` require `Num` and yield `Bool`; `== !=` require both sides to have the same type and yield `Bool`; `and`/`or`/`not` require `Bool`. Every violation is reported as `Type error at line L, col C: ...` naming **both** conflicting types.
 
-Verify against the provided programs (course starter repo): six well-typed programs that must pass silently, and six ill-typed programs that must each produce a positioned error — including the classic `let x: Num = 1 + true;` (error *before* anything runs) and a shadowing case where an inner `let x: Str` legitimately changes the type of `x` for the inner scope only.
+Verify against the provided programs (course starter repo): six well-typed programs that must pass silently, and six ill-typed programs that must each produce a positioned error, including the classic `let x: Num = 1 + true;` (error *before* anything runs) and a shadowing case where an inner `let x: Str` legitimately changes the type of `x` for the inner scope only.
 
 ## Part 2: Typing Rules on Paper (30 points)
 
-In `RULES.md`, state the typing rule for each construct your checker covers — one rule per construct, premises and conclusion, in either inference-rule layout or a disciplined "if... then..." sentence (e.g., *if `e1 : Num` and `e2 : Num`, then `e1 + e2 : Num`*). Cite, for each rule, the function or branch in `typechecker.py` that implements it. This document becomes the seed of the Interpreter assignment's semantics writeup — and if you later choose the full Hindley-Milner direction, these rules are exactly what inference generalizes.
+In `RULES.md`, state the typing rule for each construct your checker covers: one rule per construct, premises and conclusion, in either inference-rule layout or a disciplined "if... then..." sentence (e.g., *if `e1 : Num` and `e2 : Num`, then `e1 + e2 : Num`*). Cite, for each rule, the function or branch in `typechecker.py` that implements it. This document becomes the seed of the Interpreter assignment's semantics writeup, and if you later choose the full Hindley-Milner direction, these rules are exactly what inference generalizes.
 
-Close `RULES.md` with two theory questions from the Type Systems session: (1) place four languages — Python, C, Haskell, and JavaScript — on the **static/dynamic × strong/weak** quadrant, with one sentence of justification each; (2) your checker makes the class language *gradually* typed in spirit (annotated declarations are checked, unannotated territory is documented as unchecked) — state one benefit and one risk of that middle ground, using the mypy/TypeScript comparison from class.
+Close `RULES.md` with two theory questions from the Type Systems session: (1) place four languages (Python, C, Haskell, and JavaScript) on the **static/dynamic × strong/weak** quadrant, with one sentence of justification each; (2) your checker makes the class language *gradually* typed in spirit (annotated declarations are checked, unannotated territory is documented as unchecked); state one benefit and one risk of that middle ground, using the mypy/TypeScript comparison from class.
 
 ---
 
@@ -83,7 +83,7 @@ Submit a ZIP containing `typechecker.py`, the run log over the twelve provided p
 - Your checker rejects `while 1 { ... }` if you require a `Bool` condition, though the evaluator's truthiness rule would happily run it. Which behavior do you consider correct for the class language, and why?
 - If you worked in a pair, who did what, and name one thing your partner caught that you would have missed. If you worked alone, note that instead.
 - AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
-- Approximately how many hours it took you to finish this lab (I will not judge you for this at all — I am simply using it to gauge if the labs are too easy or hard)?
+- Approximately how many hours it took you to finish this lab (I will not judge you for this at all; I am simply using it to gauge if the labs are too easy or hard)?
 
 ## From the Type Systems Activity: A Dynamically, Strongly Typed Core
 
@@ -91,7 +91,7 @@ The material below was previously delivered in the *Type Systems* class session.
 
 ## Part II: Types in Your Interpreter
 
-**Intuition for Model 2:** Your interpreter already evaluates binary expressions like `3.0 + 4.0`. This model shows you how to add a gatekeeper at the top of that evaluation: before you touch the operands, check whether the combination makes sense and raise a clear error if it does not. Think of it like a bouncer who checks IDs before letting values into an operation — `float + float` gets in, `float + string` does not.
+**Intuition for Model 2:** Your interpreter already evaluates binary expressions like `3.0 + 4.0`. This model shows you how to add a gatekeeper at the top of that evaluation: before you touch the operands, check whether the combination makes sense and raise a clear error if it does not. Think of it like a bouncer who checks IDs before letting values into an operation: `float + float` gets in, `float + string` does not.
 
 ### 2. A Dynamically, Strongly Typed Core
 
@@ -169,11 +169,11 @@ Type inference
 
 </details>
 
-> **Watch out!** Duck typing (Python's "if it walks like a duck and quacks like a duck, treat it as a duck") is *still* a form of typing — it is a dynamic, structural approach where compatibility is checked by whether an object supports the required operations, not by its declared class. Saying a language "has no types" because it uses duck typing is incorrect. Duck typing is a deliberate design choice that trades the early-error benefits of nominal or structural static checks for maximum flexibility.
+> **Watch out!** Duck typing (Python's "if it walks like a duck and quacks like a duck, treat it as a duck") is *still* a form of typing: it is a dynamic, structural approach where compatibility is checked by whether an object supports the required operations, not by its declared class. Saying a language "has no types" because it uses duck typing is incorrect. Duck typing is a deliberate design choice that trades the early-error benefits of nominal or structural static checks for maximum flexibility.
 
 ---
 
-**Intuition for Model 2:** A dynamically typed interpreter never checks anything in advance — every check rides along with evaluation itself. Picture evaluation as water flowing up from the leaves of the AST: values form at the literals, meet at each operator, and *at each meeting point* the bouncer from Section 2 checks the pair before combining them. This model slows that flow down to one step at a time so you can see exactly when each check fires — and, just as important, what has already irrevocably happened by the time a check fails.
+**Intuition for Model 2:** A dynamically typed interpreter never checks anything in advance: every check rides along with evaluation itself. Picture evaluation as water flowing up from the leaves of the AST: values form at the literals, meet at each operator, and *at each meeting point* the bouncer from Section 2 checks the pair before combining them. This model slows that flow down to one step at a time so you can see exactly when each check fires, and, just as important, what has already irrevocably happened by the time a check fails.
 
 ### Model 2: Tracing the Runtime Checker on a Compound Expression
 
@@ -183,7 +183,7 @@ Type inference
 |------|----------------|-------------------|--------------------|-----------------|--------|
 | 1 | `3.0 + 4.0` | `3.0` : number | `4.0` : number | `+` licensed for number, number | `7.0` |
 | 2 | `2.0 * 6.0` | `2.0` : number | `6.0` : number | `*` licensed for number, number | `12.0` |
-| 3 | `7.0 < 12.0` | `7.0` : number | `12.0` : number | `<` requires same type — OK | `True` |
+| 3 | `7.0 < 12.0` | `7.0` : number | `12.0` : number | `<` requires same type, OK | `True` |
 
 Three checks, three passes, one final value. Now the same trace for `(3.0 + 4.0) < ("total: " + 12.0)`:
 
@@ -253,24 +253,24 @@ An interpreter with dynamic (runtime) checking evaluates `(3.0 + 4.0) < ("a" + 1
 
 - Before execution begins
 - When the `<` comparison runs
-- At the moment the `+` on `"a"` and `1.0` is evaluated — after `3.0 + 4.0` has already computed
+- At the moment the `+` on `"a"` and `1.0` is evaluated, after `3.0 + 4.0` has already computed
 - Never; dynamic languages coerce automatically
 
 <details><summary>Answer</summary>
 
-At the moment the `+` on `"a"` and `1.0` is evaluated — after `3.0 + 4.0` has already computed
+At the moment the `+` on `"a"` and `1.0` is evaluated, after `3.0 + 4.0` has already computed
 
 </details>
 
 #### Critical Thinking Questions
 
-8. The trace shows the checks firing in steps 1, 2, 3 — the same order as evaluation. State the general rule: in a dynamically typed interpreter, when does the check for an operator fire, relative to the evaluation of that operator's operands?
+8. The trace shows the checks firing in steps 1, 2, 3, the same order as evaluation. State the general rule: in a dynamically typed interpreter, when does the check for an operator fire, relative to the evaluation of that operator's operands?
 9. In the failing trace, step 1 finished before the TypeError at step 2. Suppose step 1 had been `print("charging card...")` instead of an addition. What does this tell you about *where in a program's lifetime* you would prefer type errors to fire, and which typing discipline delivers that?
 10. Redo the failing trace as a *static* checker would perform it, before execution: rewrite the table with types only, no values. Which columns disappear, and which check still fails?
 
 ---
 
-**Intuition for Model 3:** Type inference is the party trick where the compiler figures out every variable's type from context alone — you write `let a = 2` and the checker deduces `a: int` without you saying so. Mechanically, it is just a tree walk: visit each node, compute what type it must produce, and propagate that information upward. When two branches disagree on type (e.g., adding an `int` to a `str`), the checker reports an error *at that node* — which may feel far from the actual mistake if the mistake was made pages earlier.
+**Intuition for Model 3:** Type inference is the party trick where the compiler figures out every variable's type from context alone: you write `let a = 2` and the checker deduces `a: int` without you saying so. Mechanically, it is just a tree walk: visit each node, compute what type it must produce, and propagate that information upward. When two branches disagree on type (e.g., adding an `int` to a `str`), the checker reports an error *at that node*, which may feel far from the actual mistake if the mistake was made pages earlier.
 
 ### Model 3: Type Inference by Hand
 
@@ -343,7 +343,7 @@ try:
 except TypeError as e:
     print(f"Type error: {e}")
 
-# Program with error: let a = 2; let d = a + "hello"  — type error
+# Program with error: let a = 2; let d = a + "hello", type error
 print("\n=== Type Error Program ===")
 bad_program = ("let", "a", ("int",), ("add", ("var", "a"), ("str",)))
 try:
@@ -377,21 +377,21 @@ Now trace the *error* program: `let a = 2; a + "hello"`
 | 2 | Extend env; recurse into body `("add", ("var","a"), ("str",))` | `{a: TInt}` | - |
 | 3 | left: look up `a` -> `TInt`; right: `("str",)` -> `TStr` | `{a: TInt}` | `TInt + TStr` -> **TypeError**: `cannot add int and str` |
 
-Notice that the error is reported at the `add` node (step 3), but the root cause is the choice made at step 1. This distance between the error location and the root cause is a recurring challenge in type inference systems — and why good inference error messages are hard to write.
+Notice that the error is reported at the `add` node (step 3), but the root cause is the choice made at step 1. This distance between the error location and the root cause is a recurring challenge in type inference systems, and why good inference error messages are hard to write.
 
 #### Critical Thinking Questions
 
 11. The inference trace shows `let a: int`, `let b: int`, `let c: bool`. These are determined entirely from the *values* (literals), with no type annotations written. Is this static or dynamic typing? Explain.
 12. When inference encounters `a + "hello"`, it reports the error at the `add` expression. But the *root cause* is that `a` was given an int value. How far is the reported error from the root cause, and what does this say about inference error message quality?
-13. What would need to change to support `let a = 2; let b = a + 3.0;`? (Hint: numeric type widening — `int + float -> float`.) Modify the `infer` function to allow this.
+13. What would need to change to support `let a = 2; let b = a + 3.0;`? (Hint: numeric type widening, `int + float -> float`.) Modify the `infer` function to allow this.
 
 ---
 
-**Intuition for Model 4:** Weak typing's danger is not crashes — it is the *absence* of crashes. When a language coerces instead of refusing, a type mistake does not stop the program; it flows onward disguised as a plausible-looking value, and the first symptom appears far from the cause, often outside the program entirely. This model performs a postmortem on one such incident, step by step, with the strong-typing alternative traced alongside for contrast.
+**Intuition for Model 4:** Weak typing's danger is not crashes: it is the *absence* of crashes. When a language coerces instead of refusing, a type mistake does not stop the program; it flows onward disguised as a plausible-looking value, and the first symptom appears far from the cause, often outside the program entirely. This model performs a postmortem on one such incident, step by step, with the strong-typing alternative traced alongside for contrast.
 
 ### Model 4: A Type-Error Postmortem
 
-**The incident.** A checkout system written in a weakly typed language reads a price from a web form. Form fields always arrive as *strings* — and nobody converted. Here is the program:
+**The incident.** A checkout system written in a weakly typed language reads a price from a web form. Form fields always arrive as *strings*, and nobody converted. Here is the program:
 
 ```
 subtotal = "19.99"                       # from the form: a STRING, not a number
@@ -403,12 +403,12 @@ The intended arithmetic: `(19.99 + 5.00) * 1.06 = 24.99 * 1.06 = 26.49`. What th
 
 | Step | Expression | What a weak language does | Value after | What a strong language does |
 |------|-----------|----------------------------|-------------|------------------------------|
-| 1 | `subtotal = "19.99"` | stores the string | `"19.99"` (string) | the same — the mistake is still latent |
-| 2 | `subtotal + 5.00` | coerces `5.00` -> `"5"`, then *concatenates* | `"19.995"` (string) | **TypeError: cannot add string and number** — stops here |
+| 1 | `subtotal = "19.99"` | stores the string | `"19.99"` (string) | the same; the mistake is still latent |
+| 2 | `subtotal + 5.00` | coerces `5.00` -> `"5"`, then *concatenates* | `"19.995"` (string) | **TypeError: cannot add string and number**, stops here |
 | 3 | `"19.995" * 1.06` | coerces `"19.995"` -> `19.995`, then multiplies | `21.1947` (number) | never reached |
 | 4 | charge the customer | charges `$21.19` with no error anywhere | wrong by `$5.30` | bug reported at step 2, with a line number |
 
-Note the direction flip: at step 2 the `+` coerced the *number toward the string*, but at step 3 the `*` coerced the *string toward the number*. The same pair of types flowed in opposite directions depending on the operator — that inconsistency, not any single conversion, is what makes weak typing treacherous. And notice what is missing from the weak column: any error, at any step. The only symptom is money.
+Note the direction flip: at step 2 the `+` coerced the *number toward the string*, but at step 3 the `*` coerced the *string toward the number*. The same pair of types flowed in opposite directions depending on the operator; that inconsistency, not any single conversion, is what makes weak typing treacherous. And notice what is missing from the weak column: any error, at any step. The only symptom is money.
 
 ```python
 # Simulate both typing disciplines on the same buggy program.

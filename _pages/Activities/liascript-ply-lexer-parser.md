@@ -14,9 +14,9 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Interactive Lexing and Parsing with PLY (Python Lex-Yacc)
 
-> **Note:** this activity's code cells install PLY at runtime; in the browser CodeRunner this may fail without network access — download and run locally if cells error. This activity is a companion to the [Flex and Bison tutorial](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md).
+> **Note:** this activity's code cells install PLY at runtime; in the browser CodeRunner this may fail without network access; download and run locally if cells error. This activity is a companion to the [Flex and Bison tutorial](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md).
 
-PLY (Python Lex-Yacc) is Flex and Bison reimplemented in pure Python: you write the same declarative grammar rules and get the same LALR(1) parsing power, but without a C toolchain, a build step, or generated `.c` files to manage. Think of it as Flex/Bison with Python as the host language — the concepts translate one-to-one, and every rule you write here has a direct counterpart in a `.l` or `.y` file. That makes PLY ideal for rapid prototyping in this course: you can explore a grammar idea, run it instantly in the browser, and see the token stream or AST before committing to a full C-based toolchain.
+PLY (Python Lex-Yacc) is Flex and Bison reimplemented in pure Python: you write the same declarative grammar rules and get the same LALR(1) parsing power, but without a C toolchain, a build step, or generated `.c` files to manage. Think of it as Flex/Bison with Python as the host language; the concepts translate one-to-one, and every rule you write here has a direct counterpart in a `.l` or `.y` file. That makes PLY ideal for rapid prototyping in this course: you can explore a grammar idea, run it instantly in the browser, and see the token stream or AST before committing to a full C-based toolchain.
 
 ## Learning Goals
 
@@ -33,9 +33,9 @@ By the end of this activity, you will be able to:
 
 Make sure you are comfortable with the following before starting this activity:
 
-- **Python decorators and docstrings** — PLY uses docstrings as the grammar-rule specification language, and it relies on Python's function-object mechanism to collect rules at module load time. If docstrings feel unfamiliar, review how `def f(): """..."""` exposes `f.__doc__` before proceeding.
-- **BNF / EBNF grammar notation** — You should be able to read a production such as `expr : expr PLUS term | term` and identify the non-terminal on the left, the terminals on the right, and what "alternative" means. PLY's docstrings use this notation directly.
-- **What a token is** — A token is a (type, value) pair produced by the lexer. For example, the string `42` becomes `(NUMBER, 42.0)`. The parser never sees raw characters; it works entirely with the token stream.
+- **Python decorators and docstrings**: PLY uses docstrings as the grammar-rule specification language, and it relies on Python's function-object mechanism to collect rules at module load time. If docstrings feel unfamiliar, review how `def f(): """..."""` exposes `f.__doc__` before proceeding.
+- **BNF / EBNF grammar notation**: You should be able to read a production such as `expr : expr PLUS term | term` and identify the non-terminal on the left, the terminals on the right, and what "alternative" means. PLY's docstrings use this notation directly.
+- **What a token is**: A token is a (type, value) pair produced by the lexer. For example, the string `42` becomes `(NUMBER, 42.0)`. The parser never sees raw characters; it works entirely with the token stream.
 
 ## Overview
 
@@ -54,9 +54,9 @@ By the end of this activity you will be able to:
 
 ---
 
-## Model 1: Lexer Basics — Token Recognition
+## Model 1: Lexer Basics, Token Recognition
 
-In this model you will write your first PLY lexer — the component that reads raw source text and produces a stream of typed tokens. Picture the lexer as a bouncer at a door: it looks at each character, decides what "kind" of thing it is (a number, an identifier, an operator), and stamps it with a type before passing it on to the parser. The code below is the direct Python equivalent of a Flex `.l` file: string variables play the role of bare Flex patterns, and functions with docstrings play the role of Flex pattern-action pairs.
+In this model you will write your first PLY lexer: the component that reads raw source text and produces a stream of typed tokens. Picture the lexer as a bouncer at a door: it looks at each character, decides what "kind" of thing it is (a number, an identifier, an operator), and stamps it with a type before passing it on to the parser. The code below is the direct Python equivalent of a Flex `.l` file: string variables play the role of bare Flex patterns, and functions with docstrings play the role of Flex pattern-action pairs.
 
 A **lexer** (or scanner) converts a raw character stream into a sequence of **tokens**. In Flex you write rules in a `.l` file; in PLY you write them as Python variables and functions inside a normal `.py` file.
 
@@ -65,7 +65,7 @@ The two mechanisms PLY provides are:
 - **String variables** (`t_PLUS = r'\+'`) for simple tokens that need no extra processing.
 - **Functions with docstring regexes** (`def t_NUMBER(t): r'\d+(\.\d+)?'`) when you need to transform the matched value or take a special action.
 
-> **Watch out!** PLY uses a function's **docstring** as its grammar or lexer rule — `def t_NUMBER(t): r'\d+'` means the docstring `r'\d+'` *is* the regex pattern. This is unusual Python; it has nothing to do with documentation. If you accidentally put the pattern in a comment or a regular string variable, PLY will silently ignore the rule.
+> **Watch out!** PLY uses a function's **docstring** as its grammar or lexer rule: `def t_NUMBER(t): r'\d+'` means the docstring `r'\d+'` *is* the regex pattern. This is unusual Python; it has nothing to do with documentation. If you accidentally put the pattern in a comment or a regular string variable, PLY will silently ignore the rule.
 
 PLY always tries the **longest match first**. When two rules could match the same input, PLY chooses the one whose regex is defined first (for function rules) or whose pattern is longer (for string rules).
 
@@ -88,7 +88,7 @@ tokens = (
     'LPAREN', 'RPAREN', 'ASSIGN',
 ) + tuple(reserved.values())
 
-# Simple string rules — PLY compiles these into the master regex
+# Simple string rules - PLY compiles these into the master regex
 t_PLUS   = r'\+'
 t_MINUS  = r'-'
 t_TIMES  = r'\*'
@@ -106,13 +106,13 @@ def t_NUMBER(t):
     t.value = float(t.value)   # convert matched string to a Python float
     return t
 
-# Function rule for identifiers — checks against the reserved word dict
+# Function rule for identifiers - checks against the reserved word dict
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z0-9_]*'
     t.type = reserved.get(t.value, 'ID')   # promote reserved words to their own type
     return t
 
-# Error handler — called when no rule matches the current character
+# Error handler - called when no rule matches the current character
 def t_error(t):
     print(f"Illegal character {t.value[0]!r} at position {t.lexpos}")
     t.lexer.skip(1)
@@ -131,7 +131,7 @@ for tok in lexer:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-### CTQs — Model 1
+### CTQs, Model 1
 
 1. In Flex, lexer rules are regex patterns written in a `.l` file with the form `pattern   { action }`. How does PLY represent the same information, and where does the "action" live in PLY's approach?
 
@@ -145,17 +145,17 @@ for tok in lexer:
 
 ## Model 2: Handling Whitespace, Comments, and Strings
 
-Every real source file contains text the parser should never see: spaces, newlines, comments, and the quotation marks around string literals. This model shows the three PLY techniques for silently consuming that "noise" before tokens reach the parser. It also demonstrates line-number tracking — something PLY does not do automatically, so you have to maintain it yourself using `t.lexer.lineno`. Getting this right pays off immediately when error messages need to tell a user which line of their program is wrong.
+Every real source file contains text the parser should never see: spaces, newlines, comments, and the quotation marks around string literals. This model shows the three PLY techniques for silently consuming that "noise" before tokens reach the parser. It also demonstrates line-number tracking, something PLY does not do automatically, so you have to maintain it yourself using `t.lexer.lineno`. Getting this right pays off immediately when error messages need to tell a user which line of their program is wrong.
 
 Real source files contain characters that the parser never sees: whitespace, comments, and sometimes the quotes surrounding string literals. A lexer must handle these gracefully without crashing or leaking junk tokens to the parser.
 
 PLY provides three mechanisms for silent consumption:
 
-- `t_ignore` — a string of single characters; each is skipped with no function call.
-- A function rule that returns `None` (or falls off the end) — the token is consumed but not emitted.
-- A function rule that modifies `t.value` before returning — useful for stripping delimiters from string literals.
+- `t_ignore`: a string of single characters; each is skipped with no function call.
+- A function rule that returns `None` (or falls off the end): the token is consumed but not emitted.
+- A function rule that modifies `t.value` before returning: useful for stripping delimiters from string literals.
 
-> **Watch out!** Both `t_error` (in the lexer) and `p_error` (in the parser) are **mandatory**. If either is missing, PLY will raise an exception the moment it encounters an unrecognized character or an unexpected token. You do not get a helpful message — you get a crash. Always define both, even if the body is just `pass` or a `print` statement.
+> **Watch out!** Both `t_error` (in the lexer) and `p_error` (in the parser) are **mandatory**. If either is missing, PLY will raise an exception the moment it encounters an unrecognized character or an unexpected token. You do not get a helpful message; you get a crash. Always define both, even if the body is just `pass` or a `print` statement.
 
 Observe how the code below tracks line numbers using the `t.lexer.lineno` attribute, which PLY does *not* manage automatically.
 
@@ -175,7 +175,7 @@ t_ignore = ' \t'
 def t_NEWLINE(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
-    # No return statement — the token is consumed but not emitted to the parser
+    # No return statement - the token is consumed but not emitted to the parser
 
 def t_COMMENT(t):
     r'\#[^\n]*'
@@ -217,7 +217,7 @@ for tok in lexer:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-### CTQs — Model 2
+### CTQs, Model 2
 
 1. How does `t_ignore` simplify whitespace handling compared to writing an explicit rule? What kinds of characters are *not* suitable for `t_ignore`?
 
@@ -229,11 +229,11 @@ for tok in lexer:
 
 ---
 
-## Model 3: A Recursive Descent in PLY — Arithmetic Expressions
+## Model 3: A Recursive Descent in PLY, Arithmetic Expressions
 
-Now that the lexer can produce tokens, you need a parser to enforce grammatical structure. This model introduces PLY's parser, which works exactly like Bison: you write grammar productions (here, as docstrings), declare operator precedence, and PLY generates an LALR(1) parse table behind the scenes. For now the parser evaluates arithmetic directly — no AST yet — so you can focus on reading the grammar rules and precedence declarations before adding the extra layer of tree construction in Model 4.
+Now that the lexer can produce tokens, you need a parser to enforce grammatical structure. This model introduces PLY's parser, which works exactly like Bison: you write grammar productions (here, as docstrings), declare operator precedence, and PLY generates an LALR(1) parse table behind the scenes. For now the parser evaluates arithmetic directly (no AST yet) so you can focus on reading the grammar rules and precedence declarations before adding the extra layer of tree construction in Model 4.
 
-A **parser** checks that a token stream conforms to a grammar and (optionally) computes a value or builds a data structure. PLY implements **LALR(1)** parsing — the same algorithm used inside GNU Bison.
+A **parser** checks that a token stream conforms to a grammar and (optionally) computes a value or builds a data structure. PLY implements **LALR(1)** parsing, the same algorithm used inside GNU Bison.
 
 Each grammar rule is a Python function whose **docstring** is the production. The body sets `p[0]` (the left-hand side) from the indexed components `p[1]`, `p[2]`, ... (the right-hand side symbols, left to right).
 
@@ -321,7 +321,7 @@ for expr in tests:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-### CTQs — Model 3
+### CTQs, Model 3
 
 1. In the grammar rule `expr : expr PLUS expr`, both `expr` sub-expressions look identical. How does PLY know which one is the left operand and which is the right? Why would this rule be ambiguous without the `precedence` tuple?
 
@@ -335,11 +335,11 @@ for expr in tests:
 
 ## Model 4: Building an AST with PLY
 
-Direct evaluation in parser actions (as in Model 3) is convenient for a pocket calculator, but it throws away all structure the moment it computes a number. An Abstract Syntax Tree preserves that structure as a Python object you can inspect, transform, or evaluate multiple times. This model replaces the arithmetic in `p[0] = p[1] + p[3]` with `p[0] = BinOp('+', p[1], p[3])` — a tiny change in code that has a large impact on what you can do with the result downstream.
+Direct evaluation in parser actions (as in Model 3) is convenient for a pocket calculator, but it throws away all structure the moment it computes a number. An Abstract Syntax Tree preserves that structure as a Python object you can inspect, transform, or evaluate multiple times. This model replaces the arithmetic in `p[0] = p[1] + p[3]` with `p[0] = BinOp('+', p[1], p[3])`, a tiny change in code that has a large impact on what you can do with the result downstream.
 
 Evaluating an expression directly in parser actions works for a calculator, but real compilers and interpreters need a data structure they can analyze, optimize, or interpret later. An **Abstract Syntax Tree (AST)** captures the hierarchical structure of a program without the concrete syntax details (parentheses, commas, keywords as punctuation).
 
-PLY is well suited to AST construction: each `p_*` function sets `p[0]` to whatever Python object you like — including a dataclass node. The parent rule receives that object through its own `p[i]` slot.
+PLY is well suited to AST construction: each `p_*` function sets `p[0]` to whatever Python object you like, including a dataclass node. The parent rule receives that object through its own `p[i]` slot.
 
 ```python
 import subprocess
@@ -458,7 +458,7 @@ for src in sources:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-### CTQs — Model 4
+### CTQs, Model 4
 
 1. Why is building an AST generally better than evaluating immediately inside parser actions? Give at least two reasons that matter for a real programming language implementation.
 
@@ -470,13 +470,13 @@ for src in sources:
 
 ---
 
-## Model 5: A Complete Mini Language — Flex/Bison -> PLY Translation
+## Model 5: A Complete Mini Language, Flex/Bison -> PLY Translation
 
-This model ties everything together into a small but complete language — lexer, parser, AST, and evaluator all working as a unit. Its main purpose is to make the Flex/Bison-to-PLY translation concrete: inline comments in the code label every PLY construct with its Bison or Flex counterpart, so you can cross-reference the two tool families side by side. After working through this model you should be able to take a `.l`/`.y` grammar you have already written and port it to PLY, or vice versa, with confidence.
+This model ties everything together into a small but complete language: lexer, parser, AST, and evaluator all working as a unit. Its main purpose is to make the Flex/Bison-to-PLY translation concrete: inline comments in the code label every PLY construct with its Bison or Flex counterpart, so you can cross-reference the two tool families side by side. After working through this model you should be able to take a `.l`/`.y` grammar you have already written and port it to PLY, or vice versa, with confidence.
 
 This model shows the **direct correspondence** between Flex/Bison syntax and PLY. Comments in the code mark each Flex or Bison equivalent so you can see exactly what changed.
 
-The mini language supports variables, `let` bindings, `if-else` conditionals, and a `print` statement. After parsing, an evaluator walks the AST and computes the result — cleanly separated from the parser, exactly as the Dragon Book prescribes.
+The mini language supports variables, `let` bindings, `if-else` conditionals, and a `print` statement. After parsing, an evaluator walks the AST and computes the result, cleanly separated from the parser, exactly as the Dragon Book prescribes.
 
 ```python
 import subprocess
@@ -652,7 +652,7 @@ for prog in tests:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-### CTQs — Model 5
+### CTQs, Model 5
 
 1. The code comments show Flex/Bison equivalents side by side with their PLY counterparts. For the `let` expression rule, map each element of the Bison action `$$ = make_let($2,$4,$6)` to the corresponding PLY code. What are `$2`, `$4`, and `$6` in PLY notation?
 
@@ -666,9 +666,9 @@ for prog in tests:
 
 ## Model 6: Error Recovery and Diagnostics
 
-So far every model assumed the input was valid. Real programs are not — users make typos, forget closing parentheses, and write `3 + * 2` by accident. This model shows how PLY's built-in `error` token lets your parser absorb a mistake, emit a diagnostic, and keep parsing the rest of the input rather than crashing on the first problem. The mechanism is the same one Bison uses: PLY's error-recovery machinery is one of the closest structural parallels between the two tools.
+So far every model assumed the input was valid. Real programs are not: users make typos, forget closing parentheses, and write `3 + * 2` by accident. This model shows how PLY's built-in `error` token lets your parser absorb a mistake, emit a diagnostic, and keep parsing the rest of the input rather than crashing on the first problem. The mechanism is the same one Bison uses: PLY's error-recovery machinery is one of the closest structural parallels between the two tools.
 
-A production compiler does not stop at the first syntax error — it tries to **recover** and continue parsing so it can report multiple errors in one run. PLY supports error recovery through a special `error` token that can appear on the right-hand side of grammar rules.
+A production compiler does not stop at the first syntax error: it tries to **recover** and continue parsing so it can report multiple errors in one run. PLY supports error recovery through a special `error` token that can appear on the right-hand side of grammar rules.
 
 When PLY's parser encounters an unexpected token:
 
@@ -763,7 +763,7 @@ def p_error(p):
 parser = yacc.yacc(debug=False, write_tables=False, errorlog=yacc.NullLogger())
 
 programs = [
-    "3 + 4 ; 10 * 2",        # valid — two statements
+    "3 + 4 ; 10 * 2",        # valid - two statements
     "3 + ; 5 * 2",            # syntax error: missing right operand
     "3 + 4 ; @ ; 5",          # lex error (@), then valid statement
     "( 1 + 2",                # unmatched parenthesis
@@ -783,7 +783,7 @@ for prog in programs:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-### CTQs — Model 6
+### CTQs, Model 6
 
 1. What is "error recovery" in parsing, and why is it preferable to stopping at the first error when compiling a large source file?
 
@@ -835,7 +835,7 @@ Why is building an Abstract Syntax Tree (AST) in the parser generally better tha
 
 ## Exercises
 
-### Exercise 1 — Add a `while` Loop
+### Exercise 1: Add a `while` Loop
 
 The mini language from Model 5 has `let` and `if-else` but no looping construct. Add a `while` loop with the syntax `while cond do body`.
 
@@ -849,7 +849,7 @@ Hint: `while` is an expression in this language; it should return the value of t
 Test your solution with: `while x < 5 let x = x + 1 in x do x`
 (This syntax will require you to think carefully about where the condition ends.)
 
-### Exercise 2 — Strings and Concatenation
+### Exercise 2: Strings and Concatenation
 
 Starting from Model 5, add:
 
@@ -860,7 +860,7 @@ Starting from Model 5, add:
 
 Test with: `let s = "hello" in s ++ " world"` and `"abc" ~= "abc"`.
 
-### Exercise 3 — A Type-Checking Pass
+### Exercise 3: A Type-Checking Pass
 
 The parser from Model 4 builds an AST over `Num`, `Var`, `BinOp`, and `Assign` nodes. Write a function `type_check(node, env=None)` that walks the AST and raises a `TypeError` if:
 
@@ -873,7 +873,7 @@ Demonstrate your type checker on:
 - `x = 3 + 4 * 2` (should pass)
 - An AST you manually construct where `+` is applied to a `StrLit` and a `Num` (should raise `TypeError`).
 
-### Exercise 4 — Collect All Errors
+### Exercise 4: Collect All Errors
 
 The error-recovery code in Model 6 already collects errors in `errors_found`. Extend the approach so that:
 

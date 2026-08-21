@@ -5,7 +5,7 @@ title: "CS374: Principles of Programming Languages - Lab: Grammar and Derivation
 
 info:
   coursenum: CS374
-  purpose: "To complete the Parser assignment's grammar work with a partner — a full EBNF grammar for the class language, derivations that prove it produces the programs you expect, and precedence decisions you can defend."
+  purpose: "To complete the Parser assignment's grammar work with a partner: a full EBNF grammar for the class language, derivations that prove it produces the programs you expect, and precedence decisions you can defend."
   tilt:
     task: "With a partner, write the EBNF grammar the Parser assignment's Part 1 requires, produce leftmost derivations and parse trees for two worked programs, and demonstrate how the grammar's shape enforces precedence and associativity."
     criteria: "Assessed on a complete and correct EBNF grammar, correct derivations with matching parse trees, and a demonstrated precedence/ambiguity analysis, weighted 50/25/25 across the three parts; see the rubric below for the full breakdown."
@@ -19,7 +19,7 @@ info:
       description: "EBNF Grammar (Goal 1)"
       preemerging: The grammar is missing most constructs or does not use EBNF notation
       beginning: The grammar covers expressions or statements but not both, or several productions reference undefined nonterminals
-      progressing: The grammar is complete but flat — precedence levels are missing, so it is ambiguous for arithmetic
+      progressing: The grammar is complete but flat, precedence levels are missing, so it is ambiguous for arithmetic
       proficient: The grammar covers every expression and statement form of the class language in correct EBNF, with a tiered expression ladder (one production per precedence level) and no undefined nonterminals
     - weight: 25
       description: "Derivations and Parse Trees (Goal 2)"
@@ -47,15 +47,15 @@ tags:
 
 ---
 
-This **lab** is the Parser assignment's Part 1, done early and with a partner: the EBNF grammar that your recursive-descent parser will transcribe function-by-function. Getting the grammar right on paper first is the highest-leverage two hours of the whole Parser assignment — every parsing function you write in the Parser assignment is one production from this document. Budget **two to three hours**; it is due mid-assignment, before the parsing code gets serious.
+This **lab** is the Parser assignment's Part 1, done early and with a partner: the EBNF grammar that your recursive-descent parser will transcribe function-by-function. Getting the grammar right on paper first is the highest-leverage two hours of the whole Parser assignment; every parsing function you write in the Parser assignment is one production from this document. Budget **two to three hours**; it is due mid-assignment, before the parsing code gets serious.
 
-**Pair policy:** this lab may be completed **in pairs**. Grammar design benefits from argument — one partner proposes a production, the other tries to break it with a program it mis-derives. Both partners submit the same document, each naming the other, and both earn the same grade. (You may also work alone.) The Parser assignment remains individual work: you may both build on this shared grammar, but your parsers are your own.
+**Pair policy:** this lab may be completed **in pairs**. Grammar design benefits from argument: one partner proposes a production, the other tries to break it with a program it mis-derives. Both partners submit the same document, each naming the other, and both earn the same grade. (You may also work alone.) The Parser assignment remains individual work: you may both build on this shared grammar, but your parsers are your own.
 
 ---
 
 ## Part 1: The EBNF Grammar (50 points)
 
-Write the complete EBNF grammar for the class language used across the Lexer, Parser, and Interpreter assignments: `let`/assignment/`print` statements, `if`/`else`, `while` with blocks, and expressions over numbers, strings, booleans, identifiers, calls, and the arithmetic/comparison/logical operators. Structure the expression productions as a **ladder** — one production per precedence level, from `or` at the top down through `and`, comparison, additive, multiplicative, unary, and primary — exactly the shape the Parser assignment's Part 2 transcribes into functions.
+Write the complete EBNF grammar for the class language used across the Lexer, Parser, and Interpreter assignments: `let`/assignment/`print` statements, `if`/`else`, `while` with blocks, and expressions over numbers, strings, booleans, identifiers, calls, and the arithmetic/comparison/logical operators. Structure the expression productions as a **ladder**: one production per precedence level, from `or` at the top down through `and`, comparison, additive, multiplicative, unary, and primary, exactly the shape the Parser assignment's Part 2 transcribes into functions.
 
 ## Part 2: Derivations and Parse Trees (25 points)
 
@@ -88,4 +88,4 @@ Submit `grammar.md` containing all three parts, with both partners named at the 
 - Which production went through the most revisions before your partner could no longer break it, and what broke it last?
 - If you worked in a pair, who did what, and name one thing your partner caught that you would have missed. If you worked alone, note that instead.
 - AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
-- Approximately how many hours it took you to finish this lab (I will not judge you for this at all — I am simply using it to gauge if the labs are too easy or hard)?
+- Approximately how many hours it took you to finish this lab (I will not judge you for this at all; I am simply using it to gauge if the labs are too easy or hard)?
