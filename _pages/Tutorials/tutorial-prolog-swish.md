@@ -60,9 +60,9 @@ Then, in the query pane (bottom right), ask:
 
 SWISH answers `Who = ann`. Press `;` (or "Next") and it backtracks to `Who = pat`. Press `;` again and it reports no more solutions.
 
-Read `:-` as "if", the comma as "and". `grandparent(X, Z)` holds *if* there is some `Y` such that `X` is a parent of `Y` and `Y` is a parent of `Z`. You never told Prolog *how* to find `Y` (the engine searched.
+Read `:-` as "if", the comma as "and". `grandparent(X, Z)` holds *if* there is some `Y` such that `X` is a parent of `Y` and `Y` is a parent of `Z`. You never told Prolog *how* to find `Y`: the engine searched.
 
-> **The core idea:** a query is a request for a *proof*. The engine tries clauses top to bottom, **unifies** the query with each clause head (a two-way pattern match that binds variables), and **backtracks**) undoing bindings; whenever a branch fails. Contrast this with your interpreter, which computes a value in one forward pass and never un-binds.
+> **The core idea:** a query is a request for a *proof*. The engine tries clauses top to bottom, **unifies** the query with each clause head (a two-way pattern match that binds variables), and **backtracks** (undoing bindings) whenever a branch fails. Contrast this with your interpreter, which computes a value in one forward pass and never un-binds.
 
 ---
 
@@ -126,7 +126,7 @@ Close Direction F by connecting it back to the pipeline:
 - **Binding.** Your interpreter's `Environment` maps a name to a *value* by assignment, one direction, permanently (until reassigned). Prolog **unifies** a logic variable with a *term*, two-directionally, and **un-binds** it on backtracking.
 - **Control.** Your evaluator makes a single forward pass. Prolog searches a proof tree, trying alternatives and backtracking on failure.
 
-If you took the **type-checking direction** of the Interpreter assignment, make the link explicit: the unification in your Hindley-Milner inferencer is the *same algorithm* Prolog uses to match goals (it just serves type inference there and proof search here.
+If you took the **type-checking direction** of the Interpreter assignment, make the link explicit: the unification in your Hindley-Milner inferencer is the *same algorithm* Prolog uses to match goals; it just serves type inference there and proof search here.
 
 ---
 
@@ -134,7 +134,7 @@ If you took the **type-checking direction** of the Interpreter assignment, make 
 
 ## Advanced (optional): Build a Mini-Prolog Interpreter in Python
 
-> **Where this came from:** this section is the advanced capstone moved here from the Language Evaluation activity. It assumes you have seen unification and backtracking conceptually (Sections 1-5 above). Here you assemble a complete, self-contained Prolog engine in ordinary Python) terms, a unifier, variable renaming, and a depth-first solver, behind a clean `query(db, goal, *vars)` API.
+> **Where this came from:** this section is the advanced capstone moved here from the Language Evaluation activity. It assumes you have seen unification and backtracking conceptually (Sections 1-5 above). Here you assemble a complete, self-contained Prolog engine in ordinary Python (terms, a unifier, variable renaming, and a depth-first solver) behind a clean `query(db, goal, *vars)` API.
 
 ### Putting it all together
 
@@ -349,7 +349,7 @@ for r in query(db, Compound("member", (Mx, lst(a("p"),a("q"),a("r")))), Mx):
 
 > **CTQ 5.3** The `fresh` function renames variables by appending `_N` where N is a global counter. Why must this counter be global (or at least shared across all calls to `fresh`) rather than local to each call? What would go wrong if it reset to 0 for each query?
 
-> **CTQ 5.4** Examine the `db.fact("append", NIL, Y, Y)` line. The variable `Y` is a Python variable referencing a `Var("Y")` object. Every call to `db.fact("append", ...)` with `Y` stores the *same* `Var("Y")` object in two argument positions. Why is this safe (what operation do we rely on to make it not interfere across queries?
+> **CTQ 5.4** Examine the `db.fact("append", NIL, Y, Y)` line. The variable `Y` is a Python variable referencing a `Var("Y")` object. Every call to `db.fact("append", ...)` with `Y` stores the *same* `Var("Y")` object in two argument positions. Why is this safe: what operation do we rely on to make it not interfere across queries?
 
 > **CTQ 5.5** How would you add a `not_member(X, L)` predicate? What is the challenge of implementing "negation" in a pure SLD resolution engine?
 
@@ -357,7 +357,7 @@ for r in query(db, Compound("member", (Mx, lst(a("p"),a("q"),a("r")))), Mx):
 
 Take 5-10 minutes individually to respond to the following prompt in your notebook:
 
-> Logic programming inverts the usual programming model: instead of describing *how* to compute, you describe *what is true* and let the engine search. Choose one concept from today) unification, backtracking, bidirectionality, or the connection to type inference: and explain in your own words: (1) what makes it surprising or powerful, (2) a situation in your prior programming experience where this concept would have simplified your code, and (3) a limitation of logic programming that makes it unsuitable as a *general-purpose* language.
+> Logic programming inverts the usual programming model: instead of describing *how* to compute, you describe *what is true* and let the engine search. Choose one concept from today (unification, backtracking, bidirectionality, or the connection to type inference) and explain in your own words: (1) what makes it surprising or powerful, (2) a situation in your prior programming experience where this concept would have simplified your code, and (3) a limitation of logic programming that makes it unsuitable as a *general-purpose* language.
 
 ---
 

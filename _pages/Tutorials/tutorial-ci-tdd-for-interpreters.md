@@ -1234,7 +1234,7 @@ print("  Key: failing tests ARE the sprint backlog. Each FAIL is the next task."
 
 ### Critical Thinking Questions
 
-4. The test for `FunDecl` has `expected_output = None` (no known output yet, just a known requirement. What does this represent in the red-green discipline, and why is it still worth writing the test?
+4. The test for `FunDecl` has `expected_output = None`: no known output yet, just a known requirement. What does this represent in the red-green discipline, and why is it still worth writing the test?
 5. If the Evaluator writes 5 new failing tests at the start of the sprint, and the Builder closes 3 of them, what is the sprint's velocity? Is a sprint with 2 remaining failing tests "done"?
 6. The test suite acts as executable documentation of the language's semantics. Which is more authoritative: a test that passes, or the corresponding entry in `SEMANTICS.md`? What should you do when they disagree?
 

@@ -20,7 +20,7 @@ An AST is more than the parser's output, it is a value your programs can analyze
 
 ## Part 1: Expressions as Values: Conditionals, `let`, and Sequencing
 
-> **Think about city zoning for a moment.** A well-planned city separates residential neighborhoods from industrial districts from commercial zones, not because mixing them is physically impossible, but because keeping related things together prevents conflicts and makes the city easier to navigate. Programming languages do the same thing with *modules*, *namespaces*, and *packages*. The way a language carves up code into named, bounded units reflects its philosophy about separation of concerns: who owns what, what is visible to whom, and how names from different places coexist without colliding. In this part of the tutorial, you will explore how expression structure, the building blocks *inside* those units (is designed in functional languages.
+> **Think about city zoning for a moment.** A well-planned city separates residential neighborhoods from industrial districts from commercial zones, not because mixing them is physically impossible, but because keeping related things together prevents conflicts and makes the city easier to navigate. Programming languages do the same thing with *modules*, *namespaces*, and *packages*. The way a language carves up code into named, bounded units reflects its philosophy about separation of concerns: who owns what, what is visible to whom, and how names from different places coexist without colliding. In this part of the tutorial, you will explore how expression structure (the building blocks *inside* those units) is designed in functional languages.
 
 ### Learning Goals
 
@@ -41,7 +41,7 @@ Reference: PLAI (Programming Languages: Application and Interpretation) Ch. 7
 >
 > - Writing and calling Python functions, including lambda expressions
 > - Basic Python data structures (lists, dicts) and comprehensions
-> - The concept of *scope*) that a variable defined inside a function is not visible outside it
+> - The concept of *scope*: that a variable defined inside a function is not visible outside it
 > - Python's `dataclass` decorator (used in Models 4-5); a quick review: `@dataclass` auto-generates `__init__` from field annotations
 >
 > You do **not** need prior exposure to Scheme or Haskell, though the tutorial will introduce small snippets of each. If you have never seen Scheme syntax before, note that `(f a b)` means "call function `f` with arguments `a` and `b`": the function name comes first, inside the parentheses.

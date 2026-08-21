@@ -394,7 +394,7 @@ Run the five provided broken programs and five programs you write yourself throu
 
 Your fixed test suite in Step 3c checks the round-trip law on the handful of programs *you thought to write*. The interesting bugs live in the programs you did not think of: a unary minus applied to a parenthesized subtraction, an operator at exactly the precedence boundary, a deeply right-nested chain. **[Property-based testing](https://hypothesis.readthedocs.io/)** finds those for you: instead of writing examples, you write a *generator* of random ASTs and assert that the law holds for **all** of them; when it fails, Hypothesis automatically **shrinks** the counterexample to the smallest tree that still breaks it.
 
-This is a required step. It replaces the busywork of hand-enumerating more round-trip cases with a generator that enumerates them for you (the same verification effort, far more coverage. The full walkthrough is in the [Property-Based Testing tutorial]({{ site.baseurl }}/Tutorials/PropertyBasedTesting).
+This is a required step. It replaces the busywork of hand-enumerating more round-trip cases with a generator that enumerates them for you: the same verification effort, far more coverage. The full walkthrough is in the [Property-Based Testing tutorial]({{ site.baseurl }}/Tutorials/PropertyBasedTesting).
 
 1. **Install Hypothesis:** `uv add hypothesis` (or `pip install hypothesis`).
 2. **Write an AST generator** using `hypothesis.strategies.recursive`, so that trees can nest to arbitrary depth. Sketch:
@@ -419,16 +419,16 @@ This is a required step. It replaces the busywork of hand-enumerating more round
    def test_round_trip(tree):
        assert parse(unparse(tree)) == tree   # structural equality on your AST
    ```
-3. **Run it** (`pytest` discovers `@given` tests automatically). When it fails) and on a first parser it usually will: Hypothesis prints the minimal failing tree. Fix the bug (commonly a missing parenthesization rule in `unparse`, or a precedence/associativity error in `parse`), and re-run until it passes.
+3. **Run it** (`pytest` discovers `@given` tests automatically). When it fails (and on a first parser it usually will) Hypothesis prints the minimal failing tree. Fix the bug (commonly a missing parenthesization rule in `unparse`, or a precedence/associativity error in `parse`), and re-run until it passes.
 4. **Report one shrunk counterexample you fixed** in your `readme.md`: the minimal tree Hypothesis found, the one-sentence root cause, and the fix. This is the deliverable: evidence that the property found a real bug your fixed tests missed (or a reasoned statement of why your parser was already correct, with the generator shown).
 
-> **Note for Direction B (Mini-Notation):** apply the same idea to your pattern AST (generate random nestings of sequences, alternations, and Euclidean rhythms, and assert your tree printer round-trips (or that re-parsing your printed form yields the same event list). The reference-validation table stands in for the fixed-example half; the Hypothesis generator stands in for this half.
+> **Note for Direction B (Mini-Notation):** apply the same idea to your pattern AST: generate random nestings of sequences, alternations, and Euclidean rhythms, and assert your tree printer round-trips (or that re-parsing your printed form yields the same event list). The reference-validation table stands in for the fixed-example half; the Hypothesis generator stands in for this half.
 
 ---
 
 ## Direction A: Generator Toolchain (Bison or PLY)
 
-In this direction the LALR machinery of Bison (C) or PLY (Python) replaces the hand-written recursive descent ladder. You still write the EBNF grammar of Part 1 first) it remains the contract: and you still deliver the AST tooling and positioned errors of Part 3. What changes is Part 2's vehicle: instead of one function per tier, you write grammar productions with semantic actions, and instead of encoding precedence in the ladder's structure, you declare it.
+In this direction the LALR machinery of Bison (C) or PLY (Python) replaces the hand-written recursive descent ladder. You still write the EBNF grammar of Part 1 first (it remains the contract) and you still deliver the AST tooling and positioned errors of Part 3. What changes is Part 2's vehicle: instead of one function per tier, you write grammar productions with semantic actions, and instead of encoding precedence in the ladder's structure, you declare it.
 
 **A.1; Grammar file and declarations.** Write `parser.y` (Bison) or the PLY grammar module for the full language of Part 1. Declare a `%union` (Bison) with fields for numeric values, strings, and your AST node pointer, and type your tokens accordingly (`%token <dval> NUMBER`, `%token <sval> IDENT STRING`, and so on). Declare operator associativity and precedence with `%left`, `%right`, and `%nonassoc`: comparisons are `%nonassoc` to enforce the same no-chaining rule the core direction's grammar encodes structurally.
 
@@ -448,7 +448,7 @@ In this direction you parse a production language: the **mini-notation** shared 
 
 Do **not** transcribe Strudel's own parser; derive the grammar and semantics yourself, then use Strudel strictly as an *oracle* to test against.
 
-> **Scope note.** Direction B is the most ambitious direction of the three) budget roughly 25-35 hours end to end: and it is recommended mainly for students planning the music direction of the team project. A **reduced-scope variant earns full credit**: B.2 (SLOW and DEGRADE) and B.3 (alternation `<a b c>`, with its displayed equation) are required; B.4 (Euclidean rhythms) and B.5 (polymeter) become optional extensions beyond full credit. If you take the reduced scope, say so in your readme and build your B.6 validation table from the features you implemented.
+> **Scope note.** Direction B is the most ambitious direction of the three (budget roughly 25-35 hours end to end) and it is recommended mainly for students planning the music direction of the team project. A **reduced-scope variant earns full credit**: B.2 (SLOW and DEGRADE) and B.3 (alternation `<a b c>`, with its displayed equation) are required; B.4 (Euclidean rhythms) and B.5 (polymeter) become optional extensions beyond full credit. If you take the reduced scope, say so in your readme and build your B.6 validation table from the features you implemented.
 
 **B.1 (Grammar first (Part 1 equivalent).** Write the complete EBNF grammar for your extended mini-notation) sequences, rests, groups, `*`, `/`, `?`, plus the three constructs below: with one sentence per non-terminal explaining its placement. The grammar must remain conflict-free LALR(1); your readme cites specific states from the `.output` automaton to show where each new construct lives.
 
@@ -474,7 +474,7 @@ Verify the rule by hand for $$E(3,8)$$ (steps 0, 3, 6 -> `x..x..x.`) and one oth
 
 **B.6, Validation against the reference (Part 3 equivalent).** In place of the unparser and round-trip verification, deliver a tree printer (the pretty-printer requirement, unchanged), location-prefixed parse errors, and a **validation table** of at least eight patterns collectively exercising every feature, including at least two that nest new constructs inside one another (`<bd(3,8) sn>`, `{bd <sn cp>, hh*2}`). For each pattern, record your evaluator's event list against the spans Strudel highlights at strudel.cc, and investigate every discrepancy to a conclusion: grammar difference, semantic difference, or bug (yours or, occasionally and delightfully, theirs).
 
-**Direction B deliverables** (same ZIP-and-readme shape): complete source (`.l`, `.y`, `.c`, `.h`, `Makefile`: or the PLY equivalents), the generated `.output`/`parser.out` automaton, a test transcript regenerable via `make test`, and a readme containing the EBNF grammar, the hand-derivations, the polymeter specification, and the validation table. Fix random seeds and list toolchain versions (`flex --version`, `bison --version`, `gcc --version`) for reproducibility.
+**Direction B deliverables** (same ZIP-and-readme shape): complete source (`.l`, `.y`, `.c`, `.h`, `Makefile`, or the PLY equivalents), the generated `.output`/`parser.out` automaton, a test transcript regenerable via `make test`, and a readme containing the EBNF grammar, the hand-derivations, the polymeter specification, and the validation table. Fix random seeds and list toolchain versions (`flex --version`, `bison --version`, `gcc --version`) for reproducibility.
 
 Two useful resources for this direction: Levine's *flex & bison* (O'Reilly, 2009), particularly the conflict-diagnosis chapters, and Toussaint's "The Euclidean Algorithm Generates Traditional Musical Rhythms" (*BRIDGES* 2005).
 

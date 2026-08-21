@@ -43,13 +43,13 @@ def test_round_trip_simple():
     assert parse(unparse(parse("2 + 3 * 4"))) == parse("2 + 3 * 4")
 ```
 
-you are checking one program (the one you thought of. But the bugs in a parser or evaluator live in the programs you *didn't* think of: a unary minus applied to a parenthesized subtraction, an operator sitting exactly at a precedence boundary, a right-associative chain nested twelve deep. You cannot enumerate those by hand.
+you are checking one program: the one you thought of. But the bugs in a parser or evaluator live in the programs you *didn't* think of: a unary minus applied to a parenthesized subtraction, an operator sitting exactly at a precedence boundary, a right-associative chain nested twelve deep. You cannot enumerate those by hand.
 
 **Property-based testing** flips the process around. Instead of writing examples, you:
 
 1. Describe a *space of inputs* (a generator).
 2. State a *property* (a law) that must hold for **every** input in that space.
-3. Let the library sample hundreds of inputs, and) when one fails: automatically **shrink** it to a minimal counterexample.
+3. Let the library sample hundreds of inputs, and (when one fails) automatically **shrink** it to a minimal counterexample.
 
 The library we use is [Hypothesis](https://hypothesis.readthedocs.io/), the standard property-based testing tool for Python.
 

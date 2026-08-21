@@ -4,7 +4,7 @@ email:
 version:  0.0.1
 language: en
 narrator: US English Female
-comment:  From source to executable) the complete compile-link pipeline, ELF/EXE format, object files, and how interpreted languages differ.
+comment:  From source to executable, the complete compile-link pipeline, ELF/EXE format, object files, and how interpreted languages differ.
 import:   https://raw.githubusercontent.com/liaScript/mermaid_template/master/README.md
 link:     https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css
 -->

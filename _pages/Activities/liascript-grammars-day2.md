@@ -234,8 +234,8 @@ In your notebook: the hierarchy says more expressive power costs more recognitio
 - Noam Chomsky. "Three Models for the Description of Language." *IRE Transactions on Information Theory* (1956).
 - Michael Sipser. *Introduction to the Theory of Computation*, Chapters 1 and 2, for proofs we waved at.
 - [The JSON Grammar](https://www.json.org/json-en.html): a real, readable CFG in under 15 minutes.
-- [The Python Reference Grammar](https://docs.python.org/3/reference/grammar.html) (PEG variant; compare to what you wrote in Model 2.
+- [The Python Reference Grammar](https://docs.python.org/3/reference/grammar.html): PEG variant; compare to what you wrote in Model 2.
 
 ---
 
-Up next: the *Derivations, Parse Trees, Ambiguity, and Precedence* activity puts these grammars to work generating) and mis-generating: programs.
+Up next: the *Derivations, Parse Trees, Ambiguity, and Precedence* activity puts these grammars to work generating (and mis-generating) programs.
