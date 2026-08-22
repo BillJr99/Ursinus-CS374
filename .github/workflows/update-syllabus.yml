@@ -41,6 +41,10 @@ jobs:
           python "$RUNNER_TEMP/syllabus2ical.py"
 
       - name: Commit new ical file
+        # On a pull_request, checkout lands on the merge ref in detached HEAD and the
+        # regenerated .ics leaves the tree dirty, so the action's checkout of the head
+        # branch aborts. The commit only makes sense on a push to the real branch.
+        if: github.event_name == 'push'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           file_pattern: "files/*.ics"
