@@ -6,7 +6,7 @@ title: "CS374: Participation Exercises - Lambda Calculus"
 info:
   coursenum: CS374
   purpose: "To reduce terms until they stop, and to meet one that does not."
-  submission: "Nothing to upload. Bring your attempt, and the one step that stopped you, to the Lambda Calculus I: Syntax and Beta Reduction session. These are low-stakes preparation, assessed as part of the 15% Class Activities and Participation component, not graded for correctness."
+  submission: "Nothing to upload.  Please bring your attempt, and the one step that stopped you, to the Lambda Calculus I: Syntax and Beta Reduction session.  These belong to the 15% Class Activities and Participation component, and I am not grading them for correctness."
 
 tags:
   - resource
@@ -14,16 +14,16 @@ tags:
 
 ---
 
-Beta reduction is a rewriting rule you can only learn by applying it, slowly, with every step written down. Two reductions is enough: one that reaches a normal form, and one that never will. The second is the reason the lambda calculus is worth a unit of this course.
+Beta reduction is a rewriting rule, and you learn it by applying it slowly with every step written down.  Two reductions will do here, one that reaches a normal form and one that never will.  The second one is why the lambda calculus is worth a unit of this course.
 
 ## The Exercises
 
-- Beta-reduce `(λx. λy. x) a b` to normal form, showing each step. Then try `(λx. x x)(λx. x x)` and explain what happens.
+- Beta-reduce `(λx. λy. x) a b` to normal form, showing each step.  Then try `(λx. x x)(λx. x x)` and explain what happens.
 - Using the Church encodings from the reading, verify by reduction that `SUCC ZERO` behaves like `ONE`.
 
 ## What to Bring
 
-Mark the one step that resisted you and bring it: the reduction step you were least confident was legal. A genuine attempt that ran aground is worth more to the discussion than a blank page or a perfect one, and the stuck points set the agenda for the session.
+Bring the reduction step you were least confident was legal.  Those are the ones we work through together at the board.
 
 ## See also
 

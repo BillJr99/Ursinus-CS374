@@ -31,9 +31,9 @@ By the end of this tutorial, you will have:
 
 ## Phase 1: Design, Example Programs First
 
-Before writing a single line of interpreter code, we need to know what our language looks like from the *outside*. The best way to do this is to write example programs in Mini and ask: "What do I want this to mean?" Only after we have a clear picture of the surface syntax do we design the token set and grammar.
+Before writing a single line of interpreter code, we need to know what our language looks like from the *outside*.  The best way to do this is to write example programs in Mini and ask: "What do I want this to mean?"  Only after we have a clear picture of the surface syntax do we design the token set and grammar.
 
-This phase is about **language design by example**. Every decision you make about tokens and grammar should be traceable back to a concrete program that needs to run.
+This phase is about **language design by example**.  Every decision you make about tokens and grammar should be traceable back to a concrete program that needs to run.
 
 ### 1.1 Example Programs
 
@@ -114,11 +114,11 @@ let double = fun(n) -> n * 2;
 print apply(double, 8);
 ```
 
-> **CTQ 1.1:** Look at Example 5. The inner `fun(x) -> x + n` refers to `n`, which is defined in `make_adder`'s scope. After `make_adder` returns, does `n` still exist? What language feature makes this work?
+> **CTQ 1.1:** Look at Example 5.  The inner `fun(x) -> x + n` refers to `n`, which is defined in `make_adder`'s scope.  After `make_adder` returns, does `n` still exist?  What language feature makes this work?
 
-> **CTQ 1.2:** In Example 4, `if` is used as an *expression* (its value is assigned to `status`). What does this mean for the parser; can we use the same `if` rule for both statements and expressions?
+> **CTQ 1.2:** In Example 4, `if` is used as an *expression* (its value is assigned to `status`).  What does this mean for the parser; can we use the same `if` rule for both statements and expressions?
 
-> **CTQ 1.3:** Why does Example 3 require reassigning `result` and `i` inside the loop? What would need to change if variables were immutable?
+> **CTQ 1.3:** Why does Example 3 require reassigning `result` and `i` inside the loop?  What would need to change if variables were immutable?
 
 ### 1.2 Token Table
 
@@ -164,17 +164,17 @@ Now that we have seen real programs, every token below has a concrete justificat
 | NIL        | `nil`                                | `nil`          |
 | EOF        | *(end of input)*                     | -              |
 
-> **Note:** Keywords (`if`, `else`, `while`, `let`, `fun`, `return`, `print`, `true`, `false`, `nil`, `and`, `or`, `not`) are recognized by the lexer *after* reading an identifier. A `KEYWORDS` dictionary maps keyword strings to their token kinds.
+> **Note:** Keywords (`if`, `else`, `while`, `let`, `fun`, `return`, `print`, `true`, `false`, `nil`, `and`, `or`, `not`) are recognized by the lexer *after* reading an identifier.  A `KEYWORDS` dictionary maps keyword strings to their token kinds.
 
-> **CTQ 1.4:** The `ARROW` token `->` and the `GT`+`MINUS` pair (`> -`) share characters. How must the lexer prioritize these to avoid ambiguity? (Hint: longer match wins.)
+> **CTQ 1.4:** The `ARROW` token `->` and the `GT`+`MINUS` pair (`> -`) share characters.  How must the lexer prioritize these to avoid ambiguity?  (Hint: longer match wins.)
 
-> **CTQ 1.5:** Why are `true`, `false`, and `nil` keywords rather than built-in identifiers? What would break if they were ordinary identifiers that happened to be pre-defined in the global environment?
+> **CTQ 1.5:** Why are `true`, `false`, and `nil` keywords rather than built-in identifiers?  What would break if they were ordinary identifiers that happened to be pre-defined in the global environment?
 
 ---
 
 ## Phase 2: Lexer
 
-The **lexer** (also called a *scanner* or *tokenizer*) transforms raw source text into a flat list of `Token` objects. The parser never sees individual characters; it only sees tokens.
+The **lexer** (also called a *scanner* or *tokenizer*) transforms raw source text into a flat list of `Token` objects.  The parser never sees individual characters; it only sees tokens.
 
 ### 2.1 Token Dataclass and Constants
 
@@ -414,21 +414,21 @@ Token(LBRACE, '{', line=2)
 ...
 ```
 
-> **CTQ 2.1:** What happens if `->` is lexed as `MINUS` followed by `GT`? Write a Mini expression where this ambiguity matters and explain which tokenization is correct.
+> **CTQ 2.1:** What happens if `->` is lexed as `MINUS` followed by `GT`?  Write a Mini expression where this ambiguity matters and explain which tokenization is correct.
 
-> **CTQ 2.2:** The `_skip_whitespace_and_comments` method is called at the *start* of `next_token`. Could you instead call it at the *end*? What would break (or not break)?
+> **CTQ 2.2:** The `_skip_whitespace_and_comments` method is called at the *start* of `next_token`.  Could you instead call it at the *end*?  What would break (or not break)?
 
-> **CTQ 2.3:** Currently, strings support `\n`, `\t`, `\\`, and `\"` escapes. What would you need to add to support Unicode escapes like `A`?
+> **CTQ 2.3:** Currently, strings support `\n`, `\t`, `\\`, and `\"` escapes.  What would you need to add to support Unicode escapes like `A`?
 
-**Try It Exercise 2.1:** Modify the lexer to also support `//` line comments (C-style). Which method do you change, and what is the minimal addition?
+**Try It Exercise 2.1:** Modify the lexer to also support `//` line comments (C-style).  Which method do you change, and what is the minimal addition?
 
-**Try It Exercise 2.2:** Add `LBRACKET` (`[`) and `RBRACKET` (`]`) tokens for list literals. What is the minimal change needed in `next_token`?
+**Try It Exercise 2.2:** Add `LBRACKET` (`[`) and `RBRACKET` (`]`) tokens for list literals.  What is the minimal change needed in `next_token`?
 
 ---
 
 ## Phase 3: Grammar (EBNF)
 
-The grammar defines the *structure* of valid programs. We write it in Extended Backus-Naur Form (EBNF). Our grammar must be free of left recursion (since we will build a **recursive descent** parser) and must reflect the operator precedence we want.
+The grammar defines the *structure* of valid programs.  We write it in Extended Backus-Naur Form (EBNF).  Our grammar must be free of left recursion (since we will build a **recursive descent** parser) and must reflect the operator precedence we want.
 
 ### 3.1 Full EBNF for Mini
 
@@ -498,19 +498,19 @@ graph TD
 
 The multiplication `2 * 3` is deeper in the tree, so it evaluates first; this is how precedence emerges naturally from the grammar hierarchy.
 
-> **CTQ 3.1:** Why does the grammar have separate `add_expr` and `mul_expr` rules instead of one `binary_expr` rule? Trace through what would happen if you tried to combine them.
+> **CTQ 3.1:** Why does the grammar have separate `add_expr` and `mul_expr` rules instead of one `binary_expr` rule?  Trace through what would happen if you tried to combine them.
 
-> **CTQ 3.2:** The grammar says `cmp_expr` uses `add_expr` on both sides. What does this mean for the expression `a + b == c + d`? Draw the parse tree.
+> **CTQ 3.2:** The grammar says `cmp_expr` uses `add_expr` on both sides.  What does this mean for the expression `a + b == c + d`?  Draw the parse tree.
 
-> **CTQ 3.3:** Could you write a Mini program that is syntactically valid according to this grammar but semantically meaningless (e.g., adding a string to a boolean)? Is that a grammar problem or a later-stage problem?
+> **CTQ 3.3:** Could you write a Mini program that is syntactically valid according to this grammar but semantically meaningless (e.g., adding a string to a boolean)?  Is that a grammar problem or a later-stage problem?
 
-**Try It Exercise 3.1:** Add a `for` loop to the grammar: `for IDENT in expr block`. Write the EBNF rule and identify what new tokens (if any) you need.
+**Try It Exercise 3.1:** Add a `for` loop to the grammar: `for IDENT in expr block`.  Write the EBNF rule and identify what new tokens (if any) you need.
 
 ---
 
 ## Phase 4: AST Nodes
 
-The **Abstract Syntax Tree** (AST) is the in-memory representation of a parsed program. We use Python `@dataclass` for each node type, with `frozen=True` to prevent accidental mutation during evaluation.
+The **Abstract Syntax Tree** (AST) is the in-memory representation of a parsed program.  We use Python `@dataclass` for each node type, with `frozen=True` to prevent accidental mutation during evaluation.
 
 ### 4.1 Expression Nodes
 
@@ -634,7 +634,7 @@ class Program(Node):
 
 ### 4.3 Pretty-Printer
 
-A `pretty_print` function lets you inspect any AST node in a readable, indented form. This is invaluable for debugging your parser.
+A `pretty_print` function lets you inspect any AST node in a readable, indented form.  This is invaluable for debugging your parser.
 
 ```python
 # ast_nodes.py (continued)
@@ -706,19 +706,19 @@ def pretty_print(node: Node, indent: int = 0) -> None:
             print(f"{pad}<unknown node: {type(node).__name__}>")
 ```
 
-> **CTQ 4.1:** Why do we use `frozen=True` on AST dataclasses? What could go wrong if AST nodes were mutable during evaluation?
+> **CTQ 4.1:** Why do we use `frozen=True` on AST dataclasses?  What could go wrong if AST nodes were mutable during evaluation?
 
-> **CTQ 4.2:** The `Call` node stores `args` as a `tuple` rather than `list`. Why does `frozen=True` require tuples instead of lists for sequence fields?
+> **CTQ 4.2:** The `Call` node stores `args` as a `tuple` rather than `list`.  Why does `frozen=True` require tuples instead of lists for sequence fields?
 
-> **CTQ 4.3:** `Lambda.body` is typed as `Node` rather than `Expr` or `Stmt`. Why is this necessary, and what are the two possible concrete types it can hold at runtime?
+> **CTQ 4.3:** `Lambda.body` is typed as `Node` rather than `Expr` or `Stmt`.  Why is this necessary, and what are the two possible concrete types it can hold at runtime?
 
-**Try It Exercise 4.1:** Manually construct the AST for `let x = 1 + 2;` and call `pretty_print` on it. Does the output match your expectations?
+**Try It Exercise 4.1:** Manually construct the AST for `let x = 1 + 2;` and call `pretty_print` on it.  Does the output match your expectations?
 
 ---
 
 ## Phase 5: Parser
 
-The **parser** consumes the flat list of tokens and builds the AST. We use **recursive descent**, where each grammar rule becomes a method. The parser never looks at characters; it only calls token-level helpers.
+The **parser** consumes the flat list of tokens and builds the AST. We use **recursive descent**, where each grammar rule becomes a method.  The parser never looks at characters; it only calls token-level helpers.
 
 ### 5.1 Parser Infrastructure
 
@@ -1025,19 +1025,19 @@ tree = parse(src)
 pretty_print(tree)
 ```
 
-> **CTQ 5.1:** In `parse_multiplicative`, exponentiation (`^`) is handled with a `return` instead of continuing the `while` loop. Trace through parsing `2 ^ 3 ^ 4` to show this produces right-associativity `(2 ^ (3 ^ 4))`.
+> **CTQ 5.1:** In `parse_multiplicative`, exponentiation (`^`) is handled with a `return` instead of continuing the `while` loop.  Trace through parsing `2 ^ 3 ^ 4` to show this produces right-associativity `(2 ^ (3 ^ 4))`.
 
-> **CTQ 5.2:** The `parse_call` method wraps `parse_primary` in a `while` loop. Why a loop? Give a Mini expression that requires more than one iteration of that loop.
+> **CTQ 5.2:** The `parse_call` method wraps `parse_primary` in a `while` loop.  Why a loop?  Give a Mini expression that requires more than one iteration of that loop.
 
 > **CTQ 5.3:** If a user writes `let 42 = x;`, which method raises a `ParseError`, and on which token kind does it fail?
 
-**Try It Exercise 5.1:** Add support for list literals `[1, 2, 3]` in `parse_primary`. You will need `LBRACKET`/`RBRACKET` tokens from Try It 2.2 and a new `ListLit` AST node from Phase 4.
+**Try It Exercise 5.1:** Add support for list literals `[1, 2, 3]` in `parse_primary`.  You will need `LBRACKET`/`RBRACKET` tokens from Try It 2.2 and a new `ListLit` AST node from Phase 4.
 
 ---
 
 ## Phase 6: Environment
 
-The **environment** is the data structure that tracks variable bindings at runtime. It is a linked list of *frames*, where each frame is a Python dictionary. When a function is called, a new frame is pushed; when it returns, the frame is popped. Crucially, closures *capture* the environment at the time they are created.
+The **environment** is the data structure that tracks variable bindings at runtime.  It is a linked list of *frames*, where each frame is a Python dictionary.  When a function is called, a new frame is pushed; when it returns, the frame is popped.  Crucially, closures *capture* the environment at the time they are created.
 
 ### 6.1 Environment Class
 
@@ -1124,9 +1124,9 @@ print(inner_env.lookup("x"))     # 999 - shadows global x
 print(global_env.lookup("x"))    # 10  - global unchanged
 ```
 
-> **CTQ 6.1:** What is the difference between `define` and `assign`? Give a Mini code example where using one instead of the other would produce the wrong behavior.
+> **CTQ 6.1:** What is the difference between `define` and `assign`?  Give a Mini code example where using one instead of the other would produce the wrong behavior.
 
-> **CTQ 6.2:** When a closure is created, it captures the *current* environment object by reference (not by copy). What does this mean for the following Mini program?
+> **CTQ 6.2:** When a closure is created, it captures the *current* environment object by reference (not by copy).  What does this mean for the following Mini program?
 > ```mini
 > let counter = 0;
 > fun inc() { counter = counter + 1; }
@@ -1134,13 +1134,13 @@ print(global_env.lookup("x"))    # 10  - global unchanged
 > print counter;   # What does this print?
 > ```
 
-> **CTQ 6.3:** Could you implement environments using a single flat dictionary augmented with integer scope IDs? What would be harder about that approach?
+> **CTQ 6.3:** Could you implement environments using a single flat dictionary augmented with integer scope IDs?  What would be harder about that approach?
 
 ---
 
 ## Phase 7: Evaluator
 
-The **evaluator** (interpreter) walks the AST and produces values. It is the heart of the language. We use Python's `match` statement for clean dispatch on AST node types.
+The **evaluator** (interpreter) walks the AST and produces values.  It is the heart of the language.  We use Python's `match` statement for clean dispatch on AST node types.
 
 ### 7.1 Runtime Values
 
@@ -1404,11 +1404,11 @@ interp.eval(tree, interp.global_env)
 # Expected output: 55
 ```
 
-> **CTQ 7.1:** The `_apply` method creates a new child environment `fn.env.child()` rather than `env.child()`. Why is `fn.env` the right parent? What language behavior depends on this choice?
+> **CTQ 7.1:** The `_apply` method creates a new child environment `fn.env.child()` rather than `env.child()`.  Why is `fn.env` the right parent?  What language behavior depends on this choice?
 
-> **CTQ 7.2:** `ReturnSignal` is a Python exception rather than a special return value from `eval`. Why use an exception for this? What would be harder about returning a `(value, did_return)` tuple from every `eval` call instead?
+> **CTQ 7.2:** `ReturnSignal` is a Python exception rather than a special return value from `eval`.  Why use an exception for this?  What would be harder about returning a `(value, did_return)` tuple from every `eval` call instead?
 
-> **CTQ 7.3:** In `_eval_binop`, the `+` case checks for strings first and concatenates. What does `1 + "hello"` produce in Mini? Is this intentional? How would you change it to raise a type error instead?
+> **CTQ 7.3:** In `_eval_binop`, the `+` case checks for strings first and concatenates.  What does `1 + "hello"` produce in Mini?  Is this intentional?  How would you change it to raise a type error instead?
 
 **Try It Exercise 7.1:** Verify that `^` is right-associative end-to-end: evaluate `2 ^ 3 ^ 2` and confirm it equals `512` (= `2 ^ 9`), not `64` (= `8 ^ 2`).
 
@@ -1420,13 +1420,13 @@ fun make_counter() {
   return fun() -> n + 1;
 }
 ```
-Does the inner function mutate `n`? Why or why not? What would you need to add to make the counter actually increment?
+Does the inner function mutate `n`?  Why or why not?  What would you need to add to make the counter actually increment?
 
 ---
 
 ## Phase 8: REPL and File Runner
 
-A REPL (Read-Eval-Print Loop) lets users type Mini expressions interactively. The file runner executes `.mini` files. Both share the same `run_source` core function, which keeps error handling consistent.
+A REPL (Read-Eval-Print Loop) lets users type Mini expressions interactively.  The file runner executes `.mini` files.  Both share the same `run_source` core function, which keeps error handling consistent.
 
 ### 8.1 run_source
 
@@ -1558,19 +1558,19 @@ if __name__ == "__main__":
 > >>> exit
 > ```
 
-> **CTQ 8.1:** The REPL reads until braces balance. What happens if a user types an unbalanced `{` and never closes it? How would you add a maximum-lines limit to guard against this?
+> **CTQ 8.1:** The REPL reads until braces balance.  What happens if a user types an unbalanced `{` and never closes it?  How would you add a maximum-lines limit to guard against this?
 
-> **CTQ 8.2:** `run_source` re-raises all errors rather than printing them internally. What is the advantage of re-raising instead of printing? How does this make `run_source` more reusable?
+> **CTQ 8.2:** `run_source` re-raises all errors rather than printing them internally.  What is the advantage of re-raising instead of printing?  How does this make `run_source` more reusable?
 
-> **CTQ 8.3:** When running with `--file`, should the interpreter share state across multiple `run_file` calls? What would need to change to support passing multiple files on the command line and having them share a global environment?
+> **CTQ 8.3:** When running with `--file`, should the interpreter share state across multiple `run_file` calls?  What would need to change to support passing multiple files on the command line and having them share a global environment?
 
-**Try It Exercise 8.1:** Add a `--debug` flag that calls `pretty_print(tree)` after parsing but before evaluating when running from a file. This is extremely useful for tracking down parser bugs.
+**Try It Exercise 8.1:** Add a `--debug` flag that calls `pretty_print(tree)` after parsing but before evaluating when running from a file.  This is extremely useful for tracking down parser bugs.
 
 ---
 
 ## Phase 9: Built-in Functions
 
-Built-in functions expose Python capabilities to Mini code. They are registered in the global environment as `BuiltinFn` objects before any user code runs, so they are available from the first line of every program.
+Built-in functions expose Python capabilities to Mini code.  They are registered in the global environment as `BuiltinFn` objects before any user code runs, so they are available from the first line of every program.
 
 ### 9.1 make_global_env()
 
@@ -1693,15 +1693,15 @@ run_source('print reduce(fun(a, b) -> a + b, 0, range(1, 11));', interp)
 # Output: 55
 ```
 
-> **CTQ 9.1:** The `_map` helper creates a new `Interpreter(env)` on every call. This is wasteful. What is the cleanest architectural way to give built-ins access to the running interpreter's `_apply` method without creating new instances?
+> **CTQ 9.1:** The `_map` helper creates a new `Interpreter(env)` on every call.  This is wasteful.  What is the cleanest architectural way to give built-ins access to the running interpreter's `_apply` method without creating new instances?
 
-> **CTQ 9.2:** `append` is defined as `lambda lst, x: lst + [x]`, which returns a *new* list. Is this consistent with Mini's overall value semantics (mutability vs. immutability)? What would change if lists were mutable?
+> **CTQ 9.2:** `append` is defined as `lambda lst, x: lst + [x]`, which returns a *new* list.  Is this consistent with Mini's overall value semantics (mutability vs. immutability)?  What would change if lists were mutable?
 
-> **CTQ 9.3:** `head([])` as currently written would crash with a Python error rather than raising a `RuntimeError_`. Fix the `head` definition so it raises a proper Mini runtime error.
+> **CTQ 9.3:** `head([])` as currently written would crash with a Python error rather than raising a `RuntimeError_`.  Fix the `head` definition so it raises a proper Mini runtime error.
 
 **Try It Exercise 9.1:** Write a Mini program that uses `cons`, `head`, and `tail` to implement a recursive `my_sum` function, without using `reduce` or any Python built-ins.
 
-**Try It Exercise 9.2:** Add a `type_of(x)` built-in that returns a string: `"number"`, `"string"`, `"bool"`, `"nil"`, `"list"`, or `"function"`. This is invaluable for debugging Mini programs.
+**Try It Exercise 9.2:** Add a `type_of(x)` built-in that returns a string: `"number"`, `"string"`, `"bool"`, `"nil"`, `"list"`, or `"function"`.  This is invaluable for debugging Mini programs.
 
 ---
 
@@ -1711,16 +1711,16 @@ With all phases complete, this final phase gives you a systematic way to verify 
 
 ### 10.1 Checklist of 10 Things to Verify
 
-1. **Lexical scoping**: Inner functions see outer-scope variables; sibling functions do not share locals.
-2. **Closures capture by reference**: A returned closure correctly reflects mutations to captured variables.
-3. **Recursion correctness**: `fib(10)` returns `55`; `factorial(6)` returns `720`.
-4. **Tail recursion pitfall**: Mini does *not* optimize tail calls (Python doesn't either). For `fib(40)`, Python will hit its default recursion limit. Document this limitation clearly in your README.
-5. **Mutual recursion with forward references**: Two functions that call each other both work correctly when both definitions precede any calls.
-6. **String escapes**: `"\n"`, `"\t"`, `"\\"`, and `"\""` produce the correct Python characters.
-7. **Division by zero**: `1 / 0` raises a `RuntimeError_` with a clear message, not an uncaught Python `ZeroDivisionError`.
-8. **Type errors**: `"hello" - 1` raises a `RuntimeError_`, not an uncaught Python `TypeError`.
-9. **Early return from nested loops**: A `return` inside a `while` inside a `fun` exits the entire function, not just the loop body.
-10. **Built-ins are first-class values**: `map` can be passed as an argument: `let m = map; print m(fun(x) -> x+1, range(3));` works.
+1.  **Lexical scoping**: Inner functions see outer-scope variables; sibling functions do not share locals.
+2.  **Closures capture by reference**: A returned closure correctly reflects mutations to captured variables.
+3.  **Recursion correctness**: `fib(10)` returns `55`; `factorial(6)` returns `720`.
+4.  **Tail recursion pitfall**: Mini does *not* optimize tail calls (Python doesn't either).  For `fib(40)`, Python will hit its default recursion limit.  Document this limitation clearly in your README.
+5.  **Mutual recursion with forward references**: Two functions that call each other both work correctly when both definitions precede any calls.
+6.  **String escapes**: `"\n"`, `"\t"`, `"\\"`, and `"\""` produce the correct Python characters.
+7.  **Division by zero**: `1 / 0` raises a `RuntimeError_` with a clear message, not an uncaught Python `ZeroDivisionError`.
+8.  **Type errors**: `"hello" - 1` raises a `RuntimeError_`, not an uncaught Python `TypeError`.
+9.  **Early return from nested loops**: A `return` inside a `while` inside a `fun` exits the entire function, not just the loop body.
+10.  **Built-ins are first-class values**: `map` can be passed as an argument: `let m = map; print m(fun(x) -> x+1, range(3));` works.
 
 ### 10.2 Complete Test Suite
 
@@ -1972,7 +1972,7 @@ python test_mini.py
 
 ### 10.4 What's Next
 
-You now have a complete working interpreter for Mini. The following extensions are described in the **Extensions Menu** of the [Team Language Project](https://www.billmongan.com/Ursinus-CS374/Projects/TeamLanguage) and build directly on this foundation:
+You now have a complete working interpreter for Mini.  The following extensions are described in the **Extensions Menu** of the [Team Language Project](https://www.billmongan.com/Ursinus-CS374/Projects/TeamLanguage) and build directly on this foundation:
 
 **Language features to add:**
 - **List indexing**: `lst[i]` read and `lst[i] = v` write; requires new AST nodes `IndexExpr` and `IndexAssign`, plus updates to the parser's `parse_call` and the evaluator.
@@ -1982,8 +1982,8 @@ You now have a complete working interpreter for Mini. The following extensions a
 - **Module system**: Add an `import "file.mini"` statement to split programs across multiple files.
 
 **Compiler backends:**
-- **Bytecode compiler + stack VM**: Compile the AST to a custom instruction set and build a virtual machine to execute it. Dramatically faster than tree-walking.
-- **Python transpiler**: Walk the AST and emit Python source code instead of interpreting. Allows Mini programs to be packaged as `.py` files.
+- **Bytecode compiler + stack VM**: Compile the AST to a custom instruction set and build a virtual machine to execute it.  Dramatically faster than tree-walking.
+- **Python transpiler**: Walk the AST and emit Python source code instead of interpreting.  Allows Mini programs to be packaged as `.py` files.
 - **Static type checker**: Add a Hindley-Milner type inference pass that runs before evaluation to catch type errors at compile time.
 
 **Tooling:**
@@ -1991,11 +1991,11 @@ You now have a complete working interpreter for Mini. The following extensions a
 - **Interactive debugger**: Add a `breakpoint;` statement that drops into a mini-REPL inside the running program.
 - **Language Server Protocol (LSP) server**: Expose go-to-definition, hover documentation, and diagnostics to editors like VS Code.
 
-> **CTQ 10.1:** The `test_early_return_from_nested_while` test validates that `return` inside a `while` exits the entire function. Trace through the Python call stack to explain exactly how `ReturnSignal` achieves this, specifically, what happens when `raise ReturnSignal(...)` is executed inside `_eval_block`, called from `eval(WhileStmt, ...)`, called from `_eval_block_or_expr`, called from `_apply`.
+> **CTQ 10.1:** The `test_early_return_from_nested_while` test validates that `return` inside a `while` exits the entire function.  Trace through the Python call stack to explain exactly how `ReturnSignal` achieves this, specifically, what happens when `raise ReturnSignal(...)` is executed inside `_eval_block`, called from `eval(WhileStmt, ...)`, called from `_eval_block_or_expr`, called from `_apply`.
 
-> **CTQ 10.2:** The test suite uses `io.StringIO` to capture `print` output. Is this a good testing strategy? What would be a cleaner approach that does not depend on stdout redirection?
+> **CTQ 10.2:** The test suite uses `io.StringIO` to capture `print` output.  Is this a good testing strategy?  What would be a cleaner approach that does not depend on stdout redirection?
 
-> **CTQ 10.3:** `test_fibonacci_10` calls `fib(10)`. Why not `fib(35)` or `fib(40)`? What would you need to add to Mini to make large Fibonacci computations practical without hitting Python's recursion limit?
+> **CTQ 10.3:** `test_fibonacci_10` calls `fib(10)`.  Why not `fib(35)` or `fib(40)`?  What would you need to add to Mini to make large Fibonacci computations practical without hitting Python's recursion limit?
 
 ---
 
@@ -2003,7 +2003,7 @@ You now have a complete working interpreter for Mini. The following extensions a
 
 # From the Language Design Studio: Grammar v0 Starter
 
-The feature-checklist and EBNF-skeleton builder below came from the Sprint 0 class session. It is a tool you run while drafting your grammar, so it lives with the project guide.
+The feature-checklist and EBNF-skeleton builder below came from the Sprint 0 class session.  It is a tool you run while drafting your grammar, so it lives with the project guide.
 
 ## Model 2: Grammar v0 Starter - Feature Checklist
 
@@ -2130,15 +2130,15 @@ print("  Each True flag = at minimum one new grammar rule + one new AST node.")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **Watch out!** Adding a feature flag to `True` in the skeleton does not implement the feature; it only declares intent. The real cost shows up in two places: (1) every new grammar rule becomes a new parsing function your Builder must write and test, and (2) every new grammar rule introduces at least one new AST node that your Evaluator must handle. Teams commonly underestimate Sprint 1 scope by counting features rather than counting grammar rules plus AST nodes.
+> **Watch out!**  Adding a feature flag to `True` in the skeleton does not implement the feature; it only declares intent.  The real cost shows up in two places: (1) every new grammar rule becomes a new parsing function your Builder must write and test, and (2) every new grammar rule introduces at least one new AST node that your Evaluator must handle.  Teams commonly underestimate Sprint 1 scope by counting features rather than counting grammar rules plus AST nodes.
 
 ### Critical Thinking Questions
 
-5. Set `functions = True` and run. Count how many new grammar rules appear. Each new rule is a parser function your Builder must write. How does this inform Sprint 1's scope estimate?
-6. The niche feature `dice_roll` appears in both `statement` and `primary`. Is `3d6` a statement (roll and discard), an expression (roll and use the value), or both? How should the grammar reflect this distinction?
-7. The expression ladder encodes precedence by nesting: `or_expr` calls `and_expr` which calls `not_expr`. Add `**` (exponentiation) to the ladder with higher precedence than `*`. Write the new rule and its position in the ladder.
+5.  Set `functions = True` and run.  Count how many new grammar rules appear.  Each new rule is a parser function your Builder must write.  How does this inform Sprint 1's scope estimate?
+6.  The niche feature `dice_roll` appears in both `statement` and `primary`.  Is `3d6` a statement (roll and discard), an expression (roll and use the value), or both?  How should the grammar reflect this distinction?
+7.  The expression ladder encodes precedence by nesting: `or_expr` calls `and_expr` which calls `not_expr`.  Add `**` (exponentiation) to the ladder with higher precedence than `*`.  Write the new rule and its position in the ladder.
 
-A team's niche is dice-game scripting, and they are debating whether `3d6` should be core syntax (a lexer token and AST node) or a library function `roll(3, 6)`. The scorecard-driven way to decide is:
+A team's niche is dice-game scripting, and they are debating whether `3d6` should be core syntax (a lexer token and AST node) or a library function `roll(3, 6)`.  The scorecard-driven way to decide is:
 
 [( )] Core syntax, because it is more impressive at Demo Day
 [( )] A function, because lexer changes are risky
@@ -2147,5 +2147,5 @@ A team's niche is dice-game scripting, and they are debating whether `3d6` shoul
 
 ---
 
-A hospital keeps a patient chart that tracks every procedure, every medication, every result. Without it, different doctors treating the same patient would have no shared source of truth. Your node inventory is that chart for your interpreter: every AST node your team agrees on becomes a row, and empty cells in the "evaluator method" column show exactly where the implementation is incomplete. This model generates a starter inventory; your job is to fill in the blank rows before Sprint 1 ends.
+A hospital keeps a patient chart that tracks every procedure, every medication, every result.  Without it, different doctors treating the same patient would have no shared source of truth.  Your node inventory is that chart for your interpreter: every AST node your team agrees on becomes a row, and empty cells in the "evaluator method" column show exactly where the implementation is incomplete.  This model generates a starter inventory; your job is to fill in the blank rows before Sprint 1 ends.
 

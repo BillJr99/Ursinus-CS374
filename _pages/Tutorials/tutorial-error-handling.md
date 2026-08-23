@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tutorial: Error Handling, From Return Codes to Algebraic Effects
 
-Error handling is not just a library concern; it is a fundamental language design decision that shapes every program written in a language. Should errors interrupt control flow or flow as values? Should the type system enforce that errors are handled? The choice between exceptions, error values, and algebraic effect types reflects a philosophy about programmer responsibility, code clarity, and what the language should guarantee versus what it trusts the programmer to do correctly.
+Error handling is not just a library concern; it is a fundamental language design decision that shapes every program written in a language.  Should errors interrupt control flow or flow as values?  Should the type system enforce that errors are handled?  The choice between exceptions, error values, and algebraic effect types reflects a philosophy about programmer responsibility, code clarity, and what the language should guarantee versus what it trusts the programmer to do correctly.
 
 ## Learning Goals
 
@@ -31,15 +31,15 @@ By the end of this tutorial, you will be able to:
 
 > **Before You Begin, check that you have these foundations:**
 >
-> - **Python try/except:** You have written `try`/`except` blocks to catch exceptions and `raise` to signal errors. If you have not, review the Python docs on exceptions first.
-> - **The call stack:** You understand that when function A calls B which calls C, Python maintains a stack of active frames. When an exception propagates "up," it unwinds that stack looking for a matching `except`.
-> - **Maybe / Result types:** You have at least seen the idea that a function can return a value that is *either* a success or a failure, rather than raising an exception. (Models 3 and 4 below build this up from scratch, but having a mental picture helps.)
+> - **Python try/except:** You have written `try`/`except` blocks to catch exceptions and `raise` to signal errors.  If you have not, review the Python docs on exceptions first.
+> - **The call stack:** You understand that when function A calls B which calls C, Python maintains a stack of active frames.  When an exception propagates "up," it unwinds that stack looking for a matching `except`.
+> - **Maybe / Result types:** You have at least seen the idea that a function can return a value that is *either* a success or a failure, rather than raising an exception.  (Models 3 and 4 below build this up from scratch, but having a mental picture helps.)
 
 ---
 
 ## Preface: Why Error Handling Is a Language Design Problem
 
-Every program encounters errors: bad input, missing files, network failures, type mismatches, division by zero. A language's error handling strategy determines:
+Every program encounters errors: bad input, missing files, network failures, type mismatches, division by zero.  A language's error handling strategy determines:
 
 - **When** errors are detected (statically vs. dynamically)
 - **How** errors are represented (return values, exceptions, types)
@@ -53,9 +53,9 @@ There is no single best answer; each approach makes different tradeoffs, and und
 
 ## Model 1: Return Codes, The C Approach
 
-**Intuition:** Imagine asking a friend to look up a phone number. If they can't find it, they could simply hand you back a slip of paper that says "-1" instead of a real number. It is your job to notice the slip says "-1" before you try to dial. There is nothing stopping you from ignoring it and dialing anyway; that is exactly the problem with return codes. This is the oldest and lowest-level error-handling strategy, inherited from C, where functions signal failure through a conventional "magic" return value. The entire burden of checking falls on the caller, and the language provides no help enforcing that check.
+**Intuition:** Imagine asking a friend to look up a phone number.  If they can't find it, they could simply hand you back a slip of paper that says "-1" instead of a real number.  It is your job to notice the slip says "-1" before you try to dial.  There is nothing stopping you from ignoring it and dialing anyway; that is exactly the problem with return codes.  This is the oldest and lowest-level error-handling strategy, inherited from C, where functions signal failure through a conventional "magic" return value.  The entire burden of checking falls on the caller, and the language provides no help enforcing that check.
 
-The oldest strategy: functions return a special value (typically -1 or NULL) to signal failure. The caller is responsible for checking the return value.
+The oldest strategy: functions return a special value (typically -1 or NULL) to signal failure.  The caller is responsible for checking the return value.
 
 ```python
 # Simulating the C-style return code pattern in Python
@@ -117,23 +117,23 @@ except OSError as e:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-**The fundamental problem with return codes:** They can be silently ignored. The language provides no mechanism to force the caller to check. In large codebases, forgotten checks cause mysterious bugs far from the actual failure.
+**The fundamental problem with return codes:** They can be silently ignored.  The language provides no mechanism to force the caller to check.  In large codebases, forgotten checks cause mysterious bugs far from the actual failure.
 
 > **Check Your Understanding**, think each question through (and jot an answer) before reading on.
 
-**Q1.** In the example above, `c_style_read(fd2, 1024)` is called with an invalid fd and returns `None` silently. What real-world bugs does this pattern cause? Give a concrete example from systems programming.
+**Q1.**  In the example above, `c_style_read(fd2, 1024)` is called with an invalid fd and returns `None` silently.  What real-world bugs does this pattern cause?  Give a concrete example from systems programming.
 
-**Q2.** The `errno` global variable breaks in multi-threaded C programs. Why? What does this tell you about global mutable state as an error mechanism?
+**Q2.**  The `errno` global variable breaks in multi-threaded C programs.  Why?  What does this tell you about global mutable state as an error mechanism?
 
-**Q3.** Return codes have one significant advantage over exceptions: they are explicit in the type signature. `int read(int fd, void *buf, size_t count)` returns -1 on error. How does this relate to the caller-callee contract in a statically typed language?
+**Q3.**  Return codes have one significant advantage over exceptions: they are explicit in the type signature. `int read(int fd, void *buf, size_t count)` returns -1 on error.  How does this relate to the caller-callee contract in a statically typed language?
 
 ---
 
 ## Model 2: Exceptions, Non-Local Control Flow
 
-**Intuition:** Return codes require every caller to check: what if you could install an "emergency exit" somewhere up the call stack, so that any failure anywhere below it automatically jumps to that exit? That is exceptions in a nutshell. The function that detects the error does not need to know who called it or whether anyone will handle the error; it just raises. The nearest matching `except` block, potentially many frames away, catches it. This decoupling is powerful for separating error-detection from error-recovery, but it comes at a cost: the control flow becomes invisible: a function can silently exit through an exception channel that is not visible in its signature.
+**Intuition:** Return codes require every caller to check: what if you could install an "emergency exit" somewhere up the call stack, so that any failure anywhere below it automatically jumps to that exit?  That is exceptions in a nutshell.  The function that detects the error does not need to know who called it or whether anyone will handle the error; it just raises.  The nearest matching `except` block, potentially many frames away, catches it.  This decoupling is powerful for separating error-detection from error-recovery, but it comes at a cost: the control flow becomes invisible: a function can silently exit through an exception channel that is not visible in its signature.
 
-Exceptions decouple error signaling from error handling. A function can raise an exception at any depth; the nearest matching `catch`/`except` in the call stack handles it.
+Exceptions decouple error signaling from error handling.  A function can raise an exception at any depth; the nearest matching `catch`/`except` in the call stack handles it.
 
 ```python
 import traceback
@@ -216,30 +216,30 @@ except RuntimeError as e:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **Watch out! The bare `except` antipattern**
-> Writing `except Exception` (or worse, a bare `except:` with no class at all) catches *everything*, including errors you did not anticipate: misspelled variable names (`NameError`), out-of-memory conditions (`MemoryError`), even `SystemExit`. This silently swallows bugs and makes debugging extremely difficult because the error disappears rather than propagating. Always catch the *most specific* exception type you actually know how to handle (e.g. `except ValueError`, `except FileNotFoundError`). If you need a catch-all for logging, re-raise with `raise` afterward.
+> **Watch out!  The bare `except` antipattern**
+> Writing `except Exception` (or worse, a bare `except:` with no class at all) catches *everything*, including errors you did not anticipate: misspelled variable names (`NameError`), out-of-memory conditions (`MemoryError`), even `SystemExit`.  This silently swallows bugs and makes debugging extremely difficult because the error disappears rather than propagating.  Always catch the *most specific* exception type you actually know how to handle (e.g. `except ValueError`, `except FileNotFoundError`).  If you need a catch-all for logging, re-raise with `raise` afterward.
 
 ### Checked vs. Unchecked Exceptions
 
 **Java-style checked exceptions:** The compiler forces callers to either catch or declare every checked exception. `IOException`, `SQLException` are checked; `NullPointerException`, `ArrayIndexOutOfBoundsException` are unchecked.
 
-**Python/C++/C#-style unchecked exceptions:** No compile-time enforcement. Callers may or may not catch. The risk: a function silently throws an exception that callers don't know about.
+**Python/C++/C#-style unchecked exceptions:** No compile-time enforcement.  Callers may or may not catch.  The risk: a function silently throws an exception that callers don't know about.
 
 > **Check Your Understanding**, think each question through (and jot an answer) before reading on.
 
-**Q4.** In Python, `except Exception` catches almost every exception. Why is this considered dangerous? What would a disciplined exception-handling policy look like?
+**Q4.**  In Python, `except Exception` catches almost every exception.  Why is this considered dangerous?  What would a disciplined exception-handling policy look like?
 
-**Q5.** Java's checked exceptions were controversial and were rejected in C# and Kotlin. The argument against: they pollute call signatures with exception declarations that bubble all the way up. The argument for: callers can't ignore failure modes. Which position do you find more compelling? Why?
+**Q5.**  Java's checked exceptions were controversial and were rejected in C# and Kotlin.  The argument against: they pollute call signatures with exception declarations that bubble all the way up.  The argument for: callers can't ignore failure modes.  Which position do you find more compelling?  Why?
 
-**Q6.** Exceptions are a form of non-local control flow: they break the normal call/return pattern. A function that throws "jumps" to a catch block potentially many frames up the call stack. What debugging challenges does this create compared to return codes?
+**Q6.**  Exceptions are a form of non-local control flow: they break the normal call/return pattern.  A function that throws "jumps" to a catch block potentially many frames up the call stack.  What debugging challenges does this create compared to return codes?
 
 ---
 
 ## Model 3: Option / Maybe, Explicit Absence
 
-**Intuition:** Both return codes and exceptions have a common flaw: the type of a function like `find_user(id)` does not tell you that it might fail. What if the return type itself forced you to reckon with the possibility of failure? The `Option` (or `Maybe`) type does exactly that: instead of returning a `User` (which might secretly be `None`) or raising an exception (which is invisible in the type), the function returns `Some(user)` or `Nothing`. The type is now `Option[User]`, and the language (or the type checker) will not let you use the inner user value without first checking which variant you got. This is the functional programming answer to null-pointer crashes.
+**Intuition:** Both return codes and exceptions have a common flaw: the type of a function like `find_user(id)` does not tell you that it might fail.  What if the return type itself forced you to reckon with the possibility of failure?  The `Option` (or `Maybe`) type does exactly that: instead of returning a `User` (which might secretly be `None`) or raising an exception (which is invisible in the type), the function returns `Some(user)` or `Nothing`.  The type is now `Option[User]`, and the language (or the type checker) will not let you use the inner user value without first checking which variant you got.  This is the functional programming answer to null-pointer crashes.
 
-Many errors boil down to "there is no value here." The **Option** type (Haskell's `Maybe`, Rust's `Option`, Scala's `Option`) makes absence explicit in the type system rather than using `null` or raising an exception.
+Many errors boil down to "there is no value here."  The **Option** type (Haskell's `Maybe`, Rust's `Option`, Scala's `Option`) makes absence explicit in the type system rather than using `null` or raising an exception.
 
 ```python
 from __future__ import annotations
@@ -322,22 +322,22 @@ print(f"pipeline('bad', 4).unwrap_or(0.0) = {result}")
 
 > **Check Your Understanding**, think each question through (and jot an answer) before reading on.
 
-**Q7.** The Option type forces callers to handle the absence case explicitly (they can't just use the value without checking). How does this differ from the behavior of `None` in Python, where calling a method on `None` raises `AttributeError` at runtime?
+**Q7.**  The Option type forces callers to handle the absence case explicitly (they can't just use the value without checking).  How does this differ from the behavior of `None` in Python, where calling a method on `None` raises `AttributeError` at runtime?
 
-**Q8.** `and_then` (also called `flatMap` or `>>=` in Haskell) sequences Option computations so that if any step returns `Nothing`, the whole chain returns `Nothing`. What is the control flow equivalent of this? (Hint: think about what happens in an imperative `if ... return None` chain.)
+**Q8.** `and_then` (also called `flatMap` or `>>=` in Haskell) sequences Option computations so that if any step returns `Nothing`, the whole chain returns `Nothing`.  What is the control flow equivalent of this?  (Hint: think about what happens in an imperative `if ... return None` chain.)
 
-**Q9.** Python's `Optional[T]` type hint (`from typing import Optional`) annotates a value that may be `None`. How does this differ from the `Option` type implemented above, in terms of static guarantees?
+**Q9.**  Python's `Optional[T]` type hint (`from typing import Optional`) annotates a value that may be `None`.  How does this differ from the `Option` type implemented above, in terms of static guarantees?
 
-> **Watch out! Exceptions break referential transparency**
-> In functional programming, a function is *referentially transparent* if you can replace a call with its return value without changing the program's meaning. A function that raises an exception is **not** referentially transparent: calling `parse_int("abc")` does not simply produce a value; it may instead unwind the call stack. This is why purely functional languages like Haskell avoid exceptions in pure code entirely, using `Maybe`/`Either` instead. When you write functional-style pipelines in Python (chaining `.map` and `.and_then`), mixing in `raise` inside those lambdas defeats the whole discipline.
+> **Watch out!  Exceptions break referential transparency**
+> In functional programming, a function is *referentially transparent* if you can replace a call with its return value without changing the program's meaning.  A function that raises an exception is **not** referentially transparent: calling `parse_int("abc")` does not simply produce a value; it may instead unwind the call stack.  This is why purely functional languages like Haskell avoid exceptions in pure code entirely, using `Maybe`/`Either` instead.  When you write functional-style pipelines in Python (chaining `.map` and `.and_then`), mixing in `raise` inside those lambdas defeats the whole discipline.
 
 ---
 
 ## Model 4: Result / Either, Typed Errors
 
-**Intuition:** `Option`/`Maybe` answers the question "did it succeed or not?" but throws away the reason for failure: `Nothing` is the same whether the file was missing, the network timed out, or the input was malformed. `Result`/`Either` extends the idea: a computation returns `Ok(value)` on success or `Err(error)` on failure, where `error` is a *structured value* you define. This means callers know not just that something went wrong, but *what* went wrong, and they can pattern-match on the specific error type to recover differently for different failures. Rust has made this pattern central to its standard library, and the `?` operator makes the boilerplate nearly invisible.
+**Intuition:** `Option`/`Maybe` answers the question "did it succeed or not?" but throws away the reason for failure: `Nothing` is the same whether the file was missing, the network timed out, or the input was malformed. `Result`/`Either` extends the idea: a computation returns `Ok(value)` on success or `Err(error)` on failure, where `error` is a *structured value* you define.  This means callers know not just that something went wrong, but *what* went wrong, and they can pattern-match on the specific error type to recover differently for different failures.  Rust has made this pattern central to its standard library, and the `?` operator makes the boilerplate nearly invisible.
 
-Option discards error information ("it failed" but not "why it failed"). **Result** (Rust, Swift) or **Either** (Haskell) carries both the success value and a structured error value.
+Option discards error information ("it failed" but not "why it failed").  **Result** (Rust, Swift) or **Either** (Haskell) carries both the success value and a structured error value.
 
 ```python
 from __future__ import annotations
@@ -439,11 +439,11 @@ for test in ["16", "-4", "not_a_number"]:
 
 > **Check Your Understanding**, think each question through (and jot an answer) before reading on.
 
-**Q10.** `Err` carries a *typed* error value. What advantage does this have over Python's exception hierarchy where you catch by exception class? Give a scenario where typed errors are significantly cleaner.
+**Q10.** `Err` carries a *typed* error value.  What advantage does this have over Python's exception hierarchy where you catch by exception class?  Give a scenario where typed errors are significantly cleaner.
 
-**Q11.** In Rust, if you call `.unwrap()` on an `Err`, the program panics (crashes with a message). This is intentional: `unwrap()` is a way of saying "I know this can't fail, and if it does, crash loudly." How does this compare to the `except Exception` anti-pattern in Python?
+**Q11.**  In Rust, if you call `.unwrap()` on an `Err`, the program panics (crashes with a message).  This is intentional: `unwrap()` is a way of saying "I know this can't fail, and if it does, crash loudly."  How does this compare to the `except Exception` anti-pattern in Python?
 
-**Q12.** Rust's `?` operator desugars to: "if this is `Err`, return the error from the current function; otherwise, unwrap the `Ok` value." Implement a Python decorator or helper that provides similar behavior for the `Result` type above:
+**Q12.**  Rust's `?` operator desugars to: "if this is `Err`, return the error from the current function; otherwise, unwrap the `Ok` value."  Implement a Python decorator or helper that provides similar behavior for the `Result` type above:
 
 ```python
 # Your implementation of a "question mark operator" helper
@@ -456,9 +456,9 @@ How would you use it to write a multi-step `Result`-chaining function without de
 
 ## Model 5: Error Propagation in Your Interpreter
 
-**Intuition:** The previous models were abstract; now apply them concretely. When your interpreter evaluates `x + y` and `x` is undefined, what should happen? The naive answer (let Python raise a `KeyError`) is wrong: the user of your language sees a Python traceback, not an error in *their* language. Good interpreter error handling requires two things: (1) catching every possible failure and converting it into an error type your interpreter owns, and (2) attaching source location information (line, column) so the user can find the problem. This model shows how to build a structured exception hierarchy for an interpreter and attach `SourceLocation` objects.
+**Intuition:** The previous models were abstract; now apply them concretely.  When your interpreter evaluates `x + y` and `x` is undefined, what should happen?  The naive answer (let Python raise a `KeyError`) is wrong: the user of your language sees a Python traceback, not an error in *their* language.  Good interpreter error handling requires two things: (1) catching every possible failure and converting it into an error type your interpreter owns, and (2) attaching source location information (line, column) so the user can find the problem.  This model shows how to build a structured exception hierarchy for an interpreter and attach `SourceLocation` objects.
 
-Your interpreter must handle runtime errors: undefined variables, type mismatches, division by zero, stack overflow. How you design this affects usability.
+Your interpreter must handle runtime errors: undefined variables, type mismatches, division by zero, stack overflow.  How you design this affects usability.
 
 ```python
 from dataclasses import dataclass
@@ -568,17 +568,17 @@ for label, fn in test_cases:
 
 > **Check Your Understanding**, think each question through (and jot an answer) before reading on.
 
-**Q13.** The `SourceLocation` dataclass carries line and column numbers. Where in your interpreter pipeline would you attach source locations to AST nodes? (Hint: the lexer knows the position of each token.)
+**Q13.**  The `SourceLocation` dataclass carries line and column numbers.  Where in your interpreter pipeline would you attach source locations to AST nodes?  (Hint: the lexer knows the position of each token.)
 
-**Q14.** The evaluator raises `InterpreterError` subclasses. This is a form of exception-based error propagation. What would the `Result`-based alternative look like? What are the tradeoffs between the two approaches for an interpreter?
+**Q14.**  The evaluator raises `InterpreterError` subclasses.  This is a form of exception-based error propagation.  What would the `Result`-based alternative look like?  What are the tradeoffs between the two approaches for an interpreter?
 
-**Q15.** When an error occurs during the evaluation of a deeply nested expression (e.g., inside a function call inside a `let` body inside another function), what information would you want in the error message? How does a **stack trace** differ from a single source location?
+**Q15.**  When an error occurs during the evaluation of a deeply nested expression (e.g., inside a function call inside a `let` body inside another function), what information would you want in the error message?  How does a **stack trace** differ from a single source location?
 
 ---
 
 ## Model 6: Comparative Survey
 
-**Intuition:** You have now seen four strategies in detail. This model puts them side by side on a single, concrete task ("find an element in a list, or fail") so you can feel the ergonomic difference directly. Each strategy makes a different trade: how much the caller is trusted, how much information a failure carries, and how well errors compose when you chain multiple operations. As you read, think about which row of the comparison table you would choose for a new language you were designing, and why.
+**Intuition:** You have now seen four strategies in detail.  This model puts them side by side on a single, concrete task ("find an element in a list, or fail") so you can feel the ergonomic difference directly.  Each strategy makes a different trade: how much the caller is trusted, how much information a failure carries, and how well errors compose when you chain multiple operations.  As you read, think about which row of the comparison table you would choose for a new language you were designing, and why.
 
 ```python
 # Demonstrate three idioms for "find element or fail" in Python
@@ -644,12 +644,12 @@ for target in [30, 99]:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **Watch out! Go-style (value, ok) tuples require constant discipline**
-> The `find_tuple` pattern (returning `(result, ok)` and expecting callers to check the `ok` flag) has the same fundamental flaw as C return codes: nothing prevents a caller from writing `idx, _ = find_tuple(data, 99)` and then using `idx` as if it were valid. In a large Go codebase the `if err != nil { return ..., err }` check must appear at *every* call site, and a single omission silently propagates a bad value. The `Result` type wins precisely because the bad value is structurally impossible to use without first unwrapping it.
+> **Watch out!  Go-style (value, ok) tuples require constant discipline**
+> The `find_tuple` pattern (returning `(result, ok)` and expecting callers to check the `ok` flag) has the same fundamental flaw as C return codes: nothing prevents a caller from writing `idx, _ = find_tuple(data, 99)` and then using `idx` as if it were valid.  In a large Go codebase the `if err != nil { return ..., err }` check must appear at *every* call site, and a single omission silently propagates a bad value.  The `Result` type wins precisely because the bad value is structurally impossible to use without first unwrapping it.
 
 > **Check Your Understanding**, think each question through (and jot an answer) before reading on.
 
-**Q16.** Fill in this comparison table for yourself:
+**Q16.**  Fill in this comparison table for yourself:
 
 | Strategy | Can be ignored? | Carries error info? | Composable? | Statically checked? |
 |----------|----------------|--------------------|-----------|--------------------|
@@ -658,38 +658,38 @@ for target in [30, 99]:
 | (value, ok) tuple | | | | |
 | Result/Either type | | | | |
 
-Which row has the best profile? Why might languages still use the others?
+Which row has the best profile?  Why might languages still use the others?
 
-**Q17.** Go's (value, error) tuple idiom has been criticized for being verbose: every call site requires `if err != nil { return nil, err }`. The `Result` type with `?` in Rust addresses this. What is the fundamental insight that makes `?` (or monadic bind `>>=`) cleaner than manual propagation?
+**Q17.**  Go's (value, error) tuple idiom has been criticized for being verbose: every call site requires `if err != nil { return nil, err }`.  The `Result` type with `?` in Rust addresses this.  What is the fundamental insight that makes `?` (or monadic bind `>>=`) cleaner than manual propagation?
 
-**Q18.** **Algebraic effects** (a research direction in PL) generalize both exceptions and coroutines: you define an "effect" (like `raise IOException`), and the effect handler is separate from both the raiser and the call chain. How does this differ from exception handling? What new flexibility does it provide?
+**Q18.**  **Algebraic effects** (a research direction in PL) generalize both exceptions and coroutines: you define an "effect" (like `raise IOException`), and the effect handler is separate from both the raiser and the call chain.  How does this differ from exception handling?  What new flexibility does it provide?
 
 ---
 
 ## Multiple Choice Review
 
-**Question 1.** In Python, `except Exception` catches:
+**Question 1.**  In Python, `except Exception` catches:
 
 - [( )] All exceptions including `SystemExit` and `KeyboardInterrupt`
 - [(X)] Most exceptions, but not `BaseException` subclasses like `SystemExit`
 - [( )] Only subclasses of `RuntimeError`
 - [( )] Only exceptions explicitly raised with `raise`
 
-**Question 2.** Rust's `Option<T>` type prevents:
+**Question 2.**  Rust's `Option<T>` type prevents:
 
 - [( )] All runtime panics
 - [( )] Division by zero
 - [(X)] Using a potentially-absent value without first checking whether it is present
 - [( )] Stack overflow from deep recursion
 
-**Question 3.** Java's checked exceptions require the caller to:
+**Question 3.**  Java's checked exceptions require the caller to:
 
 - [(X)] Either catch the exception or declare it in the method signature
 - [( )] Catch the exception in the same function that throws it
 - [( )] Use a `Result` type instead of throwing
 - [( )] Handle all exceptions with a single `catch (Exception e)`
 
-**Question 4.** The `finally` block in Python runs:
+**Question 4.**  The `finally` block in Python runs:
 
 - [( )] Only when no exception was raised
 - [( )] Only when an exception was raised and caught
@@ -700,7 +700,7 @@ Which row has the best profile? Why might languages still use the others?
 
 ## Exercises
 
-**Exercise 1.** Implement a `safe_chain` decorator that converts any function returning a value (or raising an exception) into a function returning `Result`. Then use it to build a pipeline without explicit try/except at every step:
+**Exercise 1.**  Implement a `safe_chain` decorator that converts any function returning a value (or raising an exception) into a function returning `Result`.  Then use it to build a pipeline without explicit try/except at every step:
 
 ```python
 from dataclasses import dataclass
@@ -740,7 +740,7 @@ for s in ["16", "-4", "abc"]:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-**Exercise 2.** Implement a "stack trace" for your interpreter. Maintain a call stack (list of strings) that records function names as they are entered/exited. When an error occurs, attach the current stack trace to the error:
+**Exercise 2.**  Implement a "stack trace" for your interpreter.  Maintain a call stack (list of strings) that records function names as they are entered/exited.  When an error occurs, attach the current stack trace to the error:
 
 ```python
 from dataclasses import dataclass, field
@@ -801,7 +801,7 @@ except InterpreterError as e:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-**Exercise 3.** Compare Python's `Optional[T]` type hint (from `typing`) with the `Option` dataclass from Model 3. Write a function that accepts `Optional[int]` and one that accepts your `Option` type. Show what happens at runtime when a caller passes `None` vs. `Nothing()` to each:
+**Exercise 3.**  Compare Python's `Optional[T]` type hint (from `typing`) with the `Option` dataclass from Model 3.  Write a function that accepts `Optional[int]` and one that accepts your `Option` type.  Show what happens at runtime when a caller passes `None` vs. `Nothing()` to each:
 
 ```python
 from typing import Optional
@@ -841,7 +841,7 @@ print(f"  double_option(Nothing()) = {double_option(Nothing())}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-**Exercise 4.** Add structured error reporting to a mini expression evaluator. Extend the evaluator to collect ALL errors in an expression (not just the first one) before reporting them:
+**Exercise 4.**  Add structured error reporting to a mini expression evaluator.  Extend the evaluator to collect ALL errors in an expression (not just the first one) before reporting them:
 
 ```python
 from dataclasses import dataclass, field
@@ -902,7 +902,7 @@ for t in tests:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-**Exercise 5.** Design an error hierarchy for a complete interpreter. Create a class hierarchy of `InterpreterError` subclasses covering: lexer errors (invalid character, unterminated string), parser errors (unexpected token, missing closing paren), and runtime errors (undefined variable, type mismatch, division by zero, stack overflow). Write a function that pretty-prints any error with its category, location, and a helpful suggestion:
+**Exercise 5.**  Design an error hierarchy for a complete interpreter.  Create a class hierarchy of `InterpreterError` subclasses covering: lexer errors (invalid character, unterminated string), parser errors (unexpected token, missing closing paren), and runtime errors (undefined variable, type mismatch, division by zero, stack overflow).  Write a function that pretty-prints any error with its category, location, and a helpful suggestion:
 
 ```python
 from dataclasses import dataclass
@@ -985,11 +985,11 @@ for err in errors:
 
 ## Reflection
 
-1. Your interpreter currently raises Python exceptions for runtime errors. A user of your language sees a Python traceback rather than a clean error message. Describe the two changes needed to give users clean, localized error messages.
+1.  Your interpreter currently raises Python exceptions for runtime errors.  A user of your language sees a Python traceback rather than a clean error message.  Describe the two changes needed to give users clean, localized error messages.
 
-2. A language designer is choosing between checked exceptions (Java-style) and `Result` types (Rust-style) for a new systems language. The language emphasizes correctness and will be used for network services. Which would you recommend, and what tradeoff are you accepting?
+2.  A language designer is choosing between checked exceptions (Java-style) and `Result` types (Rust-style) for a new systems language.  The language emphasizes correctness and will be used for network services.  Which would you recommend, and what tradeoff are you accepting?
 
-3. Go's philosophy is "errors are values": errors are returned, not thrown. Haskell's philosophy is "errors are types": absence and failure are encoded in the type system. Python's philosophy is "errors are exceptions": errors interrupt control flow. Each philosophy has a consistent design vision. Which appeals most to you, and why?
+3.  Go's philosophy is "errors are values": errors are returned, not thrown.  Haskell's philosophy is "errors are types": absence and failure are encoded in the type system.  Python's philosophy is "errors are exceptions": errors interrupt control flow.  Each philosophy has a consistent design vision.  Which appeals most to you, and why?
 
 ---
 

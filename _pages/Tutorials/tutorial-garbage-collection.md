@@ -24,13 +24,13 @@ By the end of this tutorial, you will have:
 - Built a working Cheney copying collector and verified it compacts the live set into a clean semi-space
 - Chosen and justified a GC strategy for the final project's GC extension based on the tradeoffs of each algorithm
 
-Every interpreter allocates memory for values, closures, and environments, and must eventually reclaim memory that is no longer needed. **Garbage collection** (GC) is automatic memory management: the runtime periodically finds and frees memory that is unreachable from the program's current state. This tutorial builds three GC algorithms from scratch in Python (simulating a heap as a dictionary), explains why each works, and shows where each breaks down. **Prerequisites:** Python interpreter assignment (environments and closures); the course's AST and evaluator.
+Every interpreter allocates memory for values, closures, and environments, and must eventually reclaim memory that is no longer needed.  **Garbage collection** (GC) is automatic memory management: the runtime periodically finds and frees memory that is unreachable from the program's current state.  This tutorial builds three GC algorithms from scratch in Python (simulating a heap as a dictionary), explains why each works, and shows where each breaks down.  **Prerequisites:** Python interpreter assignment (environments and closures); the course's AST and evaluator.
 
 ---
 
 ## Part 0: Why Garbage Collection?
 
-Your current Mini interpreter runs entirely in Python's memory space; Python's own GC handles cleanup. For the final project's GC extension, you simulate explicit memory management: your interpreter has a **heap** (an array or dictionary of objects), and your GC must find and free objects that the running program can no longer reach.
+Your current Mini interpreter runs entirely in Python's memory space; Python's own GC handles cleanup.  For the final project's GC extension, you simulate explicit memory management: your interpreter has a **heap** (an array or dictionary of objects), and your GC must find and free objects that the running program can no longer reach.
 
 Three main strategies exist:
 
@@ -97,7 +97,7 @@ except Exception as e:
 
 ## Part 2: Reference Counting
 
-**Reference counting** tracks how many references point to each object. When the count drops to zero, the object is immediately freed.
+**Reference counting** tracks how many references point to each object.  When the count drops to zero, the object is immediately freed.
 
 ```python
 try:
@@ -172,7 +172,7 @@ except Exception as e:
     import traceback; traceback.print_exc()
 ```
 
-**The cycle problem.** Reference counting cannot collect cycles:
+**The cycle problem.**  Reference counting cannot collect cycles:
 
 ```python
 try:
@@ -201,8 +201,8 @@ except Exception as e:
 ## Part 3: Mark-and-Sweep
 
 Mark-and-sweep runs in two phases:
-1. **Mark:** start from all **root** references (stack variables, global env); recursively mark every reachable object.
-2. **Sweep:** free every object that was NOT marked.
+1.  **Mark:** start from all **root** references (stack variables, global env); recursively mark every reachable object.
+2.  **Sweep:** free every object that was NOT marked.
 
 ```python
 try:
@@ -304,7 +304,7 @@ except Exception as e:
 
 ## Part 4: Cheney's Copying Collector
 
-**Cheney's algorithm** divides the heap into two equal **semi-spaces**: `from-space` and `to-space`. Live objects are *copied* from `from-space` to `to-space`, which compacts the heap as a side effect.
+**Cheney's algorithm** divides the heap into two equal **semi-spaces**: `from-space` and `to-space`.  Live objects are *copied* from `from-space` to `to-space`, which compacts the heap as a side effect.
 
 ```python
 try:
@@ -403,15 +403,15 @@ except Exception as e:
 
 To add GC to your Mini interpreter:
 
-1. **Replace Python objects with heap addresses.** Instead of `Closure(params, body, env)` as a Python object, allocate a closure on your simulated heap: `heap.alloc('closure', params=params, body=body, env_addr=env_addr)`. Your evaluator holds addresses, not objects.
+1.  **Replace Python objects with heap addresses.**  Instead of `Closure(params, body, env)` as a Python object, allocate a closure on your simulated heap: `heap.alloc('closure', params=params, body=body, env_addr=env_addr)`.  Your evaluator holds addresses, not objects.
 
-2. **Thread the heap through evaluation.** Every `eval_expr(node, env, heap)` call takes and returns a heap (or mutates a global heap). The result is an address, not a value.
+2.  **Thread the heap through evaluation.**  Every `eval_expr(node, env, heap)` call takes and returns a heap (or mutates a global heap).  The result is an address, not a value.
 
-3. **Identify GC roots.** The GC roots are the current environment chain (the live variable bindings). Traverse the environment chain collecting all heap addresses; pass them as roots to `collect()`.
+3.  **Identify GC roots.**  The GC roots are the current environment chain (the live variable bindings).  Traverse the environment chain collecting all heap addresses; pass them as roots to `collect()`.
 
-4. **Call GC when the heap is full.** In `heap.alloc(...)`, if the heap is full, call `collect()` with the current roots before trying again.
+4.  **Call GC when the heap is full.**  In `heap.alloc(...)`, if the heap is full, call `collect()` with the current roots before trying again.
 
-5. **Measure live/dead object counts.** Add logging to compare `live_count()` before and after each collection cycle.
+5.  **Measure live/dead object counts.**  Add logging to compare `live_count()` before and after each collection cycle.
 
 ```python
 try:
@@ -498,8 +498,8 @@ If you choose the GC extension for your final project:
 
 ## Further Reading
 
-- Wilson, Paul R. "Uniprocessor Garbage Collection Techniques" (1992). The definitive survey of all algorithms, readable and thorough.
-- Cheney, C.J. "A Nonrecursive List Compacting Algorithm" (1970, CACM). The original two-page paper; one of the most elegant algorithms ever published.
-- Jones, Richard et al. *The Garbage Collection Handbook* (CRC Press, 2011). The modern comprehensive reference.
+- Wilson, Paul R. "Uniprocessor Garbage Collection Techniques" (1992).  The definitive survey of all algorithms, readable and thorough.
+- Cheney, C.J. "A Nonrecursive List Compacting Algorithm" (1970, CACM).  The original two-page paper; one of the most elegant algorithms ever published.
+- Jones, Richard et al. *The Garbage Collection Handbook* (CRC Press, 2011).  The modern comprehensive reference.
 - Python's GC documentation: https://docs.python.org/3/library/gc.html: explains CPython's reference counting + generational cycle collector.
 - Go GC guide: https://go.dev/doc/gc-guide: explains the tri-color mark-and-sweep used in Go's runtime.

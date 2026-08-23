@@ -28,21 +28,21 @@ The Warmup is the Teams-based onboarding survey; the Overview is the technical s
 I gave a couple of fun facts about myself in class, but I want to get to know you all better.  First, join our class team on [{{ page.info.chatname }}]({{ page.info.class_team }}).  Then please submit answers to the following questions as a private message to me on {{ page.info.chatname }}.
 
 1.  Your Name, Your Nickname (if applicable) / Preferred Pronouns
-2.  What is your reason for taking the course? (Blunt honesty is perfectly fine here, if applicable)
+2.  What is your reason for taking the course?  (Blunt honesty is perfectly fine here, if applicable)
 3.  What are you majoring in / interested in majoring in?
 4.  What do you think you might want to do after Ursinus?
-5.  How much experience do you have with programming, and in which languages? (There is no wrong answer; I just want to know where everyone is starting from.)
+5.  How much experience do you have with programming, and in which languages?  (There is no wrong answer; I just want to know where everyone is starting from.)
 6.  What are you most excited about in this course?
 7.  What are you the most worried about in this course?
 8.  A fun fact about yourself
 9.  Anything else you think I should know?
-10.  Please attach **a headshot** picture to your message. I will use this to help learn your name, and we will also use this in class to arrange teams.
+10.  Please attach **a headshot** picture to your message.  I will use this to help learn your name, and we will also use this in class to arrange teams.
 11.  Please post a short introduction and a hello to the class on the Canvas Introductions discussion forum.  There is also a Water Cooler discussion group that you can use for social discussions as well!
 12.  Finally, we will be sharing work with each other through electronic means.  To protect your privacy, you are welcome to use a pseudonym on your work in lieu of your name.  Let me know if you'd like to use a pseudonym on your assignments, and what name you'll use.
 
 ## Web Poll for Office Hours
 
-You will not be graded on this, but I want to set up my office hours so that everyone can make at least one of them. Please [click here]({{ page.info.officehourspoll }}) and select every block in which you could attend at least 30 minutes given your schedule. You may use a pseudonym or post anonymously if you wish.
+You will not be graded on this, but I want to set up my office hours so that everyone can make at least one of them.  Please [click here]({{ page.info.officehourspoll }}) and select every block in which you could attend at least 30 minutes given your schedule.  You may use a pseudonym or post anonymously if you wish.
 
 ## Class Notebook
 
@@ -50,7 +50,7 @@ We will use an electronic shared notebook throughout the class.  You'll be able 
 
 ## Syllabus (5 Pts)
 
-Please take a moment to familiarize yourself with [the course syllabus]({{ site.baseurl }}). Then **please send me an additional message on {{ page.info.chatname }} with the answers to the following questions**:
+Please take a moment to familiarize yourself with [the course syllabus]({{ site.baseurl }}).  Then **please send me an additional message on {{ page.info.chatname }} with the answers to the following questions**:
 
 1.  What is the grade reduction per day for late work?
 2.  How does the flexible submission policy work, and how can you request an extension?

@@ -24,7 +24,7 @@ By the end of this tutorial, you will have:
 - Implemented let-polymorphism (generalization and instantiation) so that a polymorphic identity function type-checks at multiple types in the same scope
 - Produced clear, position-tagged type error messages that name both conflicting types and the source location
 
-Hindley-Milner (HM) type inference deduces the type of every expression without any type annotations. It powers Haskell, OCaml, and Rust's type inference. This tutorial walks you step-by-step through building a complete HM inference engine over the Mini language AST: types, unification with occurs check, Algorithm W, and let-polymorphism. Each phase includes working Python code you can run and test before moving to the next. **Prerequisites:** the Type Systems activity, the Curry-Howard activity, and your Mini interpreter assignment.
+Hindley-Milner (HM) type inference deduces the type of every expression without any type annotations.  It powers Haskell, OCaml, and Rust's type inference.  This tutorial walks you step-by-step through building a complete HM inference engine over the Mini language AST: types, unification with occurs check, Algorithm W, and let-polymorphism.  Each phase includes working Python code you can run and test before moving to the next.  **Prerequisites:** the Type Systems activity, the Curry-Howard activity, and your Mini interpreter assignment.
 
 ---
 
@@ -32,10 +32,10 @@ Hindley-Milner (HM) type inference deduces the type of every expression without 
 
 The algorithm has four components, built in order:
 
-1. **Type terms**: the language of types: `Int`, `Bool`, `α` (type variable), `α -> β` (function type)
-2. **Substitution**: mapping from type variable names to types; `apply(subst, type)` replaces variables
-3. **Unification**: given two types, find the most general substitution making them equal
-4. **Algorithm W**: walk the AST, generate and solve type constraints, return the principal type
+1.  **Type terms**: the language of types: `Int`, `Bool`, `α` (type variable), `α -> β` (function type)
+2.  **Substitution**: mapping from type variable names to types; `apply(subst, type)` replaces variables
+3.  **Unification**: given two types, find the most general substitution making them equal
+4.  **Algorithm W**: walk the AST, generate and solve type constraints, return the principal type
 
 ---
 
@@ -174,13 +174,13 @@ except Exception as e:
     import traceback; traceback.print_exc()
 ```
 
-**Common mistake:** forgetting to chase chains in `apply`. Always apply recursively when following a variable.
+**Common mistake:** forgetting to chase chains in `apply`.  Always apply recursively when following a variable.
 
 ---
 
 ## Phase 3: Unification
 
-Unification finds the most general substitution (MGU) that makes two types equal. The occurs check prevents creating infinite types like `α = List α`.
+Unification finds the most general substitution (MGU) that makes two types equal.  The occurs check prevents creating infinite types like `α = List α`.
 
 ```python
 try:
@@ -292,13 +292,13 @@ except Exception as e:
     import traceback; traceback.print_exc()
 ```
 
-**Key insight:** always `apply(subst, ...)` BEFORE checking for variables or constants. This "chases" existing substitution chains before deciding what to do.
+**Key insight:** always `apply(subst, ...)` BEFORE checking for variables or constants.  This "chases" existing substitution chains before deciding what to do.
 
 ---
 
 ## Phase 4: Algorithm W
 
-Algorithm W walks the AST and infers types. For each node, it either returns a known type or generates fresh type variables and unifies to solve constraints.
+Algorithm W walks the AST and infers types.  For each node, it either returns a known type or generates fresh type variables and unifies to solve constraints.
 
 ```python
 try:
@@ -510,7 +510,7 @@ except Exception as e:
 
 ## Phase 5: Let-Polymorphism
 
-Without polymorphism, `let id = λx. x in id(1); id(true)` fails: the first call forces `x: Int`, and the second call on the same `id` then fails with type `Bool`. **Let-polymorphism** (Milner's key insight) generalizes the type of `id` before adding it to the environment: `id: ∀α. α -> α`. Each use of `id` gets a fresh copy of `α`.
+Without polymorphism, `let id = λx. x in id(1); id(true)` fails: the first call forces `x: Int`, and the second call on the same `id` then fails with type `Bool`.  **Let-polymorphism** (Milner's key insight) generalizes the type of `id` before adding it to the environment: `id: ∀α. α -> α`.  Each use of `id` gets a fresh copy of `α`.
 
 ```python
 try:
@@ -691,7 +691,7 @@ except Exception as e:
 
 ## Phase 6: Error Messages
 
-Good error messages include: the source line, the conflicting types, and context. Wrap every `TypeError` in a richer class:
+Good error messages include: the source line, the conflicting types, and context.  Wrap every `TypeError` in a richer class:
 
 ```python
 try:
@@ -768,27 +768,27 @@ Here is the minimal complete HM inferencer that handles the Mini language's expr
 | `ReturnStmt(e)` | infer e (return type handled at function level) |
 | `PrintStmt(e)` | infer e (any type); return TNil |
 
-**Threading substitutions correctly is the #1 implementation challenge.** Every call to `infer` takes the *current* `subst` and returns an *updated* subst. Use the returned substitution in all subsequent calls.
+Threading substitutions correctly is the #1 implementation challenge.  Every call to `infer` takes the *current* `subst` and returns an *updated* subst.  Use the returned substitution in all subsequent calls.
 
 ---
 
 ## Common Pitfalls
 
-1. **Forgetting to apply the substitution before returning.** After unification, always do `apply(final_subst, the_type)` before returning from a branch.
+1.  **Forgetting to apply the substitution before returning.**  After unification, always do `apply(final_subst, the_type)` before returning from a branch.
 
-2. **Not threading the substitution.** If you call `infer(e1, env, subst)` and get back `s1`, then call `infer(e2, env, subst)` (not `s1`), you lose constraints from the first inference.
+2.  **Not threading the substitution.**  If you call `infer(e1, env, subst)` and get back `s1`, then call `infer(e2, env, subst)` (not `s1`), you lose constraints from the first inference.
 
-3. **Generalizing too early.** Generalize only in `let` bindings, not at every variable use. Generalizing inside a function body produces unsound polymorphism.
+3.  **Generalizing too early.**  Generalize only in `let` bindings, not at every variable use.  Generalizing inside a function body produces unsound polymorphism.
 
-4. **Missing occurs check.** Without it, `id(id)` would produce a circular type `α = α -> α`, and `apply` would loop forever.
+4.  **Missing occurs check.**  Without it, `id(id)` would produce a circular type `α = α -> α`, and `apply` would loop forever.
 
-5. **Mutating the environment.** The type environment should be immutable (use `{**env, name: scheme}` for extension); mutations cause inference to fail on later branches.
+5.  **Mutating the environment.**  The type environment should be immutable (use `{**env, name: scheme}` for extension); mutations cause inference to fail on later branches.
 
 ---
 
 ## Further Reading
 
-- Damas, Luis and Milner, Robin. "Principal Type-Schemes for Functional Programs" (POPL 1982). The original HM paper; 9 pages, completely readable.
-- Cardelli, Luca. "Basic Polymorphic Typechecking" (1987, free online). A tutorial implementation much like this one, in Pascal.
+- Damas, Luis and Milner, Robin.  "Principal Type-Schemes for Functional Programs" (POPL 1982).  The original HM paper; 9 pages, completely readable.
+- Cardelli, Luca.  "Basic Polymorphic Typechecking" (1987, free online).  A tutorial implementation much like this one, in Pascal.
 - The Tree-Walking Interpreter assignment's static-typing direction (https://www.billmongan.com/Ursinus-CS374/Assignments/Interpreter): apply this tutorial to your language's AST.
-- Pierce, Benjamin C. *Types and Programming Languages*, Chapters 22-23. The rigorous treatment.
+- Pierce, Benjamin C. *Types and Programming Languages*, Chapters 22-23.  The rigorous treatment.

@@ -5,10 +5,10 @@ title: "CS374: Principles of Programming Languages - Lab: Finite Automata Simula
 
 info:
   coursenum: CS374
-  purpose: "To make the theory beneath every lexer executable: general DFA and NFA simulators driven by machine definitions loaded as data, and to trace the subset and Thompson's constructions once by hand."
+  purpose: "To make the theory beneath every lexer executable by building general DFA and NFA simulators driven by machine definitions loaded as data, and to trace the subset and Thompson's constructions once by hand."
   tilt:
     task: "With a partner, build DFA and NFA simulators that read machines from JSON, design one machine of each kind, and trace the subset construction and Thompson's construction by hand on small examples."
-    criteria: "Assessed on correct simulators that handle the deliberate edge cases, two annotated machine designs, and by-hand construction traces, weighted 40/40/20 across the three parts; see the rubric below for the full breakdown."
+    criteria: "I assess your work on correct simulators that handle the deliberate edge cases, two annotated machine designs, and by-hand construction traces, weighted 40/40/20 across the three parts.  The rubric below breaks it down in full."
   points: 100
   goals:
     - To implement general DFA and NFA simulators over machine definitions loaded from JSON
@@ -50,9 +50,9 @@ tags:
 
 ---
 
-In this **lab** you will build the machines beneath your lexer: general simulators for DFAs and NFAs that read machine definitions as data, one machine design of each kind, and a by-hand trace of the two classic constructions. It is scoped to roughly **two to three hours**; the simulators are short programs whose correctness you can check against the worked traces below, and the constructions are paper exercises, not code.
+In this **lab** you'll build the machines beneath your lexer.  That means general simulators for DFAs and NFAs that read machine definitions as data, one machine design of each kind, and a by-hand trace of the two classic constructions.  The simulators are short programs, and you can check their correctness against the worked traces below.  The constructions are paper exercises, so there is no code to write for those.
 
-**Pair policy:** this lab may be completed **in pairs**. Work together at one screen or split the DFA and NFA halves and review each other's work; either way, both partners submit the same ZIP, each naming the other in the writeup, and both earn the same grade. (You may also work alone.) Unlike the programming assignments, no individual-work certification is required here; the reflection asks who did what instead.
+**Pair policy.**  You may do this lab **in pairs**.  Work together at one screen or split the DFA and NFA halves and review each other's work; either way, both of you submit the same ZIP, each naming the other in the writeup, and you both earn the same grade.  You may also work alone if you prefer.  Unlike the programming assignments, no individual-work certification is required here; the reflection asks who did what instead.
 
 ---
 
@@ -60,7 +60,7 @@ In this **lab** you will build the machines beneath your lexer: general simulato
 
 ### Environment and Setup
 
-You need Python 3.10+ and the standard library only (`json` for machine files). Create the layout from the Deliverables section up front:
+You need Python 3.10+ and the standard library only (`json` for machine files).  Create the layout from the Deliverables section up front:
 
 ```
 simulator.py       # loader, run_dfa, run_nfa, CLI
@@ -70,7 +70,7 @@ writeup.md         # construction traces and reflection
 
 ### Your First 15 Minutes
 
-Do not start with the simulator; start with a machine. Copy the two-state parity machine JSON from Part 1 into `machines/even_ones.json`, then write the smallest possible `run_dfa`:
+Do not start with the simulator; start with a machine.  Copy the two-state parity machine JSON from Part 1 into `machines/even_ones.json`, then write the smallest possible `run_dfa`:
 
 ```python
 import json, sys
@@ -82,11 +82,11 @@ for symbol in sys.argv[1]:
 print("accept" if state in machine["accept"] else "reject")
 ```
 
-Run `python simulator.py 0110` (accept) and `python simulator.py 101` (reject), matching the traces shown in Part 1. Once this ten-line core works, the rest of Part 1 is a matter of wrapping it in validation and `--trace`; you already know the heart of it is right.
+Run `python simulator.py 0110` (accept) and `python simulator.py 101` (reject), matching the traces shown in Part 1.  Once this ten-line core works, the rest of Part 1 is a matter of wrapping it in validation and `--trace`; you already know the heart of it is right.
 
 ### Suggested Pacing
 
-This lab is handed out once the class sessions on regular expressions and finite automata are behind you; see the course schedule for the assigned and due dates. One focused session with your partner covers Parts 1-2; the paper constructions fit in a second short sitting:
+This lab is handed out once the class sessions on regular expressions and finite automata are behind you; see the course schedule for the assigned and due dates.  One focused session with your partner covers Parts 1-2; the paper constructions fit in a second short sitting:
 
 | Checkpoint | You should have |
 |------------|----------------|
@@ -110,7 +110,7 @@ All machines are JSON files with the following keys:
 | `accept` | list of strings | the accepting states |
 | `delta` | object | transition function |
 
-For DFAs, `delta` is a nested object: `delta[state][symbol]` gives the next state. Every (state, symbol) pair in the alphabet must appear.
+For DFAs, `delta` is a nested object: `delta[state][symbol]` gives the next state.  Every (state, symbol) pair in the alphabet must appear.
 
 **Example, the two-state parity machine for "even number of 1s":**
 
@@ -127,12 +127,12 @@ For DFAs, `delta` is a nested object: `delta[state][symbol]` gives the next stat
 }
 ```
 
-Trace on `"0110"`: even -> even -> odd -> even -> even. Accepts. yes  
-Trace on `"101"`: even -> odd -> even -> odd. Rejects. yes
+Trace on `"0110"`: even -> even -> odd -> even -> even.  Accepts. yes  
+Trace on `"101"`: even -> odd -> even -> odd.  Rejects. yes
 
 ### Step 1a: Loader and DFA Simulator
 
-Write `load_machine(path)` that reads a JSON file and validates that the start state, accept states, and every transition reference only declared states and alphabet symbols (collect *all* validation errors and raise a single `MachineError` listing them). Then implement `run_dfa(machine, s) -> bool`. Rules:
+Write `load_machine(path)` that reads a JSON file and validates that the start state, accept states, and every transition reference only declared states and alphabet symbols (collect *all* validation errors and raise a single `MachineError` listing them).  Then implement `run_dfa(machine, s) -> bool`.  Rules:
 - Any symbol in `s` that is not in the machine's alphabet is an immediate reject; print a reason (do not crash).
 - The empty string `""` is valid input; it tests whether the start state is an accept state.
 - With flag `--trace`, print the current state after processing each symbol.
@@ -155,7 +155,7 @@ Test with at least four accepted and four rejected strings.
 
 ### NFA Machine Format
 
-For NFAs, `delta` maps `"state,symbol"` string keys to *lists* of states. The special symbol `"eps"` denotes an epsilon (ε) transition. A state may have zero or more targets for any symbol.
+For NFAs, `delta` maps `"state,symbol"` string keys to *lists* of states.  The special symbol `"eps"` denotes an epsilon (ε) transition.  A state may have zero or more targets for any symbol.
 
 **Example fragment:**
 
@@ -174,9 +174,9 @@ Implement `eps_closure(machine, states) -> frozenset`, a small graph reachabilit
 **Example:** If `q0 -ε-> q1`, `q1 -ε-> q2`, and `q2 -ε-> q0`, then `eps_closure(m, {"q0"}) = {"q0", "q1", "q2"}`.
 
 Then implement `run_nfa(machine, s) -> bool`:
-1. Compute the epsilon-closure of `{start}` as the initial set of active states.
-2. For each symbol in `s`, compute the union of all `delta["state,symbol"]` lists over all active states, then take the epsilon-closure of that union.
-3. Accept if the final active set intersects the accept set.
+1.  Compute the epsilon-closure of `{start}` as the initial set of active states.
+2.  For each symbol in `s`, compute the union of all `delta["state,symbol"]` lists over all active states, then take the epsilon-closure of that union.
+3.  Accept if the final active set intersects the accept set.
 
 ### Step 2b: One NFA Design
 
@@ -184,13 +184,13 @@ Design, encode, and test with **at least four accepted and four rejected strings
 
 **NFA, Contains aa:** strings over `{a, b}` containing the substring `aa` somewhere.  
 Worked example: `"baaab"` -> accept; `"ababab"` -> reject.  
-Hint: nondeterministically guess where `aa` occurs: your design should genuinely use nondeterminism, not be a DFA in disguise.
+Hint: nondeterministically guess where `aa` occurs: your design should really use nondeterminism, not be a DFA in disguise.
 
 ---
 
 ## Part 3: By-Hand Constructions (20 points)
 
-These are **paper exercises** in your writeup, no code. The class sessions covered both algorithms; here you trace each once, on a small example, so you have personally executed what the lexer-generator tools automate.
+These are **paper exercises** in your writeup, no code.  The class sessions covered both algorithms; here you trace each once, on a small example, so you have personally executed what the lexer-generator tools automate.
 
 ### Step 3a: Subset Construction Trace
 
@@ -201,16 +201,16 @@ Apply the subset construction to your **Contains aa** NFA from Part 2 to produce
 | {q0} | ... | ... | No/Yes |
 | ... | | | |
 
-Start with `eps_closure({start})`; for each unmarked powerset state, compute its transitions and epsilon-close the results; mark a powerset state as accepting if it contains any NFA accept state; continue until no unmarked states remain. Document how many DFA states result.
+Start with `eps_closure({start})`; for each unmarked powerset state, compute its transitions and epsilon-close the results; mark a powerset state as accepting if it contains any NFA accept state; continue until no unmarked states remain.  Document how many DFA states result.
 
 ### Step 3b: Thompson's Construction Trace
 
-Apply Thompson's construction to the regular expression `a(b|c)*`. Show each sub-expression and its fragment, labeling every state and every ε-transition:
-1. Fragment for `a`.
-2. Fragments for `b` and `c`.
-3. Fragment for `b|c` (union).
-4. Fragment for `(b|c)*` (Kleene star).
-5. Concatenation: `a` then `(b|c)*`.
+Apply Thompson's construction to the regular expression `a(b|c)*`.  Show each sub-expression and its fragment, labeling every state and every ε-transition:
+1.  Fragment for `a`.
+2.  Fragments for `b` and `c`.
+3.  Fragment for `b|c` (union).
+4.  Fragment for `(b|c)*` (Kleene star).
+5.  Concatenation: `a` then `(b|c)*`.
 
 For reference, the fragment rules: a single character is start -> accept labeled with that character; concatenation connects A's accept to B's start with ε; union adds a new start with ε to both fragments and ε from both accepts to a new shared accept; Kleene star adds a new start with ε to the fragment's start and to a new accept, with ε from the fragment's accept back to its start and on to the new accept.
 
@@ -241,7 +241,7 @@ Ensure reproducibility by listing your Python version.
 ## Reflection Prompts
 
 - Contrast designing the NFA with tracing its equivalent DFA via subset construction: where did the complexity move?
-- Your simulators treat machines as data (loaded from JSON). Name one benefit this brought during testing that hard-coded machines would have denied you.
-- If you worked in a pair, who did what, and name one thing your partner caught that you would have missed. If you worked alone, note that instead.
+- Your simulators treat machines as data (loaded from JSON).  Name one benefit this brought during testing that hard-coded machines would have denied you.
+- If you worked in a pair, who did what, and name one thing your partner caught that you would have missed.  If you worked alone, note that instead.
 - AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
 - Approximately how many hours it took you to finish this lab (I will not judge you for this at all; I am simply using it to gauge if the labs are too easy or hard)?

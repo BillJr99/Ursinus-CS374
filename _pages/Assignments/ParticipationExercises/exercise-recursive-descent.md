@@ -6,7 +6,7 @@ title: "CS374: Participation Exercises - Recursive Descent Parsing"
 info:
   coursenum: CS374
   purpose: "To trace a parser by hand so that the grammar-to-code translation stops being mechanical and starts being obvious."
-  submission: "Nothing to upload. Bring your attempt, and the one step that stopped you, to the Recursive Descent Parsing: From Grammar to Code session. These are low-stakes preparation, assessed as part of the 15% Class Activities and Participation component, not graded for correctness."
+  submission: "Nothing to upload.  Please bring your attempt, and the one step that stopped you, to the Recursive Descent Parsing: From Grammar to Code session.  I count these within the 15% Class Activities and Participation component, and a wrong answer you worked for is worth full credit."
 
 tags:
   - resource
@@ -14,7 +14,7 @@ tags:
 
 ---
 
-Recursive descent is the point where a grammar becomes a program you could have written yourself. Tracing one function on three tokens shows you exactly where lookahead lives, and left recursion shows you the one grammar shape the technique cannot survive.
+Recursive descent is where a grammar turns into a program you could have written yourself.  Trace one function on three tokens and you will see exactly where lookahead lives.  Then look at left recursion, which is the one grammar shape this technique cannot survive.
 
 ## The Exercises
 
@@ -23,7 +23,7 @@ Recursive descent is the point where a grammar becomes a program you could have 
 
 ## What to Bring
 
-Mark the one step that resisted you and bring it: the trace, with the point marked where you needed to look ahead more than one token. A genuine attempt that ran aground is worth more to the discussion than a blank page or a perfect one, and the stuck points set the agenda for the session.
+Bring the trace, with the point marked where you needed to look ahead more than one token.  A trace that broke down partway is worth bringing; we start class from wherever people got stuck.
 
 ## See also
 

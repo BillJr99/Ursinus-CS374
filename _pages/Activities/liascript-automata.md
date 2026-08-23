@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Finite Automata
 
-Think of a turnstile at a subway station. It has exactly two states (**locked** and **unlocked**) and two transitions: inserting a coin moves it from locked to unlocked, and pushing moves it from unlocked back to locked. That tiny machine already captures the essence of a finite automaton: a fixed set of states, arrows triggered by input symbols, and a yes/no verdict at the end. The remarkable fact you will discover today is that this humble model is *exactly* as powerful as every pattern you wrote in the *Regular Expressions* activity.
+Think of a turnstile at a subway station.  It has exactly two states (**locked** and **unlocked**) and two transitions: inserting a coin moves it from locked to unlocked, and pushing moves it from unlocked back to locked.  That tiny machine already captures the essence of a finite automaton: a fixed set of states, arrows triggered by input symbols, and a yes/no verdict at the end.  The remarkable fact you will discover today is that this humble model is *exactly* as powerful as every pattern you wrote in the *Regular Expressions* activity.
 
 ## Learning Goals
 
@@ -26,7 +26,7 @@ By the end of this activity, you will be able to:
 - Explain the subset construction argument for DFA-NFA equivalence and apply it to convert a small NFA into an equivalent DFA
 - Implement a DFA simulator in Python using a transition table (dict of dicts) and connect the automaton model to the operation of a regex-based lexer
 
-A regular expression *describes* a set of strings; a **finite automaton** *recognizes* one, a machine so simple it is just states and arrows, yet exactly as powerful as the regex notation. Over two days we build the machine view: **DFAs $\rightarrow$ NFAs $\rightarrow$ their surprising equivalence $\rightarrow$ simulation in Python**, the theory under your next assignment and the engine inside every lexer, including yours.
+A regular expression *describes* a set of strings; a **finite automaton** *recognizes* one, a machine so simple it is just states and arrows, yet exactly as powerful as the regex notation.  Over two days we build the machine view: **DFAs $\rightarrow$ NFAs $\rightarrow$ their surprising equivalence $\rightarrow$ simulation in Python**, the theory under your next assignment and the engine inside every lexer, including yours.
 
 > **Before You Begin**, make sure you can:
 > - Describe what a regular expression *denotes* (the set of strings it matches), not just write one
@@ -37,15 +37,15 @@ A regular expression *describes* a set of strings; a **finite automaton** *recog
 
 ## Directions and Group Roles
 
-Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**). Consider each model and question individually first, then discuss with your group. The Recorder posts answers to the Class Activity Questions discussion board; the Presenter reports out areas of disagreement or alternative approaches. After class, respond to the reflective prompt individually in your notebook.
+Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Please think each model and question through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever you disagreed or found another approach.  After class, please respond to the reflective prompt on your own in your notebook.
 
 ---
 
 # Part I: Deterministic Finite Automata (Day 1)
 
-## 1. The Machine
+## 1.  The Machine
 
-**A DFA is a five-tuple** $M = (Q, \Sigma, \delta, q_0, F)$: a finite set of states $Q$, an input alphabet $\Sigma$, a transition function $\delta: Q \times \Sigma \rightarrow Q$, a start state $q_0$, and accepting states $F \subseteq Q$. The machine reads the input one symbol at a time, moving deterministically; it **accepts** exactly when it finishes in an accepting state. The machine's entire memory is *which state it is in*: finitely many states, finite memory, hence the hierarchy's bottom rung.
+**A DFA is a five-tuple** $M = (Q, \Sigma, \delta, q_0, F)$: a finite set of states $Q$, an input alphabet $\Sigma$, a transition function $\delta: Q \times \Sigma \rightarrow Q$, a start state $q_0$, and accepting states $F \subseteq Q$. The machine reads the input one symbol at a time, moving deterministically; it **accepts** exactly when it finishes in an accepting state.  The machine's entire memory is *which state it is in*: finitely many states, finite memory, hence the hierarchy's bottom rung.
 
 A DFA accepting binary strings with an **even number of 1s**:
 
@@ -64,18 +64,18 @@ Two states suffice because the machine only needs to remember one bit: the parit
 
 ## Model 1: Trace and Design
 
-Before writing any code, you need to be comfortable *tracing* a DFA by hand, following the arrows one symbol at a time. The parity machine above is the ideal warm-up: it has only two states, so every transition is obvious, yet it handles an infinite set of strings correctly. Once tracing feels mechanical, designing your own DFA becomes a matter of asking "what is the minimum information I need to remember at each step?"
+Before writing any code, you need to be comfortable *tracing* a DFA by hand, following the arrows one symbol at a time.  The parity machine above is the ideal warm-up: it has only two states, so every transition is obvious, yet it handles an infinite set of strings correctly.  Once tracing feels mechanical, designing your own DFA becomes a matter of asking "what is the minimum information I need to remember at each step?"
 
 ### Critical Thinking Questions
 
-1. Trace `1011` through the parity DFA, listing the state after each symbol. Accepted or rejected? The Recorder writes the trace.
-2. Design (draw) a DFA over $\{a, b\}$ accepting strings that **end in `ab`**. How many states did your team need, and what does each state "remember"?
-3. Design a DFA accepting strings containing the substring `aa`. Compare with question 2: ending-in versus containing changes which states are accepting; articulate how.
-4. Try to design a DFA for $a^n b^n$. Where does finite memory fail you, and which prior module predicted this?
+1.  Trace `1011` through the parity DFA, listing the state after each symbol.  Accepted or rejected?  The Recorder writes the trace.
+2.  Design (draw) a DFA over $\{a, b\}$ accepting strings that **end in `ab`**.  How many states did your team need, and what does each state "remember"?
+3.  Design a DFA accepting strings containing the substring `aa`.  Compare with question 2: ending-in versus containing changes which states are accepting; articulate how.
+4.  Try to design a DFA for $a^n b^n$. Where does finite memory fail you, and which prior module predicted this?
 
 ### Worked Example: tracing `1011`, as a static table
 
-CTQ 1 asks for this trace. Do it first; then check. The point of writing it as a table rather than "running it" is that you can do this on paper in an exam, in a design meeting, or when the code is not written yet.
+CTQ 1 asks for this trace.  Do it first; then check.  The point of writing it as a table rather than "running it" is that you can do this on paper in an exam, in a design meeting, or when the code is not written yet.
 
 | Step | State before | Symbol read | Transition used | State after |
 |------|--------------|-------------|-----------------|-------------|
@@ -85,16 +85,16 @@ CTQ 1 asks for this trace. Do it first; then check. The point of writing it as a
 | 3 | `odd` | `1` | `odd --1--> even` | `even` |
 | 4 | `even` | `1` | `even --1--> odd` | `odd` |
 
-Final state `odd`, which is **not** an accepting state, so `1011` is **rejected**. It has three `1`s, and this machine accepts an even count.
+Final state `odd`, which is **not** an accepting state, so `1011` is **rejected**.  It has three `1`s, and this machine accepts an even count.
 
-Two habits worth forming from this small table. First, the `0` transitions are self-loops: reading a `0` never changes the answer, which is the machine *saying* that zeros are irrelevant to parity. A DFA's self-loops are always a claim about what the machine chooses to ignore. Second, the state after step 4 is the entire memory of the computation: the machine has forgotten that it read `1011` and remembers only "odd so far." That is the whole limitation you will run into in CTQ 4.
+Two habits worth forming from this small table.  First, the `0` transitions are self-loops: reading a `0` never changes the answer, which is the machine *saying* that zeros are irrelevant to parity.  A DFA's self-loops are always a claim about what the machine chooses to ignore.  Second, the state after step 4 is the entire memory of the computation: the machine has forgotten that it read `1011` and remembers only "odd so far."  That is the whole limitation you will run into in CTQ 4.
 
 
-> The worked answers to this session's models are in the **Answer Key** at the end of this page. Attempt them with your team first.
+> The worked answers to this session's models are in the **Answer Key** at the end of this page.  Attempt them with your team first.
 
 ## Model 2: DFA Simulation, A Dictionary and a Loop
 
-The formal five-tuple maps almost directly onto a Python data structure: states become string keys, the transition function becomes a `dict` of `dict`s, and the entire simulation is a loop that does one dictionary lookup per character. Reading this code, notice that the *logic* never changes; only the data describing the machine does. That separation between the runner and the machine description is exactly the architecture your lexer assignment will use.
+The formal five-tuple maps almost directly onto a Python data structure: states become string keys, the transition function becomes a `dict` of `dict`s, and the entire simulation is a loop that does one dictionary lookup per character.  Reading this code, notice that the *logic* never changes; only the data describing the machine does.  That separation between the runner and the machine description is exactly the architecture your lexer assignment will use.
 
 ```python
 # DFA as data: states are strings, delta is a dict of dicts.
@@ -150,11 +150,11 @@ for s in ["ab", "aab", "abab", "ba", "a", "b", "aabb", ""]:
 
 ### Critical Thinking Questions
 
-5. The empty string is accepted by `EVEN_ONES`. Point to the line of code and the part of the formal definition that together make that happen, and decide whether it is correct for "even number of 1s."
-6. Encode your ends-in-`ab` DFA from Model 1 in the same dictionary format and test five strings. What was mechanical and what required thought? (That split is the point: the *design* is the thinking; the *runner* is ten lines forever.)
-7. The `ENDS_IN_AB_DFA` has 3 states. If the target were "ends in `abc`", how many states would be needed, and what would each state remember?
+5.  The empty string is accepted by `EVEN_ONES`.  Point to the line of code and the part of the formal definition that together make that happen, and decide whether it is correct for "even number of 1s."
+6.  Encode your ends-in-`ab` DFA from Model 1 in the same dictionary format and test five strings.  What was mechanical and what required thought?  (That split is the point: the *design* is the thinking; the *runner* is ten lines forever.)
+7.  The `ENDS_IN_AB_DFA` has 3 states.  If the target were "ends in `abc`", how many states would be needed, and what would each state remember?
 
 ---
 
 
-> **Continued next session.** Day 2 picks up from here: [Finite Automata, Day 2: Nondeterminism and Equivalence](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-automata-day2.md).
+> **Continued next session.**  Day 2 picks up from here: [Finite Automata, Day 2: Nondeterminism and Equivalence](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-automata-day2.md).

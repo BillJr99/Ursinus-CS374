@@ -8,7 +8,7 @@ info:
   purpose: "To stand up the first two tiers of the recursive descent ladder with a partner (the peek/decide/consume pattern that every remaining parsing function repeats) so the Parser assignment's midpoint finds you already climbing."
   tilt:
     task: "With a partner, implement parse_primary and parse_unary over the Lexer interface, with tree-shape tests and one positioned parse error."
-    criteria: "Assessed on correct primary and unary parsing with passing tree-shape tests, and a positioned error on invalid input, weighted 70/30 across the two parts; see the rubric below for the full breakdown."
+    criteria: "I assess your work on correct primary and unary parsing with passing tree-shape tests, and a positioned error on invalid input, weighted 70/30 across the two parts.  The rubric below spells out each row."
   points: 100
   goals:
     - To implement the primary and unary tiers of a recursive descent parser over the Lexer's peek/advance/expect interface
@@ -43,11 +43,11 @@ tags:
 
 ---
 
-This **lab** builds the bottom of the recursive descent ladder (`parse_primary` and `parse_unary`), the two functions whose pattern (look at `peek()`, decide, consume with `advance()` or `expect()`, return a node) every other tier of the Parser assignment repeats. Landing this mid-assignment means the Parser's hardest stretch starts from working code instead of a blank file. Budget **two to three hours** with a partner.
+This **lab** builds the bottom of the recursive descent ladder, `parse_primary` and `parse_unary`.  Those two functions establish the pattern every other tier of the Parser assignment repeats: look at `peek()`, decide, consume with `advance()` or `expect()`, and return a node.  Landing this mid-assignment means the Parser's hardest stretch starts from working code instead of a blank file.  You do this one with a partner.
 
-Use your own Lexer or the released Reference Lexer: either satisfies the interface contract, and this lab makes a good first test of whichever you plan to build the Parser assignment on.
+Use your own Lexer, or the released Reference Lexer.  Either one satisfies the interface contract, and this lab makes a good first test of whichever you plan to build the Parser assignment on.
 
-**Pair policy:** this lab may be completed **in pairs**: driver/navigator works well, swapping between the two tiers. Both partners submit the same files, each naming the other, and both earn the same grade. (You may also work alone.) The Parser assignment remains individual work: you may both grow this shared skeleton there, but the remaining tiers are your own.
+**Pair policy.**  You may do this lab **in pairs**: driver/navigator works well, swapping between the two tiers.  Submit the same files, name your partner, and you both receive the same grade.  Alone is fine as well.  The Parser assignment remains individual work: you may both grow this shared skeleton there, but the remaining tiers are your own.
 
 See the course schedule for the assigned and due dates.
 
@@ -64,7 +64,7 @@ Both functions consume tokens **only** through the Lexer's `peek`/`advance`/`exp
 
 ## Part 2: Tests and Errors (30 points)
 
-In `test_skeleton.py`, write **tree-shape tests**: assert on node types and fields (`isinstance(node, Unary)`, `node.op == "-"`, `node.operand.value == 42`), never on printed strings, covering every primary form and at least two nested unary cases. Then make failure informative: parsing an input that cannot start an expression (e.g., `;`) must raise a `ParseError` stating what was expected, what was found, and the line and column from the offending token.
+In `test_skeleton.py`, write **tree-shape tests**: assert on node types and fields (`isinstance(node, Unary)`, `node.op == "-"`, `node.operand.value == 42`), never on printed strings, covering every primary form and at least two nested unary cases.  Then make failure informative: parsing an input that cannot start an expression (e.g., `;`) must raise a `ParseError` stating what was expected, what was found, and the line and column from the offending token.
 
 ---
 
@@ -83,6 +83,6 @@ Submit a ZIP containing `parser_skeleton.py`, `test_skeleton.py` with its passin
 ## Reflection Prompts
 
 - State the peek/decide/consume pattern in your own words, and name which remaining tier of the Parser assignment you expect to repeat it most times.
-- If you worked in a pair, who did what, and name one thing your partner caught that you would have missed. If you worked alone, note that instead.
+- If you worked in a pair, who did what, and name one thing your partner caught that you would have missed.  If you worked alone, note that instead.
 - AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
 - Approximately how many hours it took you to finish this lab (I will not judge you for this at all; I am simply using it to gauge if the labs are too easy or hard)?

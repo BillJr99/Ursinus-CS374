@@ -5,10 +5,10 @@ title: "CS374: Principles of Programming Languages - The Interpreter"
 
 info:
   coursenum: CS374
-  purpose: "To complete your language pipeline with a tree-walking evaluator: nested scopes, strong dynamic typing, a small static type checker, a REPL, and a precise semantics document, the capstone component your team project extends."
+  purpose: "To complete your language pipeline with a tree-walking evaluator that has nested scopes, strong dynamic typing, a small static type checker, a REPL, and a precise semantics document.  This is the capstone component your team project extends."
   tilt:
     task: "Define AST node dataclasses with visitor dispatch, build a tree-walking evaluator with environments and short-circuit logic, add a REPL and file runner, implement a small static type checker over annotated declarations, and complete Part 5 in your choice of direction: Error Messages and SEMANTICS.md, or full Hindley-Milner Type Inference, or the Intcode VM."
-    criteria: "Assessed on a correct evaluator with well-behaved scopes and short-circuit logic, a recoverable REPL and file runner, a working small static type checker that runs as its own stage before evaluation, and a complete Part 5 in your chosen direction: Error Messages and SEMANTICS.md, or full Hindley-Milner Type Inference, or the Intcode VM, weighted 25/30/15/15/15 across the five parts; the Part 5 rubric applies equivalently to every direction. See the rubric below for the full breakdown."
+    criteria: "I grade this on a correct evaluator with well-behaved scopes and short-circuit logic, a recoverable REPL and file runner, a working small static type checker that runs as its own stage before evaluation, and a complete Part 5 in your chosen direction: Error Messages and SEMANTICS.md, or full Hindley-Milner Type Inference, or the Intcode VM, weighted 25/30/15/15/15 across the five parts; the Part 5 rubric applies equivalently to every direction.  See the rubric below for the full breakdown."
   points: 100
   goals:
     - To define a complete set of AST node dataclasses covering every language construct
@@ -73,7 +73,7 @@ tags:
 
 ---
 
-This assignment completes your pipeline: a tree-walking evaluator that runs programs in your language, with real scopes, real types, a REPL, and semantic documentation. This is the component your team project extends; the semantics documentation is as important a deliverable as the code. Build in the scaffolded order below; each part depends on the previous.
+This assignment completes your pipeline with a tree-walking evaluator that runs programs in your language, with real scopes, real types, a REPL, and semantic documentation.  This is the component your team project extends, and the semantics documentation matters as much as the code does.  Please build in the scaffolded order below, since each part depends on the one before it.
 
 ---
 
@@ -81,7 +81,7 @@ This assignment completes your pipeline: a tree-walking evaluator that runs prog
 
 ### Environment and Setup
 
-You need Python 3.10+ plus your completed Lexer and Parser. Copy `lexer.py`, `parser.py`, `ast_nodes.py`, and `token_spec.json` into the project directory and import them unchanged (note any bug fixes in your readme). Create the deliverable files up front:
+You need Python 3.10+ plus your completed Lexer and Parser.  Copy `lexer.py`, `parser.py`, `ast_nodes.py`, and `token_spec.json` into the project directory and import them unchanged (note any bug fixes in your readme).  Create the deliverable files up front:
 
 ```
 interpreter.py        # evaluator, Environment, error hierarchy
@@ -93,11 +93,11 @@ test_interpreter.py   # the test suite
 
 Confirm the pipeline is connected before evaluating anything: `python -c "from parser import parse; print(parse('print 1 + 2;'))"` should print a `Program` tree.
 
-**Reference implementation policy.** A Reference Parser and AST are released the day this assignment goes out. You may import them in place of your own `parser.py` and `ast_nodes.py` by declaring one line in your readme ("This project uses the reference parser and AST"). Your Parser assignment grade stands on its own, and using the reference carries no penalty here; the point of this assignment is the evaluator, and everyone deserves a solid tree to walk.
+**Reference implementation policy.**  A Reference Parser and AST are released the day this assignment goes out.  You may import them in place of your own `parser.py` and `ast_nodes.py` by declaring one line in your readme ("This project uses the reference parser and AST").  Your Parser assignment grade stands on its own, and using the reference carries no penalty here; the point of this assignment is the evaluator, and everyone deserves a solid tree to walk.
 
 ### Your First 30 Minutes
 
-Do exactly what Step 1b's worked example asks: build the dispatch skeleton before any evaluation logic. Copy the node dataclasses from Step 1a (reconciling them with your parser's existing nodes), then write the `Interpreter` class with an `eval_node` that has one branch per node type, each raising `NotImplementedError`:
+Do exactly what Step 1b's worked example asks: build the dispatch skeleton before any evaluation logic.  Copy the node dataclasses from Step 1a (reconciling them with your parser's existing nodes), then write the `Interpreter` class with an `eval_node` that has one branch per node type, each raising `NotImplementedError`:
 
 ```python
 interp = Interpreter()
@@ -107,11 +107,11 @@ except NotImplementedError:
     print("dispatch reached the Num branch")   # good: the wiring works
 ```
 
-Then fill in just the `Num` branch (`return node.value`) and the `Print` branch, and run `print 42;` end to end through your lexer, parser, and evaluator. Seeing one statement flow through the entire pipeline on day one turns the rest of Part 2 into filling in branches one at a time.
+Then fill in just the `Num` branch (`return node.value`) and the `Print` branch, and run `print 42;` end to end through your lexer, parser, and evaluator.  Seeing one statement flow through the entire pipeline on day one turns the rest of Part 2 into filling in branches one at a time.
 
 ### Suggested Pacing
 
-See the course schedule for the assigned and due dates; this is the longest assignment in the pipeline, with a window to match. Two pair labs land inside it and complete pieces of it for you: the **Environments and Scope lab** (due mid-assignment) builds the `Environment` machinery of Step 2c, and the **Type Checker Starter lab** (due later in the window) builds the core of Part 4's checker. Part 2 is the steepest section; the sequence below climbs it in small steps rather than one leap:
+See the course schedule for the assigned and due dates; this is the longest assignment in the pipeline, with a window to match.  Two pair labs land inside it and complete pieces of it for you: the **Environments and Scope lab** (due mid-assignment) builds the `Environment` machinery of Step 2c, and the **Type Checker Starter lab** (due later in the window) builds the core of Part 4's checker.  Part 2 is the steepest section; the sequence below climbs it in small steps rather than one leap:
 
 | Checkpoint | You should have |
 |------------|----------------|
@@ -129,11 +129,11 @@ See the course schedule for the assigned and due dates; this is the longest assi
 
 ### Why Dataclasses?
 
-Python `dataclass` gives you `__init__`, `__repr__`, and optional `__eq__` for free. Clean node types make the evaluator's isinstance dispatch readable, and `__repr__` makes test failures self-documenting.
+Python `dataclass` gives you `__init__`, `__repr__`, and optional `__eq__` for free.  Clean node types make the evaluator's isinstance dispatch readable, and `__repr__` makes test failures self-documenting.
 
 ### Step 1a: Define All Node Types
 
-Define the following node types as `@dataclass` classes. Every field must have a type annotation and a one-line comment explaining its meaning. Store source positions (line, col) on nodes where they aid error reporting, at minimum on `Var`, `BinOp`, `UnaryOp`, `Let`, and `Assign`.
+Define the following node types as `@dataclass` classes.  Every field must have a type annotation and a one-line comment explaining its meaning.  Store source positions (line, col) on nodes where they aid error reporting, at minimum on `Var`, `BinOp`, `UnaryOp`, `Let`, and `Assign`.
 
 ```python
 from dataclasses import dataclass, field
@@ -225,7 +225,7 @@ class Program:
 
 ### Step 1b: Visitor Dispatch
 
-Write an `Interpreter` class with one `eval_node(node)` method that dispatches on node type using `isinstance`. Every node type listed above must have a corresponding branch. An `else` branch raises `InterpreterError("Unknown node type: ...")`.
+Write an `Interpreter` class with one `eval_node(node)` method that dispatches on node type using `isinstance`.  Every node type listed above must have a corresponding branch.  An `else` branch raises `InterpreterError("Unknown node type: ...")`.
 
 **Worked example:** Before implementing any evaluation logic, verify that `eval_node(Num(42))` raises `NotImplementedError` (or returns a placeholder), and that every node type reaches a branch rather than the else.
 
@@ -235,7 +235,7 @@ Write an `Interpreter` class with one `eval_node(node)` method that dispatches o
 
 ### Step 2a: Expression Evaluation
 
-Implement evaluation for expression nodes. Return Python values: numbers as `float` or `int`, strings as `str`, booleans as `bool`.
+Implement evaluation for expression nodes.  Return Python values: numbers as `float` or `int`, strings as `str`, booleans as `bool`.
 
 **`Num`**: return `node.value`.
 
@@ -243,11 +243,11 @@ Implement evaluation for expression nodes. Return Python values: numbers as `flo
 
 **`BoolLit`**: return `node.value`.
 
-**`Var`**: call `env.lookup(node.name)`, raising a `LangNameError` if not found. Include the variable name and source line in the error.
+**`Var`**: call `env.lookup(node.name)`, raising a `LangNameError` if not found.  Include the variable name and source line in the error.
 
 **`UnaryOp("-")`**: evaluate the operand; if it is not a number, raise `LangTypeError("unary minus requires a number, got <type>")`.
 
-**`BinOp`**: evaluate both operands, then apply the operator. **Type rules:**
+**`BinOp`**: evaluate both operands, then apply the operator.  **Type rules:**
 - `+`, `-`, `*`, `/` require both operands to be numbers (raise `LangTypeError` naming both types otherwise).
 - `+` on two strings concatenates (if you support this, document your decision).
 - `/` by zero raises `LangZeroDivisionError` with the position.
@@ -262,13 +262,13 @@ let y = x + 1;      # LangTypeError at line 2, col 11: + requires numbers, got s
 
 ### Step 2b: Short-Circuit Logic
 
-**`LogicOp("and")`**: evaluate left; if falsy, return it **without evaluating right**. Otherwise return right.
+**`LogicOp("and")`**: evaluate left; if falsy, return it **without evaluating right**.  Otherwise return right.
 
-**`LogicOp("or")`**: evaluate left; if truthy, return it **without evaluating right**. Otherwise return right.
+**`LogicOp("or")`**: evaluate left; if truthy, return it **without evaluating right**.  Otherwise return right.
 
 **`UnaryOp("not")`**: evaluate operand, apply truthiness, return the boolean complement.
 
-**Truthiness policy** (document in SEMANTICS.md): What is falsy in your language? At minimum: `false`, `0`, `0.0`, and `""`. Everything else is truthy.
+**Truthiness policy** (document in SEMANTICS.md): What is falsy in your language?  At minimum: `false`, `0`, `0.0`, and `""`.  Everything else is truthy.
 
 **Bomb test**: include this program in your test suite and verify it does not raise an error:
 
@@ -325,15 +325,15 @@ print x;           # prints 2
 
 **`Let`**: evaluate the initializer, call `env.define(node.name, value)`.
 
-**`Assign`**: evaluate the value, call `env.assign(node.name, value)`. This updates the binding wherever it lives; it does *not* create a new one.
+**`Assign`**: evaluate the value, call `env.assign(node.name, value)`.  This updates the binding wherever it lives; it does *not* create a new one.
 
-**`Print`**: evaluate the expression and print the result to stdout. Booleans print as `true`/`false`, not `True`/`False`.
+**`Print`**: evaluate the expression and print the result to stdout.  Booleans print as `true`/`false`, not `True`/`False`.
 
-**`Block`**: create a child environment `child_env = Environment(parent=env)`, then evaluate each statement in the block using `child_env`. When the block finishes, discard `child_env` (it goes out of scope naturally).
+**`Block`**: create a child environment `child_env = Environment(parent=env)`, then evaluate each statement in the block using `child_env`.  When the block finishes, discard `child_env` (it goes out of scope naturally).
 
 **`If`**: evaluate the condition; convert to boolean via your truthiness rule; execute `then_branch` if truthy, `else_branch` (if present) otherwise.
 
-**`While`**: evaluate condition, execute body while truthy. Document whether loop body creates a per-iteration scope (both choices are valid; pick one and write it in SEMANTICS.md). Catch `BreakSignal` to exit early; catch `ContinueSignal` to restart the loop.
+**`While`**: evaluate condition, execute body while truthy.  Document whether loop body creates a per-iteration scope (both choices are valid; pick one and write it in SEMANTICS.md).  Catch `BreakSignal` to exit early; catch `ContinueSignal` to restart the loop.
 
 ### Step 2d: Break and Continue
 
@@ -344,20 +344,20 @@ class BreakSignal(Exception): pass
 class ContinueSignal(Exception): pass
 ```
 
-`Break` and `Continue` nodes raise these signals. The `While` evaluator catches them. Any `BreakSignal` or `ContinueSignal` that escapes a `While` body and reaches the top level is caught by the error handler (step below) and reported as a `LangRuntimeError("break outside loop")` or similar.
+`Break` and `Continue` nodes raise these signals.  The `While` evaluator catches them.  Any `BreakSignal` or `ContinueSignal` that escapes a `While` body and reaches the top level is caught by the error handler (step below) and reported as a `LangRuntimeError("break outside loop")` or similar.
 
 ### Step 2e: Property-Based Invariants with Hypothesis
 
-In the Parser assignment you used **[Hypothesis](https://hypothesis.readthedocs.io/)** to check a *syntactic* law (round-trip). Here you check *semantic* laws: properties that must hold for **every** program, not just the ones in your test file. These invariants are where scoping and short-circuit bugs hide, because they only surface on inputs you did not think to write. This is a required step; reuse the recursive AST generator you built for the parser (restrict it to the expression and small-statement nodes your evaluator supports).
+In the Parser assignment you used **[Hypothesis](https://hypothesis.readthedocs.io/)** to check a *syntactic* law (round-trip).  Here you check *semantic* laws: properties that must hold for **every** program, not just the ones in your test file.  These invariants are where scoping and short-circuit bugs hide, because they only surface on inputs you did not think to write.  This is a required step; reuse the recursive AST generator you built for the parser (restrict it to the expression and small-statement nodes your evaluator supports).
 
 Encode **at least three** of the following invariants as `@given` tests (the first two are required; pick at least one more):
 
-1. **Determinism.** Evaluating the same AST twice in fresh environments produces identical output and result. `eval(tree)` has no hidden state that leaks between runs.
-2. **Scope restoration.** For any generated expression `e` and a fresh variable name `v` not free in `e`, evaluating a block that binds `v` with `let`, then evaluates `e`, leaves the outer environment without `v` afterward: the inner `let` does not leak. (Generate `e`; wrap it; assert the outer env is unchanged.)
-3. **Short-circuit non-evaluation.** Give `and`/`or` a right operand with an observable side effect (e.g., a call to a tool that appends to a list, or a subexpression that divides by zero). Assert that when the left operand determines the result (`false and X`, `true or X`), the right operand's side effect **never** fires; Hypothesis will hunt for the operand shape that sneaks past your short-circuit.
-4. **Arithmetic agreement (metamorphic).** For generated integer-only expressions using `+ - *`, your evaluator's result equals Python's evaluation of the same expression, a cheap oracle that catches precedence/associativity bugs that slipped through the parser into evaluation.
+1.  **Determinism.**  Evaluating the same AST twice in fresh environments produces identical output and result. `eval(tree)` has no hidden state that leaks between runs.
+2.  **Scope restoration.**  For any generated expression `e` and a fresh variable name `v` not free in `e`, evaluating a block that binds `v` with `let`, then evaluates `e`, leaves the outer environment without `v` afterward: the inner `let` does not leak.  (Generate `e`; wrap it; assert the outer env is unchanged.)
+3.  **Short-circuit non-evaluation.**  Give `and`/`or` a right operand with an observable side effect (e.g., a call to a tool that appends to a list, or a subexpression that divides by zero).  Assert that when the left operand determines the result (`false and X`, `true or X`), the right operand's side effect **never** fires; Hypothesis will hunt for the operand shape that sneaks past your short-circuit.
+4.  **Arithmetic agreement (metamorphic).**  For generated integer-only expressions using `+ - *`, your evaluator's result equals Python's evaluation of the same expression, a cheap oracle that catches precedence/associativity bugs that slipped through the parser into evaluation.
 
-When a property fails, Hypothesis shrinks to the minimal offending program. In your `readme.md`, report one invariant that caught a real bug (or a reasoned all-clear, with the three properties and the generator shown).
+When a property fails, Hypothesis shrinks to the minimal offending program.  In your `readme.md`, report one invariant that caught a real bug (or a reasoned all-clear, with the three properties and the generator shown).
 
 > This step also feeds the Team Language Project: the same three invariants, generalized to your team's language, become the core of its property-based test suite, so write them to be reusable.
 
@@ -368,10 +368,10 @@ When a property fails, Hypothesis shrinks to the minimal offending program. In y
 ### Step 3a: File Runner
 
 `python mylang.py program.ml` should:
-1. Read the source file.
-2. Lex it, catching `LexError` -> print `"Lexical error at line L, col C: <message>"` and exit.
-3. Parse it, catching `ParseError` -> print `"Syntax error at line L, col C: expected X, found Y"` and exit.
-4. Evaluate it, catching `LangNameError`, `LangTypeError`, `LangZeroDivisionError`, and `LangRuntimeError` -> print `"Runtime error at line L: <message>"` and exit.
+1.  Read the source file.
+2.  Lex it, catching `LexError` -> print `"Lexical error at line L, col C: <message>"` and exit.
+3.  Parse it, catching `ParseError` -> print `"Syntax error at line L, col C: expected X, found Y"` and exit.
+4.  Evaluate it, catching `LangNameError`, `LangTypeError`, `LangZeroDivisionError`, and `LangRuntimeError` -> print `"Runtime error at line L: <message>"` and exit.
 
 The stage label (`Lexical error`, `Syntax error`, `Runtime error`) must appear in every message.
 
@@ -407,23 +407,23 @@ Lexical error at line 1, col 1: unexpected character '@'
 
 ## Part 4: The Small Static Type Checker (15 points)
 
-Your evaluator enforces types *dynamically*: a type error surfaces only when the offending expression is actually evaluated. Part 4 adds a **small static type checker** that catches a useful class of those errors *before evaluation ever begins*, running as its own pipeline stage: lex -> parse -> **check** -> evaluate. This is deliberately not full type inference: it checks what is *declared*, and the **Type Checker Starter lab** builds its core with a partner before this part is due.
+Your evaluator enforces types *dynamically*: a type error surfaces only when the offending expression is actually evaluated.  Part 4 adds a **small static type checker** that catches a useful class of those errors *before evaluation ever begins*, running as its own pipeline stage: lex -> parse -> **check** -> evaluate.  This is deliberately not full type inference: it checks what is *declared*, and the **Type Checker Starter lab** builds its core with a partner before this part is due.
 
-Your language's `define` statements and function definitions carry (or are extended to carry) type annotations: `let x: Num = 42;`, `fun f(a: Num, b: Str) -> Bool { ... }`. The checker walks the AST once, maintaining a type environment that mirrors your `Environment` class, and verifies:
+Your language's `define` statements and function definitions carry (or are extended to carry) type annotations: `let x: Num = 42;`, `fun f(a: Num, b: Str) -> Bool { ... }`.  The checker walks the AST once, maintaining a type environment that mirrors your `Environment` class, and verifies:
 
-- **Literals and variables.** Every literal has its constant type; every variable use looks up the declared type; a `define` whose initializer's type disagrees with its annotation is an error.
-- **Operators.** Arithmetic operators require `Num` operands; comparison operators yield `Bool`; `and`/`or` require `Bool`; mixed-type operands are rejected naming *both* types.
-- **Call sites.** Every function call checks arity and each argument's type against the parameter annotations, and the call expression takes the declared return type; a function whose body cannot produce its declared return type is an error.
+- **Literals and variables.**  Every literal has its constant type; every variable use looks up the declared type; a `define` whose initializer's type disagrees with its annotation is an error.
+- **Operators.**  Arithmetic operators require `Num` operands; comparison operators yield `Bool`; `and`/`or` require `Bool`; mixed-type operands are rejected naming *both* types.
+- **Call sites.**  Every function call checks arity and each argument's type against the parameter annotations, and the call expression takes the declared return type; a function whose body cannot produce its declared return type is an error.
 
-Every rejection is reported as `Type error at line L, col C: ...`, naming both conflicting types; your file runner gains a fourth stage label, and a program that fails the check never runs. Keep the checker's scope contained: annotations are required at declarations, so there is no unification and no inference; where a type is unknown (an unannotated construct you choose not to cover), document the gap in your readme rather than guessing. If you choose the **full Hindley-Milner direction** in Part 5, that direction grows this checker into whole-program inference; Part 4 is its foundation, not a throwaway.
+Every rejection is reported as `Type error at line L, col C: ...`, naming both conflicting types; your file runner gains a fourth stage label, and a program that fails the check never runs.  Keep the checker's scope contained: annotations are required at declarations, so there is no unification and no inference; where a type is unknown (an unannotated construct you choose not to cover), document the gap in your readme rather than guessing.  If you choose the **full Hindley-Milner direction** in Part 5, that direction grows this checker into whole-program inference; Part 4 is its foundation, not a throwaway.
 
 ## Part 5: Making the Semantics Precise (15 points), Choose Your Direction
 
-Parts 1-4 give your language a working evaluator and a static checking stage. Part 5 makes its semantics *precise*, in your choice of **direction**: one Part 5, one deliverable, the same 15-point rubric row applied equivalently:
+Parts 1-4 give your language a working evaluator and a static checking stage.  Part 5 makes its semantics *precise*, in your choice of **direction**: one Part 5, one deliverable, the same 15-point rubric row applied equivalently:
 
-- **Staged dynamic errors and SEMANTICS.md (the core direction).** Build the language-level error hierarchy and document every semantic rule, as scaffolded in Steps 5a-5c below.
-- **Full type inference (Hindley-Milner).** Grow Part 4's annotation checker into whole-program *inference* that deduces types with no annotations at all, the way Haskell, OCaml, and Rust do. This direction substitutes Steps 5b and 5c (SEMANTICS.md and the differential programs) with the inference engine described in the **[typing direction](#part-5-direction-full-type-inference-hindley-milner)** section; Step 5a's error hierarchy is still required, since lexical, syntax, and name errors still need staged reporting. The total remains 100 points.
-- **A contrasting execution model: the Intcode VM.** Your tree-walker interprets an AST directly. A *virtual machine* instead executes a flat list of numeric opcodes, the model behind CPython's bytecode, the JVM, and WebAssembly. In this direction you implement the **[Advent of Code 2019 Intcode](https://adventofcode.com/2019/day/2)** machine, whose operational semantics is small enough to specify completely yet rich enough to be Turing-capable, and you make that semantics *precise* by writing each opcode as a state-transition rule. This direction substitutes Steps 5b and 5c with the **[Intcode direction](#part-5-direction-a-contrasting-execution-model-the-intcode-vm)** section; Step 5a's error hierarchy is still required (malformed programs and illegal opcodes are staged errors). The self-checking AoC inputs are your oracle, and a required differential test pins your VM's arithmetic against your tree-walker's on shared operations.
+- **Staged dynamic errors and SEMANTICS.md (the core direction).**  Build the language-level error hierarchy and document every semantic rule, as scaffolded in Steps 5a-5c below.
+- **Full type inference (Hindley-Milner).**  Grow Part 4's annotation checker into whole-program *inference* that deduces types with no annotations at all, the way Haskell, OCaml, and Rust do.  This direction substitutes Steps 5b and 5c (SEMANTICS.md and the differential programs) with the inference engine described in the **[typing direction](#part-5-direction-full-type-inference-hindley-milner)** section; Step 5a's error hierarchy is still required, since lexical, syntax, and name errors still need staged reporting.  The total remains 100 points.
+- **A contrasting execution model: the Intcode VM.** Your tree-walker interprets an AST directly.  A *virtual machine* instead executes a flat list of numeric opcodes, the model behind CPython's bytecode, the JVM, and WebAssembly.  In this direction you implement the **[Advent of Code 2019 Intcode](https://adventofcode.com/2019/day/2)** machine, whose operational semantics is small enough to specify completely yet rich enough to be Turing-capable, and you make that semantics *precise* by writing each opcode as a state-transition rule.  This direction substitutes Steps 5b and 5c with the **[Intcode direction](#part-5-direction-a-contrasting-execution-model-the-intcode-vm)** section; Step 5a's error hierarchy is still required (malformed programs and illegal opcodes are staged errors).  The self-checking AoC inputs are your oracle, and a required differential test pins your VM's arithmetic against your tree-walker's on shared operations.
 
 Whichever direction you choose, the underlying goal is the same: for every construct in your language (or VM), there is exactly one written answer to "what does this mean, and what happens when it is misused?", and your implementation agrees with it.
 
@@ -450,19 +450,19 @@ Every `raise` in the evaluator must use one of these classes with a meaningful m
 
 ### Step 5b: SEMANTICS.md
 
-Write `SEMANTICS.md` with one section per topic below. Each section must include: a statement of the rule, a code example in your language, and the expected output (or error message).
+Write `SEMANTICS.md` with one section per topic below.  Each section must include: a statement of the rule, a code example in your language, and the expected output (or error message).
 
-1. **Truthiness**: what values are falsy? What are truthy? Show a `while` loop that relies on numeric truthiness.
-2. **Division by zero**: what error is raised? What stage identifies it? Show the exact error message format.
-3. **Scoping and shadowing**: where does `let` define? Where does bare assignment update? Show the shadowing program and its output.
-4. **Loop-variable persistence**: does the loop variable remain in scope after the loop body? Show a program whose output depends on this decision.
-5. **Assignment vs. definition**: what error does assigning an undefined variable produce? Show it.
-6. **Type strictness**: can you add an int to a float? A string to a number? Show both cases and their outcomes.
-7. **String concatenation**: is `"a" + "b"` legal? What about `"a" + 1`? State the rule and show examples.
+1.  **Truthiness**: what values are falsy?  What are truthy?  Show a `while` loop that relies on numeric truthiness.
+2.  **Division by zero**: what error is raised?  What stage identifies it?  Show the exact error message format.
+3.  **Scoping and shadowing**: where does `let` define?  Where does bare assignment update?  Show the shadowing program and its output.
+4.  **Loop-variable persistence**: does the loop variable remain in scope after the loop body?  Show a program whose output depends on this decision.
+5.  **Assignment vs. definition**: what error does assigning an undefined variable produce?  Show it.
+6.  **Type strictness**: can you add an int to a float?  A string to a number?  Show both cases and their outcomes.
+7.  **String concatenation**: is `"a" + "b"` legal?  What about `"a" + 1`?  State the rule and show examples.
 
 ### Step 5c: Differential Programs
 
-Five programs are provided whose outputs depend on your semantics decisions. Run each, record the output, and confirm it matches your SEMANTICS.md documentation. If it does not match, fix either the code or the documentation; they must agree.
+Five programs are provided whose outputs depend on your semantics decisions.  Run each, record the output, and confirm it matches your SEMANTICS.md documentation.  If it does not match, fix either the code or the documentation; they must agree.
 
 ---
 
@@ -470,27 +470,27 @@ Five programs are provided whose outputs depend on your semantics decisions. Run
 
 {: #part-5-direction-full-type-inference-hindley-milner}
 
-This direction replaces Steps 5b-5c by growing Part 4's annotation checker into whole-program *inference*, still its own pipeline stage after parsing and before evaluation, but now deducing types where no annotations exist at all. It is the same machinery (unification and Algorithm-W-style inference) that lets Haskell, OCaml, and Rust deduce types without annotations, scoped here to your language's constructs. Your Part 4 checker is the foundation: its type environment, its staged error reporting, and its operator rules all carry forward; what changes is that unknown types become type *variables* to be solved rather than gaps to be documented.
+This direction replaces Steps 5b-5c by growing Part 4's annotation checker into whole-program *inference*, still its own pipeline stage after parsing and before evaluation, but now deducing types where no annotations exist at all.  It is the same machinery (unification and Algorithm-W-style inference) that lets Haskell, OCaml, and Rust deduce types without annotations, scoped here to your language's constructs.  Your Part 4 checker is the foundation: its type environment, its staged error reporting, and its operator rules all carry forward; what changes is that unknown types become type *variables* to be solved rather than gaps to be documented.
 
 ### Background
 
-A **type** is a type variable `α, β, ...` (unknown, to be solved), a type constant (`Num`, `Bool`, `Str`), or (if your checker covers functions) a function type `τ₁ -> τ₂`. A **substitution** maps type variables to types. **Unification** of two types finds the most general substitution that makes them equal, or fails, and that failure *is* the type error. The inference algorithm walks the AST, generating fresh type variables constrained by each node's structure and unifying to solve.
+A **type** is a type variable `α, β, ...` (unknown, to be solved), a type constant (`Num`, `Bool`, `Str`), or (if your checker covers functions) a function type `τ₁ -> τ₂`.  A **substitution** maps type variables to types.  **Unification** of two types finds the most general substitution that makes them equal, or fails, and that failure *is* the type error.  The inference algorithm walks the AST, generating fresh type variables constrained by each node's structure and unifying to solve.
 
 ### T.1: Type terms, substitution, and unification (`types.py`)
 
-Define frozen dataclasses `TVar(name)`, `TCon(name)` (and `TFun(param, ret)` if covering functions), with `apply(subst, typ)` and `free_vars(typ)` helpers. Implement `unify(t1, t2, subst) -> subst`:
+Define frozen dataclasses `TVar(name)`, `TCon(name)` (and `TFun(param, ret)` if covering functions), with `apply(subst, typ)` and `free_vars(typ)` helpers.  Implement `unify(t1, t2, subst) -> subst`:
 
-1. Apply the current substitution to both types; if they are now identical, return the substitution unchanged.
-2. If one is a type variable `α` not occurring in the other, extend the substitution with `{α: other}`. The **occurs check** (refusing to bind `α` to a type containing `α`) is what prevents infinite types; raise a `LangTypeError` naming both types if it fires.
-3. Recurse componentwise on matching constructors; otherwise raise a `LangTypeError` naming both conflicting types.
+1.  Apply the current substitution to both types; if they are now identical, return the substitution unchanged.
+2.  If one is a type variable `α` not occurring in the other, extend the substitution with `{α: other}`.  The **occurs check** (refusing to bind `α` to a type containing `α`) is what prevents infinite types; raise a `LangTypeError` naming both types if it fires.
+3.  Recurse componentwise on matching constructors; otherwise raise a `LangTypeError` naming both conflicting types.
 
 Test at minimum: `unify(TVar("a"), TNum)` binds `a`; unifying `TNum` with `TBool` raises; and an occurs-check case raises.
 
 ### T.2: Inference over your AST (`typecheck.py`)
 
-Implement `infer(node, type_env, subst) -> (subst, type)` with one case per node type your evaluator handles: literals return their constant type; `Var` looks up the type environment (undefined names remain `LangNameError`s); arithmetic operators unify both operands with `Num` and return `Num`; comparisons return `Bool`; `LogicOp` and `not` unify with `Bool`; `If` and `While` conditions must be `Bool` (note that this is *stricter* than your dynamic truthiness rule; see the reflection prompt); `Let` extends the type environment; `Assign` unifies the new value's type with the variable's existing type; `Block` checks its statements in a child type environment mirroring your `Environment` scoping. Thread the substitution through every case.
+Implement `infer(node, type_env, subst) -> (subst, type)` with one case per node type your evaluator handles: literals return their constant type; `Var` looks up the type environment (undefined names remain `LangNameError`s); arithmetic operators unify both operands with `Num` and return `Num`; comparisons return `Bool`; `LogicOp` and `not` unify with `Bool`; `If` and `While` conditions must be `Bool` (note that this is *stricter* than your dynamic truthiness rule; see the reflection prompt); `Let` extends the type environment; `Assign` unifies the new value's type with the variable's existing type; `Block` checks its statements in a child type environment mirroring your `Environment` scoping.  Thread the substitution through every case.
 
-Wire it into `mylang.py` as a stage: `python mylang.py --typed program.ml` (or make it the default; document your choice) lexes, parses, **type-checks**, and only then evaluates. The stage label `Type error` joins the staged-error format of Part 3: `Type error at line L: <message>`.
+Wire it into `mylang.py` as a stage: `python mylang.py --typed program.ml` (or make it the default; document your choice) lexes, parses, **type-checks**, and only then evaluates.  The stage label `Type error` joins the staged-error format of Part 3: `Type error at line L: <message>`.
 
 ### T.3: Positioned type errors
 
@@ -504,9 +504,9 @@ Type error at line 5: cannot unify Num with Bool (from assignment to 'result')
 
 ### T.4: TYPES.md and test programs
 
-In place of SEMANTICS.md, write `TYPES.md`: one section per construct stating its typing rule in prose (or inference-rule notation), with one program the checker accepts and one it rejects, showing the exact error message. Include at least five test programs total: three that the checker rejects with distinct positioned errors, and two that pass the checker and then run correctly, demonstrating that well-typed programs still evaluate as before.
+In place of SEMANTICS.md, write `TYPES.md`: one section per construct stating its typing rule in prose (or inference-rule notation), with one program the checker accepts and one it rejects, showing the exact error message.  Include at least five test programs total: three that the checker rejects with distinct positioned errors, and two that pass the checker and then run correctly, demonstrating that well-typed programs still evaluate as before.
 
-**Depth (part of "proficient"):** if your language grows function values in the team project (or if you simply want the full Milner experience), implement **let-polymorphism**: generalize a let-bound name's type over the type variables not free in the environment, and instantiate fresh copies at each use, so a polymorphic identity function can be applied to both a `Num` and a `Bool` in the same scope. Self-application (`f(f)`) must still be rejected: no finite type satisfies it, and your occurs check is what says so.
+**Depth (part of "proficient"):** if your language grows function values in the team project (or if you simply want the full Milner experience), implement **let-polymorphism**: generalize a let-bound name's type over the type variables not free in the environment, and instantiate fresh copies at each use, so a polymorphic identity function can be applied to both a `Num` and a `Bool` in the same scope.  Self-application (`f(f)`) must still be rejected: no finite type satisfies it, and your occurs check is what says so.
 
 ---
 
@@ -516,32 +516,32 @@ In place of SEMANTICS.md, write `TYPES.md`: one section per construct stating it
 
 ### Background
 
-A tree-walker is one way to run a program; a **virtual machine** is another. Instead of recursing over an AST, a VM holds the program as a flat array of integers and steps a program counter through them, decoding one instruction at a time. This is the model underneath CPython's bytecode, the JVM, and WebAssembly, and Advent of Code 2019's **Intcode** is the smallest complete instance of it worth studying. Choosing this direction means you have now built the two dominant execution models in the same course and can say precisely how they differ.
+A tree-walker is one way to run a program; a **virtual machine** is another.  Instead of recursing over an AST, a VM holds the program as a flat array of integers and steps a program counter through them, decoding one instruction at a time.  This is the model underneath CPython's bytecode, the JVM, and WebAssembly, and Advent of Code 2019's **Intcode** is the smallest complete instance of it worth studying.  Choosing this direction means you have now built the two dominant execution models in the same course and can say precisely how they differ.
 
 Intcode's operational semantics is small enough to write down completely, which is exactly what makes it a legitimate "make the semantics precise" direction: every opcode is one state-transition rule over the machine state `(memory, pc, input, output, relative_base)`.
 
 ### I.1: Precise operational semantics (`INTCODE.md`)
 
-Before writing code, write `INTCODE.md`: for **each** opcode, state its rule as a transition on the machine state. For example, opcode 1 (add):
+Before writing code, write `INTCODE.md`: for **each** opcode, state its rule as a transition on the machine state.  For example, opcode 1 (add):
 
 > `add`: with parameters `a, b, c`, set `mem[c] <- value(a) + value(b)`, then `pc <- pc + 4`.
 
-Cover opcodes `1` (add), `2` (multiply), `3` (input), `4` (output), `5` (jump-if-true), `6` (jump-if-false), `7` (less-than), `8` (equals), and `99` (halt), plus the **parameter modes** (0 = position, 1 = immediate, and, for the full machine, 2 = relative, with opcode `9` adjusting the relative base). State what an unknown opcode does: it is a staged error (`LangRuntimeError`), not a crash.
+Cover opcodes `1` (add), `2` (multiply), `3` (input), `4` (output), `5` (jump-if-true), `6` (jump-if-false), `7` (less-than), `8` (equals), and `99` (halt), plus the **parameter modes** (0 = position, 1 = immediate, and, for the full machine, 2 = relative, with opcode `9` adjusting the relative base).  State what an unknown opcode does: it is a staged error (`LangRuntimeError`), not a crash.
 
 ### I.2: The VM (`intcode.py`)
 
-Implement `run(program, inputs) -> outputs` as an opcode dispatch loop. Decode each instruction as `opcode = instr % 100` and the per-parameter modes from the higher digits. Structure the dispatch so that adding an opcode is a localized change (a dict from opcode to a small handler, or a match statement), the same "one construct, one place" discipline as your tree-walker's visitor. Illegal opcodes and out-of-range addresses raise your Step 5a error classes with a position (the `pc` at fault).
+Implement `run(program, inputs) -> outputs` as an opcode dispatch loop.  Decode each instruction as `opcode = instr % 100` and the per-parameter modes from the higher digits.  Structure the dispatch so that adding an opcode is a localized change (a dict from opcode to a small handler, or a match statement), the same "one construct, one place" discipline as your tree-walker's visitor.  Illegal opcodes and out-of-range addresses raise your Step 5a error classes with a position (the `pc` at fault).
 
 ### I.3: Self-checking against the AoC oracle
 
-Intcode is self-validating: the puzzle inputs come with known answers. Include at least these checkpoints, each with the exact expected output in your `readme.md`:
+Intcode is self-validating: the puzzle inputs come with known answers.  Include at least these checkpoints, each with the exact expected output in your `readme.md`:
 - The Day 2 sample programs (e.g., `1,9,10,3,2,3,11,0,99,30,40,50` halts with `3500` in position 0).
 - A Day 5 program exercising input, output, immediate mode, and a jump/comparison (e.g., "is the input equal to 8?").
 - If you implement relative mode + opcode 9, the Day 9 quine (`104,1125899906842624,99`) which must output its own large constant.
 
 ### I.4: Differential test against your tree-walker (required)
 
-The two execution models must agree where they overlap. Write a differential test: for a handful of integer arithmetic expressions, evaluate each **both** with your Part 2 tree-walker and with an equivalent hand-assembled Intcode program, and assert the results match. In your readme, name one thing the VM makes easy that the tree-walker makes hard (or vice versa), e.g., self-modifying code, or explicit control over evaluation order.
+The two execution models must agree where they overlap.  Write a differential test: for a handful of integer arithmetic expressions, evaluate each **both** with your Part 2 tree-walker and with an equivalent hand-assembled Intcode program, and assert the results match.  In your readme, name one thing the VM makes easy that the tree-walker makes hard (or vice versa), e.g., self-modifying code, or explicit control over evaluation order.
 
 > **Scope note:** this direction is warm-up-scale by design: the VM is a couple hundred lines and its correctness is externally checkable, so your effort goes into the *precise semantics* and the *model comparison*, which is what the 15-point Part 5 rubric rewards.
 
@@ -584,8 +584,8 @@ Ensure reproducibility by listing your Python version.
 
 - Which semantics decision did you change after testing revealed a consequence you had not foreseen?
 - Point to the exact line in your `Environment` class that makes your language statically (lexically) scoped rather than dynamically scoped.
-- Typing direction only: your dynamic truthiness rule accepts `while 1 { ... }`, but your type checker demands a `Bool` condition. Where else did the static discipline reject a program your evaluator would have happily run, and which behavior do you consider correct for your language?
-- The `BreakSignal`/`ContinueSignal` pattern uses exceptions for control flow, a technique the course calls "signal exceptions." What property of exceptions makes them well suited for this, and what would you use instead if exceptions were not available?
-- If collaboration with a buddy was permitted, did you work with a buddy on this assignment? If so, who? If not, do you certify that this submission represents your own original work? Please identify any and all portions of your submission that were not originally written by you.
+- Typing direction only: your dynamic truthiness rule accepts `while 1 { ... }`, but your type checker demands a `Bool` condition.  Where else did the static discipline reject a program your evaluator would have happily run, and which behavior do you consider correct for your language?
+- The `BreakSignal`/`ContinueSignal` pattern uses exceptions for control flow, a technique the course calls "signal exceptions."  What property of exceptions makes them well suited for this, and what would you use instead if exceptions were not available?
+- If collaboration with a buddy was permitted, did you work with a buddy on this assignment?  If so, who?  If not, do you certify that this submission represents your own original work?  Please identify any and all portions of your submission that were not originally written by you.
 - AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
 - Approximately how many hours it took you to finish this assignment (I will not judge you for this at all; I am simply using it to gauge if the assignments are too easy or hard)?

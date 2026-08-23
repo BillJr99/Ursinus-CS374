@@ -5,10 +5,10 @@ title: "CS374: Principles of Programming Languages - Lab: BNF Workshop"
 
 info:
   coursenum: CS374
-  purpose: "To get early, low-stakes practice writing grammars: EBNF for two small languages, Chomsky-level classification, and a design-criteria argument, the skill the Parser stretch of the course leans on hardest."
+  purpose: "To get early practice writing grammars while the stakes are still low, with EBNF for two small languages, Chomsky-level classification, and a design-criteria argument.  This is the skill the Parser stretch of the course leans on hardest."
   tilt:
     task: "With a partner, write EBNF grammars for two toy languages, classify a set of sample languages by Chomsky level, and argue one syntax design choice against the readability/writability/reliability criteria."
-    criteria: "Assessed on correct and complete EBNF grammars, correct Chomsky classifications with reasons, and a criteria-grounded design argument, weighted 50/30/20 across the three parts; see the rubric below for the full breakdown."
+    criteria: "I assess your work on correct and complete EBNF grammars, correct Chomsky classifications with reasons, and a criteria-grounded design argument, weighted 50/30/20 across the three parts.  See the rubric below for the full breakdown."
   points: 100
   goals:
     - To write EBNF grammars for small formal languages
@@ -53,11 +53,11 @@ tags:
 
 ---
 
-This **lab** is your first grammar-writing rep, taken while the stakes are low: two small EBNF grammars, a Chomsky-classification exercise, and one design argument. Grammar-writing is the skill the Parser assignment leans on hardest, and the Grammar and Derivations Workshop later asks you to do this for the real class language; this lab is the warm-up on toy examples. It is entirely on paper (or in a markdown file); budget **two to three hours** with a partner.
+This **lab** is your first grammar-writing rep, taken while the stakes are low.  You'll write two small EBNF grammars, do a Chomsky-classification exercise, and make one design argument.  Grammar-writing is the skill the Parser assignment leans on hardest, and the Grammar and Derivations Workshop later asks you to do this for the real class language.  Think of this lab as the warm-up on toy examples.  It is entirely on paper, or in a markdown file if you prefer, and you do it with a partner.
 
-**Pair policy:** this lab may be completed **in pairs**: one partner proposes a production, the other tries to break it with a string it mis-handles. Both partners submit the same document, each naming the other, and both earn the same grade. (You may also work alone.)
+**Pair policy.**  You may do this lab **in pairs**: one partner proposes a production, the other tries to break it with a string it mis-handles.  Submit one document between you, with each of you naming the other, and you both earn the same grade.  Working alone is fine too.
 
-See the course schedule for the assigned and due dates. Derivation trees and ambiguity get their own treatment later, in class and in the Grammar and Derivations Workshop; here the job is just to write grammars that draw the right boundary.
+See the course schedule for the assigned and due dates.  Derivation trees and ambiguity get their own treatment later, in class and in the Grammar and Derivations Workshop; here the job is just to write grammars that draw the right boundary.
 
 ---
 
@@ -65,8 +65,8 @@ See the course schedule for the assigned and due dates. Derivation trees and amb
 
 Write a complete EBNF grammar for each, in `grammars.md`, and verify each by hand with **three accepted and two rejected strings**:
 
-1. **Phone directory entries**: lines of the form `NAME: (610) 555-0123` or `NAME: 555-0123`, where a name is one or more capitalized words. The area code is optional; the punctuation is not.
-2. **A tiny configuration language**: zero or more lines of `key = value;`, where a key is an identifier, and a value is an integer, a quoted string, or a bracketed comma-separated list of values (lists nest: `themes = ["dark", ["contrast", "high"]];`).
+1.  **Phone directory entries**: lines of the form `NAME: (610) 555-0123` or `NAME: 555-0123`, where a name is one or more capitalized words.  The area code is optional; the punctuation is not.
+2.  **A tiny configuration language**: zero or more lines of `key = value;`, where a key is an identifier, and a value is an integer, a quoted string, or a bracketed comma-separated list of values (lists nest: `themes = ["dark", ["contrast", "high"]];`).
 
 Use EBNF's operators for repetition (`{ }`), optionality (`[ ]`), and grouping; the point of the exercise is expressing shape declaratively rather than in prose.
 
@@ -74,17 +74,17 @@ Use EBNF's operators for repetition (`{ }`), optionality (`[ ]`), and grouping; 
 
 For each language below, name the lowest Chomsky level that can describe it and give a one-sentence reason naming the structural property that forces it:
 
-1. Binary strings with an even number of 1s.
-2. Balanced parentheses.
-3. Your Part 1 configuration language (careful: the values nest).
-4. Identifiers matching `[A-Za-z_][A-Za-z0-9_]*`.
-5. Strings of the form `a^n b^n c^n` (equal counts of all three).
+1.  Binary strings with an even number of 1s.
+2.  Balanced parentheses.
+3.  Your Part 1 configuration language (careful: the values nest).
+4.  Identifiers matching `[A-Za-z_][A-Za-z0-9_]*`.
+5.  Strings of the form `a^n b^n c^n` (equal counts of all three).
 
 Close with one sentence each: which level do the class language's *tokens* need, and which does its *full syntax* need, and what does that split tell you about why compilers have both a lexer and a parser?
 
 ## Part 3: Design-Criteria Argument (20 points)
 
-The configuration language's designer proposes making the trailing `;` optional. In one paragraph, evaluate the proposal against at least two of the **readability, writability, and reliability** criteria from the Evaluating Languages session, with a concrete consequence for each (what a programmer gains or loses), state the tradeoff, and take a position.
+The configuration language's designer proposes making the trailing `;` optional.  In one paragraph, evaluate the proposal against at least two of the **readability, writability, and reliability** criteria from the Evaluating Languages session, with a concrete consequence for each (what a programmer gains or loses), state the tradeoff, and take a position.
 
 ---
 
@@ -104,6 +104,6 @@ Submit `grammars.md` containing all three parts, with both partners named at the
 ## Reflection Prompts
 
 - Which string broke your first draft of a grammar, and what production fixed it?
-- If you worked in a pair, who did what, and name one thing your partner caught that you would have missed. If you worked alone, note that instead.
+- If you worked in a pair, who did what, and name one thing your partner caught that you would have missed.  If you worked alone, note that instead.
 - AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
 - Approximately how many hours it took you to finish this lab (I will not judge you for this at all; I am simply using it to gauge if the labs are too easy or hard)?

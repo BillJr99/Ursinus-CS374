@@ -6,7 +6,7 @@ title: "CS374: Participation Exercises - Derivations, Parse Trees, Ambiguity, an
 info:
   coursenum: CS374
   purpose: "To see ambiguity as two drawings of the same string, and to fix it by changing the grammar rather than by adding a rule outside it."
-  submission: "Nothing to upload. Bring your attempt, and the one step that stopped you, to the Derivations, Parse Trees, Ambiguity, and Precedence session. These are low-stakes preparation, assessed as part of the 15% Class Activities and Participation component, not graded for correctness."
+  submission: "Nothing to upload.  Please bring your attempt, and the one step that stopped you, to the Derivations, Parse Trees, Ambiguity, and Precedence session.  These are preparation, so they count within the 15% Class Activities and Participation component and I do not grade them for correctness."
 
 tags:
   - resource
@@ -14,16 +14,16 @@ tags:
 
 ---
 
-Ambiguity is not a subtle property once you have drawn it twice. Draw both trees, then rewrite the grammar until only one drawing survives; that rewrite is the whole technique, and doing it by hand once is worth more than reading three descriptions of it.
+Ambiguity stops being subtle the moment you have drawn it twice.  Draw both trees, then rewrite the grammar until only one drawing survives.  That rewrite is the whole technique, and you will learn more from doing it once by hand than from reading three descriptions of it.
 
 ## The Exercises
 
-- Show that a given expression grammar is ambiguous by drawing two distinct parse trees for one string. Then rewrite the grammar to encode precedence and associativity so the ambiguity is gone.
-- Take `2 - 3 - 4` and draw the parse tree that makes subtraction left-associative; then the one that makes it right-associative. Which does your favorite language use? Confirm in the REPL.
+- Show that a given expression grammar is ambiguous by drawing two distinct parse trees for one string.  Then rewrite the grammar to encode precedence and associativity so the ambiguity is gone.
+- Take `2 - 3 - 4` and draw the parse tree that makes subtraction left-associative; then the one that makes it right-associative.  Which does your favorite language use?  Confirm in the REPL.
 
 ## What to Bring
 
-Mark the one step that resisted you and bring it: the rewritten grammar, and the place where encoding precedence made a rule harder to read. A genuine attempt that ran aground is worth more to the discussion than a blank page or a perfect one, and the stuck points set the agenda for the session.
+Bring the rewritten grammar, and mark the place where encoding precedence made a rule harder to read.  If the whole thing fell apart on you, bring it anyway.  Where it fell apart is what we should spend class time on.
 
 ## See also
 

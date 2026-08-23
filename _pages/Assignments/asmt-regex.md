@@ -5,10 +5,10 @@ title: "CS374: Principles of Programming Languages - Regular Expressions"
 
 info:
   coursenum: CS374
-  purpose: "To build a working command of regular expressions: writing tested pattern libraries, a finditer-based mini lexer, and realistic data extraction, plus the vocabulary to reason about why a pattern behaves the way it does."
+  purpose: "To build a working command of regular expressions by writing tested pattern libraries, a finditer-based mini lexer, and realistic data extraction, and to pick up the vocabulary you need to reason about why a pattern behaves the way it does."
   tilt:
     task: "Work through four scaffolded parts: a ten-pattern library, a re.finditer mini lexer, a regex text transformer and log parser, and a written analysis of regex limits."
-    criteria: "Assessed on the correctness of your patterns, mini lexer, and log parser and the depth of your greedy/lazy, anchors, and Chomsky-limits analysis, each part worth 25 points; see the rubric below for the full breakdown."
+    criteria: "I grade this on the correctness of your patterns, mini lexer, and log parser and the depth of your greedy/lazy, anchors, and Chomsky-limits analysis, each part worth 25 points.  The rubric below spells out each row."
   points: 100
   goals:
     - To write and test a library of regular expressions for real-world data patterns
@@ -54,7 +54,7 @@ tags:
 
 ---
 
-In this assignment you will build fluency with regular expressions in four scaffolded parts, ending with a realistic log-extraction task. Use raw strings (`r"..."`) throughout. Each part is independently tested; do not skip ahead. The assignment concludes with a theoretical limits question that you must answer in your writeup.
+In this assignment you'll build fluency with regular expressions across four scaffolded parts, ending with a realistic log-extraction task.  Please use raw strings (`r"..."`) throughout.  Each part is tested independently, so don't skip ahead.  The assignment closes with a theoretical limits question, and you need to answer it in your writeup.
 
 ---
 
@@ -62,7 +62,7 @@ In this assignment you will build fluency with regular expressions in four scaff
 
 ### Environment and Setup
 
-You need Python 3.10+ (`python --version` to confirm) and nothing else: `re` and `json` are in the standard library. Create the files you will submit up front, so each part has a home:
+You need Python 3.10+ (`python --version` to confirm) and nothing else: `re` and `json` are in the standard library.  Create the files you will submit up front, so each part has a home:
 
 ```
 patterns.py      # Part 1
@@ -85,13 +85,13 @@ check("COURSE_CODE", COURSE_CODE,
       should_not_match=["cs374", "CS3741"])
 ```
 
-Run `python patterns.py` and confirm you see a `PASS` line. Then break it on purpose: remove the `-?` and rerun to watch `check()` report the failure. That edit-run-read-failure loop is the whole workflow for Part 1; once it works for one pattern, the remaining nine are repetitions of the same cycle.
+Run `python patterns.py` and confirm you see a `PASS` line.  Then break it on purpose: remove the `-?` and rerun to watch `check()` report the failure.  That edit-run-read-failure loop is the whole workflow for Part 1; once it works for one pattern, the remaining nine are repetitions of the same cycle.
 
-This assignment is handed out alongside the dedicated Regular Expressions class session and the **Regex Workshop lab**, which is due mid-assignment and completes your first patterns and the mini-lexer skeleton for you. Bring your lab artifacts into Parts 1 and 2 directly: the lab is a head start on this assignment, not separate work.
+This assignment is handed out alongside the dedicated Regular Expressions class session and the **Regex Workshop lab**, which is due mid-assignment and completes your first patterns and the mini-lexer skeleton for you.  Bring your lab artifacts into Parts 1 and 2 directly: the lab is a head start on this assignment, not separate work.
 
 ### Suggested Pacing
 
-See the course schedule for the assigned and due dates. A suggested sequence:
+See the course schedule for the assigned and due dates.  A suggested sequence:
 
 | Checkpoint | You should have |
 |------------|----------------|
@@ -129,7 +129,7 @@ def check(name: str, pattern: str, should_match: list, should_not_match: list):
         print(f"PASS {name} ({len(should_match)} positive, {len(should_not_match)} negative)")
 ```
 
-Note: `fullmatch` requires the pattern to match the *entire* string. This is intentional: anchoring the test exposes patterns that are too permissive.
+Note: `fullmatch` requires the pattern to match the *entire* string.  This is intentional: anchoring the test exposes patterns that are too permissive.
 
 ### Required Patterns (10 total)
 
@@ -139,15 +139,15 @@ Write a `re.compile`d pattern for each, named as shown, with **at least three po
 - Match: `CS374`, `MATH111`, `BIO-101`, `ENGL-201`
 - No match: `cs374`, `CS3741`, `CS-37`, `374`
 
-**P2 `IDENTIFIER`:** A legal programming identifier: starts with a letter or underscore, followed by any combination of letters, digits, and underscores. Must match the full string.
+**P2 `IDENTIFIER`:** A legal programming identifier: starts with a letter or underscore, followed by any combination of letters, digits, and underscores.  Must match the full string.
 - Match: `foo`, `_bar`, `x1`, `my_var_2`
 - No match: `1foo`, `-x`, `foo bar`, `"x"`
 
-**P3 `DECIMAL`:** A decimal number with an optional sign and optional fractional part. The integer part is required; a bare `.` or a number like `3.` (trailing dot without digits) is not valid.
+**P3 `DECIMAL`:** A decimal number with an optional sign and optional fractional part.  The integer part is required; a bare `.` or a number like `3.` (trailing dot without digits) is not valid.
 - Match: `3`, `-3`, `+3.14`, `0.5`, `-0.001`
 - No match: `.5`, `3.`, `--3`, `3..14`, `abc`
 
-**P4 `TIME_12H`:** A 12-hour clock time. Hour is 1-12. Minutes are optional but, if present, must be two digits. Meridiem (`AM` or `PM`) is required and separated by a space.
+**P4 `TIME_12H`:** A 12-hour clock time.  Hour is 1-12.  Minutes are optional but, if present, must be two digits.  Meridiem (`AM` or `PM`) is required and separated by a space.
 - Match: `8 AM`, `12:00 PM`, `1:30 AM`, `11:59 PM`
 - No match: `13:00 AM`, `0:00 AM`, `8:5 PM`, `8AM`, `8:00`
 
@@ -159,7 +159,7 @@ Write a `re.compile`d pattern for each, named as shown, with **at least three po
 - Match: `(215) 555-1234`, `(800) 123-4567`
 - No match: `215-555-1234`, `(015) 555-1234`, `(215)555-1234`
 
-**P7 `ISO_DATE`:** An ISO 8601 date `YYYY-MM-DD`. Month 01-12, day 01-31 (exact day-of-month validation is beyond regex; just validate the format and ranges).
+**P7 `ISO_DATE`:** An ISO 8601 date `YYYY-MM-DD`.  Month 01-12, day 01-31 (exact day-of-month validation is beyond regex; just validate the format and ranges).
 - Match: `2026-09-18`, `2000-01-01`, `1999-12-31`
 - No match: `26-09-18`, `2026-9-18`, `2026-13-01`, `2026-00-15`
 
@@ -167,7 +167,7 @@ Write a `re.compile`d pattern for each, named as shown, with **at least three po
 - Match: `#fff`, `#FFF`, `#1a2b3c`, `#ABC`
 - No match: `#gg1122`, `fff`, `#1234`, `#12345g`
 
-**P9 `IPV4_ADDRESS`:** An IPv4 address: four groups of 1-3 digits separated by dots. (Exact 0-255 range validation is encouraged but not required; validate format and that each octet is 1-3 digits.)
+**P9 `IPV4_ADDRESS`:** An IPv4 address: four groups of 1-3 digits separated by dots.  (Exact 0-255 range validation is encouraged but not required; validate format and that each octet is 1-3 digits.)
 - Match: `192.168.1.1`, `10.0.0.0`, `255.255.255.255`, `0.0.0.0`
 - No match: `192.168.1`, `192.168.1.1.1`, `abc.def.ghi.jkl`
 
@@ -228,7 +228,7 @@ def mini_lex(source: str) -> list:
 
 ### Step 2b: Extend the Token Spec
 
-Extend TOKEN_SPEC to cover the language below - at least 15 token types, including every keyword, operator, and literal listed. Use negative lookahead `(?!\w)` on all keywords to prevent `iffy` from tokenizing as `IF`.
+Extend TOKEN_SPEC to cover the language below, using at least 15 token types and including every keyword, operator, and literal listed.  Use negative lookahead `(?!\w)` on all keywords to prevent `iffy` from tokenizing as `IF`.
 
 | Category | Tokens |
 |----------|--------|
@@ -239,7 +239,7 @@ Extend TOKEN_SPEC to cover the language below - at least 15 token types, includi
 | Punctuation | `(`, `)`, `{`, `}`, `;`, `:`, `,` |
 | Skipped | whitespace, `# comment to end of line` |
 
-This is the same language the Lexer assignment will ask you to tokenize with a reusable component, so the work you do here carries forward directly - but everything you need is in the table above; you do not need that assignment sheet to finish this one.
+This is the same language the Lexer assignment will ask you to tokenize with a reusable component, so the work you do here carries forward directly.  Everything you need is in the table above, and you don't need that assignment sheet to finish this one.
 
 ### Step 2c: Verify Ordering and Maximal Munch
 
@@ -262,11 +262,11 @@ Run `mini_lex` on each of these inputs and verify the output matches the expecte
 
 Write a `transform(text: str) -> str` function that applies all three substitutions to the input text:
 
-1. **Redact emails:** Replace every email address (use P5 from Part 1, without anchoring) with `[EMAIL]` using `re.sub`.
-2. **Normalize dates:** Convert `MM/DD/YYYY` format dates to ISO `YYYY-MM-DD` using group references in the replacement string (e.g., `r"\3-\1-\2"` with groups for month, day, year).
-3. **Redact phone numbers:** Replace US phone numbers (P6 from Part 1) with `[PHONE]`.
+1.  **Redact emails:** Replace every email address (use P5 from Part 1, without anchoring) with `[EMAIL]` using `re.sub`.
+2.  **Normalize dates:** Convert `MM/DD/YYYY` format dates to ISO `YYYY-MM-DD` using group references in the replacement string (e.g., `r"\3-\1-\2"` with groups for month, day, year).
+3.  **Redact phone numbers:** Replace US phone numbers (P6 from Part 1) with `[PHONE]`.
 
-Apply all three in sequence. Demonstrate on this input paragraph:
+Apply all three in sequence.  Demonstrate on this input paragraph:
 
 ```
 Contact MONGAN, WILLIAM at billmongan@gmail.com or call (610) 555-0192.
@@ -308,11 +308,11 @@ In a comment, explain in one sentence *why* greedy captured more.
 
 Given the provided server log file (lines like `2026-09-18 08:10:22 WARN disk usage 91% on /dev/sda1`), write a `parse_log(log_path: str, config_path: str)` function that:
 
-1. Uses one `re.finditer` pattern with named groups to extract `date`, `time`, `level`, and `message` from each log line.
-2. Reports counts by level (how many INFO, WARN, ERROR lines).
-3. Reports the earliest and latest timestamps (as strings in `YYYY-MM-DD HH:MM:SS` format).
-4. Extracts every percentage value (`\d+%`) mentioned in WARN lines and reports the maximum.
-5. Writes all ERROR lines, prefixed with their original line number, to `errors.txt`.
+1.  Uses one `re.finditer` pattern with named groups to extract `date`, `time`, `level`, and `message` from each log line.
+2.  Reports counts by level (how many INFO, WARN, ERROR lines).
+3.  Reports the earliest and latest timestamps (as strings in `YYYY-MM-DD HH:MM:SS` format).
+4.  Extracts every percentage value (`\d+%`) mentioned in WARN lines and reports the maximum.
+5.  Writes all ERROR lines, prefixed with their original line number, to `errors.txt`.
 
 The named-group pattern must match this line format exactly:
 
@@ -343,23 +343,23 @@ Externalize both the input log path and the output `errors.txt` path in a JSON c
 
 ## Part 4: Pattern Analysis (25 points)
 
-Answer each of the following four questions in your writeup. Each answer must be at least one paragraph and must include a concrete example from your own work in this assignment.
+Answer each of the following four questions in your writeup.  Each answer must be at least one paragraph and must include a concrete example from your own work in this assignment.
 
 ### Q1: Greedy vs. Lazy
 
-Explain the difference between greedy (`*`, `+`) and lazy (`*?`, `+?`) quantifiers. Use the specific example from Step 3b. Under what circumstances would you prefer lazy over greedy in production code?
+Explain the difference between greedy (`*`, `+`) and lazy (`*?`, `+?`) quantifiers.  Use the specific example from Step 3b.  Under what circumstances would you prefer lazy over greedy in production code?
 
 ### Q2: Anchors
 
-Explain the difference between `^`, `$`, `\A`, and `\Z`. Show a pattern from your Part 1 library where removing the anchors (or switching from `fullmatch` to `search`) would cause a false positive. State which anchor approach you used in each Part 1 pattern and why.
+Explain the difference between `^`, `$`, `\A`, and `\Z`.  Show a pattern from your Part 1 library where removing the anchors (or switching from `fullmatch` to `search`) would cause a false positive.  State which anchor approach you used in each Part 1 pattern and why.
 
 ### Q3: Named Groups
 
-Explain the difference between plain groups `(...)`, non-capturing groups `(?:...)`, and named groups `(?P<name>...)`. Show how `groupdict()` differs from `groups()` using your log parser pattern from Step 3c.
+Explain the difference between plain groups `(...)`, non-capturing groups `(?:...)`, and named groups `(?P<name>...)`.  Show how `groupdict()` differs from `groups()` using your log parser pattern from Step 3c.
 
 ### Q4: The Limits of Regular Expressions
 
-In one paragraph, explain why no regular expression can validate balanced nested parentheses in general. Your explanation must:
+In one paragraph, explain why no regular expression can validate balanced nested parentheses in general.  Your explanation must:
 - Reference the pumping lemma for regular languages (by name; you do not need to reproduce the full proof) (taught in the Regular Expressions class session with a worked example; see Allison Ch. 4).
 - Name the level of the Chomsky hierarchy that handles context-free languages.
 - Name the component of your language pipeline (from the Lexer, Parser, and Interpreter assignments) whose job it is to handle balanced nesting.
@@ -398,7 +398,7 @@ Ensure reproducibility by listing your Python version.
 
 - Which pattern took the most revisions, and what misconception did the failures expose?
 - Where did you choose a simpler pattern over a perfectly precise one, and how did you document the tradeoff?
-- After completing Part 2, what are the limits of a regex-only lexer? Name one thing this `finditer` loop cannot do that a hand-written scanner with `peek`/`advance` can - you will build exactly that in the Lexer assignment.
-- If collaboration with a buddy was permitted, did you work with a buddy on this assignment? If so, who? If not, do you certify that this submission represents your own original work? Please identify any and all portions of your submission that were not originally written by you.
+- After completing Part 2, what are the limits of a regex-only lexer?  Name one thing this `finditer` loop cannot do that a hand-written scanner with `peek`/`advance` can.  You'll build exactly that in the Lexer assignment.
+- If collaboration with a buddy was permitted, did you work with a buddy on this assignment?  If so, who?  If not, do you certify that this submission represents your own original work?  Please identify any and all portions of your submission that were not originally written by you.
 - AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
 - Approximately how many hours it took you to finish this assignment (I will not judge you for this at all; I am simply using it to gauge if the assignments are too easy or hard)?

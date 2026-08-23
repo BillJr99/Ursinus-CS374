@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Evaluating Languages: Readability, Writability, Reliability
 
-Evaluating a programming language is a lot like evaluating a tool in a workshop: a hammer and a screwdriver are both "correct" tools, but which one you reach for depends entirely on what you are building. No language is universally best; every language embodies a set of deliberate tradeoffs that make it excellent for some tasks and awkward for others. In this activity you will develop a systematic, criteria-driven way to evaluate those tradeoffs so that you can choose languages wisely and design your own language with open eyes. The paradigms you toured in *Programming Paradigms* are the raw material these criteria judge.
+Evaluating a programming language is a lot like evaluating a tool in a workshop: a hammer and a screwdriver are both "correct" tools, but which one you reach for depends entirely on what you are building.  No language is universally best; every language embodies a set of deliberate tradeoffs that make it excellent for some tasks and awkward for others.  In this activity you will develop a systematic, criteria-driven way to evaluate those tradeoffs so that you can choose languages wisely and design your own language with open eyes.  The paradigms you toured in *Programming Paradigms* are the raw material these criteria judge.
 
 ## Learning Goals
 
@@ -33,39 +33,39 @@ By the end of this activity, you will be able to:
 >
 > If any of these feel shaky, review them first.
 
-"Which language is best?" is a bad question; "best *for what*, judged *by what criteria*" is an engineering question. Today we adopt the classical evaluation framework (readability, writability, reliability, and cost) and the design tradeoffs that connect them, because every choice your team makes in December will trade one criterion against another. The arc: **the criteria $\rightarrow$ the design features that drive them $\rightarrow$ tradeoffs in real languages $\rightarrow$ a scorecard for your own design**.
+"Which language is best?" is a bad question; "best *for what*, judged *by what criteria*" is an engineering question.  Today we adopt the classical evaluation framework (readability, writability, reliability, and cost) and the design tradeoffs that connect them, because every choice your team makes in December will trade one criterion against another.  We move today from **the criteria $\rightarrow$ the design features that drive them $\rightarrow$ tradeoffs in real languages $\rightarrow$ a scorecard for your own design**.
 
 ---
 
 ## Directions and Group Roles
 
-Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**). Consider each model and question individually first, then discuss with your group. The Recorder posts answers to the Class Activity Questions discussion board; the Presenter reports out areas of disagreement or alternative approaches. After class, respond to the reflective prompt individually in your notebook.
+Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Please think each model and question through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever you disagreed or found another approach.  After class, please respond to the reflective prompt on your own in your notebook.
 
 ---
 
 # Part I: The Criteria
 
-## 1. Four Lenses
+## 1.  Four Lenses
 
-Before diving into definitions, consider why we need multiple lenses at all. When you argue that "Python is better than Java," you are almost certainly weighting one criterion heavily and ignoring others. The four lenses below give you a shared vocabulary so that design debates become precise: instead of "I like Python better," you can say "Python trades static-typing reliability for writability speed, which is the right call for this domain."
+Before diving into definitions, consider why we need multiple lenses at all.  When you argue that "Python is better than Java," you are almost certainly weighting one criterion heavily and ignoring others.  The four lenses below give you a shared vocabulary so that design debates become precise: instead of "I like Python better," you can say "Python trades static-typing reliability for writability speed, which is the right call for this domain."
 
-**Readability** is the ease with which programs can be read and understood, and it dominates total cost because code is read far more often than written. It is driven by *simplicity* (few constructs, few ways to do one thing), *orthogonality* (a small set of features combinable without special cases), and *syntax design* (meaningful keywords, consistent forms).
+**Readability** is the ease with which programs can be read and understood, and it dominates total cost because code is read far more often than written.  It is driven by *simplicity* (few constructs, few ways to do one thing), *orthogonality* (a small set of features combinable without special cases), and *syntax design* (meaningful keywords, consistent forms).
 
 **Writability** is the ease of creating programs: *expressivity* (powerful, concise operations like list comprehensions), *abstraction support* (functions, classes, modules), and fit between the language and the problem domain.
 
 **Reliability** is the likelihood that programs behave as intended: *type checking* (catching misuse early), *exception handling*, *aliasing restrictions* (fewer ways for two names to surprise you by referring to one cell), and, foundationally, readability and writability themselves, since code that is hard to read hides its bugs.
 
-**Cost** totals the lifecycle: training, writing, compiling, executing, maintaining, and the price of unreliability. A language fast to write but cryptic to read shifts cost from author to maintainer; a language with heavyweight checking shifts cost from runtime failures to compile-time friction.
+**Cost** totals the lifecycle: training, writing, compiling, executing, maintaining, and the price of unreliability.  A language fast to write but cryptic to read shifts cost from author to maintainer; a language with heavyweight checking shifts cost from runtime failures to compile-time friction.
 
 ---
 
 ## Model 1: Orthogonality, Combining Features Without Surprises
 
-Imagine a language where every operator works on every type in a consistent, predictable way: no surprise exceptions, no "well, `+` works on strings but `*` only works on strings with integers, not with other strings." That ideal is called orthogonality. In practice, every real language falls short of it somewhere, and the gaps are exactly where programmers make mental-model mistakes. This model makes those gaps visible by running operator experiments directly.
+Imagine a language where every operator works on every type in a consistent, predictable way: no surprise exceptions, no "well, `+` works on strings but `*` only works on strings with integers, not with other strings."  That ideal is called orthogonality.  In practice, every real language falls short of it somewhere, and the gaps are exactly where programmers make mental-model mistakes.  This model makes those gaps visible by running operator experiments directly.
 
-> **Watch out!** Students often conflate orthogonality with "the feature exists." The question is not whether Python supports string repetition (`"ha" * 3`) but whether the same rule applies uniformly everywhere. When you find a case where it does not, that is a special case the programmer must memorize, a direct hit on readability.
+> **Watch out!**  Students often conflate orthogonality with "the feature exists."  The question is not whether Python supports string repetition (`"ha" * 3`) but whether the same rule applies uniformly everywhere.  When you find a case where it does not, that is a special case the programmer must memorize, a direct hit on readability.
 
-**Orthogonality** means that a small set of primitives can be combined uniformly: adding a new feature does not require dozens of special cases for where it *cannot* be used. C is famously non-orthogonal: you can have a pointer to a struct, a pointer to a function, an array of structs, but you cannot pass an array by value, return an array from a function, or use `==` to compare two structs. Python is more orthogonal (everything is an object, `+` works on many types) but still has asymmetries.
+**Orthogonality** means that a small set of primitives can be combined uniformly: adding a new feature does not require dozens of special cases for where it *cannot* be used.  C is famously non-orthogonal: you can have a pointer to a struct, a pointer to a function, an array of structs, but you cannot pass an array by value, return an array from a function, or use `==` to compare two structs.  Python is more orthogonal (everything is an object, `+` works on many types) but still has asymmetries.
 
 The cell below catalogs several "does it combine?" experiments so your team can observe orthogonality failures directly.
 
@@ -128,30 +128,30 @@ except TypeError as e:
 
 ### Critical Thinking Questions
 
-1. From the output, identify two cases where Python *is* orthogonal (the same operator works uniformly across types) and two where it is *not*. For each non-orthogonal case, state what the programmer must remember as a special case.
-2. Define orthogonality in your own words using these examples: which special cases break the "features combine uniformly" promise in each language? Should `set + set` work? Make an argument both ways using readability and reliability as criteria.
-3. A maximally orthogonal language sounds ideal. Propose one danger of *too much* orthogonality (hint: if everything combines with everything, what can the reader assume about any expression?).
-4. Score C and Python (low/medium/high) on each of the four criteria for the task "a 200-line data cleaning script maintained by rotating student workers." Defend your most contested cell.
+1.  From the output, identify two cases where Python *is* orthogonal (the same operator works uniformly across types) and two where it is *not*.  For each non-orthogonal case, state what the programmer must remember as a special case.
+2.  Define orthogonality in your own words using these examples: which special cases break the "features combine uniformly" promise in each language?  Should `set + set` work?  Make an argument both ways using readability and reliability as criteria.
+3.  A maximally orthogonal language sounds ideal.  Propose one danger of *too much* orthogonality (hint: if everything combines with everything, what can the reader assume about any expression?).
+4.  Score C and Python (low/medium/high) on each of the four criteria for the task "a 200-line data cleaning script maintained by rotating student workers."  Defend your most contested cell.
 
 ---
 
 # Part II: Tradeoffs
 
-## 2. There Is No Free Criterion
+## 2.  There Is No Free Criterion
 
-Part I gave you four lenses; Part II shows why you cannot maximize all four at once. Every language design decision moves at least one criterion up and at least one criterion down; there is no free lunch. As you read through the examples below, resist the instinct to call one choice "wrong." Instead, ask: "Which criterion did the designer prioritize, and does that match the language's target use case?"
+Part I gave you four lenses; Part II shows why you cannot maximize all four at once.  Every language design decision moves at least one criterion up and at least one criterion down; there is no free lunch.  As you read through the examples below, resist the instinct to call one choice "wrong."  Instead, ask: "Which criterion did the designer prioritize, and does that match the language's target use case?"
 
-> **Watch out!** It is tempting to conclude "Python is better than C because it has higher reliability." That claim ignores context. For a hard-real-time embedded system where memory layout matters, C's lower abstraction is a feature, not a bug. Criteria scores are always relative to the problem domain, not absolute.
+> **Watch out!**  It is tempting to conclude "Python is better than C because it has higher reliability."  That claim ignores context.  For a hard-real-time embedded system where memory layout matters, C's lower abstraction is a feature, not a bug.  Criteria scores are always relative to the problem domain, not absolute.
 
-**Reliability versus cost of execution.** Java checks every array index at runtime; C does not. One buys memory safety with cycles; the other buys speed with vulnerability (buffer overflows remain a top security flaw class decades later).
+Reliability versus cost of execution.  Java checks every array index at runtime; C does not.  One buys memory safety with cycles; the other buys speed with vulnerability (buffer overflows remain a top security flaw class decades later).
 
-**Writability versus readability.** APL and Perl achieve astonishing concision; their critics call them write-only. Python's design explicitly privileges the reader ("readability counts"), accepting more keystrokes.
+**Writability versus readability.**  APL and Perl achieve astonishing concision; their critics call them write-only.  Python's design explicitly privileges the reader ("readability counts"), accepting more keystrokes.
 
-**Flexibility versus reliability.** Dynamic typing (Python) lets any variable hold anything, which speeds exploration and defers type errors to runtime, possibly in production. Static typing (Java, Rust) front-loads the friction. Modern designs hedge: type *inference* (the compiler deduces types you did not write) and *gradual typing* (Python's optional annotations) try to buy reliability without the ceremony.
+**Flexibility versus reliability.**  Dynamic typing (Python) lets any variable hold anything, which speeds exploration and defers type errors to runtime, possibly in production.  Static typing (Java, Rust) front-loads the friction.  Modern designs hedge: type *inference* (the compiler deduces types you did not write) and *gradual typing* (Python's optional annotations) try to buy reliability without the ceremony.
 
-> **Runnable version (at home).** A four-way demonstration of these tradeoffs in executable Python - coercion, comprehensions, checked division, and duck typing - is in *Part III* below, with its own questions.
+> **Runnable version (at home).**  *Part III* below demonstrates four of these tradeoffs in executable Python (coercion, comprehensions, checked division, and duck typing), with its own questions.
 
-A team adds implicit type coercion to their language so that `"3" + 4` yields `7`, reasoning that it improves writability. The most likely cost, in this framework, is to:
+A team adds implicit type coercion to their language so that `"3" + 4` yields `7`, reasoning that it improves writability.  The most likely cost, in this framework, is to:
 
 [( )] Execution speed only
 [(X)] Reliability, because errors that types would have caught now produce silently wrong values
@@ -162,9 +162,9 @@ A team adds implicit type coercion to their language so that `"3" + 4` yields `7
 
 ## Model 2: The Billion-Dollar Hindsight
 
-One of the most studied reliability failures in language design history is the null reference: the idea that a variable of any type can silently hold "nothing," and that nothing will only explode when you try to use it, potentially deep inside code far from where the bad value was introduced. This model walks through three different language-design responses to that problem, letting you directly compare the reliability-versus-writability tradeoffs each one makes.
+One of the most studied reliability failures in language design history is the null reference: the idea that a variable of any type can silently hold "nothing," and that nothing will only explode when you try to use it, potentially deep inside code far from where the bad value was introduced.  This model walks through three different language-design responses to that problem, letting you directly compare the reliability-versus-writability tradeoffs each one makes.
 
-Tony Hoare called the null reference his "billion-dollar mistake" in a 2009 keynote. His argument: the null reference can be assigned to any pointer-typed variable and dereferenced into a crash, yet no type system of the era flagged the dereference as potentially unsafe. The result: null dereferences became one of the most common runtime errors in Java, C, and C++. Languages have responded differently.
+Tony Hoare called the null reference his "billion-dollar mistake" in a 2009 keynote.  His argument: the null reference can be assigned to any pointer-typed variable and dereferenced into a crash, yet no type system of the era flagged the dereference as potentially unsafe.  The result: null dereferences became one of the most common runtime errors in Java, C, and C++. Languages have responded differently.
 
 ```python
 # Simulating three language designs for the "absence" problem in Python.
@@ -259,14 +259,14 @@ print("  Design 3 (no null):       max ceremony, compiler-guaranteed safety")
 
 ### Critical Thinking Questions
 
-8. Express each of the three designs as a position in the reliability-versus-writability tradeoff. Which shifts the cost of absence-handling earliest: to the programmer at write time, to the compiler at compile time, or to the user at run time?
-9. Your project language will have to decide what happens when a variable is used before assignment. Enumerate three possible designs (error at parse time, error at run time, default value) and score each on reliability and writability. Which does Python use? Which does Java use?
-10. Hoare's mistake survived fifty years because it was *convenient*. Name one convenience in a language you use that you now suspect is somebody's future billion-dollar regret. Use the four criteria to defend your suspicion.
+8.  Express each of the three designs as a position in the reliability-versus-writability tradeoff.  Which shifts the cost of absence-handling earliest: to the programmer at write time, to the compiler at compile time, or to the user at run time?
+9.  Your project language will have to decide what happens when a variable is used before assignment.  Enumerate three possible designs (error at parse time, error at run time, default value) and score each on reliability and writability.  Which does Python use?  Which does Java use?
+10.  Hoare's mistake survived fifty years because it was *convenient*.  Name one convenience in a language you use that you now suspect is somebody's future billion-dollar regret.  Use the four criteria to defend your suspicion.
 
 ---
 
 
-> **Cut for time.** The simplicity-versus-expressiveness comparison (including the Perl-golf demonstration) added length without adding a criterion beyond the four lenses in Part I. The point it made (that terseness and clarity are different axes, and that a language can optimize for either) is covered in Model 1's orthogonality discussion.
+> **Cut for time.**  The simplicity-versus-expressiveness comparison (including the Perl-golf demonstration) added length without adding a criterion beyond the four lenses in Part I. The point it made (that terseness and clarity are different axes, and that a language can optimize for either) is covered in Model 1's orthogonality discussion.
 
 # Part III: Synthesis and Practice
 
@@ -357,40 +357,40 @@ for obj in [Duck(), Dog(), Rock()]:
 
 ### Critical Thinking Questions
 
-5. For each of the four "feature choices" in the cell, identify which criterion it improves and which it weakens, using the vocabulary (readability/writability/reliability/cost).
-6. The list comprehension and `for`-loop produce identical results. A new programmer finds the loop more readable; an experienced Python programmer finds the comprehension more readable. What does this asymmetry reveal about readability as a criterion: is it absolute or relative to the reader?
-7. Duck typing (`make_sound`) defers the `Rock` error until `make_sound(Rock())` is actually called. In a large program, how far might that call be from the assignment `thing = Rock()`? Connect this to the "hidden path" problem from the types module.
+5.  For each of the four "feature choices" in the cell, identify which criterion it improves and which it weakens, using the vocabulary (readability/writability/reliability/cost).
+6.  The list comprehension and `for`-loop produce identical results.  A new programmer finds the loop more readable; an experienced Python programmer finds the comprehension more readable.  What does this asymmetry reveal about readability as a criterion: is it absolute or relative to the reader?
+7.  Duck typing (`make_sound`) defers the `Rock` error until `make_sound(Rock())` is actually called.  In a large program, how far might that call be from the assignment `thing = Rock()`?  Connect this to the "hidden path" problem from the types module.
 
 
-## 4. Exercises
+## 4.  Exercises
 
-1. *Criteria audit.* Choose one feature of a language you know (Python indentation blocks, Java checked exceptions, C pointers, JavaScript `==` coercion). Write a half-page evaluation through all four lenses, ending with a verdict: keep, modify, or remove, and why.
-2. *Scorecard draft.* Create your team's language-design scorecard: the four criteria as rows, with a sentence per row stating what your language will prioritize and what it will knowingly sacrifice. This scorecard reappears in your project proposal.
-3. *Holy war defusal.* Find one online "language X versus Y" argument and translate its two loudest claims into this framework. Does the disagreement survive translation, or does it dissolve into different weightings of the same criteria?
-4. *Null policy.* Write a 150-word statement for your project's SEMANTICS.md documenting your language's policy on absent values: what type/value represents absence, what happens when the programmer dereferences it, and which of the three designs from Model 2 you are choosing and why.
-5. *Coercion matrix.* Build a 4×4 matrix (types: int, float, string, bool) showing which of the 16 pairwise `+` operations your language will allow, which will coerce, and which will error. For each allowed coercion, state the reliability risk.
+1.  *Criteria audit.*  Choose one feature of a language you know (Python indentation blocks, Java checked exceptions, C pointers, JavaScript `==` coercion).  Write a half-page evaluation through all four lenses, ending with a verdict: keep, modify, or remove, and why.
+2.  *Scorecard draft.*  Create your team's language-design scorecard: the four criteria as rows, with a sentence per row stating what your language will prioritize and what it will knowingly sacrifice.  This scorecard reappears in your project proposal.
+3.  *Holy war defusal.*  Find one online "language X versus Y" argument and translate its two loudest claims into this framework.  Does the disagreement survive translation, or does it dissolve into different weightings of the same criteria?
+4.  *Null policy.*  Write a 150-word statement for your project's SEMANTICS.md documenting your language's policy on absent values: what type/value represents absence, what happens when the programmer dereferences it, and which of the three designs from Model 2 you are choosing and why.
+5.  *Coercion matrix.*  Build a 4×4 matrix (types: int, float, string, bool) showing which of the 16 pairwise `+` operations your language will allow, which will coerce, and which will error.  For each allowed coercion, state the reliability risk.
 
 ---
 
 ## Reflection Prompt
 
-In your notebook: recall the language feature that most confused you as a beginning programmer. Through today's lenses, was the confusion a readability failure, a reliability failure, or a teaching failure? What would you change? Now that you are about to design your own language in December, which of the four criteria do you find yourself valuing *more* than you expected before this course began?
+In your notebook: recall the language feature that most confused you as a beginning programmer.  Through today's lenses, was the confusion a readability failure, a reliability failure, or a teaching failure?  What would you change?  Now that you are about to design your own language in December, which of the four criteria do you find yourself valuing *more* than you expected before this course began?
 
 ---
 
-## 5. Further Reading
+## 5.  Further Reading
 
-- Douglas Thain. *Introduction to Compilers and Language Design*, Chapter 1.
-- Robert Sebesta. *Concepts of Programming Languages*, Chapter 1 (the canonical source of this framework; any edition, library reserve).
-- Tony Hoare. "Null References: The Billion Dollar Mistake" (talk, 2009, online).
+- Douglas Thain.  *Introduction to Compilers and Language Design*, Chapter 1.
+- Robert Sebesta.  *Concepts of Programming Languages*, Chapter 1 (the canonical source of this framework; any edition, library reserve).
+- Tony Hoare.  "Null References: The Billion Dollar Mistake" (talk, 2009, online).
 - Python PEP 20, "The Zen of Python": `import this` in any Python interpreter.
-- Gary Bernhardt. "Wat" (talk, 2012, online): four minutes of coercion comedy with a serious lesson.
+- Gary Bernhardt.  "Wat" (talk, 2012, online): four minutes of coercion comedy with a serious lesson.
 
 ---
 
 ## Going Deeper (Optional Pointers)
 
-> **Going further:** the material that used to live here (logic programming with Prolog: family-tree facts and rules, Robinson unification, SLD resolution and backtracking, bidirectional list predicates, a complete mini-Prolog interpreter in Python, and the miniKanren connection) is covered in depth in the dedicated guide: [Prolog in the Browser with SWISH](https://www.billmongan.com/Ursinus-CS374/Tutorials/Prolog), which backs **Direction F** of the Functional assignment (the mini-Prolog interpreter build now lives there as an advanced section). Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here (logic programming with Prolog: family-tree facts and rules, Robinson unification, SLD resolution and backtracking, bidirectional list predicates, a complete mini-Prolog interpreter in Python, and the miniKanren connection) is covered in depth in the dedicated guide: [Prolog in the Browser with SWISH](https://www.billmongan.com/Ursinus-CS374/Tutorials/Prolog), which backs **Direction F** of the Functional assignment (the mini-Prolog interpreter build now lives there as an advanced section).  Explore it when your project or curiosity calls for it.
 
 ---
 

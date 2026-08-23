@@ -24,14 +24,14 @@ By the end of this tutorial, you will have:
 - Extended the calculator grammar with at least one new construct (e.g., comparison operators or a print statement)
 - Connected the Flex/Bison toolchain to the hand-written lexer and recursive-descent parser you built in earlier assignments
 
-This tutorial builds a complete, running calculator language step by step using **Flex** (fast lexer generator) and **Bison** (parser generator). No prior knowledge of either tool is assumed. By the end you will have:
+This tutorial builds a complete, running calculator language step by step using **Flex** (fast lexer generator) and **Bison** (parser generator).  No prior knowledge of either tool is assumed.  By the end you will have:
 
-1. A working `flex` lexer that tokenizes arithmetic expressions
-2. A working `bison` grammar that parses them with correct precedence
-3. A complete calculator that evaluates expressions including variables
-4. The knowledge to extend this into a full language
+1.  A working `flex` lexer that tokenizes arithmetic expressions
+2.  A working `bison` grammar that parses them with correct precedence
+3.  A complete calculator that evaluates expressions including variables
+4.  The knowledge to extend this into a full language
 
-**Why Flex and Bison?** Your hand-written lexer and recursive-descent parser give you deep understanding, but real languages use generated parsers for reliability and speed. GCC used Bison until recently; PostgreSQL uses Bison for SQL; PHP, Ruby, and many other interpreters were born from Flex/Bison grammars.
+**Why Flex and Bison?**  Your hand-written lexer and recursive-descent parser give you deep understanding, but real languages use generated parsers for reliability and speed.  GCC used Bison until recently; PostgreSQL uses Bison for SQL; PHP, Ruby, and many other interpreters were born from Flex/Bison grammars.
 
 ---
 
@@ -63,9 +63,9 @@ int main() { return yylex(); }
 ```
 
 A flex file has three sections separated by `%%`:
-1. **Definitions**: `%option` directives, named patterns, C headers
-2. **Rules**: pattern -> action pairs
-3. **User code**: C functions, including `main` if desired
+1.  **Definitions**: `%option` directives, named patterns, C headers
+2.  **Rules**: pattern -> action pairs
+3.  **User code**: C functions, including `main` if desired
 
 Build and test:
 
@@ -300,7 +300,7 @@ echo "-3 * -4" | ./calc            # = 12
 
 ## 4.1 Why Build an AST?
 
-The calculator above evaluates expressions *during parsing* (embedded actions). For a real language, you want to:
+The calculator above evaluates expressions *during parsing* (embedded actions).  For a real language, you want to:
 - Check for errors across the whole program before running anything
 - Optimize the tree before evaluating
 - Generate code rather than evaluate directly
@@ -410,7 +410,7 @@ expr:
 
 ## 5.1 The `error` Token
 
-Bison provides a special `error` token for error recovery. When a syntax error occurs, Bison pops the stack until it finds a state where `error` can shift, then discards tokens until it finds one the grammar expects.
+Bison provides a special `error` token for error recovery.  When a syntax error occurs, Bison pops the stack until it finds a state where `error` can shift, then discards tokens until it finds one the grammar expects.
 
 ```c
 stmt:
@@ -472,7 +472,7 @@ typedef struct { Ast *cond; Ast *body; } WhileNode;
 
 ## 7.1 Shift-Reduce Conflicts
 
-When Bison reports "N shift/reduce conflicts", it means the grammar is ambiguous in a way that one token of lookahead cannot resolve. Bison's default is to **shift** (which is usually right for operator precedence, left recursion, and dangling else).
+When Bison reports "N shift/reduce conflicts", it means the grammar is ambiguous in a way that one token of lookahead cannot resolve.  Bison's default is to **shift** (which is usually right for operator precedence, left recursion, and dangling else).
 
 **To see what's happening:** add `--report=all` to your bison command; it generates a `.output` file showing every state and every conflict.
 
@@ -483,7 +483,7 @@ cat calc.output | grep -A5 "State "
 
 ## 7.2 Dangling Else
 
-The grammar `if expr then stmt | if expr then stmt else stmt` has a classic shift-reduce conflict at `else`. Bison's shift default is the right behavior (match else with nearest if), but it is cleaner to make it explicit:
+The grammar `if expr then stmt | if expr then stmt else stmt` has a classic shift-reduce conflict at `else`.  Bison's shift default is the right behavior (match else with nearest if), but it is cleaner to make it explicit:
 
 ```c
 %precedence THEN
@@ -492,11 +492,11 @@ The grammar `if expr then stmt | if expr then stmt else stmt` has a classic shif
 
 ## 7.3 Memory in Semantic Values
 
-When you `strdup` a string in the lexer (`yylval.sval = strdup(yytext)`), the grammar rules that consume it are responsible for `free`-ing it. Failing to do so is a memory leak. In the AST approach, the AST takes ownership and `ast_free` handles deallocation.
+When you `strdup` a string in the lexer (`yylval.sval = strdup(yytext)`), the grammar rules that consume it are responsible for `free`-ing it.  Failing to do so is a memory leak.  In the AST approach, the AST takes ownership and `ast_free` handles deallocation.
 
 ## 7.4 Debugging Flex Rules
 
-Add `%option debug` to your flex file and set the environment variable `FLEXDBG=1` before running. This prints every rule that fires.
+Add `%option debug` to your flex file and set the environment variable `FLEXDBG=1` before running.  This prints every rule that fires.
 
 ---
 
@@ -540,7 +540,7 @@ clean:
 
 # Part 9: From Calculator to Language
 
-The calculator is one step from a complete language. The progression:
+The calculator is one step from a complete language.  The progression:
 
 | Addition | Flex Change | Bison Change |
 |---|---|---|
@@ -551,17 +551,17 @@ The calculator is one step from a complete language. The progression:
 | Blocks / sequencing | `";"` or newline | `stmt_list` production |
 | Lists | `"["`, `"]"`, `","` | `list_expr` production |
 
-Each addition requires: (1) updating the lexer rules, (2) updating the grammar, (3) adding AST node types, (4) adding eval cases. The structure remains the same.
+Each addition requires: (1) updating the lexer rules, (2) updating the grammar, (3) adding AST node types, (4) adding eval cases.  The structure remains the same.
 
 ---
 
 ## Further Reading
 
-- Levine, John. *Flex & Bison* (O'Reilly, 2009). The definitive practical reference; covers everything in this tutorial and much more.
-- The Bison manual: `info bison` or online. Covers LALR, GLR, push parsers, named references, and error recovery in depth.
-- The Flex manual: `info flex` or online. Covers start conditions, multiple input files, `%option`, and C++ lexers.
-- Johnson, Stephen C. "Yacc: Yet Another Compiler-Compiler." Bell Labs, 1975. The original yacc paper; still readable and historically illuminating.
-- Aho, Lam, Sethi, Ullman. *Compilers* (Dragon Book), Chapter 4: the theory behind what flex/bison generate.
+- Levine, John.  *Flex & Bison* (O'Reilly, 2009).  The definitive practical reference; covers everything in this tutorial and much more.
+- The Bison manual: `info bison` or online.  Covers LALR, GLR, push parsers, named references, and error recovery in depth.
+- The Flex manual: `info flex` or online.  Covers start conditions, multiple input files, `%option`, and C++ lexers.
+- Johnson, Stephen C. "Yacc: Yet Another Compiler-Compiler."  Bell Labs, 1975.  The original yacc paper; still readable and historically illuminating.
+- Aho, Lam, Sethi, Ullman.  *Compilers* (Dragon Book), Chapter 4: the theory behind what flex/bison generate.
 
 ---
 
@@ -571,13 +571,13 @@ This appendix is the theory behind the `--report=all` output you met in Part 7 a
 
 ## A.1 How Yacc Parses: LR Items, States, and the LALR(1) Idea
 
-**Yacc builds a shift-reduce parser driven by a finite automaton over grammar items.** An **LR(0) item** is a production with a dot marking parsing progress, such as
+Yacc builds a shift-reduce parser driven by a finite automaton over grammar items.  An **LR(0) item** is a production with a dot marking parsing progress, such as
 
 $$
 \texttt{expr} \rightarrow \texttt{expr} \cdot \texttt{'*'}\ \texttt{expr}
 $$
 
-which reads "we have parsed the left operand and will accept this production if `'*'` and another `expr` come next." The parser generator closes sets of items into **states**, connects them with transitions on grammar symbols, and emits two tables: an **action** table (shift, reduce, accept, or error, indexed by state and lookahead token) and a **goto** table (next state after a reduction). At run time the parser is breathtakingly simple, which is the point: a loop, a stack, and table lookups, running in $O(n)$ time and using stack space proportional to the deepest nesting in the input.
+which reads "we have parsed the left operand and will accept this production if `'*'` and another `expr` come next."  The parser generator closes sets of items into **states**, connects them with transitions on grammar symbols, and emits two tables: an **action** table (shift, reduce, accept, or error, indexed by state and lookahead token) and a **goto** table (next state after a reduction).  At run time the parser is breathtakingly simple, which is the point: a loop, a stack, and table lookups, running in $O(n)$ time and using stack space proportional to the deepest nesting in the input.
 
 ### Pseudocode
 
@@ -603,9 +603,9 @@ function LR-PARSE(tokens):
 
 ## A.2 A Shift-Reduce Parse You Can Watch
 
-**What you are about to see:** The pseudocode above describes LR parsing in the abstract; this model makes it concrete by running it step by step for a small arithmetic grammar. You will see the two-stack (state stack + symbol stack) loop in action and read a printed trace of every shift and reduce decision. Pay attention to the moment when the parser chooses to shift `*` rather than reducing an already-complete `+` expression; that single decision is where operator precedence lives in an LR parser, and spotting it in the trace will make the conflict discussion that follows much easier to understand.
+**What you are about to see:** The pseudocode above describes LR parsing in the abstract; this model makes it concrete by running it step by step for a small arithmetic grammar.  You will see the two-stack (state stack + symbol stack) loop in action and read a printed trace of every shift and reduce decision.  Pay attention to the moment when the parser chooses to shift `*` rather than reducing an already-complete `+` expression; that single decision is where operator precedence lives in an LR parser, and spotting it in the trace will make the conflict discussion that follows much easier to understand.
 
-Before reading the bison output, run the algorithm yourself on a tiny grammar. The code below simulates a shift-reduce parser for simple arithmetic expressions (`n + n * n`) with an explicit stack and action trace, the same algorithm bison generates for the calculator, just with a hand-written action table instead of a generated one.
+Before reading the bison output, run the algorithm yourself on a tiny grammar.  The code below simulates a shift-reduce parser for simple arithmetic expressions (`n + n * n`) with an explicit stack and action trace, the same algorithm bison generates for the calculator, just with a hand-written action table instead of a generated one.
 
 ```python
 # Shift-reduce parser trace for: E -> E+T | T,  T -> T*F | F,  F -> (E) | n
@@ -692,17 +692,17 @@ lr_parse(["n", "*", "n", "+", "n"])
 
 ### Questions to Consider
 
-- In the first trace (`n + n * n`), at what point does the parser shift `*` instead of reducing the first `n + n`? What state and lookahead determine this decision?
-- In the RULES table, `"E->E+T": (3, "E")` pops 3 symbols. What are those 3 symbols, and why does popping them from the stack correspond to "recognizing a complete E+T"?
-- If you added `"E->E+E"` to the grammar (making addition left-recursive in a second way), which `ACTION` table entry would conflict with an existing one? This is a shift/reduce conflict; identify the state and the competing actions.
+- In the first trace (`n + n * n`), at what point does the parser shift `*` instead of reducing the first `n + n`?  What state and lookahead determine this decision?
+- In the RULES table, `"E->E+T": (3, "E")` pops 3 symbols.  What are those 3 symbols, and why does popping them from the stack correspond to "recognizing a complete E+T"?
+- If you added `"E->E+E"` to the grammar (making addition left-recursive in a second way), which `ACTION` table entry would conflict with an existing one?  This is a shift/reduce conflict; identify the state and the competing actions.
 
 ---
 
-**LALR(1) is LR(1) with merged states.** Full LR(1) tables distinguish states by lookahead and grow large; LALR(1) merges LR(1) states that share the same item cores, keeping the table compact at the cost of accepting a slightly smaller family of grammars. The calculator grammar from Part 3 builds cleanly under LALR(1): the grammar is deliberately ambiguous (`expr '+' expr` and friends), but every conflict is resolved by the `%left`/`%right` precedence declarations. You can verify with `bison -v calc.y`, which writes the full automaton, every state and item set, to `calc.output`, the same report `--report=all` produces in Part 7.1. Reading that file once, slowly, will teach you more about LR parsing than any lecture, and the experiment below has you do exactly that.
+LALR(1) is LR(1) with merged states.  Full LR(1) tables distinguish states by lookahead and grow large; LALR(1) merges LR(1) states that share the same item cores, keeping the table compact at the cost of accepting a slightly smaller family of grammars.  The calculator grammar from Part 3 builds cleanly under LALR(1): the grammar is deliberately ambiguous (`expr '+' expr` and friends), but every conflict is resolved by the `%left`/`%right` precedence declarations.  You can verify with `bison -v calc.y`, which writes the full automaton, every state and item set, to `calc.output`, the same report `--report=all` produces in Part 7.1.  Reading that file once, slowly, will teach you more about LR parsing than any lecture, and the experiment below has you do exactly that.
 
-**Conflicts are the diagnostic signal.** A **shift/reduce conflict** means some state sees a lookahead for which both shifting and reducing are table-legal; a **reduce/reduce conflict** means two completed productions compete. (Part 7.1 covers Bison's default resolution, shift, and how to inspect conflicts with `--report=all`.) The calculator grammar produces no unresolved conflicts, but you will manufacture one, deliberately, in a moment, because learning to read conflict reports is the practical skill that separates people who can use parser generators from people who fight them.
+Conflicts are the diagnostic signal.  A **shift/reduce conflict** means some state sees a lookahead for which both shifting and reducing are table-legal; a **reduce/reduce conflict** means two completed productions compete.  (Part 7.1 covers Bison's default resolution, shift, and how to inspect conflicts with `--report=all`.)  The calculator grammar produces no unresolved conflicts, but you will manufacture one, deliberately, in a moment, because learning to read conflict reports is the practical skill that separates people who can use parser generators from people who fight them.
 
-> **Watch out!** Bison resolves shift/reduce conflicts silently by defaulting to *shift*, but it still prints a warning. Never ignore that warning: if your grammar has a conflict you did not anticipate, the silent default resolution may produce parse trees that are subtly wrong and very difficult to debug downstream. Always read the `.output` file and confirm that the chosen resolution matches your intent.
+> **Watch out!**  Bison resolves shift/reduce conflicts silently by defaulting to *shift*, but it still prints a warning.  Never ignore that warning: if your grammar has a conflict you did not anticipate, the silent default resolution may produce parse trees that are subtly wrong and very difficult to debug downstream.  Always read the `.output` file and confirm that the chosen resolution matches your intent.
 
 ---
 
@@ -710,16 +710,16 @@ lr_parse(["n", "*", "n", "+", "n"])
 
 Make exactly one of the following edits to `calc.y` from Part 3, then rebuild with `bison -v calc.y`:
 
-1. Comment out the `%left '+' '-'` and `%left '*' '/'` precedence declarations.
-2. Add a redundant second copy of the production `expr : '(' expr ')'`.
+1.  Comment out the `%left '+' '-'` and `%left '*' '/'` precedence declarations.
+2.  Add a redundant second copy of the production `expr : '(' expr ')'`.
 
-Using only bison's stderr output and the `.output` file, identify which conflict type each edit produces (shift/reduce or reduce/reduce), and point to the state and item set where it arises. Record the state number and one sentence of explanation, then undo the edit and confirm the conflicts disappear.
+Using only bison's stderr output and the `.output` file, identify which conflict type each edit produces (shift/reduce or reduce/reduce), and point to the state and item set where it arises.  Record the state number and one sentence of explanation, then undo the edit and confirm the conflicts disappear.
 
 ---
 
 ## A.3 LR(0) Items and the Canonical Collection
 
-An LR(0) item is a production with a bookmark (the dot) that says "I have seen this much of the right-hand side so far." The set of all possible bookmarked states the parser could be in, connected by transitions, forms a finite automaton, the "canonical collection." Understanding this automaton is the key to understanding what shift-reduce conflicts mean and why some grammars are hard to parse.
+An LR(0) item is a production with a bookmark (the dot) that says "I have seen this much of the right-hand side so far."  The set of all possible bookmarked states the parser could be in, connected by transitions, forms a finite automaton, the "canonical collection."  Understanding this automaton is the key to understanding what shift-reduce conflicts mean and why some grammars are hard to parse.
 
 Two item positions matter most:
 
@@ -734,7 +734,7 @@ The **closure** of a set of items: if $[A \to \alpha \bullet B \beta]$ is in the
 
 The **goto** function: $\mathrm{goto}(I, X)$ = closure of all items in $I$ where the dot is advanced over $X$.
 
-> **Watch out!** The closure operation adds items for every production of each nonterminal that appears after a dot, including transitively. A single starting item can generate a large closure. Students often compute closure for only the directly referenced nonterminal and miss the transitive additions.
+> **Watch out!**  The closure operation adds items for every production of each nonterminal that appears after a dot, including transitively.  A single starting item can generate a large closure.  Students often compute closure for only the directly referenced nonterminal and miss the transitive additions.
 
 ```python
 # LR(0) item construction for a simpler grammar: S' -> S, S -> ( S ) | x
@@ -798,4 +798,4 @@ for sid, items in enumerate(states):
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-The ACTION and GOTO tables Bison emits are read straight off this automaton: transitions on terminals become shift entries, transitions on nonterminals become goto entries, and any state containing a dot-at-the-end item becomes a reduce, with the LALR(1) lookahead sets deciding *which* lookahead tokens trigger each reduction. When two of those rules claim the same table cell, you get exactly the shift/reduce and reduce/reduce conflicts described in Part 7.1 and manufactured in the experiment above.
+The ACTION and GOTO tables Bison emits are read straight off this automaton: transitions on terminals become shift entries, transitions on nonterminals become goto entries, and any state containing a dot-at-the-end item becomes a reduce, with the LALR(1) lookahead sets deciding *which* lookahead tokens trigger each reduction.  When two of those rules claim the same table cell, you get exactly the shift/reduce and reduce/reduce conflicts described in Part 7.1 and manufactured in the experiment above.

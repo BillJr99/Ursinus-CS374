@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Type Systems
 
-Every time you write `def add(x, y)` in Python, you are making an implicit promise: callers will pass values that support `+`. A **type system** is the mechanism that turns informal promises like this into enforceable contracts, checked either before your program ever runs or the instant a broken promise is exercised at runtime. Catching a broken promise in the compiler is like catching a typo before you mail a letter; catching it at runtime is like discovering the mistake only after the recipient tries to read it. This activity will show you exactly how those two approaches differ, why the difference matters, and how to build the checking machinery into your own interpreter.
+Every time you write `def add(x, y)` in Python, you are making an implicit promise: callers will pass values that support `+`.  A **type system** is the mechanism that turns informal promises like this into enforceable contracts, checked either before your program ever runs or the instant a broken promise is exercised at runtime.  Catching a broken promise in the compiler is like catching a typo before you mail a letter; catching it at runtime is like discovering the mistake only after the recipient tries to read it.  This activity will show you exactly how those two approaches differ, why the difference matters, and how to build the checking machinery into your own interpreter.
 
 ## Learning Goals
 
@@ -33,19 +33,19 @@ By the end of this activity, you will be able to:
 >
 > If any of these feel shaky, review them first.
 
-Your interpreter (now equipped with the environments of *Environments and Variable Storage*) happily computes `5 / 0`'s error, but what should it do with `"hello" * true`? A **type system** is a language's machinery for classifying values and rejecting senseless combinations, and the design axes (static or dynamic, strong or weak, declared or inferred) are among the most consequential your team will choose. The arc: **what types are for $\rightarrow$ the two axes $\rightarrow$ inference $\rightarrow$ adding type errors to your interpreter**.
+Your interpreter (now equipped with the environments of *Environments and Variable Storage*) happily computes `5 / 0`'s error, but what should it do with `"hello" * true`?  A **type system** is a language's machinery for classifying values and rejecting senseless combinations, and the design axes (static or dynamic, strong or weak, declared or inferred) are among the most consequential your team will choose.  The path today: **what types are for $\rightarrow$ the two axes $\rightarrow$ inference $\rightarrow$ adding type errors to your interpreter**.
 
 ---
 
 ## Directions and Group Roles
 
-Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**). Consider each model and question individually first, then discuss with your group. The Recorder posts answers to the Class Activity Questions discussion board; the Presenter reports out areas of disagreement or alternative approaches. After class, respond to the reflective prompt individually in your notebook.
+Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Please think each model and question through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever you disagreed or found another approach.  After class, please respond to the reflective prompt on your own in your notebook.
 
 ---
 
 ## Key Concepts
 
-Before diving in, here is a plain-English glossary of the terms this activity uses. Return to this table whenever a term feels slippery.
+Here is a plain-English glossary of the terms this activity uses.  Please come back to this table whenever one of them starts to feel slippery.
 
 | Term | Plain-English meaning | Why it matters |
 |------|-----------------------|----------------|
@@ -64,19 +64,19 @@ Before diving in, here is a plain-English glossary of the terms this activity us
 
 # Part I: The Axes
 
-## 1. Two Independent Questions
+## 1.  Two Independent Questions
 
-**A type classifies values and licenses operations**: numbers may be divided, strings concatenated, booleans tested. A **type error** is an operation applied outside its license. Languages differ on two independent axes:
+**A type classifies values and licenses operations**: numbers may be divided, strings concatenated, booleans tested.  A **type error** is an operation applied outside its license.  Languages differ on two independent axes:
 
-**When is checking done?** **Static** typing checks before execution (Java rejects `int x = "hi";` at compile time); **dynamic** typing checks during execution, at the moment the operation runs (Python raises `TypeError` when `"hi" * {}` is attempted). Static catches errors earlier and on all paths, including paths your tests never run; dynamic permits more flexible code and faster iteration. This is the binding-time framework again: the type's binding time.
+When is checking done?  **Static** typing checks before execution (Java rejects `int x = "hi";` at compile time); **dynamic** typing checks during execution, at the moment the operation runs (Python raises `TypeError` when `"hi" * {}` is attempted).  Static catches errors earlier and on all paths, including paths your tests never run; dynamic permits more flexible code and faster iteration.  This is the binding-time framework again: the type's binding time.
 
-**How strictly is checking enforced?** **Strong** typing refuses undefined mixtures or requires explicit conversion; **weak** typing silently **coerces** (converts) operands to make the operation proceed. JavaScript famously computes `"5" - 1` as `4` and `"5" + 1` as `"51"`; Python, dynamically but *strongly* typed, raises on `"5" - 1`. The axes are independent: Python is dynamic and strong; C is static and (in places) weak.
+**How strictly is checking enforced?**  **Strong** typing refuses undefined mixtures or requires explicit conversion; **weak** typing silently **coerces** (converts) operands to make the operation proceed.  JavaScript famously computes `"5" - 1` as `4` and `"5" + 1` as `"51"`; Python, dynamically but *strongly* typed, raises on `"5" - 1`.  The axes are independent: Python is dynamic and strong; C is static and (in places) weak.
 
-**Inference splits the difference on ceremony.** Statically typed languages with **type inference** (Rust, Haskell, modern Java's `var`, TypeScript) deduce types you do not write: `let n = 5` is statically known to be an integer because 5 is. Inference buys static safety without annotation cost, at the price of error messages that can point far from the cause.
+**Inference splits the difference on ceremony.**  Statically typed languages with **type inference** (Rust, Haskell, modern Java's `var`, TypeScript) deduce types you do not write: `let n = 5` is statically known to be an integer because 5 is.  Inference buys static safety without annotation cost, at the price of error messages that can point far from the cause.
 
 ---
 
-**Intuition for Model 1:** The two axes (static/dynamic and strong/weak) are completely independent, so a language can land in any of the four quadrants. Think of Python refusing `"5" - 1` (strong, because no silent conversion) yet only discovering that refusal when the line actually executes (dynamic). In contrast, a language like Haskell refuses that expression at compile time without you ever running the program (static and strong). This model asks you to place real behaviors on those axes before you look at any code.
+**Intuition for Model 1:** The two axes (static/dynamic and strong/weak) are completely independent, so a language can land in any of the four quadrants.  Think of Python refusing `"5" - 1` (strong, because no silent conversion) yet only discovering that refusal when the line actually executes (dynamic).  In contrast, a language like Haskell refuses that expression at compile time without you ever running the program (static and strong).  This model asks you to place real behaviors on those axes before you look at any code.
 
 ## Model 1: Place the Languages
 
@@ -87,9 +87,9 @@ Before diving in, here is a plain-English glossary of the terms this activity us
 | Computes `"5" - 1 == 4` without complaint | ? | ? |
 | Compiles `let n = 5; n = "hi"` to an error without any annotations | ? | ? |
 
-> **Watch out!** Static/dynamic and strong/weak are two *separate* axes; do not conflate them. "Static" refers to *when* checking happens (before vs. during execution). "Strong" refers to *whether* the language permits silent coercion between incompatible types. Python is **dynamic** (checks at runtime) AND **strong** (refuses coercion). C is **static** (compile-time) but can be **weak** in places (e.g., implicitly converting pointer types). Any combination of the four quadrants is possible.
+> **Watch out!**  Static/dynamic and strong/weak are two *separate* axes; do not conflate them.  "Static" refers to *when* checking happens (before vs. during execution).  "Strong" refers to *whether* the language permits silent coercion between incompatible types.  Python is **dynamic** (checks at runtime) AND **strong** (refuses coercion).  C is **static** (compile-time) but can be **weak** in places (e.g., implicitly converting pointer types).  Any combination of the four quadrants is possible.
 
-> **Watch out!** Python is *not* "untyped." Every Python value has a definite type: `type(42)` is `<class 'int'>`, `type("hi")` is `<class 'str'>`. The language simply chooses to check type compatibility at runtime rather than before execution. Calling Python "untyped" is a common and consequential misconception: it conflates the absence of *declared* types with the absence of types altogether.
+> **Watch out!**  Python is *not* "untyped."  Every Python value has a definite type: `type(42)` is `<class 'int'>`, `type("hi")` is `<class 'str'>`.  The language simply chooses to check type compatibility at runtime rather than before execution.  Calling Python "untyped" is a common and consequential misconception: it conflates the absence of *declared* types with the absence of types altogether.
 
 **Verify Python's dynamic strong typing:**
 
@@ -136,16 +136,16 @@ print(categorize(200))    # fine
 
 ### Critical Thinking Questions
 
-1. Fill the grid and name a plausible language for each row.
-2. Row 3's behavior (coercion) maximizes which criterion from the *Evaluating Languages* activity, and damages which? Cite the `"5" + 1` versus `"5" - 1` asymmetry in JavaScript as evidence.
-3. Row 4 shows inference: the checker deduced `n`'s type from `5`. Sketch how it would propagate types through `let m = n + 1; let s = m + "!"` and where it would report the error. Whose line gets blamed?
-4. Testing exercises only the paths you run; static checking covers all paths. Construct a two-branch program where dynamic typing hides a type error from a test suite that achieves 100% line coverage on the happy branch; then explain why coverage did not save you.
+1.  Fill the grid and name a plausible language for each row.
+2.  Row 3's behavior (coercion) maximizes which criterion from the *Evaluating Languages* activity, and damages which?  Cite the `"5" + 1` versus `"5" - 1` asymmetry in JavaScript as evidence.
+3.  Row 4 shows inference: the checker deduced `n`'s type from `5`.  Sketch how it would propagate types through `let m = n + 1; let s = m + "!"` and where it would report the error.  Whose line gets blamed?
+4.  Testing exercises only the paths you run; static checking covers all paths.  Construct a two-branch program where dynamic typing hides a type error from a test suite that achieves 100% line coverage on the happy branch; then explain why coverage did not save you.
 
 ---
 
 # Interlude: Enforcing Types at Runtime with pydantic
 
-Python's type hints (`def add(x: int, y: int) -> int:`) are, by default, *documentation the interpreter ignores*; nothing checks them when the program runs. **pydantic** is a widely used library that turns those same annotations into **enforced contracts**: it validates data against your declared types the instant an object is constructed, and raises a precise, located error the moment a promise is broken. It is the runtime, strong-typing gatekeeper from Part I, packaged for real Python code, and it is the same discipline you are about to build into your interpreter.
+Python's type hints (`def add(x: int, y: int) -> int:`) are, by default, *documentation the interpreter ignores*; nothing checks them when the program runs.  **pydantic** is a widely used library that turns those same annotations into **enforced contracts**: it validates data against your declared types the instant an object is constructed, and raises a precise, located error the moment a promise is broken.  It is the runtime, strong-typing gatekeeper from Part I, packaged for real Python code, and it is the same discipline you are about to build into your interpreter.
 
 ```bash
 pip install pydantic
@@ -178,7 +178,7 @@ except ValidationError as e:
     print(e)                    # line: Input should be a valid integer ...
 ```
 
-Both behaviors from the *Type Systems* axes show up here, made concrete. pydantic is **strong** (it refuses `"seven"` as an `int`) yet it performs **deliberate, declared coercion** (`"7"` -> `7`): coercion you opted into by choosing pydantic, not the silent coercion of a weakly typed language. Turn coercion off entirely with strict mode (`model_config = ConfigDict(strict=True)`), and `"7"` is rejected too.
+Both behaviors from the *Type Systems* axes show up here, made concrete. pydantic is **strong** (it refuses `"seven"` as an `int`) yet it performs **deliberate, declared coercion** (`"7"` -> `7`): coercion you opted into by choosing pydantic, not the silent coercion of a weakly typed language.  Turn coercion off entirely with strict mode (`model_config = ConfigDict(strict=True)`), and `"7"` is rejected too.
 
 ## Validators: When a "Type" Encodes an Invariant
 
@@ -215,50 +215,50 @@ for bad in (dict(op="%", line=3), dict(op="+", line=0)):
 
 This is the same **check-before-you-compute** gatekeeper you will write into your interpreter's evaluator in the next section; pydantic just applies it at the *boundary* where untrusted data (a config file, a JSON request, a serialized AST, a parsed token stream) enters your program, giving you specific, located errors for free.
 
-> **Watch out!** Plain type *hints* (`x: int`) are never enforced by CPython at runtime: `add("a", "b")` runs until `+` fails. `@dataclass` gives you the same annotations but also does **not** validate them. A static checker like `mypy` checks before running and does nothing at runtime. pydantic is the tool that enforces the annotation *when the data arrives*. Know which of these three guarantees you actually have.
+> **Watch out!**  Plain type *hints* (`x: int`) are never enforced by CPython at runtime: `add("a", "b")` runs until `+` fails. `@dataclass` gives you the same annotations but also does **not** validate them.  A static checker like `mypy` checks before running and does nothing at runtime. pydantic is the tool that enforces the annotation *when the data arrives*.  Know which of these three guarantees you actually have.
 
 ---
 
 
-> **The interpreter half of this topic is in the lab.** Building the runtime type checker, tracing it on a compound expression, doing type inference by hand, and the type-error postmortem all live in the [Type Checker Starter lab](https://www.billmongan.com/Ursinus-CS374/Assignments/TypeCheckerLab); that is the assignment this session sets up.
+> **The interpreter half of this topic is in the lab.**  Building the runtime type checker, tracing it on a compound expression, doing type inference by hand, and the type-error postmortem all live in the [Type Checker Starter lab](https://www.billmongan.com/Ursinus-CS374/Assignments/TypeCheckerLab); that is the assignment this session sets up.
 
 # Part III: Synthesis and Practice
 
 ---
-**In-class work stops here.** Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
+**In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
 
-## 3. Exercises
+## 3.  Exercises
 
-1. *Interpreter integration.* Wire `eval_binop` into your interpreter's `BinOp` case, add booleans and strings as value types (with literals in your lexer and parser if absent), and demonstrate three programs: one that runs, one that raises your TypeError with a helpful message, and one comparison program.
-2. *Coercion lab.* Implement a `--weak` configuration flag that turns two refusals into coercions. Write one program whose output silently changes between modes, and one paragraph on which mode your team ships and why, citing the evaluation criteria.
-3. *Inference on paper.* For the program `let a = 2; let b = a + 3; let c = b < a; let d = c + 1;`, infer every variable's type top to bottom and identify the first line a static checker would reject. Note how far the *error* is from the *mistake*, and what that implies about inference error messages.
-4. *Type archaeology.* Find one real bug report or postmortem caused by implicit coercion (JavaScript and PHP folklore abounds). Summarize the failure in two sentences and the language rule that would have prevented it.
-5. *Runtime type tag.* Modify your interpreter's value representation so that every value is a `(type_tag, raw_value)` pair: `("num", 3.0)`, `("str", "hi")`, `("bool", True)`. Update `eval_binop` to check the tag before operating. Show that error messages now include the tag.
+1.  *Interpreter integration.*  Wire `eval_binop` into your interpreter's `BinOp` case, add booleans and strings as value types (with literals in your lexer and parser if absent), and demonstrate three programs: one that runs, one that raises your TypeError with a helpful message, and one comparison program.
+2.  *Coercion lab.*  Implement a `--weak` configuration flag that turns two refusals into coercions.  Write one program whose output silently changes between modes, and one paragraph on which mode your team ships and why, citing the evaluation criteria.
+3.  *Inference on paper.*  For the program `let a = 2; let b = a + 3; let c = b < a; let d = c + 1;`, infer every variable's type top to bottom and identify the first line a static checker would reject.  Note how far the *error* is from the *mistake*, and what that implies about inference error messages.
+4.  *Type archaeology.*  Find one real bug report or postmortem caused by implicit coercion (JavaScript and PHP folklore abounds).  Summarize the failure in two sentences and the language rule that would have prevented it.
+5.  *Runtime type tag.*  Modify your interpreter's value representation so that every value is a `(type_tag, raw_value)` pair: `("num", 3.0)`, `("str", "hi")`, `("bool", True)`.  Update `eval_binop` to check the tag before operating.  Show that error messages now include the tag.
 
 ---
 
 ## Reflection Prompt
 
-In your notebook: strong typing refuses to guess what you meant; weak typing guesses. Describe one tool or person in your life whose refusals to guess you have come to value, and what it cost to appreciate them. Then: the type inference mini-implementation shows that a checker can deduce `c: bool` from context alone, no annotation needed. Does this feel like magic to you now? After this activity, what makes it feel mechanical rather than magical?
+In your notebook: strong typing refuses to guess what you meant; weak typing guesses.  Describe one tool or person in your life whose refusals to guess you have come to value, and what it cost to appreciate them.  Then: the type inference mini-implementation shows that a checker can deduce `c: bool` from context alone, no annotation needed.  Does this feel like magic to you now?  After this activity, what makes it feel mechanical rather than magical?
 
 ---
 
-## 4. Further Reading
+## 4.  Further Reading
 
-- Douglas Thain. *Introduction to Compilers and Language Design*, Chapter 7.
-- Robert Nystrom. *Crafting Interpreters*, "Evaluating Expressions" (runtime type checks).
-- Gary Bernhardt. "Wat" (talk, 2012, online): four minutes of coercion comedy with a serious lesson.
-- Benjamin Pierce. *Types and Programming Languages* (TAPL), the gold standard reference.
+- Douglas Thain.  *Introduction to Compilers and Language Design*, Chapter 7.
+- Robert Nystrom.  *Crafting Interpreters*, "Evaluating Expressions" (runtime type checks).
+- Gary Bernhardt.  "Wat" (talk, 2012, online): four minutes of coercion comedy with a serious lesson.
+- Benjamin Pierce.  *Types and Programming Languages* (TAPL), the gold standard reference.
 
 ---
 
 ## Going Deeper (Optional Pointers)
 
-The core lesson above stands on its own. The deep-dive appendices that used to follow it now live on the Tutorials shelf:
+The core lesson above stands on its own.  The deep-dive appendices that used to follow it now live on the Tutorials shelf:
 
-> **Going further:** the material that used to live here (Robinson unification, substitutions and the occurs check, Algorithm W, Hindley-Milner type inference, and let-polymorphism) is covered in depth in the dedicated tutorial: [Implementing Hindley-Milner Type Inference](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-type-inference.md). Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here (Robinson unification, substitutions and the occurs check, Algorithm W, Hindley-Milner type inference, and let-polymorphism) is covered in depth in the dedicated tutorial: [Implementing Hindley-Milner Type Inference](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-type-inference.md).  Explore it when your project or curiosity calls for it.
 
-> **Going further:** the material that used to live here (the static/dynamic and strong/weak axes in depth, Python annotations and `mypy`, type erasure, product and sum types, structural vs. nominal typing, and gradual typing with the consistency relation and blame) is covered in depth in the dedicated guide: [Typing Disciplines: Strong vs. Weak, Static vs. Dynamic, and Gradual Typing](https://www.billmongan.com/Ursinus-CS374/Tutorials/TypingDisciplines). Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here (the static/dynamic and strong/weak axes in depth, Python annotations and `mypy`, type erasure, product and sum types, structural vs. nominal typing, and gradual typing with the consistency relation and blame) is covered in depth in the dedicated guide: [Typing Disciplines: Strong vs. Weak, Static vs. Dynamic, and Gradual Typing](https://www.billmongan.com/Ursinus-CS374/Tutorials/TypingDisciplines).  Explore it when your project or curiosity calls for it.
 
 ---
 
