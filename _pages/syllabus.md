@@ -234,11 +234,13 @@ schedule:
   - rtitle: "Thain, Chapter 1"
   - rtitle: "Allison, Ch. 1: Introduction, Formal Languages and Finite State Machines"
   - rtitle: "The Arc of This Course: From Symbols to Languages (Day 1 preview)"
-    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-course-arc.md"
+    rlink: "Activities/liascript-course-arc.md"
+    liapage: true
 - week: "0"
   date: "1"
   title: "Programming Paradigms and Evaluating Languages"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-languageevaluation.md"
+  link: "Activities/liascript-languageevaluation.md"
+  liapage: true
   deliverables:
   - dtitle: "Participation: Overview Assignment Handed Out"
     dlink: "Assignments/Overview"
@@ -254,11 +256,13 @@ schedule:
   - rtitle: "Reading Exercise / Discussion: attempt the Evaluating Languages and Paradigms exercises before class"
     rlink: "Participation/ReadingExercises"
   - rtitle: "Optional depth, tutorial: Compiling and Linking (From Source to Executable)"
-    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-compiling-linking.md"
+    rlink: "Tutorials/tutorial-compiling-linking.md"
+    liapage: true
 - week: "1"
   date: "0"
   title: "Syntax and BNF/EBNF"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-syntaxbnf.md"
+  link: "Activities/liascript-syntaxbnf.md"
+  liapage: true
   deliverables:
   - dtitle: "Participation: Warmup Assignment Due"
     dlink: "Assignments/Warmup"
@@ -272,7 +276,8 @@ schedule:
 - week: "1"
   date: "1"
   title: "Grammars and the Chomsky Hierarchy (Day 1 of 2)"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-grammars.md"
+  link: "Activities/liascript-grammars.md"
+  liapage: true
   readings:
   - rtitle: "Reading Exercise / Discussion: attempt the Syntax, BNF/EBNF, and Grammars exercises before class"
     rlink: "Participation/ReadingExercises"
@@ -281,14 +286,16 @@ schedule:
 - week: "2"
   date: "0"
   title: "Grammars, Day 2: Writing Context-Free Grammars"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-grammars-day2.md"
+  link: "Activities/liascript-grammars-day2.md"
+  liapage: true
   readings:
   - rtitle: "Continues Day 1. Bring the grammar you drafted; we build on it."
     rlink: false
 - week: "2"
   date: "1"
   title: "Derivations, Parse Trees, Ambiguity, and Precedence"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-derivationsambiguity.md"
+  link: "Activities/liascript-derivationsambiguity.md"
+  liapage: true
   deliverables:
   - dtitle: "Participation: Overview Assignment Due"
     dlink: "Assignments/Overview"
@@ -301,7 +308,8 @@ schedule:
 - week: "3"
   date: "0"
   title: "Regular Expressions (Day 1 of 2): Theory"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-regex.md"
+  link: "Activities/liascript-regex.md"
+  liapage: true
   deliverables:
   - dtitle: "Lab: BNF Workshop Due"
     dlink: "Assignments/BNFWorkshop"
@@ -325,14 +333,16 @@ schedule:
 - week: "3"
   date: "1"
   title: "Regular Expressions, Day 2: Practice"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-regex-day2.md"
+  link: "Activities/liascript-regex-day2.md"
+  liapage: true
   readings:
   - rtitle: "Continues Day 1. Bring a regex you could not get working - we debug it against the backtracking model."
     rlink: false
 - week: "4"
   date: "0"
   title: "Finite Automata (Day 1 of 2): DFAs"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-automata.md"
+  link: "Activities/liascript-automata.md"
+  liapage: true
   deliverables:
   - dtitle: "Lab: Regex Workshop Due"
     dlink: "Assignments/RegexWorkshop"
@@ -344,7 +354,8 @@ schedule:
 - week: "4"
   date: "1"
   title: "Finite Automata, Day 2: Nondeterminism and Equivalence"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-automata-day2.md"
+  link: "Activities/liascript-automata-day2.md"
+  liapage: true
   deliverables:
   - dtitle: "Lab: Finite Automata Simulators Handed Out"
     dlink: "Assignments/Automata"
@@ -356,7 +367,8 @@ schedule:
 - week: "5"
   date: "0"
   title: "Tokens and Scanning: Building a Lexer"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-tokensscanning.md"
+  link: "Activities/liascript-tokensscanning.md"
+  liapage: true
   deliverables:
   - dtitle: "Programming Assignment: Regular Expressions Due"
     dlink: "Assignments/Regex"
@@ -373,7 +385,8 @@ schedule:
 - week: "5"
   date: "1"
   title: "Abstract Syntax Trees"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-ast.md"
+  link: "Activities/liascript-ast.md"
+  liapage: true
   readings:
   - rtitle: "Reading Exercise / Discussion: attempt the Abstract Syntax Trees exercises before class"
     rlink: "Participation/ReadingExercises"
@@ -381,7 +394,8 @@ schedule:
 - week: "6"
   date: "0"
   title: "Recursive Descent Parsing: From Grammar to Code"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-recursivedescent.md"
+  link: "Activities/liascript-recursivedescent.md"
+  liapage: true
   deliverables:
   - dtitle: "Lab: Grammar and Derivations Workshop Handed Out"
     dlink: "Assignments/GrammarWorkshop"
@@ -391,11 +405,13 @@ schedule:
   - rtitle: "Reading Exercise / Discussion: attempt the Recursive Descent Parsing exercises before class"
     rlink: "Participation/ReadingExercises"
   - rtitle: "Optional depth, tutorial: Parser Combinators (Parsers as First-Class Values)"
-    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-parser-combinators.md"
+    rlink: "Tutorials/tutorial-parser-combinators.md"
+    liapage: true
 - week: "7"
   date: "1"
   title: "Parsing Expressions: Left Factoring, Precedence, and Chained Comparisons"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-parsingexpressions.md"
+  link: "Activities/liascript-parsingexpressions.md"
+  liapage: true
   deliverables:
   - dtitle: "Lab: Finite Automata Simulators Due"
     dlink: "Assignments/Automata"
@@ -407,7 +423,8 @@ schedule:
 - week: "8"
   date: "0"
   title: "Table-Driven and LR Parsing"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-parsertable.md"
+  link: "Activities/liascript-parsertable.md"
+  liapage: true
   deliverables:
   - dtitle: "Programming Assignment: Build a Lexer Due"
     dlink: "Assignments/Lexer"
@@ -423,7 +440,8 @@ schedule:
 - week: "8"
   date: "1"
   title: "Tree-Walking Interpretation (Day 1 of 2): Evaluating the AST"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-interpretation.md"
+  link: "Activities/liascript-interpretation.md"
+  liapage: true
   deliverables:
   - dtitle: "Lab: Grammar and Derivations Workshop Due"
     dlink: "Assignments/GrammarWorkshop"
@@ -442,11 +460,13 @@ schedule:
     rlink: "Participation/ReadingExercises"
   - rtitle: "Allison, Ch. 6 §6.1-6.2: Context-Free Grammars, Derivation Trees, and Expression Trees"
   - rtitle: "Optional depth - tutorial: PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer and Parser assignments)"
-    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-ply-lexer-parser.md"
+    rlink: "Activities/liascript-ply-lexer-parser.md"
+    liapage: true
 - week: "9"
   date: "0"
   title: "Control Flow and Statement Semantics (Interpretation, Day 2)"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-controlflowsemantics.md"
+  link: "Activities/liascript-controlflowsemantics.md"
+  liapage: true
   readings:
   - rtitle: "This session is Day 2 of tree-walking interpretation: statements change state, where expressions returned values."
     rlink: false
@@ -457,7 +477,8 @@ schedule:
 - week: "9"
   date: "1"
   title: "Binding and Scope"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-bindingscope.md"
+  link: "Activities/liascript-bindingscope.md"
+  liapage: true
   deliverables:
   - dtitle: "Lab: Parser Skeleton Due"
     dlink: "Assignments/ParserSkeleton"
@@ -477,16 +498,20 @@ schedule:
 - week: "10"
   date: "0"
   title: "Environments and Variable Storage"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-environments.md"
+  link: "Activities/liascript-environments.md"
+  liapage: true
   readings:
   - rtitle: "Optional depth, tutorial: Build an Interpreter (start-to-finish companion for the upcoming assignment)"
-    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md"
+    rlink: "Tutorials/tutorial-build-an-interpreter.md"
+    liapage: true
   - rtitle: "Optional depth, tutorial: Garbage Collection (Implementing Memory Management)"
-    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-garbage-collection.md"
+    rlink: "Tutorials/tutorial-garbage-collection.md"
+    liapage: true
 - week: "10"
   date: "1"
   title: "Type Systems"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-types.md"
+  link: "Activities/liascript-types.md"
+  liapage: true
   deliverables:
   - dtitle: "Programming Assignment: Parser and AST Due"
     dlink: "Assignments/Parser"
@@ -513,11 +538,13 @@ schedule:
     rlink: "https://www.typescriptlang.org/play"
   - rtitle: "Optional depth, Allison, Ch. 10 §10.1: The Halting Problem (Why Some Questions About Programs Are Undecidable)"
   - rtitle: "Optional depth, tutorial: Type Inference (Implementing Hindley-Milner)"
-    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-type-inference.md"
+    rlink: "Tutorials/tutorial-type-inference.md"
+    liapage: true
 - week: "11"
   date: "0"
   title: "Functional Programming and Higher-Order Functions"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-functional.md"
+  link: "Activities/liascript-functional.md"
+  liapage: true
   deliverables:
   - dtitle: "Lab: Environments and Scope Due"
     dlink: "Assignments/EnvironmentsLab"
@@ -525,7 +552,8 @@ schedule:
     rubricpath: "_pages/Assignments/lab-environments.md"
   readings:
   - rtitle: "Optional depth - activity: Scheme and Racket as Objects of Study (required prep if you take the Scheme direction on the Functional assignment)"
-    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-scheme.md"
+    rlink: "Activities/liascript-scheme.md"
+    liapage: true
   - rtitle: "Reading Exercise / Discussion: attempt the Functional Programming and Higher-Order Functions exercises before class"
     rlink: "Participation/ReadingExercises"
   - rtitle: "In-class taste: the declarative paradigm in Prolog, a 15-minute SWISH warm-up (facts, rules, a query that backtracks). Previews the Functional assignment's Logic Programming direction"
@@ -533,11 +561,13 @@ schedule:
   - rtitle: "Optional depth, reference: The Power of Prolog (Markus Triska)"
     rlink: "https://www.metalevel.at/prolog"
   - rtitle: "Optional depth, tutorial: Haskell Essentials"
-    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-haskell-essentials.md"
+    rlink: "Tutorials/tutorial-haskell-essentials.md"
+    liapage: true
 - week: "11"
   date: "1"
   title: "Language Design Workshop: Project Kickoff (Sprint 0)"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-languagedesign.md"
+  link: "Activities/liascript-languagedesign.md"
+  liapage: true
   deliverables:
   - dtitle: "Team Language Project: Proposal (with signed team charter) Due"
     dlink: "Projects/TeamLanguage"
@@ -547,11 +577,13 @@ schedule:
   - rtitle: "Project Extensions Menu: libraries and packaging, scripting and automation targets, transpilation, and more (see the Team Language Project page)"
     rlink: "Projects/TeamLanguage"
   - rtitle: "Optional depth, tutorial: Build a Bytecode VM"
-    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md"
+    rlink: "Tutorials/tutorial-bytecode-vm.md"
+    liapage: true
 - week: "12"
   date: "0"
   title: "Lambda Calculus I: Syntax and Beta Reduction"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-lambdacalculus1.md"
+  link: "Activities/liascript-lambdacalculus1.md"
+  liapage: true
   deliverables:
   - dtitle: "Lab: Type Checker Starter Due"
     dlink: "Assignments/TypeCheckerLab"
@@ -566,11 +598,13 @@ schedule:
     rlink: "Participation/ReadingExercises"
   - rtitle: "Optional depth, Allison, Ch. 8: Turing Machines and the Church-Turing Thesis"
   - rtitle: "Optional depth, tutorial: Build a Lambda Calculus Reducer"
-    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md"
+    rlink: "Tutorials/tutorial-lambda-calculus-reducer.md"
+    liapage: true
 - week: "12"
   date: "1"
   title: "Lambda Calculus II: Church Encodings and Combinators"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-lambdacalculus2.md"
+  link: "Activities/liascript-lambdacalculus2.md"
+  liapage: true
   deliverables:
   - dtitle: "Programming Assignment: Functional Programming Handed Out"
     dlink: "Assignments/Functional"
@@ -581,7 +615,8 @@ schedule:
 - week: "13"
   date: "0"
   title: "Closures and First-Class Functions"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-closures.md"
+  link: "Activities/liascript-closures.md"
+  liapage: true
   deliverables:
   - dtitle: "Programming Assignment: Tree-Walking Interpreter Due"
     dlink: "Assignments/Interpreter"
@@ -593,7 +628,8 @@ schedule:
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
   - rtitle: "Optional depth - activity: Modern Language Features - pattern matching, generics, ownership, and async as syntax"
-    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-modernfeatures.md"
+    rlink: "Activities/liascript-modernfeatures.md"
+    liapage: true
   - rtitle: "Note: the Functional assignment includes a Logic Programming direction (Direction F) in Prolog, if the declarative paradigm appeals to you, skim the Prolog tutorial and The Power of Prolog"
     rlink: "Tutorials/Prolog"
   - rtitle: "Note: the Functional assignment also includes an open-source contribution direction (Direction G), mal, Strudel/TidalCycles, tree-sitter, or SWI-Prolog docs; instructor scope approval is required within the first week"
@@ -601,7 +637,8 @@ schedule:
 - week: "14"
   date: "0"
   title: "Sprint Studio: Sprints 1-2 and Gallery Walk"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-sprintstudio.md"
+  link: "Activities/liascript-sprintstudio.md"
+  liapage: true
   deliverables:
   - dtitle: "Lab: Lambda Calculus Due"
     dlink: "Assignments/LambdaCalculusLab"
@@ -613,13 +650,15 @@ schedule:
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
   - rtitle: "Optional depth, tutorial: The Project Language Guide (a complete worked path for the team project)"
-    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-project-language-guide.md"
+    rlink: "Tutorials/tutorial-project-language-guide.md"
+    liapage: true
   - rtitle: "Optional depth, tutorial: Shell Skills for Language Development"
     rlink: "Tutorials/ShellForLanguageDev"
 - week: "14"
   date: "1"
   title: "Sprint Studio: Sprint 3 and Release Hardening"
-  link: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-sprintstudio.md"
+  link: "Activities/liascript-sprintstudio.md"
+  liapage: true
   deliverables:
   - dtitle: "Programming Assignment: Functional Programming Due"
     dlink: "Assignments/Functional"
@@ -633,7 +672,8 @@ schedule:
   - rtitle: "Optional depth, tutorial: Publishing Your Language (pip, npm, and Docker)"
     rlink: "Tutorials/PublishingYourLanguage"
   - rtitle: "Optional depth, tutorial: Advanced C++ for Language Implementers"
-    rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-cpp-advanced.md"
+    rlink: "Tutorials/tutorial-cpp-advanced.md"
+    liapage: true
 - week: "15"
   date: "0"
   title: "Demo Day: Team Language Presentations (Class Switch Day: follows a Thursday schedule)"

@@ -51,11 +51,14 @@ info:
       proficient: "Dynamic-errors direction: every error class (LexError, ParseError, NameError, TypeError, ZeroDivisionError) is caught at the appropriate stage and reported with a message of the form \"Stage error at line L, col C: description\"; SEMANTICS.md includes one example program that triggers each error class with the expected message shown. Typing direction: unification (with the occurs check) and Algorithm-W-style inference are correct for every construct the checker covers; the checker runs as its own stage before evaluation; every type error names both conflicting types with line and context; and TYPES.md states the typing rule per construct with one accepted and one rejected program each. Intcode direction: the VM passes every cited AoC checkpoint, illegal opcodes raise staged positioned errors, INTCODE.md gives a precise transition rule for every opcode and parameter mode, and the required differential test shows the VM and tree-walker agree on shared arithmetic, any direction demonstrating Goal 6 by providing a complete semantics reference"
   readings:
     - rtitle: "Tree-Walking Interpretation Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-interpretation.md"
+      rlink: "Activities/liascript-interpretation.md"
+      liapage: true
     - rtitle: "Environments Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-environments.md"
+      rlink: "Activities/liascript-environments.md"
+      liapage: true
     - rtitle: "Control Flow Semantics Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-controlflowsemantics.md"
+      rlink: "Activities/liascript-controlflowsemantics.md"
+      liapage: true
     - rtitle: "Property-Based Testing Your Language with Hypothesis (Tutorial)"
       rlink: "../Tutorials/PropertyBasedTesting"
     - rtitle: "Advent of Code 2019, Day 2: Intcode (Part 5 Intcode direction)"

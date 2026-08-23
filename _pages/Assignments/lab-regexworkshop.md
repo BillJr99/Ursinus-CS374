@@ -29,7 +29,8 @@ info:
       proficient: A single compiled alternation with named groups tokenizes the worked example with correct types and values, keyword-before-identifier ordering is demonstrated, and gaps are detected and reported with their position
   readings:
     - rtitle: "Regular Expressions Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-regex.md"
+      rlink: "Activities/liascript-regex.md"
+      liapage: true
     - rtitle: "Python re Documentation"
       rlink: "https://docs.python.org/3/library/re.html"
 

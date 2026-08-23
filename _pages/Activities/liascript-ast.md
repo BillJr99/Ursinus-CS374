@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-ast.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-ast.md
+comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-ast.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-ast.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -444,7 +444,7 @@ pretty(tree)
 ---
 
 
-> **Your first optimizer, constant folding as a tree transformation, moved to the tutorial shelf:** [From AST Back to Code](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-ast-to-code.md). It is the natural warm-up for that tutorial's `unparse` work.
+> **Your first optimizer, constant folding as a tree transformation, moved to the tutorial shelf:** [From AST Back to Code](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-ast-to-code.md). It is the natural warm-up for that tutorial's `unparse` work.
 
 # Part III: The `unparse` Round-Trip
 
@@ -700,9 +700,9 @@ The AST is the third representation of the same program (characters -> tokens ->
 
 The core lesson above stands on its own. The deep-dive appendices that used to follow it now live on the Tutorials shelf:
 
-> **Going further:** the material that used to live here, expression-oriented language design (conditionals as values, `let`-expressions, sequencing, short-circuit and lazy evaluation) and the interpreter-to-compiler path (the visitor pattern, transpiling your AST to Python, JavaScript, and Haskell, and source maps), is covered in depth in the dedicated tutorial [From AST to Code: Visitors and Transpilers](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-ast-to-code.md). Explore it when your project or curiosity calls for it; transpilation is one of the Team Language Project's extension directions.
+> **Going further:** the material that used to live here, expression-oriented language design (conditionals as values, `let`-expressions, sequencing, short-circuit and lazy evaluation) and the interpreter-to-compiler path (the visitor pattern, transpiling your AST to Python, JavaScript, and Haskell, and source maps), is covered in depth in the dedicated tutorial [From AST to Code: Visitors and Transpilers](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-ast-to-code.md). Explore it when your project or curiosity calls for it; transpilation is one of the Team Language Project's extension directions.
 
-> **Going further:** the stack-machine and bytecode-compiler material that used to live here (compiling your AST to instructions and executing them on a virtual machine) is covered in depth in the dedicated tutorial: [Building a Bytecode VM for Mini](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md). Explore it when your project or curiosity calls for it.
+> **Going further:** the stack-machine and bytecode-compiler material that used to live here (compiling your AST to instructions and executing them on a virtual machine) is covered in depth in the dedicated tutorial: [Building a Bytecode VM for Mini](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md). Explore it when your project or curiosity calls for it.
 
 ---
 

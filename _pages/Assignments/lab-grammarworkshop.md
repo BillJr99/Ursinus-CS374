@@ -35,9 +35,11 @@ info:
       proficient: The analysis derives the precedence example, names the exact productions that force multiplication to bind tighter than addition and subtraction to associate left, and shows what a flat one-level grammar would have permitted instead
   readings:
     - rtitle: "Recursive Descent Parsing Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-recursivedescent.md"
+      rlink: "Activities/liascript-recursivedescent.md"
+      liapage: true
     - rtitle: "Parsing Expressions Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-parsingexpressions.md"
+      rlink: "Activities/liascript-parsingexpressions.md"
+      liapage: true
 
 tags:
   - grammars

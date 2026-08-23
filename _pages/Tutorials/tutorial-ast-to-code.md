@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-ast-to-code.md
+comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-ast-to-code.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tutorial: From AST to Code: Visitors and Transpilers
 
-An AST is more than the parser's output, it is a value your programs can analyze, rewrite, and translate. This tutorial has two halves. **Part 1** studies *expression-oriented* language design: what changes when `if`, `let`, and sequencing are expressions that produce values rather than statements that perform actions. **Part 2** builds on that foundation to cross the interpreter-to-compiler bridge: the **Visitor pattern** for AST traversals, three working **transpilers** (to Python, JavaScript, and Haskell), and **source maps** that connect generated code back to its source. **Prerequisites:** the *Abstract Syntax Trees* activity (node classes, `pretty`, constant folding); comfort writing Python classes. The stack-machine/bytecode branch of the same bridge lives in the companion tutorial [Build a Bytecode VM](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md).
+An AST is more than the parser's output, it is a value your programs can analyze, rewrite, and translate. This tutorial has two halves. **Part 1** studies *expression-oriented* language design: what changes when `if`, `let`, and sequencing are expressions that produce values rather than statements that perform actions. **Part 2** builds on that foundation to cross the interpreter-to-compiler bridge: the **Visitor pattern** for AST traversals, three working **transpilers** (to Python, JavaScript, and Haskell), and **source maps** that connect generated code back to its source. **Prerequisites:** the *Abstract Syntax Trees* activity (node classes, `pretty`, constant folding); comfort writing Python classes. The stack-machine/bytecode branch of the same bridge lives in the companion tutorial [Build a Bytecode VM](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md).
 
 ---
 
@@ -520,7 +520,7 @@ By the end of this tutorial, you will be able to:
 
 Your tree-walking interpreter evaluates an AST **at runtime**: it visits each node and immediately computes a value. A **compiler** walks the same AST but, instead of computing values, **emits instructions**; for a virtual machine, a real CPU, or another programming language. A **transpiler** (source-to-source compiler) emits valid code in a different high-level language. All three share the same frontend (lexer, parser, AST builder); they diverge only in what the AST traversal produces.
 
-In this part we build the transpiler half of the bridge: starting from the interpreter you have already built, we add **transpilers** that emit valid Python, valid JavaScript, and valid Haskell. You will be able to run programs in your language by transpiling them: without writing a new frontend. (The bytecode/stack-machine half is the [Build a Bytecode VM](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md) tutorial.)
+In this part we build the transpiler half of the bridge: starting from the interpreter you have already built, we add **transpilers** that emit valid Python, valid JavaScript, and valid Haskell. You will be able to run programs in your language by transpiling them: without writing a new frontend. (The bytecode/stack-machine half is the [Build a Bytecode VM](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md) tutorial.)
 
 ---
 
@@ -893,7 +893,7 @@ A transpiler differs from an interpreter in which fundamental way?
 
 ---
 
-> **The third backend; a bytecode compiler and virtual stack machine, ** is developed step by step in the companion tutorial [Build a Bytecode VM](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md). The source-map section below uses a small, self-contained bytecode compiler for concreteness; you do not need the full VM tutorial to follow it.
+> **The third backend; a bytecode compiler and virtual stack machine, ** is developed step by step in the companion tutorial [Build a Bytecode VM](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md). The source-map section below uses a small, self-contained bytecode compiler for concreteness; you do not need the full VM tutorial to follow it.
 
 ---
 

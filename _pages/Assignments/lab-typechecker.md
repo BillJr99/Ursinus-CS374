@@ -29,7 +29,8 @@ info:
       proficient: Each covered construct has a precise rule (premises above, conclusion below, or a disciplined if/then sentence), and each rule cites the checker function that implements it
   readings:
     - rtitle: "Type Systems Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-types.md"
+      rlink: "Activities/liascript-types.md"
+      liapage: true
     - rtitle: "Core Tutorial: Typing Disciplines, Strong vs. Weak, Static vs. Dynamic, and Gradual Typing"
       rlink: "../Tutorials/TypingDisciplines"
 

@@ -36,9 +36,11 @@ info:
       proficient: The subset-construction table is complete and correct, every Thompson fragment is labeled step by step, and the writeup includes a clear paragraph connecting the simulators to the lexer (which component of the lexer plays the role of your simulators?)
   readings:
     - rtitle: "Finite Automata Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-automata.md"
+      rlink: "Activities/liascript-automata.md"
+      liapage: true
     - rtitle: "Grammars and the Chomsky Hierarchy Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-grammars.md"
+      rlink: "Activities/liascript-grammars.md"
+      liapage: true
 
 tags:
   - automata

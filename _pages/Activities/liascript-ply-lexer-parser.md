@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-ply-lexer-parser.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-ply-lexer-parser.md
+comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-ply-lexer-parser.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-ply-lexer-parser.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Interactive Lexing and Parsing with PLY (Python Lex-Yacc)
 
-> **Note:** this activity's code cells install PLY at runtime; in the browser CodeRunner this may fail without network access; download and run locally if cells error. This activity is a companion to the [Flex and Bison tutorial](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md).
+> **Note:** this activity's code cells install PLY at runtime; in the browser CodeRunner this may fail without network access; download and run locally if cells error. This activity is a companion to the [Flex and Bison tutorial](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md).
 
 PLY (Python Lex-Yacc) is Flex and Bison reimplemented in pure Python: you write the same declarative grammar rules and get the same LALR(1) parsing power, but without a C toolchain, a build step, or generated `.c` files to manage. Think of it as Flex/Bison with Python as the host language; the concepts translate one-to-one, and every rule you write here has a direct counterpart in a `.l` or `.y` file. That makes PLY ideal for rapid prototyping in this course: you can explore a grammar idea, run it instantly in the browser, and see the token stream or AST before committing to a full C-based toolchain.
 

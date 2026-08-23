@@ -29,11 +29,14 @@ info:
       proficient: TRUE/FALSE/AND and successor-of-one are all verified by complete reduction sequences, and the closing question connects Church encoding to a concrete higher-order-function idiom from the Functional Programming sessions
   readings:
     - rtitle: "Lambda Calculus I Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-lambdacalculus1.md"
+      rlink: "Activities/liascript-lambdacalculus1.md"
+      liapage: true
     - rtitle: "Lambda Calculus II Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-lambdacalculus2.md"
+      rlink: "Activities/liascript-lambdacalculus2.md"
+      liapage: true
     - rtitle: "Supplemental Tutorial: Build a Lambda Calculus Reducer"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md"
+      rlink: "Tutorials/tutorial-lambda-calculus-reducer.md"
+      liapage: true
 
 tags:
   - lambda-calculus

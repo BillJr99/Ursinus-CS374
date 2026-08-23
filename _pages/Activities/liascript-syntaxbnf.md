@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-syntaxbnf.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-syntaxbnf.md
+comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-syntaxbnf.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-syntaxbnf.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -197,7 +197,7 @@ The code cell above shows the EBNF-to-code mapping at work: `[ sign ]` became an
 ---
 
 
-> **The runnable version, a grammar as a Python dictionary, is in [Grammar Tooling in Python](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-grammars-in-python.md),** alongside the left-recursion detector and derivation tracer that use the same representation.
+> **The runnable version, a grammar as a Python dictionary, is in [Grammar Tooling in Python](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-grammars-in-python.md),** alongside the left-recursion detector and derivation tracer that use the same representation.
 
 # Part III: Synthesis and Practice (At Home)
 

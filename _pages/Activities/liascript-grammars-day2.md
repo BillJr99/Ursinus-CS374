@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-grammars-day2.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-grammars-day2.md
+comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-grammars-day2.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-grammars-day2.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -16,7 +16,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 Day 1 established what a grammar *is* and where programming languages sit in the Chomsky hierarchy. Today we write them: you will build grammars for real constructs, argue about which nonterminal owns which decision, and learn to spot the left recursion that will break the parser you write in three weeks.
 
-> This is the second of two sessions on this topic. If you have not done Day 1, start there: [Grammars](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-grammars.md).
+> This is the second of two sessions on this topic. If you have not done Day 1, start there: [Grammars](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-grammars.md).
 
 # Part II: Writing Context-Free Grammars (Day 2)
 
@@ -139,7 +139,7 @@ for s in ["ab", "aabb", "aaabbb", "aab", "ba", "abab"]:
 ---
 
 
-> **The runnable versions of these models are on their own page.** Representing a CFG as a Python dictionary, detecting left recursion mechanically, and building parse trees as nested dicts are all in [Grammar Tooling in Python](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-grammars-in-python.md). Work them after class; the left-recursion detector in particular will tell you whether a grammar you wrote can be parsed by recursive descent.
+> **The runnable versions of these models are on their own page.** Representing a CFG as a Python dictionary, detecting left recursion mechanically, and building parse trees as nested dicts are all in [Grammar Tooling in Python](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-grammars-in-python.md). Work them after class; the left-recursion detector in particular will tell you whether a grammar you wrote can be parsed by recursive descent.
 
 # Part III: Synthesis and Practice
 

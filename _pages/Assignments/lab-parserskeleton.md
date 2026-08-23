@@ -29,9 +29,11 @@ info:
       proficient: Tree-shape tests cover every primary form and nested unary cases, and an invalid input (e.g., a stray semicolon where an expression is required) raises a ParseError stating what was expected, what was found, and the line and column
   readings:
     - rtitle: "Recursive Descent Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-recursivedescent.md"
+      rlink: "Activities/liascript-recursivedescent.md"
+      liapage: true
     - rtitle: "Abstract Syntax Trees Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-ast.md"
+      rlink: "Activities/liascript-ast.md"
+      liapage: true
 
 tags:
   - parser

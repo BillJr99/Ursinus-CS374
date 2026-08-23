@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-types.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-types.md
+comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-types.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-types.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -256,7 +256,7 @@ In your notebook: strong typing refuses to guess what you meant; weak typing gue
 
 The core lesson above stands on its own. The deep-dive appendices that used to follow it now live on the Tutorials shelf:
 
-> **Going further:** the material that used to live here (Robinson unification, substitutions and the occurs check, Algorithm W, Hindley-Milner type inference, and let-polymorphism) is covered in depth in the dedicated tutorial: [Implementing Hindley-Milner Type Inference](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-type-inference.md). Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here (Robinson unification, substitutions and the occurs check, Algorithm W, Hindley-Milner type inference, and let-polymorphism) is covered in depth in the dedicated tutorial: [Implementing Hindley-Milner Type Inference](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-type-inference.md). Explore it when your project or curiosity calls for it.
 
 > **Going further:** the material that used to live here (the static/dynamic and strong/weak axes in depth, Python annotations and `mypy`, type erasure, product and sum types, structural vs. nominal typing, and gradual typing with the consistency relation and blame) is covered in depth in the dedicated guide: [Typing Disciplines: Strong vs. Weak, Static vs. Dynamic, and Gradual Typing](https://www.billmongan.com/Ursinus-CS374/Tutorials/TypingDisciplines). Explore it when your project or curiosity calls for it.
 

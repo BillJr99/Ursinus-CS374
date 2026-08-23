@@ -35,11 +35,14 @@ info:
       proficient: The argument evaluates the choice against at least two of readability, writability, and reliability with concrete programmer-facing consequences, states the tradeoff plainly, and takes a defensible position
   readings:
     - rtitle: "Syntax and BNF/EBNF Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-syntaxbnf.md"
+      rlink: "Activities/liascript-syntaxbnf.md"
+      liapage: true
     - rtitle: "Grammars and the Chomsky Hierarchy Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-grammars.md"
+      rlink: "Activities/liascript-grammars.md"
+      liapage: true
     - rtitle: "Evaluating Languages Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-languageevaluation.md"
+      rlink: "Activities/liascript-languageevaluation.md"
+      liapage: true
 
 tags:
   - grammars

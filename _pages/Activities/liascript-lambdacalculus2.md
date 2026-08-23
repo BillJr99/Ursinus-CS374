@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-lambdacalculus2.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-lambdacalculus2.md
+comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-lambdacalculus2.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-lambdacalculus2.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -459,7 +459,7 @@ In your notebook: numbers, booleans, pairs, and conditionals all dissolved into 
 
 ## Going Deeper (Optional Pointers)
 
-> **Going further:** the full Y-combinator derivation that used to live here (self-reference without names, the fixed-point equation $Y\ g = g\ (Y\ g)$, and the Z combinator for strict languages) now lives as the advanced section "Advanced: Deriving the Y Combinator" at the end of the dedicated tutorial: [Build a Lambda Calculus Reducer](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md). **Direction C of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374/Assignments/Functional) builds on the Church encodings from this activity**: read that direction's section before choosing it.
+> **Going further:** the full Y-combinator derivation that used to live here (self-reference without names, the fixed-point equation $Y\ g = g\ (Y\ g)$, and the Z combinator for strict languages) now lives as the advanced section "Advanced: Deriving the Y Combinator" at the end of the dedicated tutorial: [Build a Lambda Calculus Reducer](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md). **Direction C of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374/Assignments/Functional) builds on the Church encodings from this activity**: read that direction's section before choosing it.
 
 > **Going further:** the call-with-current-continuation appendix that used to live here: capturing "the rest of the computation" as a value, deriving break, return, exceptions, cooperative schedulers, generators, and backtracking from `call/cc`, now lives where it is assessed: **Direction B of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374/Assignments/Functional) builds on this material**; read that direction's section before choosing it.
 

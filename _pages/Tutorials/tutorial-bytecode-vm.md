@@ -5,7 +5,7 @@ version:  0.0.1
 language: en
 narrator: US English Female
 
-comment: Build a stack-based bytecode VM for Mini, the same architecture used by CPython, the JVM, and Lua. Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md
+comment: Build a stack-based bytecode VM for Mini, the same architecture used by CPython, the JVM, and Lua. Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 

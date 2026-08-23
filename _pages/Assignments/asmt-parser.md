@@ -38,11 +38,14 @@ info:
       proficient: Node dataclasses (or tagged-union nodes) cover every construct with documented fields; the pretty-printer renders nested structure clearly; the unparser inserts parentheses only where the tree shape requires them; the round-trip property parse(unparse(parse(s))) is verified across the full test suite **and** with a Hypothesis recursive-AST generator, with one shrunk counterexample reported (or a reasoned all-clear with the generator shown); every error states what was expected, what was found, and the line and column, demonstrating that the AST is a complete, self-documenting artifact. (In the Mini-Notation direction, the timed-event evaluator and the Strudel validation table stand in for the unparser and fixed-example round-trip, with the generator applied to the pattern AST, and are assessed equivalently.)
   readings:
     - rtitle: "Recursive Descent Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-recursivedescent.md"
+      rlink: "Activities/liascript-recursivedescent.md"
+      liapage: true
     - rtitle: "Parsing Expressions Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-parsingexpressions.md"
+      rlink: "Activities/liascript-parsingexpressions.md"
+      liapage: true
     - rtitle: "Abstract Syntax Trees Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-ast.md"
+      rlink: "Activities/liascript-ast.md"
+      liapage: true
     - rtitle: "Property-Based Testing Your Language with Hypothesis (Tutorial)"
       rlink: "../Tutorials/PropertyBasedTesting"
     - rtitle: "Hypothesis Documentation"

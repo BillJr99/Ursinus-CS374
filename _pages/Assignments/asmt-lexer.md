@@ -37,7 +37,8 @@ info:
       proficient: Every error includes line, column, and the offending text; collect-all mode gathers every error in a single pass without stopping; string-literal escape sequences are fully implemented; and the test suite covers all token types, all escape sequences, all maximal-munch cases, and at least five deliberate error programs with expected messages verified, demonstrating a deliverable that the team project can import unchanged
   readings:
     - rtitle: "Tokens and Scanning Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-tokensscanning.md"
+      rlink: "Activities/liascript-tokensscanning.md"
+      liapage: true
 
 tags:
   - lexer

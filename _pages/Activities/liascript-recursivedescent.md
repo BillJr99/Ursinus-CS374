@@ -3,7 +3,7 @@ author:   William Mongan
 language: en
 narrator: US English Male
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-recursivedescent.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-recursivedescent.md
+comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-recursivedescent.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-recursivedescent.md
 
 import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
 
@@ -32,8 +32,8 @@ The parser is where the grammar becomes a program, and **recursive descent** is 
 
 > **Prerequisites. Make sure you are comfortable with these before proceeding:**
 >
-> - **EBNF/BNF Grammars**: you need to read a grammar and trace derivations. Review: [Syntax and BNF/EBNF Activity](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-syntaxbnf.md)
-> - **Abstract Syntax Trees (ASTs)**: you need to understand what the parser is building. Review: [AST Activity](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-ast.md)
+> - **EBNF/BNF Grammars**: you need to read a grammar and trace derivations. Review: [Syntax and BNF/EBNF Activity](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-syntaxbnf.md)
+> - **Abstract Syntax Trees (ASTs)**: you need to understand what the parser is building. Review: [AST Activity](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-ast.md)
 >
 > **Why this matters:** Recursive descent is the technique you will use to write the parser for your final project. Every grammar rule you write will directly become a Python function using the pattern below. Master this pattern and the rest of the parser writes itself.
 
@@ -951,7 +951,7 @@ print("meaning * is evaluated first -- this is how precedence is encoded in the 
 
 ## Going Deeper (Optional Pointers)
 
-> **Going further:** the extra complete parsers that used to live here are best replaced by one polished pipeline: the dedicated tutorial [Build an Interpreter](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md) contains a complete recursive-descent parser (Stage 3) wired into a lexer and evaluator. The error-*recovering* parser that reports several syntax errors in one run by synchronizing at statement boundaries is a self-study topic; keywords: "panic-mode error recovery," "synchronization points," and the "Synchronizing a recursive descent parser" section of *Crafting Interpreters*, and makes a strong Parser-assignment stretch goal.
+> **Going further:** the extra complete parsers that used to live here are best replaced by one polished pipeline: the dedicated tutorial [Build an Interpreter](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md) contains a complete recursive-descent parser (Stage 3) wired into a lexer and evaluator. The error-*recovering* parser that reports several syntax errors in one run by synchronizing at statement boundaries is a self-study topic; keywords: "panic-mode error recovery," "synchronization points," and the "Synchronizing a recursive descent parser" section of *Crafting Interpreters*, and makes a strong Parser-assignment stretch goal.
 
 ---
 

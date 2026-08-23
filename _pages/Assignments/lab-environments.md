@@ -29,9 +29,11 @@ info:
       proficient: The trace shows the environment chain at every step, every prediction matches the actual run, and the lexical-vs-dynamic question is answered by pointing to the exact line of the class that decides it
   readings:
     - rtitle: "Binding and Scope Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-bindingscope.md"
+      rlink: "Activities/liascript-bindingscope.md"
+      liapage: true
     - rtitle: "Environments Activity"
-      rlink: "https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374/gh-pages/_pages/Activities/liascript-environments.md"
+      rlink: "Activities/liascript-environments.md"
+      liapage: true
 
 tags:
   - interpreter
