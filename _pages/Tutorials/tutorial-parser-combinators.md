@@ -24,7 +24,7 @@ By the end of this tutorial, you will have:
 - Connected parser combinators to the monad abstraction from the Monads activity and explained what `bind` does in the parsing context
 - Compared the combinator parser to the recursive-descent parser from the interpreter assignment, identifying the tradeoffs in readability, error messages, and extensibility
 
-A **parser combinator library** builds parsers by composing small parser values with combinator functions. A parser is simply a function from a string position to either `(value, new_position)` on success or `None` on failure. Combinators (`seq`, `alt`, `many`, `map`) combine parsers into larger parsers the same way function composition combines functions. The result is a recursive-descent parser written in the host language's normal expression syntax, with no separate grammar notation. This tutorial walks from the atomic building block up to a complete expression parser for Mini's arithmetic, all in ~200 lines of Python. **Prerequisites:** Monads activity (parsers form a monad); Lambda Calculus and Recursive Descent activities.
+A **parser combinator library** builds parsers by composing small parser values with combinator functions.  A parser is simply a function from a string position to either `(value, new_position)` on success or `None` on failure.  Combinators (`seq`, `alt`, `many`, `map`) combine parsers into larger parsers the same way function composition combines functions.  The result is a recursive-descent parser written in the host language's normal expression syntax, with no separate grammar notation.  This tutorial walks from the atomic building block up to a complete expression parser for Mini's arithmetic, all in ~200 lines of Python.  **Prerequisites:** Monads activity (parsers form a monad); Lambda Calculus and Recursive Descent activities.
 
 ---
 
@@ -36,7 +36,7 @@ A **parser** is a value of type:
 Parser[A] = str × int -> (A × int) | None
 ```
 
-Given the full input string and a current position, it returns either `(value, next_position)` or `None` (failure). The entire combinator library is built on this representation.
+Given the full input string and a current position, it returns either `(value, next_position)` or `None` (failure).  The entire combinator library is built on this representation.
 
 ```python
 try:
@@ -59,7 +59,7 @@ except Exception as e:
     import traceback; traceback.print_exc()
 ```
 
-Every parser in this tutorial is a function built by calling combinators. There are no classes yet, just functions returning functions.
+Every parser in this tutorial is a function built by calling combinators.  There are no classes yet, just functions returning functions.
 
 ---
 
@@ -259,7 +259,7 @@ except Exception as e:
 
 ## Part 3: Recursive Parsers and `forward`
 
-Parsers for grammars with recursion (like expressions) need forward references: `expr` calls `term` which calls `factor` which calls `expr` for parenthesized sub-expressions. A `forward` cell solves this cleanly.
+Parsers for grammars with recursion (like expressions) need forward references: `expr` calls `term` which calls `factor` which calls `expr` for parenthesized sub-expressions.  A `forward` cell solves this cleanly.
 
 ```python
 try:
@@ -671,7 +671,7 @@ except Exception as e:
 
 ## Part 6: Haskell's Parsec, The Industrial Version
 
-Python's combinator library above mirrors Haskell's **Parsec** (and its successor **Megaparsec**), which is used in real production compilers (Pandoc, GHC extensions). Parsec's operators are:
+Python's combinator library above mirrors Haskell's **Parsec** (and its successor **Megaparsec**), which is used in real production compilers (Pandoc, GHC extensions).  Parsec's operators are:
 
 | Python | Haskell Parsec | Meaning |
 |---|---|---|
@@ -714,7 +714,7 @@ The `do`-notation is the same monadic sequencing you saw in the Monads activity,
 
 ## Part 7: Error Recovery and Committed Choice
 
-A real parser combinator library needs **committed choice** (also called *cut* in Prolog): once a prefix is consumed, stop trying alternatives and report an error rather than silently backtracking. This prevents confusing error messages.
+A real parser combinator library needs **committed choice** (also called *cut* in Prolog): once a prefix is consumed, stop trying alternatives and report an error rather than silently backtracking.  This prevents confusing error messages.
 
 Parsec achieves this with `try`: `try p <|> q` backtracks on failure of `p`; plain `p <|> q` commits once `p` consumes input.
 
@@ -765,27 +765,27 @@ except Exception as e:
 | Forward ref | `Forward` class | `mfix`, recursive `do` |
 | Error | `raise ParseError` | `unexpected`, `<?>`  |
 
-**Key insight:** a parser combinator library is just the Parser monad, and the Parser monad is just a function. All the power of recursive-descent parsing, all the composability of functional programming, in ~100 lines of Python.
+**Key insight:** a parser combinator library is just the Parser monad, and the Parser monad is just a function.  All the power of recursive-descent parsing, all the composability of functional programming, in ~100 lines of Python.
 
 ---
 
 ## Further Reading
 
-- Hutton, Graham and Meijer, Erik. "Monadic Parser Combinators" (1996). The original paper; builds the full library you saw today.
-- Leijen, Daan. *Parsec: A practical parser library* (2001). The Haskell library this tutorial mirrors.
+- Hutton, Graham and Meijer, Erik.  "Monadic Parser Combinators" (1996).  The original paper; builds the full library you saw today.
+- Leijen, Daan.  *Parsec: A practical parser library* (2001).  The Haskell library this tutorial mirrors.
 - Megaparsec (Haskell): https://hackage.haskell.org/package/megaparsec: the modern successor.
 - Python's `parsy` library: https://parsy.readthedocs.io: a production-quality Python combinator library.
-- Norvig, Peter. "How to Write a Spell Checker" and "Lispy": two famous small parsers in Python; identify the combinator pattern in each.
+- Norvig, Peter.  "How to Write a Spell Checker" and "Lispy": two famous small parsers in Python; identify the combinator pattern in each.
 
 # From the Parsing Expressions Activity: Runnable Models
 
-The three models below were previously embedded in the *Parsing Expressions* class session. They are code you run rather than reasoning you do together, so they live here. Pratt parsing in particular is beyond the grammar the Parser assignment requires; it is here because it is the technique most real hand-written parsers actually use.
+The three models below were previously embedded in the *Parsing Expressions* class session.  They are code you run rather than reasoning you do together, so they live here.  Pratt parsing in particular is beyond the grammar the Parser assignment requires; it is here because it is the technique most real hand-written parsers actually use.
 
 ## Model 2: Precedence Table (Runnable)
 
-Before writing parser code, it helps to see that "precedence" is just a number: a higher number means "bind tighter" (resolve sooner). This model lets you experiment with two different precedence tables on the same token stream so you can observe concretely how changing one number changes the resulting tree, and therefore the numeric result. Pay attention to the flat-precedence case: it is a useful stress-test for understanding what your parser *actually* does rather than what you think it does.
+Before writing parser code, it helps to see that "precedence" is just a number: a higher number means "bind tighter" (resolve sooner).  This model lets you experiment with two different precedence tables on the same token stream so you can observe concretely how changing one number changes the resulting tree, and therefore the numeric result.  Pay attention to the flat-precedence case: it is a useful stress-test for understanding what your parser *actually* does rather than what you think it does.
 
-Different precedence assignments for the same token stream produce completely different trees and values. The model below encodes two precedence tables and a simple "what would this mean?" validator that folds a flat token list according to each table, showing both resulting trees.
+Different precedence assignments for the same token stream produce completely different trees and values.  The model below encodes two precedence tables and a simple "what would this mean?" validator that folds a flat token list according to each table, showing both resulting trees.
 
 ```python
 # Model 2: Two precedence tables, one token stream - two different meanings.
@@ -866,18 +866,18 @@ show("Standard precedence (left assoc)", PREC_STANDARD, tokens2)
 
 ### Critical Thinking Questions
 
-4. The standard table gives `2 + 3 * 4 = 14`; the flat table gives `20`. Trace exactly which fold step differs between the two tables for these five tokens.
-5. The flat table makes all operators equal in precedence and left-associative. What value does `6 - 2 - 1` produce under flat precedence? Is it the same as under standard precedence? Explain why or why not.
-6. APL evaluates all binary operators right-to-left at equal precedence. Modify `PREC_FLAT` to test that claim for `6 - 2 - 1` by changing the fold direction. What value do you expect, and does it match?
-7. Annotate the correspondence: which EBNF symbol became the `while` condition, which became `advance()`, which became the recursive call? (This is the translation table earning its keep.)
+4.  The standard table gives `2 + 3 * 4 = 14`; the flat table gives `20`.  Trace exactly which fold step differs between the two tables for these five tokens.
+5.  The flat table makes all operators equal in precedence and left-associative.  What value does `6 - 2 - 1` produce under flat precedence?  Is it the same as under standard precedence?  Explain why or why not.
+6.  APL evaluates all binary operators right-to-left at equal precedence.  Modify `PREC_FLAT` to test that claim for `6 - 2 - 1` by changing the fold direction.  What value do you expect, and does it match?
+7.  Annotate the correspondence: which EBNF symbol became the `while` condition, which became `advance()`, which became the recursive call?  (This is the translation table earning its keep.)
 
 ---
 
 ## Model 3: Recursive Descent Expression Parser (Runnable)
 
-This model brings everything together into a working parser you can run. The mutual call chain `parse_expr -> parse_addsub -> parse_muldiv -> parse_unary -> parse_primary -> parse_expr` encodes the entire precedence hierarchy: a function only returns to its caller after fully resolving everything at the current or tighter tiers. Notice how parentheses are handled in `parse_primary` with a single call to `parse_expr`; that one line gives parentheses the power to override every precedence level.
+This model brings everything together into a working parser you can run.  The mutual call chain `parse_expr -> parse_addsub -> parse_muldiv -> parse_unary -> parse_primary -> parse_expr` encodes the entire precedence hierarchy: a function only returns to its caller after fully resolving everything at the current or tighter tiers.  Notice how parentheses are handled in `parse_primary` with a single call to `parse_expr`; that one line gives parentheses the power to override every precedence level.
 
-A self-contained recursive descent parser for `+`, `-`, `*`, `/` and parentheses. The mutual recursion `expr -> addsub -> muldiv -> unary -> primary -> ... -> expr` gives precedence without any table.
+A self-contained recursive descent parser for `+`, `-`, `*`, `/` and parentheses.  The mutual recursion `expr -> addsub -> muldiv -> unary -> primary -> ... -> expr` gives precedence without any table.
 
 ```python
 # Model 3: Complete recursive-descent expression parser (stand-alone)
@@ -978,19 +978,19 @@ for expr in ["2+3*4", "2*3+4", "(2+3)*4", "7-2-1", "-3*2", "1+2+3+4"]:
 
 ### Critical Thinking Questions
 
-8. Trace `2 + 3 * 4` through the parser call by call: list every function invoked in order and what tuple each returns. Confirm that `parse_muldiv` is called *by* `parse_addsub`, so `3 * 4` is resolved before the `+` node is built.
-9. `parse_unary` calls itself for `--3`. Is that left recursion? Explain why it terminates here but `E -> E + T` would loop infinitely in a naive recursive descent.
-10. `parse_primary`'s parenthesis branch calls `parse_expr`, the top of the chain. Explain why this single call makes parentheses override every precedence level, and identify the matching production in the grammar at the top of this module.
+8.  Trace `2 + 3 * 4` through the parser call by call: list every function invoked in order and what tuple each returns.  Confirm that `parse_muldiv` is called *by* `parse_addsub`, so `3 * 4` is resolved before the `+` node is built.
+9. `parse_unary` calls itself for `--3`.  Is that left recursion?  Explain why it terminates here but `E -> E + T` would loop infinitely in a naive recursive descent.
+10. `parse_primary`'s parenthesis branch calls `parse_expr`, the top of the chain.  Explain why this single call makes parentheses override every precedence level, and identify the matching production in the grammar at the top of this module.
 
 ---
 
 ## Model 4: Pratt Parsing (Runnable)
 
-Pratt parsing (also called precedence climbing) is an elegant alternative to the tiered-function approach: instead of encoding precedence by the *depth* of a function chain, it encodes it as a *number* (the binding power) and uses a single loop with a numeric comparison to decide whether to keep consuming. The result is exactly the same AST with far less boilerplate: adding a new operator means adding one entry to the `LBP` table, not writing a new function. Both parsers run on the same test cases so you can confirm they agree.
+Pratt parsing (also called precedence climbing) is an elegant alternative to the tiered-function approach: instead of encoding precedence by the *depth* of a function chain, it encodes it as a *number* (the binding power) and uses a single loop with a numeric comparison to decide whether to keep consuming.  The result is exactly the same AST with far less boilerplate: adding a new operator means adding one entry to the `LBP` table, not writing a new function.  Both parsers run on the same test cases so you can confirm they agree.
 
-> **Watch out!** Pratt parsing is an elegant alternative that scales gracefully as your language grows, but it is easy to confuse the two binding-power roles. The **left binding power (lbp)** of an operator is how tightly it pulls in a left operand that has already been parsed; the **right binding power** passed to the recursive `expression()` call controls how tightly the operator claims tokens on its right. For left-associative operators these differ by exactly 1 (or you pass `bp` rather than `bp - 1`); for right-associative operators (like `**`) the right call must use `bp - 1` so a subsequent operator at the same level is allowed to win; see Exercise 1 for the concrete example.
+> **Watch out!**  Pratt parsing is an elegant alternative that scales gracefully as your language grows, but it is easy to confuse the two binding-power roles.  The **left binding power (lbp)** of an operator is how tightly it pulls in a left operand that has already been parsed; the **right binding power** passed to the recursive `expression()` call controls how tightly the operator claims tokens on its right.  For left-associative operators these differ by exactly 1 (or you pass `bp` rather than `bp - 1`); for right-associative operators (like `**`) the right call must use `bp - 1` so a subsequent operator at the same level is allowed to win; see Exercise 1 for the concrete example.
 
-A Pratt parser (precedence climbing) associates a *binding power* with each operator and decides whether to consume the next operator based on numeric comparison: no mutual recursion, no separate function per tier. Both parsers should produce the same AST for `2 + 3 * 4 - 1`.
+A Pratt parser (precedence climbing) associates a *binding power* with each operator and decides whether to consume the next operator based on numeric comparison: no mutual recursion, no separate function per tier.  Both parsers should produce the same AST for `2 + 3 * 4 - 1`.
 
 ```python
 # Model 4: Pratt parser (precedence climbing) and comparison with recursive descent
@@ -1132,9 +1132,9 @@ for t in tests:
 
 ### Critical Thinking Questions
 
-11. Both parsers produce identical ASTs for `2 + 3 * 4 - 1`. Now trace just the Pratt parser's `expression` calls for this input: what is the `rbp` argument on each call, and when does the `while` loop stop consuming?
-12. In the recursive descent parser, adding a new precedence tier requires a new function. In the Pratt parser, what is the equivalent change? Which approach do you find easier to extend, and why?
-13. Change `LBP["+"]` and `LBP["-"]` to `20` (equal to `*` and `/`). Predict what tree `2 + 3 * 4` produces under this change before running. Verify, then explain what "all equal precedence, left associative" means for expression evaluation.
+11.  Both parsers produce identical ASTs for `2 + 3 * 4 - 1`.  Now trace just the Pratt parser's `expression` calls for this input: what is the `rbp` argument on each call, and when does the `while` loop stop consuming?
+12.  In the recursive descent parser, adding a new precedence tier requires a new function.  In the Pratt parser, what is the equivalent change?  Which approach do you find easier to extend, and why?
+13.  Change `LBP["+"]` and `LBP["-"]` to `20` (equal to `*` and `/`).  Predict what tree `2 + 3 * 4` produces under this change before running.  Verify, then explain what "all equal precedence, left associative" means for expression evaluation.
 
 ---
 

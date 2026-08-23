@@ -2,7 +2,7 @@
 
 This is the TidalCycles-style **mini-notation** subset built in the
 "Parser Tables" class activity, packaged so you can build and run it
-outside the browser. It scans and parses patterns such as `bd sn`,
+outside the browser.  It scans and parses patterns such as `bd sn`,
 `bd*2`, `[bd sn]*2`, and `bd [sn sn] hh*2 ~`, builds an AST, prints the
 tree, and evaluates the pattern into timed events within one cycle.
 
@@ -21,7 +21,7 @@ tree, and evaluates the pattern into timed events within one cycle.
 
 ## Building with flex + bison
 
-You need `flex`, `bison`, and a C compiler. Then:
+You need `flex`, `bison`, and a C compiler.  Then:
 
 ```sh
 make
@@ -44,7 +44,7 @@ you through reading.
 ## Adapting to PLY (Python)
 
 The Parser assignment uses Python, so you will likely translate rather
-than compile this. PLY (`ply.lex` / `ply.yacc`) mirrors flex/bison
+than compile this.  PLY (`ply.lex` / `ply.yacc`) mirrors flex/bison
 almost line for line:
 
 - Each flex rule becomes a `t_TOKEN` regex (e.g.

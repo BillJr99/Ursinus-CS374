@@ -30,7 +30,7 @@ By the end of this tutorial, you will have:
 
 ### Model 1.1: Stack vs Heap Allocation
 
-C++ gives the programmer explicit control over where memory lives. Stack memory is managed automatically (LIFO cleanup when scope exits). Heap memory is managed manually via `new` and `delete`.
+C++ gives the programmer explicit control over where memory lives.  Stack memory is managed automatically (LIFO cleanup when scope exits).  Heap memory is managed manually via `new` and `delete`.
 
 ```cpp
 #include <iostream>
@@ -58,7 +58,7 @@ void stack_vs_heap() {
 int main() { stack_vs_heap(); }
 ```
 
-Stack frames are automatically popped when a function returns; no `delete` needed. Heap allocations persist until you explicitly `delete` them. Forgetting, double-deleting, or accessing freed memory are the three canonical bugs.
+Stack frames are automatically popped when a function returns; no `delete` needed.  Heap allocations persist until you explicitly `delete` them.  Forgetting, double-deleting, or accessing freed memory are the three canonical bugs.
 
 ---
 
@@ -89,7 +89,7 @@ freed by thread T0 here:
     #1 0x... in double_free_demo() demo.cpp:5
 ```
 
-The allocator's bookkeeping structures (size, free-list links) live adjacent to heap blocks. A double-free corrupts them, enabling heap exploitation primitives used in real-world CVEs.
+The allocator's bookkeeping structures (size, free-list links) live adjacent to heap blocks.  A double-free corrupts them, enabling heap exploitation primitives used in real-world CVEs.
 
 ---
 
@@ -180,7 +180,7 @@ g++ -g -fsanitize=address,undefined demo.cpp -o demo_asan && ./demo_asan
 
 ### Critical Thinking Questions, Part 1
 
-1. **Bug identification.** For each snippet, identify the bug category (double free, use after free, or memory leak) and explain *why* it is undefined behaviour at the C++ specification level:
+1.  **Bug identification.**  For each snippet, identify the bug category (double free, use after free, or memory leak) and explain *why* it is undefined behaviour at the C++ specification level:
 
    a.
    ```cpp
@@ -208,9 +208,9 @@ g++ -g -fsanitize=address,undefined demo.cpp -o demo_asan && ./demo_asan
    cache.get()->draw();
    ```
 
-2. **Why does nulling a pointer after delete (`p = nullptr`) prevent a double-free bug but not a use-after-free via an alias?** Sketch the memory diagram showing `p`, `alias`, and the heap block after `delete p; p = nullptr;`.
+2.  **Why does nulling a pointer after delete (`p = nullptr`) prevent a double-free bug but not a use-after-free via an alias?**  Sketch the memory diagram showing `p`, `alias`, and the heap block after `delete p; p = nullptr;`.
 
-3. **Valgrind vs ASan.** Valgrind instruments every memory access at runtime. AddressSanitizer (`-fsanitize=address`) adds shadow memory at compile time. Which detects more bugs? Which has lower overhead? Look up "redzones" in the ASan documentation and explain in one sentence what they add beyond Valgrind's capabilities.
+3.  **Valgrind vs ASan.**  Valgrind instruments every memory access at runtime.  AddressSanitizer (`-fsanitize=address`) adds shadow memory at compile time.  Which detects more bugs?  Which has lower overhead?  Look up "redzones" in the ASan documentation and explain in one sentence what they add beyond Valgrind's capabilities.
 
 ---
 
@@ -218,7 +218,7 @@ g++ -g -fsanitize=address,undefined demo.cpp -o demo_asan && ./demo_asan
 
 ### Model 2.1: RAII: The Core Principle
 
-**Resource Acquisition Is Initialization (RAII):** tie a resource's lifetime to an object's lifetime. The constructor acquires; the destructor releases. Since C++ guarantees destructors run when objects go out of scope (even through exceptions), RAII makes resource leaks nearly impossible.
+**Resource Acquisition Is Initialization (RAII):** tie a resource's lifetime to an object's lifetime.  The constructor acquires; the destructor releases.  Since C++ guarantees destructors run when objects go out of scope (even through exceptions), RAII makes resource leaks nearly impossible.
 
 ```cpp
 #include <fstream>
@@ -238,7 +238,7 @@ void write_log(const std::string& msg) {
 
 ### Model 2.2: `unique_ptr<T>`: Sole Ownership
 
-`unique_ptr` models *exclusive* ownership. It cannot be copied; only moved. When it goes out of scope, it calls `delete` automatically.
+`unique_ptr` models *exclusive* ownership.  It cannot be copied; only moved.  When it goes out of scope, it calls `delete` automatically.
 
 ```cpp
 #include <iostream>
@@ -295,7 +295,7 @@ Widget(Button) destroyed
 
 ### Model 2.3: `shared_ptr<T>` and Reference Counting
 
-`shared_ptr` allows multiple owners. An internal control block tracks the reference count. When the count reaches zero, the object is deleted.
+`shared_ptr` allows multiple owners.  An internal control block tracks the reference count.  When the count reaches zero, the object is deleted.
 
 ```cpp
 #include <iostream>
@@ -363,7 +363,7 @@ void weak_ptr_demo() {
 
 ### Python Interlude, Simulating Reference Counting
 
-The following Python program simulates a reference-counting system similar to what `shared_ptr` does internally. Run it to see how refcounts change as references are added and removed.
+The following Python program simulates a reference-counting system similar to what `shared_ptr` does internally.  Run it to see how refcounts change as references are added and removed.
 
 ```python
 try:
@@ -422,11 +422,11 @@ except Exception as e:
 
 ### Critical Thinking Questions, Part 2
 
-1. **Ownership transfer.** Why does `unique_ptr` delete its copy constructor and copy assignment operator? What would happen if two `unique_ptr`s pointed to the same raw pointer and both called `delete` in their destructors?
+1.  **Ownership transfer.**  Why does `unique_ptr` delete its copy constructor and copy assignment operator?  What would happen if two `unique_ptr`s pointed to the same raw pointer and both called `delete` in their destructors?
 
-2. **Control block layout.** A `shared_ptr<T>` holds two pointers internally: one to `T` and one to a *control block*. The control block stores the strong refcount, a weak refcount, and the deleter. `make_shared<T>(args...)` performs a *single* allocation for both `T` and the control block. `shared_ptr<T>(new T(args...))` performs two allocations. Explain one advantage and one disadvantage of the single-allocation form.
+2.  **Control block layout.**  A `shared_ptr<T>` holds two pointers internally: one to `T` and one to a *control block*.  The control block stores the strong refcount, a weak refcount, and the deleter. `make_shared<T>(args...)` performs a *single* allocation for both `T` and the control block. `shared_ptr<T>(new T(args...))` performs two allocations.  Explain one advantage and one disadvantage of the single-allocation form.
 
-3. **Weak pointer validity.** Given the following code, will `wp.lock()` return a valid pointer or an empty pointer? Explain:
+3.  **Weak pointer validity.**  Given the following code, will `wp.lock()` return a valid pointer or an empty pointer?  Explain:
    ```cpp
    std::weak_ptr<int> wp;
    {
@@ -436,13 +436,13 @@ except Exception as e:
    auto p = wp.lock();
    ```
 
-4. **RAII and exceptions.** A function creates three resources: a `unique_ptr<A>`, a `unique_ptr<B>`, and a `unique_ptr<C>`. If the constructor of `C` throws, will `A` and `B` be leaked? Would the answer change if you used raw `new` instead?
+4.  **RAII and exceptions.**  A function creates three resources: a `unique_ptr<A>`, a `unique_ptr<B>`, and a `unique_ptr<C>`.  If the constructor of `C` throws, will `A` and `B` be leaked?  Would the answer change if you used raw `new` instead?
 
 ---
 
 ### Building and Running These Examples
 
-The C++ snippets above are ordinary programs; each has a `main()`. To compile and run one yourself, save it (say, the `unique_ptr` demo) as `smartptr.cpp` and drive the build with this `Makefile`:
+The C++ snippets above are ordinary programs; each has a `main()`.  To compile and run one yourself, save it (say, the `unique_ptr` demo) as `smartptr.cpp` and drive the build with this `Makefile`:
 
 ```makefile
 # Makefile - build and run the smart-pointer demo
@@ -474,7 +474,7 @@ make run     # compiles if needed, then runs ./smartptr
 make clean   # removes the built binary
 ```
 
-A `Makefile`'s recipe lines must be indented with a **real tab**, not spaces, a classic first-time error. The `-fsanitize=address` flag links AddressSanitizer, which reports use-after-free, double-free, and leaks at runtime: run `make run` on a raw-pointer (`new`/`delete`) version and on the `unique_ptr` version and compare; the sanitizer stays quiet only when ownership is correct, which is the whole case for smart pointers in one command.
+A `Makefile`'s recipe lines must be indented with a **real tab**, not spaces, a classic first-time error.  The `-fsanitize=address` flag links AddressSanitizer, which reports use-after-free, double-free, and leaks at runtime: run `make run` on a raw-pointer (`new`/`delete`) version and on the `unique_ptr` version and compare; the sanitizer stays quiet only when ownership is correct, which is the whole case for smart pointers in one command.
 
 ---
 
@@ -482,7 +482,7 @@ A `Makefile`'s recipe lines must be indented with a **real tab**, not spaces, a 
 
 ### Model 3.1: Lvalues and Rvalues
 
-An **lvalue** has an identity: it has a name and an address you can take. An **rvalue** is a temporary; it will cease to exist at the end of the expression.
+An **lvalue** has an identity: it has a name and an address you can take.  An **rvalue** is a temporary; it will cease to exist at the end of the expression.
 
 ```cpp
 #include <iostream>
@@ -580,7 +580,7 @@ int main() {
 }
 ```
 
-**The Rule of Five:** if you define *any* of destructor / copy-ctor / copy-assign / move-ctor / move-assign, you should define *all five*. The compiler-generated defaults become incorrect once you manage a raw resource.
+**The Rule of Five:** if you define *any* of destructor / copy-ctor / copy-assign / move-ctor / move-assign, you should define *all five*.  The compiler-generated defaults become incorrect once you manage a raw resource.
 
 ---
 
@@ -622,16 +622,16 @@ int main() {
 
 ### Critical Thinking Questions, Part 3
 
-1. **Lvalue / rvalue classification.** For each expression, state whether it is an lvalue or rvalue and why:
+1.  **Lvalue / rvalue classification.**  For each expression, state whether it is an lvalue or rvalue and why:
    - `x` (where `int x = 5;`)
    - `x + 1`
    - `std::string("temp")`
    - `*ptr` (where `int* ptr = new int(3);`)
    - `std::move(x)`
 
-2. **`noexcept` and `std::vector`.** Explain why `std::vector` uses the move constructor only when it is marked `noexcept`. What guarantee would be violated if the move constructor could throw partway through reallocation?
+2.  **`noexcept` and `std::vector`.**  Explain why `std::vector` uses the move constructor only when it is marked `noexcept`.  What guarantee would be violated if the move constructor could throw partway through reallocation?
 
-3. **`std::move` is a cast.** The declaration `std::string t = std::move(s);` does not immediately move anything. Trace exactly what happens: (a) what type does `std::move(s)` return, (b) which constructor of `std::string` is called, and (c) what is the state of `s` afterwards according to the C++ standard?
+3.  **`std::move` is a cast.**  The declaration `std::string t = std::move(s);` does not immediately move anything.  Trace exactly what happens: (a) what type does `std::move(s)` return, (b) which constructor of `std::string` is called, and (c) what is the state of `s` afterwards according to the C++ standard?
 
 ---
 
@@ -639,7 +639,7 @@ int main() {
 
 ### Model 4.1: Function Templates
 
-Templates let you write one algorithm that works for any type satisfying the required interface, without runtime overhead. The compiler **instantiates** a new concrete function for each unique set of template arguments.
+Templates let you write one algorithm that works for any type satisfying the required interface, without runtime overhead.  The compiler **instantiates** a new concrete function for each unique set of template arguments.
 
 ```cpp
 #include <iostream>
@@ -803,11 +803,11 @@ T square(T x) { return x * x; }  // works for types with operator*
 
 ### Critical Thinking Questions, Part 4
 
-1. **Template instantiation.** The compiler generates a separate machine-code function for `max_of<int>` and `max_of<double>`. Why does this not violate the "Don't Repeat Yourself" principle the way copy-pasted code would? Under what circumstances could it become a code-size problem (hint: look up "template bloat")?
+1.  **Template instantiation.**  The compiler generates a separate machine-code function for `max_of<int>` and `max_of<double>`.  Why does this not violate the "Don't Repeat Yourself" principle the way copy-pasted code would?  Under what circumstances could it become a code-size problem (hint: look up "template bloat")?
 
-2. **Specialization vs overloading.** You can write both `template<> bool equal<const char*>(...)` (full specialization) and a plain overload `bool equal(const char* a, const char* b)`. Scott Meyers argues you should prefer the overload. Why? (Hint: consider what happens with `equal("a", std::string("a"))` and how the compiler selects candidates.)
+2.  **Specialization vs overloading.**  You can write both `template<> bool equal<const char*>(...)` (full specialization) and a plain overload `bool equal(const char* a, const char* b)`.  Scott Meyers argues you should prefer the overload.  Why?  (Hint: consider what happens with `equal("a", std::string("a"))` and how the compiler selects candidates.)
 
-3. **Concepts vs SFINAE.** Rewrite the following SFINAE-constrained function signature using a C++20 `requires` clause. Explain which is easier to read and which gives better compiler error messages:
+3.  **Concepts vs SFINAE.** Rewrite the following SFINAE-constrained function signature using a C++20 `requires` clause.  Explain which is easier to read and which gives better compiler error messages:
    ```cpp
    template<typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
    T next_power_of_two(T n);
@@ -967,17 +967,17 @@ void stl_algorithms() {
 
 ### Critical Thinking Questions, Part 5
 
-1. **Container choice.** For each scenario, choose the best STL container and justify your answer in terms of complexity:
+1.  **Container choice.**  For each scenario, choose the best STL container and justify your answer in terms of complexity:
    - A spell-checker needs O(1) average lookup of 100,000 English words.
    - A task scheduler needs to always pop the highest-priority task.
    - A text editor stores a long document where characters are frequently inserted and deleted at the cursor position.
    - A cache needs to iterate in insertion order and do O(1) lookup by key.
 
-2. **Iterator invalidation.** What happens to existing iterators into a `std::vector<int>` after you call `push_back`? How does this differ for `std::list<int>`? Write a code snippet that exhibits undefined behaviour due to iterator invalidation in a `vector`.
+2.  **Iterator invalidation.**  What happens to existing iterators into a `std::vector<int>` after you call `push_back`?  How does this differ for `std::list<int>`?  Write a code snippet that exhibits undefined behaviour due to iterator invalidation in a `vector`.
 
-3. **Lambda capture modes.** Explain the difference between `[=]`, `[&]`, `[x]`, `[&x]`, and `[this]` lambda captures. Why can capturing `[&]` in a lambda returned from a function cause use-after-free?
+3.  **Lambda capture modes.**  Explain the difference between `[=]`, `[&]`, `[x]`, `[&x]`, and `[this]` lambda captures.  Why can capturing `[&]` in a lambda returned from a function cause use-after-free?
 
-4. **Algorithm composition.** Using only `std::transform`, `std::copy_if`, and `std::accumulate` (no raw loops), write the expression to compute the sum of squares of all even numbers in a `vector<int>`. Name the higher-order programming pattern this represents.
+4.  **Algorithm composition.**  Using only `std::transform`, `std::copy_if`, and `std::accumulate` (no raw loops), write the expression to compute the sum of squares of all even numbers in a `vector<int>`.  Name the higher-order programming pattern this represents.
 
 ---
 
@@ -985,7 +985,7 @@ void stl_algorithms() {
 
 ### Model 6.1: Virtual Functions and the Vtable
 
-When a class has virtual functions, the compiler adds a hidden pointer (the **vptr**) to every object. This vptr points to the class's **vtable**, a static array of function pointers.
+When a class has virtual functions, the compiler adds a hidden pointer (the **vptr**) to every object.  This vptr points to the class's **vtable**, a static array of function pointers.
 
 ```
 Object layout in memory:
@@ -1069,7 +1069,7 @@ void rtti_demo(Shape* s) {
 
 ### Model 6.2: Type Erasure: `std::function` and Friends
 
-**Type erasure** hides the concrete type behind a stable interface. You can store a lambda, a function pointer, a functor, or a member function pointer in the same `std::function` object, without knowing the concrete type at the call site.
+**Type erasure** hides the concrete type behind a stable interface.  You can store a lambda, a function pointer, a functor, or a member function pointer in the same `std::function` object, without knowing the concrete type at the call site.
 
 ```cpp
 #include <iostream>
@@ -1144,7 +1144,7 @@ void variant_demo() {
 
 ### Python Interlude, Duck Typing vs Explicit Interfaces
 
-In Python, type erasure is the *default*: any callable is accepted anywhere a callable is expected. This contrast helps clarify *why* C++ needs explicit type erasure machinery.
+In Python, type erasure is the *default*: any callable is accepted anywhere a callable is expected.  This contrast helps clarify *why* C++ needs explicit type erasure machinery.
 
 ```python
 try:
@@ -1206,13 +1206,13 @@ except Exception as e:
 
 ### Critical Thinking Questions, Part 6
 
-1. **Virtual dispatch cost.** A non-virtual function call is resolved at compile time (direct call instruction). A virtual function call requires: (a) load the vptr from the object, (b) index into the vtable, (c) load the function pointer, (d) call indirectly. In tight loops, this indirect branch can cause branch-misprediction penalties. Name two techniques used in production code to recover this performance while keeping polymorphic behaviour.
+1.  **Virtual dispatch cost.**  A non-virtual function call is resolved at compile time (direct call instruction).  A virtual function call requires: (a) load the vptr from the object, (b) index into the vtable, (c) load the function pointer, (d) call indirectly.  In tight loops, this indirect branch can cause branch-misprediction penalties.  Name two techniques used in production code to recover this performance while keeping polymorphic behaviour.
 
-2. **Why virtual destructors?** Suppose `Shape` does not have a `virtual` destructor. You write `Shape* s = new Circle(3.0); delete s;`. What happens? Write out the exact sequence of destructor calls in both cases (virtual vs non-virtual).
+2.  **Why virtual destructors?**  Suppose `Shape` does not have a `virtual` destructor.  You write `Shape* s = new Circle(3.0); delete s;`.  What happens?  Write out the exact sequence of destructor calls in both cases (virtual vs non-virtual).
 
-3. **`std::function` overhead.** `std::function` uses *small-buffer optimization (SBO)*: callables that fit in ~24-48 bytes are stored inline (no heap allocation). Larger callables are heap-allocated. Given `auto big_lambda = [captured_array = std::array<char, 128>{}](int x){ return x; };`, will `std::function<int(int)> f = big_lambda;` trigger a heap allocation? How would you verify this?
+3.  **`std::function` overhead.** `std::function` uses *small-buffer optimization (SBO)*: callables that fit in ~24-48 bytes are stored inline (no heap allocation).  Larger callables are heap-allocated.  Given `auto big_lambda = [captured_array = std::array<char, 128>{}](int x){ return x; };`, will `std::function<int(int)> f = big_lambda;` trigger a heap allocation?  How would you verify this?
 
-4. **`std::variant` vs inheritance.** `std::variant<Circle, Rectangle>` and a base-class hierarchy both model "a shape that is either a Circle or a Rectangle". List two advantages of the `variant` approach and two advantages of the virtual-function approach. (Hint: open/closed extensibility, separate compilation, pattern matching.)
+4.  **`std::variant` vs inheritance.** `std::variant<Circle, Rectangle>` and a base-class hierarchy both model "a shape that is either a Circle or a Rectangle".  List two advantages of the `variant` approach and two advantages of the virtual-function approach.  (Hint: open/closed extensibility, separate compilation, pattern matching.)
 
 ---
 
@@ -1401,7 +1401,7 @@ void fold_demo() {
 
 ### Model 7.4: Coroutines (C++20): Brief Introduction
 
-Coroutines are functions that can be suspended and resumed. C++20 provides the machinery; you typically use a library wrapper (`std::generator` in C++23, or a coroutine handle wrapper).
+Coroutines are functions that can be suspended and resumed.  C++20 provides the machinery; you typically use a library wrapper (`std::generator` in C++23, or a coroutine handle wrapper).
 
 ```cpp
 // Coroutines require a Promise type and coroutine handle.
@@ -1441,9 +1441,9 @@ Coroutines are functions that can be suspended and resumed. C++20 provides the m
 
 ### Critical Thinking Questions, Part 7
 
-1. **`std::optional` vs pointer.** Both `std::optional<Widget>` and `Widget*` can represent "a Widget or nothing." List three specific scenarios where `std::optional` is the better choice, and one scenario where a pointer (raw or smart) is the better choice. What does `optional` communicate about *ownership* that a raw pointer does not?
+1.  **`std::optional` vs pointer.**  Both `std::optional<Widget>` and `Widget*` can represent "a Widget or nothing."  List three specific scenarios where `std::optional` is the better choice, and one scenario where a pointer (raw or smart) is the better choice.  What does `optional` communicate about *ownership* that a raw pointer does not?
 
-2. **`string_view` lifetime pitfalls.** Consider the following three functions. For each, state whether the returned `string_view` is safe to use after the function returns, and explain why:
+2.  **`string_view` lifetime pitfalls.**  Consider the following three functions.  For each, state whether the returned `string_view` is safe to use after the function returns, and explain why:
 
    ```cpp
    // a)
@@ -1463,30 +1463,30 @@ Coroutines are functions that can be suspended and resumed. C++20 provides the m
    }
    ```
 
-3. **Ranges vs `<algorithm>`.** The pre-C++20 way to filter-then-transform is:
+3.  **Ranges vs `<algorithm>`.**  The pre-C++20 way to filter-then-transform is:
    ```cpp
    std::vector<int> evens;
    std::copy_if(v.begin(), v.end(), std::back_inserter(evens), is_even);
    std::vector<int> squares;
    std::transform(evens.begin(), evens.end(), std::back_inserter(squares), square);
    ```
-   The ranges way is lazy: `v | filter(is_even) | transform(square)`. Explain what "lazy" means here in terms of memory allocation and when each element is processed. Under what conditions is the ranges version both faster and more memory-efficient?
+   The ranges way is lazy: `v | filter(is_even) | transform(square)`.  Explain what "lazy" means here in terms of memory allocation and when each element is processed.  Under what conditions is the ranges version both faster and more memory-efficient?
 
 ---
 
 ## Further Reading
 
 - **C++ Core Guidelines**: [https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
-  The authoritative set of guidelines maintained by Bjarne Stroustrup and Herb Sutter. Every section in this tutorial has a corresponding guideline. Read especially: R (resource management), T (templates), and C (classes).
+  The authoritative set of guidelines maintained by Bjarne Stroustrup and Herb Sutter.  Every section in this tutorial has a corresponding guideline.  Read especially: R (resource management), T (templates), and C (classes).
 
 - **cppreference.com**: [https://en.cppreference.com/](https://en.cppreference.com/)
-  The definitive online reference for every C++ standard library component. When the standard says "effects as if," cppreference shows the actual complexity, iterator invalidation rules, and example code. Bookmark it.
+  The definitive online reference for every C++ standard library component.  When the standard says "effects as if," cppreference shows the actual complexity, iterator invalidation rules, and example code.  Bookmark it.
 
 - **Scott Meyers, "Effective Modern C++" (O'Reilly, 2014)**
-  42 specific items covering `auto`, smart pointers, move semantics, lambdas, and concurrency. Items 1-9 (type deduction), 18-22 (smart pointers), and 23-30 (move semantics) map directly to this tutorial. Read it after you feel comfortable with the concepts here.
+  42 specific items covering `auto`, smart pointers, move semantics, lambdas, and concurrency.  Items 1-9 (type deduction), 18-22 (smart pointers), and 23-30 (move semantics) map directly to this tutorial.  Read it after you feel comfortable with the concepts here.
 
 - **"C++ Templates: The Complete Guide", Vandevoorde, Josuttis, Gregor (2nd ed.)**
-  Deep dive into template mechanics: instantiation, argument deduction, SFINAE, variadic templates, and expression templates. Essential for library authors.
+  Deep dive into template mechanics: instantiation, argument deduction, SFINAE, variadic templates, and expression templates.  Essential for library authors.
 
 - **CppCon talks (YouTube)**: Search for:
   - "Back to Basics: Smart Pointers", Arthur O'Dwyer
@@ -1502,15 +1502,15 @@ Coroutines are functions that can be suspended and resumed. C++20 provides the m
 
 Write 2-3 paragraphs addressing the following:
 
-1. **The surprising feature.** Pick one concept from this tutorial (move semantics, type erasure, `constexpr`, Concepts, RAII, or another) that you did not expect to work the way it does. Describe precisely what surprised you.
+1.  **The surprising feature.**  Pick one concept from this tutorial (move semantics, type erasure, `constexpr`, Concepts, RAII, or another) that you did not expect to work the way it does.  Describe precisely what surprised you.
 
-2. **The PL theory connection.** Map your chosen feature to a concept from the programming languages theory portion of this course:
-   - *Ownership types / affine types*: `unique_ptr`'s move-only semantics correspond to **affine types** (used at most once). Rust formalizes this as its ownership system. How does C++'s approach differ from Rust's compile-time enforcement?
-   - *Parametric polymorphism*: Templates are C++'s mechanism for parametric polymorphism, the same construct studied in Hindley-Milner type theory (Haskell's `forall a. a -> a`). But C++ templates use *duck typing at instantiation time* rather than type-class constraints. How do C++20 Concepts close this gap?
-   - *Type erasure and existential types*: `std::function<int(int)>` hides the concrete callable type. In type theory, this corresponds to an **existential type** `∃T. (T, T->int)`: there exists some type T, along with a value of T and a function from T to int. How does `std::any` differ; what existential does it represent?
-   - *Lazy evaluation*: C++20 ranges are lazy in the same sense as Haskell's list combinators. Both defer computation until the value is demanded. What does this say about the relationship between the iterator protocol and **thunks** in lazy languages?
+2.  **The PL theory connection.**  Map your chosen feature to a concept from the programming languages theory portion of this course:
+   - *Ownership types / affine types*: `unique_ptr`'s move-only semantics correspond to **affine types** (used at most once).  Rust formalizes this as its ownership system.  How does C++'s approach differ from Rust's compile-time enforcement?
+   - *Parametric polymorphism*: Templates are C++'s mechanism for parametric polymorphism, the same construct studied in Hindley-Milner type theory (Haskell's `forall a. a -> a`).  But C++ templates use *duck typing at instantiation time* rather than type-class constraints.  How do C++20 Concepts close this gap?
+   - *Type erasure and existential types*: `std::function<int(int)>` hides the concrete callable type.  In type theory, this corresponds to an **existential type** `∃T. (T, T->int)`: there exists some type T, along with a value of T and a function from T to int.  How does `std::any` differ; what existential does it represent?
+   - *Lazy evaluation*: C++20 ranges are lazy in the same sense as Haskell's list combinators.  Both defer computation until the value is demanded.  What does this say about the relationship between the iterator protocol and **thunks** in lazy languages?
 
-3. **Design tradeoff.** Every C++ feature has a cost. Does your chosen feature introduce runtime overhead? Compile-time overhead? Code complexity? How does the C++ design philosophy of **zero-cost abstractions** justify or limit the feature's design?
+3.  **Design tradeoff.**  Every C++ feature has a cost.  Does your chosen feature introduce runtime overhead?  Compile-time overhead?  Code complexity?  How does the C++ design philosophy of **zero-cost abstractions** justify or limit the feature's design?
 
 ---
 
@@ -1518,7 +1518,7 @@ Write 2-3 paragraphs addressing the following:
 
 This appendix supports the Team Language Project's **Foreign Function Interface** extension: it shows how languages call into native code (the C ABI, `ctypes`, C-compatible structs and callbacks, name mangling) and how to design an `ffi(...)` primitive for your own language.
 
-> **Imagine the United Nations General Assembly.** Each delegate speaks their own language and follows their own parliamentary customs. A simultaneous interpreter sits in a booth, listening to one language and speaking another in real time, handling not just words but idioms, formal registers, and cultural conventions that do not map one-to-one. A Foreign Function Interface is exactly that interpreter: it sits between two language runtimes, negotiating the differences in data layout, calling conventions, memory ownership, and error handling so that a function written in C can be invoked transparently from Python, Haskell, or your own mini language. Without this translator, each language would be an island; with it, every language inherits the vast ecosystem of C libraries built over 50 years.
+> **Imagine the United Nations General Assembly.**  Each delegate speaks their own language and follows their own parliamentary customs.  A simultaneous interpreter sits in a booth, listening to one language and speaking another in real time, handling not just words but idioms, formal registers, and cultural conventions that do not map one-to-one.  A Foreign Function Interface is exactly that interpreter: it sits between two language runtimes, negotiating the differences in data layout, calling conventions, memory ownership, and error handling so that a function written in C can be invoked transparently from Python, Haskell, or your own mini language.  Without this translator, each language would be an island; with it, every language inherits the vast ecosystem of C libraries built over 50 years.
 
 ### Learning Goals
 
@@ -1542,21 +1542,21 @@ By the end of this section, you will be able to:
 > - The concept of a *shared library* (`.so` on Linux, `.dylib` on macOS, `.dll` on Windows), a compiled binary that can be loaded at runtime
 > - Python's `dataclass` decorator and `isinstance` checks (used in Model 5)
 >
-> You do **not** need to have written C code before. When C snippets appear (e.g., `int (*compar)(const void*, const void*)`), they are read-only reference points; the Python code does all the actual work. If a C type looks unfamiliar, focus on what `ctypes` does with it rather than the C syntax itself.
+> You do **not** need to have written C code before.  When C snippets appear (e.g., `int (*compar)(const void*, const void*)`), they are read-only reference points; the Python code does all the actual work.  If a C type looks unfamiliar, focus on what `ctypes` does with it rather than the C syntax itself.
 
 ---
 
 ### Preface: Why Every Language Needs to Call C
 
-*Intuition:* Every high-level language you have ever used (Python, JavaScript, Ruby, Java) eventually bottoms out in native code. When Python opens a file, it calls a C function in the operating system. When it computes a sine, it calls a C math library. When it sends a network packet, it calls a C socket API. The FFI is the seam between the comfortable, safe, garbage-collected world of your high-level language and the raw, pointer-filled world of the operating system and hardware. Understanding that seam makes you a better programmer regardless of which side you spend most of your time on.
+*Intuition:* Every high-level language you have ever used (Python, JavaScript, Ruby, Java) eventually bottoms out in native code.  When Python opens a file, it calls a C function in the operating system.  When it computes a sine, it calls a C math library.  When it sends a network packet, it calls a C socket API. The FFI is the seam between the comfortable, safe, garbage-collected world of your high-level language and the raw, pointer-filled world of the operating system and hardware.  Understanding that seam makes you a better programmer regardless of which side you spend most of your time on.
 
-No programming language is an island. The operating system, graphics drivers, cryptography libraries, database engines, and compression algorithms are all written in C (or C++, which uses C's ABI for its C-compatible subset). To be useful, a language must be able to call into this world.
+No programming language is an island.  The operating system, graphics drivers, cryptography libraries, database engines, and compression algorithms are all written in C (or C++, which uses C's ABI for its C-compatible subset).  To be useful, a language must be able to call into this world.
 
-A **Foreign Function Interface (FFI)** is the mechanism by which one language calls functions written in another. "Foreign" means "outside the current language runtime." The most common form is calling C from a high-level language (Python, Haskell, Lua, Julia) because:
+A **Foreign Function Interface (FFI)** is the mechanism by which one language calls functions written in another.  "Foreign" means "outside the current language runtime."  The most common form is calling C from a high-level language (Python, Haskell, Lua, Julia) because:
 
-1. **C is the universal ABI:** Nearly all languages can call C; C is the *lingua franca* of system interfaces.
-2. **Performance:** Native code runs without an interpreter loop.
-3. **Library reuse:** Millions of battle-tested C libraries exist.
+1.  **C is the universal ABI:** Nearly all languages can call C; C is the *lingua franca* of system interfaces.
+2.  **Performance:** Native code runs without an interpreter loop.
+3.  **Library reuse:** Millions of battle-tested C libraries exist.
 
 The challenge: the high-level language's runtime and the C runtime make different assumptions about data layout, memory ownership, error handling, and calling conventions.
 
@@ -1564,11 +1564,11 @@ The challenge: the high-level language's runtime and the C runtime make differen
 
 ### Model 1: The C Application Binary Interface (ABI)
 
-*Intuition:* When you call a function, the CPU needs to know: where are the arguments? (In registers? On the stack? Which ones?) Who cleans up after the call? What format does the return value come back in? The ABI is the contract that answers all of these questions. Think of it as the physical handshake protocol between two programs. C's ABI has become the universal handshake because C was the first widely-portable systems language, and every other language that wanted to talk to the operating system had to agree to shake hands on C's terms.
+*Intuition:* When you call a function, the CPU needs to know: where are the arguments?  (In registers?  On the stack?  Which ones?)  Who cleans up after the call?  What format does the return value come back in?  The ABI is the contract that answers all of these questions.  Think of it as the physical handshake protocol between two programs.  C's ABI has become the universal handshake because C was the first widely-portable systems language, and every other language that wanted to talk to the operating system had to agree to shake hands on C's terms.
 
-> **Watch out!** You must declare `argtypes` and `restype` on a `ctypes` function object before calling it. If you skip this step, `ctypes` will guess (usually defaulting to `c_int`) and you will get silent data corruption or crashes instead of a clean error. Always set both, even for functions whose return type is `void`.
+> **Watch out!**  You must declare `argtypes` and `restype` on a `ctypes` function object before calling it.  If you skip this step, `ctypes` will guess (usually defaulting to `c_int`) and you will get silent data corruption or crashes instead of a clean error.  Always set both, even for functions whose return type is `void`.
 
-An **ABI (Application Binary Interface)** defines how functions are called at the machine level: which registers hold arguments, who cleans up the stack, how structures are laid out in memory, what calling conventions are used. C's ABI is the de facto standard because it is stable, documented, and supported by every compiler on every platform.
+An **ABI (Application Binary Interface)** defines how functions are called at the machine level: which registers hold arguments, who cleans up the stack, how structures are laid out in memory, what calling conventions are used.  C's ABI is the de facto standard because it is stable, documented, and supported by every compiler on every platform.
 
 ```python
 import ctypes
@@ -1623,25 +1623,25 @@ for name, ctype, example in type_map:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-**Key insight:** `ctypes` marshals Python values into C-compatible binary representations automatically for simple types. For complex types (structs, arrays, function pointers), you must describe the layout explicitly.
+**Key insight:** `ctypes` marshals Python values into C-compatible binary representations automatically for simple types.  For complex types (structs, arrays, function pointers), you must describe the layout explicitly.
 
 > **Critical Thinking Questions 1-3**
 
-**CTQ 1.** `strlen` expects a `const char *`, a pointer to a null-terminated byte array. Why does `ctypes` require `b"Hello"` (bytes) rather than `"Hello"` (str)? What does Python's str store internally that C's `char *` does not?
+**CTQ 1.** `strlen` expects a `const char *`, a pointer to a null-terminated byte array.  Why does `ctypes` require `b"Hello"` (bytes) rather than `"Hello"` (str)?  What does Python's str store internally that C's `char *` does not?
 
-**CTQ 2.** `ctypes.c_float` has sizeof 4 bytes; `ctypes.c_double` has sizeof 8 bytes. Python's `float` is always 64-bit (a C `double`). What precision loss happens when you pass a Python `float` to a C function declared with `c_float` parameter?
+**CTQ 2.** `ctypes.c_float` has sizeof 4 bytes; `ctypes.c_double` has sizeof 8 bytes.  Python's `float` is always 64-bit (a C `double`).  What precision loss happens when you pass a Python `float` to a C function declared with `c_float` parameter?
 
-**CTQ 3.** The ABI specifies how arguments are passed: by register (x86-64 uses rdi, rsi, rdx, rcx, r8, r9 for first 6 integer args) or by stack (7th and beyond). A language that passes arguments in the wrong order or wrong registers will silently corrupt function calls. What is the responsibility of `ctypes` in this context?
+**CTQ 3.**  The ABI specifies how arguments are passed: by register (x86-64 uses rdi, rsi, rdx, rcx, r8, r9 for first 6 integer args) or by stack (7th and beyond).  A language that passes arguments in the wrong order or wrong registers will silently corrupt function calls.  What is the responsibility of `ctypes` in this context?
 
 ---
 
 ### Model 2: Structs, Pointers, and Memory Layout
 
-*Intuition:* A C struct is just a named chunk of memory. The compiler decides exactly how many bytes each field occupies and at what offset from the start of the struct, and it follows strict rules about *alignment* (each field must start at an address that is a multiple of its size). When you pass a struct across an FFI boundary, the receiving side must use *exactly* the same layout, or it will read the wrong bytes. `ctypes.Structure` exists precisely to let Python declare the layout explicitly so the two sides agree.
+*Intuition:* A C struct is just a named chunk of memory.  The compiler decides exactly how many bytes each field occupies and at what offset from the start of the struct, and it follows strict rules about *alignment* (each field must start at an address that is a multiple of its size).  When you pass a struct across an FFI boundary, the receiving side must use *exactly* the same layout, or it will read the wrong bytes. `ctypes.Structure` exists precisely to let Python declare the layout explicitly so the two sides agree.
 
-> **Watch out!** Struct padding is invisible in the source code but very real in memory. A struct with fields `uint8, uint32, uint16` (1+4+2 = 7 bytes naively) will actually occupy 8 or more bytes because the `uint32` field must be 4-byte aligned. Always use `ctypes.sizeof` to check the real size; never compute it by adding field sizes by hand.
+> **Watch out!**  Struct padding is invisible in the source code but very real in memory.  A struct with fields `uint8, uint32, uint16` (1+4+2 = 7 bytes naively) will actually occupy 8 or more bytes because the `uint32` field must be 4-byte aligned.  Always use `ctypes.sizeof` to check the real size; never compute it by adding field sizes by hand.
 
-C structs have a specific memory layout (with padding). When calling C functions that take or return structs, the FFI must reproduce the exact layout.
+C structs have a specific memory layout (with padding).  When calling C functions that take or return structs, the FFI must reproduce the exact layout.
 
 ```python
 import ctypes
@@ -1709,21 +1709,21 @@ print(f"  sizeof = {ctypes.sizeof(arr)} bytes ({ctypes.sizeof(ctypes.c_int)} × 
 
 > **Critical Thinking Questions 4-6**
 
-**CTQ 4.** The `Padded` struct has `sizeof` greater than 1+4+2=7. The compiler adds **padding** between fields to align them to their natural alignment. Why does alignment matter? What hardware problem does misaligned access cause on x86? On ARM?
+**CTQ 4.**  The `Padded` struct has `sizeof` greater than 1+4+2=7.  The compiler adds **padding** between fields to align them to their natural alignment.  Why does alignment matter?  What hardware problem does misaligned access cause on x86?  On ARM?
 
-**CTQ 5.** `ctypes.byref(v)` passes a pointer to `v` without copying. If the C function modifies the struct through the pointer, the Python object `v` is also modified. How does this differ from Python's normal parameter passing semantics? When is this desirable? When is it dangerous?
+**CTQ 5.** `ctypes.byref(v)` passes a pointer to `v` without copying.  If the C function modifies the struct through the pointer, the Python object `v` is also modified.  How does this differ from Python's normal parameter passing semantics?  When is this desirable?  When is it dangerous?
 
-**CTQ 6.** Structs can be passed **by value** (C copies the struct) or **by pointer** (C receives an address). For large structs, passing by pointer is more efficient. But it also means the callee can modify the original. How do languages like Rust use the type system to make this safe?
+**CTQ 6.**  Structs can be passed **by value** (C copies the struct) or **by pointer** (C receives an address).  For large structs, passing by pointer is more efficient.  But it also means the callee can modify the original.  How do languages like Rust use the type system to make this safe?
 
 ---
 
 ### Model 3: Callbacks, C Calling Back into Python
 
-*Intuition:* The FFI translator analogy runs in both directions. When you hire an interpreter for a UN session, sometimes the foreign delegate asks the interpreter a question; the interpreter must be able to respond, not just relay. Callbacks are the same: a C library like `qsort` does not just receive data; it calls back into your code to ask "which of these two items is larger?" The Python function you provide becomes, for the duration of the C call, a first-class participant in C's execution; it must speak C's calling convention fluently, which is what `ctypes.CFUNCTYPE` arranges.
+*Intuition:* The FFI translator analogy runs in both directions.  When you hire an interpreter for a UN session, sometimes the foreign delegate asks the interpreter a question; the interpreter must be able to respond, not just relay.  Callbacks are the same: a C library like `qsort` does not just receive data; it calls back into your code to ask "which of these two items is larger?"  The Python function you provide becomes, for the duration of the C call, a first-class participant in C's execution; it must speak C's calling convention fluently, which is what `ctypes.CFUNCTYPE` arranges.
 
-> **Watch out!** C holds a raw function pointer to your Python callback, just a memory address. Python's garbage collector does not know about this. If the Python object wrapping the callback is collected (because no Python variable refers to it anymore), the memory address becomes invalid, and the next time C calls it your program will crash or produce undefined behavior. Always store callback objects in a variable that stays alive for as long as C might invoke them.
+> **Watch out!**  C holds a raw function pointer to your Python callback, just a memory address.  Python's garbage collector does not know about this.  If the Python object wrapping the callback is collected (because no Python variable refers to it anymore), the memory address becomes invalid, and the next time C calls it your program will crash or produce undefined behavior.  Always store callback objects in a variable that stays alive for as long as C might invoke them.
 
-The FFI is bidirectional: not only can Python call C, but C can call Python functions (callbacks). This is used for event handlers, sort comparators, and error handlers.
+The FFI is bidirectional: not only can Python call C, but C can call Python functions (callbacks).  This is used for event handlers, sort comparators, and error handlers.
 
 ```python
 import ctypes
@@ -1801,19 +1801,19 @@ print(f"  Direct test of callback: my_handler(10, 3) = {cb.c_ptr(10, 3)}")
 
 > **Critical Thinking Questions 7-9**
 
-**CTQ 7.** `COMPARATOR = ctypes.CFUNCTYPE(c_int, c_void_p, c_void_p)` describes the function signature. What would happen if you passed a Python function with the wrong signature (e.g., one that takes only one argument instead of two)?
+**CTQ 7.** `COMPARATOR = ctypes.CFUNCTYPE(c_int, c_void_p, c_void_p)` describes the function signature.  What would happen if you passed a Python function with the wrong signature (e.g., one that takes only one argument instead of two)?
 
-**CTQ 8.** The comment warns: "if c_compare is garbage collected, the pointer becomes dangling." Why can't Python's garbage collector know that C is holding a reference? What would a language with linear types (like Rust) do differently?
+**CTQ 8.**  The comment warns: "if c_compare is garbage collected, the pointer becomes dangling."  Why can't Python's garbage collector know that C is holding a reference?  What would a language with linear types (like Rust) do differently?
 
-**CTQ 9.** `qsort` calls the comparator multiple times on different pairs. The comparator modifies `call_count`, a Python list (mutable container). This works because Python closures capture by reference. If the comparator modified a Python integer directly (`count = count + 1`), it would fail due to Python's scoping rules. Why? What does this reveal about closures and rebinding?
+**CTQ 9.** `qsort` calls the comparator multiple times on different pairs.  The comparator modifies `call_count`, a Python list (mutable container).  This works because Python closures capture by reference.  If the comparator modified a Python integer directly (`count = count + 1`), it would fail due to Python's scoping rules.  Why?  What does this reveal about closures and rebinding?
 
 ---
 
 ### Model 4: Name Mangling and Symbol Resolution
 
-*Intuition:* When a program links against a library, it looks up function names in the library's *symbol table*, a dictionary inside the compiled binary. C's symbol for `strlen` is literally the string `"strlen"`. C++ cannot do this for overloaded functions: `foo(int)` and `foo(double)` both spell `foo`, but they are different functions with different machine code. C++ solves this by *mangling* the name, encoding the parameter types into the symbol string so that `foo(int)` becomes something like `_ZN3foo1iE`. This is the "name" the linker actually looks up. FFI tools must understand mangling to call C++ functions correctly.
+*Intuition:* When a program links against a library, it looks up function names in the library's *symbol table*, a dictionary inside the compiled binary.  C's symbol for `strlen` is literally the string `"strlen"`.  C++ cannot do this for overloaded functions: `foo(int)` and `foo(double)` both spell `foo`, but they are different functions with different machine code.  C++ solves this by *mangling* the name, encoding the parameter types into the symbol string so that `foo(int)` becomes something like `_ZN3foo1iE`.  This is the "name" the linker actually looks up.  FFI tools must understand mangling to call C++ functions correctly.
 
-C uses simple symbol names (`strlen`, `printf`). C++ mangles names to encode type signatures. Understanding this is essential for building FFI tools.
+C uses simple symbol names (`strlen`, `printf`).  C++ mangles names to encode type signatures.  Understanding this is essential for building FFI tools.
 
 ```python
 import ctypes
@@ -1889,19 +1889,19 @@ for cls, fn, params in examples:
 
 > **Critical Thinking Questions 10-12**
 
-**CTQ 10.** C's simple symbol names (`strlen`) mean that a shared library can only export one `strlen`. C++ name mangling allows overloaded functions (`foo(int)` and `foo(double)`) to coexist in the same library. What does this tell you about C's type system at the ABI level?
+**CTQ 10.**  C's simple symbol names (`strlen`) mean that a shared library can only export one `strlen`.  C++ name mangling allows overloaded functions (`foo(int)` and `foo(double)`) to coexist in the same library.  What does this tell you about C's type system at the ABI level?
 
-**CTQ 11.** `ctypes.CDLL(None)` loads symbols from all currently loaded libraries, including the Python interpreter itself. Why is calling Python's internal C API this way dangerous? What invariant must you preserve?
+**CTQ 11.** `ctypes.CDLL(None)` loads symbols from all currently loaded libraries, including the Python interpreter itself.  Why is calling Python's internal C API this way dangerous?  What invariant must you preserve?
 
-**CTQ 12.** When writing an FFI for your mini language, you could either (a) call into C at the C ABI level (like ctypes) or (b) call Python functions directly. Option (b) is simpler. What would you lose by choosing (b) rather than (a)? Under what circumstances would (a) be necessary?
+**CTQ 12.**  When writing an FFI for your mini language, you could either (a) call into C at the C ABI level (like ctypes) or (b) call Python functions directly.  Option (b) is simpler.  What would you lose by choosing (b) rather than (a)?  Under what circumstances would (a) be necessary?
 
 ---
 
 ### Model 5: Implementing a Simple FFI in a Mini Interpreter
 
-*Intuition:* Now that you understand the mechanics of crossing the language boundary, you can add that crossing point to your own interpreter. The key design decision is: what does an FFI call look like *in your language's syntax*, and how does the interpreter translate that into an actual call? This model shows the minimum viable implementation: an `FfiCall` AST node carries the library name, function name, type annotations, and arguments. The interpreter's `eval_node` function dispatches it to a registry that handles the marshaling. Even a simple version like this is enough to give your mini language access to the entire C standard library.
+*Intuition:* Now that you understand the mechanics of crossing the language boundary, you can add that crossing point to your own interpreter.  The key design decision is: what does an FFI call look like *in your language's syntax*, and how does the interpreter translate that into an actual call?  This model shows the minimum viable implementation: an `FfiCall` AST node carries the library name, function name, type annotations, and arguments.  The interpreter's `eval_node` function dispatches it to a registry that handles the marshaling.  Even a simple version like this is enough to give your mini language access to the entire C standard library.
 
-A language interpreter can support FFI by letting programs call Python built-ins or C functions by name. Here is a minimal implementation.
+A language interpreter can support FFI by letting programs call Python built-ins or C functions by name.  Here is a minimal implementation.
 
 ```python
 from dataclasses import dataclass, field
@@ -2039,11 +2039,11 @@ print("  print n;   # 5")
 
 > **Critical Thinking Questions 13-15**
 
-**CTQ 13.** The `FFIRegistry` uses a "Python" pseudo-library for safe built-ins and C libraries for native code. What is the advantage of keeping these in the same `FfiCall` AST node vs. having separate `NativeFn` and `PythonFn` nodes?
+**CTQ 13.**  The `FFIRegistry` uses a "Python" pseudo-library for safe built-ins and C libraries for native code.  What is the advantage of keeping these in the same `FfiCall` AST node vs. having separate `NativeFn` and `PythonFn` nodes?
 
-**CTQ 14.** FFI calls bypass your interpreter's type checker. A language-level type error (e.g., passing a string where `c_int` is expected) will become a ctypes exception rather than a friendly language error. How would you add a "type gate" to the FFI call path?
+**CTQ 14.**  FFI calls bypass your interpreter's type checker.  A language-level type error (e.g., passing a string where `c_int` is expected) will become a ctypes exception rather than a friendly language error.  How would you add a "type gate" to the FFI call path?
 
-**CTQ 15.** A language with FFI can call any C function, including `malloc`, `free`, `exec`, and `system`. This breaks memory safety and security. How do languages like Haskell (via `Foreign.Unsafe`) or Rust (via `unsafe`) signal that FFI code requires special trust?
+**CTQ 15.**  A language with FFI can call any C function, including `malloc`, `free`, `exec`, and `system`.  This breaks memory safety and security.  How do languages like Haskell (via `Foreign.Unsafe`) or Rust (via `unsafe`) signal that FFI code requires special trust?
 
 ---
 
@@ -2056,21 +2056,21 @@ print("  print n;   # 5")
 - [( )] A single character (1 byte)
 - [( )] A wide character (2 bytes) for Unicode
 
-**Question 2.** When a C function takes a struct by value, the caller:
+**Question 2.**  When a C function takes a struct by value, the caller:
 
 - [(X)] Copies the entire struct onto the stack (or into registers per ABI)
 - [( )] Passes a pointer to the struct, which C dereferences automatically
 - [( )] Converts the struct to a byte string first
 - [( )] Returns an error unless the struct is marked `extern "C"`
 
-**Question 3.** C++ name mangling is needed because:
+**Question 3.**  C++ name mangling is needed because:
 
 - [( )] C++ is compiled to a different object format than C
 - [(X)] C++ allows function overloading, so multiple functions can have the same name but different parameter types
 - [( )] The linker requires all symbols to be prefixed with the namespace
 - [( )] C++ uses a garbage collector that must track all function names
 
-**Question 4.** Keeping a reference to a `ctypes.CFUNCTYPE` callback alive while C might call it is necessary because:
+**Question 4.**  Keeping a reference to a `ctypes.CFUNCTYPE` callback alive while C might call it is necessary because:
 
 - [( )] ctypes functions are reference-counted independently
 - [(X)] Python's garbage collector will free the callback if no Python reference remains, leaving C with a dangling pointer
@@ -2081,7 +2081,7 @@ print("  print n;   # 5")
 
 ### Exercises
 
-**Exercise 1.** Use `ctypes` to call C's `qsort` with a Python comparator that sorts strings by length (shortest first), falling back to lexicographic order for equal-length strings:
+**Exercise 1.**  Use `ctypes` to call C's `qsort` with a Python comparator that sorts strings by length (shortest first), falling back to lexicographic order for equal-length strings:
 
 ```python
 import ctypes
@@ -2122,7 +2122,7 @@ else:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-**Exercise 2.** Extend the `FFIRegistry` from Model 5 to support type coercion and better error messages. Add a `validate_and_coerce` method that checks types and converts Python values:
+**Exercise 2.**  Extend the `FFIRegistry` from Model 5 to support type coercion and better error messages.  Add a `validate_and_coerce` method that checks types and converts Python values:
 
 ```python
 import ctypes
@@ -2196,7 +2196,7 @@ for fn, types, args in bad_calls:
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-**Exercise 3.** Implement a minimal "safe FFI" for your mini language that allows calling Python's `math` module functions. Add lexer/parser support for the syntax `ffi("math", "sqrt", 9.0)`:
+**Exercise 3.**  Implement a minimal "safe FFI" for your mini language that allows calling Python's `math` module functions.  Add lexer/parser support for the syntax `ffi("math", "sqrt", 9.0)`:
 
 ```python
 import math
@@ -2259,11 +2259,11 @@ except ImportError as e:
 
 ### Reflection
 
-1. The FFI is fundamentally an "escape hatch" from your language's safety guarantees. A type-safe language can call unsafe C code via FFI. How do language designers manage this tension? Name the strategies used by Python, Haskell, and Rust respectively.
+1.  The FFI is fundamentally an "escape hatch" from your language's safety guarantees.  A type-safe language can call unsafe C code via FFI. How do language designers manage this tension?  Name the strategies used by Python, Haskell, and Rust respectively.
 
-2. Your mini interpreter runs Python as its host language. This means your "FFI" to Python is essentially free; you can call any Python function. But if your language was a compiled language generating machine code, FFI would require real ABI compatibility. What would change in your implementation?
+2.  Your mini interpreter runs Python as its host language.  This means your "FFI" to Python is essentially free; you can call any Python function.  But if your language was a compiled language generating machine code, FFI would require real ABI compatibility.  What would change in your implementation?
 
-3. The `SAFE_MODULES` allowlist in Exercise 3 prevents calling `os.system` via FFI. Is a whitelist the right security model for an FFI? What are the limitations of this approach?
+3.  The `SAFE_MODULES` allowlist in Exercise 3 prevents calling `os.system` via FFI. Is a whitelist the right security model for an FFI? What are the limitations of this approach?
 
 ---
 

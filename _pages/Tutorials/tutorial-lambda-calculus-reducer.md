@@ -24,7 +24,7 @@ By the end of this tutorial, you will have:
 - Implemented both normal-order and applicative-order beta reduction strategies and observed on a concrete term where they differ
 - Built a step-tracer and REPL that interactively reduces lambda calculus terms, suitable for use in the Lambda Calculus assignment
 
-This tutorial builds a complete, correct lambda calculus reducer in Python, the same one you need for the Lambda Calculus assignment. We go slowly through every design decision and every subtle point, so that when you write your own from scratch, you understand *why* each piece works, not just *what* it does.
+This tutorial builds a complete, correct lambda calculus reducer in Python, the same one you need for the Lambda Calculus assignment.  We go slowly through every design decision and every subtle point, so that when you write your own from scratch, you understand *why* each piece works, not just *what* it does.
 
 By the end you will have:
 - An AST with `Var`, `Lam`, `App` nodes
@@ -41,7 +41,7 @@ By the end you will have:
 
 ## 1.1 Three Node Types
 
-The lambda calculus has exactly three syntactic forms. Each gets one class:
+The lambda calculus has exactly three syntactic forms.  Each gets one class:
 
 ```python
 # lc_ast.py - Lambda Calculus AST
@@ -258,7 +258,7 @@ print(beta_step(id_app))   # z
 
 ## 4.2 Normal-Order Reduction
 
-**Normal-order** always reduces the **leftmost, outermost** redex. This is the strategy that finds a normal form whenever one exists.
+**Normal-order** always reduces the **leftmost, outermost** redex.  This is the strategy that finds a normal form whenever one exists.
 
 ```python
 def normal_order_step(term):
@@ -306,7 +306,7 @@ def reduce_normal(term, max_steps=1000, trace=False):
 
 ## 4.3 Applicative-Order Reduction
 
-**Applicative-order** reduces arguments first. This is what Python, Java, C, and most languages do.
+**Applicative-order** reduces arguments first.  This is what Python, Java, C, and most languages do.
 
 ```python
 def applicative_order_step(term):
@@ -601,7 +601,7 @@ for desc, term_str, expected in tests:
 | Config | `config.json` | your code |
 | Transcript | run with trace=True, redirect to file | `README` |
 
-The one step not covered here: **alpha-equivalence checking** for your cross-verification report. Two terms are alpha-equivalent if one can be obtained from the other by consistently renaming bound variables. The cleanest approach is to normalize bound variable names (rename them in order of appearance: `x₁`, `x₂`, etc.) and then compare structurally.
+The one step not covered here: **alpha-equivalence checking** for your cross-verification report.  Two terms are alpha-equivalent if one can be obtained from the other by consistently renaming bound variables.  The cleanest approach is to normalize bound variable names (rename them in order of appearance: `x₁`, `x₂`, etc.) and then compare structurally.
 
 ---
 
@@ -611,11 +611,11 @@ The one step not covered here: **alpha-equivalence checking** for your cross-ver
 
 This optional advanced section stands apart from the reducer you built above: it answers the question the reducer raises but cannot answer on its own: how does an *anonymous* function recurse?
 
-Imagine a self-playing record: the groove that plays the current note also contains the instruction to move to the next note. The record does not need to consult an external playlist; the mechanism for advancing is baked into every moment of the playback. The Y combinator works the same way: the code that produces the next recursive call is folded directly into each call site, with no external name, no registry, no environment entry needed.
+Imagine a self-playing record: the groove that plays the current note also contains the instruction to move to the next note.  The record does not need to consult an external playlist; the mechanism for advancing is baked into every moment of the playback.  The Y combinator works the same way: the code that produces the next recursive call is folded directly into each call site, with no external name, no registry, no environment entry needed.
 
-Every recursive function you have ever written calls itself by name: `factorial` calls `factorial`, `fib` calls `fib`. This seems obvious and necessary. But names are a feature of programming environments, not a feature of computation itself. The lambda calculus has no names; every definition is anonymous. So how do you write a recursive function when you cannot name it? How do you call a function you cannot refer to?
+Every recursive function you have ever written calls itself by name: `factorial` calls `factorial`, `fib` calls `fib`.  This seems obvious and necessary.  But names are a feature of programming environments rather than a feature of computation itself.  The lambda calculus has no names; every definition is anonymous.  So how do you write a recursive function when you cannot name it?  How do you call a function you cannot refer to?
 
-The answer is the **Y combinator**: a fixed-point operator that provides every function the gift of self-reference, without requiring a name. This section builds to Y from scratch (through a carefully designed sequence of wrong answers that teach the right intuition) and then shows Y at work in modern Python, JavaScript, and Haskell.
+The answer is the **Y combinator**: a fixed-point operator that provides every function the gift of self-reference, without requiring a name.  This section builds to Y from scratch (through a carefully designed sequence of wrong answers that teach the right intuition) and then shows Y at work in modern Python, JavaScript, and Haskell.
 
 By the end of this section, you will be able to:
 
@@ -634,7 +634,7 @@ By the end of this section, you will be able to:
 > - **Python lambdas**: `lambda n: n * 2` is a valid Python callable; you can nest lambdas and call them immediately
 > - **Named combinators (recommended but not required)**: familiarity with I, K, and the Church encodings from Part 5 helps
 >
-> The key mental model you need: a function in the lambda calculus is *anonymous*. It has no name. The question this section answers is: how can something anonymous call itself?
+> The key mental model you need: a function in the lambda calculus is *anonymous*.  It has no name.  The question this section answers is: how can something anonymous call itself?
 
 ---
 
@@ -656,7 +656,7 @@ print([factorial_named(n) for n in range(8)])
 
 ## Step 1: Pass a Copy of Yourself
 
-The big idea in this step is embarrassingly simple once you see it: if you cannot *name* yourself, you can *be given* yourself as an argument. Instead of `factorial` calling `factorial`, you write a function that says "whoever you are, call yourself on the next input." Then the caller is responsible for handing the function a copy of itself. This feels circular (and it is!) but the circularity is explicit and controlled rather than hidden in a name lookup.
+The big idea in this step is embarrassingly simple once you see it: if you cannot *name* yourself, you can *be given* yourself as an argument.  Instead of `factorial` calling `factorial`, you write a function that says "whoever you are, call yourself on the next input."  Then the caller is responsible for handing the function a copy of itself.  This feels circular (and it is!) but the circularity is explicit and controlled rather than hidden in a name lookup.
 
 If a function cannot refer to itself by name, the next best thing is to **receive itself as an argument**:
 
@@ -673,25 +673,25 @@ print(factorial_v1(7))   # 5040
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-This works! But `step1(step1)` is repetitive, and the body has `self(self)(n-1)` instead of the clean `self(n-1)` we would prefer. The next steps clean this up.
+This works!  But `step1(step1)` is repetitive, and the body has `self(self)(n-1)` instead of the clean `self(n-1)` we would prefer.  The next steps clean this up.
 
 > **Watch out! `self` is a function, not an integer**
 >
-> In `step1`, the argument called `self` is not a number: it is a *function* (specifically, it will be `step1` itself). The call `self(self)` returns a *function* (one that takes `n`), and then `(n - 1)` calls that function. It is easy to confuse `self(self)(n-1)` with `self(n-1)`: the first passes `self` as argument to produce a callable, then calls that callable on `n-1`; the second would pass `n-1` directly to `self`, which expects a function. Always trace the types.
+> In `step1`, the argument called `self` is not a number: it is a *function* (specifically, it will be `step1` itself).  The call `self(self)` returns a *function* (one that takes `n`), and then `(n - 1)` calls that function.  It is easy to confuse `self(self)(n-1)` with `self(n-1)`: the first passes `self` as argument to produce a callable, then calls that callable on `n-1`; the second would pass `n-1` directly to `self`, which expects a function.  Always trace the types.
 
 **Check your understanding**, answer these for yourself before moving on:
 
-1. In `step1 = lambda self: lambda n: ...`, what type does `self` have? (Hint: what does `self(self)` produce?)
-2. Why does the recursive call have `self(self)(n-1)` rather than `self(n-1)`?
-3. If we wrote `self(n-1)` instead, what would happen when we try to call `step1(step1)(3)`? Trace the first two calls.
+1.  In `step1 = lambda self: lambda n: ...`, what type does `self` have?  (Hint: what does `self(self)` produce?)
+2.  Why does the recursive call have `self(self)(n-1)` rather than `self(n-1)`?
+3.  If we wrote `self(n-1)` instead, what would happen when we try to call `step1(step1)(3)`?  Trace the first two calls.
 
 ---
 
 ## Step 2: Cleaning Up the Body
 
-The self-application ugliness (`self(self)(n-1)`) is a leaky abstraction: the *caller's* machinery is bleeding into the function's *logic*. The fix is a wrapper that absorbs the machinery, so the recursive call site looks like an ordinary call `rec(n-1)`. Think of `rec` as a pre-packaged "call-me-again" token that the function receives and uses freely, without knowing or caring that underneath it is `self(self)`.
+The self-application ugliness (`self(self)(n-1)`) is a leaky abstraction: the *caller's* machinery is bleeding into the function's *logic*.  The fix is a wrapper that absorbs the machinery, so the recursive call site looks like an ordinary call `rec(n-1)`.  Think of `rec` as a pre-packaged "call-me-again" token that the function receives and uses freely, without knowing or caring that underneath it is `self(self)`.
 
-The `self(self)(n-1)` pattern is ugly. Let us hide it inside a helper `rec`:
+The `self(self)(n-1)` pattern is ugly.  Let us hide it inside a helper `rec`:
 
 ```python
 # Step 2: wrap the self-application so the body is clean
@@ -708,15 +708,15 @@ print(factorial_v2(6))   # 720
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-Now the body `lambda n: 1 if n == 0 else n * rec(n - 1)` looks like a normal recursive function that calls `rec`. The self-application machinery is hidden in `rec`'s definition.
+Now the body `lambda n: 1 if n == 0 else n * rec(n - 1)` looks like a normal recursive function that calls `rec`.  The self-application machinery is hidden in `rec`'s definition.
 
 ---
 
 ## Step 3: Separating the Logic from the Fixed-Point Machinery
 
-This is the key abstraction step. Once the self-application plumbing is hidden in `rec`, the factorial logic becomes a perfectly ordinary function generator: "give me a `rec` that handles the recursive call, and I will give you a working factorial." This generator works for *any* recursive function, not just factorial. The machinery that turns a generator into a recursive function is independent of what the function computes. That machinery (currently called `Y_machinery`) is the Y combinator. You have now rebuilt it from scratch.
+This is the key abstraction step.  Once the self-application plumbing is hidden in `rec`, the factorial logic becomes a perfectly ordinary function generator: "give me a `rec` that handles the recursive call, and I will give you a working factorial."  This generator works for *any* recursive function, not just factorial.  The machinery that turns a generator into a recursive function is independent of what the function computes.  That machinery (currently called `Y_machinery`) is the Y combinator.  You have now rebuilt it from scratch.
 
-Notice that `lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1)` is just the factorial *logic*: a function that takes its recursive call-stub and returns the actual implementation. Let us name this "the step" or "the generator":
+Notice that `lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1)` is just the factorial *logic*: a function that takes its recursive call-stub and returns the actual implementation.  Let us name this "the step" or "the generator":
 
 ```python
 # Separate the factorial logic from the fixed-point machinery
@@ -742,7 +742,7 @@ print([fib_v3(n) for n in range(10)])   # [0,1,1,2,3,5,8,13,21,34]
 
 ## The Y Combinator, Formally
 
-The formal definition of Y in the lambda calculus is exactly the `Y_machinery` you built above, written in lambda notation and compressed. The self-playing record analogy pays off here: $\lambda x.\ f\ (x\ x)$ is the "groove": a function that, when applied to itself, hands $f$ a way to replay itself. Applied to itself, it produces $f\ (\text{the whole thing again})$. The outer $\lambda f$ makes the machinery generic: it works for *any* generator $f$, not just factorial. The one practical obstacle is evaluation order, which forces us to use the Z variant in Python.
+The formal definition of Y in the lambda calculus is exactly the `Y_machinery` you built above, written in lambda notation and compressed.  The self-playing record analogy pays off here: $\lambda x.\ f\ (x\ x)$ is the "groove": a function that, when applied to itself, hands $f$ a way to replay itself.  Applied to itself, it produces $f\ (\text{the whole thing again})$. The outer $\lambda f$ makes the machinery generic: it works for *any* generator $f$, not just factorial.  The one practical obstacle is evaluation order, which forces us to use the Z variant in Python.
 
 The **Y combinator** in the pure lambda calculus is:
 
@@ -765,13 +765,13 @@ $$
 = g\ (Y\ g)
 $$
 
-This is the **unfolding equation**: $Y\ g$ reduces to $g$ applied to $Y\ g$ applied to itself. Exactly what a recursive call does.
+This is the **unfolding equation**: $Y\ g$ reduces to $g$ applied to $Y\ g$ applied to itself.  Exactly what a recursive call does.
 
 **Why we need the Z variant for strict languages:** Pure Y in Python loops:
 
-> **Watch out! Python evaluates arguments before calling functions**
+> **Watch out!  Python evaluates arguments before calling functions**
 >
-> In the pure Y combinator, the body contains `x(x)` as a sub-expression. Python (like most languages) evaluates *both* arguments before making a function call. So when it processes `(lambda x: f(x(x)))(lambda x: f(x(x)))`, it tries to evaluate the argument `lambda x: f(x(x))` applied to itself *immediately* (before any base case can fire), resulting in infinite recursion. The fix is eta-expansion: wrap `x(x)` in `lambda v: x(x)(v)`, which delays evaluation until `v` is actually provided. This single change converts the call-by-name Y into the call-by-value Z.
+> In the pure Y combinator, the body contains `x(x)` as a sub-expression.  Python (like most languages) evaluates *both* arguments before making a function call.  So when it processes `(lambda x: f(x(x)))(lambda x: f(x(x)))`, it tries to evaluate the argument `lambda x: f(x(x))` applied to itself *immediately* (before any base case can fire), resulting in infinite recursion.  The fix is eta-expansion: wrap `x(x)` in `lambda v: x(x)(v)`, which delays evaluation until `v` is actually provided.  This single change converts the call-by-name Y into the call-by-value Z.
 
 ```python
 # Y = lambda f: (lambda x: f(x(x)))(lambda x: f(x(x)))
@@ -787,7 +787,7 @@ print([factorial_via_Z(n) for n in range(8)])
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-The Z combinator differs from Y only in the `lambda v:` wrapper: instead of `x(x)` (evaluated immediately), it is `lambda v: x(x)(v)` (a function, evaluated only when called). This one-token change converts Y from a normal-order term to an applicative-order term. (You can watch the difference with the reducer you built in Part 4: normal order finds the base case; applicative order hits the step limit.)
+The Z combinator differs from Y only in the `lambda v:` wrapper: instead of `x(x)` (evaluated immediately), it is `lambda v: x(x)(v)` (a function, evaluated only when called).  This one-token change converts Y from a normal-order term to an applicative-order term.  (You can watch the difference with the reducer you built in Part 4: normal order finds the base case; applicative order hits the step limit.)
 
 What is the key difference between the Y combinator and the Z combinator?
 
@@ -837,7 +837,7 @@ factorial = fix (\rec n -> if n == 0 then 1 else n * rec (n - 1))
 
 ## Y as a Fixed-Point Operator
 
-A fixed point is a value that a function maps to itself: $g(x) = x$. For numeric functions, this is a concrete number (the fixed point of cosine is about 0.739). For function-valued functions (generators that take a recursive call-stub and return a function) the "fixed point" is the fully recursive function itself. This is the self-playing record in precise mathematical language: the record that, when played, produces itself as output. The Y combinator finds that fixed point for any generator.
+A fixed point is a value that a function maps to itself: $g(x) = x$. For numeric functions, this is a concrete number (the fixed point of cosine is about 0.739).  For function-valued functions (generators that take a recursive call-stub and return a function) the "fixed point" is the fully recursive function itself.  This is the self-playing record in precise mathematical language: the record that, when played, produces itself as output.  The Y combinator finds that fixed point for any generator.
 
 A **fixed point** of a function $g$ is a value $x$ such that $g(x) = x$. The Y combinator computes a fixed point of $g$ in the following sense:
 
@@ -845,7 +845,7 @@ $$
 Y\ g = g\ (Y\ g)
 $$
 
-The value $Y\ g$ is a program that *unfolds itself one step whenever called*, which is exactly what a recursive function does. Recursion is **the fixed point of an unrolled computation**.
+The value $Y\ g$ is a program that *unfolds itself one step whenever called*, which is exactly what a recursive function does.  Recursion is **the fixed point of an unrolled computation**.
 
 ```python
 # Fixed point illustration (not Y, but the idea):
@@ -884,7 +884,7 @@ print("Fixed point verified: Z(fact_gen)(n) == fact_gen(Z(fact_gen))(n) for all 
 
 ## Y Without Y: Other Fixed-Point Tricks
 
-Real-world code rarely spells out `Z = lambda f: (lambda x: ...)`. Instead, programmers reach for idioms that produce the same effect: passing `self` as an argument, wrapping in a class, using a shared namespace. These are all approximations of the fixed-point idea, using features (assignment, objects, closures) that the lambda calculus deliberately excludes. Recognizing them as instances of the same underlying pattern is the payoff of having studied Y from scratch.
+Real-world code rarely spells out `Z = lambda f: (lambda x: ...)`.  Instead, programmers reach for idioms that produce the same effect: passing `self` as an argument, wrapping in a class, using a shared namespace.  These are all approximations of the fixed-point idea, using features (assignment, objects, closures) that the lambda calculus deliberately excludes.  Recognizing them as instances of the same underlying pattern is the payoff of having studied Y from scratch.
 
 Several practical patterns implement the same idea without writing Y explicitly:
 
@@ -920,31 +920,31 @@ print(namespace['even'](10), namespace['odd'](11))   # True True
 
 ## Y Combinator Exercises
 
-1. **Derive Z by hand.** Starting from Y = $\lambda f.\ (\lambda x.\ f\ (x\ x))\ (\lambda x.\ f\ (x\ x))$, derive Z by adding the eta-expansion `lambda v:` in the right place. Show why the unadapted Y diverges in Python by tracing the first three beta-reduction steps in applicative order.
+1.  **Derive Z by hand.**  Starting from Y = $\lambda f.\ (\lambda x.\ f\ (x\ x))\ (\lambda x.\ f\ (x\ x))$, derive Z by adding the eta-expansion `lambda v:` in the right place.  Show why the unadapted Y diverges in Python by tracing the first three beta-reduction steps in applicative order.
 
-2. **Non-numeric recursion.** Use Z to implement `reverse_list` (takes a list, returns it reversed) without any `def` or named function. Hint: `reverse_list_gen = lambda rec: lambda lst: [] if not lst else rec(lst[1:]) + [lst[0]]`.
+2.  **Non-numeric recursion.**  Use Z to implement `reverse_list` (takes a list, returns it reversed) without any `def` or named function.  Hint: `reverse_list_gen = lambda rec: lambda lst: [] if not lst else rec(lst[1:]) + [lst[0]]`.
 
-3. **Mutual recursion.** Use Z to implement mutually recursive `is_even` and `is_odd` (without using `%`). Hint: pack both into a pair, pass the pair as the self-argument, and select the correct one.
+3.  **Mutual recursion.**  Use Z to implement mutually recursive `is_even` and `is_odd` (without using `%`).  Hint: pack both into a pair, pass the pair as the self-argument, and select the correct one.
 
-4. **Fixed-point poetry.** The Y combinator satisfies $Y\ g = g\ (Y\ g)$. In Python, `print` is a function. Can you write an expression (one Python line, no semicolons) that prints itself? This is the Quine problem: a program that outputs its own source code. It is the programming equivalent of the fixed-point equation. Research the connection and write a two-paragraph explanation.
+4.  **Fixed-point poetry.**  The Y combinator satisfies $Y\ g = g\ (Y\ g)$. In Python, `print` is a function.  Can you write an expression (one Python line, no semicolons) that prints itself?  This is the Quine problem: a program that outputs its own source code.  It is the programming equivalent of the fixed-point equation.  Research the connection and write a two-paragraph explanation.
 
-5. **Y in the wild.** Find one real-world use of the Y combinator (or the Z combinator, or `fix`) in production code or a popular library. (Hint: search GitHub for `fix` in Haskell libraries, or `Y` in functional JavaScript utilities.) Write up: what is the function, what does it compute, and why was the author motivated to write it with an explicit fixed-point combinator rather than a named recursive function?
+5.  **Y in the wild.**  Find one real-world use of the Y combinator (or the Z combinator, or `fix`) in production code or a popular library.  (Hint: search GitHub for `fix` in Haskell libraries, or `Y` in functional JavaScript utilities.)  Write up: what is the function, what does it compute, and why was the author motivated to write it with an explicit fixed-point combinator rather than a named recursive function?
 
 ---
 
 ## Reflection
 
-The Y combinator makes a striking philosophical point: self-reference (the ability of a process to call itself) is not a primitive. It is derivable from two things: functions and application. Write a paragraph responding to this: what does it mean for computation that all recursion, everywhere, is ultimately "just" this fixed-point trick? Does it change how you think about what a programming language "really" needs to provide, versus what it provides for convenience?
+The Y combinator makes a striking philosophical point: self-reference (the ability of a process to call itself) is not a primitive.  It is derivable from two things: functions and application.  Write a paragraph responding to this: what does it mean for computation that all recursion, everywhere, is ultimately "just" this fixed-point trick?  Does it change how you think about what a programming language "really" needs to provide, versus what it provides for convenience?
 
 ---
 
 ## Further Reading on the Y Combinator
 
-- Michaelson, Greg. *An Introduction to Functional Programming Through Lambda Calculus* (Dover, 2011). Chapter 7 builds Y from scratch, more slowly than we do here.
-- Gabriel Lebec. "Lambda as JS, or, A Flock of Functions." Speakerdeck, 2016. The JavaScript Y combinator section directly connects to this section.
-- Krishnamurthi, Shriram. *PLAI*, Chapter 9: "Recursion and Cycles." The semantics of letrec (what the evaluator does to implement Y) is the companion to the combinator view.
-- Abelson and Sussman. *SICP*, Section 4.1.6. The metacircular evaluator's treatment of `define` and recursive definitions.
-- Gabriel, Richard. "Lisp: Good News, Bad News, How to Win Big." 1991. Mentions the Y combinator in the context of Lisp's identity as "the programmable programming language."
+- Michaelson, Greg.  *An Introduction to Functional Programming Through Lambda Calculus* (Dover, 2011).  Chapter 7 builds Y from scratch, more slowly than we do here.
+- Gabriel Lebec.  "Lambda as JS, or, A Flock of Functions."  Speakerdeck, 2016.  The JavaScript Y combinator section directly connects to this section.
+- Krishnamurthi, Shriram.  *PLAI*, Chapter 9: "Recursion and Cycles."  The semantics of letrec (what the evaluator does to implement Y) is the companion to the combinator view.
+- Abelson and Sussman.  *SICP*, Section 4.1.6.  The metacircular evaluator's treatment of `define` and recursive definitions.
+- Gabriel, Richard.  "Lisp: Good News, Bad News, How to Win Big." 1991.  Mentions the Y combinator in the context of Lisp's identity as "the programmable programming language."
 
 ---
 
@@ -952,7 +952,7 @@ The Y combinator makes a striking philosophical point: self-reference (the abili
 
 **Direction D of the Functional assignment builds on this material**; if you are considering that direction, this section is your foundation.
 
-Think of combinators as **LEGO bricks for computation**. Each brick does exactly one simple, self-contained thing: snap the identity brick onto the constant brick, snap that onto the compose brick, and from a handful of primitive pieces you can build any computation that any computer can perform. No names, no variables, no environment. Just bricks clicking together.
+Think of combinators as **LEGO bricks for computation**.  Each brick does exactly one simple, self-contained thing: snap the identity brick onto the constant brick, snap that onto the compose brick, and from a handful of primitive pieces you can build any computation that any computer can perform.  No names, no variables, no environment.  Just bricks clicking together.
 
 By the end of this section, you will be able to:
 
@@ -971,11 +971,11 @@ By the end of this section, you will be able to:
 > - **Currying**: you understand that `lambda a: lambda b: a` is a two-argument function written as two nested one-argument functions
 > - **Python lambdas**: `lambda x: x + 1` is valid Python and returns a callable
 >
-> If any of these feel shaky, review Parts 1-5 of this tutorial before continuing. Combinators are built directly on top of that material; every reduction rule here is just beta-reduction with no bound variables.
+> If any of these feel shaky, review Parts 1-5 of this tutorial before continuing.  Combinators are built directly on top of that material; every reduction rule here is just beta-reduction with no bound variables.
 
 *"To every combination there corresponds a unique bird."*, Raymond Smullyan, *To Mock a Mockingbird* (1985)
 
-In this tutorial we built computation from three syntactic forms: variables, abstraction, and application. Here we take the abstraction away. **Combinatory logic** is the lambda calculus with no bound variables: no $\lambda x$, no substitution, no alpha-conversion, no capture to fear. Only application and a small fixed collection of **combinators**: functions with no free variables whose behavior is defined entirely by how they transform their arguments. In 1924, Moses Schönfinkel proved that just two combinators, **S** and **K**, suffice to express any computable function. The birds are named in Raymond Smullyan's puzzle book, and Gabriel Lebec's 2016 London talk "*A Flock of Functions*" demonstrates the entire menagerie live in JavaScript. By the end of this section you will reduce terms in the combinator calculus by hand, implement all the birds in Python, derive familiar operations (function composition, `flip`, `const`, `id`) directly from the birds, and understand why SKI completeness is the combinatory-logic version of the Church-Turing thesis.
+In this tutorial we built computation from three syntactic forms: variables, abstraction, and application.  Here we take the abstraction away.  **Combinatory logic** is the lambda calculus with no bound variables: no $\lambda x$, no substitution, no alpha-conversion, no capture to fear.  Only application and a small fixed collection of **combinators**: functions with no free variables whose behavior is defined entirely by how they transform their arguments.  In 1924, Moses Schönfinkel proved that just two combinators, **S** and **K**, suffice to express any computable function.  The birds are named in Raymond Smullyan's puzzle book, and Gabriel Lebec's 2016 London talk "*A Flock of Functions*" demonstrates the entire menagerie live in JavaScript.  By the end of this section you will reduce terms in the combinator calculus by hand, implement all the birds in Python, derive familiar operations (function composition, `flip`, `const`, `id`) directly from the birds, and understand why SKI completeness is the combinatory-logic version of the Church-Turing thesis.
 
 ---
 
@@ -992,16 +992,16 @@ print("Ready to meet the flock.")
 
 ## Part I: The Birds Themselves
 
-### 1. Notation and Reduction Rules
+### 1.  Notation and Reduction Rules
 
-Before diving into the rules, orient yourself: in the lambda calculus you had *variables*, *abstractions* ($\lambda x.\ e$), and *application*. Combinatory logic throws out variables and abstractions entirely. What remains? Application only, and a small fixed menu of named functions (the "birds") whose behavior is completely captured by simple rewrite rules. Each rule says: "when this bird receives enough arguments, rewrite the whole expression." There is no substitution, no renaming, no environment to thread around. Reduction is pure term rewriting, like rearranging LEGO bricks according to a picture.
+Before diving into the rules, orient yourself: in the lambda calculus you had *variables*, *abstractions* ($\lambda x.\ e$), and *application*.  Combinatory logic throws out variables and abstractions entirely.  What remains?  Application only, and a small fixed menu of named functions (the "birds") whose behavior is completely captured by simple rewrite rules.  Each rule says: "when this bird receives enough arguments, rewrite the whole expression."  There is no substitution, no renaming, no environment to thread around.  Reduction is pure term rewriting, like rearranging LEGO bricks according to a picture.
 
 **Combinatory terms** are built from:
 
 - **Constants**: the combinators themselves (I, K, S, B, C, W, M, ...)
 - **Application**: writing two terms next to each other, left-associative
 
-That is the entire syntax. There are no variables and no abstractions. A **reduction rule** for each combinator states how it consumes arguments from the right:
+That is the entire syntax.  There are no variables and no abstractions.  A **reduction rule** for each combinator states how it consumes arguments from the right:
 
 $$
 \mathbf{I}\ a \;\Rightarrow\; a
@@ -1013,11 +1013,11 @@ $$
 \mathbf{S}\ a\ b\ c \;\Rightarrow\; a\ c\ (b\ c)
 $$
 
-Application associates left, so $\mathbf{S}\ a\ b\ c$ means $(((\mathbf{S}\ a)\ b)\ c)$. A **redex** in combinatory logic is any subterm of the form $\mathbf{I}\ a$, $\mathbf{K}\ a\ b$, or $\mathbf{S}\ a\ b\ c$ (and analogously for other combinators). Reduction is confluent, exactly as in the lambda calculus, because the combinators are derived from it.
+Application associates left, so $\mathbf{S}\ a\ b\ c$ means $(((\mathbf{S}\ a)\ b)\ c)$. A **redex** in combinatory logic is any subterm of the form $\mathbf{I}\ a$, $\mathbf{K}\ a\ b$, or $\mathbf{S}\ a\ b\ c$ (and analogously for other combinators).  Reduction is confluent, exactly as in the lambda calculus, because the combinators are derived from it.
 
-> **Watch out! Argument counting**
+> **Watch out!  Argument counting**
 >
-> A combinator only fires when it has received *all* of its required arguments. $\mathbf{K}\ a$ is a partially applied function: it is waiting for its second argument and does *not* yet reduce. $\mathbf{S}\ a\ b$ is similarly stuck. Writing $\mathbf{S}\ a\ b\ c$ is what triggers the rule. If you try to reduce a term and nothing fires, check whether every combinator in the term is fully saturated.
+> A combinator only fires when it has received *all* of its required arguments. $\mathbf{K}\ a$ is a partially applied function: it is waiting for its second argument and does *not* yet reduce. $\mathbf{S}\ a\ b$ is similarly stuck.  Writing $\mathbf{S}\ a\ b\ c$ is what triggers the rule.  If you try to reduce a term and nothing fires, check whether every combinator in the term is fully saturated.
 
 **The translation from lambda calculus to combinators** (bracket abstraction) works by structural recursion:
 
@@ -1031,7 +1031,7 @@ $$
 [x]\ (e_1\ e_2) = \mathbf{S}\ ([x]\ e_1)\ ([x]\ e_2) \quad (x \in \mathrm{FV}(e_1 e_2))
 $$
 
-Every lambda term becomes a combinator expression, free of variables, yet computationally identical. The gain is conceptual: reduction is pure term rewriting, no environment, no substitution machinery.
+Every lambda term becomes a combinator expression, free of variables, yet computationally identical.  The gain is conceptual: reduction is pure term rewriting, no environment, no substitution machinery.
 
 ---
 
@@ -1047,15 +1047,15 @@ Hint for (3): what does $\mathbf{K}\ a\ (\_)$ do to any second argument?
 
 ---
 
-### 2. The Identity Bird, **I** (Idiot)
+### 2.  The Identity Bird, **I** (Idiot)
 
-This is the simplest possible LEGO brick: snap it onto anything and that thing comes straight out the other side unchanged. It seems useless in isolation, but it becomes essential as a "do nothing" placeholder when you need a function in a slot that does not actually transform its argument. It also shows up in the derivation of every other combinator from S and K.
+This is the simplest possible LEGO brick: snap it onto anything and that thing comes straight out the other side unchanged.  It seems useless in isolation, but it becomes essential as a "do nothing" placeholder when you need a function in a slot that does not actually transform its argument.  It also shows up in the derivation of every other combinator from S and K.
 
 $$
 \mathbf{I}\ a = a
 $$
 
-The Idiot bird passes its argument through unchanged. In lambda calculus it is $\lambda a.\ a$. In Haskell it is `id`. In mathematics it is the identity function on every set. Note that $\mathbf{I}$ is not primitive given S and K: $\mathbf{S}\ \mathbf{K}\ \mathbf{K}\ a \Rightarrow \mathbf{K}\ a\ (\mathbf{K}\ a) \Rightarrow a$, so $\mathbf{I} = \mathbf{S}\ \mathbf{K}\ \mathbf{K}$.
+The Idiot bird passes its argument through unchanged.  In lambda calculus it is $\lambda a.\ a$. In Haskell it is `id`.  In mathematics it is the identity function on every set.  Note that $\mathbf{I}$ is not primitive given S and K: $\mathbf{S}\ \mathbf{K}\ \mathbf{K}\ a \Rightarrow \mathbf{K}\ a\ (\mathbf{K}\ a) \Rightarrow a$, so $\mathbf{I} = \mathbf{S}\ \mathbf{K}\ \mathbf{K}$.
 
 ```python
 I = lambda a: a
@@ -1068,15 +1068,15 @@ print(I(I)(42))       # 42  -- identity of identity is still identity
 
 ---
 
-### 3. The Kestrel, **K** (Constant)
+### 3.  The Kestrel, **K** (Constant)
 
-The Kestrel is the "ignore and keep" brick. You hand it a value, and no matter what else you stack on top, it will always return that original value. This turns out to encode the Boolean *true* in Church encodings, because `if true then x else y` means "take two branches, return the first." Connect to the LEGO analogy: K is a brick with a trap door; everything that enters the second slot falls straight through and disappears.
+The Kestrel is the "ignore and keep" brick.  You hand it a value, and no matter what else you stack on top, it will always return that original value.  This turns out to encode the Boolean *true* in Church encodings, because `if true then x else y` means "take two branches, return the first."  Connect to the LEGO analogy: K is a brick with a trap door; everything that enters the second slot falls straight through and disappears.
 
 $$
 \mathbf{K}\ a\ b = a
 $$
 
-The Kestrel takes two arguments and returns the first, discarding the second. In lambda calculus it is $\lambda a.\ \lambda b.\ a$, the encoding of **true** in Church booleans! In Haskell it is `const`. In Python:
+The Kestrel takes two arguments and returns the first, discarding the second.  In lambda calculus it is $\lambda a.\ \lambda b.\ a$, the encoding of **true** in Church booleans!  In Haskell it is `const`.  In Python:
 
 ```python
 I = lambda a: a
@@ -1095,15 +1095,15 @@ print(KI("ignored")("returned"))  # returned -- K(I) behaves as false / second-s
 
 ---
 
-### 4. The Bluebird, **B** (Compose)
+### 4.  The Bluebird, **B** (Compose)
 
-The Bluebird is the pipeline brick. Snap two bricks together end-to-end: the output of the second feeds into the input of the first. This is Haskell's `.` operator, and it is how real functional programs are built: not by writing big monolithic functions, but by composing small single-purpose ones. Notice that the argument order matters: $\mathbf{B}\ f\ g$ means "do $g$ first, then $f$," which is the standard mathematical right-to-left composition.
+The Bluebird is the pipeline brick.  Snap two bricks together end-to-end: the output of the second feeds into the input of the first.  This is Haskell's `.` operator, and it is how real functional programs are built: not by writing big monolithic functions, but by composing small single-purpose ones.  Notice that the argument order matters: $\mathbf{B}\ f\ g$ means "do $g$ first, then $f$," which is the standard mathematical right-to-left composition.
 
 $$
 \mathbf{B}\ f\ g\ x = f\ (g\ x)
 $$
 
-The Bluebird composes two functions: apply $g$ first, then $f$. In lambda calculus it is $\lambda f.\ \lambda g.\ \lambda x.\ f\ (g\ x)$. In Haskell it is `(.)`. It is one of the most-used birds in practice because function composition is the primary method of building programs in functional style.
+The Bluebird composes two functions: apply $g$ first, then $f$. In lambda calculus it is $\lambda f.\ \lambda g.\ \lambda x.\ f\ (g\ x)$. In Haskell it is `(.)`.  It is one of the most-used birds in practice because function composition is the primary method of building programs in functional style.
 
 ```python
 K = lambda a: lambda b: a
@@ -1127,15 +1127,15 @@ print(B_from_SK(add_one)(double)(5))  # 11 -- same as B(add_one)(double)(5)
 
 ---
 
-### 5. The Cardinal, **C** (Flip)
+### 5.  The Cardinal, **C** (Flip)
 
-The Cardinal is the "swap the inputs" brick. When you have a two-argument function and the arguments are arriving in the wrong order (perhaps you want to partially apply the *second* argument first), the Cardinal flips them for you. Haskell calls this `flip`, and it appears constantly when adapting library functions for use in pipelines and point-free style.
+The Cardinal is the "swap the inputs" brick.  When you have a two-argument function and the arguments are arriving in the wrong order (perhaps you want to partially apply the *second* argument first), the Cardinal flips them for you.  Haskell calls this `flip`, and it appears constantly when adapting library functions for use in pipelines and point-free style.
 
 $$
 \mathbf{C}\ f\ a\ b = f\ b\ a
 $$
 
-The Cardinal flips the argument order of a two-argument function. In lambda calculus it is $\lambda f.\ \lambda a.\ \lambda b.\ f\ b\ a$. In Haskell it is `flip`.
+The Cardinal flips the argument order of a two-argument function.  In lambda calculus it is $\lambda f.\ \lambda a.\ \lambda b.\ f\ b\ a$. In Haskell it is `flip`.
 
 ```python
 K = lambda a: lambda b: a
@@ -1155,15 +1155,15 @@ print(C_from_SK(subtract)(10)(3))   # 7
 
 ---
 
-### 6. The Starling, **S** (the Power Bird)
+### 6.  The Starling, **S** (the Power Bird)
 
-The Starling is the "fork and merge" brick, the one that makes the calculus powerful enough to compute anything. Given $x$, it routes $x$ down two separate paths simultaneously: one path feeds $x$ into $f$, producing a function; the other path feeds $x$ into $g$, producing an argument; then the results are merged by application. This is the combinator encoding of *sharing*: the same input reaches two different parts of a computation. Without this sharing capability, the calculus could only compute linear functions.
+The Starling is the "fork and merge" brick, the one that makes the calculus powerful enough to compute anything.  Given $x$, it routes $x$ down two separate paths simultaneously: one path feeds $x$ into $f$, producing a function; the other path feeds $x$ into $g$, producing an argument; then the results are merged by application.  This is the combinator encoding of *sharing*: the same input reaches two different parts of a computation.  Without this sharing capability, the calculus could only compute linear functions.
 
 $$
 \mathbf{S}\ f\ g\ x = f\ x\ (g\ x)
 $$
 
-The Starling is the heart of the calculus. It passes $x$ to both $f$ and $g$, then applies the result of $f(x)$ to the result of $g(x)$. This is the combinator version of *sharing an argument*: both branches see $x$, so duplication is built in. **S and K together are Turing complete**: any computable function can be expressed using only these two birds.
+The Starling is the heart of the calculus.  It passes $x$ to both $f$ and $g$, then applies the result of $f(x)$ to the result of $g(x)$. This is the combinator version of *sharing an argument*: both branches see $x$, so duplication is built in.  **S and K together are Turing complete**: any computable function can be expressed using only these two birds.
 
 ```python
 K = lambda a: lambda b: a
@@ -1184,15 +1184,15 @@ print(succ(10))  # 11
 
 ---
 
-### 7. The Mockingbird, **M** (Self-Application)
+### 7.  The Mockingbird, **M** (Self-Application)
 
-The Mockingbird is the "danger" brick; handle with care. It takes whatever you hand it and makes it eat itself. Applied to a safe function, this produces interesting behavior (self-duplication, mirroring). Applied to itself, it produces $\Omega$: the combinator equivalent of an infinite loop. The Mockingbird is the combinatory seed from which fixed-point combinators and recursion grow; it demonstrates that non-termination is an intrinsic feature of any sufficiently expressive system.
+The Mockingbird is the "danger" brick; handle with care.  It takes whatever you hand it and makes it eat itself.  Applied to a safe function, this produces interesting behavior (self-duplication, mirroring).  Applied to itself, it produces $\Omega$: the combinator equivalent of an infinite loop.  The Mockingbird is the combinatory seed from which fixed-point combinators and recursion grow; it demonstrates that non-termination is an intrinsic feature of any sufficiently expressive system.
 
 $$
 \mathbf{M}\ a = a\ a
 $$
 
-The Mockingbird applies its argument to itself. In lambda calculus it is $\lambda a.\ a\ a$. It is the self-application operator, and $\mathbf{M}\ \mathbf{M}$ is the combinatory equivalent of $\Omega$; it reduces forever. But applied carefully, the Mockingbird is the basis for fixed-point combinators and recursion in the combinator calculus.
+The Mockingbird applies its argument to itself.  In lambda calculus it is $\lambda a.\ a\ a$. It is the self-application operator, and $\mathbf{M}\ \mathbf{M}$ is the combinatory equivalent of $\Omega$; it reduces forever.  But applied carefully, the Mockingbird is the basis for fixed-point combinators and recursion in the combinator calculus.
 
 ```python
 # We can't actually call M(M) -- infinite loop! 
@@ -1213,15 +1213,15 @@ print("M is the self-application bird")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **Watch out! Do not evaluate M(M)**
+> **Watch out!  Do not evaluate M(M)**
 >
-> `M(M)` in Python will immediately raise a `RecursionError` (or spin forever). The Mockingbird is safe only when its argument is a function that can meaningfully accept a function as input. Before running any expression involving M, ask: "does this argument expect a callable?" If not, do not apply M.
+> `M(M)` in Python will immediately raise a `RecursionError` (or spin forever).  The Mockingbird is safe only when its argument is a function that can meaningfully accept a function as input.  Before running any expression involving M, ask: "does this argument expect a callable?"  If not, do not apply M.
 
 ---
 
-### 8. The Warbler, **W** (Duplicate)
+### 8.  The Warbler, **W** (Duplicate)
 
-The Warbler is the "copy and double-feed" brick. It takes a two-argument function and collapses its two inputs into one: whatever you hand it, it hands to $f$ twice. This is subtly different from the Mockingbird: M makes $x$ eat *itself*, while W feeds $x$ to an *external* two-argument function $f$. The Warbler is how you derive "diagonal" operations (squaring, equality-with-self, duplication) without ever naming the argument twice.
+The Warbler is the "copy and double-feed" brick.  It takes a two-argument function and collapses its two inputs into one: whatever you hand it, it hands to $f$ twice.  This is subtly different from the Mockingbird: M makes $x$ eat *itself*, while W feeds $x$ to an *external* two-argument function $f$. The Warbler is how you derive "diagonal" operations (squaring, equality-with-self, duplication) without ever naming the argument twice.
 
 $$
 \mathbf{W}\ f\ x = f\ x\ x
@@ -1250,11 +1250,11 @@ print(W(eq)(5))    # True -- a number always equals itself
 
 ## Part II: Derivation and the Completeness of SKI
 
-### 9. Everything from S, K, I
+### 9.  Everything from S, K, I
 
-You have now met seven birds. Here is the remarkable fact: you do not need seven. You need *two*. S and K alone (two LEGO bricks) can simulate every other bird, every lambda term, every computable function. This is Schönfinkel's 1924 theorem, the combinatory-logic counterpart of the Church-Turing thesis. The bracket abstraction algorithm in Section 1 is the constructive proof: it tells you mechanically how to turn any lambda term into an SKI expression. The derivations below make this concrete.
+You have now met seven birds.  Here is the remarkable fact: you do not need seven.  You need *two*.  S and K alone (two LEGO bricks) can simulate every other bird, every lambda term, every computable function.  This is Schönfinkel's 1924 theorem, the combinatory-logic counterpart of the Church-Turing thesis.  The bracket abstraction algorithm in Section 1 is the constructive proof: it tells you mechanically how to turn any lambda term into an SKI expression.  The derivations below make this concrete.
 
-The true power of combinatory logic is that S and K suffice for *any* lambda term. The bracket abstraction algorithm (Section 1) converts any lambda term to an equivalent SKI expression. Let us derive B, C, and W from SKI to see this concretely.
+The true power of combinatory logic is that S and K suffice for *any* lambda term.  The bracket abstraction algorithm (Section 1) converts any lambda term to an equivalent SKI expression.  Let us derive B, C, and W from SKI to see this concretely.
 
 **Deriving B (Compose) from SKI:**
 
@@ -1264,7 +1264,7 @@ $$
 [x]\ (f\ (g\ x)) = \mathbf{S}\ ([x]\ f)\ ([x]\ (g\ x)) = \mathbf{S}\ (\mathbf{K}\ f)\ (\mathbf{S}\ (\mathbf{K}\ g)\ \mathbf{I})
 $$
 
-So $\mathbf{B} = \mathbf{S}\ (\mathbf{K}\ \mathbf{S})\ \mathbf{K}$ (with one more step of abstraction). Verify:
+So $\mathbf{B} = \mathbf{S}\ (\mathbf{K}\ \mathbf{S})\ \mathbf{K}$ (with one more step of abstraction).  Verify:
 
 $$
 \mathbf{S}\ (\mathbf{K}\ \mathbf{S})\ \mathbf{K}\ f\ g\ x \Rightarrow \mathbf{K}\ \mathbf{S}\ f\ (\mathbf{K}\ f)\ g\ x \Rightarrow \mathbf{S}\ (\mathbf{K}\ f)\ g\ x \Rightarrow \mathbf{K}\ f\ x\ (g\ x) \Rightarrow f\ (g\ x)
@@ -1286,9 +1286,9 @@ print(B_from_SK(str)(double)(5))       # "10": str(double(5))
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **Watch out! SKI expressions grow quickly**
+> **Watch out!  SKI expressions grow quickly**
 >
-> The naive bracket abstraction algorithm can produce expressions that are exponentially larger than the original lambda term: a two-variable lambda can become dozens of S, K, and I tokens. This is why real compilers (e.g., Turner 1979) use optimized combinators like B and C to keep the output manageable. When you do bracket abstraction by hand in the exercises, count your tokens; if the result seems enormous, double-check your steps.
+> The naive bracket abstraction algorithm can produce expressions that are exponentially larger than the original lambda term: a two-variable lambda can become dozens of S, K, and I tokens.  This is why real compilers (e.g., Turner 1979) use optimized combinators like B and C to keep the output manageable.  When you do bracket abstraction by hand in the exercises, count your tokens; if the result seems enormous, double-check your steps.
 
 ---
 
@@ -1301,11 +1301,11 @@ Which reduction sequence correctly shows that $\mathbf{K}\ \mathbf{I}\ a\ b \Rig
 
 ---
 
-### 10. The Y Combinator in SK
+### 10.  The Y Combinator in SK
 
-This section pulls together everything: if S and K are computationally complete, and if recursion is a computable operation, then S and K can express recursion, without any `def`, without any name, without any environment. The Y combinator written in pure SK is startling precisely because it looks like nothing else you have seen: a wall of S, K, and I with no variables anywhere. Yet it satisfies $Y\ g = g\ (Y\ g)$ for any $g$. The derivation in the Y combinator section above explains *why* this works; here the goal is to see that it is expressible at all.
+This section pulls together everything: if S and K are computationally complete, and if recursion is a computable operation, then S and K can express recursion, without any `def`, without any name, without any environment.  The Y combinator written in pure SK is startling precisely because it looks like nothing else you have seen: a wall of S, K, and I with no variables anywhere.  Yet it satisfies $Y\ g = g\ (Y\ g)$ for any $g$. The derivation in the Y combinator section above explains *why* this works; here the goal is to see that it is expressible at all.
 
-Recall from the previous section that the Y combinator satisfies $Y\ g = g\ (Y\ g)$. In strict (applicative-order) languages we use the Z combinator instead. In pure SK combinatory logic:
+Recall from the previous section that the Y combinator satisfies $Y\ g = g\ (Y\ g)$. In strict (applicative-order) languages we use the Z combinator instead.  In pure SK combinatory logic:
 
 $$
 \mathbf{Y} = \mathbf{S}\ (\mathbf{K}\ (\mathbf{S}\ \mathbf{I}\ \mathbf{I}))\ (\mathbf{S}\ (\mathbf{S}\ (\mathbf{K}\ \mathbf{S})\ \mathbf{K})\ (\mathbf{K}\ (\mathbf{S}\ \mathbf{I}\ \mathbf{I})))
@@ -1334,11 +1334,11 @@ print([fib(n) for n in range(10)])   # [0,1,1,2,3,5,8,13,21,34]
 
 ## Part III: The Flock in Practice
 
-### 11. Gabriel Lebec's Birds in JavaScript, and in Python
+### 11.  Gabriel Lebec's Birds in JavaScript, and in Python
 
-The birds stop being an abstract curiosity the moment you recognize them in code you already write. Every time you call `map(lambda x: x + 1, lst)` you are using I. Every time you write `key=lambda _: 0` you are using K. Every time you write `sorted(lst, key=lambda x: -x)` you are using a partial application of C. Gabriel Lebec's talk makes this explicit for JavaScript; this section makes it explicit for Python. The punchline: **combinators are not exotic theory; they are the names for the patterns you reach for every day without knowing it**.
+The birds stop being an abstract curiosity the moment you recognize them in code you already write.  Every time you call `map(lambda x: x + 1, lst)` you are using I. Every time you write `key=lambda _: 0` you are using K. Every time you write `sorted(lst, key=lambda x: -x)` you are using a partial application of C. Gabriel Lebec's talk makes this explicit for JavaScript; this section makes it explicit for Python.  The punchline: **combinators are not exotic theory; they are the names for the patterns you reach for every day without knowing it**.
 
-Gabriel Lebec's 2016 talk "*A Flock of Functions*" demonstrates that every standard higher-order function in JavaScript is a bird in disguise. The key insight is that **you already use combinators every day**; you just call them `const`, `id`, `flip`, `compose`, and `curry`. Here is the full correspondence, in Python:
+Gabriel Lebec's 2016 talk "*A Flock of Functions*" demonstrates that every standard higher-order function in JavaScript is a bird in disguise.  Notice that **you already use combinators every day**; you just call them `const`, `id`, `flip`, `compose`, and `curry`.  Here is the full correspondence, in Python:
 
 ```python
 # === The Flock - Python Edition ===
@@ -1384,11 +1384,11 @@ print(to_int(succ(twice)))  # 3
 
 ---
 
-### 12. Point-Free Style: Programming Without Variables
+### 12.  Point-Free Style: Programming Without Variables
 
-Point-free programming is what happens when you take the combinator philosophy all the way to the surface of your code. Instead of writing `lambda x: f(g(x))` (which names $x$ even though $x$ appears in only one place) you write `B(f)(g)`, which says "compose f and g" without ever mentioning what they are applied to. This is not just an aesthetic preference: in Haskell it is the dominant style, because it emphasizes what transformations are being composed rather than what data they act on. The LEGO metaphor completes here: point-free code is a blueprint describing how bricks connect, not a sequence of operations on a specific piece.
+Point-free programming is what happens when you take the combinator philosophy all the way to the surface of your code.  Instead of writing `lambda x: f(g(x))` (which names $x$ even though $x$ appears in only one place) you write `B(f)(g)`, which says "compose f and g" without ever mentioning what they are applied to.  This is not just an aesthetic preference: in Haskell it is the dominant style, because it emphasizes what transformations are being composed rather than what data they act on.  The LEGO metaphor completes here: point-free code is a blueprint describing how bricks connect, not a sequence of operations on a specific piece.
 
-**Point-free** (or "tacit") programming uses only combinators and function composition: no named variables, no lambdas. It is the ultimate expression of the combinatory-logic philosophy, and it is the standard style in Haskell. Here is the connection:
+**Point-free** (or "tacit") programming uses only combinators and function composition: no named variables, no lambdas.  It is the ultimate expression of the combinatory-logic philosophy, and it is the standard style in Haskell.  Here is the connection:
 
 ```python
 from functools import reduce
@@ -1431,29 +1431,29 @@ For each Python expression below, identify which bird (I, K, S, B, C, W, M, KI) 
 
 ---
 
-### 13. Exercises
+### 13.  Exercises
 
-1. **Reduction transcripts.** Reduce to normal form, one combinator rule per line, circling the redex:
+1.  **Reduction transcripts.**  Reduce to normal form, one combinator rule per line, circling the redex:
    - (a) $\mathbf{B}\ f\ (\mathbf{B}\ g\ h)\ x$: show this equals $\mathbf{B}\ (\mathbf{B}\ f\ g)\ h\ x$ (associativity of composition)
    - (b) $\mathbf{C}\ \mathbf{K}\ a\ b$: what does this return, and what lambda term is it equivalent to?
    - (c) $\mathbf{W}\ \mathbf{K}\ a$: one step is enough; what does it return?
 
-2. **Bracket abstraction.** Use the three-rule bracket abstraction algorithm to convert $\lambda x.\ \lambda y.\ y\ x$ to an SKI expression. Verify by reducing your expression on two concrete arguments.
+2.  **Bracket abstraction.**  Use the three-rule bracket abstraction algorithm to convert $\lambda x.\ \lambda y.\ y\ x$ to an SKI expression.  Verify by reducing your expression on two concrete arguments.
 
-3. **Flock identification.** A colleague writes `f = lambda x: lambda _: x`. Which bird is this? Write the bird's one-line reduction rule, its lambda term, its Haskell name, and the two-word English description that explains what it does to its arguments.
+3.  **Flock identification.**  A colleague writes `f = lambda x: lambda _: x`.  Which bird is this?  Write the bird's one-line reduction rule, its lambda term, its Haskell name, and the two-word English description that explains what it does to its arguments.
 
-4. **Pairs from birds.** Using only I, K, KI, V (Vireo), implement `swap` (exchange the components of a pair) as a bird expression, with no lambda. Verify on `pair(1)(2)`.
+4.  **Pairs from birds.**  Using only I, K, KI, V (Vireo), implement `swap` (exchange the components of a pair) as a bird expression, with no lambda.  Verify on `pair(1)(2)`.
 
-5. **SKI Turing completeness (research).** The combinator $\mathbf{S}\ \mathbf{K}$ applied to itself loops: $\mathbf{S}\ \mathbf{K}\ (\mathbf{S}\ \mathbf{K}) \Rightarrow \mathbf{K}\ (\mathbf{S}\ \mathbf{K})\ (\mathbf{K}\ (\mathbf{S}\ \mathbf{K})) \Rightarrow \mathbf{S}\ \mathbf{K}$. Write a one-paragraph explanation of why the existence of a non-terminating term (like $\Omega$ in the lambda calculus) is *necessary* for a system to be Turing complete, connecting to the Halting Problem.
+5.  **SKI Turing completeness (research).**  The combinator $\mathbf{S}\ \mathbf{K}$ applied to itself loops: $\mathbf{S}\ \mathbf{K}\ (\mathbf{S}\ \mathbf{K}) \Rightarrow \mathbf{K}\ (\mathbf{S}\ \mathbf{K})\ (\mathbf{K}\ (\mathbf{S}\ \mathbf{K})) \Rightarrow \mathbf{S}\ \mathbf{K}$. Write a one-paragraph explanation of why the existence of a non-terminating term (like $\Omega$ in the lambda calculus) is *necessary* for a system to be Turing complete, connecting to the Halting Problem.
 
 ---
 
-### 14. Further Reading on Combinatory Logic
+### 14.  Further Reading on Combinatory Logic
 
-- Smullyan, Raymond. *To Mock a Mockingbird* (Knopf, 1985). The source of the bird names; a puzzle book that teaches combinatory logic through delightful ornithological fiction.
-- Lebec, Gabriel. "Lambda as JS, or A Flock of Functions: Combinators, Lambda Calculus, and Church Encodings in JavaScript." London Functional Programmers Meetup, 2016. **This is the direct inspiration for this section.** Slides: https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript. Source: https://github.com/glebec/lambda-talk. Watch the recording; every combinator in this section appears there in JavaScript.
+- Smullyan, Raymond.  *To Mock a Mockingbird* (Knopf, 1985).  The source of the bird names; a puzzle book that teaches combinatory logic through delightful ornithological fiction.
+- Lebec, Gabriel.  "Lambda as JS, or A Flock of Functions: Combinators, Lambda Calculus, and Church Encodings in JavaScript."  London Functional Programmers Meetup, 2016.  **This is the direct inspiration for this section.**  Slides: https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript. Source: https://github.com/glebec/lambda-talk. Watch the recording; every combinator in this section appears there in JavaScript.
 - **Lambda-Py / pycombinator**: combinators and Church encodings in Python: https://finsberg.github.io/pycombinator/docs/lambda-talk.html, the flock in Python rather than JavaScript; use it to check your hand reductions from this section against a mechanical reducer.
-- Curry, H. B. and R. Feys. *Combinatory Logic, Volume I* (North-Holland, 1958). The foundational text.
-- Hindley, J. Roger and Jonathan P. Seldin. *Lambda-Calculus and Combinators: An Introduction* (Cambridge UP, 2008). Modern, rigorous, and accessible.
-- Turner, David. "Another Algorithm for Bracket Abstraction." *Journal of Symbolic Logic* 44(2), 1979. The optimized bracket abstraction that compilers actually use, avoiding the SKI expansion explosion.
-- Tromp, John. "Binary Lambda Calculus and Combinatory Logic." *Randomness and Complexity* (World Scientific, 2007). SK programs as bit strings; the smallest known universal computer.
+- Curry, H. B. and R. Feys.  *Combinatory Logic, Volume I* (North-Holland, 1958).  The foundational text.
+- Hindley, J. Roger and Jonathan P. Seldin.  *Lambda-Calculus and Combinators: An Introduction* (Cambridge UP, 2008).  Modern, rigorous, and accessible.
+- Turner, David.  "Another Algorithm for Bracket Abstraction."  *Journal of Symbolic Logic* 44(2), 1979.  The optimized bracket abstraction that compilers actually use, avoiding the SKI expansion explosion.
+- Tromp, John.  "Binary Lambda Calculus and Combinatory Logic."  *Randomness and Complexity* (World Scientific, 2007).  SK programs as bit strings; the smallest known universal computer.

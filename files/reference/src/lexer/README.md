@@ -2,10 +2,10 @@
 
 This is the **instructor reference implementation** of the Lexer assignment,
 released with the Parser assignment so that nobody is blocked by a broken
-lexer. Python 3.10+ (tested on 3.11), standard library only.
+lexer.  Python 3.10+ (tested on 3.11), standard library only.
 
 > **Usage declaration policy:** you may build your Parser on this reference
-> lexer instead of your own. If you do, declare it with one line in your
+> lexer instead of your own.  If you do, declare it with one line in your
 > Parser README (e.g., *"This submission uses the reference lexer."*).
 > There is no penalty for using it, and your original Lexer assignment
 > grade stands unchanged.
@@ -48,7 +48,7 @@ lx.expect("LET")  # -> Token if it matches; else raises a located LexError
 Ordered rules + maximal munch means order is correctness:
 COMMENT/WHITESPACE first (skipped); `FLOAT` before `INT`; every keyword
 (with a `\b` boundary, so `iffy` is an IDENT) before `IDENT`;
-`<= >= == !=` before `< > = !`. Unterminated strings raise at the
+`<= >= == !=` before `< > = !`.  Unterminated strings raise at the
 **opening** quote's position.
 
 ## Interface decisions beyond the assignment text

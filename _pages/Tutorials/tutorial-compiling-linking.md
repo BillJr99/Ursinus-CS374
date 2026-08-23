@@ -23,7 +23,7 @@ By the end of this tutorial, you will have:
 
 > **"Every program you run went through a pipeline you've never seen."**
 >
-> When you type `gcc hello.c -o hello`, a remarkable chain of tools transforms text into a binary that the operating system can map directly into memory and execute. This tutorial traces that chain step by step - from C source to ELF binary - and then contrasts it with how interpreted languages (Python, JavaScript) work instead.
+> When you type `gcc hello.c -o hello`, a remarkable chain of tools transforms text into a binary that the operating system can map directly into memory and execute.  This tutorial traces that chain step by step, from C source to ELF binary, and then contrasts it with how interpreted languages (Python, JavaScript) work instead.
 
 ---
 
@@ -94,7 +94,7 @@ After preprocessing (`gcc -E hello.c`), `#include <stdio.h>` is replaced by thou
 | `#ifdef / #ifndef` | Conditional compilation |
 | `#pragma once` | Include guard (modern, portable alternative to `#ifndef HEADER_H_`) |
 
-**Why preprocessing matters for language design:** The C preprocessor is essentially a *macro system* at the text level, the same problem as unhygienic macros in Lisp. Languages that adopted later (Rust, D) replaced it with hygienic macro systems that operate on AST nodes instead of text.
+**Why preprocessing matters for language design:** The C preprocessor is essentially a *macro system* at the text level, the same problem as unhygienic macros in Lisp.  Languages that adopted later (Rust, D) replaced it with hygienic macro systems that operate on AST nodes instead of text.
 
 ---
 
@@ -156,7 +156,7 @@ High address
 Low address
 ```
 
-**Key insight:** The call stack you see in debuggers is this structure. When a function returns, `ret` pops the return address from the stack and jumps to it; this is why stack overflow crashes programs (the stack pointer goes past the stack's memory limit).
+**Key insight:** The call stack you see in debuggers is this structure.  When a function returns, `ret` pops the return address from the stack and jumps to it; this is why stack overflow crashes programs (the stack pointer goes past the stack's memory limit).
 
 ---
 
@@ -206,9 +206,9 @@ Relocation:
 
 The **linker** (`ld`, usually invoked via `gcc`) takes multiple object files (and libraries) and produces an executable by:
 
-1. **Merging sections**: All `.text` sections -> one `.text` segment; all `.data` -> one `.data` segment
-2. **Symbol resolution**: For each `U` (undefined) symbol, find which other `.o` file defines it
-3. **Relocation**: Fill in all the placeholder addresses with actual virtual addresses
+1.  **Merging sections**: All `.text` sections -> one `.text` segment; all `.data` -> one `.data` segment
+2.  **Symbol resolution**: For each `U` (undefined) symbol, find which other `.o` file defines it
+3.  **Relocation**: Fill in all the placeholder addresses with actual virtual addresses
 
 ```yaml
 main.o:   defines main, uses printf (undefined)
@@ -243,7 +243,7 @@ ldd /bin/ls
 
 ## Part 5: The ELF Format (Linux/macOS Executable)
 
-**ELF** (Executable and Linkable Format) is the binary format used by Linux, macOS (Mach-O is similar), and most Unix systems. Windows uses **PE** (Portable Executable) format, structurally very similar.
+**ELF** (Executable and Linkable Format) is the binary format used by Linux, macOS (Mach-O is similar), and most Unix systems.  Windows uses **PE** (Portable Executable) format, structurally very similar.
 
 ```
 ELF File Layout:
@@ -313,7 +313,7 @@ _start:
     call exit
 ```
 
-The C runtime (`crt0.o` / `crt1.o`) provides `_start`, which sets up argc/argv, calls `main`, and calls `exit`. This is automatically linked in by `gcc`.
+The C runtime (`crt0.o` / `crt1.o`) provides `_start`, which sets up argc/argv, calls `main`, and calls `exit`.  This is automatically linked in by `gcc`.
 
 ---
 
@@ -321,14 +321,14 @@ The C runtime (`crt0.o` / `crt1.o`) provides `_start`, which sets up argc/argv, 
 
 When you run `./hello`, the OS executes a **loader** (`execve` syscall on Linux) that:
 
-1. **Reads the ELF header** to find segment info
-2. **Maps segments into virtual memory** using `mmap`:
+1.  **Reads the ELF header** to find segment info
+2.  **Maps segments into virtual memory** using `mmap`:
    - `.text` -> read+execute (shared between multiple running instances)
    - `.data` + `.bss` -> read+write (private per process)
-3. **Maps the stack** (a region of anonymous memory)
-4. **Loads shared libraries** (`.so` files listed in `.dynamic`) via the *dynamic linker* (`ld.so`)
-5. **Resolves dynamic symbols** (fills in the Global Offset Table / Procedure Linkage Table)
-6. **Transfers control** to the entry point (`_start`)
+3.  **Maps the stack** (a region of anonymous memory)
+4.  **Loads shared libraries** (`.so` files listed in `.dynamic`) via the *dynamic linker* (`ld.so`)
+5.  **Resolves dynamic symbols** (fills in the Global Offset Table / Procedure Linkage Table)
+6.  **Transfers control** to the entry point (`_start`)
 
 **Virtual Memory Layout (typical Linux x86-64 process):**
 
@@ -411,7 +411,7 @@ objdump -p hello.exe | head -30    # PE header info
 
 ## Part 8: How Interpreted Languages Work Instead
 
-When you run `python3 script.py`, no ELF is produced. Instead:
+When you run `python3 script.py`, no ELF is produced.  Instead:
 
 **Python's execution model:**
 
@@ -498,7 +498,7 @@ Bytecode            <- runs initially
 Native machine code <- recompiles frequently-executed functions
 ```
 
-This is called **Just-In-Time (JIT) compilation**: start interpreted, profile which functions are hot, then compile those to native code. V8 can achieve 50-80% of C++ performance for some workloads.
+This is called **Just-In-Time (JIT) compilation**: start interpreted, profile which functions are hot, then compile those to native code.  V8 can achieve 50-80% of C++ performance for some workloads.
 
 ---
 
@@ -601,7 +601,7 @@ gcc math_utils.o main.o -o program
 # independently, only relinking when needed.
 ```
 
-**The One Definition Rule (ODR):** Every symbol must be *declared* in every translation unit that uses it (via headers), but *defined* in exactly one. Violating ODR causes linker errors (`undefined reference`) or undefined behavior (multiple definitions).
+**The One Definition Rule (ODR):** Every symbol must be *declared* in every translation unit that uses it (via headers), but *defined* in exactly one.  Violating ODR causes linker errors (`undefined reference`) or undefined behavior (multiple definitions).
 
 ---
 
@@ -626,7 +626,7 @@ hello     (ELF executable: all sections, addresses assigned)
 Process   (running in virtual address space)
 ```
 
-**Interpreted languages take a shortcut**: Python parses and compiles to bytecode (`.pyc`), then the Python interpreter (itself a compiled ELF/EXE) runs the bytecode. The bytecode is portable but slower; JIT compilers (V8, PyPy, JVM HotSpot) add a native-code path for hot functions.
+**Interpreted languages take a shortcut**: Python parses and compiles to bytecode (`.pyc`), then the Python interpreter (itself a compiled ELF/EXE) runs the bytecode.  The bytecode is portable but slower; JIT compilers (V8, PyPy, JVM HotSpot) add a native-code path for hot functions.
 
 ---
 
@@ -634,26 +634,26 @@ Process   (running in virtual address space)
 
 ### Exercise 1: Inspect Your Own Compiler (20 min)
 
-Run `gcc -save-temps hello.c -o hello` on a simple C program. Examine each intermediate file: `.i`, `.s`, `.o`, and the final binary. Using `objdump -h hello.o`, identify which section contains each piece of data.
+Run `gcc -save-temps hello.c -o hello` on a simple C program.  Examine each intermediate file: `.i`, `.s`, `.o`, and the final binary.  Using `objdump -h hello.o`, identify which section contains each piece of data.
 
 ### Exercise 2: Symbol Hunt (15 min)
 
-Write a C program with: one initialized global int, one uninitialized global int, one string literal, and one function. Predict which section each goes in. Verify with `nm` and `objdump -h`.
+Write a C program with: one initialized global int, one uninitialized global int, one string literal, and one function.  Predict which section each goes in.  Verify with `nm` and `objdump -h`.
 
 ### Exercise 3: Linking Error Diagnosis (20 min)
 
-Create two `.c` files where one calls a function defined in the other. Compile each to `.o` separately, then:
-1. Try linking only one `.o` (observe the undefined reference error)
-2. Link both (should succeed)
-3. Add a second definition of the function in a third `.c` file and try linking all three (observe the multiple definition error)
+Create two `.c` files where one calls a function defined in the other.  Compile each to `.o` separately, then:
+1.  Try linking only one `.o` (observe the undefined reference error)
+2.  Link both (should succeed)
+3.  Add a second definition of the function in a third `.c` file and try linking all three (observe the multiple definition error)
 
 ### Exercise 4: Python Bytecode (15 min)
 
-Use `dis.dis()` to disassemble a Python function you've written. Identify: LOAD_FAST vs LOAD_GLOBAL, CALL_FUNCTION, and any JUMP instructions. Map each bytecode instruction back to a line of source code.
+Use `dis.dis()` to disassemble a Python function you've written.  Identify: LOAD_FAST vs LOAD_GLOBAL, CALL_FUNCTION, and any JUMP instructions.  Map each bytecode instruction back to a line of source code.
 
 ### Exercise 5: Compare Memory Sizes (15 min)
 
-Write a C program that uses `sizeof` to print the size of `int`, `long`, `double`, `char*`, and a struct. Then write an equivalent Python program using `sys.getsizeof`. Why are the Python sizes so much larger? Explain in terms of Python's object model.
+Write a C program that uses `sizeof` to print the size of `int`, `long`, `double`, `char*`, and a struct.  Then write an equivalent Python program using `sys.getsizeof`.  Why are the Python sizes so much larger?  Explain in terms of Python's object model.
 
 ---
 

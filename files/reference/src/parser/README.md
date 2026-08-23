@@ -2,15 +2,15 @@
 
 This is the **instructor reference implementation** of the Parser assignment,
 released with the Interpreter assignment so that nobody is blocked by a
-broken parser. Python 3.10+ (tested on 3.11), standard library only. The
+broken parser.  Python 3.10+ (tested on 3.11), standard library only.  The
 package is self-contained: it ships copies of the reference lexer
 (`tokens.py`, `lexer.py`, `token_spec.json`, `token_spec_alt.json`) and
 imports it unchanged.
 
 > **Usage declaration policy:** you may build your Interpreter on this
-> reference parser (and/or the reference lexer) instead of your own. If you
+> reference parser (and/or the reference lexer) instead of your own.  If you
 > do, declare it with one line in your Interpreter README (e.g., *"This
-> submission uses the reference parser."*). There is no penalty, and your
+> submission uses the reference parser."*).  There is no penalty, and your
 > original Parser assignment grade stands unchanged.
 
 ## Files

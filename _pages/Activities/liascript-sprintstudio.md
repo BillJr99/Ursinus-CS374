@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Sprint Studio and Gallery Walk
 
-Building a programming language in a semester requires the same discipline that shipping any complex software requires: knowing exactly where you stand, not where you feel like you stand. Sprint studio days replace "mostly working" with numbers, and the gallery walk replaces private uncertainty with structured peer review. The combination is how teams find their blind spots before Demo Day rather than during it.
+Building a programming language in a semester takes the same discipline that shipping any complex software takes.  You have to know exactly where you stand, rather than where you feel like you stand.  Sprint studio days replace "mostly working" with numbers, and the gallery walk replaces private uncertainty with structured peer review.  The combination is how teams find their blind spots before Demo Day rather than during it.
 
 ## Learning Goals
 
@@ -33,52 +33,52 @@ By the end of this activity, you will be able to:
 >
 > If any of these feel shaky, check in with your team before the stand-up.
 
-Studio days are structured work time for the team language project: a stand-up, focused build time, and, on designated days, the formal **gallery walk** peer review that feeds your final sprint. This page is the protocol for every studio day; the gallery walk sections apply on the scheduled walk day. The protocol picks up where the *Language Design Workshop* kickoff left off: your proposal is now a backlog. The arc: **stand-up $\rightarrow$ build $\rightarrow$ gallery walk $\rightarrow$ triage $\rightarrow$ release checklist**.
+Studio days are structured work time for the team language project: a stand-up, focused build time, and, on designated days, the formal **gallery walk** peer review that feeds your final sprint.  This page is the protocol for every studio day; the gallery walk sections apply on the scheduled walk day.  The protocol picks up where the *Language Design Workshop* kickoff left off: your proposal is now a backlog.  Here is the path for today: **stand-up $\rightarrow$ build $\rightarrow$ gallery walk $\rightarrow$ triage $\rightarrow$ release checklist**.
 
 ---
 
 ## Directions and Group Roles
 
-Project roles (rotated by sprint) are in effect: **Coordinator**, **Builder(s)**, **Evaluator**, **Scribe**. The Scribe maintains today's living document: stand-up notes, all feedback received verbatim, and the triaged backlog the team leaves with.
+Project roles (rotated by sprint) are in effect: **Coordinator**, **Builder(s)**, **Evaluator**, **Scribe**.  The Scribe maintains today's living document: stand-up notes, all feedback received verbatim, and the triaged backlog the team leaves with.
 
 ---
 
-## 1. Stand-Up (10 minutes)
+## 1.  Stand-Up (10 minutes)
 
-Each team answers, in two minutes at the board, exactly four questions: What runs end-to-end today (which sample programs pass)? What is the riskiest unfinished piece of the sprint? What does the test suite report this week (a number of passing tests, not an adjective)? What do you need from the instructor or another team? The discipline is *saying the number*; "mostly working" is not a status.
+Each team gets two minutes at the board to answer exactly four questions.  What runs end to end today, meaning which sample programs pass?  What is the riskiest unfinished piece of the sprint?  What does the test suite report this week, as a count of passing tests?  And what do you need from me or from another team?  Please say the number.  "Mostly working" is not a status.
 
 ---
 
 
 > **Studio tooling moved:** sprint velocity and the red-green discipline are in [CI and TDD for Interpreters](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-ci-tdd-for-interpreters.md).
 
-## 2. Build Time
+## 2.  Build Time
 
-Builders build the sprint increment; the Evaluator extends the test suite *ahead of* the features (a failing test is a specification); the Scribe keeps `SEMANTICS.md` and the decision log current as choices happen, not after; the Coordinator defends scope against good ideas that belong in the future-work list. Mid-studio checkpoint: the Coordinator confirms the sprint goal is still achievable or re-scopes it *now*, aloud.
+Builders build the sprint increment; the Evaluator extends the test suite *ahead of* the features (a failing test is a specification); the Scribe keeps `SEMANTICS.md` and the decision log current as choices happen, not after; the Coordinator defends scope against good ideas that belong in the future-work list.  Mid-studio checkpoint: the Coordinator confirms the sprint goal is still achievable or re-scopes it *now*, aloud.
 
 ---
 
-## 3. Gallery Walk Protocol (40 minutes, designated days)
+## 3.  Gallery Walk Protocol (40 minutes, designated days)
 
-Stations: each team's language runs live (REPL up, sample programs ready) beside two artifacts: the grammar one-pager and the current test results table. Half of each team hosts; half walks; swap at the midpoint.
+Stations: each team's language runs live (REPL up, sample programs ready) beside two artifacts: the grammar one-pager and the current test results table.  Half of each team hosts; half walks; swap at the midpoint.
 
 Walkers leave one structured card per station, with exactly three fields:
 
 - **Strength**: one specific thing that works, precisely named ("the error message for an unclosed brace points at the opening brace's line").
-- **Question**: one genuine question the demo raised, ideally about a seam or a semantics decision ("what does your `for` desugar to, and does the loop variable survive?").
+- **Question**: one real question the demo raised, ideally about a seam or a semantics decision ("what does your `for` desugar to, and does the loop variable survive?").
 - **Risk**: the one thing most likely to fail on Demo Day, stated kindly and concretely.
 
-Hosts demonstrate honestly: at least one **known failure case** must be shown at every station (a program that breaks the parser, a semantics corner still undecided). A demo that hides its failures is rehearsing a deception; your `SEMANTICS.md` deserves better.
+Hosts demonstrate honestly: at least one **known failure case** must be shown at every station (a program that breaks the parser, a semantics corner still undecided).  A demo that hides its failures is rehearsing a deception; your `SEMANTICS.md` deserves better.
 
 ---
 
 ## Model 3: Feedback Triage, Turning Gallery Walk Cards into Backlog
 
-Raw gallery walk feedback is like unprocessed ore: valuable but unusable until refined. Triage converts cards into decisions: this gets fixed before Demo Day, this gets disclosed honestly, this goes on the future-work list. The discipline is the middle bucket: admitting known limitations publicly is mature engineering, not weakness.
+Raw gallery walk feedback is like unprocessed ore: valuable but unusable until refined.  Triage converts cards into decisions: this gets fixed before Demo Day, this gets disclosed honestly, this goes on the future-work list.  The discipline is the middle bucket: admitting known limitations publicly is mature engineering, and nobody in the room will read it as weakness.
 
-> **Watch out!** "Disclose" does not mean "hide." It means you have a rehearsed, candid one-sentence description of the limitation ready for Demo Day. A question-and-answer session where a known bug surfaces without preparation is much worse than a proactive "our interpreter does not yet handle nested function calls, and here is why that is hard."
+> **Watch out!**  "Disclose" does not mean "hide."  It means you have a rehearsed, candid one-sentence description of the limitation ready for Demo Day.  A question-and-answer session where a known bug surfaces without preparation is much worse than a proactive "our interpreter does not yet handle nested function calls, and here is why that is hard."
 
-The Scribe collects all gallery walk cards and triages them live. The cell below simulates triage: take each card, classify it into a bucket, and produce an actionable backlog sorted by priority.
+The Scribe collects all gallery walk cards and triages them live.  The cell below simulates triage: take each card, classify it into a bucket, and produce an actionable backlog sorted by priority.
 
 ```python
 # Gallery walk feedback triage simulator.
@@ -159,29 +159,29 @@ print("  Scribe: fill in the blanks above and commit BACKLOG.md before end of da
 
 ### Critical Thinking Questions
 
-7. Two items are classified as DISCLOSE: known limitations acknowledged at Demo Day rather than fixed. Why is a well-worded disclosure *preferable* to a rushed fix made the night before? What risks does a rushed fix introduce?
-8. The Instructor's risk item says "SEMANTICS.md says X, but the code does Y." Which one is right? Write the policy your team will follow when documentation and implementation disagree.
-9. As a walker, you notice a language with much better error messages than yours. Should you copy their approach, ask how they did it, or note it as a future-work item? Use the triage categories to articulate the difference.
+7.  Two items are classified as DISCLOSE: known limitations acknowledged at Demo Day rather than fixed.  Why is a well-worded disclosure *preferable* to a rushed fix made the night before?  What risks does a rushed fix introduce?
+8.  The Instructor's risk item says "SEMANTICS.md says X, but the code does Y." Which one is right?  Write the policy your team will follow when documentation and implementation disagree.
+9.  As a walker, you notice a language with much better error messages than yours.  Should you copy their approach, ask how they did it, or note it as a future-work item?  Use the triage categories to articulate the difference.
 
 ---
 
-## 4. Triage (20 minutes, after the walk)
+## 4.  Triage (20 minutes, after the walk)
 
-Cluster the cards and sort every item into exactly one bucket: **Fix before Demo Day** (breaks the core story), **Disclose at Demo Day** (real, acknowledged, out of scope), or **Future work** (report material). The discipline is the middle bucket: mature engineering names its known defects. The Scribe converts bucket one into assigned, dated backlog items before anyone leaves.
+Cluster the cards and sort every item into exactly one bucket: **Fix before Demo Day** (breaks the core story), **Disclose at Demo Day** (real, acknowledged, out of scope), or **Future work** (report material).  The discipline is the middle bucket: mature engineering names its known defects.  The Scribe converts bucket one into assigned, dated backlog items before anyone leaves.
 
 ---
 
-## 5. Demo Day Release Checklist
+## 5.  Demo Day Release Checklist
 
 Before Demo Day, the Evaluator verifies and signs each line:
 
-1. The REPL and the file-runner both work from a fresh clone following the readme, in under three minutes.
-2. All sample programs (five minimum, including one that shows off the niche) run with committed expected outputs.
-3. The test suite passes and its results table is current in the repository.
+1.  The REPL and the file-runner both work from a fresh clone following the readme, in under three minutes.
+2.  All sample programs (five minimum, including one that shows off the niche) run with committed expected outputs.
+3.  The test suite passes and its results table is current in the repository.
 4. `SEMANTICS.md` and the grammar document match what the implementation actually does today.
-5. One failure case is rehearsed and its disclosure worded.
-6. Every teammate can run the demo and explain the distinctive feature solo.
-7. Reproducibility: Python version listed, any dependencies pinned, setup tested by the teammate who did not write it.
+5.  One failure case is rehearsed and its disclosure worded.
+6.  Every teammate can run the demo and explain the distinctive feature solo.
+7.  Reproducibility: Python version listed, any dependencies pinned, setup tested by the teammate who did not write it.
 
 ```python
 # Release checklist automator: enforces the 7-item checklist as code.
@@ -264,24 +264,24 @@ else:
 
 ### Critical Thinking Questions
 
-10. The checklist runs automated checks, but check 6 ("every teammate can demo the distinctive feature solo") cannot be automated. Why does this check matter, and what would a *passing* version of it look like as an observable event rather than a feeling?
-11. Check 4 requires SEMANTICS.md to be non-trivial (>500 bytes). Is this a good proxy for "SEMANTICS.md is complete"? Propose a better automated check.
-12. The checklist is run *before* Demo Day. On what day should the Evaluator first run it, and what should happen if any check fails with three days remaining?
+10.  The checklist runs automated checks, but check 6 ("every teammate can demo the distinctive feature solo") cannot be automated.  Why does this check matter, and what would a *passing* version of it look like as an observable event rather than a feeling?
+11.  Check 4 requires SEMANTICS.md to be non-trivial (>500 bytes).  Is this a good proxy for "SEMANTICS.md is complete"?  Propose a better automated check.
+12.  The checklist is run *before* Demo Day.  On what day should the Evaluator first run it, and what should happen if any check fails with three days remaining?
 
 ---
 
 ## Reflection Prompt
 
-In your notebook: compare the feedback your team received today with the error messages your language gives its users. Both are diagnostics offered to someone mid-effort. What makes each actionable or useless, and what will you change in one of them this week? Also: the stand-up discipline says "say the number." What is one domain (not software) where you have benefited from someone insisting on numbers over adjectives?
+In your notebook: compare the feedback your team received today with the error messages your language gives its users.  Both are diagnostics offered to someone mid-effort.  What makes each actionable or useless, and what will you change in one of them this week?  Also: the stand-up discipline says "say the number."  What is one domain (not software) where you have benefited from someone insisting on numbers over adjectives?
 
 ---
 
-## 6. Further Reading
+## 6.  Further Reading
 
 - The project specification's Demo Day rubric, reread tonight.
-- Robert Nystrom. *Crafting Interpreters*, the "Challenges" sections of your weakest chapter, as triage inspiration.
-- Tom DeMarco and Timothy Lister. *Peopleware*, Chapter 11: the cost of not measuring.
-- Kent Beck. *Test-Driven Development: By Example*: the red-green-refactor cycle your Evaluator role embodies.
+- Robert Nystrom.  *Crafting Interpreters*, the "Challenges" sections of your weakest chapter, as triage inspiration.
+- Tom DeMarco and Timothy Lister.  *Peopleware*, Chapter 11: the cost of not measuring.
+- Kent Beck.  *Test-Driven Development: By Example*: the red-green-refactor cycle your Evaluator role embodies.
 
 ---
 

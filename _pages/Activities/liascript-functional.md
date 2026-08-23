@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Functional Programming
 
-When you give someone driving directions, you say "turn left on Main, go two blocks, turn right." That is imperative programming: a step-by-step recipe for *how* to get somewhere. Functional programming is like giving the destination instead: you describe *what* you want the data to look like, and let the language figure out how to get there. This shift in thinking is why functional ideas now show up in every modern language (Python, JavaScript, Java, Rust) and why mastering them makes you a dramatically more expressive programmer.
+When you give someone driving directions, you say "turn left on Main, go two blocks, turn right."  That is imperative programming: a step-by-step recipe for *how* to get somewhere.  Functional programming is like giving the destination instead: you describe *what* you want the data to look like, and let the language figure out how to get there.  This shift in thinking is why functional ideas now show up in every modern language (Python, JavaScript, Java, Rust) and why mastering them makes you a dramatically more expressive programmer.
 
 ## Learning Goals
 
@@ -26,7 +26,7 @@ By the end of this activity, you will be able to:
 - Use currying and partial application to build specialized functions from general ones
 - Implement recursive solutions to iterative problems without using mutable state or assignment
 
-With the interpreter core complete through *Control Flow Semantics*, the course turns from building languages to inhabiting one paradigm deeply. We practice **functional programming** in Python (`lambda`, `map`, `filter`, `reduce`) with the discipline of **purity** and **immutability**, because the functional toolkit is both a daily professional skill (data pipelines, modern Java/JavaScript/Rust) and the bridge to Scheme and the lambda calculus ahead.
+With the interpreter core complete through *Control Flow Semantics*, the course turns from building languages to inhabiting one paradigm deeply.  We practice **functional programming** in Python (`lambda`, `map`, `filter`, `reduce`) with the discipline of **purity** and **immutability**, because the functional toolkit is both a daily professional skill (data pipelines, modern Java/JavaScript/Rust) and the bridge to Scheme and the lambda calculus ahead.
 
 Arc: **purity and why it pays -> the big three combinators -> higher-order thinking -> currying and partial application -> recursion without loops**
 
@@ -41,13 +41,13 @@ Arc: **purity and why it pays -> the big three combinators -> higher-order think
 
 ## Directions and Group Roles
 
-Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**). Consider each model and question individually first, then discuss with your group. The Recorder posts answers to the Class Activity Questions discussion board; the Presenter reports out areas of disagreement or alternative approaches.
+Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Please think each model and question through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever you disagreed or found another approach.
 
 ---
 
 ## Key Concepts
 
-Before diving in, here is a plain-English glossary of the terms this activity uses. Return to this table whenever a term feels slippery.
+Here is a plain-English glossary of the terms this activity uses.  Please come back to this table whenever one of them starts to feel slippery.
 
 | Term | Plain-English meaning | Why it matters |
 |------|-----------------------|----------------|
@@ -66,15 +66,15 @@ Before diving in, here is a plain-English glossary of the terms this activity us
 
 # Part I: Purity
 
-## 1. Functions Like Mathematics Meant
+## 1.  Functions Like Mathematics Meant
 
-**A pure function's output depends only on its inputs, and it changes nothing outside itself.** No mutation of arguments, no global reads or writes, no printing, no randomness. Purity buys three concrete powers:
+A pure function's output depends only on its inputs, and it changes nothing outside itself.  No mutation of arguments, no global reads or writes, no printing, no randomness.  Purity buys three concrete powers:
 
-1. **Substitution**: a call can be replaced by its result anywhere (referential transparency)
-2. **Testability**: no setup, no teardown: just input -> expected output
-3. **Parallel safety**: no shared state means no interference
+1.  **Substitution**: a call can be replaced by its result anywhere (referential transparency)
+2.  **Testability**: no setup, no teardown: just input -> expected output
+3.  **Parallel safety**: no shared state means no interference
 
-**Immutability is purity's partner.** Functional style does not modify a list; it produces a new one.
+Immutability is purity's partner.  Functional style does not modify a list; it produces a new one.
 
 ```python  liascript
 # Spot the impure function, run this and observe the difference
@@ -104,15 +104,15 @@ print(f"data after two calls to impure_double: {data}")   # [4, 8, 12], not [4, 
 
 **Critical Thinking Questions (CTQs)**
 
-> **CTQ 1.1** `pure_double` and `impure_double` return the same value for `[1, 2, 3]`, yet they differ fundamentally. What is the difference, and why does it matter when a function is called more than once?
+> **CTQ 1.1** `pure_double` and `impure_double` return the same value for `[1, 2, 3]`, yet they differ fundamentally.  What is the difference, and why does it matter when a function is called more than once?
 
-> **CTQ 1.2** The rule "calling a pure function twice with the same input always gives the same output" is called **referential transparency**. Which functions in the code above have this property? Which do not?
+> **CTQ 1.2** The rule "calling a pure function twice with the same input always gives the same output" is called **referential transparency**.  Which functions in the code above have this property?  Which do not?
 
-> **CTQ 1.3** Could `pure_double` safely run on two halves of the list in parallel and merge the results? Could `impure_double`? Explain.
+> **CTQ 1.3** Could `pure_double` safely run on two halves of the list in parallel and merge the results?  Could `impure_double`?  Explain.
 
 ---
 
-Think of purity the way you think about a calculator: press `2 + 3` and you always get `5`, no matter how many times you press it and no matter what else is on your desk. Model 1 gives you six functions and asks you to decide which ones behave like that trustworthy calculator and which ones secretly remember (or change) the world around them. Use what you learned from the opening example above to guide your classification.
+Think of purity the way you think about a calculator: press `2 + 3` and you always get `5`, no matter how many times you press it and no matter what else is on your desk.  Model 1 gives you six functions and asks you to decide which ones behave like that trustworthy calculator and which ones secretly remember (or change) the world around them.  Use what you learned from the opening example above to guide your classification.
 
 ## Model 1: The Purity Audit
 
@@ -140,19 +140,19 @@ print(f"f6() twice: {f6():.4f}, {f6():.4f}")   # random
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **CTQ 1.4** Classify each function as pure or impure. For each impure one, name the exact disqualifying feature.
+> **CTQ 1.4** Classify each function as pure or impure.  For each impure one, name the exact disqualifying feature.
 
-> **CTQ 1.5** `f4` reads but never writes a global. What referential transparency property does it still forfeit? Construct a test that would *pass* today but *fail* after appending to `LOG_LINES`.
+> **CTQ 1.5** `f4` reads but never writes a global.  What referential transparency property does it still forfeit?  Construct a test that would *pass* today but *fail* after appending to `LOG_LINES`.
 
 ---
 
 # Part II: The Big Three Combinators
 
-The next two models focus on the three combinators that replace nearly every explicit loop you have ever written. Before we look at any code, notice that each combinator corresponds to a question you already ask about data: "what does each element look like after a change?", "which elements do I want to keep?", "what single summary value do these elements produce?" You have been answering these questions with `for` loops; now you will answer them with a single function call.
+The next two models focus on the three combinators that replace nearly every explicit loop you have ever written.  Before we look at any code, notice that each combinator corresponds to a question you already ask about data: "what does each element look like after a change?", "which elements do I want to keep?", "what single summary value do these elements produce?"  You have been answering these questions with `for` loops; now you will answer them with a single function call.
 
-> **Watch out!** Python's `map` and `filter` do not prevent you from passing in an impure function, one that prints, mutates globals, or reads from a file. The combinators themselves are pure, but they will faithfully execute whatever function you hand them. Always make sure the lambda or function you pass in has no side effects, or you lose the guarantees that make functional style valuable.
+> **Watch out!**  Python's `map` and `filter` do not prevent you from passing in an impure function, one that prints, mutates globals, or reads from a file.  The combinators themselves are pure, but they will faithfully execute whatever function you hand them.  Always make sure the lambda or function you pass in has no side effects, or you lose the guarantees that make functional style valuable.
 
-## 2. Map, Filter, Reduce
+## 2.  Map, Filter, Reduce
 
 $$\text{map}(f, [x_1, \dots, x_n]) = [f(x_1), \dots, f(x_n)]$$
 
@@ -160,7 +160,7 @@ $$\text{filter}(p, [x_1, \dots, x_n]) = [x_i \mid p(x_i) = \text{True}]$$
 
 $$\text{reduce}(\oplus, [x_1, \dots, x_n], z) = ((z \oplus x_1) \oplus x_2) \oplus \cdots \oplus x_n$$
 
-Each replaces a loop pattern you have written a hundred times. The key: `map` *transforms* every element, `filter` *selects* elements, `reduce` *collapses* a list to one value.
+Each replaces a loop pattern you have written a hundred times.  The key: `map` *transforms* every element, `filter` *selects* elements, `reduce` *collapses* a list to one value.
 
 ```python  liascript
 from functools import reduce
@@ -194,17 +194,17 @@ print(f"max score: {max_score}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **CTQ 2.1** Rewrite the `map` call as an explicit `for` loop. What bookkeeping did `map` absorb? Do the same for `filter`.
+> **CTQ 2.1** Rewrite the `map` call as an explicit `for` loop.  What bookkeeping did `map` absorb?  Do the same for `filter`.
 
-> **CTQ 2.2** `reduce` with `lambda a, b: a - b` over `[10, 3, 2]` and seed 0: compute it by hand using the left-fold formula `((0 - 10) - 3) - 2`. What is the result? Now try seed 10 with `[3, 2]`. What does "left fold" mean?
+> **CTQ 2.2** `reduce` with `lambda a, b: a - b` over `[10, 3, 2]` and seed 0: compute it by hand using the left-fold formula `((0 - 10) - 3) - 2`.  What is the result?  Now try seed 10 with `[3, 2]`.  What does "left fold" mean?
 
-> **CTQ 2.3** The pipeline composes `map`, `filter`, and `reduce` in a *single expression* with no intermediate names. Name one benefit and one cost for a reader.
+> **CTQ 2.3** The pipeline composes `map`, `filter`, and `reduce` in a *single expression* with no intermediate names.  Name one benefit and one cost for a reader.
 
 ---
 
-Python gives you two roads to the same destination: the `map`/`filter` combinators you just saw, and *list comprehensions*, which borrow syntax from mathematical set-builder notation. Model 2 puts them side by side so you can see that they produce identical results while looking quite different. Understanding both is practical (you will encounter both in real Python codebases) and comparing them deepens your intuition for what "transforming a collection" really means.
+Python gives you two roads to the same destination: the `map`/`filter` combinators you just saw, and *list comprehensions*, which borrow syntax from mathematical set-builder notation.  Model 2 puts them side by side so you can see that they produce identical results while looking quite different.  Understanding both is practical (you will encounter both in real Python codebases) and comparing them deepens your intuition for what "transforming a collection" really means.
 
-> **Watch out!** Immutability does not mean "constant." In Python, writing `x = 5` creates a variable that you could reassign at any time. True immutability in functional programming means that once a data structure is built you never modify it; instead you build a new one. Python's `tuple` is immutable; a `list` is not. When you call `pure_double` above, `original` stays unchanged not because Python enforces it, but because the function was *written* to build a new list. Nothing stops you from writing an impure version; discipline and code review do.
+> **Watch out!**  Immutability does not mean "constant."  In Python, writing `x = 5` creates a variable that you could reassign at any time.  True immutability in functional programming means that once a data structure is built you never modify it; instead you build a new one.  Python's `tuple` is immutable; a `list` is not.  When you call `pure_double` above, `original` stays unchanged not because Python enforces it, but because the function was *written* to build a new list.  Nothing stops you from writing an impure version; discipline and code review do.
 
 ## Model 2: Comprehensions vs. Combinators
 
@@ -230,17 +230,17 @@ print(f"generator sum: {sum(gen)}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **CTQ 2.4** The comprehension evaluates `min(s + 5, 100)` *twice* for each element. How would you fix this using a nested comprehension or a helper function?
+> **CTQ 2.4** The comprehension evaluates `min(s + 5, 100)` *twice* for each element.  How would you fix this using a nested comprehension or a helper function?
 
-> **CTQ 2.5** Generators are *lazy*: they produce elements one at a time on demand. What advantage does this have for processing a file with 10 million lines?
+> **CTQ 2.5** Generators are *lazy*: they produce elements one at a time on demand.  What advantage does this have for processing a file with 10 million lines?
 
 ---
 
-Before moving on to higher-order functions, pause and run one pipeline entirely *by hand*. If you can produce every intermediate list on paper, `map`/`filter`/`reduce` stop being magic incantations and become bookkeeping you happen not to write yourself.
+Before moving on to higher-order functions, pause and run one pipeline entirely *by hand*.  If you can produce every intermediate list on paper, `map`/`filter`/`reduce` stop being magic incantations and become bookkeeping you happen not to write yourself.
 
 ## Model 3: Tracing a Map-Filter-Reduce Pipeline by Hand
 
-**Worked example.** Trace the scores pipeline from Section 2, one stage at a time:
+**Worked example.**  Trace the scores pipeline from Section 2, one stage at a time:
 
 ```
 scores    [88, 92, 54, 71, 67, 95, 49, 83]
@@ -288,7 +288,7 @@ print(f"total = {total}, mean = {total / len(passing):.1f}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-In the pipeline trace, the score 54 becomes 59 after the map stage and then vanishes. Which statement is accurate?
+In the pipeline trace, the score 54 becomes 59 after the map stage and then vanishes.  Which statement is accurate?
 
 [( )] `map` removed it because it was below 70
 [(X)] `map` transformed it (54 -> 59) and `filter` discarded it because 59 < 70
@@ -297,21 +297,21 @@ In the pipeline trace, the score 54 becomes 59 after the map stage and then vani
 
 **Critical Thinking Questions (CTQs)**
 
-> **CTQ 3.1** Recompute the running-total column yourself to confirm 526. Which two original scores never reach `reduce`, and which stage eliminated each one?
+> **CTQ 3.1** Recompute the running-total column yourself to confirm 526.  Which two original scores never reach `reduce`, and which stage eliminated each one?
 
-> **CTQ 3.2** The stage diagram materializes two whole intermediate lists (`curved`, `passing`) because the code calls `list(...)`. In the one-expression pipeline from Section 2 (no `list` calls), do those intermediate lists ever exist in memory? Connect your answer to the laziness you observed in CTQ 2.5.
+> **CTQ 3.2** The stage diagram materializes two whole intermediate lists (`curved`, `passing`) because the code calls `list(...)`.  In the one-expression pipeline from Section 2 (no `list` calls), do those intermediate lists ever exist in memory?  Connect your answer to the laziness you observed in CTQ 2.5.
 
-> **CTQ 3.3** The running-total column is exactly the accumulator variable from an imperative loop, yet nothing here is mutated. Where does the "updated" accumulator live on each fold step instead? And is `reduce` with `traced_add` still pure? (Careful: `traced_add` prints.)
+> **CTQ 3.3** The running-total column is exactly the accumulator variable from an imperative loop, yet nothing here is mutated.  Where does the "updated" accumulator live on each fold step instead?  And is `reduce` with `traced_add` still pure?  (Careful: `traced_add` prints.)
 
 ---
 
 # Part III: Higher-Order Functions
 
-You have already passed functions as arguments: every time you called `map(lambda x: x*2, data)` you handed a function to another function. Part III asks: what if a function could also *return* a new function? Think of it like a factory: instead of building one widget, the factory builds a machine that builds widgets. `make_adder(5)` is that factory: call it once and you get back a custom addition function, ready to use anywhere.
+You have already passed functions as arguments: every time you called `map(lambda x: x*2, data)` you handed a function to another function.  Part III asks: what if a function could also *return* a new function?  Think of it like a factory: instead of building one widget, the factory builds a machine that builds widgets. `make_adder(5)` is that factory: call it once and you get back a custom addition function, ready to use anywhere.
 
-## 3. Functions That Make Functions
+## 3.  Functions That Make Functions
 
-A **higher-order function** takes functions as arguments *or* returns functions. Today we also *return* them, creating parameterized behavior without classes.
+A **higher-order function** takes functions as arguments *or* returns functions.  Today we also *return* them, creating parameterized behavior without classes.
 
 ```python  liascript
 # make_adder returns a function; each call creates a new closure
@@ -353,11 +353,11 @@ print(f"add5 twice applied to 0: {add5_twice(0)}")   # 10
 
 ---
 
-A composed pipeline like `clean` reads as a single gesture, but the machine executes it one function at a time. Tracing a composition call by call (writing down each intermediate value) is the fastest way to convince yourself that data really does flow left to right through `pipeline`, and right to left through `compose`.
+A composed pipeline like `clean` reads as a single gesture, but the machine executes it one function at a time.  Tracing a composition call by call (writing down each intermediate value) is the fastest way to convince yourself that data really does flow left to right through `pipeline`, and right to left through `compose`.
 
 ## Model 4: Composition, Traced One Call at a Time
 
-**Worked example.** Trace `clean("  Hello World  ")` where `clean = pipeline(str.strip, str.lower, lambda s: s.replace(' ', '_'))`. Since `pipeline` folds with `lambda v, f: f(v)`, the string threads through the functions in order:
+**Worked example.**  Trace `clean("  Hello World  ")` where `clean = pipeline(str.strip, str.lower, lambda s: s.replace(' ', '_'))`.  Since `pipeline` folds with `lambda v, f: f(v)`, the string threads through the functions in order:
 
 | Step | Function applied | Input value | Output value |
 |------|------------------|-------------|--------------|
@@ -411,7 +411,7 @@ print(f"result: {messy('  Hello World  ')!r}")
 
 Notice that `traced` is itself a higher-order function: it consumes a function and returns a new one with the same behavior plus narration, the same shape as `twice` and `compose`.
 
-`compose(f, g)` returns `lambda x: f(g(x))`. Evaluating `compose(str.lower, str.strip)("  ABC  ")` therefore:
+`compose(f, g)` returns `lambda x: f(g(x))`.  Evaluating `compose(str.lower, str.strip)("  ABC  ")` therefore:
 
 [( )] Applies `lower` first, then `strip`
 [(X)] Applies `strip` first (it is innermost), then `lower`
@@ -420,17 +420,17 @@ Notice that `traced` is itself a higher-order function: it consumes a function a
 
 **Critical Thinking Questions (CTQs)**
 
-> **CTQ 4.1** Each stage's output becomes the next stage's input. What requirement connects the *return type* of one stage to the *parameter type* of the next? The swapped `messy` pipeline still ran without error; did it satisfy your requirement, and is "runs without error" the same as "correct"?
+> **CTQ 4.1** Each stage's output becomes the next stage's input.  What requirement connects the *return type* of one stage to the *parameter type* of the next?  The swapped `messy` pipeline still ran without error; did it satisfy your requirement, and is "runs without error" the same as "correct"?
 
-> **CTQ 4.2** Unroll `pipeline(f, g, h)(x)` by hand using the left-fold formula from CTQ 2.2 to show it computes `h(g(f(x)))`. Then unroll `compose(f, g)(x)`. Which order do you find easier to read, and why might data-pipeline libraries prefer left-to-right?
+> **CTQ 4.2** Unroll `pipeline(f, g, h)(x)` by hand using the left-fold formula from CTQ 2.2 to show it computes `h(g(f(x)))`.  Then unroll `compose(f, g)(x)`.  Which order do you find easier to read, and why might data-pipeline libraries prefer left-to-right?
 
-> **CTQ 4.3** `pipeline` is implemented with `reduce`, but folding over a list of *functions* rather than numbers. In the trace table, what plays the role of the accumulator, and what is its value after step 2?
+> **CTQ 4.3** `pipeline` is implemented with `reduce`, but folding over a list of *functions* rather than numbers.  In the trace table, what plays the role of the accumulator, and what is its value after step 2?
 
 ---
 
-If higher-order functions are factories, then currying and partial application are factory *customizations*. Imagine a general `power(base, exp)` function. Partial application lets you say "I always want `exp=2`; give me a `square` function." Currying takes this further: it restructures any multi-argument function so you can supply arguments one at a time, producing a chain of single-argument functions. This style shows up everywhere in functional languages like Haskell, and understanding it will make the lambda calculus we study later feel natural.
+If higher-order functions are factories, then currying and partial application are factory *customizations*.  Imagine a general `power(base, exp)` function.  Partial application lets you say "I always want `exp=2`; give me a `square` function."  Currying takes this further: it restructures any multi-argument function so you can supply arguments one at a time, producing a chain of single-argument functions.  This style shows up everywhere in functional languages like Haskell, and understanding it will make the lambda calculus we study later feel natural.
 
-## 4. Partial Application and Currying
+## 4.  Partial Application and Currying
 
 **Partial application**: fix some arguments of a function to produce a simpler one.
 
@@ -476,21 +476,21 @@ print(f"process({data}) = {process(data)}")   # sum of elements > 0 after subtra
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **CTQ 4.4** `map_with(lambda x: x * 2)` returns a function. How is this different from `map(lambda x: x * 2, data)`? When is the list transformer version more useful?
+> **CTQ 4.4** `map_with(lambda x: x * 2)` returns a function.  How is this different from `map(lambda x: x * 2, data)`?  When is the list transformer version more useful?
 
-> **CTQ 4.5** Haskell functions are automatically curried: `f x y` is always `(f x) y`. What advantage does automatic currying give you for composing functions?
+> **CTQ 4.5** Haskell functions are automatically curried: `f x y` is always `(f x) y`.  What advantage does automatic currying give you for composing functions?
 
 ---
 
 # Part IV: Recursion Without Loops
 
-In Python you have used `for` loops to walk through lists. But a `for` loop requires mutable state: a counter variable that changes on every iteration. Pure functional programming avoids mutable state entirely, so loops are off the table. The replacement is recursion: a function that solves a big problem by calling itself on a smaller piece of that problem. Model 5 shows you that `map`, `filter`, and `reduce` (which you already know) can themselves be written as recursive functions, making their structure visible and precise.
+In Python you have used `for` loops to walk through lists.  But a `for` loop requires mutable state: a counter variable that changes on every iteration.  Pure functional programming avoids mutable state entirely, so loops are off the table.  The replacement is recursion: a function that solves a big problem by calling itself on a smaller piece of that problem.  Model 5 shows you that `map`, `filter`, and `reduce` (which you already know) can themselves be written as recursive functions, making their structure visible and precise.
 
-> **Watch out!** When students first encounter "no loops allowed," a common instinct is to reach for a `while True` loop with a counter. That is still a loop! Pure functional recursion means the function calls itself with a *smaller* argument: there is no loop variable, no `i += 1`, and no mutation of any list. If you find yourself writing an assignment statement inside a recursive function, pause and reconsider.
+> **Watch out!**  When students first encounter "no loops allowed," a common instinct is to reach for a `while True` loop with a counter.  That is still a loop!  Pure functional recursion means the function calls itself with a *smaller* argument: there is no loop variable, no `i += 1`, and no mutation of any list.  If you find yourself writing an assignment statement inside a recursive function, pause and reconsider.
 
-## 5. Thinking Recursively
+## 5.  Thinking Recursively
 
-In pure functional style, **there are no loops**, only recursion. Every loop corresponds to a recursive function:
+In pure functional style, **there are no loops**, only recursion.  Every loop corresponds to a recursive function:
 
 ```python  liascript
 import sys
@@ -533,15 +533,15 @@ print(f"rsum({nums}) = {rsum(nums)}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **CTQ 5.1** Each recursive function has a base case and a recursive case. Identify them for `my_map`. What guarantees the recursion terminates?
+> **CTQ 5.1** Each recursive function has a base case and a recursive case.  Identify them for `my_map`.  What guarantees the recursion terminates?
 
-> **CTQ 5.2** `my_reduce(f, lst, init)` uses `init` as an accumulator. Trace `my_reduce(lambda a, b: a - b, [3, 2, 1], 10)` step by step. What is the result?
+> **CTQ 5.2** `my_reduce(f, lst, init)` uses `init` as an accumulator.  Trace `my_reduce(lambda a, b: a - b, [3, 2, 1], 10)` step by step.  What is the result?
 
-> **CTQ 5.3** Python has a default recursion limit of 1000. Haskell compiles tail-recursive functions to loops. What is a "tail call," and why can't Python's `rsum` be optimized this way?
+> **CTQ 5.3** Python has a default recursion limit of 1000.  Haskell compiles tail-recursive functions to loops.  What is a "tail call," and why can't Python's `rsum` be optimized this way?
 
 ---
 
-Model 6 pushes recursion in two new directions: *mutual* recursion (two functions that call each other) and *structural* recursion (recursing along the shape of nested data, not a numeric counter). You will also see a fully functional merge sort, no mutation anywhere. Before diving in, study the worked example below that shows how to translate an imperative loop into a functional composition step by step.
+Model 6 pushes recursion in two new directions: *mutual* recursion (two functions that call each other) and *structural* recursion (recursing along the shape of nested data, not a numeric counter).  You will also see a fully functional merge sort, no mutation anywhere.  Before diving in, study the worked example below that shows how to translate an imperative loop into a functional composition step by step.
 
 **Worked Example: Imperative -> Functional**
 
@@ -557,12 +557,12 @@ for x in nums:
 
 Here is how to transform it step by step into a functional composition:
 
-**Step 1. Identify the three loop concerns separately:**
+**Step 1.  Identify the three loop concerns separately:**
 - *Filter*: keep only even numbers -> `x % 2 == 0`
 - *Transform*: square each kept number -> `x ** 2`
 - *Aggregate*: sum the results -> `+`
 
-**Step 2. Write each concern as a lambda:**
+**Step 2.  Write each concern as a lambda:**
 
 ```python
 is_even  = lambda x: x % 2 == 0
@@ -570,7 +570,7 @@ square   = lambda x: x ** 2
 add      = lambda a, b: a + b
 ```
 
-**Step 3. Assemble with `filter`, `map`, `reduce`:**
+**Step 3.  Assemble with `filter`, `map`, `reduce`:**
 
 ```python
 from functools import reduce
@@ -585,9 +585,9 @@ result = reduce(lambda a, b: a + b,
                     filter(lambda x: x % 2 == 0, nums)), 0)
 ```
 
-The result is identical to the loop. The difference: the functional version has **no mutation** (`result` is never reassigned), **no loop variable**, and each concern is a named, testable piece.
+The result is identical to the loop.  The difference: the functional version has **no mutation** (`result` is never reassigned), **no loop variable**, and each concern is a named, testable piece.
 
-## 6. Mutual Recursion and Structural Recursion
+## 6.  Mutual Recursion and Structural Recursion
 
 ```python  liascript
 import sys
@@ -642,9 +642,9 @@ print(f"mergesort([5,2,8,1,9,3]) = {mergesort([5,2,8,1,9,3])}")
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-> **CTQ 6.1** `tree_sum` recurses on the *structure* of the data, not a loop counter. What property of the tree guarantees this terminates?
+> **CTQ 6.1** `tree_sum` recurses on the *structure* of the data, not a loop counter.  What property of the tree guarantees this terminates?
 
-> **CTQ 6.2** `mergesort` produces new lists at each step: it never mutates the input. What is the memory cost compared to in-place quicksort? Is purity free?
+> **CTQ 6.2** `mergesort` produces new lists at each step: it never mutates the input.  What is the memory cost compared to in-place quicksort?  Is purity free?
 
 ---
 
@@ -660,7 +660,7 @@ Which of the following is a *pure* function?
 ---
 
 ---
-**In-class work stops here.** Everything below is homework and going-deeper material, attempt the exercises before the related assignment.
+**In-class work stops here.**  Everything below is homework and going-deeper material, attempt the exercises before the related assignment.
 
 ## Exercises (Homework: ~95 minutes total)
 
@@ -683,7 +683,7 @@ Demo: `pipeline(str.strip, str.lower, lambda s: s.split())` on `"  Hello World  
 
 ### Exercise 3: My Map and Reduce (20 min)
 
-Implement `my_map` and `my_reduce` recursively (no `for`/`while`). Test against the built-ins on 5 inputs each. Then implement `my_zip(lst1, lst2)` and `my_flatten(nested)` recursively.
+Implement `my_map` and `my_reduce` recursively (no `for`/`while`).  Test against the built-ins on 5 inputs each.  Then implement `my_zip(lst1, lst2)` and `my_flatten(nested)` recursively.
 
 ### Exercise 4: Purity Refactor (20 min)
 
@@ -691,13 +691,13 @@ Take the impure `f2` and `f3` from Model 1, refactor them to be pure, and write 
 
 ### Exercise 5: No-Assignment Challenge (25 min)
 
-Compute the average word length of a paragraph using **exactly one expression**, no statements, no intermediate variable names (except the function parameter). Then discuss: when does point-free style help, and when does it hurt readability?
+Compute the average word length of a paragraph using **exactly one expression**, no statements, no intermediate variable names (except the function parameter).  Then discuss: when does point-free style help, and when does it hurt readability?
 
 ---
 
 ## Reflection Prompt
 
-Purity forbids a function from leaving traces on the world: which makes it trustworthy, but also means it *cannot do anything* (no printing, no saving) without breaking the rules. Real programs must do things. Where should the impurity live in a well-organized program? Name a non-programming system (kitchen, lab, organization) organized the same way.
+Purity forbids a function from leaving traces on the world: which makes it trustworthy, but also means it *cannot do anything* (no printing, no saving) without breaking the rules.  Real programs must do things.  Where should the impurity live in a well-organized program?  Name a non-programming system (kitchen, lab, organization) organized the same way.
 
 ---
 
@@ -713,13 +713,13 @@ Purity forbids a function from leaving traces on the world: which makes it trust
 
 ## Going Deeper (Optional Pointers)
 
-The core lesson above stands on its own. The deep-dive appendices that used to follow it now live on the Tutorials shelf:
+The core lesson above stands on its own.  The deep-dive appendices that used to follow it now live on the Tutorials shelf:
 
-> **Going further:** [Haskell Essentials for the Programming Languages Course](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-haskell-essentials.md) covers the Haskell fundamentals behind this unit: functions, pattern matching, algebraic data types, and higher-order style. The monads material that used to live here (the Maybe, List, and IO monads, the monad laws, do-notation, thunks, and infinite streams) is not covered in the course materials; explore it independently (keywords: "monad laws," "do-notation," "thunks and lazy evaluation," "infinite streams Haskell"). Direction A of the Functional assignment covers lazy sequences and generators in Python.
+> **Going further:** [Haskell Essentials for the Programming Languages Course](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-haskell-essentials.md) covers the Haskell fundamentals behind this unit: functions, pattern matching, algebraic data types, and higher-order style.  The monads material that used to live here (the Maybe, List, and IO monads, the monad laws, do-notation, thunks, and infinite streams) is not covered in the course materials; explore it independently (keywords: "monad laws," "do-notation," "thunks and lazy evaluation," "infinite streams Haskell").  Direction A of the Functional assignment covers lazy sequences and generators in Python.
 
-> **Going further:** the material that used to live here (treating parsers themselves as composable higher-order functions) is covered in depth in the dedicated tutorial: [Parser Combinators: Parsers as First-Class Values](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-parser-combinators.md). Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here (treating parsers themselves as composable higher-order functions) is covered in depth in the dedicated tutorial: [Parser Combinators: Parsers as First-Class Values](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-parser-combinators.md).  Explore it when your project or curiosity calls for it.
 
-> **Going further:** the continuation-passing style unit and the MapReduce/parallel-functional-programming unit that used to live here now live where they are assessed. **Directions B and E of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374/Assignments/Functional) build on this material, read the tutorial pointer sections there before choosing those directions.**
+> **Going further:** the continuation-passing style unit and the MapReduce/parallel-functional-programming unit that used to live here now live where they are assessed.  **Directions B and E of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374/Assignments/Functional) build on this material, read the tutorial pointer sections there before choosing those directions.**
 
 ---
 

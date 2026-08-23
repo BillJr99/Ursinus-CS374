@@ -6,7 +6,7 @@ title: "CS374: Participation Exercises - Type Systems"
 info:
   coursenum: CS374
   purpose: "To find, in a program you wrote, the specific expression where a type system helps and the specific one where it gets in your way."
-  submission: "Nothing to upload. Bring your attempt, and the one step that stopped you, to the Type Systems session. These are low-stakes preparation, assessed as part of the 15% Class Activities and Participation component, not graded for correctness."
+  submission: "Nothing to upload.  Please bring your attempt, and the one step that stopped you, to the Type Systems session.  I read these as part of the 15% Class Activities and Participation component, and getting them right is not the point."
 
 tags:
   - resource
@@ -14,16 +14,16 @@ tags:
 
 ---
 
-Everyone has a position on static typing and almost no one arrives with an example. Annotate a small program, find the expression a checker would reject that a dynamic language would happily run, and decide which behavior you want there. That example is your entry into the day's compare.
+Everyone has a position on static typing, and almost nobody arrives with an example.  Annotate a small program, find the expression a checker would reject that a dynamic language would happily run, and decide which behavior you want there.  That example is how you get into the day's discussion.
 
 ## The Exercises
 
-- For a small program, annotate each subexpression with the type you expect, and find one expression a static type checker would reject that a dynamic language would run. Which behavior do you prefer here, and why?
+- For a small program, annotate each subexpression with the type you expect, and find one expression a static type checker would reject that a dynamic language would run.  Which behavior do you prefer here, and why?
 - State one guarantee a type system buys and one program it forbids that you wish it allowed.
 
 ## What to Bring
 
-Mark the one step that resisted you and bring it: the program you wish the checker had allowed. A genuine attempt that ran aground is worth more to the discussion than a blank page or a perfect one, and the stuck points set the agenda for the session.
+Bring the program you wish the checker had allowed.  Come with it even if you could not settle the question; the unsettled ones are what we argue about in class.
 
 ## See also
 

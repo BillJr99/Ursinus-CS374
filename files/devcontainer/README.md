@@ -20,10 +20,10 @@ This README is the quickstart version.
 
 ## Setup (common to routes A and B)
 
-1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+1.  Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
    (macOS/Windows) or Docker Engine (Linux) and confirm `docker run hello-world` works.
-2. Create a **private** GitHub repository named `cs374-work` and clone it.
-3. Copy the three files above into a `.devcontainer/` folder inside the clone:
+2.  Create a **private** GitHub repository named `cs374-work` and clone it.
+3.  Copy the three files above into a `.devcontainer/` folder inside the clone:
 
    ```
    cs374-work/
@@ -35,18 +35,18 @@ This README is the quickstart version.
 
 The bind mount in `docker-compose.yml` (and the `workspaceMount` in
 `devcontainer.json`) exposes **your cloned GitHub repo** (and nothing else on
-your machine) at `/workspace` inside the container. You edit, test, commit,
+your machine) at `/workspace` inside the container.  You edit, test, commit,
 and push there; the files live on your disk and on GitHub, so the container
 itself is disposable.
 
 ## Route A: VS Code Dev Containers
 
-1. Install VS Code and the **Dev Containers** extension.
-2. Open the `cs374-work` folder in VS Code.
-3. Run **Dev Containers: Reopen in Container** from the command palette.
-4. VS Code builds the image (first time takes a few minutes) and reopens your
+1.  Install VS Code and the **Dev Containers** extension.
+2.  Open the `cs374-work` folder in VS Code.
+3.  Run **Dev Containers: Reopen in Container** from the command palette.
+4.  VS Code builds the image (first time takes a few minutes) and reopens your
    repo inside it, with the Python and GitLens extensions preinstalled.
-5. Open a terminal in VS Code; you are inside the container at `/workspace`.
+5.  Open a terminal in VS Code; you are inside the container at `/workspace`.
 
 ## Route B: plain Docker Compose
 
@@ -70,8 +70,8 @@ in the mounted repo.
 
 If you cannot run Docker, install the tools directly:
 
-1. Install Python 3.11 or later (any 3.10+ works for the pipeline assignments).
-2. In your cloned `cs374-work` repo, use [uv](https://docs.astral.sh/uv/) to
+1.  Install Python 3.11 or later (any 3.10+ works for the pipeline assignments).
+2.  In your cloned `cs374-work` repo, use [uv](https://docs.astral.sh/uv/) to
    create the environment and add the course packages:
 
    ```bash
@@ -80,7 +80,7 @@ If you cannot run Docker, install the tools directly:
    uv run pytest --version
    ```
 
-3. **Only if** you take the generator-toolchain directions (or build the
+3.  **Only if** you take the generator-toolchain directions (or build the
    mininote scaffold), install the OS packages for flex/bison:
    - Debian/Ubuntu: `sudo apt install flex bison gcc make`
    - macOS: `xcode-select --install` then `brew install flex bison`

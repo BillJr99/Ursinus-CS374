@@ -6,7 +6,7 @@ title: "CS374: Participation Exercises - Regular Expressions and Finite Automata
 info:
   coursenum: CS374
   purpose: "To hold a regular expression and the machine that recognizes it in your head at the same time."
-  submission: "Nothing to upload. Bring your attempt, and the one step that stopped you, to the Regular Expressions (Day 1 of 2): Theory session. These are low-stakes preparation, assessed as part of the 15% Class Activities and Participation component, not graded for correctness."
+  submission: "Nothing to upload.  Please bring your attempt, and the one step that stopped you, to the Regular Expressions (Day 1 of 2): Theory session.  These count toward the 15% Class Activities and Participation component, and correctness is not the standard."
 
 tags:
   - resource
@@ -14,7 +14,7 @@ tags:
 
 ---
 
-The equivalence of regular expressions and finite automata is the first place this course claims two very different-looking things are the same. The claim only lands if you build both for one language of your own and watch them agree. Subset construction by hand is tedious exactly once, and then it is a tool.
+The equivalence of regular expressions and finite automata is the first place this course claims that two very different-looking things are the same.  You will believe it once you have built both for a language of your own and watched them agree.  Subset construction by hand is tedious exactly once, and after that it is a tool you have.
 
 ## The Exercises
 
@@ -23,7 +23,7 @@ The equivalence of regular expressions and finite automata is the first place th
 
 ## What to Bring
 
-Mark the one step that resisted you and bring it: the subset-construction step where the state set stopped being obvious. A genuine attempt that ran aground is worth more to the discussion than a blank page or a perfect one, and the stuck points set the agenda for the session.
+Bring the construction even if it stalled, and mark the subset-construction step where the state set stopped being obvious.  The stall is the useful part for our discussion.
 
 ## See also
 

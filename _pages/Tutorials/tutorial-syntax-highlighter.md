@@ -29,9 +29,9 @@ tags:
 
 # A Syntax Highlighter for Your Language with tree-sitter
 
-This tutorial is a companion to the **Team Language Project** Extensions Menu. It shows how to give the language your team invented real editor support (syntax highlighting, and optionally a live diagnostic) which is one of the highest-impact things you can show at Demo Day: an audience *immediately* understands "we built a language" when they see it light up with color in a real editor.
+This tutorial is a companion to the **Team Language Project** Extensions Menu.  It shows you how to give the language your team invented real editor support, meaning syntax highlighting and optionally a live diagnostic.  This is one of the highest-impact things you can show at Demo Day, because an audience *immediately* understands "we built a language" when they see it light up with color in a real editor.
 
-Scope this small. Highlighting plus (optionally) one diagnostic is plenty for an undergraduate extension. You do not need a full language server.
+Scope this small.  Highlighting plus (optionally) one diagnostic is plenty for an undergraduate extension.  You do not need a full language server.
 
 ---
 
@@ -39,8 +39,8 @@ Scope this small. Highlighting plus (optionally) one diagnostic is plenty for an
 
 There are two common routes, and you can pick based on ambition:
 
-1. **TextMate grammar (simplest).** A JSON/plist file of regular expressions that VS Code uses to color tokens. No parser needed. Good enough for keyword/number/string/comment coloring. Start here if time is tight.
-2. **tree-sitter grammar (recommended).** You write a small grammar; tree-sitter generates a fast incremental parser; a `highlights.scm` query maps syntax nodes to color categories. This is what ships in modern editors and gives structure-aware highlighting (e.g., a function name colored differently from a variable). It also compiles to WebAssembly, so it runs anywhere.
+1.  **TextMate grammar (simplest).**  A JSON/plist file of regular expressions that VS Code uses to color tokens.  No parser needed.  Good enough for keyword/number/string/comment coloring.  Start here if time is tight.
+2.  **tree-sitter grammar (recommended).**  You write a small grammar; tree-sitter generates a fast incremental parser; a `highlights.scm` query maps syntax nodes to color categories.  This is what ships in modern editors and gives structure-aware highlighting (e.g., a function name colored differently from a variable).  It also compiles to WebAssembly, so it runs anywhere.
 
 The rest of this tutorial uses tree-sitter.
 
@@ -56,7 +56,7 @@ mkdir tree-sitter-mylang && cd tree-sitter-mylang
 tree-sitter init            # scaffolds the project
 ```
 
-Write `grammar.js`. Here is a tiny grammar for an expression-and-let language; adapt the rules to your team's actual syntax:
+Write `grammar.js`.  Here is a tiny grammar for an expression-and-let language; adapt the rules to your team's actual syntax:
 
 ```js
 module.exports = grammar({
@@ -84,9 +84,9 @@ tree-sitter generate
 echo 'let x = 2 + 3 * 4; print x;' | tree-sitter parse /dev/stdin
 ```
 
-You should see a parse tree. Iterate in the [tree-sitter playground](https://tree-sitter.github.io/tree-sitter/playground); paste your grammar and type programs to watch the tree update live.
+You should see a parse tree.  Iterate in the [tree-sitter playground](https://tree-sitter.github.io/tree-sitter/playground); paste your grammar and type programs to watch the tree update live.
 
-> **Reuse your EBNF:** you already wrote a precedence-annotated grammar in the Parser assignment. Your tree-sitter `prec.left`/`prec.right` annotations mirror the precedence ladder you built there; this is the same knowledge in a new notation.
+> **Reuse your EBNF:** you already wrote a precedence-annotated grammar in the Parser assignment.  Your tree-sitter `prec.left`/`prec.right` annotations mirror the precedence ladder you built there; this is the same knowledge in a new notation.
 
 ---
 
@@ -116,7 +116,7 @@ npm install -g yo generator-code
 yo code           # choose "New Language Support"
 ```
 
-Fill in your language id (`mylang`), file extension (`.ml`), and edit the generated `syntaxes/mylang.tmLanguage.json` to add patterns for your keywords, numbers, strings, and comments. Press `F5` in VS Code to launch an Extension Development Host and open a `.ml` file; it should be colored.
+Fill in your language id (`mylang`), file extension (`.ml`), and edit the generated `syntaxes/mylang.tmLanguage.json` to add patterns for your keywords, numbers, strings, and comments.  Press `F5` in VS Code to launch an Extension Development Host and open a `.ml` file; it should be colored.
 
 To use your tree-sitter grammar inside VS Code instead, compile it to WASM (`tree-sitter build --wasm`) and load it with the `vscode-tree-sitter` integration; this is the more advanced path.
 
@@ -124,7 +124,7 @@ To use your tree-sitter grammar inside VS Code instead, compile it to WASM (`tre
 
 ## Section 5 (optional): One diagnostic from your own parser
 
-The "wow" upgrade: surface a real error from *your* parser as an editor squiggle. A VS Code extension can run your interpreter on save and publish diagnostics:
+The "wow" upgrade: surface a real error from *your* parser as an editor squiggle.  A VS Code extension can run your interpreter on save and publish diagnostics:
 
 ```js
 // on save: run `python3 mylang.py <file> --check`, parse its "line L, col C: message"
@@ -137,7 +137,7 @@ Because your Parser and Interpreter assignments already emit positioned errors (
 
 ## Section 6: What to demo
 
-At Demo Day, open a sample program from your `examples/` folder in a real editor with your extension active. Show: keyword/number/operator coloring, and (if you did Section 5) a deliberate error producing a red squiggle at the right position. Keep a short README explaining how a grader installs the extension (`code --install-extension mylang-0.0.1.vsix`).
+At Demo Day, open a sample program from your `examples/` folder in a real editor with your extension active.  Show: keyword/number/operator coloring, and (if you did Section 5) a deliberate error producing a red squiggle at the right position.  Keep a short README explaining how a grader installs the extension (`code --install-extension mylang-0.0.1.vsix`).
 
 ---
 

@@ -29,21 +29,21 @@ tags:
 
 ## Introduction
 
-By the end of CS374 you have built a real programming language: a lexer, a parser, an evaluator or compiler, and probably a REPL. That implementation lives in a folder on your laptop. This tutorial shows you how to share it with the world so that anyone (without cloning your repository or installing your dependencies by hand) can run programs written in your language.
+By the end of CS374 you have built a real programming language, with a lexer, a parser, an evaluator or compiler, and probably a REPL.  Right now that implementation lives in a folder on your laptop.  This tutorial shows you how to share it with the world so that anyone (without cloning your repository or installing your dependencies by hand) can run programs written in your language.
 
 There are three scenarios, and you only need the one that fits your project:
 
-- **pip**: Your interpreter is written in Python. After publishing, anyone who runs `pip install mylang-cs374` will get the `mylang` command on their PATH and can run `mylang program.ml` directly.
-- **npm**: Your transpiler emits JavaScript. After publishing, anyone who runs `npx @yourname/mylang program.ml` will transpile and run the source file using Node.js; no installation required.
-- **Docker / ghcr.io**: Your language has native dependencies that are difficult to install (Flex/Bison, LLVM, a custom C runtime). A Docker image bundles everything. After publishing, users run `docker run --rm -v $(pwd):/work ghcr.io/yourname/mylang program.ml` and it just works.
+- **pip**: Your interpreter is written in Python.  After publishing, anyone who runs `pip install mylang-cs374` will get the `mylang` command on their PATH and can run `mylang program.ml` directly.
+- **npm**: Your transpiler emits JavaScript.  After publishing, anyone who runs `npx @yourname/mylang program.ml` will transpile and run the source file using Node.js; no installation required.
+- **Docker / ghcr.io**: Your language has native dependencies that are difficult to install (Flex/Bison, LLVM, a custom C runtime).  A Docker image bundles everything.  After publishing, users run `docker run --rm -v $(pwd):/work ghcr.io/yourname/mylang program.ml` and it just works.
 
-Pick the section that matches your project. The three parts are completely independent.
+Pick the section that matches your project.  The three parts are completely independent.
 
 ---
 
 ## Semantic Versioning Quick Reference
 
-Before diving into the tooling, agree on version numbers. All three ecosystems (PyPI, npm, Docker) use the same **semantic versioning** convention: `MAJOR.MINOR.PATCH`.
+Before diving into the tooling, agree on version numbers.  All three ecosystems (PyPI, npm, Docker) use the same **semantic versioning** convention: `MAJOR.MINOR.PATCH`.
 
 | Change | Version bump | Example |
 |---|---|---|
@@ -51,7 +51,7 @@ Before diving into the tooling, agree on version numbers. All three ecosystems (
 | Bug fix | Patch | 0.1.0 -> 0.1.1 |
 | Breaking change | Major | 0.1.0 -> 1.0.0 |
 
-Start at `0.1.0`. You are allowed to break things in the `0.x` range. When you feel the language is stable, bump to `1.0.0`.
+Start at `0.1.0`.  You are allowed to break things in the `0.x` range.  When you feel the language is stable, bump to `1.0.0`.
 
 ---
 
@@ -61,7 +61,7 @@ Use this section if your interpreter is written in Python.
 
 ### A1: Project Layout
 
-Before you can publish, your project needs a standard layout. The key file is `pyproject.toml`, which replaces the older `setup.py`. The special `__main__.py` module makes `python3 -m mylang` work as an alternative to the `mylang` command.
+Before you can publish, your project needs a standard layout.  The key file is `pyproject.toml`, which replaces the older `setup.py`.  The special `__main__.py` module makes `python3 -m mylang` work as an alternative to the `mylang` command.
 
 ```
 mylang/
@@ -77,11 +77,11 @@ tests/
   test_closures.py
 ```
 
-`__init__.py` can be empty; it just tells Python that `mylang/` is a package. Your existing source files (`lexer.py`, `parser.py`, `evaluator.py`) stay exactly where they are.
+`__init__.py` can be empty; it just tells Python that `mylang/` is a package.  Your existing source files (`lexer.py`, `parser.py`, `evaluator.py`) stay exactly where they are.
 
 ### A2: pyproject.toml
 
-`pyproject.toml` is the single file that describes your package to PyPI, to `pip`, and to the build tool. Create it in the root of your project (next to the `mylang/` directory, not inside it):
+`pyproject.toml` is the single file that describes your package to PyPI, to `pip`, and to the build tool.  Create it in the root of your project (next to the `mylang/` directory, not inside it):
 
 ```toml
 [build-system]
@@ -103,13 +103,13 @@ mylang = "mylang.__main__:main"
 Key points:
 
 - **`name`** must be unique on PyPI. Append your username or course section if `mylang-cs374` is taken: `mylang-cs374-yourname`.
-- **`version`** must be bumped every time you upload. PyPI rejects a new upload with an existing version number.
+- **`version`** must be bumped every time you upload.  PyPI rejects a new upload with an existing version number.
 - **`[project.scripts]`** is what creates the `mylang` command on the user's PATH. The value `"mylang.__main__:main"` means "import `mylang/__main__.py` and call the `main()` function."
-- **`requires-python`** tells pip to refuse installation on older Pythons. Use `>=3.10` to match what you developed with.
+- **`requires-python`** tells pip to refuse installation on older Pythons.  Use `>=3.10` to match what you developed with.
 
 ### A3: \_\_main\_\_.py
 
-This file is the CLI entry point. It reads a source file from the command line, passes its contents to your evaluator, and handles errors gracefully.
+This file is the CLI entry point.  It reads a source file from the command line, passes its contents to your evaluator, and handles errors gracefully.
 
 ```python
 import sys
@@ -146,7 +146,7 @@ Install the build and upload tools once:
 pip install build twine
 ```
 
-Then build your package. This creates two distribution files in `dist/`:
+Then build your package.  This creates two distribution files in `dist/`:
 
 ```bash
 python3 -m build
@@ -207,7 +207,7 @@ Users get the update by running `pip install --upgrade mylang-cs374`.
 
 ## Part B: Publishing to npm
 
-Use this section if your transpiler emits JavaScript. Your users will run programs with `npx @yourname/mylang program.ml`; no install step needed for one-off use.
+Use this section if your transpiler emits JavaScript.  Your users will run programs with `npx @yourname/mylang program.ml`; no install step needed for one-off use.
 
 ### B1: When to Use npm
 
@@ -221,7 +221,7 @@ If your interpreter is written in Python and produces Python-like semantics, use
 
 ### B2: package.json
 
-`package.json` is the npm equivalent of `pyproject.toml`. Create it in the root of your project:
+`package.json` is the npm equivalent of `pyproject.toml`.  Create it in the root of your project:
 
 ```json
 {
@@ -242,13 +242,13 @@ If your interpreter is written in Python and produces Python-like semantics, use
 
 Key points:
 
-- **`name`** uses a **scope** (`@yourname/`) to avoid name conflicts with existing packages. Replace `yourname` with your npm username.
-- **`bin`** declares the CLI command. When a user installs your package globally, npm puts `mylang` on their PATH pointing at `bin/mylang.js`.
+- **`name`** uses a **scope** (`@yourname/`) to avoid name conflicts with existing packages.  Replace `yourname` with your npm username.
+- **`bin`** declares the CLI command.  When a user installs your package globally, npm puts `mylang` on their PATH pointing at `bin/mylang.js`.
 - **`main`** is the entry point when another JavaScript file requires your package as a library: `const { transpile } = require('@yourname/mylang')`.
 
 ### B3: bin/mylang.js
 
-Create the directory `bin/` and add `mylang.js`. The shebang line (`#!/usr/bin/env node`) tells the OS to run this file with Node.js:
+Create the directory `bin/` and add `mylang.js`.  The shebang line (`#!/usr/bin/env node`) tells the OS to run this file with Node.js:
 
 ```javascript
 #!/usr/bin/env node
@@ -311,7 +311,7 @@ npm login
 
 **Testing locally before publishing**
 
-Pack the package into a tarball without uploading it. This lets you inspect exactly what will be published and install it locally for testing:
+Pack the package into a tarball without uploading it.  This lets you inspect exactly what will be published and install it locally for testing:
 
 ```bash
 npm pack
@@ -360,11 +360,11 @@ Docker is the right choice when:
 - You want users to run your language on any operating system without installing anything except Docker.
 - Your language runtime is compiled (C, C++, Rust) rather than interpreted by Python or Node.
 
-Docker bundles your runtime, system libraries, and everything else into a single image. A user with Docker installed can run your language with one command, regardless of their OS.
+Docker bundles your runtime, system libraries, and everything else into a single image.  A user with Docker installed can run your language with one command, regardless of their OS.
 
 ### C2: Dockerfile
 
-Create a file named `Dockerfile` in the root of your project. This example starts from a minimal Python image; adapt the base image (`FROM` line) and the system package install step for your project:
+Create a file named `Dockerfile` in the root of your project.  This example starts from a minimal Python image; adapt the base image (`FROM` line) and the system package install step for your project:
 
 ```dockerfile
 FROM python:3.12-slim
@@ -409,7 +409,7 @@ Test it by mounting your local `tests/` directory into the container and running
 docker run --rm -v $(pwd)/tests:/tests mylang:latest /tests/fibonacci.ml
 ```
 
-The `-v $(pwd)/tests:/tests` flag mounts your host's `tests/` directory at `/tests` inside the container. Your `ENTRYPOINT ["mylang"]` receives `/tests/fibonacci.ml` as its argument.
+The `-v $(pwd)/tests:/tests` flag mounts your host's `tests/` directory at `/tests` inside the container.  Your `ENTRYPOINT ["mylang"]` receives `/tests/fibonacci.ml` as its argument.
 
 Run your full test suite to verify the image works the same as your local install:
 
@@ -426,7 +426,7 @@ GitHub Container Registry (ghcr.io) is free for public images and integrates dir
 
 **Step 1: Create a Personal Access Token (PAT)**
 
-Go to [github.com/settings/tokens](https://github.com/settings/tokens) and create a new token (classic) with the `write:packages` scope. Copy the token value; you will only see it once.
+Go to [github.com/settings/tokens](https://github.com/settings/tokens) and create a new token (classic) with the `write:packages` scope.  Copy the token value; you will only see it once.
 
 **Step 2: Log in to ghcr.io**
 
@@ -452,7 +452,7 @@ docker push ghcr.io/YOUR_GITHUB_USERNAME/mylang:0.1.0
 
 **Step 4: Make the image public**
 
-By default, new packages on ghcr.io are private. Go to your GitHub profile -> Packages -> select your image -> Package settings -> Change visibility -> Public.
+By default, new packages on ghcr.io are private.  Go to your GitHub profile -> Packages -> select your image -> Package settings -> Change visibility -> Public.
 
 After making it public, anyone can pull and run your language with:
 
@@ -462,7 +462,7 @@ docker run --rm -v $(pwd):/work ghcr.io/YOUR_GITHUB_USERNAME/mylang:latest /work
 
 ### C5: Automate with GitHub Actions
 
-Manually building and pushing the image every time you tag a release is tedious. GitHub Actions can do it automatically whenever you push a version tag.
+Manually building and pushing the image every time you tag a release is tedious.  GitHub Actions can do it automatically whenever you push a version tag.
 
 Create the file `.github/workflows/docker-publish.yml` in your repository:
 
@@ -517,9 +517,9 @@ git tag v0.2.0
 git push origin main --tags
 ```
 
-GitHub Actions will detect the `v0.2.0` tag, build the Docker image, and push `ghcr.io/yourname/mylang:v0.2.0` and `ghcr.io/yourname/mylang:latest` automatically. No manual `docker build` or `docker push` needed.
+GitHub Actions will detect the `v0.2.0` tag, build the Docker image, and push `ghcr.io/yourname/mylang:v0.2.0` and `ghcr.io/yourname/mylang:latest` automatically.  No manual `docker build` or `docker push` needed.
 
-{% raw %}The `${{ secrets.GITHUB_TOKEN }}` is automatically available in every Actions workflow{% endraw %}; you do not need to create it manually. It has `write:packages` permission because the workflow declares `packages: write`.
+{% raw %}The `${{ secrets.GITHUB_TOKEN }}` is automatically available in every Actions workflow{% endraw %}; you do not need to create it manually.  It has `write:packages` permission because the workflow declares `packages: write`.
 
 ---
 
@@ -532,4 +532,4 @@ GitHub Actions will detect the `v0.2.0` tag, build the Docker image, and push `g
 | Native dependencies (Flex/Bison, LLVM, C compiler) | Part C (Docker / ghcr.io) |
 | I want both pip install and docker run to work | Parts A + C (they are independent) |
 
-The most important thing is that someone who has never seen your language can install it in one command and run a program in under two minutes. Pick the packaging path that makes that true for your project.
+The most important thing is that someone who has never seen your language can install it in one command and run a program in under two minutes.  Pick the packaging path that makes that true for your project.

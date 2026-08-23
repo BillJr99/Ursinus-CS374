@@ -29,15 +29,15 @@ tags:
 
 # Prolog in the Browser with SWISH
 
-This tutorial is the companion to **Direction F (Declarative Logic Programming in Prolog)** of the Functional Programming assignment. Everything here runs in the browser at [SWISH](https://swish.swi-prolog.org/): nothing to install. For depth beyond this tutorial, read the opening chapters of [The Power of Prolog](https://www.metalevel.at/prolog).
+This tutorial is the companion to **Direction F (Declarative Logic Programming in Prolog)** of the Functional Programming assignment.  Everything here runs in the browser at [SWISH](https://swish.swi-prolog.org/), so there is nothing to install.  For depth beyond this tutorial, read the opening chapters of [The Power of Prolog](https://www.metalevel.at/prolog).
 
-Logic programming is the widest paradigm contrast in the course. Every other assignment is about **evaluation**: you write an expression and a machine reduces it to a value. Prolog is about **relations**; you state what is true, pose a query, and a search engine finds every way to make it true.
+Logic programming is the widest paradigm contrast in the course.  Every other assignment is about **evaluation**: you write an expression and a machine reduces it to a value.  Prolog is about **relations**; you state what is true, pose a query, and a search engine finds every way to make it true.
 
 ---
 
 ## Section 1: Facts, rules, and queries
 
-A Prolog program is a set of **facts** and **rules**. A query asks whether something can be proven.
+A Prolog program is a set of **facts** and **rules**.  A query asks whether something can be proven.
 
 Paste this into a SWISH program pane (left side):
 
@@ -58,17 +58,17 @@ Then, in the query pane (bottom right), ask:
 ?- grandparent(tom, Who).
 ```
 
-SWISH answers `Who = ann`. Press `;` (or "Next") and it backtracks to `Who = pat`. Press `;` again and it reports no more solutions.
+SWISH answers `Who = ann`.  Press `;` (or "Next") and it backtracks to `Who = pat`.  Press `;` again and it reports no more solutions.
 
-Read `:-` as "if", the comma as "and". `grandparent(X, Z)` holds *if* there is some `Y` such that `X` is a parent of `Y` and `Y` is a parent of `Z`. You never told Prolog *how* to find `Y`: the engine searched.
+Read `:-` as "if", the comma as "and". `grandparent(X, Z)` holds *if* there is some `Y` such that `X` is a parent of `Y` and `Y` is a parent of `Z`.  You never told Prolog *how* to find `Y`: the engine searched.
 
-> **The core idea:** a query is a request for a *proof*. The engine tries clauses top to bottom, **unifies** the query with each clause head (a two-way pattern match that binds variables), and **backtracks** (undoing bindings) whenever a branch fails. Contrast this with your interpreter, which computes a value in one forward pass and never un-binds.
+> **The core idea:** a query is a request for a *proof*.  The engine tries clauses top to bottom, **unifies** the query with each clause head (a two-way pattern match that binds variables), and **backtracks** (undoing bindings) whenever a branch fails.  Contrast this with your interpreter, which computes a value in one forward pass and never un-binds.
 
 ---
 
 ## Section 2: Lists and recursion
 
-Lists are written `[1,2,3]`, with head/tail pattern `[H|T]`. Recursion is the norm:
+Lists are written `[1,2,3]`, with head/tail pattern `[H|T]`.  Recursion is the norm:
 
 ```prolog
 my_last(X, [X]).
@@ -79,7 +79,7 @@ rev_acc([], Acc, Acc).
 rev_acc([H|T], Acc, Rev) :- rev_acc(T, [H|Acc], Rev).
 ```
 
-Query `?- rev([1,2,3], R).` gives `R = [3,2,1]`. Note there is no "return", `rev/2` *relates* a list to its reversal.
+Query `?- rev([1,2,3], R).` gives `R = [3,2,1]`.  Note there is no "return", `rev/2` *relates* a list to its reversal.
 
 ---
 
@@ -96,15 +96,15 @@ Direction F asks for a deliberately small, representative slice of the classic [
 | P46 | `table(A, B, Expr)` | logic connectives as relations |
 | P90 | `queens(Qs)` | backtracking search; eight non-attacking queens |
 
-Work each in SWISH, and record the query and its answer(s) in your `logic_session.md`. For P90, press `;` repeatedly (or use `findall/3`) to enumerate and **count** the solutions; the declarative style shines when the same clauses that *describe* a valid board also *search* for one.
+Work each in SWISH, and record the query and its answer(s) in your `logic_session.md`.  For P90, press `;` repeatedly (or use `findall/3`) to enumerate and **count** the solutions; the declarative style shines when the same clauses that *describe* a valid board also *search* for one.
 
-A note on P31 and negation: `\+ Goal` succeeds when `Goal` cannot be proven ("negation as failure"). Explain in your writeup why this is subtly different from logical "not".
+A note on P31 and negation: `\+ Goal` succeeds when `Goal` cannot be proven ("negation as failure").  Explain in your writeup why this is subtly different from logical "not".
 
 ---
 
 ## Section 4: Running a relation backwards
 
-This is the single most important idea in the direction. `append/3` is built in, but consider what it *is*: a relation between two lists and their concatenation. That means it runs in every direction:
+This is the single most important idea in the direction. `append/3` is built in, but consider what it *is*: a relation between two lists and their concatenation.  That means it runs in every direction:
 
 ```prolog
 ?- append([1,2], [3], Xs).       % concatenate:  Xs = [1,2,3]
@@ -115,7 +115,7 @@ This is the single most important idea in the direction. `append/3` is built in,
                                  %   Xs = [1,2,3], Ys = []
 ```
 
-A Python function `append(a, b)` can only run one way; you cannot ask it "what two lists concatenate to `[1,2,3]`?" Prolog can, because `append/3` binds **logic variables** by unification rather than evaluating expressions. Demonstrate one of your own relations used in at least two modes and explain this in your writeup.
+A Python function `append(a, b)` can only run one way; you cannot ask it "what two lists concatenate to `[1,2,3]`?"  Prolog can, because `append/3` binds **logic variables** by unification rather than evaluating expressions.  Demonstrate one of your own relations used in at least two modes and explain this in your writeup.
 
 ---
 
@@ -123,8 +123,8 @@ A Python function `append(a, b)` can only run one way; you cannot ask it "what t
 
 Close Direction F by connecting it back to the pipeline:
 
-- **Binding.** Your interpreter's `Environment` maps a name to a *value* by assignment, one direction, permanently (until reassigned). Prolog **unifies** a logic variable with a *term*, two-directionally, and **un-binds** it on backtracking.
-- **Control.** Your evaluator makes a single forward pass. Prolog searches a proof tree, trying alternatives and backtracking on failure.
+- **Binding.**  Your interpreter's `Environment` maps a name to a *value* by assignment, one direction, permanently (until reassigned).  Prolog **unifies** a logic variable with a *term*, two-directionally, and **un-binds** it on backtracking.
+- **Control.**  Your evaluator makes a single forward pass.  Prolog searches a proof tree, trying alternatives and backtracking on failure.
 
 If you took the **type-checking direction** of the Interpreter assignment, make the link explicit: the unification in your Hindley-Milner inferencer is the *same algorithm* Prolog uses to match goals; it just serves type inference there and proof search here.
 
@@ -134,21 +134,21 @@ If you took the **type-checking direction** of the Interpreter assignment, make 
 
 ## Advanced (optional): Build a Mini-Prolog Interpreter in Python
 
-> **Where this came from:** this section is the advanced capstone moved here from the Language Evaluation activity. It assumes you have seen unification and backtracking conceptually (Sections 1-5 above). Here you assemble a complete, self-contained Prolog engine in ordinary Python (terms, a unifier, variable renaming, and a depth-first solver) behind a clean `query(db, goal, *vars)` API.
+> **Where this came from:** this section is the advanced capstone moved here from the Language Evaluation activity.  It assumes you have seen unification and backtracking conceptually (Sections 1-5 above).  Here you assemble a complete, self-contained Prolog engine in ordinary Python (terms, a unifier, variable renaming, and a depth-first solver) behind a clean `query(db, goal, *vars)` API.
 
 ### Putting it all together
 
-We now have all the pieces: terms, unification, clause representation, variable renaming, and the backtracking solver. A complete mini-Prolog interpreter adds:
+We now have all the pieces: terms, unification, clause representation, variable renaming, and the backtracking solver.  A complete mini-Prolog interpreter adds:
 
-1. A **database class** with methods to assert facts and rules
-2. A **query interface** that returns human-readable results
-3. A **reification** step that walks the answer substitution to produce ground terms
+1.  A **database class** with methods to assert facts and rules
+2.  A **query interface** that returns human-readable results
+3.  A **reification** step that walks the answer substitution to produce ground terms
 
-The `reify` function applies the final substitution to a query variable to get its answer. If a variable is still unbound, it prints as itself; meaning the query is satisfied for *any* value of that variable.
+The `reify` function applies the final substitution to a query variable to get its answer.  If a variable is still unbound, it prints as itself; meaning the query is satisfied for *any* value of that variable.
 
 ---
 
-**Intuition.** You now have all the ingredients: a term language (Var/Atom/Compound), a unifier, variable renaming, and the solver loop. Assembling them into a `DB` class with `fact`/`rule` methods and a `query` helper gives you a complete, self-contained Prolog engine. As you read Model 5, focus on the *interface*, not the internals; the internals are exactly what you built piecemeal in Models 2 and 3. The new thing is the clean `query(db, goal, *vars)` API that hides the generator machinery.
+**Intuition.**  You now have all the ingredients: a term language (Var/Atom/Compound), a unifier, variable renaming, and the solver loop.  Assembling them into a `DB` class with `fact`/`rule` methods and a `query` helper gives you a complete, self-contained Prolog engine.  As you read Model 5, focus on the *interface*, not the internals; the internals are exactly what you built piecemeal in Models 2 and 3.  The new thing is the clean `query(db, goal, *vars)` API that hides the generator machinery.
 
 ### The full mini-Prolog interpreter
 
@@ -343,21 +343,21 @@ for r in query(db, Compound("member", (Mx, lst(a("p"),a("q"),a("r")))), Mx):
 
 **Critical Thinking Questions (CTQs)**
 
-> **CTQ 5.1** The `DB` class stores all clauses in a single list. What is the consequence of this for predicate lookup; specifically, when the solver tries to match a goal `parent(tom, X)`, it must scan *all* clauses. How would a real Prolog implementation index the database to make this faster?
+> **CTQ 5.1** The `DB` class stores all clauses in a single list.  What is the consequence of this for predicate lookup; specifically, when the solver tries to match a goal `parent(tom, X)`, it must scan *all* clauses.  How would a real Prolog implementation index the database to make this faster?
 
-> **CTQ 5.2** The `query` function has a `limit=10` parameter to prevent infinite output. What class of queries would produce infinitely many results without this limit? Give an example using the family database.
+> **CTQ 5.2** The `query` function has a `limit=10` parameter to prevent infinite output.  What class of queries would produce infinitely many results without this limit?  Give an example using the family database.
 
-> **CTQ 5.3** The `fresh` function renames variables by appending `_N` where N is a global counter. Why must this counter be global (or at least shared across all calls to `fresh`) rather than local to each call? What would go wrong if it reset to 0 for each query?
+> **CTQ 5.3** The `fresh` function renames variables by appending `_N` where N is a global counter.  Why must this counter be global (or at least shared across all calls to `fresh`) rather than local to each call?  What would go wrong if it reset to 0 for each query?
 
-> **CTQ 5.4** Examine the `db.fact("append", NIL, Y, Y)` line. The variable `Y` is a Python variable referencing a `Var("Y")` object. Every call to `db.fact("append", ...)` with `Y` stores the *same* `Var("Y")` object in two argument positions. Why is this safe: what operation do we rely on to make it not interfere across queries?
+> **CTQ 5.4** Examine the `db.fact("append", NIL, Y, Y)` line.  The variable `Y` is a Python variable referencing a `Var("Y")` object.  Every call to `db.fact("append", ...)` with `Y` stores the *same* `Var("Y")` object in two argument positions.  Why is this safe: what operation do we rely on to make it not interfere across queries?
 
-> **CTQ 5.5** How would you add a `not_member(X, L)` predicate? What is the challenge of implementing "negation" in a pure SLD resolution engine?
+> **CTQ 5.5** How would you add a `not_member(X, L)` predicate?  What is the challenge of implementing "negation" in a pure SLD resolution engine?
 
 ### Reflection prompt (for the advanced section)
 
 Take 5-10 minutes individually to respond to the following prompt in your notebook:
 
-> Logic programming inverts the usual programming model: instead of describing *how* to compute, you describe *what is true* and let the engine search. Choose one concept from today (unification, backtracking, bidirectionality, or the connection to type inference) and explain in your own words: (1) what makes it surprising or powerful, (2) a situation in your prior programming experience where this concept would have simplified your code, and (3) a limitation of logic programming that makes it unsuitable as a *general-purpose* language.
+> Logic programming inverts the usual programming model: instead of describing *how* to compute, you describe *what is true* and let the engine search.  Choose one concept from today (unification, backtracking, bidirectionality, or the connection to type inference) and explain in your own words: (1) what makes it surprising or powerful, (2) a situation in your prior programming experience where this concept would have simplified your code, and (3) a limitation of logic programming that makes it unsuitable as a *general-purpose* language.
 
 ---
 

@@ -24,7 +24,7 @@ By the end of this tutorial, you will have:
 - Connected Haskell's lazy evaluation to the normal-order reduction strategy from the lambda calculus module
 - Read and modified a TidalCycles pattern to understand how Haskell's design choices show up in live-coding music code
 
-Haskell is the host language for TidalCycles, the live-coding music system we have been using throughout this course. It is also the language that most clearly embodies the lambda calculus: every Haskell function is a lambda term, the type system is Hindley-Milner, and lazy evaluation is the normal-order reduction strategy made practical. This tutorial gives you enough Haskell to read TidalCycles code, write simple Haskell programs, and understand why Haskell's design choices feel the way they do after our theory modules.
+Haskell is the host language for TidalCycles, the live-coding music system we have been using throughout this course.  It is also the language that most clearly embodies the lambda calculus: every Haskell function is a lambda term, the type system is Hindley-Milner, and lazy evaluation is the normal-order reduction strategy made practical.  This tutorial gives you enough Haskell to read TidalCycles code, write simple Haskell programs, and understand why Haskell's design choices feel the way they do after our theory modules.
 
 **What you need:**
 - GHCi, the Haskell interactive environment: `sudo apt install ghc` or `brew install ghc`
@@ -76,7 +76,7 @@ True :: Bool
 
 ## 1.2 Functions
 
-In Haskell, functions are defined at the top level with pattern matching. Every function is curried by default.
+In Haskell, functions are defined at the top level with pattern matching.  Every function is curried by default.
 
 ```haskell
 -- functions.hs
@@ -105,7 +105,7 @@ Prelude> add5 10           -- 15
 Prelude> square 9          -- 81
 ```
 
-**Key insight:** `add :: Int -> Int -> Int` is actually `add :: Int -> (Int -> Int)`: a function that takes an Int and returns a function. Application is left-associative: `add 3 4` means `(add 3) 4`.
+**Key insight:** `add :: Int -> Int -> Int` is actually `add :: Int -> (Int -> Int)`: a function that takes an Int and returns a function.  Application is left-associative: `add 3 4` means `(add 3) 4`.
 
 ---
 
@@ -243,7 +243,7 @@ Prelude> filter (>3) [1..6]         -- [4,5,6]
 
 ## 3.1 Type Classes
 
-A **type class** defines a set of operations that a type must support. It is Haskell's mechanism for **ad-hoc polymorphism** (like interfaces in Java, but more powerful):
+A **type class** defines a set of operations that a type must support.  It is Haskell's mechanism for **ad-hoc polymorphism** (like interfaces in Java, but more powerful):
 
 ```haskell
 -- Num: types that support arithmetic
@@ -335,7 +335,7 @@ older_alice = alice { age = 31 }
 
 ## 4.1 Reading Tidal Code
 
-TidalCycles is a library of Haskell types and functions. A Tidal pattern like:
+TidalCycles is a library of Haskell types and functions.  A Tidal pattern like:
 
 ```haskell
 d1 $ sound "bd sn [cp cp] hh"
@@ -402,24 +402,24 @@ euclidean k n = go k (n - k) (replicate k [True]) (replicate (n-k) [False])
 
 ## 5.1 Exercises
 
-1. **Rewrite in Haskell.** Translate the following Python into idiomatic Haskell:
+1.  **Rewrite in Haskell.**  Translate the following Python into idiomatic Haskell:
    - `[x**2 for x in range(1, 11)]`: list comprehension of squares
    - `list(filter(lambda x: x % 2 == 0, range(1, 21)))`: even numbers
    - `from functools import reduce; reduce(lambda a, b: a * b, range(1, 6))`: factorial via reduce
 
-2. **Pattern match a tree.** Define a Haskell data type `Tree a = Leaf | Node a (Tree a) (Tree a)`. Implement: `depth :: Tree a -> Int`, `size :: Tree a -> Int`, `toList :: Tree a -> [a]` (in-order traversal). Test in GHCi.
+2.  **Pattern match a tree.**  Define a Haskell data type `Tree a = Leaf | Node a (Tree a) (Tree a)`.  Implement: `depth :: Tree a -> Int`, `size :: Tree a -> Int`, `toList :: Tree a -> [a]` (in-order traversal).  Test in GHCi.
 
-3. **Church numerals in Haskell.** Define the Church numerals `zero`, `one`, `two`, `three` as Haskell functions (type: `(a -> a) -> a -> a`). Define `succC`, `addC`, `mulC`. Write `toInt :: ((Int -> Int) -> Int -> Int) -> Int` and verify `toInt (addC two three) == 5`.
+3.  **Church numerals in Haskell.**  Define the Church numerals `zero`, `one`, `two`, `three` as Haskell functions (type: `(a -> a) -> a -> a`).  Define `succC`, `addC`, `mulC`.  Write `toInt :: ((Int -> Int) -> Int -> Int) -> Int` and verify `toInt (addC two three) == 5`.
 
-4. **Infinite lists.** Write `fibs :: [Integer]` as an infinite list using `zipWith (+) fibs (tail fibs)`. Take the first 20. Write `primes :: [Int]` using the Sieve of Eratosthenes: `primes = sieve [2..]` where `sieve (p:xs) = p : sieve [x | x <- xs, x `mod` p /= 0]`. Take the first 15 primes.
+4.  **Infinite lists.**  Write `fibs :: [Integer]` as an infinite list using `zipWith (+) fibs (tail fibs)`.  Take the first 20.  Write `primes :: [Int]` using the Sieve of Eratosthenes: `primes = sieve [2..]` where `sieve (p:xs) = p : sieve [x | x <- xs, x `mod` p /= 0]`.  Take the first 15 primes.
 
-5. **TidalCycles reading.** In GHCi with TidalCycles loaded, type `:t every`, `:t fast`, `:t slow`, `:t stack`, `:t cat`. For each type signature, write a one-sentence English explanation of what the function does, and give one concrete usage example with the expected behavior.
+5.  **TidalCycles reading.**  In GHCi with TidalCycles loaded, type `:t every`, `:t fast`, `:t slow`, `:t stack`, `:t cat`.  For each type signature, write a one-sentence English explanation of what the function does, and give one concrete usage example with the expected behavior.
 
 ---
 
 ## Further Reading
 
-- Hutton, Graham. *Programming in Haskell* (2nd ed., Cambridge UP, 2016). The clearest introduction; Chapters 1-8 are essential.
-- Lipovaca, Miran. *Learn You a Haskell for Great Good!* Free online. Friendlier but thorough.
-- McLean, Alex. *TidalCycles* source code and documentation. Reading real Haskell library code is the best advanced exercise.
-- Bird, Richard. *Thinking Functionally with Haskell* (Cambridge UP, 2014). Beautiful algebraic reasoning about programs; connects to the formal methods in this course.
+- Hutton, Graham.  *Programming in Haskell* (2nd ed., Cambridge UP, 2016).  The clearest introduction; Chapters 1-8 are essential.
+- Lipovaca, Miran.  *Learn You a Haskell for Great Good!*  Free online.  Friendlier but thorough.
+- McLean, Alex.  *TidalCycles* source code and documentation.  Reading real Haskell library code is the best advanced exercise.
+- Bird, Richard.  *Thinking Functionally with Haskell* (Cambridge UP, 2014).  Beautiful algebraic reasoning about programs; connects to the formal methods in this course.

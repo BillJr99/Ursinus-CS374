@@ -6,7 +6,7 @@ title: "CS374: Tutorials Shelf"
 
 # The Tutorials Shelf
 
-These tutorials are the course's self-serve depth: worked paths, toolchain guides, and companions to the assignments and the Team Language Project. Most are invitations rather than requirements; a few (marked *anchors required work*) are the reference behind a required assignment step or reading, and the assignment itself always contains the full instructions. Interactive tutorials open in the LiaScript viewer; guide pages open on this site.
+These tutorials are where you go for depth on your own schedule.  They are worked paths, toolchain guides, and companions to the assignments and the Team Language Project.  Most are invitations rather than requirements; a few (marked *anchors required work*) are the reference behind a required assignment step or reading, and the assignment itself always contains the full instructions.  Interactive tutorials open in the LiaScript viewer; guide pages open on this site.
 
 ## Companions to the Assignments
 

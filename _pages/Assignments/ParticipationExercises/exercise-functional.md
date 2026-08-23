@@ -6,7 +6,7 @@ title: "CS374: Participation Exercises - Functional Programming and Higher-Order
 info:
   coursenum: CS374
   purpose: "To rewrite something you already know how to write, and to be honest about why the new version feels worse."
-  submission: "Nothing to upload. Bring your attempt, and the one step that stopped you, to the Functional Programming and Higher-Order Functions session. These are low-stakes preparation, assessed as part of the 15% Class Activities and Participation component, not graded for correctness."
+  submission: "Nothing to upload.  Please bring your attempt, and the one step that stopped you, to the Functional Programming and Higher-Order Functions session.  They count within the 15% Class Activities and Participation component, and I grade the attempt rather than the answer."
 
 tags:
   - resource
@@ -14,7 +14,7 @@ tags:
 
 ---
 
-The first `map`/`filter`/`reduce` rewrite of a loop you understand well is usually less readable to you, and that is the interesting part: it tells you how much of readability is the code and how much is your habits. Then write a closure and trace what it captured, because captured state is where the surprises live.
+The first time you rewrite a loop you understand well into `map`/`filter`/`reduce`, the new version usually reads worse to you.  That is the interesting part, because it tells you how much of readability is the code and how much is your own habits.  Then write a closure and trace what it captured.  Captured state is where the surprises live.
 
 ## The Exercises
 
@@ -23,7 +23,7 @@ The first `map`/`filter`/`reduce` rewrite of a loop you understand well is usual
 
 ## What to Bring
 
-Mark the one step that resisted you and bring it: the loop that would not translate cleanly, or the closure that captured something you did not expect. A genuine attempt that ran aground is worth more to the discussion than a blank page or a perfect one, and the stuck points set the agenda for the session.
+Bring the loop that would not translate cleanly, or the closure that captured something you did not expect.  A rewrite that came out badly is more useful in class than one that came out well, so please bring it either way.
 
 ## See also
 

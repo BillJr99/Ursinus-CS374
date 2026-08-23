@@ -9,7 +9,7 @@ info:
   - section: "A"
   course_title: "Principles of Programming Languages"
   credit_hours: "4 Semester Hours"
-  # The one per-term value in this file. Every relative rlink/dlink below is
+  # The one per-term value in this file.  Every relative rlink/dlink below is
   # resolved against it by code/course/syllabus2ical.py and ursinus_canvas.py,
   # so updating this line (and baseurl in _config.yml) re-points the whole schedule.
   course_homepage: "https://www.billmongan.com/Ursinus-CS374-Fall2026/"
@@ -19,7 +19,7 @@ info:
   course_prerequisites: "CS174 with a grade of C- or higher."
   course_start_date: "2026/08/24"
   course_end_date: "2026/12/08"
-  course_description: "Syntax, processors, representations and styles of programming languages. Study and comparison of several modern programming languages. Prerequisite: A grade of C- or higher in CS-174. Offered in the fall of even years. Three hours per week. Four semester hours."
+  course_description: "Syntax, processors, representations and styles of programming languages.  Study and comparison of several modern programming languages.  Prerequisite: A grade of C- or higher in CS-174.  Offered in the fall of even years.  Three hours per week.  Four semester hours."
   questions: |
     This semester, we build toward a single shared accomplishment: by December, your team will have designed and implemented a programming language of your own. Along the way, we will collectively consider questions like:
     <ul>
@@ -48,8 +48,8 @@ info:
       starttime: "10:00 AM"
       endtime: "11:15 AM"
       place: "Pfahler 012"
-  # No midterm/final in this course. "TBD" dates are the sentinel that suppresses
-  # rendering and .ics events for these blocks - do not delete them.
+  # No midterm/final in this course.  "TBD" dates are the sentinel that suppresses
+  # rendering and .ics events for these blocks, so do not delete them.
   midtermexam:
     - mdate: "TBD"
       mstarttime: "N/A"
@@ -290,7 +290,7 @@ schedule:
   link: "Activities/liascript-grammars-day2.md"
   liapage: true
   readings:
-  - rtitle: "Continues Day 1. Bring the grammar you drafted; we build on it."
+  - rtitle: "Continues Day 1.  Bring the grammar you drafted; we build on it."
     rlink: false
 - week: "2"
   date: "1"
@@ -329,7 +329,7 @@ schedule:
   readings:
   - rtitle: "Allison, Ch. 3 §3.1-3.2: Regular Expressions and Their Equivalence to Finite Automata"
   - rtitle: "Allison, Ch. 4: The Pumping Lemma, proving a language is not regular (required for the Regex assignment's Part 4 theory questions; we work one example in class today)"
-  - rtitle: "The Shell for Language Development - the grep section, which puts today's patterns to work on your own source tree"
+  - rtitle: "The Shell for Language Development, the grep section, which puts today's patterns to work on your own source tree"
     rlink: "Tutorials/ShellForLanguageDev"
 - week: "3"
   date: "1"
@@ -337,7 +337,7 @@ schedule:
   link: "Activities/liascript-regex-day2.md"
   liapage: true
   readings:
-  - rtitle: "Continues Day 1. Bring a regex you could not get working - we debug it against the backtracking model."
+  - rtitle: "Continues Day 1.  Please bring a regex you could not get working, and we will debug it against the backtracking model."
     rlink: false
 - week: "4"
   date: "0"
@@ -363,7 +363,7 @@ schedule:
     points: "15"
     rubricpath: "_pages/Assignments/lab-automata.md"
   readings:
-  - rtitle: "Continues Day 1. Bring your hand-traced DFA from last session."
+  - rtitle: "Continues Day 1.  Bring your hand-traced DFA from last session."
     rlink: false
 - week: "5"
   date: "0"
@@ -420,7 +420,7 @@ schedule:
     points: "15"
     rubricpath: "_pages/Assignments/lab-automata.md"
   readings:
-  - rtitle: "For the Parser assignment (Step 3e): Property-Based Testing with Hypothesis - the round-trip property and how to shrink a failing case"
+  - rtitle: "For the Parser assignment (Step 3e): Property-Based Testing with Hypothesis, covering the round-trip property and how to shrink a failing case"
     rlink: "Tutorials/PropertyBasedTesting"
 - week: "8"
   date: "0"
@@ -461,7 +461,7 @@ schedule:
     dlink: "Assignments/ParticipationExercises/BindingAndScope"
   readings:
   - rtitle: "Allison, Ch. 6 §6.1-6.2: Context-Free Grammars, Derivation Trees, and Expression Trees"
-  - rtitle: "Optional depth - tutorial: PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer and Parser assignments)"
+  - rtitle: "Optional depth, tutorial: PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer and Parser assignments)"
     rlink: "Activities/liascript-ply-lexer-parser.md"
     liapage: true
 - week: "9"
@@ -472,7 +472,7 @@ schedule:
   readings:
   - rtitle: "This session is Day 2 of tree-walking interpretation: statements change state, where expressions returned values."
     rlink: false
-  - rtitle: "For the Tree-Walking Interpreter (Step 2e): Property-Based Testing with Hypothesis - the round-trip property, now over evaluation"
+  - rtitle: "For the Tree-Walking Interpreter (Step 2e): Property-Based Testing with Hypothesis, covering the round-trip property, now over evaluation"
     rlink: "Tutorials/PropertyBasedTesting"
   - rtitle: "Optional depth, tutorial: CI and TDD for Interpreters"
     rlink: "Tutorials/CITDDForInterpreters"
@@ -555,10 +555,10 @@ schedule:
   - dtitle: "Participation: Exercise - Functional Programming and Higher-Order Functions Handed Out"
     dlink: "Assignments/ParticipationExercises/FunctionalProgramming"
   readings:
-  - rtitle: "Optional depth - activity: Scheme and Racket as Objects of Study (required prep if you take the Scheme direction on the Functional assignment)"
+  - rtitle: "Optional depth, activity: Scheme and Racket as Objects of Study (required prep if you take the Scheme direction on the Functional assignment)"
     rlink: "Activities/liascript-scheme.md"
     liapage: true
-  - rtitle: "In-class taste: the declarative paradigm in Prolog, a 15-minute SWISH warm-up (facts, rules, a query that backtracks). Previews the Functional assignment's Logic Programming direction"
+  - rtitle: "In-class taste: the declarative paradigm in Prolog, a 15-minute SWISH warm-up (facts, rules, a query that backtracks).  Previews the Functional assignment's Logic Programming direction"
     rlink: "https://swish.swi-prolog.org/"
   - rtitle: "Optional depth, reference: The Power of Prolog (Markus Triska)"
     rlink: "https://www.metalevel.at/prolog"
@@ -629,7 +629,7 @@ schedule:
     points: "3"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
-  - rtitle: "Optional depth - activity: Modern Language Features - pattern matching, generics, ownership, and async as syntax"
+  - rtitle: "Optional depth, activity: Modern Language Features, covering pattern matching, generics, ownership, and async as syntax"
     rlink: "Activities/liascript-modernfeatures.md"
     liapage: true
   - rtitle: "Note: the Functional assignment includes a Logic Programming direction (Direction F) in Prolog, if the declarative paradigm appeals to you, skim the Prolog tutorial and The Power of Prolog"
@@ -689,49 +689,49 @@ schedule:
     points: "10"
 ---
 
-This semester is a build: by December, your team will have designed and implemented a programming language of your own, assembled one assignment at a time. The sections below explain how the pieces fit together: how the course is designed to give you choices, how to read an assignment, how to prepare for each class, and how the day-to-day work of participating is valued and evaluated. Read them once now, and return to the participation and preparation guides throughout the term.
+This semester is a build.  By December, your team will have designed and implemented a programming language of your own, assembled one assignment at a time.  The sections below explain how the pieces fit together, including how the course gives you choices, how to read an assignment, how to prepare for each class, and how I value and evaluate the day-to-day work of participating.  Please read them once now, and come back to the participation and preparation guides throughout the term.
 
 ## How This Course Works: Choice and Universal Design
 
-This course is built on the principle that there is more than one good path through it, and that you should have real say over yours. The choices are deliberate, in the spirit of Universal Design for Learning (multiple ways to engage with the material and multiple ways to demonstrate what you have learned), and none of them is the "remedial" path.
+I have built this course on the principle that there is more than one good path through it, and that you should have real say over yours.  The choices here are in the spirit of Universal Design for Learning, which asks for multiple ways to engage with the material and multiple ways to demonstrate what you have learned.  None of these paths is the "remedial" one.
 
-- **A capstone you shape.** The Team Language Project is yours to design; a compelling original language is always welcome, and the final project's extension menu lets you go deep where your interest lies rather than following a single fixed spec.
-- **The Music and Live-Coding Directions.** If you would rather build toward making music than a general-purpose language, several assignments (the Parser and Functional Programming among them) and the Team Language Project each offer a music direction inside the same required deliverable. The [Music and Live-Coding guide](Projects/TeamLanguage#the-music-and-live-coding-path) maps the whole path, including a text-events-only route that never requires audio. Choose direction by direction as each assignment arrives; teams commit to a project direction at the kickoff.
-- **Depth inside every assignment, and supplemental depth everywhere.** Each programming assignment offers **directions** you choose inside it (a generator-toolchain lexer, a music-notation parser, a type checker for your interpreter, continuations or Church encodings in the functional assignment), so nothing on the schedule is optional, but every deliverable has room for your interests. Beyond the assignments, the schedule carries supplemental activities and tutorials (parser combinators, garbage collection, bytecode VMs, and more; browse the [Tutorials shelf](Tutorials/)): invitations, not obligations. Tell me when one of them becomes the thing you want to go further with.
+- **A capstone you shape.**  The Team Language Project is yours to design.  A compelling original language is always welcome, and the final project's extension menu lets you go deep wherever your interest lies instead of following one fixed spec.
+- **The Music and Live-Coding Directions.**  If you would rather build toward making music than a general-purpose language, several assignments (the Parser and Functional Programming among them) and the Team Language Project each offer a music direction inside the same required deliverable.  The [Music and Live-Coding guide](Projects/TeamLanguage#the-music-and-live-coding-path) maps the whole path, including a text-events-only route that never requires audio.  Choose direction by direction as each assignment arrives; teams commit to a project direction at the kickoff.
+- **Depth inside every assignment, and supplemental depth everywhere.**  Each programming assignment offers **directions** you choose inside it (a generator-toolchain lexer, a music-notation parser, a type checker for your interpreter, continuations or Church encodings in the functional assignment), so nothing on the schedule is optional, but every deliverable has room for your interests.  Beyond the assignments, the schedule carries supplemental activities and tutorials on parser combinators, garbage collection, bytecode VMs, and more, and you can browse them on the [Tutorials shelf](Tutorials/).  These are invitations rather than obligations.  Please tell me when one of them becomes the thing you want to go further with.
 
-If a path you want is not on the menu, propose it. The point of the choices is to let you build the language, and the fluency, that you actually care about.
+If a path you want is not on the menu, please propose it.  The choices are here so you can build the language, and the fluency, that you actually care about.
 
 ## How Assignments Are Structured: Purpose, Task, and Criteria
 
-Every assignment in this course is written to be transparent about three things, so that you are never guessing about what is being asked or how it will be judged:
+I write every assignment in this course to be transparent about three things, so you are never guessing about what I am asking or how I will judge it:
 
-- **Purpose:** *why* the assignment exists and what capability it builds toward. The work is never busywork; each piece is a stage of the language you are building or a skill that stage depends on.
+- **Purpose:** *why* the assignment exists and what capability it builds toward.  None of it is busywork.  Each piece is either a stage of the language you are building or a skill that stage depends on.
 - **Task:** *what* you will actually do, broken into concrete steps.
-- **Criteria:** *how* your work will be evaluated. Every graded assignment carries a rubric with four levels (pre-emerging, beginning, progressing, proficient) so you can see exactly what proficient work looks like before you start, and can use the rubric to assess your own draft.
+- **Criteria:** *how* your work will be evaluated.  Every graded assignment carries a rubric with four levels (pre-emerging, beginning, progressing, proficient) so you can see exactly what proficient work looks like before you start, and can use the rubric to assess your own draft.
 
-When you open an assignment, read the Purpose first: it tells you what the assignment is really for, which is the fastest way to make good decisions when the task gets ambiguous. Every assignment also closes by asking you to reflect: what you did, what fought you, how long it took, and what grade you would give yourself against the criteria. That reflection is part of the work, not an afterthought.
+When you open an assignment, please read the Purpose first.  It tells you what the assignment is really for, and that is the fastest way to make good decisions when the task gets ambiguous.  Every assignment also closes by asking you to reflect on what you did, what fought you, how long it took, and what grade you would give yourself against the criteria.  I count that reflection as part of the work.
 
-A note on grade categories: the **Overview** (100 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the five programming assignments (Regular Expressions, Lexer, Parser, Interpreter, and Functional Programming) make up the **Programming Assignments** category. The **Labs** category comprises eight short labs (BNF Workshop, Regex Workshop, Finite Automata Simulators, Grammar and Derivations Workshop, Parser Skeleton, Environments and Scope, Type Checker Starter, and Lambda Calculus), each scoped to roughly two to three hours. Labs may be completed **in pairs** (both partners submit, naming each other; both earn the same grade); the programming assignments remain individual work. Each lab lands mid-assignment and completes a piece of the assignment it scaffolds, so lab work is a head start, not an add-on. **There is no midterm or final exam**: Demo Day on the last class meeting (Tuesday, December 8) is the course's terminal event, and no work is accepted after it. Seven teams present for nine minutes each within our class meeting; external guests visiting both this Demo Day and CS357's (same day) are welcome to stay for both.
+A note on grade categories: the **Overview** (100 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the five programming assignments (Regular Expressions, Lexer, Parser, Interpreter, and Functional Programming) make up the **Programming Assignments** category.  The **Labs** category comprises eight short labs (BNF Workshop, Regex Workshop, Finite Automata Simulators, Grammar and Derivations Workshop, Parser Skeleton, Environments and Scope, Type Checker Starter, and Lambda Calculus), each scoped to roughly two to three hours.  Labs may be completed **in pairs** (both partners submit, naming each other; both earn the same grade); the programming assignments remain individual work.  Each lab falls mid-assignment and completes a piece of the assignment it scaffolds, so lab work gives you a head start rather than adding to your load.  **There is no midterm or final exam**: Demo Day on the last class meeting (Tuesday, December 8) is the course's terminal event, and no work is accepted after it.  Seven teams present for nine minutes each within our class meeting; external guests visiting both this Demo Day and CS357's (same day) are welcome to stay for both.
 
 ## Generative AI Policy
 
-Generative AI tools are part of the professional landscape you are graduating into, and this course treats them the way it treats any powerful tool: welcome in some roles, corrosive in others, and never a substitute for your own understanding.
+Generative AI tools are part of the professional landscape you are graduating into, and I treat them here the way I would treat any powerful tool.  They are welcome in some roles, corrosive in others, and never a substitute for your own understanding.
 
-- **Permitted uses.** You may use AI tools to explain concepts you are stuck on, to debug your own code, and to explore alternative approaches to a problem you have already engaged with. Used this way, they are a tutor on call, and a good complement to the reading routine described below.
-- **Required disclosure.** Each assignment's reflection asks what AI tools you used and how. Answer it plainly, every time; "none" is always an acceptable answer, and disclosure is never penalized.
-- **Primary authorship.** You must be the primary author of the code and prose you submit, and you must be able to explain any line of your submission on request. If a tool wrote something you cannot explain, it is not ready to submit, and the gap will be obvious the moment we discuss your work, because the reflection and the conversation are part of the assessment.
-- **Public work.** Work that leaves the classroom carries an extra obligation: for Functional Direction G pull requests and team-project open-source extensions, AI-assisted contributions must be disclosed to maintainers according to that project's own policy, and you are accountable for their correctness. An upstream maintainer's trust is not yours to spend casually.
+- **Permitted uses.**  You may use AI tools to explain concepts you are stuck on, to debug your own code, and to explore alternative approaches to a problem you have already engaged with.  Used this way, they are a tutor on call, and a good complement to the reading routine described below.
+- **Required disclosure.**  Each assignment's reflection asks what AI tools you used and how.  Please answer it plainly every time.  "None" is always an acceptable answer, and I never penalize disclosure.
+- **Primary authorship.**  You must be the primary author of the code and prose you submit, and you must be able to explain any line of your submission when I ask.  If a tool wrote something you cannot explain, it isn't ready to submit.  The gap will show the moment we discuss your work, because the reflection and the conversation are both part of the assessment.
+- **Public work.**  Work that leaves the classroom carries an extra obligation.  For Functional Direction G pull requests and team-project open-source extensions, you must disclose AI-assisted contributions to maintainers according to that project's own policy, and you are accountable for their correctness.  Please do not spend an upstream maintainer's trust casually.
 
-The point of every assignment here is the fluency you build, not the artifact you hand in. Use the tools in ways that leave you knowing more than you did before, and you will be on the right side of this policy.
+Every assignment here is aimed at the fluency you build rather than the artifact you hand in.  Use these tools in ways that leave you knowing more than you did before, and you will be on the right side of this policy.
 
 ## Preparing for Each Class
 
-Our class meetings are hands-on POGIL sessions: you work in your standing team through activities that build the concepts and the code, not lectures you passively receive. That means class works best when you arrive ready, and "ready" is a routine you can run rather than a matter of luck. The **[Preparing for Each Class](Participation/PreparingForClass)** guide lays out that routine: how to read a technical section in passes, how to attempt the participation exercises before class, and how to arrive with a question or a stuck point that the session can resolve. Bringing that prepared question is itself the accountability check that the reading happened, and it is usually where the best discussion starts.
+Our class meetings are hands-on POGIL sessions.  You work in your standing team through activities that build the concepts and the code, rather than sitting through lectures.  That means class works best when you arrive ready, and being ready is a routine you can run rather than a matter of luck.  The **[Preparing for Each Class](Participation/PreparingForClass)** guide lays out that routine: how to read a technical section in passes, how to attempt the participation exercises before class, and how to arrive with a question or a sticking point the session can resolve.  Bringing that prepared question is how I know the reading happened, and it is usually where the best discussion starts.
 
 ## Class Activities and Participation (15%)
 
-This is a course you do, not one you watch, and this component values the daily work of showing up prepared and contributing to the shared build. It is assessed against the rubric on the **[Preparing for Each Class](Participation/PreparingForClass)** guide, across four dimensions: **preparation** (you have done the reading and attempted the exercises), **contribution** (you engage in your POGIL team and in whole-class discussion), **collaboration** (you take your rotating team role seriously and help your teammates succeed), and **reflection** (your activity and assignment reflections show genuine engagement).
+This is a course you do rather than one you watch, and this component values the daily work of showing up prepared and contributing to the shared build.  I assess it against the rubric on the **[Preparing for Each Class](Participation/PreparingForClass)** guide, across four dimensions: **preparation** (you have done the reading and attempted the exercises), **contribution** (you engage in your POGIL team and in whole-class discussion), **collaboration** (you take your rotating team role seriously and help your teammates succeed), and **reflection** (your activity and assignment reflections show real engagement).
 
-Participation takes more than one form, by design. In the in-class activities your team rotates the POGIL roles (**Manager, Recorder, Presenter, and Reflector**) so that on different days you facilitate, capture the group's thinking, report out, or step back and synthesize. In the project phase your team rotates a second set of roles: **Coordinator, Builder, Evaluator, and Scribe**. Speaking up in whole-class discussion counts; so does posting your team's answer to the class discussion board, asking a sharp question, or helping a teammate past a bug. If the spoken room is hard for you, the written and role-based channels are real ways to earn this component. Talk with me early and we will find the path that fits.
+Participation takes more than one form here, and that is deliberate.  In the in-class activities your team rotates the POGIL roles (**Manager, Recorder, Presenter, and Reflector**) so that on different days you facilitate, capture the group's thinking, report out, or step back and synthesize.  In the project phase your team rotates a second set of roles: **Coordinator, Builder, Evaluator, and Scribe**.  Speaking up in whole-class discussion counts, and so does posting your team's answer to the class discussion board, asking a sharp question, or helping a teammate past a bug.  If the spoken room is hard for you, the written and role-based channels are real ways to earn this component.  Please talk with me early and we'll find the path that fits.
 
-From time to time the class agenda sets aside time for **participation exercises and discussion**: a short problem tied to the reading (write a grammar rule, trace a tokenizer, evaluate a language-design tradeoff) that you attempt beforehand and we work through together. These are marked on the schedule and drawn from the **[Participation Exercises](Assignments/ParticipationExercises)** bank. The Week 14 **mock-interview rehearsal** (practicing an interview-style explanation of your own interpreter and language with a partner from another team) counts here too; see the [Demo Day Guide](Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice).
+From time to time the class agenda sets aside time for **participation exercises and discussion**.  These are short problems tied to the reading, like writing a grammar rule, tracing a tokenizer, or evaluating a language-design tradeoff, and you attempt them beforehand so we can work through them together.  These are marked on the schedule and drawn from the **[Participation Exercises](Assignments/ParticipationExercises)** bank.  The Week 14 **mock-interview rehearsal** (practicing an interview-style explanation of your own interpreter and language with a partner from another team) counts here too; see the [Demo Day Guide](Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice).

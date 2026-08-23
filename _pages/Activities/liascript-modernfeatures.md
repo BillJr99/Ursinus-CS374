@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Modern Language Features
 
-> **Opening Hook:** Modern programming language features are not invented randomly or for aesthetic reasons; each one solves a concrete expressivity or safety problem that practitioners encountered at scale. Pattern matching exists because nested if-else chains and field accesses made tree-walking code unreadable and error-prone at the scale of production compilers. Generics exist because the alternative (writing the same `sort` function separately for every element type) was both tedious and unsafe. Ownership exists because C's manual memory management caused security vulnerabilities in billions of lines of deployed code. Async/await exists because callback-based I/O shredded programs into pieces so small that the control flow became impossible to follow. The through-line: language features are engineering responses to pain points, and understanding the pain explains the solution.
+> **Opening Hook:** Modern programming language features are not invented randomly or for aesthetic reasons; each one solves a concrete expressivity or safety problem that practitioners encountered at scale.  Pattern matching exists because nested if-else chains and field accesses made tree-walking code unreadable and error-prone at the scale of production compilers.  Generics exist because the alternative (writing the same `sort` function separately for every element type) was both tedious and unsafe.  Ownership exists because C's manual memory management caused security vulnerabilities in billions of lines of deployed code.  Async/await exists because callback-based I/O shredded programs into pieces so small that the control flow became impossible to follow.  The through-line: language features are engineering responses to pain points, and understanding the pain explains the solution.
 
 ## Learning Goals
 
@@ -36,27 +36,27 @@ By the end of this activity, you will be able to:
 > - The idea that a *type* constrains what operations are valid on a value
 > - Basic familiarity with at least one language besides Python (Java, C, JavaScript, or Rust)
 >
-> You do **not** need prior experience with Rust, Haskell, or async programming. All features are introduced with Python examples before any cross-language comparisons.
+> You do **not** need prior experience with Rust, Haskell, or async programming.  All features are introduced with Python examples before any cross-language comparisons.
 
 ---
 
-Language design did not stop with the features your interpreter implements; it accelerated, and the closures you just built in *Closures and First-Class Functions* are the mechanism beneath several of today's features. Today we survey four ideas that define the current generation (pattern matching, generics, memory safety through ownership, and async concurrency), each through the lenses you have built: what problem it solves, what it costs, and which evaluation criterion it serves. Your team committed to a language niche at the *Language Design Workshop* kickoff; today restocks its feature menu for the sprints ahead. The arc: **pattern matching $\rightarrow$ generics $\rightarrow$ ownership $\rightarrow$ async $\rightarrow$ choosing for your language**.
+Language design did not stop with the features your interpreter implements.  If anything it accelerated, and the closures you just built in *Closures and First-Class Functions* are the mechanism underneath several of today's features.  Today we survey four ideas that define the current generation: pattern matching, generics, memory safety through ownership, and async concurrency.  We look at each one through the lenses you have already built, asking what problem it solves, what it costs, and which evaluation criterion it serves.  Your team committed to a language niche at the *Language Design Workshop* kickoff; today restocks its feature menu for the sprints ahead.  Today we work from **pattern matching $\rightarrow$ generics $\rightarrow$ ownership $\rightarrow$ async $\rightarrow$ choosing for your language**.
 
 ---
 
 ## Directions and Group Roles
 
-Work in your POGIL team with rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**). Today runs as a jigsaw: each pair takes one feature as primary, then teaches it back using the three-lens template (problem, mechanism, cost). After class, respond to the reflective prompt individually in your notebook.
+Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Today runs as a jigsaw: each pair takes one feature as primary, then teaches it back using the three-lens template (problem, mechanism, cost).  After class, please respond to the reflective prompt on your own in your notebook.
 
 ---
 
 # Part I: The Features
 
-> **Intuition:** Each of the four features in this part is presented through the same three-lens template: the *problem* it solves (what was painful before), the *mechanism* (the language construct that solves it), and the *cost* (what the programmer gives up to get the benefit). As you read, keep connecting back to your own interpreter project; several of these features apply directly to the code you have already written.
+> **Intuition:** Each of the four features in this part is presented through the same three-lens template: the *problem* it solves (what was painful before), the *mechanism* (the language construct that solves it), and the *cost* (what the programmer gives up to get the benefit).  As you read, keep connecting back to your own interpreter project; several of these features apply directly to the code you have already written.
 
-## 1. Pattern Matching: Branching on Shape
+## 1.  Pattern Matching: Branching on Shape
 
-**The problem.** Code that dissects structured data degenerates into nested ifs and field accesses. **The mechanism.** A `match` tests a value against *patterns* that simultaneously check shape and bind variables; Python (3.10) joined Rust, Scala, and the ML family:
+**The problem.**  Code that dissects structured data degenerates into nested ifs and field accesses.  **The mechanism.**  A `match` tests a value against *patterns* that simultaneously check shape and bind variables; Python (3.10) joined Rust, Scala, and the ML family:
 
 ```python
 def describe(node):
@@ -79,32 +79,32 @@ print(describe(("+", ("num", 2), ("neg", ("num", 3)))))
 ```
 @LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
-**The cost and the criterion.** A new syntactic form (readability spent up front, repaid in every dissection), and questions of exhaustiveness: ML-family compilers *prove* you handled every case, a reliability win your `evaluate`'s if-chain never gets. Notice the example: pattern matching is practically purpose-built for tree walks like yours.
+The cost and the criterion.  A new syntactic form (readability spent up front, repaid in every dissection), and questions of exhaustiveness: ML-family compilers *prove* you handled every case, a reliability win your `evaluate`'s if-chain never gets.  Notice the example: pattern matching is practically purpose-built for tree walks like yours.
 
-## 2. Generics: Abstraction over Types
+## 2.  Generics: Abstraction over Types
 
-**The problem.** A statically typed list-of-int and list-of-string need the same code twice, or an unsafe any-type escape hatch. **The mechanism.** Parameterize the *type itself*: `List[T]`, `def first(items: list[T]) -> T`. The checker verifies the code once *for all* T, and call sites stay fully checked. **The cost and the criterion.** Type-system complexity (Java's wildcards, variance puzzles) traded for reliability-with-reuse; dynamically typed languages get the reuse for free and the checking never. Connect to the types module: generics exist precisely to keep static typing's early binding without its duplication.
+**The problem.**  A statically typed list-of-int and list-of-string need the same code twice, or an unsafe any-type escape hatch.  **The mechanism.**  Parameterize the *type itself*: `List[T]`, `def first(items: list[T]) -> T`.  The checker verifies the code once *for all* T, and call sites stay fully checked.  **The cost and the criterion.**  Type-system complexity (Java's wildcards, variance puzzles) traded for reliability-with-reuse; dynamically typed languages get the reuse for free and the checking never.  Connect to the types module: generics exist precisely to keep static typing's early binding without its duplication.
 
-## 3. Ownership: Memory Safety without a Garbage Collector
+## 3.  Ownership: Memory Safety without a Garbage Collector
 
-**The problem.** C frees memory manually (use-after-free, leaks, security holes); Java collects garbage at runtime (safe, but with pauses and overhead). **The mechanism.** Rust's third way: every value has exactly **one owner**; assignment *moves* ownership; **borrows** lend access temporarily (many readers or one writer, never both); the compiler proves at compile time that no reference outlives its value, so the program needs neither `free` nor a collector. **The cost and the criterion.** A famously steep learning curve ("fighting the borrow checker"): writability spent for reliability *and* performance simultaneously, which is why Rust keeps winning systems-programming converts. Binding-time lens: Rust moved memory-correctness from runtime (GC) or never (C) to compile time.
+**The problem.**  C frees memory manually (use-after-free, leaks, security holes); Java collects garbage at runtime (safe, but with pauses and overhead).  **The mechanism.**  Rust's third way: every value has exactly **one owner**; assignment *moves* ownership; **borrows** lend access temporarily (many readers or one writer, never both); the compiler proves at compile time that no reference outlives its value, so the program needs neither `free` nor a collector.  **The cost and the criterion.**  A famously steep learning curve ("fighting the borrow checker"): writability spent for reliability *and* performance simultaneously, which is why Rust keeps winning systems-programming converts.  Binding-time lens: Rust moved memory-correctness from runtime (GC) or never (C) to compile time.
 
-## 4. Async/Await: Concurrency as Syntax
+## 4.  Async/Await: Concurrency as Syntax
 
-**The problem.** Programs that wait (network, disk) waste their wait, and callback-based solutions shred control flow. **The mechanism.** `async` functions are *pausable*: `await` yields control at a wait point and resumes when the result arrives, letting one thread interleave thousands of waiting tasks; the compiler transforms your straight-line code into a state machine (a *desugaring*, industrial grade). **The cost and the criterion.** The "function color" problem: async functions can only be awaited from async functions, splitting the ecosystem in two; writability and performance for I/O-bound work, bought with a pervasive design constraint.
+**The problem.**  Programs that wait (network, disk) waste their wait, and callback-based solutions shred control flow.  **The mechanism.** `async` functions are *pausable*: `await` yields control at a wait point and resumes when the result arrives, letting one thread interleave thousands of waiting tasks; the compiler transforms your straight-line code into a state machine (a *desugaring*, industrial grade).  **The cost and the criterion.**  The "function color" problem: async functions can only be awaited from async functions, splitting the ecosystem in two; writability and performance for I/O-bound work, bought with a pervasive design constraint.
 
 ---
 
 ## Model 1: Three Lenses, Four Features
 
-> **Intuition:** The three-lens template (problem / mechanism / cost) is a general framework for evaluating *any* language feature, not just the four covered here. When you encounter a new feature in the wild (Python's walrus operator `:=`, JavaScript's optional chaining `?.`, Kotlin's coroutines) you can immediately ask these three questions to understand it. Notice that "cost" is not always a drawback: sometimes you are deliberately spending writability to buy reliability, or spending simplicity to buy performance. The interesting question is always *whether the trade is worth it* in your target use case.
+> **Intuition:** The three-lens template (problem / mechanism / cost) is a general framework for evaluating *any* language feature, not just the four covered here.  When you encounter a new feature in the wild (Python's walrus operator `:=`, JavaScript's optional chaining `?.`, Kotlin's coroutines) you can immediately ask these three questions to understand it.  Notice that "cost" is not always a drawback: sometimes you are deliberately spending writability to buy reliability, or spending simplicity to buy performance.  The interesting question is always *whether the trade is worth it* in your target use case.
 
 ### Critical Thinking Questions
 
-1. Complete the jigsaw grid as a class: for each feature, the problem, the mechanism in one sentence, the criterion served, and the criterion taxed.
-2. Run the pattern-matching cell, then rewrite *your interpreter's* `evaluate` dispatch as a `match` on node classes (`case Num(value=n):` works on your classes!). Report: lines saved, readability verdict, and one behavior the if-chain allowed that match's structure discourages.
-3. Ownership and garbage collection are both answers to "when may memory be reclaimed?" Place C, Java/Python, and Rust on a binding-time axis for that decision, and state each position's billion-dollar risk.
-4. Which of the four features could a *tree-walking interpreter team* plausibly implement a slice of in three weeks, and which are out of reach? Justify with reference to which pipeline stage each feature lives in (parser? evaluator? a checker between them?).
+1.  Complete the jigsaw grid as a class: for each feature, the problem, the mechanism in one sentence, the criterion served, and the criterion taxed.
+2.  Run the pattern-matching cell, then rewrite *your interpreter's* `evaluate` dispatch as a `match` on node classes (`case Num(value=n):` works on your classes!).  Report: lines saved, readability verdict, and one behavior the if-chain allowed that match's structure discourages.
+3.  Ownership and garbage collection are both answers to "when may memory be reclaimed?"  Place C, Java/Python, and Rust on a binding-time axis for that decision, and state each position's billion-dollar risk.
+4.  Which of the four features could a *tree-walking interpreter team* plausibly implement a slice of in three weeks, and which are out of reach?  Justify with reference to which pipeline stage each feature lives in (parser? evaluator? a checker between them?).
 
 Rust achieves memory safety without a garbage collector primarily by:
 
@@ -117,13 +117,13 @@ Rust achieves memory safety without a garbage collector primarily by:
 
 # Part II: Runnable Models
 
-> **Watch out!** Python's `match` is **not** a switch statement. A switch matches on a single value (like an integer or string). Python's `match` matches on *structure*: it can simultaneously check the type of an object, destructure it into named components, and bind those components to variables, all in one pattern. If you find yourself writing `match x: case 1: ... case 2: ...` you are using only a small fraction of what `match` can do.
+> **Watch out!**  Python's `match` is **not** a switch statement.  A switch matches on a single value (like an integer or string).  Python's `match` matches on *structure*: it can simultaneously check the type of an object, destructure it into named components, and bind those components to variables, all in one pattern.  If you find yourself writing `match x: case 1: ... case 2: ...` you are using only a small fraction of what `match` can do.
 
 ## Model 2: Pattern Matching (Python 3.10+ match/case)
 
-> **Intuition:** Before `match`, writing a tree-walking evaluator in Python meant chains of `if isinstance(node, Num):` checks, followed by manual attribute accesses (`node.value`), all nested inside each other. With `match`, you write `case Num(value=n):` and in one line you have checked the type, extracted the field, and bound it to a local variable. The code mirrors the structure of the data it processes, which is exactly what you want when the data *is* a tree.
+> **Intuition:** Before `match`, writing a tree-walking evaluator in Python meant chains of `if isinstance(node, Num):` checks, followed by manual attribute accesses (`node.value`), all nested inside each other.  With `match`, you write `case Num(value=n):` and in one line you have checked the type, extracted the field, and bound it to a local variable.  The code mirrors the structure of the data it processes, which is exactly what you want when the data *is* a tree.
 
-Python's `match` statement (PEP 634) goes far beyond a simple switch: it matches on *structure*, destructures into bindings, supports guards, and handles class patterns. The cell below walks through each capability with your CS374 AST as the running example.
+Python's `match` statement (PEP 634) goes far beyond a simple switch: it matches on *structure*, destructures into bindings, supports guards, and handles class patterns.  The cell below walks through each capability with your CS374 AST as the running example.
 
 ```python
 import sys
@@ -211,20 +211,20 @@ for val in [-3, 0, 4, 7]:
 
 ### Critical Thinking Questions
 
-5. The `evaluate` function uses `case Num(value=n)` to match a namedtuple. What does Python check to decide this pattern matches: the type, the field name, the value, or all three? Contrast with a plain `isinstance` check.
-6. The `case _:` wildcard arm raises a `TypeError`. Remove it and run the `Call` test. What does Python return silently? Explain why an ML compiler's exhaustiveness check is a stronger reliability guarantee than Python's runtime behavior.
-7. The `Let` arm creates `new_env = {**env, name: ...}`. Why does it use a *copy* of the environment rather than mutating `env` directly? Connect this to the distinction between static and dynamic scope.
-8. Rewrite `categorize` using `if/elif/else` chains. Count the lines. Then describe one pattern-match capability (structural decomposition, guard, variable binding) that the `if` version cannot express without additional code.
+5.  The `evaluate` function uses `case Num(value=n)` to match a namedtuple.  What does Python check to decide this pattern matches: the type, the field name, the value, or all three?  Contrast with a plain `isinstance` check.
+6.  The `case _:` wildcard arm raises a `TypeError`.  Remove it and run the `Call` test.  What does Python return silently?  Explain why an ML compiler's exhaustiveness check is a stronger reliability guarantee than Python's runtime behavior.
+7.  The `Let` arm creates `new_env = {**env, name: ...}`.  Why does it use a *copy* of the environment rather than mutating `env` directly?  Connect this to the distinction between static and dynamic scope.
+8.  Rewrite `categorize` using `if/elif/else` chains.  Count the lines.  Then describe one pattern-match capability (structural decomposition, guard, variable binding) that the `if` version cannot express without additional code.
 
 ---
 
-> **Watch out!** Python's `match` does **not** enforce exhaustiveness at compile time. If no arm matches, Python silently returns `None`; it does not raise an error. In Rust, OCaml, and Haskell, a non-exhaustive `match` is a *compile error* or at least a warning. This means that in Python, if you add a new AST node type and forget to add a case for it, your evaluator will silently return `None` and the bug may not surface until much later. The `case _: raise ...` wildcard arm is your manual safety net.
+> **Watch out!**  Python's `match` does **not** enforce exhaustiveness at compile time.  If no arm matches, Python silently returns `None`; it does not raise an error.  In Rust, OCaml, and Haskell, a non-exhaustive `match` is a *compile error* or at least a warning.  This means that in Python, if you add a new AST node type and forget to add a case for it, your evaluator will silently return `None` and the bug may not surface until much later.  The `case _: raise ...` wildcard arm is your manual safety net.
 
 ## Model 3: Dataclasses and __post_init__
 
-> **Intuition:** A `@dataclass` is Python's shortcut for a class whose job is primarily to hold data. Instead of writing `__init__`, `__repr__`, and `__eq__` by hand (all of which are boilerplate that mirrors the field list you already wrote as annotations), `@dataclass` generates them for you. The `__post_init__` hook is the place to add any validation logic that goes beyond "assign these fields": it runs after the generated `__init__`, so you can check invariants and raise errors before the object escapes into the rest of the program.
+> **Intuition:** A `@dataclass` is Python's shortcut for a class whose job is primarily to hold data.  Instead of writing `__init__`, `__repr__`, and `__eq__` by hand (all of which are boilerplate that mirrors the field list you already wrote as annotations), `@dataclass` generates them for you.  The `__post_init__` hook is the place to add any validation logic that goes beyond "assign these fields": it runs after the generated `__init__`, so you can check invariants and raise errors before the object escapes into the rest of the program.
 
-Python's `@dataclass` decorator (PEP 557) auto-generates `__init__`, `__repr__`, and `__eq__` from field annotations. The `__post_init__` hook runs *after* the generated `__init__`, allowing validation and derived fields, a lightweight version of the invariant-checking constructors common in strongly typed languages.
+Python's `@dataclass` decorator (PEP 557) auto-generates `__init__`, `__repr__`, and `__eq__` from field annotations.  The `__post_init__` hook runs *after* the generated `__init__`, allowing validation and derived fields, a lightweight version of the invariant-checking constructors common in strongly typed languages.
 
 ```python
 from dataclasses import dataclass, field
@@ -317,20 +317,20 @@ print("ensuring no Token or ASTNode can exist in an invalid state.")
 
 ### Critical Thinking Questions
 
-9. `@dataclass` generates `__init__` from the annotated fields. What is the advantage of having the generated `__init__` call `__post_init__` rather than placing validation in a separate `validate()` method you call manually?
-10. `@dataclass(frozen=True)` makes instances immutable and auto-generates `__hash__`. Explain why mutability and hashability conflict, and name a use case in your CS374 project where an immutable, hashable AST node would be useful.
-11. The `NumNode.__post_init__` coerces `self.value` to `float`. This is a *type coercion* at construction time. Compare this to a statically typed language where the field type annotation would prevent a non-float from being passed at all. Which approach is more *writable*? Which is more *reliable*?
-12. Design a `FunctionDef` dataclass for your interpreter with fields `name`, `params` (a list of strings), and `body` (an `ASTNode`). Write the `__post_init__` that enforces: at least one parameter, no duplicate parameter names, and `body` is actually an `ASTNode`. Write only the class definition, not the full interpreter.
+9. `@dataclass` generates `__init__` from the annotated fields.  What is the advantage of having the generated `__init__` call `__post_init__` rather than placing validation in a separate `validate()` method you call manually?
+10. `@dataclass(frozen=True)` makes instances immutable and auto-generates `__hash__`.  Explain why mutability and hashability conflict, and name a use case in your CS374 project where an immutable, hashable AST node would be useful.
+11.  The `NumNode.__post_init__` coerces `self.value` to `float`.  This is a *type coercion* at construction time.  Compare this to a statically typed language where the field type annotation would prevent a non-float from being passed at all.  Which approach is more *writable*?  Which is more *reliable*?
+12.  Design a `FunctionDef` dataclass for your interpreter with fields `name`, `params` (a list of strings), and `body` (an `ASTNode`).  Write the `__post_init__` that enforces: at least one parameter, no duplicate parameter names, and `body` is actually an `ASTNode`.  Write only the class definition, not the full interpreter.
 
 ---
 
-> **Watch out!** `@dataclass(frozen=True)` makes an instance *immutable after construction*, but it is not the same as a deeply immutable object. If a frozen dataclass has a field that holds a mutable list, the list's contents can still change; `frozen` prevents reassignment of the field itself (`obj.field = new_value` will raise `FrozenInstanceError`), but does not prevent mutation of the object the field points to (`obj.field.append(x)` still works). For true immutability, all fields must themselves be immutable.
+> **Watch out!** `@dataclass(frozen=True)` makes an instance *immutable after construction*, but it is not the same as a deeply immutable object.  If a frozen dataclass has a field that holds a mutable list, the list's contents can still change; `frozen` prevents reassignment of the field itself (`obj.field = new_value` will raise `FrozenInstanceError`), but does not prevent mutation of the object the field points to (`obj.field.append(x)` still works).  For true immutability, all fields must themselves be immutable.
 
 ## Model 4: Type Annotations, Generators, and Context Managers
 
-> **Intuition:** This model covers three Python features that look unrelated but share a common theme: each one lets you express a program's *intent* more precisely without changing its runtime behavior. Type annotations document the expected shapes of data. Generators let you describe a lazy sequence without materializing it. Context managers let you express "this block needs setup and guaranteed teardown" as a first-class construct rather than a try/finally pattern you must remember to write. All three are about making the code's intent visible and verifiable: to other programmers, to type checkers, and to the runtime.
+> **Intuition:** This model covers three Python features that look unrelated but share a common theme: each one lets you express a program's *intent* more precisely without changing its runtime behavior.  Type annotations document the expected shapes of data.  Generators let you describe a lazy sequence without materializing it.  Context managers let you express "this block needs setup and guaranteed teardown" as a first-class construct rather than a try/finally pattern you must remember to write.  All three are about making the code's intent visible and verifiable: to other programmers, to type checkers, and to the runtime.
 
-Python's type system, generators, and context managers are three orthogonal features that each address a distinct design concern: **static documentation**, **lazy computation**, and **resource safety**. The cell explores all three in the context of a token stream, a structure your compiler pipeline uses.
+Python's type system, generators, and context managers are three orthogonal features that each address a distinct design concern: **static documentation**, **lazy computation**, and **resource safety**.  The cell explores all three in the context of a token stream, a structure your compiler pipeline uses.
 
 ```python
 from typing import Iterator, Generator, List, Optional, TypeVar
@@ -460,46 +460,46 @@ with parse_session("bad $ input") as s:
 
 ### Critical Thinking Questions
 
-13. The return type annotation `Generator[tuple[str, str], None, None]` has three type parameters. Look up what each means (yield type, send type, return type). Why is the send type `None` for a tokenizer, and when would a non-`None` send type be useful?
-14. Compare `tokenize` (returns a list) with `tokenize_lazy` (yields tokens). For a 1 GB source file, which is preferable and why? Identify the specific trade-off in terms of memory usage versus random access capability.
-15. The `@contextmanager` decorator wraps a generator function with a single `yield`. The code *before* `yield` is `__enter__`; code *after* is `__exit__`. Rewrite `parse_session` as a class with explicit `__enter__` and `__exit__` methods. Which form is more readable, and which is more explicit about the resource lifecycle?
-16. Python's type annotations are not enforced at runtime (without a separate checker). Name one scenario in your CS374 project where a type error that annotations would expose at type-check time actually caused a runtime bug during testing. If you cannot recall one, invent a plausible example involving mismatched AST node types.
+13.  The return type annotation `Generator[tuple[str, str], None, None]` has three type parameters.  Look up what each means (yield type, send type, return type).  Why is the send type `None` for a tokenizer, and when would a non-`None` send type be useful?
+14.  Compare `tokenize` (returns a list) with `tokenize_lazy` (yields tokens).  For a 1 GB source file, which is preferable and why?  Identify the specific trade-off in terms of memory usage versus random access capability.
+15.  The `@contextmanager` decorator wraps a generator function with a single `yield`.  The code *before* `yield` is `__enter__`; code *after* is `__exit__`.  Rewrite `parse_session` as a class with explicit `__enter__` and `__exit__` methods.  Which form is more readable, and which is more explicit about the resource lifecycle?
+16.  Python's type annotations are not enforced at runtime (without a separate checker).  Name one scenario in your CS374 project where a type error that annotations would expose at type-check time actually caused a runtime bug during testing.  If you cannot recall one, invent a plausible example involving mismatched AST node types.
 
 ---
 
 ---
-**In-class work stops here.** Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
+**In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
 
-## 2. Exercises
+## 2.  Exercises
 
-1. *Feature pitch.* Each pair writes a half-page pitch for adding their jigsaw feature (or a realistic slice of it) to the team language: the construct's syntax in your grammar's EBNF, the node it adds, the evaluator rule, and the criterion it serves. The team votes one pitch onto the project's "stretch goals" list.
-2. *Exhaustiveness by hand.* Add a new node type to your AST but not to your match-based evaluate. Run it; read the failure. Now add a `case _:` that raises a located error listing the node type. You have hand-built the safety net ML compilers automate; one sentence on the difference.
-3. *Color audit.* Sketch (no implementation) what adding async to your language would split: which built-ins become awaitable, which functions change color, what the REPL does with a pending value. Conclude with a recommendation and its rationale.
-4. *Feature archaeology.* Each teammate picks one feature that *arrived* in a mainstream language during their lifetime (Python match 2021, Java records 2020, JS async 2017, C++ lambdas 2011) and reports the proposal document's stated motivation versus what we identified today.
+1.  *Feature pitch.*  Each pair writes a half-page pitch for adding their jigsaw feature (or a realistic slice of it) to the team language: the construct's syntax in your grammar's EBNF, the node it adds, the evaluator rule, and the criterion it serves.  The team votes one pitch onto the project's "stretch goals" list.
+2.  *Exhaustiveness by hand.*  Add a new node type to your AST but not to your match-based evaluate.  Run it; read the failure.  Now add a `case _:` that raises a located error listing the node type.  You have hand-built the safety net ML compilers automate; one sentence on the difference.
+3.  *Color audit.*  Sketch (no implementation) what adding async to your language would split: which built-ins become awaitable, which functions change color, what the REPL does with a pending value.  Conclude with a recommendation and its rationale.
+4.  *Feature archaeology.*  Each teammate picks one feature that *arrived* in a mainstream language during their lifetime (Python match 2021, Java records 2020, JS async 2017, C++ lambdas 2011) and reports the proposal document's stated motivation versus what we identified today.
 
 ---
 
 ## Reflection Prompt
 
-In your notebook: every feature today moved some check or transformation to an earlier binding time at the price of language complexity. Is there a complexity budget beyond which a language should stop adding features, and who in a language community should hold that budget? Answer as the designer you are about to be.
+In your notebook: every feature today moved some check or transformation to an earlier binding time at the price of language complexity.  Is there a complexity budget beyond which a language should stop adding features, and who in a language community should hold that budget?  Answer as the designer you are about to be.
 
 ---
 
-## 3. Further Reading
+## 3.  Further Reading
 
 - The Rust Book, chapter 4 (ownership): https://doc.rust-lang.org/book/
 - PEP 634 through 636 (Python structural pattern matching), especially 636, the tutorial.
-- Bob Nystrom. "What Color is Your Function?" (online essay), the async critique, vividly argued.
+- Bob Nystrom.  "What Color is Your Function?"  (online essay), the async critique, vividly argued.
 
 ---
 
 ## Going Deeper (Optional Pointers)
 
-The core lesson above stands on its own. The deep-dive appendices that used to follow it now live elsewhere:
+The core lesson above stands on its own.  The deep-dive appendices that used to follow it now live elsewhere:
 
-> **Going further:** the material that used to live here (macros and metaprogramming: C-style textual macros and their double-evaluation hazards, quasiquotation, and hygienic expansion) is now project material: the **Macros or Hygienic Quoting** entry in the [Team Language Project's Extensions Menu](https://www.billmongan.com/Ursinus-CS374/Projects/TeamLanguage) specifies exactly what a credited macro extension must do, and [Building the Mini Language: A Complete Guide](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-project-language-guide.md) provides the interpreter foundation to build it on. Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here (macros and metaprogramming: C-style textual macros and their double-evaluation hazards, quasiquotation, and hygienic expansion) is now project material: the **Macros or Hygienic Quoting** entry in the [Team Language Project's Extensions Menu](https://www.billmongan.com/Ursinus-CS374/Projects/TeamLanguage) specifies exactly what a credited macro extension must do, and [Building the Mini Language: A Complete Guide](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-project-language-guide.md) provides the interpreter foundation to build it on.  Explore it when your project or curiosity calls for it.
 
-> **Going further:** two former appendices are now self-study topics. *Objects and OOP from closures to vtables*, method resolution order (MRO) and the diamond problem, abstract base classes, and how vtables implement dynamic dispatch, is a rich afternoon with the Python data-model docs; search "C3 linearization," "Python MRO," and "abstract base class." *The expression problem* (why adding new node types is easy in OOP but adding new operations is easy in functional style, and never both) is the classic design tension behind your evaluator; search "expression problem Wadler" and revisit it when your team debates visitor vs. match.
+> **Going further:** two former appendices are now self-study topics.  *Objects and OOP from closures to vtables*, method resolution order (MRO) and the diamond problem, abstract base classes, and how vtables implement dynamic dispatch, is a rich afternoon with the Python data-model docs; search "C3 linearization," "Python MRO," and "abstract base class."  *The expression problem* (why adding new node types is easy in OOP but adding new operations is easy in functional style, and never both) is the classic design tension behind your evaluator; search "expression problem Wadler" and revisit it when your team debates visitor vs. match.
 
 ---
 
