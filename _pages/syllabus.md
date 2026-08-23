@@ -246,15 +246,15 @@ schedule:
     dlink: "Assignments/Overview"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-overview.md"
-  - dtitle: "Participation: Reading Exercises Handed Out"
-    dlink: "Participation/ReadingExercises"
+  - dtitle: "Participation: Exercises Handed Out"
+    dlink: "Assignments/ParticipationExercises"
     points: "10"
     module: overarching
+  - dtitle: "Participation: Exercise - Evaluating Languages and Paradigms Handed Out"
+    dlink: "Assignments/ParticipationExercises/EvaluatingLanguages"
   readings:
   - rtitle: "History of Programming Languages"
     rlink: "https://www.billmongan.com/Ursinus-CS374-History"
-  - rtitle: "Reading Exercise / Discussion: attempt the Evaluating Languages and Paradigms exercises before class"
-    rlink: "Participation/ReadingExercises"
   - rtitle: "Optional depth, tutorial: Compiling and Linking (From Source to Executable)"
     rlink: "Tutorials/tutorial-compiling-linking.md"
     liapage: true
@@ -278,9 +278,10 @@ schedule:
   title: "Grammars and the Chomsky Hierarchy (Day 1 of 2)"
   link: "Activities/liascript-grammars.md"
   liapage: true
+  deliverables:
+  - dtitle: "Participation: Exercise - Syntax, BNF/EBNF, and Grammars Handed Out"
+    dlink: "Assignments/ParticipationExercises/SyntaxAndGrammars"
   readings:
-  - rtitle: "Reading Exercise / Discussion: attempt the Syntax, BNF/EBNF, and Grammars exercises before class"
-    rlink: "Participation/ReadingExercises"
   - rtitle: "Allison, Ch. 9 §9.3: The Chomsky Hierarchy"
   - rtitle: "Allison, Ch. 6 §6.1: Context-Free Grammars and Derivations"
 - week: "2"
@@ -301,9 +302,9 @@ schedule:
     dlink: "Assignments/Overview"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-overview.md"
+  - dtitle: "Participation: Exercise - Derivations, Parse Trees, Ambiguity, and Precedence Handed Out"
+    dlink: "Assignments/ParticipationExercises/DerivationsAndAmbiguity"
   readings:
-  - rtitle: "Reading Exercise / Discussion: attempt the Derivations, Parse Trees, Ambiguity, and Precedence exercises before class"
-    rlink: "Participation/ReadingExercises"
   - rtitle: "Allison, Ch. 6 §6.2: Derivation Trees and Ambiguous Grammars (Operator Precedence and Associativity)"
 - week: "3"
   date: "0"
@@ -323,9 +324,9 @@ schedule:
     dlink: "Assignments/RegexWorkshop"
     points: "15"
     rubricpath: "_pages/Assignments/lab-regexworkshop.md"
+  - dtitle: "Participation: Exercise - Regular Expressions and Finite Automata Handed Out"
+    dlink: "Assignments/ParticipationExercises/RegexAndAutomata"
   readings:
-  - rtitle: "Reading Exercise / Discussion: attempt the Regular Expressions and Finite Automata exercises before class"
-    rlink: "Participation/ReadingExercises"
   - rtitle: "Allison, Ch. 3 §3.1-3.2: Regular Expressions and Their Equivalence to Finite Automata"
   - rtitle: "Allison, Ch. 4: The Pumping Lemma, proving a language is not regular (required for the Regex assignment's Part 4 theory questions; we work one example in class today)"
   - rtitle: "The Shell for Language Development - the grep section, which puts today's patterns to work on your own source tree"
@@ -378,18 +379,19 @@ schedule:
     dlink: "Assignments/Lexer"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-lexer.md"
+  - dtitle: "Participation: Exercise - Tokens and Scanning Handed Out"
+    dlink: "Assignments/ParticipationExercises/TokensAndScanning"
   readings:
-  - rtitle: "Reading Exercise / Discussion: attempt the Tokens and Scanning exercises before class"
-    rlink: "Participation/ReadingExercises"
   - rtitle: "Allison, Ch. 2 §2.4: Machines with Output, Lexical Analysis"
 - week: "5"
   date: "1"
   title: "Abstract Syntax Trees"
   link: "Activities/liascript-ast.md"
   liapage: true
+  deliverables:
+  - dtitle: "Participation: Exercise - Abstract Syntax Trees Handed Out"
+    dlink: "Assignments/ParticipationExercises/AbstractSyntaxTrees"
   readings:
-  - rtitle: "Reading Exercise / Discussion: attempt the Abstract Syntax Trees exercises before class"
-    rlink: "Participation/ReadingExercises"
   - rtitle: "Allison, Ch. 6 §6.2: Expression Trees, Operator Precedence, and Associativity"
 - week: "6"
   date: "0"
@@ -401,9 +403,9 @@ schedule:
     dlink: "Assignments/GrammarWorkshop"
     points: "15"
     rubricpath: "_pages/Assignments/lab-grammarworkshop.md"
+  - dtitle: "Participation: Exercise - Recursive Descent Parsing Handed Out"
+    dlink: "Assignments/ParticipationExercises/RecursiveDescent"
   readings:
-  - rtitle: "Reading Exercise / Discussion: attempt the Recursive Descent Parsing exercises before class"
-    rlink: "Participation/ReadingExercises"
   - rtitle: "Optional depth, tutorial: Parser Combinators (Parsers as First-Class Values)"
     rlink: "Tutorials/tutorial-parser-combinators.md"
     liapage: true
@@ -455,9 +457,9 @@ schedule:
     dlink: "Projects/TeamLanguage"
     points: "100"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
+  - dtitle: "Participation: Exercise - Tree-Walking Interpretation, Binding, and Scope Handed Out"
+    dlink: "Assignments/ParticipationExercises/BindingAndScope"
   readings:
-  - rtitle: "Reading Exercise / Discussion: attempt the Tree-Walking Interpretation, Binding, and Scope exercises before class"
-    rlink: "Participation/ReadingExercises"
   - rtitle: "Allison, Ch. 6 §6.1-6.2: Context-Free Grammars, Derivation Trees, and Expression Trees"
   - rtitle: "Optional depth - tutorial: PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer and Parser assignments)"
     rlink: "Activities/liascript-ply-lexer-parser.md"
@@ -492,7 +494,7 @@ schedule:
   - rtitle: "Interactive (in class): PLAI Stacker / SMoL Tutor, step through binding, scope, and the environment in a notional machine"
     rlink: "https://www.plai.org/"
   - rtitle: "In-class exercise: Mystery Scoping Language, deduce lexical vs. dynamic scope by experiment (CS173-style), then predict what your interpreter's Environment will do"
-    rlink: "Participation/ReadingExercises"
+    rlink: "Assignments/ParticipationExercises/BindingAndScope"
   - rtitle: "Optional depth: Krishnamurthi, PLAI (3rd ed.), the chapters on functions, scope, and environments"
     rlink: "https://www.plai.org/"
 - week: "10"
@@ -529,9 +531,9 @@ schedule:
     dlink: "Assignments/TypeCheckerLab"
     points: "15"
     rubricpath: "_pages/Assignments/lab-typechecker.md"
+  - dtitle: "Participation: Exercise - Type Systems Handed Out"
+    dlink: "Assignments/ParticipationExercises/TypeSystems"
   readings:
-  - rtitle: "Reading Exercise / Discussion: attempt the Type Systems exercises before class"
-    rlink: "Participation/ReadingExercises"
   - rtitle: "Core Tutorial: Typing Disciplines, Strong vs. Weak, Static vs. Dynamic, and Gradual Typing (required; anchors today's quadrant and the mypy/TypeScript compare)"
     rlink: "Tutorials/TypingDisciplines"
   - rtitle: "In-class compare: the same buggy snippet under mypy (Python) and TypeScript, gradual typing as an object of study"
@@ -550,12 +552,12 @@ schedule:
     dlink: "Assignments/EnvironmentsLab"
     points: "15"
     rubricpath: "_pages/Assignments/lab-environments.md"
+  - dtitle: "Participation: Exercise - Functional Programming and Higher-Order Functions Handed Out"
+    dlink: "Assignments/ParticipationExercises/FunctionalProgramming"
   readings:
   - rtitle: "Optional depth - activity: Scheme and Racket as Objects of Study (required prep if you take the Scheme direction on the Functional assignment)"
     rlink: "Activities/liascript-scheme.md"
     liapage: true
-  - rtitle: "Reading Exercise / Discussion: attempt the Functional Programming and Higher-Order Functions exercises before class"
-    rlink: "Participation/ReadingExercises"
   - rtitle: "In-class taste: the declarative paradigm in Prolog, a 15-minute SWISH warm-up (facts, rules, a query that backtracks). Previews the Functional assignment's Logic Programming direction"
     rlink: "https://swish.swi-prolog.org/"
   - rtitle: "Optional depth, reference: The Power of Prolog (Markus Triska)"
@@ -593,9 +595,9 @@ schedule:
     dlink: "Assignments/LambdaCalculusLab"
     points: "15"
     rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
+  - dtitle: "Participation: Exercise - Lambda Calculus Handed Out"
+    dlink: "Assignments/ParticipationExercises/LambdaCalculus"
   readings:
-  - rtitle: "Reading Exercise / Discussion: attempt the Lambda Calculus exercises before class"
-    rlink: "Participation/ReadingExercises"
   - rtitle: "Optional depth, Allison, Ch. 8: Turing Machines and the Church-Turing Thesis"
   - rtitle: "Optional depth, tutorial: Build a Lambda Calculus Reducer"
     rlink: "Tutorials/tutorial-lambda-calculus-reducer.md"
@@ -682,8 +684,8 @@ schedule:
     dlink: "Projects/TeamLanguage"
     points: "75"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
-  - dtitle: "Participation: Reading Exercises Due"
-    dlink: "Participation/ReadingExercises"
+  - dtitle: "Participation: Exercises Due"
+    dlink: "Assignments/ParticipationExercises"
     points: "10"
 ---
 
@@ -724,7 +726,7 @@ The point of every assignment here is the fluency you build, not the artifact yo
 
 ## Preparing for Each Class
 
-Our class meetings are hands-on POGIL sessions: you work in your standing team through activities that build the concepts and the code, not lectures you passively receive. That means class works best when you arrive ready, and "ready" is a routine you can run rather than a matter of luck. The **[Preparing for Each Class](Participation/PreparingForClass)** guide lays out that routine: how to read a technical section in passes, how to attempt the reading exercises before class, and how to arrive with a question or a stuck point that the session can resolve. Bringing that prepared question is itself the accountability check that the reading happened, and it is usually where the best discussion starts.
+Our class meetings are hands-on POGIL sessions: you work in your standing team through activities that build the concepts and the code, not lectures you passively receive. That means class works best when you arrive ready, and "ready" is a routine you can run rather than a matter of luck. The **[Preparing for Each Class](Participation/PreparingForClass)** guide lays out that routine: how to read a technical section in passes, how to attempt the participation exercises before class, and how to arrive with a question or a stuck point that the session can resolve. Bringing that prepared question is itself the accountability check that the reading happened, and it is usually where the best discussion starts.
 
 ## Class Activities and Participation (15%)
 
@@ -732,4 +734,4 @@ This is a course you do, not one you watch, and this component values the daily 
 
 Participation takes more than one form, by design. In the in-class activities your team rotates the POGIL roles (**Manager, Recorder, Presenter, and Reflector**) so that on different days you facilitate, capture the group's thinking, report out, or step back and synthesize. In the project phase your team rotates a second set of roles: **Coordinator, Builder, Evaluator, and Scribe**. Speaking up in whole-class discussion counts; so does posting your team's answer to the class discussion board, asking a sharp question, or helping a teammate past a bug. If the spoken room is hard for you, the written and role-based channels are real ways to earn this component. Talk with me early and we will find the path that fits.
 
-From time to time the class agenda sets aside time for **reading exercises and discussion**: a short problem tied to the reading (write a grammar rule, trace a tokenizer, evaluate a language-design tradeoff) that you attempt beforehand and we work through together. These are marked on the schedule and drawn from the **[Reading Exercises](Participation/ReadingExercises)** bank. The Week 14 **mock-interview rehearsal** (practicing an interview-style explanation of your own interpreter and language with a partner from another team) counts here too; see the [Demo Day Guide](Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice).
+From time to time the class agenda sets aside time for **participation exercises and discussion**: a short problem tied to the reading (write a grammar rule, trace a tokenizer, evaluate a language-design tradeoff) that you attempt beforehand and we work through together. These are marked on the schedule and drawn from the **[Participation Exercises](Assignments/ParticipationExercises)** bank. The Week 14 **mock-interview rehearsal** (practicing an interview-style explanation of your own interpreter and language with a partner from another team) counts here too; see the [Demo Day Guide](Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice).
