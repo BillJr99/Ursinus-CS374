@@ -255,9 +255,8 @@ schedule:
   readings:
   - rtitle: "History of Programming Languages"
     rlink: "https://www.billmongan.com/Ursinus-CS374-History"
-  - rtitle: "Optional depth, tutorial: Compiling and Linking (From Source to Executable)"
+  - rtitle: "Compiling and Linking (From Source to Executable)"
     rlink: "Tutorials/CompilingAndLinking"
-    liapage: true
 - week: "1"
   date: "0"
   title: "Syntax and BNF/EBNF"
@@ -406,9 +405,8 @@ schedule:
   - dtitle: "Participation: Exercise - Recursive Descent Parsing Handed Out"
     dlink: "Assignments/ParticipationExercises/RecursiveDescent"
   readings:
-  - rtitle: "Optional depth, tutorial: Parser Combinators (Parsers as First-Class Values)"
+  - rtitle: "Parser Combinators (Parsers as First-Class Values)"
     rlink: "Tutorials/ParserCombinators"
-    liapage: true
 - week: "7"
   date: "1"
   title: "Parsing Expressions: Left Factoring, Precedence, and Chained Comparisons"
@@ -461,9 +459,8 @@ schedule:
     dlink: "Assignments/ParticipationExercises/BindingAndScope"
   readings:
   - rtitle: "Allison, Ch. 6 §6.1-6.2: Context-Free Grammars, Derivation Trees, and Expression Trees"
-  - rtitle: "Optional depth, tutorial: PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer and Parser assignments)"
+  - rtitle: "PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer and Parser assignments)"
     rlink: "Tutorials/PLYLexerAndParser"
-    liapage: true
 - week: "9"
   date: "0"
   title: "Control Flow and Statement Semantics (Interpretation, Day 2)"
@@ -474,7 +471,7 @@ schedule:
     rlink: false
   - rtitle: "For the Tree-Walking Interpreter (Step 2e): Property-Based Testing with Hypothesis, covering the round-trip property, now over evaluation"
     rlink: "Tutorials/PropertyBasedTesting"
-  - rtitle: "Optional depth, tutorial: CI and TDD for Interpreters"
+  - rtitle: "CI and TDD for Interpreters"
     rlink: "Tutorials/CITDDForInterpreters"
 - week: "9"
   date: "1"
@@ -501,12 +498,10 @@ schedule:
   link: "Activities/liascript-environments.md"
   liapage: true
   readings:
-  - rtitle: "Optional depth, tutorial: Build an Interpreter (start-to-finish companion for the upcoming assignment)"
+  - rtitle: "Build an Interpreter (start-to-finish companion for the upcoming assignment)"
     rlink: "Tutorials/BuildAnInterpreter"
-    liapage: true
-  - rtitle: "Optional depth, tutorial: Garbage Collection (Implementing Memory Management)"
+  - rtitle: "Garbage Collection (Implementing Memory Management)"
     rlink: "Tutorials/GarbageCollection"
-    liapage: true
 - week: "10"
   date: "1"
   title: "Type Systems"
@@ -532,14 +527,13 @@ schedule:
   - dtitle: "Participation: Exercise - Type Systems Handed Out"
     dlink: "Assignments/ParticipationExercises/TypeSystems"
   readings:
-  - rtitle: "Optional depth: Typing Disciplines, going past today's quadrant into structural vs. nominal typing, type erasure, and algebraic data types"
+  - rtitle: "Typing Disciplines, going past today's quadrant into structural vs. nominal typing, type erasure, and algebraic data types"
     rlink: "Tutorials/TypingDisciplines"
   - rtitle: "In-class compare: the same buggy snippet under mypy (Python) and TypeScript, gradual typing as an object of study"
     rlink: "https://www.typescriptlang.org/play"
-  - rtitle: "Optional depth, Allison, Ch. 10 §10.1: The Halting Problem (Why Some Questions About Programs Are Undecidable)"
-  - rtitle: "Optional depth, tutorial: Type Inference (Implementing Hindley-Milner)"
+  - rtitle: "Allison, Ch. 10 §10.1: The Halting Problem (Why Some Questions About Programs Are Undecidable)"
+  - rtitle: "Type Inference (Implementing Hindley-Milner)"
     rlink: "Tutorials/TypeInference"
-    liapage: true
 - week: "11"
   date: "0"
   title: "Functional Programming and Higher-Order Functions"
@@ -555,11 +549,10 @@ schedule:
   readings:
   - rtitle: "In-class taste: the declarative paradigm in Prolog, a 15-minute SWISH warm-up (facts, rules, a query that backtracks).  Previews the Functional assignment's Logic Programming direction"
     rlink: "https://swish.swi-prolog.org/"
-  - rtitle: "Optional depth, reference: The Power of Prolog (Markus Triska)"
+  - rtitle: "The Power of Prolog (Markus Triska)"
     rlink: "https://www.metalevel.at/prolog"
-  - rtitle: "Optional depth, tutorial: Haskell Essentials"
+  - rtitle: "Haskell Essentials"
     rlink: "Tutorials/HaskellEssentials"
-    liapage: true
 - week: "11"
   date: "1"
   title: "Language Design Workshop: Project Kickoff (Sprint 0)"
@@ -571,9 +564,8 @@ schedule:
     points: "25"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
-  - rtitle: "Optional depth, tutorial: Build a Bytecode VM"
+  - rtitle: "Build a Bytecode VM"
     rlink: "Tutorials/BytecodeVM"
-    liapage: true
 - week: "12"
   date: "0"
   title: "Lambda Calculus I: Syntax and Beta Reduction"
@@ -591,10 +583,11 @@ schedule:
   - dtitle: "Participation: Exercise - Lambda Calculus Handed Out"
     dlink: "Assignments/ParticipationExercises/LambdaCalculus"
   readings:
-  - rtitle: "Optional depth, Allison, Ch. 8: Turing Machines and the Church-Turing Thesis"
-  - rtitle: "Optional depth, tutorial: Build a Lambda Calculus Reducer"
+  - rtitle: "Allison, Ch. 8: Turing Machines and the Church-Turing Thesis"
+  - rtitle: "Lambda Calculus - Fundamentals of Lambda Calculus & Functional Programming in JavaScript (Gabriel Lebec)"
+    rlink: "https://www.youtube.com/watch?v=3VQ382QG-y4"
+  - rtitle: "Build a Lambda Calculus Reducer"
     rlink: "Tutorials/LambdaCalculusReducer"
-    liapage: true
 - week: "12"
   date: "1"
   title: "Lambda Calculus II: Church Encodings and Combinators"
@@ -607,6 +600,8 @@ schedule:
     rubricpath: "_pages/Assignments/asmt-functional.md"
   readings:
   - rtitle: "Church encodings: numerals, booleans, and the arithmetic you reduce by hand in the Lambda Calculus lab (today's activity, Models 2-3)"
+  - rtitle: "A Flock of Functions: Combinators, Lambda Calculus, & Church Encodings in JS - Part II (Gabriel Lebec)"
+    rlink: "https://www.youtube.com/watch?v=pAnLQ9jwN-E"
 - week: "13"
   date: "0"
   title: "Closures and First-Class Functions"
@@ -641,10 +636,9 @@ schedule:
     points: "3"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
-  - rtitle: "Optional depth, tutorial: The Project Language Guide (a complete worked path for the team project)"
+  - rtitle: "The Project Language Guide (a complete worked path for the team project)"
     rlink: "Tutorials/ProjectLanguageGuide"
-    liapage: true
-  - rtitle: "Optional depth, tutorial: Shell Skills for Language Development"
+  - rtitle: "Shell Skills for Language Development"
     rlink: "Tutorials/ShellForLanguageDev"
 - week: "14"
   date: "1"
@@ -661,11 +655,10 @@ schedule:
     points: "3"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
-  - rtitle: "Optional depth, tutorial: Publishing Your Language (pip, npm, and Docker)"
+  - rtitle: "Publishing Your Language (pip, npm, and Docker)"
     rlink: "Tutorials/PublishingYourLanguage"
-  - rtitle: "Optional depth, tutorial: Advanced C++ for Language Implementers"
+  - rtitle: "Advanced C++ for Language Implementers"
     rlink: "Tutorials/AdvancedCpp"
-    liapage: true
 - week: "15"
   date: "0"
   title: "Demo Day: Team Language Presentations (Class Switch Day: follows a Thursday schedule)"
