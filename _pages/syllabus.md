@@ -457,7 +457,7 @@ schedule:
     dlink: "Projects/TeamLanguage"
     points: "100"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
-  - dtitle: "Participation: Exercise - Tree-Walking Interpretation, Binding, and Scope Handed Out"
+  - dtitle: "Participation: Exercise - Binding and Scope, Part 1: Tree-Walking Interpretation Handed Out"
     dlink: "Assignments/ParticipationExercises/BindingAndScope"
   readings:
   - rtitle: "Allison, Ch. 6 §6.1-6.2: Context-Free Grammars, Derivation Trees, and Expression Trees"
@@ -490,7 +490,7 @@ schedule:
     dlink: "Assignments/EnvironmentsLab"
     points: "15"
     rubricpath: "_pages/Assignments/lab-environments.md"
-  - dtitle: "Participation: Exercise - Mystery Scoping Language Handed Out"
+  - dtitle: "Participation: Exercise - Binding and Scope, Part 2: Mystery Scoping Language Handed Out"
     dlink: "Assignments/ParticipationExercises/BindingAndScope"
   readings:
   - rtitle: "Krishnamurthi, PLAI (3rd ed.): the Stacker and SMoL Tutor, which we step through in class, and the chapters on functions, scope, and environments"
