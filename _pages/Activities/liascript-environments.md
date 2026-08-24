@@ -154,6 +154,74 @@ except NameError as e:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
+### Reading the Code
+
+- `vars` and `parent` are the whole data structure.  Everything else on the class is a *walk* over that chain; there is no other state anywhere.
+- `define` writes to `self.vars` and never looks at `parent`.  `assign` never writes to `self.vars` unless the name is already there.  That one asymmetry is the entire difference between declaring and updating, and it is where most interpreter bugs live.
+- `lookup` walks outward and stops at the *first* frame that has the name.  Shadowing is not a special case in the code; it falls out of stopping early.
+- Leaving a block is not an operation.  There is no `pop`: the code simply stops using `block`, and Python's garbage collector does the rest.  Scope ending is the absence of a reference, not an instruction.
+- `__repr__` renders the chain outward with `->`, which is why the printed trace reads exactly like the boxes you drew on paper.
+
+### Try It Yourself
+
+Break the chain on purpose, and watch which operation notices.
+
+```python
+class Environment:
+    def __init__(self, parent=None, name="?"):
+        self.vars = {}
+        self.parent = parent
+        self.name = name
+    def define(self, name, value):
+        self.vars[name] = value
+    def lookup(self, name):
+        env = self
+        while env is not None:
+            if name in env.vars:
+                return env.vars[name]
+            env = env.parent
+        raise NameError(f"undefined variable {name!r}")
+    def assign(self, name, value):
+        env = self
+        while env is not None:
+            if name in env.vars:
+                env.vars[name] = value
+                return
+            env = env.parent
+        raise NameError(f"cannot assign to undefined variable {name!r}")
+    def __repr__(self):
+        parts = [f"{self.name}:{self.vars}"]
+        if self.parent:
+            parts.append(repr(self.parent))
+        return " -> ".join(parts)
+
+glob  = Environment(name="global")
+glob.define("total", 0)
+inner = Environment(parent=glob, name="inner")
+
+print("=== Start ===")
+print(f"  {inner}")
+
+# TODO 1: call inner.assign("total", 5) and print the chain. WHICH frame
+#         changed? Predict before you run.
+
+# TODO 2: now call inner.define("total", 99) and print the chain again.
+#         There are now two bindings named "total". Which one does
+#         inner.lookup("total") find, and which does glob.lookup("total")
+#         find? Print both.
+
+# TODO 3: break it. Set inner.parent = None, then try inner.lookup("total")
+#         and glob.lookup("total"). Which one still works, and why does
+#         that tell you where the chain actually lives?
+
+print("\n=== After your edits ===")
+print(f"  inner: {inner}")
+print(f"  glob : {glob}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output before you edit anything: one line showing `inner:{} -> global:{'total': 0}`, twice.  Each TODO changes exactly one thing, so run after each one rather than all at the end.
+
 ---
 
 **Intuition for Model 2:** Read the class as three post-office operations: `define` drops a letter into the current mailbox only; `lookup` asks each mailbox up the chain; `assign` updates the *existing* copy wherever it lives rather than creating a duplicate.  Confusing `define` with `assign` is the single most common environment bug.
@@ -257,6 +325,12 @@ print(f"outer2.lookup('x') = {outer2.lookup('x')}")   # 99 -- changed!
 print(f"\nEnvironment chain: {inner}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- The demo runs the same two-line program twice, once with `define` and once with `assign`, and the only difference in the output is *which frame* holds the changed value.  That is the whole lesson of Part II in one contrast.
+- Watch `inner` after the `define` run: it has its own `x`.  After the `assign` run it is empty, and `outer`'s `x` moved instead.  Two bindings versus one.
+- Neither operation ever copies a frame.  `assign` reaches through the chain and mutates in place, which is why a change made deep inside a block is still visible after the block ends.
 
 ### Critical Thinking Questions (Model 3)
 
@@ -428,6 +502,77 @@ except NameError as e:
 
 Had the body used `define` for `n` instead of `assign`, you would recreate the Model 3 Extended bug: the outer `n` would never decrease and the loop would never terminate.
 
+### Reading the Code
+
+- `loop_env` is rebuilt inside the `while`, once per iteration.  Move that line above the loop and every iteration would share one frame, which is exactly the closure-capture decision from *Names, Binding, and Scope*, now visible in the interpreter rather than in Python.
+- `n` is updated with `assign`, so it reaches out to `glob` and the loop can terminate.  `t` is created with `define`, so it stays in `loop_env` and vanishes each iteration.  Swap those two calls and you get an infinite loop, which is the single most common bug in this assignment.
+- The final lookup of `t` raising `NameError` is the *proof* that per-iteration scope worked.  A test that only checks the printed values would pass even if `t` leaked.
+
+### Try It Yourself
+
+Decide the per-iteration question for your own language, and prove your answer with the environment rather than by asserting it.
+
+```python
+class Environment:
+    def __init__(self, parent=None, name="?"):
+        self.vars, self.parent, self.name = {}, parent, name
+    def define(self, name, value):
+        self.vars[name] = value
+    def lookup(self, name):
+        env = self
+        while env is not None:
+            if name in env.vars: return env.vars[name]
+            env = env.parent
+        raise NameError(f"undefined variable {name!r}")
+    def assign(self, name, value):
+        env = self
+        while env is not None:
+            if name in env.vars:
+                env.vars[name] = value; return
+            env = env.parent
+        raise NameError(f"cannot assign to undefined variable {name!r}")
+    def __repr__(self):
+        parts = [f"{self.name}:{self.vars}"]
+        if self.parent: parts.append(repr(self.parent))
+        return " -> ".join(parts)
+
+# Simulate:  for i in 0..2 { let captured = i; remember(captured); }
+# The question: does each iteration get a FRESH frame, or share one?
+
+def run(fresh_frame_per_iteration):
+    glob = Environment(name="global")
+    remembered = []
+    shared = Environment(parent=glob, name="loop")     # used when NOT fresh
+    for i in range(3):
+        if fresh_frame_per_iteration:
+            body = Environment(parent=glob, name=f"iter{i}")   # a new frame
+        else:
+            body = shared                                      # the same frame
+        body.define("captured", i)
+        remembered.append(body)                        # keep the frame alive
+    return [f.lookup("captured") for f in remembered]
+
+print("=== Fresh frame per iteration ===")
+print(f"  remembered values: {run(True)}")
+print("=== One shared frame ===")
+print(f"  remembered values: {run(False)}")
+
+# TODO 1: explain the second line. All three frames are the SAME object,
+#         so all three report the last value written. Which Python bug
+#         from the Binding and Scope session is this?
+
+# TODO 2: your language has to pick. Write the one-sentence rule for
+#         SEMANTICS.md, and name a language that made each choice.
+
+# TODO 3: harder. Make the shared version behave like the fresh one WITHOUT
+#         creating a new Environment per iteration. What do you have to
+#         copy instead, and what does that tell you about what a closure
+#         really captures?
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: `[0, 1, 2]` and then `[2, 2, 2]`.  If you have seen `[2, 2, 2]` before, that is the point: it is the same bug, one level down.
+
 ### Critical Thinking Questions (Model 4)
 
 14.  In the first loop, `t` is defined anew each iteration and disappears at the end of each iteration.  Is `t`'s *scope* per-iteration, or is its *lifetime* per-iteration, or both?  Define your terms before answering.
@@ -528,6 +673,12 @@ except NameError as e:
     print("  As expected:", e)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- Three frames, three `define` calls at different depths, and every printed lookup reports the *hop count* that found it.  Read the hop counts as the cost of a name: a variable two blocks out costs two pointer follows on every use.
+- `x` is found at the global frame from all three depths, and `z` resolves to a different value depending on where you stand.  Same name, same program, three answers, all correct.
+- The `w` lookup from MID raising `NameError` is the containment check: inner names are invisible from outside, which is the property that makes blocks safe to nest.
 
 ### Critical Thinking Questions (Model 5)
 
