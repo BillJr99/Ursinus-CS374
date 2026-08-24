@@ -175,6 +175,164 @@ The example above walked through `2 + 3` step by step.  Now your team will execu
 
 > **Watch out!**  LR parsers read left-to-right but reduce from the right end of the stack; this confuses students about which "direction" they should be thinking.  The key is that a reduction always fires on the *top* of the stack (the rightmost symbols currently seen), not on the leftmost.  "LR" means Left-to-right scan, Rightmost derivation in reverse: the tree you are building is a rightmost derivation discovered backwards, bottom-up.
 
+### Run the Machine
+
+The table above is data.  Below it is wired to a driver of about twenty lines, so you can check the parse you just did by hand against what the algorithm actually does, and watch the precedence decision from row 2 happen in real time.
+
+```python
+# The ACTION/GOTO table transcribed EXACTLY from the table above.
+#   ("s", n) = shift and go to state n
+#   ("r", n) = reduce by production n
+#   ("acc",) = accept
+PRODUCTIONS = {                   # number: (lhs, length of rhs)
+    1: ("E", 3),                  # E -> E + T
+    2: ("E", 1),                  # E -> T
+    3: ("T", 3),                  # T -> T * F
+    4: ("T", 1),                  # T -> F
+    5: ("F", 1),                  # F -> num
+}
+RHS_TEXT = {1: "E + T", 2: "T", 3: "T * F", 4: "F", 5: "num"}
+
+ACTION = {
+    (0, "num"): ("s", 4),
+    (1, "+"):   ("s", 6),   (1, "$"): ("acc",),
+    (2, "*"):   ("s", 7),   (2, "+"): ("r", 2),  (2, "$"): ("r", 2),
+    (3, "*"):   ("r", 4),   (3, "+"): ("r", 4),  (3, "$"): ("r", 4),
+    (4, "*"):   ("r", 5),   (4, "+"): ("r", 5),  (4, "$"): ("r", 5),
+    (6, "num"): ("s", 4),
+    (7, "num"): ("s", 4),
+    (8, "*"):   ("s", 7),   (8, "+"): ("r", 1),  (8, "$"): ("r", 1),
+    (9, "*"):   ("r", 3),   (9, "+"): ("r", 3),  (9, "$"): ("r", 3),
+}
+GOTO = {
+    (0, "E"): 1, (0, "T"): 2, (0, "F"): 3,
+    (6, "T"): 8, (6, "F"): 3,
+    (7, "F"): 9,
+}
+
+def parse(tokens, trace=True):
+    tokens = list(tokens) + ["$"]
+    states  = [0]          # the state stack
+    symbols = []           # the symbol stack, for display
+    pos = 0
+    step = 0
+    if trace:
+        print(f"  {'step':>4}  {'stack':<20} {'input':<14} action")
+    while True:
+        step += 1
+        state = states[-1]
+        tok   = tokens[pos]
+        entry = ACTION.get((state, tok))
+        stack_str = " ".join(symbols) or "-"
+        input_str = " ".join(tokens[pos:])
+        if entry is None:
+            if trace:
+                print(f"  {step:>4}  {stack_str:<20} {input_str:<14} ERROR: no action for "
+                      f"state {state} on {tok!r}")
+            return None
+        if entry[0] == "acc":
+            if trace:
+                print(f"  {step:>4}  {stack_str:<20} {input_str:<14} accept")
+            return symbols[-1]
+        if entry[0] == "s":
+            if trace:
+                print(f"  {step:>4}  {stack_str:<20} {input_str:<14} shift -> s{entry[1]}")
+            symbols.append(tok); states.append(entry[1]); pos += 1
+        else:
+            n = entry[1]
+            lhs, length = PRODUCTIONS[n]
+            del states[-length:]
+            del symbols[-length:]
+            symbols.append(lhs)
+            states.append(GOTO[(states[-1], lhs)])
+            if trace:
+                print(f"  {step:>4}  {stack_str:<20} {input_str:<14} "
+                      f"reduce r{n}: {lhs} -> {RHS_TEXT[n]}")
+
+print("=== 2 + 3, the parse worked by hand above ===")
+parse(["num", "+", "num"])
+
+print("\n=== 2 * 3 + 4, CTQ 1's parse ===")
+parse(["num", "*", "num", "+", "num"])
+
+print("\n=== 2 + 3 * 4: watch state 8 refuse to reduce on '*' ===")
+parse(["num", "+", "num", "*", "num"])
+
+print("\n=== And an input the table rejects ===")
+parse(["num", "+", "+"])
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- `ACTION` and `GOTO` are the two tables from the worked example, transcribed with no interpretation added.  The driver never looks at the grammar; it only looks these up.  That is what "table-driven" means, and it is why a generator like yacc can emit these tables and reuse one driver for every language.
+- The whole algorithm is four cases: shift, reduce, accept, error.  There is no recursion and no per-nonterminal function, which is the structural opposite of recursive descent.
+- The reduce case pops `length` entries from *both* stacks and then consults `GOTO` with the state now on top.  Popping the right number of symbols is the only bookkeeping in the entire parser.
+- In the third parse, look for the step where the stack is `E + T` and the input begins with `*`.  The table says `s7`, not reduce, which is precedence happening: reducing there would have built `(2+3)*4`.  That is CTQ 2's answer as a line of output.
+- The last parse ends in `ERROR: no action for state ... on '+'`.  A table-driven parser detects an error the instant it reaches an empty cell, which is one of LR's real advantages: errors are found at the earliest possible token.
+
+### Try It Yourself
+
+Use the driver to find where the tree is built, and then break the table on purpose.
+
+```python
+PRODUCTIONS = {1: ("E", 3), 2: ("E", 1), 3: ("T", 3), 4: ("T", 1), 5: ("F", 1)}
+RHS_TEXT    = {1: "E + T", 2: "T", 3: "T * F", 4: "F", 5: "num"}
+ACTION = {
+    (0, "num"): ("s", 4),
+    (1, "+"):   ("s", 6),   (1, "$"): ("acc",),
+    (2, "*"):   ("s", 7),   (2, "+"): ("r", 2),  (2, "$"): ("r", 2),
+    (3, "*"):   ("r", 4),   (3, "+"): ("r", 4),  (3, "$"): ("r", 4),
+    (4, "*"):   ("r", 5),   (4, "+"): ("r", 5),  (4, "$"): ("r", 5),
+    (6, "num"): ("s", 4),
+    (7, "num"): ("s", 4),
+    (8, "*"):   ("s", 7),   (8, "+"): ("r", 1),  (8, "$"): ("r", 1),
+    (9, "*"):   ("r", 3),   (9, "+"): ("r", 3),  (9, "$"): ("r", 3),
+}
+GOTO = {(0,"E"):1, (0,"T"):2, (0,"F"):3, (6,"T"):8, (6,"F"):3, (7,"F"):9}
+
+def parse(tokens, action=ACTION, quiet=False):
+    tokens = list(tokens) + ["$"]
+    states, symbols, pos, reductions = [0], [], 0, []
+    while True:
+        entry = action.get((states[-1], tokens[pos]))
+        if entry is None:
+            if not quiet: print(f"    ERROR at {tokens[pos]!r}")
+            return None, reductions
+        if entry[0] == "acc":
+            return symbols[-1], reductions
+        if entry[0] == "s":
+            symbols.append(tokens[pos]); states.append(entry[1]); pos += 1
+        else:
+            lhs, length = PRODUCTIONS[entry[1]]
+            reductions.append(RHS_TEXT[entry[1]] + " -> " + lhs)
+            del states[-length:]; del symbols[-length:]
+            symbols.append(lhs); states.append(GOTO[(states[-1], lhs)])
+
+print("=== The reduction sequence IS the derivation, backwards ===")
+for src in [["num","+","num","*","num"], ["num","*","num","+","num"]]:
+    _, reds = parse(src)
+    print(f"  {' '.join(src)}")
+    for i, r in enumerate(reds, 1):
+        print(f"      {i}. {r}")
+    print()
+
+# TODO 1: in the first parse, which reduction number built the subtree for
+#         3 * 4? Bottom-up means the subtree existed before its parent --
+#         point at the line that proves it. (This is CTQ 3.)
+
+# TODO 2: break precedence on purpose. Copy ACTION, change (8, "*") from
+#         ("s", 7) to ("r", 1), and reparse "num + num * num". What tree
+#         does the reduction sequence describe now, and which arithmetic
+#         answer would it produce?
+
+# TODO 3: that one cell is where * binds tighter than +. Compare with
+#         recursive descent: where does the same fact live there?
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: the two reduction sequences, each ending in `T -> E`.  For TODO 2, changing that single cell turns `2 + 3 * 4` into the tree for `(2 + 3) * 4`, which is the same wrong answer the ambiguous grammar produced back in *Derivations, Parse Trees, Ambiguity, and Precedence*.
+
 ---
 
 # Part II: Conflicts and Choices
@@ -710,6 +868,53 @@ for ctype, cause, example, fix in conflicts:
 17.  The reduce-reduce conflict arises because `A -> a b` and `B -> a b` have *identical* right-hand sides.  Explain why an LR(1) parser (which uses one token of lookahead *after* a reduction, not just before) still cannot resolve this conflict without grammar changes.
 18.  Declared precedence (yacc's `%left`, `%right`, `%nonassoc`) resolves shift-reduce conflicts by turning the ambiguous grammar into a deterministic one *without* restructuring it.  Describe the trade-off: what is gained (writability of the grammar spec) and what is lost (clarity of the formal grammar)?
 19.  Your CS374 recursive-descent parser handles precedence via *grammar structure* (the E/T/F ladder).  An LR parser can handle it via *declarations*.  Which approach would be easier to modify if your language added a new operator with a precedence between `+` and `*`?  Justify by describing the required changes in each approach.
+
+---
+
+# Check Your Understanding
+
+"Table-driven" parsing means:
+
+[(X)] One fixed driver algorithm reads ACTION/GOTO tables that a generator produced from the grammar
+[( )] The parser consults a precedence table at each operator
+[( )] The grammar is stored as a table instead of as rules
+[( )] Each nonterminal has a table of its alternatives
+
+---
+
+In the parse of `2 + 3 * 4`, the stack reaches `E + T` with `*` next and the table says shift, not reduce. That cell is where:
+
+[(X)] `*` binds tighter than `+`; reducing there would have built `(2+3)*4`
+[( )] The parser recovers from an error
+[( )] The grammar's ambiguity is detected
+[( )] Associativity is decided
+
+---
+
+A shift-reduce conflict means:
+
+[(X)] Some table cell has both a shift and a reduce available, so the grammar is not LR(1) as written
+[( )] The input contains a syntax error
+[( )] The stack and the input disagree
+[( )] Two productions have the same right-hand side
+
+---
+
+Recursive descent cannot use `E -> E + T` but an LR parser prefers it. The difference is where the left context is remembered:
+
+[(X)] Recursive descent keeps it on the call stack, which left recursion never gets to build; LR keeps it on an explicit stack it has already filled
+[( )] LR parsers have a larger recursion limit
+[( )] Recursive descent reads right-to-left
+[( )] LR parsers rewrite the grammar internally
+
+---
+
+An LR parser reports an error the moment it reaches an empty table cell. That gives it:
+
+[(X)] The viable-prefix property: it never shifts a token that cannot start a legal continuation
+[( )] Faster parsing on legal input
+[( )] Better error messages by default
+[( )] The ability to parse ambiguous grammars
 
 ---
 
