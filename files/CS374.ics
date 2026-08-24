@@ -292,7 +292,7 @@ BEGIN:VEVENT
 UID:00000000-0000-0000-0000-0366c95f181d
 DTSTAMP:20261022T000000Z
 DTSTART;VALUE=DATE:20261022
-SUMMARY:CS374 Principles of Programming Languages: Participation: Exercise - Tree-Walking Interpretation, Binding, and Scope Handed Out
+SUMMARY:CS374 Principles of Programming Languages: Participation: Exercise - Binding and Scope, Part 1: Tree-Walking Interpretation Handed Out
 LOCATION:
 DESCRIPTION:
 PRIORITY:3
@@ -319,7 +319,7 @@ BEGIN:VEVENT
 UID:00000000-0000-0000-0000-0366c95f1820
 DTSTAMP:20261029T000000Z
 DTSTART;VALUE=DATE:20261029
-SUMMARY:CS374 Principles of Programming Languages: Participation: Exercise - Mystery Scoping Language Handed Out
+SUMMARY:CS374 Principles of Programming Languages: Participation: Exercise - Binding and Scope, Part 2: Mystery Scoping Language Handed Out
 LOCATION:
 DESCRIPTION:
 PRIORITY:3

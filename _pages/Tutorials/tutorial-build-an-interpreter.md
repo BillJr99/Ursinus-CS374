@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/BuildAnInterpreter
 title: "CS374: Build a Complete Interpreter in Python, Step by Step"
 

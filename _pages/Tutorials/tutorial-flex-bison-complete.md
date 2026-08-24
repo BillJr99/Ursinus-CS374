@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/FlexAndBison
 title: "CS374: Flex and Bison from Zero to a Working Language"
 

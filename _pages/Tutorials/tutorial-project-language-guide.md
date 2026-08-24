@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/ProjectLanguageGuide
 title: "CS374: Building the Mini Language: A Complete Guide"
 

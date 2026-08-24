@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/ASTToCode
 title: "CS374: From AST to Code: Visitors and Transpilers"
 

@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/SyntaxHighlighter
 title: "CS374: A Syntax Highlighter for Your Language with tree-sitter"
 

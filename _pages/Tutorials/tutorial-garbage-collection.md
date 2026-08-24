@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/GarbageCollection
 title: "CS374: Garbage Collection, Memory Management from First Principles"
 

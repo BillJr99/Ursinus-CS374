@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/AdvancedCpp
 title: "CS374: Advanced C++: Modern Memory, Templates, and the STL"
 

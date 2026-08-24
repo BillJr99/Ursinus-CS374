@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/ErrorHandling
 title: "CS374: Error Handling, From Return Codes to Algebraic Effects"
 

@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/BytecodeVM
 title: "CS374: Building a Bytecode VM for Mini"
 

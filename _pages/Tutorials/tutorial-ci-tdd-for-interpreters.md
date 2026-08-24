@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/CITDDForInterpreters
 title: "CS374: CI/CD and TDD for Language Projects"
 

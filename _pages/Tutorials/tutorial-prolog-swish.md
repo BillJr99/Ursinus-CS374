@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/Prolog
 title: "CS374: Prolog in the Browser with SWISH"
 

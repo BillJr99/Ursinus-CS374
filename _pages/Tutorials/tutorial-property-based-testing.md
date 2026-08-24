@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/PropertyBasedTesting
 title: "CS374: Property-Based Testing Your Language with Hypothesis"
 

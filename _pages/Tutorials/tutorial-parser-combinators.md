@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/ParserCombinators
 title: "CS374: Parser Combinators, Parsers as First-Class Values"
 
