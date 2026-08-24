@@ -1980,7 +1980,7 @@ python test_mini.py
 
 ### 10.4 What's Next
 
-You now have a complete working interpreter for Mini.  The following extensions are described in the **Extensions Menu** of the [Team Language Project](https://www.billmongan.com/Ursinus-CS374/Projects/TeamLanguage) and build directly on this foundation:
+You now have a complete working interpreter for Mini.  The following extensions are described in the **Extensions Menu** of the [Team Language Project](https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage) and build directly on this foundation:
 
 **Language features to add:**
 - **List indexing**: `lst[i]` read and `lst[i] = v` write; requires new AST nodes `IndexExpr` and `IndexAssign`, plus updates to the parser's `parse_call` and the evaluator.
