@@ -2407,6 +2407,10 @@ A **tail call** is a function call that is the *last* action of a function.  Ins
 ```python
 import sys
 
+# factorial(5000) has about 16,000 digits.  CPython 3.11+ refuses to render an
+# int longer than 4300 digits as a string unless you raise the cap first.
+sys.set_int_max_str_digits(100000)
+
 # Without TCO: factorial(10000) causes stack overflow in Python
 def factorial_no_tco(n):
     if n <= 1: return 1

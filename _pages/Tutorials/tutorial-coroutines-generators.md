@@ -765,16 +765,12 @@ def eval_node(node, env):
         val = eval_node(node.value, env)
         env.assign(node.name, val)
         return val
-    if isinstance(node, Yield_):
-        return ("yield", eval_node(node.value, env))
-    if isinstance(node, While):
-        while eval_node(node.condition, env):
-            for stmt in node.body:
-                result = eval_node(stmt, env)
-                if isinstance(result, tuple) and result[0] == "yield":
-                    yield result[1]
-        return
-    raise ValueError(f"unknown: {node!r}")
+    # Statements that can yield (While, Yield_) belong to run_node_yielding
+    # below, not here.  Keep eval_node free of `yield`: one `yield` anywhere in
+    # a function makes EVERY call return a generator object instead of a value,
+    # and since a generator object is always truthy, `while eval_node(cond)`
+    # would loop forever.
+    raise ValueError(f"unknown expression: {node!r}")
 
 def run_generator(gen_def: GeneratorDef, arg, parent_env):
     env = Env(parent=parent_env)
