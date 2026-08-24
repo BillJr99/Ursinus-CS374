@@ -368,36 +368,61 @@ TERMINALS = {"+", "*", "(", ")", "num"}
 def is_terminal(sym):
     return sym in TERMINALS
 
-def expand(form, grammar, leftmost=True):
-    """Yield each step of a leftmost (or rightmost) derivation for `form`."""
-    try:
-        idx_fn = next if leftmost else lambda it: list(it)[-1]  # pick position
-        while any(not is_terminal(s) for s in form):
-            # Find the nonterminal to expand
-            positions = [i for i, s in enumerate(form) if not is_terminal(s)]
-            idx = positions[0] if leftmost else positions[-1]
-            sym = form[idx]
-            # Use the FIRST production (just to pick one derivation path)
-            rhs = grammar[sym][0]
-            form = form[:idx] + rhs + form[idx+1:]
-            yield list(form)
-            if len(form) > 30:   # safety: stop runaway expansions
-                yield ["... (truncated)"]
-                return
-    except Exception as e:
-        print(f"[derivation:expand] {e}")
-        import traceback; traceback.print_exc()
+# A derivation has to derive a SPECIFIC string. Blindly taking each rule's
+# first alternative runs straight into E -> E + T, which is left-recursive:
+# it rewrites E forever and never consumes input. So parse the string once,
+# then read both derivations off the resulting tree.
 
-def show_derivation(start, grammar, label):
-    print(f"-- {label} derivation from {start} --")
-    form = [start]
-    print("  " + " ".join(form))
-    for step in expand(form, grammar, leftmost=(label=="Leftmost")):
-        print("  " + " ".join(step))
-    print()
+def parse(tokens):
+    """Recursive descent over the layered grammar. Returns a labelled tree."""
+    pos = 0
+    def peek():   return tokens[pos] if pos < len(tokens) else None
+    def eat(t):
+        nonlocal pos
+        assert peek() == t, f"expected {t!r}, saw {peek()!r}"
+        pos += 1
+    def E():
+        node = ("E", [T()])
+        while peek() == "+":
+            eat("+"); node = ("E", [node, "+", T()])
+        return node
+    def T():
+        node = ("T", [F()])
+        while peek() == "*":
+            eat("*"); node = ("T", [node, "*", F()])
+        return node
+    def F():
+        if peek() == "(":
+            eat("("); inner = E(); eat(")")
+            return ("F", ["(", inner, ")"])
+        eat("num")
+        return ("F", ["num"])
+    tree = E()
+    assert pos == len(tokens), f"trailing input at {pos}"
+    return tree
 
-show_derivation("E", GRAMMAR, "Leftmost")
-show_derivation("E", GRAMMAR, "Rightmost")
+def derivation(tree, leftmost=True):
+    """Expand one nonterminal per step, choosing the production the tree used."""
+    form = [tree]
+    steps = [[n[0] if isinstance(n, tuple) else n for n in form]]
+    while True:
+        idxs = [i for i, n in enumerate(form) if isinstance(n, tuple)]
+        if not idxs:
+            break
+        i = idxs[0] if leftmost else idxs[-1]
+        form = form[:i] + list(form[i][1]) + form[i+1:]
+        steps.append([n[0] if isinstance(n, tuple) else n for n in form])
+    return steps
+
+tokens = ["num", "+", "num", "*", "num"]
+tree = parse(tokens)
+
+for label in ("Leftmost", "Rightmost"):
+    steps = derivation(tree, leftmost=(label == "Leftmost"))
+    print(f"-- {label} derivation of  num + num * num --")
+    for i, form in enumerate(steps):
+        print(f"  {'   ' if i == 0 else '=> '}{' '.join(form)}")
+    print(f"  {len(steps) - 1} steps, final string: {' '.join(steps[-1])}\n")
 ```
 
 ### Critical Thinking Questions
@@ -446,13 +471,15 @@ def gen_trees(sym, depth=0, max_depth=4):
         import traceback; traceback.print_exc()
 
 def leaves(tree):
-    """Collect the leaf terminals in left-to-right order."""
+    """Terminals in left-to-right order, skipping the operator slot.
+
+    Nodes are (op, left, right), so iterating over the whole tuple would
+    count the operator as a leaf and nothing would ever match the target.
+    """
     if not isinstance(tree, tuple):
         return [tree]
-    result = []
-    for child in tree:
-        result.extend(leaves(child))
-    return result
+    _op, left, right = tree
+    return leaves(left) + leaves(right)
 
 def trees_for(target_leaves, sym="E", max_depth=4):
     """Return all distinct trees whose leaves match target_leaves."""
