@@ -223,11 +223,77 @@ pretty(tree2)
 
 > **CTQ 1.4** The two trees have the same nodes but different shapes.  Which one evaluates to 20 and which to 14?  Verify by hand.
 
+### Reading the Code
+
+- Each node type is a `@dataclass`, so `BinOp('+', l, r)` gives you `.op`, `.left`,
+  and `.right` by name rather than by index.  That is the entire difference from a
+  tuple, and it is why `repr` on a dataclass reads like the tree it represents.
+- `pretty` is the **tree walk**, and it has the shape every later pass will have:
+  one `case` per node type, a recursive call per child, and a base case at the
+  leaves.  Printing, evaluating, type checking, and compiling are all this function
+  with the body changed.
+- The indentation argument is threaded down the recursion rather than tracked in a
+  global.  That is what makes the walk reentrant and, later, what makes an
+  evaluator's environment behave correctly under nesting.
+- Notice what `pretty` never sees: parentheses and grammar nonterminals.  They were
+  consumed by the parser and left no node behind.  Their entire effect survives as
+  the *shape* of what `pretty` is printing.
+
+### Critical Thinking Questions
+
 > **CTQ 1.5** `pretty` dispatches on node type and recurses on children.  Name the two or three lines you would change to make it *evaluate* instead of print.  You have just designed the interpreter of the *Tree-Walking Interpretation* activity.
 
 > **CTQ 1.6** The recursion visits children before finishing the parent's subtree.  For evaluation, must children be processed before or after the parent's operation?  Which traversal order is that (pre-order, in-order, or post-order)?
 
 > **Watch out!**  The `case _:` arm in `pretty` is a safety net, but in a real interpreter it is a bug waiting to happen.  If you add a new node type (say, `FunDef`) but forget to add a corresponding `case FunDef(...):` arm, Python will silently fall through to `Unknown: ...` instead of raising an error.  Every time you add a new AST node, immediately add a handler for it in *every* tree-walking function: `pretty`, `count_nodes`, `collect_vars`, `constant_fold`, and especially the evaluator.
+
+### Try It Yourself
+
+Add a node type and watch the silent-fallthrough bug happen to you, on purpose.
+
+```python
+from dataclasses import dataclass
+from typing import Any, List
+
+@dataclass
+class Num:     value: float
+@dataclass
+class Var:     name: str
+@dataclass
+class BinOp:   op: str; left: Any; right: Any
+@dataclass
+class Call:    fn: str; args: List[Any]      # <-- the NEW node type
+
+def pretty(node, indent=0):
+    pad = "  " * indent
+    match node:
+        case Num(value=v):
+            print(f"{pad}Num({v})")
+        case Var(name=n):
+            print(f"{pad}Var({n})")
+        case BinOp(op=o, left=l, right=r):
+            print(f"{pad}BinOp({o})")
+            pretty(l, indent + 1)
+            pretty(r, indent + 1)
+        # TODO: add a `case Call(fn=f, args=a):` arm that prints the function
+        #       name and then recurses on every argument.
+        case _:
+            print(f"{pad}Unknown: {node}")
+
+tree = BinOp("+", Num(1), Call("max", [Num(2), BinOp("*", Num(3), Var("x"))]))
+
+print("Before you add the Call arm:")
+pretty(tree)
+print()
+print("Notice what went wrong: the whole Call SUBTREE vanished into one")
+print("'Unknown' line. The multiplication and the variable inside it were")
+print("never visited. A missing case does not raise; it silently truncates.")
+print()
+print("Now add the arm and rerun. Every node should appear.")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output before your edit: one `Unknown:` line swallowing three nodes.  After: the full tree, six nodes deep.  Remember this the next time an evaluator "works" but quietly ignores a construct.
 
 ---
 
@@ -444,9 +510,187 @@ pretty(tree)
 ---
 
 
-> **Your first optimizer, constant folding as a tree transformation, moved to the tutorial shelf:** [From AST Back to Code](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-ast-to-code.md).  It is the natural warm-up for that tutorial's `unparse` work.
+## Model 4: Your First Optimizer, Constant Folding
 
-# Part III: The `unparse` Round-Trip
+Every walk so far has *read* the tree.  A walk can also **rewrite** it, returning a
+new tree instead of a value.  That is what a compiler optimization is, and the
+simplest one is **constant folding**: wherever both children of an operator are
+already known numbers, do the arithmetic now and replace the whole subtree with
+its answer.
+
+### Examples: Fold It by Hand First
+
+Take `2 * 3 + x * (4 + 1)` and fold it on paper, innermost first.  Fill in the
+node counts before you run anything:
+
+| Pass | Tree | Nodes |
+|------|------|-------|
+| original | `BinOp(+, BinOp(*, 2, 3), BinOp(*, x, BinOp(+, 4, 1)))` | 9 |
+| fold `2*3` | `BinOp(+, 6, BinOp(*, x, BinOp(+, 4, 1)))` | ? |
+| fold `4+1` | `BinOp(+, 6, BinOp(*, x, 5))` | ? |
+| anything left? | `x` is not a constant, so `x * 5` stays | ? |
+
+Two questions to settle before looking at code.  Does folding ever need a *second*
+pass over the tree?  And is `x * 0` foldable to `0`?  Argue both, then check.
+
+```python
+from dataclasses import dataclass
+from typing import Any
+
+@dataclass
+class Num:   value: float
+@dataclass
+class Var:   name: str
+@dataclass
+class BinOp: op: str; left: Any; right: Any
+
+def show(node):
+    match node:
+        case Num(value=v):                return str(int(v) if v == int(v) else v)
+        case Var(name=n):                 return n
+        case BinOp(op=o, left=l, right=r): return f"({show(l)} {o} {show(r)})"
+
+def size(node):
+    match node:
+        case BinOp(left=l, right=r): return 1 + size(l) + size(r)
+        case _:                      return 1
+
+OPS = {"+": lambda a, b: a + b, "-": lambda a, b: a - b,
+       "*": lambda a, b: a * b, "/": lambda a, b: a / b}
+
+def fold(node):
+    """Rewrite the tree, returning a NEW tree with constant subtrees collapsed."""
+    match node:
+        case BinOp(op=o, left=l, right=r):
+            l, r = fold(l), fold(r)              # children first: bottom-up
+            if isinstance(l, Num) and isinstance(r, Num):
+                if o == "/" and r.value == 0:
+                    return BinOp(o, l, r)        # refuse: leave the error for runtime
+                return Num(OPS[o](l.value, r.value))
+            return BinOp(o, l, r)
+        case _:
+            return node
+
+examples = [
+    BinOp("+", BinOp("*", Num(2), Num(3)),
+               BinOp("*", Var("x"), BinOp("+", Num(4), Num(1)))),
+    BinOp("*", BinOp("+", Num(1), Num(2)), BinOp("-", Num(10), Num(4))),
+    BinOp("+", Var("y"), Var("z")),
+    BinOp("/", Num(1), Num(0)),
+]
+
+print(f"  {'before':34} {'after':22} {'nodes':>12}")
+for tree in examples:
+    folded = fold(tree)
+    before, after = size(tree), size(folded)
+    pct = 100 * (before - after) / before
+    print(f"  {show(tree):34} {show(folded):22} {before:2} -> {after:2}  ({pct:4.0f}% gone)")
+
+print("\n=== Does folding need a second pass? ===")
+deep = BinOp("+", Num(1), BinOp("+", Num(2), BinOp("+", Num(3), Num(4))))
+print(f"  {show(deep)}")
+once = fold(deep)
+print(f"  after one pass:  {show(once)}  (nodes {size(deep)} -> {size(once)})")
+twice = fold(once)
+print(f"  after two passes: {show(twice)}")
+print("  Because fold() recurses into the children BEFORE testing the parent,")
+print("  one bottom-up pass already reaches a fixed point here.")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- `fold` returns a **tree**, not a number.  That single difference turns a read-only
+  analysis into a transformation, and it is the whole idea behind a compiler pass.
+- The line `l, r = fold(l), fold(r)` comes *before* the constant test.  Folding the
+  children first is what makes one bottom-up pass sufficient: by the time the parent
+  is examined, its children are already as folded as they will get.
+- The division guard refuses to fold `1 / 0`.  An optimizer must never turn a
+  program that *would have* raised at runtime into one that fails at compile time,
+  or vice versa.  Preserving observable behavior is the rule every optimization
+  obeys.
+- `Var` falls to `case _:` and is returned unchanged.  Anything the optimizer does
+  not understand, it must leave alone.
+
+> **Watch out!**  It is tempting to add algebraic rules like `x * 0 -> 0` or
+> `x + 0 -> x`.  Be careful: `x * 0` is only `0` if evaluating `x` has no side
+> effects and cannot raise.  In a language where `x` might be a function call, that
+> rewrite changes what the program does.  Real optimizers gate these rules behind
+> an effects analysis, which is why the safe fold above only touches subtrees that
+> are *already* literal numbers.
+
+### Critical Thinking Questions
+
+> **CTQ 3.3** In the first example, folding removed a third of the nodes and the
+> variable `x` prevented more.  What property of a subtree makes it foldable, stated
+> in one sentence?
+
+> **CTQ 3.4** `fold` recurses into children before testing the parent.  Rewrite that
+> order in your head, testing the parent first, and give a tree where the naive order
+> misses a fold that the bottom-up order catches.
+
+> **CTQ 3.5** The division guard leaves `1 / 0` in the tree.  Argue the other side:
+> what would be *good* about reporting the division by zero at compile time, and what
+> language design decision does that choice belong to?
+
+### Try It Yourself
+
+Extend the optimizer with one more rewrite and check that you have not broken anything.
+
+```python
+from dataclasses import dataclass
+from typing import Any
+
+@dataclass
+class Num:   value: float
+@dataclass
+class Var:   name: str
+@dataclass
+class BinOp: op: str; left: Any; right: Any
+
+def show(node):
+    match node:
+        case Num(value=v):                 return str(int(v) if v == int(v) else v)
+        case Var(name=n):                  return n
+        case BinOp(op=o, left=l, right=r): return f"({show(l)} {o} {show(r)})"
+
+OPS = {"+": lambda a, b: a + b, "-": lambda a, b: a - b,
+       "*": lambda a, b: a * b, "/": lambda a, b: a / b}
+
+def fold(node):
+    match node:
+        case BinOp(op=o, left=l, right=r):
+            l, r = fold(l), fold(r)
+            if isinstance(l, Num) and isinstance(r, Num):
+                if o == "/" and r.value == 0:
+                    return BinOp(o, l, r)
+                return Num(OPS[o](l.value, r.value))
+            # TODO 1: add the identity rules  x + 0 -> x  and  0 + x -> x
+            # TODO 2: add  x * 1 -> x  and  1 * x -> x
+            # TODO 3: decide about x * 0 -> 0. Read the Watch out! above first,
+            #         then either implement it or write down why you refused.
+            return BinOp(o, l, r)
+        case _:
+            return node
+
+cases = [
+    BinOp("+", Var("x"), Num(0)),
+    BinOp("*", Num(1), Var("y")),
+    BinOp("*", Var("z"), Num(0)),
+    BinOp("+", BinOp("*", Var("a"), Num(1)), Num(0)),
+]
+for tree in cases:
+    print(f"  {show(tree):22} -> {show(fold(tree))}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output once TODOs 1 and 2 are done: the first two collapse to `x` and `y`,
+and the fourth collapses all the way to `a`.  What you do with the third is a design
+decision you should be able to defend.
+
+---
+
+# Part IV: The `unparse` Round-Trip
 
 ## 3.  Back to Source
 
@@ -543,7 +787,7 @@ Run `import ast; print(ast.dump(ast.parse("2 + 3 * 4")))` in Python.  Compare Py
 
 ---
 
-# Part IV: Expression Trees in Practice, Adapted Examples
+# Part V: Expression Trees in Practice, Adapted Examples
 
 These models adapt code from *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).  The adapted example rewrites Allison's binary-tree traversal as a typed `ExprNode` dataclass, connecting preorder/inorder/postorder traversal directly to prefix/infix/postfix notation, the same connection your parser and evaluator rely on.
 
