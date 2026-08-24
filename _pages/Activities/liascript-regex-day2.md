@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Regular Expressions, Day 2: Practice
 
-Day 1 covered the three operators every regular expression is built from, and why the engine backtracks.  Today we put them to work in Python: `re` in five verbs, `finditer` as the lexer's best friend, and the boundary where regular expressions stop being enough and you need a grammar instead.
+Day 1 covered the three operators every regular expression is built from, and showed that all the convenient syntax is sugar over them.  Today we put them to work in Python: `re` in five verbs, how the engine actually searches when it has a choice, the master-alternation scanner that *is* your lexer, and the boundary where regular expressions stop being enough and you need a grammar instead.
 
 > This is the second of two sessions on this topic.  If you have not done Day 1, start there: [Regular Expressions](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-regex.md).
 
@@ -53,12 +53,49 @@ for m in re.finditer(r"order", text, flags=re.IGNORECASE):
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
+### Reading the Code
+
+- `re.search` returns a **match object** or `None`, which is why every use is guarded.  `m.group(1)` is the text captured by the first parenthesized group, not the whole match; `m.group(0)` is the whole match.
+- `re.findall` behaves differently depending on your pattern.  With no groups it returns whole matches; with exactly one group it returns *just that group*, which is why `r"#(\d+)"` yields bare numbers rather than `#`-prefixed ones.  With two or more groups it returns tuples.  This trips up everyone once.
+- `m.groups()` unpacks all captures at once, which is how the three-part date comes apart in one line.
+- `\b` in the redaction pattern is a **word boundary**: a zero-width assertion that matches a *position*, not a character.  Without it, `\d{5}` would happily match the first five digits of a longer number.
+- `finditer` yields match objects with `.start()` and `.end()`, so you learn *where* each match sits.  That is the difference between detecting text and tokenizing it, and it is why Model 3 is built on `finditer` rather than `findall`.
+
 ### Critical Thinking Questions
 
 4.  Predict, before running, what the redaction line prints.  What does `\b` (word boundary) contribute; what over-matches without it?
 5. `re.match` versus `re.search`: design a one-line experiment distinguishing them, run it, and state the rule.
 6.  The date pattern accepts `2026-99-99`.  Is that a defect of regular expressions, of this pattern, or of asking syntax to do semantics' job?  Where in a language pipeline would the 99th month be caught?
 7. `finditer` reports start and end offsets.  Write two sentences to your future self explaining why a *lexer* needs exactly this capability and not just `findall`.
+
+### Try It Yourself
+
+Find out for yourself how `findall` changes shape with the number of groups; this is the single most common `re` surprise.
+
+```python
+import re
+
+text = "CS374 meets TR, MATH-111 meets MWF, CS173 meets TR"
+
+experiments = [
+    (r"[A-Z]+-?\d+",              "no groups"),
+    (r"([A-Z]+)-?\d+",            "one group"),
+    (r"([A-Z]+)-?(\d+)",          "two groups"),
+    (r"(?:[A-Z]+)-?(\d+)",        "one capturing, one non-capturing"),
+]
+
+for pattern, label in experiments:
+    print(f"  {label:34} findall -> {re.findall(pattern, text)}")
+
+print("\nNow predict, then check: which of these would you use in a lexer,")
+print("where you need BOTH the full token text and its position?")
+
+# TODO: rewrite the last experiment with finditer and print, for each match,
+#       the full text (m.group(0)), the captured digits, and m.start().
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: four different shapes from four nearly identical patterns.  Write down the rule in one sentence; you will need it on the Lexer assignment.
 
 ---
 
@@ -112,6 +149,13 @@ Matching `a*ab` against `"aaab"`, the engine's first attempt lets `a*` consume a
 [(X)] The engine backtracks: `a*` gives back one character and the rest of the pattern is retried from there
 [( )] The engine raises an exception because the pattern is ambiguous
 
+### Reading the Code
+
+- `max_a` is the longest run of `a`s available, computed up front.  That is the *greedy maximum*: the most `a*` could possibly take.
+- `for k in range(max_a, -1, -1)` counts **downward**.  That descending loop is greed: try the longest take first, and only give characters back when forced.  A reluctant `a*?` would count upward from 0 instead, and that single change is the whole difference.
+- Each iteration of that loop is one **decision point revisited**.  The number of iterations before success is the amount of backtracking the engine did.
+- The final line checks our narration against `re.fullmatch`, so the trace is not just plausible; it agrees with the real engine on every input.
+
 ### Critical Thinking Questions
 
 8.  In the trace for `"aaab"`, how many characters does `a*` hold on its *first* attempt, and why that many?  State the general rule the engine follows when a greedy quantifier has a choice.
@@ -126,7 +170,172 @@ You have now seen how to match a single pattern; a real lexer must recognize *ma
 > **Watch out!**  Quantifiers like `*`, `+`, and `?` are **greedy by default**: they consume as many characters as possible while still allowing the overall pattern to match.  This is usually what you want in a lexer (match the longest token), but it can surprise you in other contexts.  Append `?` to make a quantifier **non-greedy** (reluctant): `.*?` matches as *few* characters as possible.  You will see this contrast demonstrated concretely in Model 3 (Greed).
 
 
-> **Named groups and the log-triage walkthrough moved to the shell tutorial.**  Both are in [The Shell for Language Development](https://www.billmongan.com/Ursinus-CS374/Tutorials/ShellForLanguageDev), which is required prep for this session; named groups are how each token type gets its own label in your lexer.
+## Model 3: One Pattern, Every Token: The Scanner
+
+Here is the payoff.  A lexer does not run one pattern at a time; it joins every
+token pattern into a single alternation with **named groups**, then walks the
+source once with `finditer`.  After each match, `m.lastgroup` tells you which
+alternative fired, which is exactly the token type.
+
+That is the whole scanner.  What follows is roughly the code you will write for
+the Lexer assignment.
+
+```python
+import re
+
+# Each entry is (TOKEN_NAME, pattern). ORDER MATTERS, see below.
+TOKEN_SPEC = [
+    ("FLOAT",   r"[0-9]+\.[0-9]+"),
+    ("INT",     r"[0-9]+"),
+    ("KEYWORD", r"\b(?:if|then|else|while|let)\b"),
+    ("IDENT",   r"[A-Za-z_][A-Za-z0-9_]*"),
+    ("LE",      r"<="),
+    ("LT",      r"<"),
+    ("OP",      r"[+\-*/=]"),
+    ("LPAREN",  r"\("),
+    ("RPAREN",  r"\)"),
+    ("NEWLINE", r"\n"),
+    ("SKIP",    r"[ \t]+"),
+    ("MISMATCH", r"."),          # anything else: an error, and we still report it
+]
+
+# Join them into ONE pattern, each alternative wearing its own name.
+MASTER = "|".join(f"(?P<{name}>{pat})" for name, pat in TOKEN_SPEC)
+
+def tokenize(source):
+    line = 1
+    for m in re.finditer(MASTER, source):
+        kind = m.lastgroup            # which alternative fired
+        text = m.group()
+        if kind == "NEWLINE":
+            line += 1
+            continue
+        if kind == "SKIP":
+            continue
+        if kind == "MISMATCH":
+            print(f"  line {line}: unexpected character {text!r}")
+            continue
+        yield (kind, text, line, m.start())
+
+src = "let x = 3.14\nif x <= 10 then y = x + 1\nlet bad = @"
+
+print("=== Tokens ===")
+for kind, text, line, pos in tokenize(src):
+    print(f"  line {line:2} col {pos:3}  {kind:8} {text!r}")
+
+print("\n=== Why the ORDER of TOKEN_SPEC matters ===")
+print("  FLOAT before INT:   ", end="")
+print([t[:2] for t in tokenize("3.14")])
+print("  if INT came first:  ", end="")
+BAD = "|".join(f"(?P<{n}>{p})" for n, p in
+               [("INT", r"[0-9]+"), ("FLOAT", r"[0-9]+\.[0-9]+"), ("MISMATCH", r".")])
+print([(m.lastgroup, m.group()) for m in re.finditer(BAD, "3.14")])
+print("  -> INT wins the '3', the dot becomes garbage, and 3.14 is destroyed.")
+
+print("\n  LE before LT:       ", end="")
+print([t[:2] for t in tokenize("x <= 10")])
+print("  if LT came first:   ", end="")
+BAD2 = "|".join(f"(?P<{n}>{p})" for n, p in
+                [("LT", r"<"), ("LE", r"<="), ("SKIP", r"[ \t]+"),
+                 ("IDENT", r"[A-Za-z_]\w*"), ("INT", r"[0-9]+"), ("MISMATCH", r".")])
+print([(m.lastgroup, m.group()) for m in re.finditer(BAD2, "x <= 10")
+       if m.lastgroup != "SKIP"])
+print("  -> '<=' is read as '<' then '=', two tokens instead of one.")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- `(?P<NAME>...)` is a **named** capture group.  Named groups are what make one
+  giant alternation usable: without them you would get a match and have no idea
+  which branch produced it.
+- `m.lastgroup` is the name of the last matched named group, which for a top-level
+  alternation is the alternative that fired.  Those two lines are the entire
+  dispatch mechanism of a lexer.
+- Python's alternation is **first-match, not longest-match**.  It tries the
+  alternatives left to right and takes the first that matches at that position.
+  That is why `FLOAT` must precede `INT` and `LE` must precede `LT`, and the last
+  two blocks of output show exactly what breaks when it does not.
+- `MISMATCH` with the pattern `.` is a catch-all placed last.  It guarantees the
+  scanner always makes progress and gives you a positioned error message instead
+  of a silent skip or an infinite loop.
+- `SKIP` deliberately matches whitespace and then throws it away.  Whitespace is
+  significant to the scanner (it separates tokens) and invisible to the parser.
+
+> **Watch out!**  `\b(?:if|then|else|while|let)\b` uses a *non-capturing* group
+> `(?:...)` inside a *named* group.  If you wrote `(if|else|while|let)` there, you
+> would introduce a second, anonymous capture inside `KEYWORD`, and `m.lastgroup`
+> would start reporting that inner group instead.  Inside a master pattern, every
+> group you do not need should be non-capturing.
+
+> **Watch out!**  Without the `\b` anchors, `KEYWORD` would match the `if` at the
+> start of the identifier `iffy`, and your lexer would emit `KEYWORD(if)` followed
+> by `IDENT(fy)`.  Word boundaries are what keep a keyword from eating the front of
+> a name.
+
+### Critical Thinking Questions
+
+12.  Move `IDENT` above `KEYWORD` in `TOKEN_SPEC` and predict what happens to the
+     word `if`.  Then reason about why most real lexers do the opposite: match
+     `IDENT` first and then check the matched text against a keyword *set*.
+13.  `MISMATCH` matches `.`, which does not match a newline.  Since `NEWLINE`
+     appears earlier in the list, does that matter here?  Construct an input where
+     the ordering of those two would matter.
+14.  The scanner reports `m.start()` as a column.  For a multi-line source, that
+     is an offset into the whole string, not a column within the line.  What would
+     you have to track to report true line-and-column positions, and why does every
+     compiler bother?
+15.  Compare this scanner to the DFA view coming in *Finite Automata*.  The regex
+     engine is doing something equivalent to running one machine per token type in
+     parallel and taking the first to accept.  What does that suggest about how a
+     production lexer generator like `flex` actually works?
+
+### Try It Yourself
+
+Extend the scanner with two token types your project needs, and break it on purpose.
+
+```python
+import re
+
+TOKEN_SPEC = [
+    ("FLOAT",    r"[0-9]+\.[0-9]+"),
+    ("INT",      r"[0-9]+"),
+    ("KEYWORD",  r"\b(?:if|then|else|while|let)\b"),
+    ("IDENT",    r"[A-Za-z_][A-Za-z0-9_]*"),
+    # TODO 1: add STRING, a double-quoted run with no internal quotes.
+    #         Where in this list must it go, and why?
+    # TODO 2: add COMMENT, a '#' to the end of the line.
+    #         Careful: it must not swallow the newline that follows it.
+    ("LE",       r"<="),
+    ("LT",       r"<"),
+    ("OP",       r"[+\-*/=]"),
+    ("NEWLINE",  r"\n"),
+    ("SKIP",     r"[ \t]+"),
+    ("MISMATCH", r"."),
+]
+MASTER = "|".join(f"(?P<{n}>{p})" for n, p in TOKEN_SPEC)
+
+def tokenize(source):
+    for m in re.finditer(MASTER, source):
+        if m.lastgroup in ("SKIP", "NEWLINE"):
+            continue
+        yield (m.lastgroup, m.group())
+
+src = 'let msg = "hello"   # a greeting\nlet n = 42'
+for kind, text in tokenize(src):
+    print(f"  {kind:9} {text!r}")
+
+print("\nExpected once both are added: STRING '\"hello\"' as ONE token,")
+print("the comment consumed and discarded, and 'let n = 42' still scanning.")
+print("If you see MISMATCH on a quote or a hash, your pattern is not reached.")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output before you edit: `"`, `hello`, `"` and `#` all arrive as separate
+`MISMATCH` or `IDENT` tokens.  After: one `STRING` token and no comment tokens at
+all.  Keep this `TOKEN_SPEC`; it is the starting point for the Lexer assignment.
+
+---
 
 ## 3.  Greed, and the Edge of the Regular World
 
