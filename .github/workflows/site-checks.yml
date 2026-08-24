@@ -55,6 +55,10 @@ jobs:
 
   build:
     name: Build with warnings as errors
+    # Deploy GitHub Pages already builds on a push to gh-pages, so building again
+    # here would be the same work twice. Skip it there and let the audit job,
+    # which runs everywhere and takes seconds, stay as the guard on direct pushes.
+    if: github.event_name != 'push' || github.ref != 'refs/heads/gh-pages'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
