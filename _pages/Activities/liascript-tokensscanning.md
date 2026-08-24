@@ -72,7 +72,14 @@ Tokenize by hand: `count2 = count2 + 12 >= limit`
 
 ## 2.  A Complete Tokenizer
 
-This lexer is the seed of your assignment and your project: a token specification as data, one master pattern, and a generator that yields typed tokens with positions.  Read it alongside the regex module's `finditer` discussion.
+You met the master-alternation trick in *Regular Expressions, Day 2*, where it was a
+demonstration that named groups let one pattern carry many alternatives.  Here it
+becomes the real thing: a token specification as data, one master pattern, and a
+generator that yields typed tokens **with positions**, plus an error path.  Positions
+and errors are what separate a regex demo from a lexer, and they are what the parser
+will need when it has to tell a student *where* their program went wrong.
+
+This is the seed of your Lexer assignment and of your project.
 
 ---
 
@@ -138,6 +145,94 @@ for tok in tokenize(code):
     print(tok)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- `TOKEN_SPEC` is **ordered**, and that order is the priority rule from Part I made
+  executable.  `KEYWORD` precedes `IDENT`, so `if` is a keyword; `GE`/`LE`/`EQ`/`NE`
+  precede `ASSIGN`, `GT`, and `LT`, so `>=` is one token rather than two.
+- `MASTER` joins every pattern into one alternation with named groups.  Python's
+  alternation is **first-match, not longest-match**, which is why maximal munch here
+  is achieved by ordering rather than by the engine measuring lengths for you.  Put
+  `LT` before `LE` and `<=` silently becomes two tokens.
+- `m.lastgroup` names the alternative that fired.  That single attribute is the
+  entire type-dispatch of the lexer.
+- `line` and `line_start` are the only mutable state.  `col` is computed as
+  `m.start() - line_start + 1`, which is why the column resets at every newline.
+  Track this yourself and you get error messages a human can act on.
+- `tokenize` is a **generator**: it yields tokens lazily instead of building a list.
+  The parser can therefore start work before the whole file is scanned, and a
+  syntax error can stop the scan early.
+- `MISMATCH` is last and matches `.`, so the scanner always makes progress and always
+  has something specific to complain about.
+
+> **Watch out!**  `NUMBER` uses `\d+(\.\d+)?`, which contains an *unnamed* capture
+> group.  It happens to work here because `m.lastgroup` reports the last *named*
+> group, but nesting an extra capture inside a named alternative is a habit that
+> will bite you: write `(?:\.\d+)?` instead, and keep every helper group
+> non-capturing.
+
+### Try It Yourself
+
+This `TOKEN_SPEC` is missing a token type your language needs.  Run the tests, watch
+what a missing pattern does to a perfectly reasonable line of source, then add it in
+the right place.
+
+```python
+import re
+from collections import namedtuple
+
+Token = namedtuple("Token", ["type", "lexeme", "line", "col"])
+
+TOKEN_SPEC = [
+    ("NUMBER",   r"\d+(?:\.\d+)?"),
+    ("KEYWORD",  r"\b(?:if|else|while|let|print)\b"),
+    ("IDENT",    r"[A-Za-z_][A-Za-z0-9_]*"),
+    # TODO 1: a STRING token, a double quote to the next double quote.
+    #         Where must it go in this list, and why does it matter?
+    ("GE", r">="), ("LE", r"<="), ("EQ", r"=="), ("NE", r"!="),
+    ("ASSIGN", r"="), ("GT", r">"), ("LT", r"<"),
+    ("PLUS", r"\+"), ("MINUS", r"-"), ("STAR", r"\*"), ("SLASH", r"/"),
+    ("LPAREN", r"\("), ("RPAREN", r"\)"),
+    ("SEMI", r";"), ("NEWLINE", r"\n"), ("SKIP", r"[ \t]+"),
+    ("COMMENT", r"#[^\n]*"),
+    ("MISMATCH", r"."),
+]
+MASTER = re.compile("|".join(f"(?P<{n}>{p})" for n, p in TOKEN_SPEC))
+
+def tokenize(source):
+    line, line_start = 1, 0
+    for m in MASTER.finditer(source):
+        kind, lexeme = m.lastgroup, m.group()
+        col = m.start() - line_start + 1
+        if kind == "NEWLINE":
+            line += 1; line_start = m.end()
+        elif kind in ("SKIP", "COMMENT"):
+            continue
+        elif kind == "MISMATCH":
+            yield Token("ERROR", lexeme, line, col)
+        else:
+            yield Token(kind, lexeme, line, col)
+
+CASES = [
+    ('let x = 1;',              "the baseline: should scan cleanly"),
+    ('let s = "hi there";',     "needs STRING; without it, watch it shatter"),
+    ('if x != 1 print x;',      "!= must stay one token"),
+    ('let n = 3.14;',           "a float is ONE number token"),
+]
+
+for src, note in CASES:
+    print(f"\n{src!r}   ({note})")
+    for t in tokenize(src):
+        flag = "   <-- ERROR" if t.type == "ERROR" else ""
+        print(f"    line {t.line} col {t.col:2}  {t.type:8} {t.lexeme!r}{flag}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output before your edit: the second case shatters, emitting `ERROR '"'`,
+then `IDENT 'hi'`, `IDENT 'there'`, then another `ERROR`.  After adding `STRING` in
+the right place, it is one token.  Keep this `TOKEN_SPEC`; the Lexer assignment
+starts from it.
 
 ---
 
