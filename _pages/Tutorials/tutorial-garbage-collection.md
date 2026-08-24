@@ -1,17 +1,23 @@
-<!--
-author:   William Mongan
-language: en
-narrator: US English Male
+---
+layout: tutorial
+permalink: /Tutorials/GarbageCollection
+title: "CS374: Garbage Collection, Memory Management from First Principles"
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-garbage-collection.md
+info:
+  coursenum: CS374
+  goals:
+    - "Implemented a simulated heap in Python (a dictionary from address to object) supporting allocation and deallocation"
+    - "Built a working reference-counting collector and demonstrated why it leaks cyclic structures"
+    - "Built a working mark-and-sweep collector with a gray/black worklist and verified it reclaims cycles"
+    - "Built a working Cheney copying collector and verified it compacts the live set into a clean semi-space"
+    - "Chosen and justified a GC strategy for the final project's GC extension based on the tradeoffs of each algorithm"
 
-import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
+tags:
+  - memory
+  - gc
+  - project-extension
 
-link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css/liascript-custom.css?v=2025-08-23-4
-        https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap
-
--->
-
+---
 # Tutorial: Garbage Collection, Memory Management from First Principles
 
 ## Learning Goals

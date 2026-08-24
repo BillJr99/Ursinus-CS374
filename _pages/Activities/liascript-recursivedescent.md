@@ -951,7 +951,7 @@ print("meaning * is evaluated first -- this is how precedence is encoded in the 
 
 ## Going Deeper (Optional Pointers)
 
-> **Going further:** the extra complete parsers that used to live here are best replaced by one polished pipeline: the dedicated tutorial [Build an Interpreter](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md) contains a complete recursive-descent parser (Stage 3) wired into a lexer and evaluator.  The error-*recovering* parser that reports several syntax errors in one run by synchronizing at statement boundaries is a self-study topic; keywords: "panic-mode error recovery," "synchronization points," and the "Synchronizing a recursive descent parser" section of *Crafting Interpreters*, and makes a strong Parser-assignment stretch goal.
+> **Going further:** the extra complete parsers that used to live here are best replaced by one polished pipeline: the dedicated tutorial [Build an Interpreter](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BuildAnInterpreter) contains a complete recursive-descent parser (Stage 3) wired into a lexer and evaluator.  The error-*recovering* parser that reports several syntax errors in one run by synchronizing at statement boundaries is a self-study topic; keywords: "panic-mode error recovery," "synchronization points," and the "Synchronizing a recursive descent parser" section of *Crafting Interpreters*, and makes a strong Parser-assignment stretch goal.
 
 ---
 

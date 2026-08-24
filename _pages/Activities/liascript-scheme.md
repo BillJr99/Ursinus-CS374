@@ -524,7 +524,7 @@ In your notebook: Scheme deletes nearly all syntax and gains the ability to trea
 
 ## Going Deeper (Optional Pointers)
 
-> **Going further:** the material that used to live here, the metacircular evaluator (Scheme in Python): s-expression parsing, environment chains, the evaluator core, the global environment, and tail-call optimization via trampoline, now lives as the advanced "Metacircular Scheme Evaluator" section of the dedicated tutorial: [Build a Complete Interpreter in Python: Step by Step](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md).  The Interpreter assignment has you build the same architecture for the Mini language.  Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here, the metacircular evaluator (Scheme in Python): s-expression parsing, environment chains, the evaluator core, the global environment, and tail-call optimization via trampoline, now lives as the advanced "Metacircular Scheme Evaluator" section of the dedicated tutorial: [Build a Complete Interpreter in Python: Step by Step](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BuildAnInterpreter).  The Interpreter assignment has you build the same architecture for the Mini language.  Explore it when your project or curiosity calls for it.
 
 ### If you explore the evaluator: reflection prompts
 

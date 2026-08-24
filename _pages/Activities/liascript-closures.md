@@ -196,7 +196,7 @@ demo_dynamic()  # prints "demo", dynamic scope: show sees caller's x
 ---
 
 
-> **The implementation half is in the interpreter tutorial:** [Build an Interpreter](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md): twenty lines to first-class functions, and why closures are what make recursion work.
+> **The implementation half is in the interpreter tutorial:** [Build an Interpreter](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BuildAnInterpreter): twenty lines to first-class functions, and why closures are what make recursion work.
 
 # Part III: The Loop-Variable Trap
 
@@ -434,8 +434,8 @@ A closure carries its context everywhere, so it always means what it meant at ho
 
 The core lesson above stands on its own.  Two full self-paced tutorials extend today's mechanism into runtime territory that feeds the Interpreter assignment's extensions and the team project:
 
-- [Coroutines and Generators: Pausable Computation](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-coroutines-generators.md): how `yield` freezes a stack frame, how `async`/`await` desugars to a state machine, and how to add generator objects to your interpreter
-- [Error Handling: From Return Codes to Algebraic Effects](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-error-handling.md): return codes, exceptions, Option/Maybe, Result/Either, and designing error propagation for your interpreter
+- [Coroutines and Generators: Pausable Computation](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CoroutinesAndGenerators): how `yield` freezes a stack frame, how `async`/`await` desugars to a state machine, and how to add generator objects to your interpreter
+- [Error Handling: From Return Codes to Algebraic Effects](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ErrorHandling): return codes, exceptions, Option/Maybe, Result/Either, and designing error propagation for your interpreter
 
 ---
 

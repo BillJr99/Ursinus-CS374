@@ -390,7 +390,7 @@ In your notebook: recall the language feature that most confused you as a beginn
 
 ## Going Deeper (Optional Pointers)
 
-> **Going further:** the material that used to live here (logic programming with Prolog: family-tree facts and rules, Robinson unification, SLD resolution and backtracking, bidirectional list predicates, a complete mini-Prolog interpreter in Python, and the miniKanren connection) is covered in depth in the dedicated guide: [Prolog in the Browser with SWISH](https://www.billmongan.com/Ursinus-CS374/Tutorials/Prolog), which backs **Direction F** of the Functional assignment (the mini-Prolog interpreter build now lives there as an advanced section).  Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here (logic programming with Prolog: family-tree facts and rules, Robinson unification, SLD resolution and backtracking, bidirectional list predicates, a complete mini-Prolog interpreter in Python, and the miniKanren connection) is covered in depth in the dedicated guide: [Prolog in the Browser with SWISH](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/Prolog), which backs **Direction F** of the Functional assignment (the mini-Prolog interpreter build now lives there as an advanced section).  Explore it when your project or curiosity calls for it.
 
 ---
 

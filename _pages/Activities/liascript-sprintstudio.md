@@ -50,7 +50,7 @@ Each team gets two minutes at the board to answer exactly four questions.  What 
 ---
 
 
-> **Studio tooling moved:** sprint velocity and the red-green discipline are in [CI and TDD for Interpreters](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-ci-tdd-for-interpreters.md).
+> **Studio tooling moved:** sprint velocity and the red-green discipline are in [CI and TDD for Interpreters](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CITDDForInterpreters).
 
 ## 2.  Build Time
 

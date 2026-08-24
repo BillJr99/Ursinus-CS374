@@ -1,14 +1,23 @@
-<!--
-author:   CS374 Course Staff
-email:    
-version:  0.0.1
-language: en
-narrator: US English Female
-comment:  From source to executable, the complete compile-link pipeline, ELF/EXE format, object files, and how interpreted languages differ.
-import:   https://raw.githubusercontent.com/liaScript/mermaid_template/master/README.md
-link:     https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css
--->
+---
+layout: tutorial
+permalink: /Tutorials/CompilingAndLinking
+title: "CS374: From Source to Executable: Compiling, Linking, and the ELF Format"
 
+info:
+  coursenum: CS374
+  goals:
+    - "Traced a C source file through all four pipeline stages (preprocessor, compiler, assembler, linker) using `gcc -save-temps` and inspected each intermediate artifact"
+    - "Read an ELF binary's section headers with `readelf` and identified the `.text`, `.data`, `.rodata`, and `.bss` sections"
+    - "Explained the difference between static and dynamic linking and predicted which symbols will be unresolved at compile time vs. resolved at load time"
+    - "Contrasted the compiled pipeline with how interpreted languages (Python, JavaScript) execute source code at runtime"
+    - "Applied this knowledge to explain why a bytecode VM sits between a tree-walking interpreter and a native compiler in the execution-strategy spectrum"
+
+tags:
+  - compiling
+  - linking
+  - elf
+
+---
 # From Source to Executable: Compiling, Linking, and the ELF Format
 
 ## Learning Goals

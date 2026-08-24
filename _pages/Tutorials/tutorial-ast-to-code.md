@@ -1,20 +1,20 @@
-<!--
-author:   William Mongan
-language: en
-narrator: US English Male
+---
+layout: tutorial
+permalink: /Tutorials/ASTToCode
+title: "CS374: From AST to Code: Visitors and Transpilers"
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-ast-to-code.md
+info:
+  coursenum: CS374
 
-import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
+tags:
+  - ast
+  - codegen
+  - visitor
 
-link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css/liascript-custom.css?v=2025-08-23-4
-        https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap
-
--->
-
+---
 # Tutorial: From AST to Code: Visitors and Transpilers
 
-An AST is more than the parser's output, it is a value your programs can analyze, rewrite, and translate.  This tutorial has two halves.  **Part 1** studies *expression-oriented* language design: what changes when `if`, `let`, and sequencing are expressions that produce values rather than statements that perform actions.  **Part 2** builds on that foundation to cross the interpreter-to-compiler bridge: the **Visitor pattern** for AST traversals, three working **transpilers** (to Python, JavaScript, and Haskell), and **source maps** that connect generated code back to its source.  **Prerequisites:** the *Abstract Syntax Trees* activity (node classes, `pretty`, constant folding); comfort writing Python classes.  The stack-machine/bytecode branch of the same bridge lives in the companion tutorial [Build a Bytecode VM](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md).
+An AST is more than the parser's output, it is a value your programs can analyze, rewrite, and translate.  This tutorial has two halves.  **Part 1** studies *expression-oriented* language design: what changes when `if`, `let`, and sequencing are expressions that produce values rather than statements that perform actions.  **Part 2** builds on that foundation to cross the interpreter-to-compiler bridge: the **Visitor pattern** for AST traversals, three working **transpilers** (to Python, JavaScript, and Haskell), and **source maps** that connect generated code back to its source.  **Prerequisites:** the *Abstract Syntax Trees* activity (node classes, `pretty`, constant folding); comfort writing Python classes.  The stack-machine/bytecode branch of the same bridge lives in the companion tutorial [Build a Bytecode VM](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BytecodeVM).
 
 ---
 
@@ -87,7 +87,6 @@ def iif(cond, then_val, else_val):
 result = iif(5 > 3, "yes", "no")
 print(f"iif result: {result}")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 #### Critical Thinking Questions
 
@@ -149,7 +148,6 @@ data = [1, 5, 3, 8, 2, 9, 4]
 result3 = [y for x in data if (y := x * 2) > 8]
 print(f"doubled values > 8: {result3}")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 #### Critical Thinking Questions
 
@@ -210,7 +208,6 @@ print(f"Final value: {value}")
 squares = [x**2 for x in range(1, 6)]
 print(f"Squares: {squares}")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 #### Critical Thinking Questions
 
@@ -320,7 +317,6 @@ program2 = LetExpr(
 )
 print(f"let y=x*2 in if y>10 then y else 0 where x=7: {eval_expr(program2, env)}")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 #### Critical Thinking Questions
 
@@ -392,7 +388,6 @@ answer = lazy_if(
 )
 print(f"Result: {answer}")  # Only prints "evaluating THEN"
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 #### Critical Thinking Questions
 
@@ -410,37 +405,61 @@ print(f"Result: {answer}")  # Only prints "evaluating THEN"
 
 **Question 1:** In a functional language where `if` is an expression, what must be true?
 
-[( )] Only the condition is evaluated; neither branch is evaluated until explicitly called
-[(X)] Both branches exist syntactically, but only one is evaluated based on the condition
-[( )] Both branches are always evaluated eagerly, and the result is selected after
-[( )] The condition and both branches are always evaluated to check for errors
+- Only the condition is evaluated; neither branch is evaluated until explicitly called
+- Both branches exist syntactically, but only one is evaluated based on the condition
+- Both branches are always evaluated eagerly, and the result is selected after
+- The condition and both branches are always evaluated to check for errors
+
+<details><summary>Answer</summary>
+
+Both branches exist syntactically, but only one is evaluated based on the condition
+
+</details>
 
 ---
 
 **Question 2:** In Scheme, `let` binds all variables simultaneously using the *outer* environment. `letrec` allows bindings to refer to each other.  Which of the following **requires** `letrec` and cannot be expressed with plain `let`?
 
-[( )] `(let ((x 1) (y 2)) (+ x y))`
-[( )] `(let ((x 5)) (let ((y x)) y))`
-[(X)] `(letrec ((even? (lambda (n) (if (= n 0) #t (odd? (- n 1))))) (odd? (lambda (n) (if (= n 0) #f (even? (- n 1)))))) (even? 4))`
-[( )] `(let ((f (lambda (x) (* x 2)))) (f 5))`
+- `(let ((x 1) (y 2)) (+ x y))`
+- `(let ((x 5)) (let ((y x)) y))`
+- `(letrec ((even? (lambda (n) (if (= n 0) #t (odd? (- n 1))))) (odd? (lambda (n) (if (= n 0) #f (even? (- n 1)))))) (even? 4))`
+- `(let ((f (lambda (x) (* x 2)))) (f 5))`
+
+<details><summary>Answer</summary>
+
+`(letrec ((even? (lambda (n) (if (= n 0) #t (odd? (- n 1))))) (odd? (lambda (n) (if (= n 0) #f (even? (- n 1)))))) (even? 4))`
+
+</details>
 
 ---
 
 **Question 3:** Consider the `BinOp` case in the expression evaluator from Model 4.  Both `eval_expr(expr.left, env)` and `eval_expr(expr.right, env)` are called before performing the operation.  What does this mean about the evaluator's strategy for `BinOp`?
 
-[( )] It uses lazy evaluation; operands are evaluated only when needed
-[(X)] It uses strict (eager) evaluation: both operands are always evaluated before the operation
-[( )] It uses short-circuit evaluation: the right operand may not be evaluated
-[( )] It uses call-by-name: operands are substituted unevaluated into the operation
+- It uses lazy evaluation; operands are evaluated only when needed
+- It uses strict (eager) evaluation: both operands are always evaluated before the operation
+- It uses short-circuit evaluation: the right operand may not be evaluated
+- It uses call-by-name: operands are substituted unevaluated into the operation
+
+<details><summary>Answer</summary>
+
+It uses strict (eager) evaluation: both operands are always evaluated before the operation
+
+</details>
 
 ---
 
 **Question 4:** Python's `or` operator short-circuits.  Given `result = f() or g()`, when is `g()` **not** called?
 
-[( )] When `g()` would raise an exception
-[( )] When both `f()` and `g()` return `True`
-[(X)] When `f()` returns a truthy value
-[( )] When `f()` returns `False` or `None`
+- When `g()` would raise an exception
+- When both `f()` and `g()` return `True`
+- When `f()` returns a truthy value
+- When `f()` returns `False` or `None`
+
+<details><summary>Answer</summary>
+
+When `f()` returns a truthy value
+
+</details>
 
 ---
 
@@ -520,7 +539,7 @@ By the end of this tutorial, you will be able to:
 
 Your tree-walking interpreter evaluates an AST **at runtime**: it visits each node and immediately computes a value.  A **compiler** walks the same AST but, instead of computing values, **emits instructions**; for a virtual machine, a real CPU, or another programming language.  A **transpiler** (source-to-source compiler) emits valid code in a different high-level language.  All three share the same frontend (lexer, parser, AST builder); they diverge only in what the AST traversal produces.
 
-In this part we build the transpiler half of the bridge: starting from the interpreter you have already built, we add **transpilers** that emit valid Python, valid JavaScript, and valid Haskell.  You will be able to run programs in your language by transpiling them: without writing a new frontend.  (The bytecode/stack-machine half is the [Build a Bytecode VM](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md) tutorial.)
+In this part we build the transpiler half of the bridge: starting from the interpreter you have already built, we add **transpilers** that emit valid Python, valid JavaScript, and valid Haskell.  You will be able to run programs in your language by transpiling them: without writing a new frontend.  (The bytecode/stack-machine half is the [Build a Bytecode VM](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BytecodeVM) tutorial.)
 
 ---
 
@@ -548,7 +567,6 @@ class Call:
 
 print("AST nodes loaded.")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -632,7 +650,6 @@ interp = Interpreter()
 ast = Let("x", Num(3), BinOp("+", BinOp("*", Var("x"), Num(2)), Num(1)))
 print("Interpreter result:", interp.visit(ast))   # 7
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!** `getattr(self, method_name, self.generic_visit)` dispatches to a method named `visit_ClassName`.  This means the method name is determined by the Python class name of the AST node, not by any tag you set.  If you rename `BinOp` to `BinaryOperation`, the dispatch will break silently, `generic_visit` will be called instead, likely raising a confusing error.  Always keep AST class names stable once you build visitors over them.
 
@@ -719,7 +736,6 @@ print("Python code:", py_code)
 result   = eval(py_code)
 print("Evaluated: ", result)   # should be 7
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -801,7 +817,6 @@ print("JavaScript code:", js_code)
 # Output: ((x) => ((x * 2) + 1))(3)
 # Paste into browser console to verify: returns 7
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -877,23 +892,28 @@ print("Haskell expression:", hs_code)
 # Output: (let x = 3 in ((x * 2) + 1))
 # Load in GHCi to verify: returns 7
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
 A transpiler differs from an interpreter in which fundamental way?
 
-[(X)] A transpiler emits code in a target language rather than executing the program; both traverse the same AST but produce different output from each node.
-[( )] A transpiler performs type-checking at compile time while an interpreter does not.
-[( )] A transpiler uses a bottom-up (LR) parser while an interpreter uses a top-down (LL) parser.
-[( )] A transpiler is always faster to execute than an interpreter because it generates native code.
+- A transpiler emits code in a target language rather than executing the program; both traverse the same AST but produce different output from each node.
+- A transpiler performs type-checking at compile time while an interpreter does not.
+- A transpiler uses a bottom-up (LR) parser while an interpreter uses a top-down (LL) parser.
+- A transpiler is always faster to execute than an interpreter because it generates native code.
+
+<details><summary>Answer</summary>
+
+A transpiler emits code in a target language rather than executing the program; both traverse the same AST but produce different output from each node.
+
+</details>
 
 ---
 
 
 ---
 
-> **The third backend; a bytecode compiler and virtual stack machine, ** is developed step by step in the companion tutorial [Build a Bytecode VM](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md).  The source-map section below uses a small, self-contained bytecode compiler for concreteness; you do not need the full VM tutorial to follow it.
+> **The third backend; a bytecode compiler and virtual stack machine, ** is developed step by step in the companion tutorial [Build a Bytecode VM](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BytecodeVM).  The source-map section below uses a small, self-contained bytecode compiler for concreteness; you do not need the full VM tutorial to follow it.
 
 ---
 
@@ -988,7 +1008,6 @@ print("\nSource map excerpt (instruction index -> operation):")
 for idx, op in tc.source_map[:8]:
     print(f"  {idx}: {op}")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -1101,7 +1120,6 @@ for t in tests:
     folded = constant_fold(t)
     print(f"{pretty(t):30} -> {pretty(folded)}")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!**  Constant folding is only safe for *pure* sub-expressions; ones with no side effects.  It is tempting to fold `f() + 0` to `f()` because "adding zero does nothing," but that reasoning only applies when `f()` has no side effects.  If `f()` prints to the screen or modifies a global, folding away the `+ 0` is correct *for the arithmetic* but changes the program's observable behavior in other ways.  When in doubt, only fold sub-trees made entirely of `Num`, `Bool`, and `Str` nodes with no `Call` or `Var` nodes anywhere inside.
 
@@ -1115,19 +1133,31 @@ for t in tests:
 
 After upgrading the parser to emit AST nodes, the team's old torture tests still pass with identical tree shapes.  The best explanation is:
 
-[(X)] The grammar and parsing logic determine the shape; the node classes only changed the representation
-[( )] Python tuples and dataclasses are interchangeable types
-[( )] The lexer normalizes the input before parsing
-[( )] Associativity moved into the node classes
+- The grammar and parsing logic determine the shape; the node classes only changed the representation
+- Python tuples and dataclasses are interchangeable types
+- The lexer normalizes the input before parsing
+- Associativity moved into the node classes
+
+<details><summary>Answer</summary>
+
+The grammar and parsing logic determine the shape; the node classes only changed the representation
+
+</details>
 
 ---
 
 `constant_fold` is a tree *transformation* that returns a new tree.  What does this say about ASTs?
 
-[( )] ASTs can only be read, not modified
-[(X)] The same tree-walking pattern used for evaluation and printing also supports transformation and optimization
-[( )] Constant folding requires the evaluator to run first
-[( )] Only leaf nodes can be transformed
+- ASTs can only be read, not modified
+- The same tree-walking pattern used for evaluation and printing also supports transformation and optimization
+- Constant folding requires the evaluator to run first
+- Only leaf nodes can be transformed
+
+<details><summary>Answer</summary>
+
+The same tree-walking pattern used for evaluation and printing also supports transformation and optimization
+
+</details>
 
 ---
 

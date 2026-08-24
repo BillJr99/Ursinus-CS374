@@ -35,7 +35,7 @@ info:
       rlink: "Activities/liascript-lambdacalculus2.md"
       liapage: true
     - rtitle: "Supplemental Tutorial: Build a Lambda Calculus Reducer"
-      rlink: "Tutorials/tutorial-lambda-calculus-reducer.md"
+      rlink: "Tutorials/LambdaCalculusReducer"
       liapage: true
 
 tags:

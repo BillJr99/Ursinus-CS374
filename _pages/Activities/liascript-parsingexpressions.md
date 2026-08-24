@@ -277,7 +277,7 @@ In `parse_addsub`, the line `node = (op, node, right)` places the previous resul
 ---
 
 
-> **The runnable models for this session are on the tutorial shelf.**  The precedence-table generator, a complete recursive-descent expression parser, and Pratt parsing are in [Parser Combinators and Runnable Parsing Models](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-parser-combinators.md).
+> **The runnable models for this session are on the tutorial shelf.**  The precedence-table generator, a complete recursive-descent expression parser, and Pratt parsing are in [Parser Combinators and Runnable Parsing Models](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ParserCombinators).
 
 ## 3.  Exercises
 

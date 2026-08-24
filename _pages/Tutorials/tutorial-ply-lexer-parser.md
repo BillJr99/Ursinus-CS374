@@ -1,20 +1,28 @@
-<!--
-author:   William Mongan
-language: en
-narrator: US English Male
+---
+layout: tutorial
+permalink: /Tutorials/PLYLexerAndParser
+title: "CS374: Lexing and Parsing with PLY (Python Lex-Yacc)"
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-ply-lexer-parser.md or locally via https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-ply-lexer-parser.md
+info:
+  coursenum: CS374
+  goals:
+    - "Write PLY lexer rules using regular-expression strings and docstring-regex functions, and explain how PLY selects among competing rules"
+    - "Write PLY parser rules as LALR(1) grammar productions with semantic actions that construct an AST"
+    - "Declare operator precedence and associativity in PLY to resolve shift-reduce conflicts without rewriting the grammar"
+    - "Trace a PLY-generated parser on a given input token stream and predict the AST it produces"
+    - "Translate an equivalent Flex/Bison grammar into its PLY form and identify the structural correspondences between the two tools"
+    - "Implement error recovery in a PLY parser and explain how error tokens allow parsing to resume after a syntax error"
 
-import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
+tags:
+  - ply
+  - lexer
+  - parser
+  - toolchain
 
-link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css/liascript-custom.css?v=2025-08-23-4
-        https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap
+---
+# Lexing and Parsing with PLY (Python Lex-Yacc)
 
--->
-
-# Interactive Lexing and Parsing with PLY (Python Lex-Yacc)
-
-> **Note:** this activity's code cells install PLY at runtime; in the browser CodeRunner this may fail without network access; download and run locally if cells error.  This activity is a companion to the [Flex and Bison tutorial](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md).
+> **Note:** this activity's code cells install PLY at runtime; in the browser CodeRunner this may fail without network access; download and run locally if cells error.  This activity is a companion to the [Flex and Bison tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/FlexAndBison).
 
 PLY (Python Lex-Yacc) is Flex and Bison reimplemented in pure Python: you write the same declarative grammar rules and get the same LALR(1) parsing power, but without a C toolchain, a build step, or generated `.c` files to manage.  Think of it as Flex/Bison with Python as the host language; the concepts translate one-to-one, and every rule you write here has a direct counterpart in a `.l` or `.y` file.  That makes PLY ideal for rapid prototyping in this course: you can explore a grammar idea, run it instantly in the browser, and see the token stream or AST before committing to a full C-based toolchain.
 
@@ -129,7 +137,6 @@ print("-" * 25)
 for tok in lexer:
     print(f"{tok.type:<12} {repr(tok.value)}")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### CTQs, Model 1
 
@@ -215,7 +222,6 @@ print("-" * 35)
 for tok in lexer:
     print(f"{tok.lineno:>4}  {tok.type:<12} {repr(tok.value)}")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### CTQs, Model 2
 
@@ -319,7 +325,6 @@ for expr in tests:
     result = parser.parse(expr)
     print(f"{expr:<24} {result}")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### CTQs, Model 3
 
@@ -456,7 +461,6 @@ for src in sources:
     ast = parser.parse(src)
     pprint_ast(ast)
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### CTQs, Model 4
 
@@ -650,7 +654,6 @@ for prog in tests:
     except Exception as e:
         print(f"  {prog!r} => Error: {e}\n")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### CTQs, Model 5
 
@@ -781,7 +784,6 @@ for prog in programs:
         print("  (no errors)")
     print()
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### CTQs, Model 6
 
@@ -799,37 +801,61 @@ for prog in programs:
 
 Which statement best describes what `t_ignore = ' \t'` does in a PLY lexer?
 
-[( )] It raises an error whenever a space or tab is found in the input.
-[(X)] It silently discards space and tab characters without calling any rule function.
-[( )] It converts spaces and tabs into WHITESPACE tokens.
-[( )] It causes PLY to report an illegal-character warning for spaces and tabs.
+- It raises an error whenever a space or tab is found in the input.
+- It silently discards space and tab characters without calling any rule function.
+- It converts spaces and tabs into WHITESPACE tokens.
+- It causes PLY to report an illegal-character warning for spaces and tabs.
+
+<details><summary>Answer</summary>
+
+It silently discards space and tab characters without calling any rule function.
+
+</details>
 
 ---
 
 Given the PLY declaration `precedence = (('left', 'PLUS', 'MINUS'), ('left', 'TIMES', 'DIVIDE'))`, what does PLY do when parsing `3 + 4 * 2` and the parser has `3 + 4` on its stack with `*` as the lookahead token?
 
-[( )] It reduces `3 + 4` immediately because `+` was seen first.
-[(X)] It shifts `*` because `TIMES` has higher precedence than `PLUS`.
-[( )] It reports a shift-reduce conflict and halts.
-[( )] It shifts `*` because all tokens shift before any reduction.
+- It reduces `3 + 4` immediately because `+` was seen first.
+- It shifts `*` because `TIMES` has higher precedence than `PLUS`.
+- It reports a shift-reduce conflict and halts.
+- It shifts `*` because all tokens shift before any reduction.
+
+<details><summary>Answer</summary>
+
+It shifts `*` because `TIMES` has higher precedence than `PLUS`.
+
+</details>
 
 ---
 
 LALR(1) and LL(1) are both parsing strategies that use one token of lookahead.  Which statement correctly distinguishes them?
 
-[( )] LL(1) is bottom-up; LALR(1) is top-down.
-[( )] Both are top-down; LALR(1) uses a larger lookahead set.
-[(X)] LL(1) is top-down (predictive); LALR(1) is bottom-up (shift-reduce) and handles a larger class of grammars.
-[( )] LALR(1) requires the grammar to be right-recursive; LL(1) requires left-recursion.
+- LL(1) is bottom-up; LALR(1) is top-down.
+- Both are top-down; LALR(1) uses a larger lookahead set.
+- LL(1) is top-down (predictive); LALR(1) is bottom-up (shift-reduce) and handles a larger class of grammars.
+- LALR(1) requires the grammar to be right-recursive; LL(1) requires left-recursion.
+
+<details><summary>Answer</summary>
+
+LL(1) is top-down (predictive); LALR(1) is bottom-up (shift-reduce) and handles a larger class of grammars.
+
+</details>
 
 ---
 
 Why is building an Abstract Syntax Tree (AST) in the parser generally better than evaluating expressions directly in parser actions?
 
-[( )] ASTs are faster to build than direct evaluation.
-[( )] Direct evaluation in parser actions is impossible in PLY.
-[(X)] An AST can be traversed multiple times for different purposes (type checking, optimization, code generation), while direct evaluation discards structure immediately.
-[( )] ASTs are required by the LALR(1) algorithm.
+- ASTs are faster to build than direct evaluation.
+- Direct evaluation in parser actions is impossible in PLY.
+- An AST can be traversed multiple times for different purposes (type checking, optimization, code generation), while direct evaluation discards structure immediately.
+- ASTs are required by the LALR(1) algorithm.
+
+<details><summary>Answer</summary>
+
+An AST can be traversed multiple times for different purposes (type checking, optimization, code generation), while direct evaluation discards structure immediately.
+
+</details>
 
 ---
 

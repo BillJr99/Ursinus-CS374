@@ -1,17 +1,22 @@
-<!--
-author:   William Mongan
-language: en
-narrator: US English Male
+---
+layout: tutorial
+permalink: /Tutorials/HaskellEssentials
+title: "CS374: Haskell Essentials for the Programming Languages Course"
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-haskell-essentials.md
+info:
+  coursenum: CS374
+  goals:
+    - "Written and run basic Haskell expressions in GHCi, using `:t` to inspect types and `:l` to load files"
+    - "Defined pure functions using pattern matching, guards, and list comprehensions"
+    - "Implemented common higher-order functions (`map`, `filter`, `foldr`) and understood their types in the Hindley-Milner type system"
+    - "Connected Haskell's lazy evaluation to the normal-order reduction strategy from the lambda calculus module"
+    - "Read and modified a TidalCycles pattern to understand how Haskell's design choices show up in live-coding music code"
 
-import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
+tags:
+  - haskell
+  - functional
 
-link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css/liascript-custom.css?v=2025-08-23-4
-        https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap
-
--->
-
+---
 # Tutorial: Haskell Essentials for the Programming Languages Course
 
 ## Learning Goals

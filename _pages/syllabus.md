@@ -256,7 +256,7 @@ schedule:
   - rtitle: "History of Programming Languages"
     rlink: "https://www.billmongan.com/Ursinus-CS374-History"
   - rtitle: "Optional depth, tutorial: Compiling and Linking (From Source to Executable)"
-    rlink: "Tutorials/tutorial-compiling-linking.md"
+    rlink: "Tutorials/CompilingAndLinking"
     liapage: true
 - week: "1"
   date: "0"
@@ -407,7 +407,7 @@ schedule:
     dlink: "Assignments/ParticipationExercises/RecursiveDescent"
   readings:
   - rtitle: "Optional depth, tutorial: Parser Combinators (Parsers as First-Class Values)"
-    rlink: "Tutorials/tutorial-parser-combinators.md"
+    rlink: "Tutorials/ParserCombinators"
     liapage: true
 - week: "7"
   date: "1"
@@ -462,7 +462,7 @@ schedule:
   readings:
   - rtitle: "Allison, Ch. 6 §6.1-6.2: Context-Free Grammars, Derivation Trees, and Expression Trees"
   - rtitle: "Optional depth, tutorial: PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer and Parser assignments)"
-    rlink: "Activities/liascript-ply-lexer-parser.md"
+    rlink: "Tutorials/PLYLexerAndParser"
     liapage: true
 - week: "9"
   date: "0"
@@ -504,10 +504,10 @@ schedule:
   liapage: true
   readings:
   - rtitle: "Optional depth, tutorial: Build an Interpreter (start-to-finish companion for the upcoming assignment)"
-    rlink: "Tutorials/tutorial-build-an-interpreter.md"
+    rlink: "Tutorials/BuildAnInterpreter"
     liapage: true
   - rtitle: "Optional depth, tutorial: Garbage Collection (Implementing Memory Management)"
-    rlink: "Tutorials/tutorial-garbage-collection.md"
+    rlink: "Tutorials/GarbageCollection"
     liapage: true
 - week: "10"
   date: "1"
@@ -540,7 +540,7 @@ schedule:
     rlink: "https://www.typescriptlang.org/play"
   - rtitle: "Optional depth, Allison, Ch. 10 §10.1: The Halting Problem (Why Some Questions About Programs Are Undecidable)"
   - rtitle: "Optional depth, tutorial: Type Inference (Implementing Hindley-Milner)"
-    rlink: "Tutorials/tutorial-type-inference.md"
+    rlink: "Tutorials/TypeInference"
     liapage: true
 - week: "11"
   date: "0"
@@ -563,7 +563,7 @@ schedule:
   - rtitle: "Optional depth, reference: The Power of Prolog (Markus Triska)"
     rlink: "https://www.metalevel.at/prolog"
   - rtitle: "Optional depth, tutorial: Haskell Essentials"
-    rlink: "Tutorials/tutorial-haskell-essentials.md"
+    rlink: "Tutorials/HaskellEssentials"
     liapage: true
 - week: "11"
   date: "1"
@@ -579,7 +579,7 @@ schedule:
   - rtitle: "Project Extensions Menu: libraries and packaging, scripting and automation targets, transpilation, and more (see the Team Language Project page)"
     rlink: "Projects/TeamLanguage"
   - rtitle: "Optional depth, tutorial: Build a Bytecode VM"
-    rlink: "Tutorials/tutorial-bytecode-vm.md"
+    rlink: "Tutorials/BytecodeVM"
     liapage: true
 - week: "12"
   date: "0"
@@ -600,7 +600,7 @@ schedule:
   readings:
   - rtitle: "Optional depth, Allison, Ch. 8: Turing Machines and the Church-Turing Thesis"
   - rtitle: "Optional depth, tutorial: Build a Lambda Calculus Reducer"
-    rlink: "Tutorials/tutorial-lambda-calculus-reducer.md"
+    rlink: "Tutorials/LambdaCalculusReducer"
     liapage: true
 - week: "12"
   date: "1"
@@ -652,7 +652,7 @@ schedule:
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
   - rtitle: "Optional depth, tutorial: The Project Language Guide (a complete worked path for the team project)"
-    rlink: "Tutorials/tutorial-project-language-guide.md"
+    rlink: "Tutorials/ProjectLanguageGuide"
     liapage: true
   - rtitle: "Optional depth, tutorial: Shell Skills for Language Development"
     rlink: "Tutorials/ShellForLanguageDev"
@@ -674,7 +674,7 @@ schedule:
   - rtitle: "Optional depth, tutorial: Publishing Your Language (pip, npm, and Docker)"
     rlink: "Tutorials/PublishingYourLanguage"
   - rtitle: "Optional depth, tutorial: Advanced C++ for Language Implementers"
-    rlink: "Tutorials/tutorial-cpp-advanced.md"
+    rlink: "Tutorials/AdvancedCpp"
     liapage: true
 - week: "15"
   date: "0"

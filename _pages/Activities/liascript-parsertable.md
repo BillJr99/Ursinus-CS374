@@ -388,7 +388,7 @@ Which statement about the pipeline is correct?
 - [( )] The loader recompiles the program each time it runs
 - [( )] Static and dynamic linking differ only in file size, never in behavior
 
-> **Going deeper:** the full story (object-file formats, symbol tables you can inspect with `nm`, linker maps, and dynamic loading) is the [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-compiling-linking.md) tutorial.
+> **Going deeper:** the full story (object-file formats, symbol tables you can inspect with `nm`, linker maps, and dynamic loading) is the [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CompilingAndLinking) tutorial.
 
 ---
 
@@ -819,11 +819,11 @@ In your notebook: the LR table is compiled knowledge, decisions made once, ahead
 
 The deep-dive appendices that used to follow this activity now live on the Tutorials shelf:
 
-> **Going further:** the Flex/Yacc material that used to live here is covered in depth in the dedicated tutorial: [Flex and Bison from Zero to a Working Language](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md): installing Flex and Bison, a complete `.l`/`.y` walkthrough of a calculator language with variables, and an appendix on LR(0) item-set construction and how Yacc builds and resolves its parse tables.  The ready-to-build mini-notation scaffold lives in the course examples at [files/examples/mininote/](https://www.billmongan.com/Ursinus-CS374/files/examples/mininote/).  Explore them when your project or curiosity calls for it.
+> **Going further:** the Flex/Yacc material that used to live here is covered in depth in the dedicated tutorial: [Flex and Bison from Zero to a Working Language](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/FlexAndBison): installing Flex and Bison, a complete `.l`/`.y` walkthrough of a calculator language with variables, and an appendix on LR(0) item-set construction and how Yacc builds and resolves its parse tables.  The ready-to-build mini-notation scaffold lives in the course examples at [files/examples/mininote/](https://www.billmongan.com/Ursinus-CS374/files/examples/mininote/).  Explore them when your project or curiosity calls for it.
 
-> **Going further:** the material that used to live here (compiling expressions to bytecode and executing them on a stack machine) is covered in depth in the dedicated tutorial: [Building a Bytecode VM for Mini](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md).  Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here (compiling expressions to bytecode and executing them on a stack machine) is covered in depth in the dedicated tutorial: [Building a Bytecode VM for Mini](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BytecodeVM).  Explore it when your project or curiosity calls for it.
 
-> **Going further:** the material that used to live here (object files, symbol tables, static and dynamic linking, loaders, and the path from source to executable) is covered in depth in the dedicated tutorial: [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-compiling-linking.md).  Explore it when your project or curiosity calls for it.
+> **Going further:** the material that used to live here (object files, symbol tables, static and dynamic linking, loaders, and the path from source to executable) is covered in depth in the dedicated tutorial: [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CompilingAndLinking).  Explore it when your project or curiosity calls for it.
 
 ---
 

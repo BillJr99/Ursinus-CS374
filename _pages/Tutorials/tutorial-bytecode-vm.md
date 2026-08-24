@@ -1,19 +1,23 @@
-<!--
-author:   CS374 Course Staff
-email:    
-version:  0.0.1
-language: en
-narrator: US English Female
+---
+layout: tutorial
+permalink: /Tutorials/BytecodeVM
+title: "CS374: Building a Bytecode VM for Mini"
 
-comment: Build a stack-based bytecode VM for Mini, the same architecture used by CPython, the JVM, and Lua.  Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md
+info:
+  coursenum: CS374
+  goals:
+    - "Defined a Mini instruction set architecture (`Opcode` enum and `Instruction` dataclass) and explained why a flat instruction list is more cache-friendly than an AST"
+    - "Implemented a compiler that walks the Mini AST and emits bytecode instructions with a constant pool and jump backpatching"
+    - "Implemented a stack-based VM dispatch loop that executes bytecode using a value stack and a call stack of frames"
+    - "Implemented upvalues (the Lua trick) so that closures in the VM correctly capture variables from enclosing frames"
+    - "Verified that the VM produces identical output to the tree-walking interpreter on all provided test programs and measured the speedup"
 
-import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
+tags:
+  - vm
+  - bytecode
+  - project-extension
 
-link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css/liascript-custom.css?v=2025-08-23-4
-        https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap
-
--->
-
+---
 # Tutorial: Building a Bytecode VM for Mini
 
 ## Learning Goals
@@ -2030,7 +2034,6 @@ if False:
 
 print("x =", x, "  y =", y)
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Critical Thinking Questions (CTQs)**
 
@@ -2158,7 +2161,6 @@ for t in tests:
     result = fold_and_propagate(t, {})
     print(f"{pretty(t):50} -> {pretty(result)}")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 2.1** The first test case propagates `x=3` into the body, evaluates `y=5`, then folds `3*5=15`.  What is the final result?  Is there any variable left in the output?
 
@@ -2271,7 +2273,6 @@ print(f"  {pretty(expr)}")
 print("\nAfter CSE:")
 print(f"  {pretty(optimized)}")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 3.1** After CSE, `(x+1)*(x+1)` should become `let _cse1 = (x+1) in _cse1 * _cse1`.  Only ONE addition is computed instead of two.  How many operations were eliminated?
 
@@ -2388,7 +2389,6 @@ print(f"\nBefore: {pretty(expr2)}")
 print(f"Inlined: {pretty(inlined2)}")
 # (After constant folding, this would become 10)
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 4.1** Inlining `double(5)` produces `5 + 5`.  Can we further fold this?  What optimization would you chain after inlining?
 
@@ -2481,7 +2481,6 @@ fact_body = If(None,
 )
 print(f"\nfact body has tail call to 'fact': {is_tail_call(fact_body, 'fact')}")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 5.1** `factorial_no_tco` has `return n * factorial_no_tco(n-1)`.  Why is this NOT a tail call?  What computation happens after the recursive call returns?
 
@@ -2497,28 +2496,46 @@ print(f"\nfact body has tail call to 'fact': {is_tail_call(fact_body, 'fact')}")
 
 Which optimization is UNSAFE to apply to `result = print("hello") or True`?
 
-[(X)] Replacing `print("hello")` with its constant value (it returns `None`)
-[( )] Evaluating `True` at compile time
-[( )] Keeping the original expression unchanged
-[( )] All of the above
+- Replacing `print("hello")` with its constant value (it returns `None`)
+- Evaluating `True` at compile time
+- Keeping the original expression unchanged
+- All of the above
+
+<details><summary>Answer</summary>
+
+Replacing `print("hello")` with its constant value (it returns `None`)
+
+</details>
 
 ---
 
 Constant propagation extends the environment with `{x: 3}` when `let x = 3`.  Why is it safe to propagate this constant throughout the body?
 
-[( )] Because x is an integer
-[(X)] Because `let` creates an immutable binding: x's value cannot change in the body
-[( )] Because 3 is small enough to inline
-[( )] Because the compiler checked for side effects
+- Because x is an integer
+- Because `let` creates an immutable binding: x's value cannot change in the body
+- Because 3 is small enough to inline
+- Because the compiler checked for side effects
+
+<details><summary>Answer</summary>
+
+Because `let` creates an immutable binding: x's value cannot change in the body
+
+</details>
 
 ---
 
 A tail call optimization converts a tail-recursive call into a loop at compile time.  What benefit does this provide?
 
-[( )] Faster garbage collection
-[(X)] Constant stack space instead of O(n) stack frames: enables deep or infinite recursion without stack overflow
-[( )] Smaller bytecode
-[( )] Type safety
+- Faster garbage collection
+- Constant stack space instead of O(n) stack frames: enables deep or infinite recursion without stack overflow
+- Smaller bytecode
+- Type safety
+
+<details><summary>Answer</summary>
+
+Constant stack space instead of O(n) stack frames: enables deep or infinite recursion without stack overflow
+
+</details>
 
 ---
 
@@ -2560,7 +2577,6 @@ def optimize(node):
     node = fold_and_propagate(node, {})  # run again after inlining!
     return node
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 Test the pipeline on a program that contains all four optimization opportunities.  Show before and after.
 
 ##### Exercise 5: Mini TCO (30 min, harder)

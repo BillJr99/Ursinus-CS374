@@ -1,17 +1,16 @@
-<!--
-author:   William Mongan
-language: en
-narrator: US English Male
+---
+layout: tutorial
+permalink: /Tutorials/GrammarsInPython
+title: "CS374: Grammar Tooling in Python"
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-grammars-in-python.md
+info:
+  coursenum: CS374
 
-import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
+tags:
+  - grammars
+  - tooling
 
-link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css/liascript-custom.css?v=2025-08-23-4
-        https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap
-
--->
-
+---
 # Grammar Tooling in Python
 
 Companion to the *Grammars and the Chomsky Hierarchy* and *Derivations, Parse Trees, Ambiguity, and Precedence* activities.
@@ -102,7 +101,6 @@ tests = ["2+3", "2*3", "1+2*3", "2++3", "2+", "+2", "9*8*7"]
 for s in tests:
     print(f"  {s!r:12} in L(G)? {derivable(s, GRAMMAR)}")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -194,7 +192,6 @@ report("Left-recursive arithmetic", grammar_lr)
 report("Right-recursive (LL) arithmetic", grammar_rr)
 report("Balanced parentheses", grammar_bp)
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -325,7 +322,6 @@ right_tree = tree("-", leaf(7), tree("-", leaf(2), leaf(1)))
 print(f"Left-assoc  (7-2)-1 = {evaluate(left_tree)}")   # 2
 print(f"Right-assoc 7-(2-1) = {evaluate(right_tree)}")  # 6
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -403,7 +399,6 @@ def show_derivation(start, grammar, label):
 show_derivation("E", GRAMMAR, "Leftmost")
 show_derivation("E", GRAMMAR, "Rightmost")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -489,7 +484,6 @@ if len(found) >= 2:
 else:
     print("Only one tree found (grammar may be unambiguous for this input).")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -570,7 +564,6 @@ right_assoc = node("-", leaf(5), node("-", leaf(2), leaf(1)))
 print(f"Left-assoc  (5-2)-1 = {evaluate(left_assoc)}")   # 2  (correct)
 print(f"Right-assoc 5-(2-1) = {evaluate(right_assoc)}")  # 4  (wrong for subtraction)
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -659,7 +652,6 @@ for tokens, expected, label in test_cases:
     status = "OK" if result == expected else "FAIL"
     print(f"{label:<35} {str(expected):>6}  {str(result):>6}  {status:>4}")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
