@@ -185,6 +185,61 @@ for test in ["42", "-42", "+7", "4-2", "-", "", "007"]:
 
 ---
 
+### Reading the Code
+
+- The EBNF `[sign] digit {digit}` is transcribed almost symbol for symbol: the optional `[...]` becomes an `if`, and the repetition `{...}` becomes a `while`.  That correspondence is the point of the notation, and it is the whole idea behind recursive descent three weeks from now.
+- The recognizer returns a *position*, not a boolean.  Every rule consumes some prefix and reports where it stopped, which is how rules compose: the caller carries on from where the callee left off.
+- Nothing here builds a tree.  A recognizer answers only "is this legal?"  A parser answers "and what is its structure?", which is the next step up.
+
+### Try It Yourself
+
+Take the EBNF-to-code recipe and apply it to a rule you write yourself.
+
+```python
+DIGITS = "0123456789"
+
+def recognize_integer(text, pos=0):
+    """EBNF:  integer = [ "-" | "+" ] , digit , { digit }"""
+    if pos < len(text) and text[pos] in "+-":
+        pos += 1                          # [ ... ] becomes an if
+    if pos >= len(text) or text[pos] not in DIGITS:
+        return None                       # a required piece is missing
+    pos += 1
+    while pos < len(text) and text[pos] in DIGITS:
+        pos += 1                          # { ... } becomes a while
+    return pos
+
+def check(rule, text):
+    end = rule(text)
+    ok = end == len(text)
+    print(f"  {text!r:12} -> {'accept' if ok else 'reject'}"
+          f"{'' if ok else f'  (stopped at {end})'}")
+
+print("=== integer = [ sign ] digit { digit } ===")
+for t in ["42", "-7", "+0", "", "-", "4a", "007"]:
+    check(recognize_integer, t)
+
+print("\n=== YOUR rule ===")
+# TODO 1: write the EBNF for an identifier, then transcribe it below:
+#           identifier = letter , { letter | digit | "_" }
+LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+def recognize_identifier(text, pos=0):
+    # TODO: the required first letter, then the repetition
+    return None
+
+for t in ["x", "count1", "_hidden", "2fast", "a_b_c", ""]:
+    check(recognize_identifier, t)
+
+# TODO 2: `007` is accepted by recognize_integer. Is that a bug, a feature,
+#         or a question for the language designer? Amend the EBNF to forbid
+#         leading zeros (except for "0" itself) and transcribe the change.
+#         Note how much more complicated the RULE got, not the code.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: the integer rule accepts `42`, `-7`, `+0` and `007`, and rejects the rest.  Your identifier rule should accept everything except `2fast` and the empty string.
+
 ## Model 3: The Translation Pattern
 
 The code cell above shows the EBNF-to-code mapping at work: `[ sign ]` became an `if` statement and `{ digit }` became a `while` loop.  This is not a coincidence; it is the systematic translation rule that you will apply throughout the parser project.  Every optional construct becomes a conditional; every repeated construct becomes a loop.
@@ -197,7 +252,118 @@ The code cell above shows the EBNF-to-code mapping at work: `[ sign ]` became an
 ---
 
 
-> **The runnable version, a grammar as a Python dictionary, is in [Grammar Tooling in Python](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/GrammarsInPython),** alongside the left-recursion detector and derivation tracer that use the same representation.
+## Model 4: A Grammar as Data, and the Question It Lets You Ask
+
+Once a grammar is a Python dictionary rather than a comment, you can ask questions about it mechanically.  The first question worth asking is the one that decides whether the parser you are about to write will work at all: **is any rule left-recursive?**
+
+A nonterminal $A$ is *directly left-recursive* if it has a production $A \rightarrow A\,\alpha$.  Written as recursive descent, `parse_A` would call `parse_A` as its very first action, having consumed no input, and recurse forever.  The standard textbook grammar for arithmetic is left-recursive, which is exactly the trap.
+
+```python
+# A grammar is a dict: nonterminal -> list of productions.
+# Each production is a list of symbols. [] is epsilon.
+
+def find_left_recursive(grammar):
+    """Nonterminals whose production can start with themselves."""
+    return {head
+            for head, prods in grammar.items()
+            for rhs in prods
+            if rhs and rhs[0] == head}
+
+def report(name, grammar):
+    lr = sorted(find_left_recursive(grammar))
+    verdict = f"LEFT-RECURSIVE: {lr}" if lr else "no direct left recursion"
+    print(f"  {name:34} {verdict}")
+
+# The standard textbook form. Correct, and unusable for recursive descent.
+grammar_lr = {
+    "E": [["E", "+", "T"], ["T"]],
+    "T": [["T", "*", "F"], ["F"]],
+    "F": [["num"]],
+}
+
+# The right-recursive rewrite. SAME language, parseable top-down.
+grammar_rr = {
+    "E":  [["T", "E'"]],
+    "E'": [["+", "T", "E'"], []],
+    "T":  [["F", "T'"]],
+    "T'": [["*", "F", "T'"], []],
+    "F":  [["num"]],
+}
+
+grammar_bp = {"S": [["(", "S", "S", ")"], []]}
+
+print("=== Which of these can a recursive-descent parser handle? ===")
+report("Left-recursive arithmetic", grammar_lr)
+report("Right-recursive arithmetic", grammar_rr)
+report("Balanced parentheses", grammar_bp)
+
+print("\n=== The two arithmetic grammars generate the SAME strings ===")
+print("  left-recursive  E -> E + T | T      generates T, T+T, T+T+T, ...")
+print("  right-recursive E -> T E'           generates T, T+T, T+T+T, ...")
+print("  with E' -> + T E' | epsilon")
+print("  Same language. Different tree shape, and different parser fate.")
+
+print("\n=== Watch the trap, without actually hanging ===")
+depth = 0
+def parse_E_naive(tokens, pos):
+    global depth
+    depth += 1
+    if depth > 12:
+        raise RecursionError("parse_E called itself 12 times, consuming nothing")
+    return parse_E_naive(tokens, pos)      # E -> E + T : recurse first, eat nothing
+
+try:
+    parse_E_naive(["num", "+", "num"], 0)
+except RecursionError as e:
+    print(f"  {e}")
+    print("  No input was consumed, so the base case is never reachable.")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- `find_left_recursive` is one comprehension.  The whole test is `rhs[0] == head`: does the rule begin with the nonterminal it defines?
+- The two arithmetic grammars accept exactly the same set of strings.  Left recursion is not about *what* a grammar means, only about whether a particular parsing technique can cope with it.
+- The last block shows the failure without hanging the cell, by counting calls instead of waiting for Python's recursion limit.  The diagnostic detail is that `pos` never advances: a recursive call that consumes nothing can never terminate.
+- This detector finds only *direct* left recursion.  A grammar with $A \rightarrow B\,\alpha$ and $B \rightarrow A\,\beta$ is indirectly left-recursive and slips past it, which is a good exercise and a real limitation.
+
+### Try It Yourself
+
+Run the detector on the grammar you are actually going to build a parser from.
+
+```python
+def find_left_recursive(grammar):
+    return {head
+            for head, prods in grammar.items()
+            for rhs in prods
+            if rhs and rhs[0] == head}
+
+# TODO 1: replace this with YOUR team's grammar, in the same dict form.
+MY_GRAMMAR = {
+    "expr":   [["expr", "+", "term"], ["term"]],
+    "term":   [["term", "*", "factor"], ["factor"]],
+    "factor": [["(", "expr", ")"], ["num"]],
+}
+
+lr = sorted(find_left_recursive(MY_GRAMMAR))
+if lr:
+    print(f"  LEFT-RECURSIVE: {lr}")
+    print("  A recursive-descent parser for this will recurse forever.")
+    print("  Rewrite each offending rule in the A -> B A' form and rerun.")
+else:
+    print("  No direct left recursion. Safe for recursive descent.")
+
+# TODO 2: rewrite the offending rules right-recursively and rerun until the
+#         detector reports clean. Keep BOTH versions and confirm they still
+#         accept the same strings.
+
+# TODO 3: harder. Write a grammar that is INDIRECTLY left-recursive
+#         (A -> B x, B -> A y) and confirm this detector misses it.
+#         What would you have to compute to catch that case?
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output as written: `expr` and `term` reported as left-recursive.  Keep rewriting until it reports clean; that is the precondition for the *Recursive Descent Parsing* session.
 
 # Part III: Synthesis and Practice (At Home)
 
@@ -396,7 +562,54 @@ for nt in ["expr", "expr_rest", "term", "term_rest", "factor"]:
 
 The exercises below ask you to write grammars from scratch, which is harder than reading them.  Start by listing a few example strings the grammar should accept, then figure out what rule structure generates all of them.  The final exercise seeds your project grammar; keep what you write.
 
-## 3.  Exercises
+# Check Your Understanding
+
+EBNF adds `[...]`, `{...}` and `(...)` to BNF. What does that buy?
+
+[(X)] Convenience only: EBNF describes exactly the same class of languages as BNF, more compactly
+[( )] Strictly more power: some languages need EBNF and cannot be written in BNF
+[( )] The ability to describe context-sensitive languages
+[( )] Faster parsing at run time
+
+---
+
+Transcribing `[sign] digit {digit}` into code turns `[...]` into an `if` and `{...}` into a `while`. That correspondence matters because:
+
+[(X)] It is the recipe recursive descent generalizes: each grammar construct becomes one control structure
+[( )] It proves the grammar is unambiguous
+[( )] It is the only way to recognize integers
+[( )] `if` and `while` are the only statements a parser may use
+
+---
+
+`E -> E + T | T` is left-recursive. A recursive-descent parser written directly from it:
+
+[(X)] Calls `parse_E` as its first action having consumed no input, so it never reaches a base case
+[( )] Parses correctly but builds a right-leaning tree
+[( )] Accepts a different language than the right-recursive version
+[( )] Works, but only for inputs shorter than the recursion limit
+
+---
+
+The left-recursive and right-recursive arithmetic grammars differ in:
+
+[(X)] Tree shape and parseability, not in the set of strings they accept
+[( )] The set of strings they accept
+[( )] Whether they are context-free
+[( )] Nothing; they are the same grammar written twice
+
+---
+
+`find_left_recursive` reports nothing for a grammar with `A -> B x` and `B -> A y`. That grammar is:
+
+[(X)] Indirectly left-recursive, which this detector does not catch
+[( )] Not left-recursive at all, so the report is correct
+[( )] Ambiguous rather than left-recursive
+[( )] Not a context-free grammar
+
+---
+
+## Exercises
 
 1.  *Phone grammar.*  Write EBNF for US phone numbers allowing `610-409-3000`, `(610) 409-3000`, and `6104093000`.  Trade with another team and find one string their grammar accepts that yours rejects.
 2.  *List literal.*  Write EBNF for Python-style list literals of integers: `[]`, `[1]`, `[1, 2, 3]`, with no trailing comma.  The comma placement is the lesson; expect a false start.
