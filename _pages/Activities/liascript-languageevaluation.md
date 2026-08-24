@@ -126,12 +126,97 @@ except TypeError as e:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
+### Reading the Code
+
+- Orthogonality is the property that features combine without special cases.  Each probe pairs one operator with several operand types and asks whether the rule generalizes; where it does not, you have found a wart.
+- `+` on strings and on lists both mean "concatenate", which is orthogonal.  `*` means "repeat" for a string and an integer and has no meaning for two lists, which is not.  That inconsistency is the finding.
+- `==` never raises, whatever you compare.  Convenient, and also why a typo comparing two different types fails silently rather than loudly: a reliability cost paid for a writability gain.
+- Sets use `|` for union while lists use `+` for concatenation, so two collection types spell the same idea differently.  Every such difference is one more thing a reader has to hold in their head.
+
+### Try It Yourself
+
+Audit a corner of Python for orthogonality and score what you find against the four criteria.
+
+```python
+def probe(label, thunk):
+    try:
+        print("  " + label.ljust(26) + " -> " + repr(thunk()))
+    except Exception as e:
+        print("  " + label.ljust(26) + " -> " + type(e).__name__ + ": " + str(e))
+
+print("=== Does 'in' mean the same thing everywhere? ===")
+probe("3 in [1,2,3]",    lambda: 3 in [1, 2, 3])
+probe("'a' in 'cat'",    lambda: "a" in "cat")
+probe("'at' in 'cat'",   lambda: "at" in "cat")
+probe("'a' in {'a': 1}", lambda: "a" in {"a": 1})
+probe("1 in {'a': 1}",   lambda: 1 in {"a": 1})
+
+# TODO 1: 'in' means "is an element" for a list, "is a SUBSTRING" for a
+#         string, and "is a KEY" for a dict. Is that orthogonal? Which
+#         criterion does the inconsistency serve, and which does it cost?
+
+print("\n=== Does len() mean the same thing everywhere? ===")
+for label, value in [("len('abc')", "abc"), ("len([1,2])", [1, 2]),
+                     ("len({'a':1})", {"a": 1}), ("len((1,))", (1,))]:
+    probe(label, lambda v=value: len(v))
+
+# TODO 2: pick ONE more operator or built-in and probe it the same way.
+#         Candidates: the * operator, slicing, or + on tuples versus sets.
+#         Write four probes and report what you find.
+
+# TODO 3: score your finding on all four criteria from Part I. A feature
+#         that costs reliability and buys writability is a TRADE, not a
+#         mistake. Say which trade Python made, and whether you would make
+#         the same one in your language.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: `'at' in 'cat'` is `True` while nothing analogous works for a list, and `1 in {'a': 1}` is `False` because `in` checks keys, not values.  Both are defensible; neither is orthogonal.
+
 ### Critical Thinking Questions
 
 1.  From the output, identify two cases where Python *is* orthogonal (the same operator works uniformly across types) and two where it is *not*.  For each non-orthogonal case, state what the programmer must remember as a special case.
 2.  Define orthogonality in your own words using these examples: which special cases break the "features combine uniformly" promise in each language?  Should `set + set` work?  Make an argument both ways using readability and reliability as criteria.
 3.  A maximally orthogonal language sounds ideal.  Propose one danger of *too much* orthogonality (hint: if everything combines with everything, what can the reader assume about any expression?).
 4.  Score C and Python (low/medium/high) on each of the four criteria for the task "a 200-line data cleaning script maintained by rotating student workers."  Defend your most contested cell.
+
+---
+
+# Check Your Understanding
+
+Orthogonality means:
+
+[(X)] Features combine without special cases, so a rule learned once applies everywhere
+[( )] Every feature is independent of every other feature's implementation
+[( )] The language has few features
+[( )] Operators may not be overloaded
+
+---
+
+`"ab" * 3` works but `[1,2] * [3]` does not. That is:
+
+[(X)] A failure of orthogonality: the operator generalizes over one pairing of types and not the analogous one
+[( )] A type error, and nothing more
+[( )] Evidence that Python is weakly typed
+[( )] Correct, because repetition is undefined for lists
+
+---
+
+Writability and reliability frequently pull against each other because:
+
+[(X)] Conveniences that let you say less also let you say something wrong without being told
+[( )] Reliable languages are always slower
+[( )] Writability requires dynamic typing
+[( )] Reliability requires more keywords
+
+---
+
+Tony Hoare called null his "billion-dollar mistake" because:
+
+[(X)] Making absence a value of every type means every dereference is a possible failure the type system never flags
+[( )] Nulls are slow to check at run time
+[( )] It forced garbage collection into the language
+[( )] It made the parser ambiguous
 
 ---
 

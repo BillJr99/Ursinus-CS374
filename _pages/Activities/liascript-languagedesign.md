@@ -164,6 +164,68 @@ print("  The right answer depends on the niche. Name your niche first.")
 
 > **Watch out!**  "Readability" and "writability" sound like opposites but they measure *different audiences*.  Readability asks "can a reader (possibly not the author) follow this code quickly?" whereas writability asks "can an author produce correct code quickly?"  A language can be highly writable but hard to read; terse symbol-heavy syntax like APL is the classic example.  Before answering the questions below, commit your team to which audience your niche prioritizes.
 
+### Reading the Code
+
+- Both variants run the *same* semantics.  Nothing below the surface differs, which is the point: everything you argue about here is syntax, and syntax is the part users meet first.
+- The token counter is a crude proxy for "syntactic overhead", and crude is fine.  It gives the team a number to argue with instead of a feeling to assert.
+- Punctuation-heavy syntax is denser to write and needs closer reading; keyword-heavy syntax is more typing and more skimmable.  Neither wins outright; you are choosing which of the four criteria your language spends on.
+
+### Try It Yourself
+
+Write the same program three ways and let the count start the argument.
+
+```python
+VARIANTS = {
+    "Python-style": """
+def max(a, b):
+    if a > b:
+        return a
+    else:
+        return b
+""".strip(),
+
+    "C-style": """
+fn max(a, b) {
+    if (a > b) {
+        return a;
+    } else {
+        return b;
+    }
+}
+""".strip(),
+
+    # TODO 1: add a third variant of YOUR team's design. Lisp-style?
+    #         ML-style with `let ... in`? Ruby-style with `end`?
+}
+
+PUNCT = set("(){}[];:,.")
+
+def measure(src):
+    return (len(src),
+            src.count("\n") + 1,
+            sum(1 for c in src if c in PUNCT),
+            len(src.replace("(", " ").replace(")", " ").split()))
+
+print("  " + "variant".ljust(16) + "chars  lines  punct  tokens")
+for name, src in VARIANTS.items():
+    c, l, p, w = measure(src)
+    print("  " + name.ljust(16) + str(c).rjust(5) + str(l).rjust(7)
+          + str(p).rjust(7) + str(w).rjust(8))
+
+# TODO 2: which variant carries the most punctuation per line? Which would
+#         a student who has seen neither find easier to read aloud? Those
+#         are two different questions and may have different answers --
+#         that gap IS the readability/writability trade.
+
+# TODO 3: count is not taste. Vote in your team on which variant you would
+#         rather WRITE and which you would rather READ six weeks from now,
+#         and record the split. If the two votes disagree, say which one
+#         your language should serve.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: one row per variant, with the C-style version carrying noticeably more punctuation for the same program.  That number is where your design argument starts, not where it ends.
+
 ### Critical Thinking Questions
 
 1.  Draft your scorecard: for readability, writability, reliability, and cost (of implementation, your scarcest resource), one sentence on what your language prioritizes and one on what it knowingly sacrifices, *in service of the niche*.
@@ -256,6 +318,60 @@ print("  Sprint 1 goal: zero TODOs for core nodes (Lit, BinOp, VarRef, Assign, I
 print("  Sprint 2 goal: zero TODOs for functions and your niche feature")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- The inventory has one row per node and four columns: the class, its fields, the grammar rule that produces it, and the evaluator method that consumes it.  A row with `TODO` in the last column is a node your parser can build and your evaluator cannot run.
+- Generating the table from a spec rather than maintaining it by hand means it cannot drift.  Regenerate after every sprint and the `TODO` count is your burndown.
+- The columns are the stages of your pipeline.  A node with no grammar rule can never be produced; a node with no evaluator method can never be consumed.  Both are bugs the table shows before the code does.
+
+### Try It Yourself
+
+Fill the inventory with your own language, and read the gaps straight off it.
+
+```python
+# (NodeClass, fields, grammar_rule, evaluator_method)
+# TODO: replace every row with YOUR team's nodes. Leave evaluator_method
+#       as "TODO" for anything not yet implemented -- that is the point.
+NODES = [
+    ("Num",   "value: float",           "primary -> NUMBER",             "eval_num"),
+    ("Var",   "name: str",              "primary -> IDENT",              "eval_var"),
+    ("BinOp", "op: str, left, right",   "expr -> expr OP term",          "eval_binop"),
+    ("Let",   "name: str, value, body", "stmt -> 'let' IDENT '=' expr",  "TODO"),
+    ("If",    "cond, then_, else_",     "stmt -> 'if' expr block",       "TODO"),
+    ("While", "cond, body",             "stmt -> 'while' expr block",    "TODO"),
+    ("Call",  "fn, args",               "primary -> IDENT '(' args ')'", "TODO"),
+]
+
+HEADER = ("Node", "Fields", "Grammar rule", "Evaluator")
+widths = [max(len(str(r[i])) for r in list(NODES) + [HEADER]) for i in range(4)]
+
+def line(row):
+    return "| " + " | ".join(str(c).ljust(widths[i]) for i, c in enumerate(row)) + " |"
+
+print(line(HEADER))
+print("|" + "|".join("-" * (w + 2) for w in widths) + "|")
+for row in NODES:
+    print(line(row))
+
+todo = [n for n in NODES if n[3] == "TODO"]
+print("\n  " + str(len(NODES) - len(todo)) + " of " + str(len(NODES))
+      + " nodes are wired end to end.")
+if todo:
+    print("  Still to implement: " + ", ".join(n[0] for n in todo))
+
+# TODO 1: commit this as node_inventory.py and regenerate it at the end of
+#         every sprint. The TODO count is your burndown chart.
+
+# TODO 2: add a column for "example program exercising this node". Any node
+#         with no example is a node you have never actually tested.
+
+# TODO 3: is there a node with NO grammar rule? Nothing in your parser can
+#         ever build it. Delete the node or write the rule.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: a Markdown table and a count of nodes wired end to end.  Paste the table into your design document; it is a deliverable, not a warm-up.
 
 ### Critical Thinking Questions
 
@@ -352,6 +468,44 @@ The Coordinator is allocating Sprint 1 tasks.  The niche feature (dice rolls) is
 
 ---
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
+
+# Check Your Understanding
+
+Two syntax variants that run identical semantics differ only in:
+
+[(X)] Surface form, which is nevertheless what every user of the language meets first
+[( )] Their expressive power
+[( )] Which programs they can run
+[( )] How fast they parse
+
+---
+
+Counting punctuation tokens per line is useful because:
+
+[(X)] It turns a matter of taste into a number a team can argue about, without pretending the number settles it
+[( )] Fewer punctuation tokens always means a better language
+[( )] It predicts parser complexity
+[( )] It measures readability directly
+
+---
+
+In the node inventory, a row whose evaluator column reads `TODO` means:
+
+[(X)] The parser can build that node and the evaluator cannot run it, so any program using it fails at run time
+[( )] The node has not been designed yet
+[( )] Its grammar rule is missing
+[( )] The node is optional
+
+---
+
+`LogicOp` needs to be a separate node class from `BinOp` because:
+
+[(X)] Short-circuiting means its right operand must not be evaluated unconditionally, which every `BinOp` does
+[( )] It returns a boolean rather than a number
+[( )] It has different precedence
+[( )] It takes more than two operands
+
+---
 
 ## Reflection Prompt
 
