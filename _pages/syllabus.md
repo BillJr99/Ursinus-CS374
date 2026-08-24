@@ -490,12 +490,10 @@ schedule:
     dlink: "Assignments/EnvironmentsLab"
     points: "15"
     rubricpath: "_pages/Assignments/lab-environments.md"
+  - dtitle: "Participation: Exercise - Mystery Scoping Language Handed Out"
+    dlink: "Assignments/ParticipationExercises/BindingAndScope"
   readings:
-  - rtitle: "Interactive (in class): PLAI Stacker / SMoL Tutor, step through binding, scope, and the environment in a notional machine"
-    rlink: "https://www.plai.org/"
-  - rtitle: "In-class exercise: Mystery Scoping Language, deduce lexical vs. dynamic scope by experiment (CS173-style), then predict what your interpreter's Environment will do"
-    rlink: "Assignments/ParticipationExercises/BindingAndScope"
-  - rtitle: "Optional depth: Krishnamurthi, PLAI (3rd ed.), the chapters on functions, scope, and environments"
+  - rtitle: "Krishnamurthi, PLAI (3rd ed.): the Stacker and SMoL Tutor, which we step through in class, and the chapters on functions, scope, and environments"
     rlink: "https://www.plai.org/"
 - week: "10"
   date: "0"
@@ -534,7 +532,7 @@ schedule:
   - dtitle: "Participation: Exercise - Type Systems Handed Out"
     dlink: "Assignments/ParticipationExercises/TypeSystems"
   readings:
-  - rtitle: "Core Tutorial: Typing Disciplines, Strong vs. Weak, Static vs. Dynamic, and Gradual Typing (required; anchors today's quadrant and the mypy/TypeScript compare)"
+  - rtitle: "Optional depth: Typing Disciplines, going past today's quadrant into structural vs. nominal typing, type erasure, and algebraic data types"
     rlink: "Tutorials/TypingDisciplines"
   - rtitle: "In-class compare: the same buggy snippet under mypy (Python) and TypeScript, gradual typing as an object of study"
     rlink: "https://www.typescriptlang.org/play"
@@ -576,8 +574,6 @@ schedule:
     points: "25"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
-  - rtitle: "Project Extensions Menu: libraries and packaging, scripting and automation targets, transpilation, and more (see the Team Language Project page)"
-    rlink: "Projects/TeamLanguage"
   - rtitle: "Optional depth, tutorial: Build a Bytecode VM"
     rlink: "Tutorials/BytecodeVM"
     liapage: true
@@ -632,9 +628,9 @@ schedule:
   - rtitle: "Optional depth, activity: Modern Language Features, covering pattern matching, generics, ownership, and async as syntax"
     rlink: "Activities/liascript-modernfeatures.md"
     liapage: true
-  - rtitle: "Note: the Functional assignment includes a Logic Programming direction (Direction F) in Prolog, if the declarative paradigm appeals to you, skim the Prolog tutorial and The Power of Prolog"
+  - rtitle: "Prolog and the declarative paradigm, background for the Functional assignment's Logic Programming direction (Direction F), alongside The Power of Prolog"
     rlink: "Tutorials/Prolog"
-  - rtitle: "Note: the Functional assignment also includes an open-source contribution direction (Direction G), mal, Strudel/TidalCycles, tree-sitter, or SWI-Prolog docs; instructor scope approval is required within the first week"
+  - rtitle: "The open-source contribution direction (Direction G) of the Functional assignment: mal, Strudel/TidalCycles, tree-sitter, or the SWI-Prolog docs, with scope approval needed in the first week"
     rlink: "Assignments/Functional"
 - week: "14"
   date: "0"
