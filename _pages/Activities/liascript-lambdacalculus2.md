@@ -341,6 +341,66 @@ for n, val in [(ZERO, "ZERO"), (ONE, "ONE"), (TWO, "TWO")]:
 
 ---
 
+### Reading the Code
+
+- Every "value" here is a function, and nothing else exists.  `TRUE` and `FALSE` are not booleans in disguise; they are *selectors*, and `IF` works by applying its condition to the two branches and letting the condition choose.
+- `church_to_int` is a decoder, not part of the encoding.  A Church numeral `n` means "apply `f` to `x`, `n` times"; handing it Python's successor and `0` is only one way to read it back out.
+- `SUCC` wraps one more application around whatever it was given, which is why numerals compose without any arithmetic anywhere in sight.
+- `ISZERO` applies `lambda _: FALSE` exactly `n` times to `TRUE`.  Applied zero times the `TRUE` survives untouched; applied even once it is gone.  With no numbers available, that is the only way to ask "is this zero?".
+
+### Try It Yourself
+
+Build operators the deck has not given you, using nothing but functions.
+
+```python
+TRUE  = lambda x: lambda y: x
+FALSE = lambda x: lambda y: y
+IF    = lambda b: lambda t: lambda f: b(t)(f)
+
+ZERO  = lambda f: lambda x: x
+SUCC  = lambda n: lambda f: lambda x: f(n(f)(x))
+ADD   = lambda m: lambda n: lambda f: lambda x: m(f)(n(f)(x))
+MULT  = lambda m: lambda n: lambda f: m(n(f))
+
+to_int  = lambda n: n(lambda k: k + 1)(0)
+to_bool = lambda b: b(True)(False)
+
+ONE, TWO = SUCC(ZERO), SUCC(SUCC(ZERO))
+THREE    = SUCC(TWO)
+
+print("=== What you already have ===")
+print("  to_int(THREE)            = " + str(to_int(THREE)))
+print("  to_int(ADD(TWO)(THREE))  = " + str(to_int(ADD(TWO)(THREE))))
+print("  to_int(MULT(TWO)(THREE)) = " + str(to_int(MULT(TWO)(THREE))))
+
+# TODO 1: AND, OR, NOT. A Church boolean IS a selector, so each of these
+#         is written by choosing what p should select.
+#         Hint for the first: AND = lambda p: lambda q: p(q)(p)
+AND = lambda p: lambda q: p            # replace me
+OR  = lambda p: lambda q: p            # replace me
+NOT = lambda p: p                      # replace me
+
+print("\n=== Your booleans (all True until you fix the stubs) ===")
+for name, expr in [("AND(TRUE)(FALSE)", AND(TRUE)(FALSE)),
+                   ("AND(TRUE)(TRUE)",  AND(TRUE)(TRUE)),
+                   ("OR(FALSE)(TRUE)",  OR(FALSE)(TRUE)),
+                   ("NOT(TRUE)",        NOT(TRUE))]:
+    print("  " + name.ljust(20) + " = " + str(to_bool(expr)))
+print("  want: False, True, True, False")
+
+# TODO 2: POW(m)(n) is m to the power n, and it is SHORTER than MULT.
+#         Think about what happens when you apply one numeral to another.
+POW = lambda m: lambda n: m            # replace me
+print("\n  to_int(POW(TWO)(THREE)) = " + str(to_int(POW(TWO)(THREE))) + "   (want 8)")
+
+# TODO 3: to_int decodes by counting. Decode THREE a DIFFERENT way: hand it
+#         a function that appends to a string, so THREE becomes "fff".
+#         What does that tell you about what a numeral actually is?
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: the first three lines are 3, 5 and 6; your four booleans all print `True` because the stubs return `p`, and `POW` reports 2 instead of 8.  Fix the stubs and the wanted values appear.
+
 ## Model 3: Interrogate the Encodings
 
 ### Critical Thinking Questions
@@ -429,6 +489,53 @@ print(f"3 - 4 = {church_to_int(MINUS(THREE)(FOUR))}")   # 0 (floored)
 ---
 
 **In-class work stops here.**  Everything below is homework and going-deeper material; attempt the exercises before the related assignment.
+
+# Check Your Understanding
+
+`TRUE = \x.\y.x` and `FALSE = \x.\y.y`. A Church boolean is best described as:
+
+[(X)] A selector: a function that picks one of the two things handed to it
+[( )] A number in disguise, 1 for true and 0 for false
+[( )] A primitive the lambda calculus provides
+[( )] A pair whose first element is a flag
+
+---
+
+`IF = \b.\t.\f. b t f` works because:
+
+[(X)] The boolean itself does the choosing; `IF` only hands it the two branches
+[( )] It compares `b` against `TRUE`
+[( )] It evaluates both branches and discards one
+[( )] It relies on short-circuit evaluation
+
+---
+
+The Church numeral `THREE` is:
+
+[(X)] A function that applies its first argument to its second, three times
+[( )] The literal 3, encoded in binary
+[( )] A list of three elements
+[( )] A pair of `TWO` and `SUCC`
+
+---
+
+`ISZERO n` applies `\_.FALSE` to `TRUE`, `n` times. That decides zero because:
+
+[(X)] Applied zero times the `TRUE` is never replaced; applied any positive number of times it becomes `FALSE`
+[( )] It compares `n` against `ZERO` directly
+[( )] `FALSE` absorbs any further application
+[( )] Church numerals carry a zero flag
+
+---
+
+`PRED` is far harder than `SUCC` because:
+
+[(X)] A numeral can only build applications outward, so removing one means rebuilding the count, classically with a pair that lags one behind
+[( )] Subtraction is undefined on natural numbers
+[( )] It requires the Y combinator
+[( )] `SUCC` is not invertible in principle
+
+---
 
 ## 4.  Exercises
 

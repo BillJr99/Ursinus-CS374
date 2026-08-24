@@ -375,6 +375,86 @@ print("Free vars in (λx.λy. x):", free_vars(lam('x', lam('y', var('x')))))
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
+### Reading the Code
+
+- The three tuple shapes `('var', n)`, `('lam', p, b)` and `('app', f, a)` are the *entire* grammar of the lambda calculus.  There is nothing else to represent, which is why the tracer fits on one screen.
+- `subst` is where capture avoidance lives.  It consults `free_vars` before descending into a `lam` and renames the bound variable if substituting would otherwise capture a free one.  Every hard part of this session is in that one check.
+- `step` finds the **outermost** redex first, which is normal order.  Normal order is the strategy guaranteed to reach a normal form if one exists; Python's own evaluation is the opposite, evaluating arguments first.
+- The tracer stops when `step` reports no redex.  That is the definition of a normal form: not "the answer", but "nothing left to reduce".
+
+### Try It Yourself
+
+Make variable capture happen, then watch renaming prevent it.
+
+```python
+def free_vars(e):
+    tag = e[0]
+    if tag == "var": return {e[1]}
+    if tag == "lam": return free_vars(e[2]) - {e[1]}
+    return free_vars(e[1]) | free_vars(e[2])
+
+def show(e):
+    tag = e[0]
+    if tag == "var": return e[1]
+    if tag == "lam": return "(\\" + e[1] + "." + show(e[2]) + ")"
+    return "(" + show(e[1]) + " " + show(e[2]) + ")"
+
+def fresh(name, avoid):
+    n = name
+    while n in avoid:
+        n += "'"
+    return n
+
+def subst(body, var, value, rename=True):
+    """body[var := value].  Pass rename=False to watch capture happen."""
+    tag = body[0]
+    if tag == "var":
+        return value if body[1] == var else body
+    if tag == "app":
+        return ("app", subst(body[1], var, value, rename),
+                       subst(body[2], var, value, rename))
+    param, inner = body[1], body[2]
+    if param == var:
+        return body                        # var is shadowed here; stop
+    if rename and param in free_vars(value):
+        new = fresh(param, free_vars(value) | free_vars(inner))
+        inner = subst(inner, param, ("var", new), rename)
+        param = new
+    return ("lam", param, subst(inner, var, value, rename))
+
+# The classic case. Substituting y for x inside a binder that ALSO binds y.
+term  = ("lam", "y", ("app", ("var", "x"), ("var", "y")))
+value = ("var", "y")
+
+print("=== Substituting y for x inside " + show(term) + " ===")
+print("  value being substituted: " + show(value))
+
+bad  = subst(term, "x", value, rename=False)
+good = subst(term, "x", value, rename=True)
+
+print("\n  WITHOUT renaming: " + show(bad))
+print("     The free y was CAPTURED by the inner binder. Both y's are now")
+print("     the bound one, and the term means something else entirely.")
+print("\n  WITH renaming:    " + show(good))
+print("     The binder was renamed first, so the free y stays free.")
+
+print("\n  free vars without renaming: " + str(sorted(free_vars(bad))))
+print("  free vars with renaming:    " + str(sorted(free_vars(good))))
+
+# TODO 1: the correct result should still have y free. Does the bad one?
+#         The printed sets above answer it -- say why that IS the bug.
+
+# TODO 2: build a term where capture changes the ANSWER, not just the
+#         names. Apply both results to something and show they differ.
+
+# TODO 3: alpha-equivalence says two terms are the same if they differ only
+#         in bound names. Write alpha_eq(a, b) that decides it, by renaming
+#         both to a canonical form as you walk.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: without renaming you get a term whose free-variable set is **empty**; with renaming, `y` is still free.  A substitution that changes which variables are free has changed the meaning, and that is precisely what alpha renaming exists to prevent.
+
 ### Critical Thinking Questions
 
 9.  The tracer prints each beta-reduction step.  For the K-combinator example `(λx.λy.x) A B`, write out both steps in the mathematical notation $\rightarrow_\beta$ and match each printed line to one step.
@@ -677,6 +757,53 @@ print("  unreachable subexpressions, enabling infinite data structures.")
 
 ---
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
+
+# Check Your Understanding
+
+The lambda calculus has exactly three syntactic forms. They are:
+
+[(X)] Variable, abstraction (`\x.E`), and application (`E1 E2`)
+[( )] Variable, number, and function
+[( )] Abstraction, application, and conditional
+[( )] Variable, application, and recursion
+
+---
+
+Beta reduction of `(\x.B) A` means:
+
+[(X)] Substitute `A` for every free occurrence of `x` in `B`
+[( )] Evaluate `A`, then evaluate `B`
+[( )] Rename `x` to `A` throughout `B`, bound occurrences included
+[( )] Apply `B` to `A`
+
+---
+
+Alpha renaming exists to prevent:
+
+[(X)] Variable capture: a free variable in the substituted term being swallowed by a binder it lands inside
+[( )] Infinite reduction sequences
+[( )] Name collisions between unrelated functions
+[( )] Ambiguity in the parser
+
+---
+
+Normal-order reduction always reduces the outermost redex first. Its guarantee is:
+
+[(X)] If a normal form exists, normal order finds it; applicative order may diverge instead
+[( )] It always terminates
+[( )] It takes the fewest steps
+[( )] It matches how Python evaluates function calls
+
+---
+
+A term is in normal form when:
+
+[(X)] It contains no redex anywhere, so no reduction step applies
+[( )] It has been reduced at least once
+[( )] Its outermost form is a lambda
+[( )] It contains no free variables
+
+---
 
 ## 4.  Exercises
 
