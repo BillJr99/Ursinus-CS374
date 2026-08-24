@@ -1,17 +1,16 @@
-<!--
-author:   William Mongan
-language: en
-narrator: US English Male
+---
+layout: tutorial
+permalink: /Tutorials/GrammarsInPython
+title: "CS374: Grammar Tooling in Python"
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-grammars-in-python.md
+info:
+  coursenum: CS374
 
-import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
+tags:
+  - grammars
+  - tooling
 
-link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css/liascript-custom.css?v=2025-08-23-4
-        https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap
-
--->
-
+---
 # Grammar Tooling in Python
 
 Companion to the *Grammars and the Chomsky Hierarchy* and *Derivations, Parse Trees, Ambiguity, and Precedence* activities.
@@ -102,7 +101,6 @@ tests = ["2+3", "2*3", "1+2*3", "2++3", "2+", "+2", "9*8*7"]
 for s in tests:
     print(f"  {s!r:12} in L(G)? {derivable(s, GRAMMAR)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -194,7 +192,6 @@ report("Left-recursive arithmetic", grammar_lr)
 report("Right-recursive (LL) arithmetic", grammar_rr)
 report("Balanced parentheses", grammar_bp)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -325,7 +322,6 @@ right_tree = tree("-", leaf(7), tree("-", leaf(2), leaf(1)))
 print(f"Left-assoc  (7-2)-1 = {evaluate(left_tree)}")   # 2
 print(f"Right-assoc 7-(2-1) = {evaluate(right_tree)}")  # 6
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -372,38 +368,62 @@ TERMINALS = {"+", "*", "(", ")", "num"}
 def is_terminal(sym):
     return sym in TERMINALS
 
-def expand(form, grammar, leftmost=True):
-    """Yield each step of a leftmost (or rightmost) derivation for `form`."""
-    try:
-        idx_fn = next if leftmost else lambda it: list(it)[-1]  # pick position
-        while any(not is_terminal(s) for s in form):
-            # Find the nonterminal to expand
-            positions = [i for i, s in enumerate(form) if not is_terminal(s)]
-            idx = positions[0] if leftmost else positions[-1]
-            sym = form[idx]
-            # Use the FIRST production (just to pick one derivation path)
-            rhs = grammar[sym][0]
-            form = form[:idx] + rhs + form[idx+1:]
-            yield list(form)
-            if len(form) > 30:   # safety: stop runaway expansions
-                yield ["... (truncated)"]
-                return
-    except Exception as e:
-        print(f"[derivation:expand] {e}")
-        import traceback; traceback.print_exc()
+# A derivation has to derive a SPECIFIC string. Blindly taking each rule's
+# first alternative runs straight into E -> E + T, which is left-recursive:
+# it rewrites E forever and never consumes input. So parse the string once,
+# then read both derivations off the resulting tree.
 
-def show_derivation(start, grammar, label):
-    print(f"-- {label} derivation from {start} --")
-    form = [start]
-    print("  " + " ".join(form))
-    for step in expand(form, grammar, leftmost=(label=="Leftmost")):
-        print("  " + " ".join(step))
-    print()
+def parse(tokens):
+    """Recursive descent over the layered grammar. Returns a labelled tree."""
+    pos = 0
+    def peek():   return tokens[pos] if pos < len(tokens) else None
+    def eat(t):
+        nonlocal pos
+        assert peek() == t, f"expected {t!r}, saw {peek()!r}"
+        pos += 1
+    def E():
+        node = ("E", [T()])
+        while peek() == "+":
+            eat("+"); node = ("E", [node, "+", T()])
+        return node
+    def T():
+        node = ("T", [F()])
+        while peek() == "*":
+            eat("*"); node = ("T", [node, "*", F()])
+        return node
+    def F():
+        if peek() == "(":
+            eat("("); inner = E(); eat(")")
+            return ("F", ["(", inner, ")"])
+        eat("num")
+        return ("F", ["num"])
+    tree = E()
+    assert pos == len(tokens), f"trailing input at {pos}"
+    return tree
 
-show_derivation("E", GRAMMAR, "Leftmost")
-show_derivation("E", GRAMMAR, "Rightmost")
+def derivation(tree, leftmost=True):
+    """Expand one nonterminal per step, choosing the production the tree used."""
+    form = [tree]
+    steps = [[n[0] if isinstance(n, tuple) else n for n in form]]
+    while True:
+        idxs = [i for i, n in enumerate(form) if isinstance(n, tuple)]
+        if not idxs:
+            break
+        i = idxs[0] if leftmost else idxs[-1]
+        form = form[:i] + list(form[i][1]) + form[i+1:]
+        steps.append([n[0] if isinstance(n, tuple) else n for n in form])
+    return steps
+
+tokens = ["num", "+", "num", "*", "num"]
+tree = parse(tokens)
+
+for label in ("Leftmost", "Rightmost"):
+    steps = derivation(tree, leftmost=(label == "Leftmost"))
+    print(f"-- {label} derivation of  num + num * num --")
+    for i, form in enumerate(steps):
+        print(f"  {'   ' if i == 0 else '=> '}{' '.join(form)}")
+    print(f"  {len(steps) - 1} steps, final string: {' '.join(steps[-1])}\n")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -451,13 +471,15 @@ def gen_trees(sym, depth=0, max_depth=4):
         import traceback; traceback.print_exc()
 
 def leaves(tree):
-    """Collect the leaf terminals in left-to-right order."""
+    """Terminals in left-to-right order, skipping the operator slot.
+
+    Nodes are (op, left, right), so iterating over the whole tuple would
+    count the operator as a leaf and nothing would ever match the target.
+    """
     if not isinstance(tree, tuple):
         return [tree]
-    result = []
-    for child in tree:
-        result.extend(leaves(child))
-    return result
+    _op, left, right = tree
+    return leaves(left) + leaves(right)
 
 def trees_for(target_leaves, sym="E", max_depth=4):
     """Return all distinct trees whose leaves match target_leaves."""
@@ -489,7 +511,6 @@ if len(found) >= 2:
 else:
     print("Only one tree found (grammar may be unambiguous for this input).")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -570,7 +591,6 @@ right_assoc = node("-", leaf(5), node("-", leaf(2), leaf(1)))
 print(f"Left-assoc  (5-2)-1 = {evaluate(left_assoc)}")   # 2  (correct)
 print(f"Right-assoc 5-(2-1) = {evaluate(right_assoc)}")  # 4  (wrong for subtraction)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -596,7 +616,7 @@ term   -> factor { ("*" | "/") factor }
 factor -> NUMBER | "(" expr ")"
 ```
 
-```python  liascript
+```python
 # Grammar as a Python dict: each key is a nonterminal, each value is
 # a list of alternatives. Each alternative is a list of symbols.
 # "t:X" means terminal X; "n:X" means nonterminal X.
@@ -659,7 +679,6 @@ for tokens, expected, label in test_cases:
     status = "OK" if result == expected else "FAIL"
     print(f"{label:<35} {str(expected):>6}  {str(result):>6}  {status:>4}")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 

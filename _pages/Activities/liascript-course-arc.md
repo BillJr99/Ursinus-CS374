@@ -53,7 +53,7 @@ Before anyone builds a real structure, someone has to prove the ground will supp
 
 Lambda calculus is the theory of computation from 1936.  It has **three rules**: a variable is an expression; `lambda x. E` is a function; and `E1 E2` is applying `E1` to `E2`.  That is the entire language.  No numbers.  No booleans.  No loops.  No `if`.  Yet it is computationally universal: anything a modern computer can compute, lambda calculus can compute.  The code below shows this: we build booleans, natural numbers, arithmetic, and even recursion entirely from `lambda`.
 
-```python  liascript
+```python
 # Lambda calculus: the theory of computation from 1936.
 # THREE rules: variables, functions, application.
 # ZERO primitives: no numbers, no booleans, no loops. Just functions.
@@ -93,13 +93,40 @@ print(f"\nY combinator factorial(5) = {factorial(5)}")
 
 print("\n>>> This is the deep foundation the whole course builds toward.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Critical Thinking Questions (CTQs)**
 
-> **CTQ 1** `TRUE = lambda x: lambda y: x` takes two arguments and returns the first. `IF = lambda b: lambda t: lambda f: b(t)(f)`.  Verify by hand: what does `IF(TRUE)('yes')('no')` compute?  Write each substitution step.
+> **CTQ 1** Consider these two definitions:
+>
+> ```python
+> TRUE = lambda x: lambda y: x
+> IF   = lambda b: lambda t: lambda f: b(t)(f)
+> ```
+>
+> `TRUE` takes two arguments and returns the first.  Verify by hand what
+>
+> ```python
+> IF(TRUE)('yes')('no')
+> ```
+>
+> computes, writing out each substitution step.
 
-> **CTQ 2** `ONE = lambda f: lambda x: f(x)`.  It applies `f` exactly once to `x`.  Verify `to_int(ONE) == 1` by tracing: `to_int(ONE) = ONE(lambda x: x+1)(0) = (lambda x: x+1)(0) = 1`.  Now trace `to_int(TWO)` the same way.
+> **CTQ 2** Here is `ONE`, which applies `f` exactly once to `x`:
+>
+> ```python
+> ONE = lambda f: lambda x: f(x)
+> ```
+>
+> Verify that `to_int(ONE)` is 1 by tracing it:
+>
+> ```python
+> to_int(ONE) = ONE(lambda x: x+1)(0)
+>             = (lambda x: x+1)(0)
+>             = 1
+> ```
+>
+> Now trace `to_int(TWO)` the same way.
 
 > **CTQ 3** Everything here uses only `lambda`.  There are no numbers, strings, if-statements, or loops built into Python's lambda syntax.  What does this tell you about the power of lambda abstraction?
 
@@ -117,7 +144,7 @@ A blueprint is useless if nobody can read it; it has to follow a standard notati
 
 A grammar defines what strings are **legal programs**.  It is a set of recursive rules, a formal description of syntax.  The grammar below defines arithmetic expressions, and the parser is a direct translation of the grammar into code: each grammar rule becomes a function.  This connection between grammars and parsers is the core insight of the front-end unit, from *Syntax and BNF/EBNF* through *Recursive Descent Parsing*.
 
-```python  liascript
+```python
 import re
 
 # A grammar defines what strings are legal programs.
@@ -170,7 +197,12 @@ def evaluate(ast):
     if isinstance(ast, float): return ast
     op, l, r = ast
     l, r = evaluate(l), evaluate(r)
-    return {'+': l+r, '-': l-r, '*': l*r, '/': l/r}[op]
+    # Lambdas, not values: only the selected branch runs, so `1 / 0` is
+    # raised by division alone and never by an unrelated `+`.
+    return {'+': lambda: l+r,
+            '-': lambda: l-r,
+            '*': lambda: l*r,
+            '/': lambda: l/r}[op]()
 
 tests = ["3 + 4 * 2", "(3 + 4) * 2", "10 / 2 + 3 * 4 - 1"]
 for t in tests:
@@ -185,7 +217,7 @@ ast = p.parse_expr()
 print(f"\nAST for '3 + 4 * 2': {ast}")
 print("Notice: ('+', 3.0, ('*', 4.0, 2.0)) -- multiplication binds tighter!")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Critical Thinking Questions (CTQs)**
 
@@ -193,7 +225,13 @@ print("Notice: ('+', 3.0, ('*', 4.0, 2.0)) -- multiplication binds tighter!")
 
 > **CTQ 6** The `parse_expr` method calls `parse_term`, which calls `parse_factor`.  This is "recursive descent."  What happens when `parse_factor` sees `(`?  Trace through the parsing of `(3 + 4) * 2` step by step.
 
-> **CTQ 7** The AST for `3 + 4 * 2` is `('+', 3.0, ('*', 4.0, 2.0))`: addition is the ROOT, multiplication is a subtree.  Draw this tree.  Why does the root being `+` correctly represent that `+` is evaluated LAST?
+> **CTQ 7** The AST for `3 + 4 * 2` is
+>
+> ```python
+> ('+', 3.0, ('*', 4.0, 2.0))
+> ```
+>
+> Addition is the ROOT and multiplication is a subtree.  Draw this tree.  Why does the root being `+` correctly represent that `+` is evaluated LAST?
 
 > **Watch out!**  Students often say "the root of the AST is evaluated first," but that is backwards.  The root is the *last* thing evaluated: it depends on its children being evaluated first, just as a `+` node cannot add until both its left and right subtrees have been computed.  Think of an AST as a recipe: the root is the final dish, and evaluation works from the leaves (ingredients) upward to the root (the finished result).
 
@@ -209,7 +247,7 @@ A building inspector reviews the blueprints before a single beam is cut; they ar
 
 A type system prevents entire classes of errors by reasoning about programs **before they run**.  The code below is a tiny type checker for a small expression language.  It walks the AST and either confirms the program is well-typed or reports a type error, without executing a single expression.  This previews the *Type Systems* activity and the Interpreter assignment's type-checking direction.
 
-```python  liascript
+```python
 from dataclasses import dataclass
 from typing import Any
 
@@ -280,7 +318,7 @@ for expr, desc in [
     except TypeError as e:
         print(f"  {desc}: {e}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Critical Thinking Questions (CTQs)**
 
@@ -304,7 +342,7 @@ Once the blueprints are drawn, the materials are certified, and the inspector ha
 
 An interpreter evaluates an AST directly.  The one below handles variables, arithmetic, conditionals, lambda functions, function application, and let-bindings, the core of a real functional language.  The key insight is **closures**: when a function is created, it captures the environment at the point of creation, not the environment at the point of call.  This is the destination of the interpretation unit (*Tree-Walking Interpretation* through *Closures and First-Class Functions*) and of the Interpreter assignment.
 
-```python  liascript
+```python
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
@@ -345,8 +383,12 @@ def interp(expr, env: Env) -> Any:
     if isinstance(expr, Var):    return env.lookup(expr.name)
     if isinstance(expr, BinOp):
         l, r = interp(expr.left, env), interp(expr.right, env)
-        return {'+': l+r, '-': l-r, '*': l*r, '/': l/r,
-                '>': l>r, '==': l==r}[expr.op]
+        return {'+':  lambda: l+r,
+                '-':  lambda: l-r,
+                '*':  lambda: l*r,
+                '/':  lambda: l/r,
+                '>':  lambda: l>r,
+                '==': lambda: l==r}[expr.op]()
     if isinstance(expr, If):
         return interp(expr.then_e, env) if interp(expr.cond, env) else interp(expr.else_e, env)
     if isinstance(expr, Lam):
@@ -382,13 +424,19 @@ print(f"if 5>3 then 100 else 0 = {interp(cond_prog, global_env)}")
 print("\n>>> By the end of the interpretation unit, you will have built this interpreter from scratch.")
 print(">>> By Demo Day, you will have added YOUR OWN features.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Critical Thinking Questions (CTQs)**
 
 > **CTQ 13** `Lam` creates a `Closure` when evaluated.  What does a `Closure` capture (besides the parameter name and body)?  Why is that captured value so important?
 
-> **CTQ 14** In `App`, after calling `interp(fn.body, fn.env.extend(fn.param, arg))`, we use `fn.env` (the closure's captured environment) not the current `env`.  Why?  What would happen if we used `env` instead; give a concrete example where the behavior would differ.
+> **CTQ 14** The `App` case evaluates the body like this:
+>
+> ```python
+> interp(fn.body, fn.env.extend(fn.param, arg))
+> ```
+>
+> It uses `fn.env`, the closure's captured environment, and not the current `env`.  Why?  What would happen if it used `env` instead?  Give a concrete example where the two differ.
 
 > **CTQ 15** This interpreter handles: numbers, variables, +/-/*//, if-then-else, lambda, application, and let.  What is it MISSING that a real language would need?  List at least five things.
 
@@ -404,7 +452,7 @@ The blueprints, the materials, the inspector, and the construction crew all have
 
 Every programming language implementation is a **pipeline**: source text enters one end, and meaning comes out the other.  The stages are scanning (breaking text into tokens), parsing (building an AST from tokens), type-checking (verifying the AST is well-typed), and interpreting or compiling (producing a result).  The code below shows all four stages working together.
 
-```python  liascript
+```python
 import re
 from dataclasses import dataclass, field
 from typing import Any
@@ -466,7 +514,12 @@ def run2(e, env):
     if isinstance(e, Var2):   return env.lookup(e.name)
     if isinstance(e, BinOp2):
         l, r = run2(e.left, env), run2(e.right, env)
-        return {'+':l+r,'-':l-r,'*':l*r,'/':l/r,'>':l>r,'==':l==r}[e.op]
+        return {'+':  lambda: l+r,
+                '-':  lambda: l-r,
+                '*':  lambda: l*r,
+                '/':  lambda: l/r,
+                '>':  lambda: l>r,
+                '==': lambda: l==r}[e.op]()
     if isinstance(e, Lam2):   return Closure2(e.param, e.body, env)
     if isinstance(e, App2):
         fn, arg = run2(e.func, env), run2(e.arg, env)
@@ -511,15 +564,96 @@ print("  Finally: YOUR language -- design workshop, sprints,")
 print("           Demo Day")
 print("="*50)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- The three stages hand each other exactly one data structure apiece: characters become a token list, the token list becomes a tree, and the tree becomes a value.  Every session this term is one of those arrows.
+- Stage 2's AST is written out by hand rather than parsed, because the parser is four weeks away.  It is the one piece of this pipeline you are being shown rather than shown *working*.
+- `run2` is the same recursive walk as Model 4, trimmed.  Notice that it never consults the source text, the tokens, or the grammar; by the time it runs, all of that has already done its job.
+- Nothing here is more than about forty lines per stage.  The pipeline is not hard; it is just long, and this term is the walk down its length.
+
+### Try It Yourself
+
+Put the pipeline under your own hands: change the input at one stage and watch what the next stage does with it.
+
+```python
+import re
+from dataclasses import dataclass
+from typing import Any
+
+@dataclass
+class Token:
+    type: str; value: str
+
+def scan(source):
+    patterns = [
+        ("NUMBER", r"\d+(\.\d+)?"), ("NAME", r"[a-zA-Z_]\w*"),
+        ("PLUS",   r"\+"),  ("MINUS", r"-"),
+        ("STAR",   r"\*"),  ("SLASH", r"/"),
+        ("EQ",     r"="),   ("LPAREN", r"\("), ("RPAREN", r"\)"),
+        ("SKIP",   r"[ \t]+"),
+    ]
+    keywords = {"let", "in", "lambda", "if", "then", "else"}
+    master = "|".join("(?P<%s>%s)" % (n, p) for n, p in patterns)
+    out = []
+    for m in re.finditer(master, source):
+        if m.lastgroup == "SKIP":
+            continue
+        kind = "KEYWORD" if m.group() in keywords else m.lastgroup
+        out.append(Token(kind, m.group()))
+    return out
+
+for src in ["let x = 3 + 4",
+            "lambda y in y * 2",
+            "12foo",
+            "3 @ 4"]:
+    toks = scan(src)
+    shown = " ".join(t.type + "(" + t.value + ")" for t in toks)
+    print("  " + repr(src).ljust(22) + " -> " + shown)
+
+# TODO 1: '12foo' produced two tokens, not one. Say exactly why, in terms
+#         of how the scanner matches. Is that the right answer for your
+#         language, or should it be an error?
+
+# TODO 2: '3 @ 4' silently DROPPED the '@'. Nothing in the pattern list
+#         matches it and finditer just skips ahead. Find the line that
+#         causes this, and decide what your scanner should do instead.
+#         (Hint: this is a real bug, not a design choice.)
+
+# TODO 3: add a STRING token type for text in double quotes, and check it
+#         against '"hi" + "there"'. What would the next stage -- the
+#         parser -- need before it could do anything with your new token?
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: `12foo` scans as `NUMBER(12) NAME(foo)`, and `3 @ 4` comes back as just two `NUMBER` tokens with the `@` silently gone.  That silent drop is the kind of bug the *Tokens and Scanning* session teaches you to catch.
 
 **Critical Thinking Questions (CTQs)**
 
 > **CTQ 17** The scanner (Stage 1) converts `"let add = lambda x lambda y x + y in add 3 4"` into a list of tokens.  What information is LOST during scanning (compared to the original source text)?  Does any of that information matter for the meaning of the program?
 
-> **CTQ 18** Stage 2 shows "what the parser would produce", an AST. The AST for `add 3 4` is `App(App(add, 3), 4)`.  Why is function application left-associative and nested, rather than a flat `App(add, [3, 4])`?  What does this nesting tell you about how the language treats multi-argument functions?
+> **CTQ 18** Stage 2 shows what the parser would produce.  The AST for `add 3 4` is
+>
+> ```python
+> App(App(add, 3), 4)
+> ```
+>
+> Why is function application left-associative and nested, rather than a flat
+>
+> ```python
+> App(add, [3, 4])
+> ```
+>
+> What does the nesting tell you about how the language treats multi-argument functions?
 
-> **CTQ 19** Stage 3 runs the interpreter.  Trace through `run2(App2(App2(Var2('add'), Num2(3)), Num2(4)), env)` step by step: what is evaluated first, and what does the environment contain at each step?
+> **CTQ 19** Stage 3 runs the interpreter.  Trace this call step by step:
+>
+> ```python
+> run2(App2(App2(Var2('add'), Num2(3)), Num2(4)), env)
+> ```
+>
+> What is evaluated first, and what does the environment contain at each step?
 
 > **CTQ 20** Looking at the Course Roadmap printed at the end: which part of the pipeline do you feel most confident about from prior courses?  Which part is most unfamiliar?  Write one concrete learning goal for yourself for the semester.
 

@@ -7,7 +7,7 @@ mininote scaffold. `git` and `zip` are included so you can commit, push, and
 package submissions from inside the container.
 
 The full walk-through (with GitHub setup, credential options, practice steps,
-and troubleshooting) is the course [Development Environment tutorial](https://www.billmongan.com/Ursinus-CS374/Tutorials/DevEnvironment).
+and troubleshooting) is the course [Development Environment tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/DevEnvironment).
 This README is the quickstart version.
 
 ## Files
@@ -94,4 +94,4 @@ If you cannot run Docker, install the tools directly:
 - `Cannot connect to the Docker daemon`: Docker Desktop is not running; start it.
 - Slow first build: normal; later builds reuse cached layers.
 - Push rejected / authentication failures: see the credential section of the
-  [Development Environment tutorial](https://www.billmongan.com/Ursinus-CS374/Tutorials/DevEnvironment).
+  [Development Environment tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/DevEnvironment).

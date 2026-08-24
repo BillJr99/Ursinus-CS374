@@ -88,7 +88,52 @@ print(f"\na is b? {a is b}  (same object: {id(a) == id(b)})")
 a = 200   # rebind a to a new object; b still points to 100
 print(f"After a = 200: a={a}, b={b}  (b unchanged)")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- The three reassignments of `x` never mutate an object.  Each one makes the *name* point somewhere new, which is why `type(x)` changes while no integer ever became a string.
+- The `a is b` probe uses identity, not equality.  Two names can be equal without being the same object; here they are the same object, until `a = 200` rebinds one of them.
+- Nothing in this cell is about scope yet.  It is entirely about *when* the association between a name and an attribute is fixed, which is the question Part II then asks in space rather than in time.
+
+### Try It Yourself
+
+Find the binding time of each fact below by experiment rather than by assertion.
+
+```python
+# For each probe: predict FIRST, in writing, then run.
+
+print("=== 1. When is the meaning of '*' decided? ===")
+print(f"  3 * 4       = {3 * 4}")
+print(f"  'ab' * 3    = {'ab' * 3!r}")
+print(f"  [1, 2] * 2  = {[1, 2] * 2}")
+# TODO: '*' clearly does different things. Was that decided when Python was
+#       designed, when this file was compiled, or when the line ran?
+#       Add a probe that distinguishes your answer from the alternatives.
+
+print("\n=== 2. When is a function's default argument bound? ===")
+def append_to(item, target=[]):        # the classic
+    target.append(item)
+    return target
+
+print(f"  append_to(1) -> {append_to(1)}")
+print(f"  append_to(2) -> {append_to(2)}")
+# TODO: explain the second line. At what moment was the empty list created,
+#       and how many times? Name the binding time.
+
+print("\n=== 3. When is a global's value bound? ===")
+LIMIT = 10
+def show_limit():
+    print(f"  inside show_limit, LIMIT = {LIMIT}")
+show_limit()
+LIMIT = 99
+show_limit()
+# TODO: the function body never changed. Which binding time does this
+#       demonstrate, and how would a compiled language differ?
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: probe 2 prints `[1]` and then `[1, 2]`, not `[1]` twice.  That surprise is a binding-time fact, and naming it correctly is the exercise.
 
 > **Watch out!**  A common mistake is to say "Python is dynamically typed, so Python has no binding times."  Every language has binding times; Python just moves the *type* binding from compile time to run time.  The object's type is fixed once created; what changes is which object the name points to.  When you run `x = 42` and then `x = "hello"`, Python is not changing the number `42` into a string; it is re-binding the name `x` to a completely different object.
 
@@ -159,7 +204,7 @@ def outer():
 
 print(outer())                      # ('inner', 'outer')
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!**  Students often confuse **shadowing** with **assignment**.  When `demo()` writes `x = 99`, it does *not* change the global `x`; it creates a brand-new local binding that happens to share the same name.  The global `x` still equals `10` after `demo()` returns.  Shadowing is about creating a second binding in an inner region; assignment is about updating an existing binding.  These are completely different operations with completely different effects on the enclosing scope.
 
@@ -195,7 +240,112 @@ def demo_dynamic():
 demo_dynamic()          # dynamic: show sees 99 (most recent x on stack)
 show_dynamic()          # static simulation: show sees 10 (global)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- `scope_stack` is a list used as a stack of frames, and `lookup_dynamic` walks it with `reversed(...)`: newest frame first.  That single line *is* dynamic scope.
+- Compare it with how Python resolved the same program above.  Python walked *textual* regions; this walks the *call history*.  Same program, same names, different answer, and the only difference is which chain you follow.
+- `demo_dynamic` pushes and pops around the call.  Forgetting the `pop()` is the classic dynamic-scope bug: a binding leaks into every function called afterwards.
+- Note that the second `show_dynamic()` prints 10.  Once the frame is popped the 99 is gone, which is the "time" half of the scope-versus-lifetime distinction Part III makes.
+
+### Try It Yourself: The Mystery Scoping Language
+
+Below is an interpreter for a tiny language.  Its scoping rule is hidden inside `RULE`,
+which is set from a value you cannot read off the code.  **Do not try to reason it out
+from the source.  Deduce it by experiment**, the way you would probe a language whose
+implementation you did not have.
+
+Write a program in the mini-language whose *output differs* depending on the rule, run
+it, and use the answer to identify `RULE`.  Then predict what your own interpreter's
+`Environment` will do with the same program.
+
+```python
+from dataclasses import dataclass
+from typing import Any
+import hashlib
+
+# --- The mystery: one of "lexical" or "dynamic". No peeking. ----------------
+RULE = hashlib.sha256(b"cs374").hexdigest()[0]
+RULE = "lexical" if int(RULE, 16) % 2 == 0 else "dynamic"
+
+@dataclass
+class Num:  value: float
+@dataclass
+class Var:  name: str
+@dataclass
+class Add:  left: Any; right: Any
+@dataclass
+class Fun:  param: str; body: Any        # a one-argument function
+@dataclass
+class Call: fn: Any; arg: Any
+@dataclass
+class Let:  name: str; val: Any; body: Any
+
+class Closure:
+    def __init__(self, param, body, env):
+        self.param, self.body, self.env = param, body, env
+
+def interp(e, env, stack):
+    if isinstance(e, Num):  return e.value
+    if isinstance(e, Var):
+        if RULE == "lexical":
+            scope = env
+        else:
+            scope = {}                       # newest frame wins
+            for frame in stack:
+                scope.update(frame)
+        if e.name not in scope:
+            raise NameError(f"undefined: {e.name}")
+        return scope[e.name]
+    if isinstance(e, Add):
+        return interp(e.left, env, stack) + interp(e.right, env, stack)
+    if isinstance(e, Fun):
+        return Closure(e.param, e.body, dict(env))
+    if isinstance(e, Let):
+        v = interp(e.val, env, stack)
+        return interp(e.body, {**env, e.name: v}, stack + [{e.name: v}])
+    if isinstance(e, Call):
+        f = interp(e.fn, env, stack)
+        a = interp(e.arg, env, stack)
+        return interp(f.body, {**f.env, f.param: a}, stack + [{f.param: a}])
+    raise ValueError(e)
+
+def run(program, label):
+    try:
+        print(f"  {label:44} -> {interp(program, {}, [{}])}")
+    except NameError as err:
+        print(f"  {label:44} -> NameError: {err}")
+
+# --- Probe 1: the classic. Does f see the x where it was DEFINED, or the
+# --- x that happens to be in scope where it was CALLED?
+#   let x = 10 in
+#   let f = fun _ -> x in
+#   let x = 99 in f(0)
+probe1 = Let("x", Num(10),
+         Let("f", Fun("_", Var("x")),
+         Let("x", Num(99),
+         Call(Var("f"), Num(0)))))
+run(probe1, "let x=10; f=fun _ -> x; let x=99; f(0)")
+
+# TODO 1: before running, predict BOTH answers. Which number means lexical?
+#         Which means dynamic? Write it down, then run.
+
+# TODO 2: write a SECOND probe that distinguishes the two rules a different
+#         way, so you are not trusting a single experiment. A good one:
+#         make the caller's binding the only one that exists, and see
+#         whether the callee can reach it.
+
+# TODO 3: state the rule you deduced, and say what your own interpreter's
+#         Environment (with its parent chain) would print for probe1.
+
+print(f"\n  ...and the answer, once you have committed: RULE = {RULE!r}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: one number for probe 1, and then the rule revealed on the last line.  The exercise is worthless if you read the last line first, so cover it, predict, and only then run.
+
+---
 
 Under static scoping, the binding that a variable use refers to can be determined:
 
@@ -256,7 +406,7 @@ print(f"Built-in 'len' found: {type(len)}")
 import builtins
 print(f"All built-ins: {len(dir(builtins))} names")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!**  Python scopes are **function-level**, not block-level.  In Java or C, a variable declared inside an `if` block or `for` loop is local to that block.  In Python, `if` blocks and `for` loops do **not** create a new scope: a variable introduced inside them belongs to the enclosing function (or module).  So a variable first assigned inside an `if` body is accessible throughout the rest of the function.  This surprises programmers coming from Java or C, and it means Python's `global` keyword is nothing like C's `global` storage class: Python's `global` is a declaration inside a function saying "when I write this name, go find it in the module scope, not here."
 
@@ -288,7 +438,7 @@ except UnboundLocalError as e:
 c = make_counter_fixed()
 print(c(), c(), c())        # 1 2 3
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -327,7 +477,7 @@ print(add10(3))   # 13, n=10 is still alive
 print(add5.__closure__[0].cell_contents)   # 5
 print(add10.__closure__[0].cell_contents)  # 10
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!**  The loop variable trap catches nearly every Python programmer eventually.  When a `lambda` (or any closure) captures a name from an enclosing scope, it captures the **name**, not the value the name held at the moment the closure was created.  By the time the loop finishes, `i` equals `4`, and every closure refers to that same `i`.  This is not a bug in Python (it is the correct behavior of late binding) but it is different from what most people intend.  The fix is to force **value capture** at creation time, either via a default argument (`i=i`) or a factory function that creates a fresh scope.
 
@@ -355,7 +505,52 @@ def make_adder(n):
 adders_fixed2 = [make_adder(i) for i in range(5)]
 print("Fixed2:", [f(0) for f in adders_fixed2])   # [0,1,2,3,4]
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- `make_adder` returns and its frame disappears, yet `n` is still readable through the returned function.  Scope (where a name is *visible*) ended; lifetime (how long the *value* survives) did not.  Those are the two axes this Part is about.
+- `__closure__` is Python showing you the captured cells directly.  Everything the returned function can still reach is in there, and nothing else is.
+- The late-binding loop bug is not a scoping bug.  Every lambda correctly refers to the same `i`; the surprise is that `i`'s *lifetime* outlasts each iteration, so they all read its final value.
+- The two fixes attack the two different halves: the default argument copies the *value* at creation time, and the factory function creates a fresh *scope* per iteration.  Knowing which one you reached for, and why, is the check that you have the distinction.
+
+### Try It Yourself
+
+Settle the scope-versus-lifetime question for the language you are building.
+
+```python
+def make_counter():
+    count = 0
+    def bump():
+        nonlocal count
+        count += 1
+        return count
+    return bump
+
+c1, c2 = make_counter(), make_counter()
+print("=== Two counters from the same factory ===")
+print(f"  c1: {c1()}, {c1()}, {c1()}")
+print(f"  c2: {c2()}")
+# TODO 1: c2 restarted at 1. How many `count` variables exist right now,
+#         and where does each one live? Neither is reachable by name from
+#         out here -- so what is keeping them alive?
+
+print("\n=== The loop again, three ways ===")
+late  = [lambda: i for i in range(3)]
+early = [lambda i=i: i for i in range(3)]
+# TODO 2: add a third list using a factory function, then print all three.
+print(f"  late-bound : {[f() for f in late]}")
+print(f"  default-arg: {[f() for f in early]}")
+
+print("\n=== The decision for YOUR language ===")
+# TODO 3: does a loop body in your language get a FRESH scope per iteration
+#         (so closures capture different variables) or ONE scope for the
+#         whole loop (so they share)? Write the one-sentence rule for
+#         SEMANTICS.md, and name a language that made each choice.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: `1, 2, 3` then `1`, and `[2, 2, 2]` against `[0, 1, 2]`.  The two counters not interfering is the same mechanism as the two fixes to the loop bug, seen from the other side.
 
 ### Critical Thinking Questions
 
@@ -365,7 +560,45 @@ print("Fixed2:", [f(0) for f in adders_fixed2])   # [0,1,2,3,4]
 
 ---
 
-## 4.  Exercises
+# Check Your Understanding
+
+A name is bound to a *type* at compile time in Java and at run time in Python. This difference is best described as:
+
+[(X)] A binding-time decision, trading early checkability for later flexibility
+[( )] Java having types and Python not having them
+[( )] A scoping difference between the two languages
+[( )] A difference in how long each language's values stay alive
+
+---
+
+In the Mystery Scoping Language probe, `f` is defined where `x` is 10 and called where `x` is 99. Printing 99 tells you the language is:
+
+[(X)] Dynamically scoped: names resolve against the call history
+[( )] Lexically scoped: names resolve against the program text
+[( )] Weakly typed
+[( )] Using late binding of the function's body
+
+---
+
+Inside a Python function, writing `x = 1` anywhere makes `x` local for the *whole* function, including lines above the assignment. That rule exists because:
+
+[(X)] Python decides each name's scope once for the entire function body, before executing any of it
+[( )] Python executes function bodies out of order
+[( )] Assignment always creates a global unless declared otherwise
+[( )] The interpreter cannot see the assignment until it runs
+
+---
+
+`make_adder(5)` returns, and its frame is gone, but the returned function still reads `n`. This shows that:
+
+[(X)] Lifetime and scope are different: `n` is no longer *visible* by name, but its value is still *alive*
+[( )] Python leaks memory when functions return
+[( )] `n` was actually a global all along
+[( )] The returned function re-runs `make_adder` on each call
+
+---
+
+# Exercises
 
 1.  *Scope archaeology.*  Run a three-level nested function experiment in Python (global, enclosing, local all binding `v`) and report which binding each level's `print` resolves to.  Then state Python's resolution order (LEGB) in your own words.
 2.  *Design memo.*  Write your project language's scoping rules in five sentences or fewer: static or dynamic; do blocks create scopes; is shadowing legal; what happens on use of an undeclared name; do loop bodies create a scope.  Add it to `SEMANTICS.md`.

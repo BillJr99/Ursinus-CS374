@@ -1,14 +1,22 @@
-<!--
-author:   CS374 Course Staff
-email:    
-version:  0.0.1
-language: en
-narrator: US English Female
-comment:  Step-by-step walkthrough for building the Mini programming language from scratch in Python.
-import:   https://raw.githubusercontent.com/liaScript/mermaid_template/master/README.md
-link:     https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css
--->
+---
+layout: tutorial
+permalink: /Tutorials/ProjectLanguageGuide
+title: "CS374: Building the Mini Language: A Complete Guide"
 
+info:
+  coursenum: CS374
+  goals:
+    - "Designed example programs in the Mini language before writing a single line of interpreter code, establishing syntax and semantics by example"
+    - "Built a complete lexer, recursive-descent parser, and AST for the Mini language"
+    - "Implemented a tree-walking evaluator with lexical scoping, first-class functions, closures, and recursive definitions"
+    - "Added at least one extension to the baseline interpreter (e.g., lists, pattern matching, or a type checker)"
+    - "Delivered a working REPL and file-runner that can run all provided example programs"
+
+tags:
+  - project
+  - interpreter
+
+---
 # Building the Mini Language: A Complete Guide
 
 ## Learning Goals
@@ -484,7 +492,7 @@ args         = ( expr ( "," expr )* )?
 
 The expression `let x = 1 + 2 * 3;` parses as:
 
-```mermaid @mermaid
+```mermaid
 graph TD
     A[let_stmt] --> B[IDENT: x]
     A --> C[add_expr]
@@ -1972,7 +1980,7 @@ python test_mini.py
 
 ### 10.4 What's Next
 
-You now have a complete working interpreter for Mini.  The following extensions are described in the **Extensions Menu** of the [Team Language Project](https://www.billmongan.com/Ursinus-CS374/Projects/TeamLanguage) and build directly on this foundation:
+You now have a complete working interpreter for Mini.  The following extensions are described in the **Extensions Menu** of the [Team Language Project](https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage) and build directly on this foundation:
 
 **Language features to add:**
 - **List indexing**: `lst[i]` read and `lst[i] = v` write; requires new AST nodes `IndexExpr` and `IndexAssign`, plus updates to the parser's `parse_call` and the evaluator.
@@ -2128,7 +2136,6 @@ print()
 print("  To add a feature: set the flag to True and add its grammar rule.")
 print("  Each True flag = at minimum one new grammar rule + one new AST node.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 > **Watch out!**  Adding a feature flag to `True` in the skeleton does not implement the feature; it only declares intent.  The real cost shows up in two places: (1) every new grammar rule becomes a new parsing function your Builder must write and test, and (2) every new grammar rule introduces at least one new AST node that your Evaluator must handle.  Teams commonly underestimate Sprint 1 scope by counting features rather than counting grammar rules plus AST nodes.
 
@@ -2140,10 +2147,16 @@ print("  Each True flag = at minimum one new grammar rule + one new AST node.")
 
 A team's niche is dice-game scripting, and they are debating whether `3d6` should be core syntax (a lexer token and AST node) or a library function `roll(3, 6)`.  The scorecard-driven way to decide is:
 
-[( )] Core syntax, because it is more impressive at Demo Day
-[( )] A function, because lexer changes are risky
-[(X)] Ask which choice best serves the niche's readability and writability, then weigh it against the implementation cost row of the scorecard
-[( )] Defer the decision until the final sprint
+- Core syntax, because it is more impressive at Demo Day
+- A function, because lexer changes are risky
+- Ask which choice best serves the niche's readability and writability, then weigh it against the implementation cost row of the scorecard
+- Defer the decision until the final sprint
+
+<details><summary>Answer</summary>
+
+Ask which choice best serves the niche's readability and writability, then weigh it against the implementation cost row of the scorecard
+
+</details>
 
 ---
 

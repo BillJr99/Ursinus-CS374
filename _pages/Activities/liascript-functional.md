@@ -76,7 +76,7 @@ A pure function's output depends only on its inputs, and it changes nothing outs
 
 Immutability is purity's partner.  Functional style does not modify a list; it produces a new one.
 
-```python  liascript
+```python
 # Spot the impure function, run this and observe the difference
 def pure_double(xs):
     return [x * 2 for x in xs]    # produces a NEW list
@@ -100,7 +100,7 @@ impure_double(data)
 impure_double(data)
 print(f"data after two calls to impure_double: {data}")   # [4, 8, 12], not [4, 4, 4]!
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Critical Thinking Questions (CTQs)**
 
@@ -116,7 +116,7 @@ Think of purity the way you think about a calculator: press `2 + 3` and you alwa
 
 ## Model 1: The Purity Audit
 
-```python  liascript
+```python
 import random
 
 LOG_LINES = ["startup", "config loaded"]  # module global
@@ -138,7 +138,52 @@ print(f"f4(0) = {f4(0)}")
 print(f"f5(7) = {f5(7)}")
 print(f"f6() twice: {f6():.4f}, {f6():.4f}")   # random
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- The audit turns on one question per function: given the same arguments, does it always return the same value, and does it change anything outside itself?  Both halves must hold for purity.
+- `f4` reads a global without writing one.  It is still impure, because "same input, same output" fails the moment somebody else changes that global.  Purity is a property of the function *and* everything it can observe.
+- The mutation surprise at the top is the practical stake: `impure_double` looked like a transformation and was in fact an edit.  Calling it twice gives different answers from the same argument, which is exactly what referential transparency forbids.
+
+### Try It Yourself
+
+Write the test that catches the impurity, then make the function pure.
+
+```python
+LOG_LINES = []
+
+def f_impure(xs):
+    LOG_LINES.append(f"called with {len(xs)} items")
+    return [x * 2 for x in xs]
+
+def f_reads_global(x):
+    return x + len(LOG_LINES)
+
+print("=== The bug purity prevents ===")
+data = [1, 2, 3]
+print(f"  f_reads_global(10) = {f_reads_global(10)}")
+f_impure(data)                        # someone else's call, elsewhere
+print(f"  f_reads_global(10) = {f_reads_global(10)}   <- same input, new answer")
+
+# TODO 1: write an assertion that PASSES right now and FAILS after another
+#         call to f_impure. That assertion is the test CTQ 1.5 asks for,
+#         and the fact that you can write it is the definition of the bug.
+
+# TODO 2: make f_reads_global pure by turning the hidden dependency into a
+#         parameter. What is its new signature, and who now has to supply
+#         the extra argument?
+
+# TODO 3: f_impure both logs AND transforms. Split it into a pure transform
+#         and a separate logging step. Which half can you now test without
+#         any setup at all?
+
+print("\n=== After your refactor, this should hold no matter what ===")
+print("  same input -> same output, every time, forever")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: `f_reads_global(10)` returns 10 and then 11, from identical arguments.  That single changed digit is the case for purity, made in one line.
 
 > **CTQ 1.4** Classify each function as pure or impure.  For each impure one, name the exact disqualifying feature.
 
@@ -162,7 +207,7 @@ $$\text{reduce}(\oplus, [x_1, \dots, x_n], z) = ((z \oplus x_1) \oplus x_2) \opl
 
 Each replaces a loop pattern you have written a hundred times.  The key: `map` *transforms* every element, `filter` *selects* elements, `reduce` *collapses* a list to one value.
 
-```python  liascript
+```python
 from functools import reduce
 
 scores = [88, 92, 54, 71, 67, 95, 49, 83]
@@ -192,7 +237,7 @@ print(f"pipeline result: {pipeline_result}")
 max_score = reduce(lambda a, b: a if a > b else b, scores)
 print(f"max score: {max_score}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 2.1** Rewrite the `map` call as an explicit `for` loop.  What bookkeeping did `map` absorb?  Do the same for `filter`.
 
@@ -210,7 +255,7 @@ Python gives you two roads to the same destination: the `map`/`filter` combinato
 
 Python offers *list comprehensions* as an alternative syntax for map+filter:
 
-```python  liascript
+```python
 scores = [88, 92, 54, 71, 67, 95, 49, 83]
 
 # Using map + filter
@@ -228,7 +273,7 @@ print(f"equal: {via_combinators == via_comprehension}")
 gen = (min(s + 5, 100) for s in scores if min(s + 5, 100) >= 70)
 print(f"generator sum: {sum(gen)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 2.4** The comprehension evaluates `min(s + 5, 100)` *twice* for each element.  How would you fix this using a nested comprehension or a helper function?
 
@@ -267,7 +312,7 @@ The same computation element by element: note how the two failing scores are *tr
 
 Run the cell to see the machine agree with your paper trace, fold step by fold step:
 
-```python  liascript
+```python
 from functools import reduce
 
 scores = [88, 92, 54, 71, 67, 95, 49, 83]
@@ -286,7 +331,7 @@ print("reduce, step by step:")
 total = reduce(traced_add, passing, 0)
 print(f"total = {total}, mean = {total / len(passing):.1f}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 In the pipeline trace, the score 54 becomes 59 after the map stage and then vanishes.  Which statement is accurate?
 
@@ -294,6 +339,57 @@ In the pipeline trace, the score 54 becomes 59 after the map stage and then vani
 [(X)] `map` transformed it (54 -> 59) and `filter` discarded it because 59 < 70
 [( )] `reduce` skipped it while folding
 [( )] It was removed before the map stage ran
+
+### Reading the Code
+
+- Each stage is a separate line producing a separate list, purely so the trace can print the intermediate results.  The one-expression version composes them without ever naming the intermediates.
+- `reduce` is the only stage that collapses.  `map` preserves length, `filter` can only shorten, and `reduce` returns one value regardless.  Knowing which stage can change the length is most of debugging a pipeline.
+- Nothing is mutated anywhere.  The "running total" column is the accumulator argument travelling from one call to the next, which is what replaces the mutable variable an imperative loop would have needed.
+
+### Try It Yourself
+
+Rebuild the big three from scratch, so you know there is nothing in them.
+
+```python
+from functools import reduce
+
+def my_map(f, xs):
+    return [f(x) for x in xs]
+
+def my_filter(p, xs):
+    return [x for x in xs if p(x)]
+
+def my_reduce(f, xs, init):
+    acc = init
+    for x in xs:
+        acc = f(acc, x)
+    return acc
+
+scores = [54, 71, 88, 63, 95, 70]
+
+print("=== yours against the library's ===")
+print(f"  my_map    {my_map(lambda s: s + 5, scores)}")
+print(f"  map       {list(map(lambda s: s + 5, scores))}")
+print(f"  my_filter {my_filter(lambda s: s >= 70, scores)}")
+print(f"  filter    {list(filter(lambda s: s >= 70, scores))}")
+print(f"  my_reduce {my_reduce(lambda a, b: a + b, scores, 0)}")
+print(f"  reduce    {reduce(lambda a, b: a + b, scores, 0)}")
+
+# TODO 1: my_reduce uses a mutable accumulator and a for loop. Rewrite it
+#         RECURSIVELY with no assignment at all. Both versions are pure
+#         from the outside -- so does the mutation inside matter? Argue it.
+
+# TODO 2: define my_map using only my_reduce. Then define my_filter using
+#         only my_reduce. What does that tell you about which of the three
+#         is the fundamental one?
+
+# TODO 3: my_reduce takes an explicit init. What goes wrong if you drop it
+#         and start from xs[0]? Try it on an empty list and say what a
+#         well-designed library should do.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: each pair of lines identical.  TODO 2 is the interesting one: `reduce` is the general fold, and the other two are special cases of it.
 
 **Critical Thinking Questions (CTQs)**
 
@@ -313,7 +409,7 @@ You have already passed functions as arguments: every time you called `map(lambd
 
 A **higher-order function** takes functions as arguments *or* returns functions.  Today we also *return* them, creating parameterized behavior without classes.
 
-```python  liascript
+```python
 # make_adder returns a function; each call creates a new closure
 def make_adder(n):
     return lambda x: x + n
@@ -342,7 +438,7 @@ twice = lambda f: lambda x: f(f(x))
 add5_twice = twice(add5)
 print(f"add5 twice applied to 0: {add5_twice(0)}")   # 10
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 `compose = lambda f, g: lambda x: f(g(x))` is a higher-order function because it:
 
@@ -375,7 +471,7 @@ compose:   compose(f, g)(x) = f(g(x))    -- g runs FIRST, then f
 
 The cell below wraps each stage so it narrates itself, then swaps the first and last stages to show that composition order is part of the meaning:
 
-```python  liascript
+```python
 from functools import reduce
 
 def pipeline(*fns):
@@ -407,7 +503,7 @@ messy = pipeline(
 print("\nsame three functions, different order:")
 print(f"result: {messy('  Hello World  ')!r}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 Notice that `traced` is itself a higher-order function: it consumes a function and returns a new one with the same behavior plus narration, the same shape as `twice` and `compose`.
 
@@ -436,7 +532,7 @@ If higher-order functions are factories, then currying and partial application a
 
 **Currying**: transform a function `f(a, b)` into `f(a)(b)`: a chain of single-argument functions.
 
-```python  liascript
+```python
 from functools import partial
 
 # Partial application with functools.partial
@@ -474,7 +570,7 @@ process = lambda lst: reduce(lambda a, b: a + b,
                                     map(lambda x: x - 2, lst)), 0)
 print(f"process({data}) = {process(data)}")   # sum of elements > 0 after subtracting 2
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 4.4** `map_with(lambda x: x * 2)` returns a function.  How is this different from `map(lambda x: x * 2, data)`?  When is the list transformer version more useful?
 
@@ -492,7 +588,7 @@ In Python you have used `for` loops to walk through lists.  But a `for` loop req
 
 In pure functional style, **there are no loops**, only recursion.  Every loop corresponds to a recursive function:
 
-```python  liascript
+```python
 import sys
 sys.setrecursionlimit(10000)
 
@@ -531,7 +627,7 @@ def rsum(lst):
 
 print(f"rsum({nums}) = {rsum(nums)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 5.1** Each recursive function has a base case and a recursive case.  Identify them for `my_map`.  What guarantees the recursion terminates?
 
@@ -589,7 +685,7 @@ The result is identical to the loop.  The difference: the functional version has
 
 ## 6.  Mutual Recursion and Structural Recursion
 
-```python  liascript
+```python
 import sys
 sys.setrecursionlimit(10000)
 
@@ -640,7 +736,7 @@ def mergesort(lst):
 
 print(f"mergesort([5,2,8,1,9,3]) = {mergesort([5,2,8,1,9,3])}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 6.1** `tree_sum` recurses on the *structure* of the data, not a loop counter.  What property of the tree guarantees this terminates?
 
@@ -648,7 +744,7 @@ print(f"mergesort([5,2,8,1,9,3]) = {mergesort([5,2,8,1,9,3])}")
 
 ---
 
-## Multiple Choice
+# Check Your Understanding
 
 Which of the following is a *pure* function?
 
@@ -659,7 +755,6 @@ Which of the following is a *pure* function?
 
 ---
 
----
 **In-class work stops here.**  Everything below is homework and going-deeper material, attempt the exercises before the related assignment.
 
 ## Exercises (Homework: ~95 minutes total)
@@ -708,18 +803,10 @@ Purity forbids a function from leaving traces on the world: which makes it trust
 - **Python `functools` documentation**: `reduce`, `partial`, `lru_cache`
 - **Haskell Tour**: for seeing what pure FP looks like at full scale: https://www.haskell.org/tutorial/
 - **"Structure and Interpretation of Computer Programs"**: online at https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf
-
----
-
-## Going Deeper (Optional Pointers)
-
-The core lesson above stands on its own.  The deep-dive appendices that used to follow it now live on the Tutorials shelf:
-
-> **Going further:** [Haskell Essentials for the Programming Languages Course](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-haskell-essentials.md) covers the Haskell fundamentals behind this unit: functions, pattern matching, algebraic data types, and higher-order style.  The monads material that used to live here (the Maybe, List, and IO monads, the monad laws, do-notation, thunks, and infinite streams) is not covered in the course materials; explore it independently (keywords: "monad laws," "do-notation," "thunks and lazy evaluation," "infinite streams Haskell").  Direction A of the Functional assignment covers lazy sequences and generators in Python.
-
-> **Going further:** the material that used to live here (treating parsers themselves as composable higher-order functions) is covered in depth in the dedicated tutorial: [Parser Combinators: Parsers as First-Class Values](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-parser-combinators.md).  Explore it when your project or curiosity calls for it.
-
-> **Going further:** the continuation-passing style unit and the MapReduce/parallel-functional-programming unit that used to live here now live where they are assessed.  **Directions B and E of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374/Assignments/Functional) build on this material, read the tutorial pointer sections there before choosing those directions.**
+- [Haskell Essentials](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/HaskellEssentials): the Haskell behind this unit, covering functions, pattern matching, algebraic data types, and higher-order style.
+- [Parser Combinators: Parsers as First-Class Values](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ParserCombinators): parsers themselves as composable higher-order functions.
+- Monads (Maybe, List, IO), the monad laws, do-notation, thunks, and infinite streams: not covered in the course materials.  Direction A of the Functional assignment covers lazy sequences and generators in Python.
+- Continuation-passing style and MapReduce live where they are assessed: Directions B and E of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Functional).  Read those directions before choosing them.
 
 ---
 

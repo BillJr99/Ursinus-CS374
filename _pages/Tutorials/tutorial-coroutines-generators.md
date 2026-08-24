@@ -1,17 +1,22 @@
-<!--
-author:   William Mongan
-language: en
-narrator: US English Male
+---
+layout: tutorial
+permalink: /Tutorials/CoroutinesAndGenerators
+title: "CS374: Coroutines and Generators, Pausable Computation"
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-coroutines-generators.md
+info:
+  coursenum: CS374
+  goals:
+    - "Define coroutines and generators and explain how `yield` captures a continuation to pause and resume computation"
+    - "Trace the execution of a generator function step-by-step, predicting what value each `next()` call produces"
+    - "Implement lazy infinite sequences using generator functions and compare their memory use to eager list-based equivalents"
+    - "Explain how `async`/`await` desugars to a state machine and identify where suspension points occur"
+    - "Extend a simple interpreter to support generator objects with `yield` and `send` semantics"
 
-import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
+tags:
+  - generators
+  - coroutines
 
-link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css/liascript-custom.css?v=2025-08-23-4
-        https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap
-
--->
-
+---
 # Tutorial: Coroutines and Generators, Pausable Computation
 
 > **Opening hook:** Imagine a vending machine.  A regular function is like a vending machine that dumps every item it will ever produce onto the floor the moment you press the button, all at once, whether you want them yet or not.  A **generator** is a vending machine that produces exactly one item each time you press the button, remembers where it left off, and waits patiently until you press again.  The machine's internal state (which slot it was at, how many remain) is frozen between presses.  That frozen state is the essence of a coroutine.
@@ -128,7 +133,6 @@ try:
 except StopIteration:
     print("  StopIteration raised on exhausted generator")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 **Key insight:** A generator function's stack frame is **frozen** at every `yield`.  The local variables, loop counter, and instruction pointer are all preserved. `next()` thaws the frame and continues from the yield point.
 
@@ -212,7 +216,6 @@ print("  yield from chain:")
 for v in gen_b():
     print(f"  {v}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 > **Check Your Understanding**, think each question through (and jot an answer) before reading on.
 
@@ -304,7 +307,6 @@ def make_generator_cps():
 
 print("  Generator-as-CPS result:", make_generator_cps())
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 > **Check Your Understanding**, think each question through (and jot an answer) before reading on.
 
@@ -381,7 +383,6 @@ def old_event_loop(coro):
 
 old_event_loop(old_style_coroutine)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 > **Check Your Understanding**, think each question through (and jot an answer) before reading on.
 
@@ -474,7 +475,10 @@ def eval_expr(node, env):
     if isinstance(node, BinOp):
         l = eval_expr(node.left, env)
         r = eval_expr(node.right, env)
-        return {"+": l+r, "-": l-r, "*": l*r, "/": l/r}[node.op]
+        return {"+": lambda: l+r,
+                "-": lambda: l-r,
+                "*": lambda: l*r,
+                "/": lambda: l/r}[node.op]()
     if isinstance(node, GeneratorDef):
         return node   # a generator definition evaluates to itself (like a closure)
     if isinstance(node, Call):
@@ -517,7 +521,6 @@ print("=== Key insight: Python's generator IS our interpreter's continuation ===
 print("  Each 'yield eval_expr(...)' in _run captures the frame's state.")
 print("  next() on the GeneratorObj resumes exactly where _run paused.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 > **Check Your Understanding**, think each question through (and jot an answer) before reading on.
 
@@ -533,31 +536,55 @@ print("  next() on the GeneratorObj resumes exactly where _run paused.")
 
 **Question 1.**  A Python generator function `def g(): yield 1; yield 2` called as `g()` returns:
 
-- [( )] The value `1` immediately
-- [( )] A list `[1, 2]`
-- [(X)] A generator object that yields `1` then `2` when iterated
-- [( )] Nothing; the function body has not executed yet
+- The value `1` immediately
+- A list `[1, 2]`
+- A generator object that yields `1` then `2` when iterated
+- Nothing; the function body has not executed yet
+
+<details><summary>Answer</summary>
+
+A generator object that yields `1` then `2` when iterated
+
+</details>
 
 **Question 2.** `coro.send(value)` on a generator/coroutine:
 
-- [( )] Calls the function with `value` as an argument
-- [(X)] Resumes the coroutine and makes `value` the result of the `yield` expression
-- [( )] Appends `value` to the generator's output sequence
-- [( )] Resets the generator to its initial state
+- Calls the function with `value` as an argument
+- Resumes the coroutine and makes `value` the result of the `yield` expression
+- Appends `value` to the generator's output sequence
+- Resets the generator to its initial state
+
+<details><summary>Answer</summary>
+
+Resumes the coroutine and makes `value` the result of the `yield` expression
+
+</details>
 
 **Question 3.**  The "function color" problem with `async/await` means:
 
-- [( )] Async functions run faster than regular functions
-- [(X)] Async functions can only be awaited from other async functions, propagating up the call chain
-- [( )] Async functions cannot call regular functions
-- [( )] Async functions require multiple OS threads
+- Async functions run faster than regular functions
+- Async functions can only be awaited from other async functions, propagating up the call chain
+- Async functions cannot call regular functions
+- Async functions require multiple OS threads
+
+<details><summary>Answer</summary>
+
+Async functions can only be awaited from other async functions, propagating up the call chain
+
+</details>
 
 **Question 4.**  A generator captures its execution state by:
 
-- [( )] Allocating a new heap object for each yielded value
-- [( )] Using OS threads with mutex locks
-- [(X)] Freezing the stack frame (locals, instruction pointer) as a heap-allocated object
-- [( )] Copying all local variables into a global dictionary
+- Allocating a new heap object for each yielded value
+- Using OS threads with mutex locks
+- Freezing the stack frame (locals, instruction pointer) as a heap-allocated object
+- Copying all local variables into a global dictionary
+
+<details><summary>Answer</summary>
+
+Freezing the stack frame (locals, instruction pointer) as a heap-allocated object
+
+</details>
 
 ---
 
@@ -598,7 +625,6 @@ print(f"Eager (computed 10000, kept 5): {eager}")
 print(f"Lazy (computed exactly 5): {result}")
 print("Both produce the same answer; lazy is O(1) memory.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 **Exercise 2.**  Implement a cooperative multitasking scheduler using generators.  Each "task" is a generator that yields to give up control.  The scheduler runs tasks in round-robin:
 
@@ -629,7 +655,6 @@ def scheduler(*tasks):
 print("=== Cooperative multitasking with generators ===")
 scheduler(task_a, task_b)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 **Exercise 3.**  Implement a `memoize_gen` that caches yielded values so that the generator can be replayed from the beginning without recomputing:
 
@@ -676,7 +701,6 @@ print("Second pass (reads from cache, no recomputation):")
 for v in rg:
     print(f"  got {v}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 **Exercise 4.**  Extend the mini interpreter from Model 5 to support a `while` loop inside generator bodies.  Add a `While` AST node and a `Assign` node so you can write:
 
@@ -762,16 +786,12 @@ def eval_node(node, env):
         val = eval_node(node.value, env)
         env.assign(node.name, val)
         return val
-    if isinstance(node, Yield_):
-        return ("yield", eval_node(node.value, env))
-    if isinstance(node, While):
-        while eval_node(node.condition, env):
-            for stmt in node.body:
-                result = eval_node(stmt, env)
-                if isinstance(result, tuple) and result[0] == "yield":
-                    yield result[1]
-        return
-    raise ValueError(f"unknown: {node!r}")
+    # Statements that can yield (While, Yield_) belong to run_node_yielding
+    # below, not here.  Keep eval_node free of `yield`: one `yield` anywhere in
+    # a function makes EVERY call return a generator object instead of a value,
+    # and since a generator object is always truthy, `while eval_node(cond)`
+    # would loop forever.
+    raise ValueError(f"unknown expression: {node!r}")
 
 def run_generator(gen_def: GeneratorDef, arg, parent_env):
     env = Env(parent=parent_env)
@@ -808,7 +828,6 @@ print("count_up(1):")
 for val in run_generator(count_up, 1, global_env):
     print(f"  {val}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 **Exercise 5.**  Implement a simple async event loop using generators.  Create a `Task` class, an `EventLoop` that runs tasks cooperatively, and simulate I/O with time-delayed wake-ups:
 
@@ -884,7 +903,6 @@ print("=== Simple generator-based event loop ===")
 loop = SimpleEventLoop()
 loop.run(main_coro)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ---
 

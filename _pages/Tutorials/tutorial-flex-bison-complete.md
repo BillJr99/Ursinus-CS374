@@ -1,17 +1,23 @@
-<!--
-author:   William Mongan
-language: en
-narrator: US English Male
+---
+layout: tutorial
+permalink: /Tutorials/FlexAndBison
+title: "CS374: Flex and Bison from Zero to a Working Language"
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-flex-bison-complete.md
+info:
+  coursenum: CS374
+  goals:
+    - "Written a working Flex lexer file (`.l`) that tokenizes arithmetic expressions including integers, floats, identifiers, and operators"
+    - "Written a working Bison grammar file (`.y`) that parses expressions with correct operator precedence and associativity"
+    - "Built and run a complete calculator language that evaluates arithmetic expressions and stores variables"
+    - "Extended the calculator grammar with at least one new construct (e.g., comparison operators or a print statement)"
+    - "Connected the Flex/Bison toolchain to the hand-written lexer and recursive-descent parser you built in earlier assignments"
 
-import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
+tags:
+  - flex
+  - bison
+  - toolchain
 
-link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css/liascript-custom.css?v=2025-08-23-4
-        https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap
-
--->
-
+---
 # Tutorial: Flex and Bison from Zero to a Working Language
 
 ## Learning Goals
@@ -688,7 +694,6 @@ print()
 print("=== n * n + n (left operand tighter) ===")
 lr_parse(["n", "*", "n", "+", "n"])
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Questions to Consider
 
@@ -796,6 +801,5 @@ for sid, items in enumerate(states):
         after  = " ".join(prod[dot:])
         print(f"  {nt} -> {before} . {after}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 The ACTION and GOTO tables Bison emits are read straight off this automaton: transitions on terminals become shift entries, transitions on nonterminals become goto entries, and any state containing a dot-at-the-end item becomes a reduce, with the LALR(1) lookahead sets deciding *which* lookahead tokens trigger each reduction.  When two of those rules claim the same table cell, you get exactly the shift/reduce and reduce/reduce conflicts described in Part 7.1 and manufactured in the experiment above.

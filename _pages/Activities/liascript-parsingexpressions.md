@@ -170,7 +170,7 @@ for src in expressions:
     show_tree(tree)
     print()
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -255,7 +255,7 @@ def parse_primary(self):
     raise SyntaxError(f"expected an expression, found "
                       f"{tok.lexeme!r} at line {tok.line}" if tok else "end of input")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -277,9 +277,256 @@ In `parse_addsub`, the line `node = (op, node, right)` places the previous resul
 ---
 
 
-> **The runnable models for this session are on the tutorial shelf.**  The precedence-table generator, a complete recursive-descent expression parser, and Pratt parsing are in [Parser Combinators and Runnable Parsing Models](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-parser-combinators.md).
+## 3.  Theory: The Ladder Does Not Scale
 
-## 3.  Exercises
+The ladder works, and it has a cost you can count.  Every precedence level is one function, and every one of those functions calls down to the next even when the input has nothing to do with that level.  Parsing the single token `5` in the grammar from Part I still walks `expr -> addsub -> muldiv -> unary -> primary`: four calls to reach one number.
+
+C has **fifteen** precedence levels.  Written as a ladder, that is fifteen functions, fifteen frames per literal, and fifteen near-identical bodies to keep in sync when you add an operator.  Adding one operator at a new level means writing a new function and editing its two neighbours.
+
+**Precedence climbing** (also called **Pratt parsing**, after Vaughan Pratt's 1973 paper) replaces the chain of functions with a *number*.  Each operator gets a **binding power**: how tightly it grips its operands.  One loop then reads operators and decides, purely by comparing numbers, whether to keep going or return.
+
+The rule is short enough to state completely:
+
+- Parse a left operand.
+- While the next token is an operator whose binding power is **at least** the minimum we were given, consume it and recursively parse its right operand with a minimum of `bp + 1` for left-associative operators, or `bp` for right-associative ones.
+- Fold and repeat.
+
+That `+ 1` is the associativity mechanism, complete.  Passing `bp + 1` means an operator of equal power will *not* be absorbed by the recursive call, so it comes back to the loop and folds on the left.  Passing `bp` lets the recursion swallow it, folding on the right.
+
+## Examples: Binding Powers, by Hand
+
+Assign binding powers to the ladder from Part I, tightest last:
+
+| Operator | Tier in the ladder | Binding power | Associates |
+|----------|-------------------|---------------|------------|
+| `+` `-`  | addsub  | 10 | left |
+| `*` `/`  | muldiv  | 20 | left |
+| `^`      | power   | 30 | **right** |
+
+Now trace `2 + 3 * 4` by hand with a minimum binding power of 0:
+
+1. Parse the left operand: `2`.
+2. Next token is `+`, power 10, and 10 >= 0, so consume it.  Recurse for the right operand with a minimum of 11.
+3. Inside that call, parse `3`.  Next is `*`, power 20, and 20 >= 11, so consume and recurse with minimum 21.
+4. Inside *that*, parse `4`.  Next token is end of input, so return `4`.
+5. Fold `3 * 4`, return it.  Back in step 2's call, next is end of input, return.
+6. Fold `2 + (3 * 4)`.
+
+Now do `2 * 3 + 4` yourself and find the step where the comparison **fails** and forces a return.  That failure is precedence, expressed as arithmetic instead of as a call chain.
+
+## Model 2: The Whole Ladder, as a Table
+
+```python
+def tokenize(text):
+    out, i = [], 0
+    while i < len(text):
+        c = text[i]
+        if c.isspace():
+            i += 1
+        elif c.isdigit():
+            j = i
+            while j < len(text) and text[j].isdigit():
+                j += 1
+            out.append(text[i:j]); i = j
+        else:
+            out.append(c); i += 1
+    return out
+
+# The ENTIRE precedence table. Adding an operator means adding a row.
+#   symbol: (binding power, associativity)
+BINDING = {
+    "+": (10, "left"),
+    "-": (10, "left"),
+    "*": (20, "left"),
+    "/": (20, "left"),
+    "^": (30, "right"),
+}
+
+def parse_expr(tokens, pos=0, min_bp=0):
+    # --- the left operand -------------------------------------------------
+    tok = tokens[pos]; pos += 1
+    if tok == "(":
+        left, pos = parse_expr(tokens, pos, 0)
+        assert tokens[pos] == ")", "expected )"
+        pos += 1
+    elif tok == "-":                       # prefix minus binds very tightly
+        operand, pos = parse_expr(tokens, pos, 40)
+        left = ("neg", operand)
+    else:
+        left = tok
+
+    # --- the loop that IS the ladder --------------------------------------
+    while pos < len(tokens):
+        op = tokens[pos]
+        if op not in BINDING:
+            break
+        bp, assoc = BINDING[op]
+        if bp < min_bp:
+            break                          # this operator belongs to our caller
+        pos += 1
+        next_min = bp + 1 if assoc == "left" else bp
+        right, pos = parse_expr(tokens, pos, next_min)
+        left = (op, left, right)
+    return left, pos
+
+def show(node):
+    if not isinstance(node, tuple):
+        return str(node)
+    if node[0] == "neg":
+        return f"(-{show(node[1])})"
+    op, l, r = node
+    return f"({show(l)} {op} {show(r)})"
+
+print("=== One loop, one table, the whole ladder ===")
+for src in ["2 + 3 * 4", "2 * 3 + 4", "(2 + 3) * 4",
+            "8 - 4 - 2", "2 ^ 3 ^ 2", "2 * 3 ^ 2", "-3 + 4"]:
+    tree, pos = parse_expr(tokenize(src))
+    print(f"  {src:14} -> {show(tree)}")
+
+print("\n=== The same trees the ladder built ===")
+print("  8 - 4 - 2 came out LEFT-leaning  because '-' passes bp + 1")
+print("  2 ^ 3 ^ 2 came out RIGHT-leaning because '^' passes bp")
+print("  That single '+ 1' is the entire associativity mechanism.")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- `BINDING` holds the grammar's precedence structure, as data.  Compare it with Part I, where the same information was spread across four function definitions and their call order.
+- `if bp < min_bp: break` is precedence.  When `parse_expr` is deep inside a `*` and meets a `+`, the comparison fails, the loop returns, and the `+` is handled by whichever caller has a low enough minimum.  No function-per-tier required.
+- `next_min = bp + 1 if assoc == "left" else bp` is associativity, in one line.  Trace `8 - 4 - 2`: the recursive call gets minimum 11, sees `-` at power 10, refuses it, and returns, so the outer loop folds left.  For `^` the call gets minimum 30, accepts the next `^`, and folds right.
+- Prefix minus is handled before the loop with a high minimum (40), which is why `-3 + 4` groups as `(-3) + 4` and not `-(3 + 4)`.
+- The ladder and this table produce **identical trees**.  They are two encodings of one grammar, and knowing both is what lets you pick: the ladder reads more like the grammar, the table scales to fifteen levels without fifteen functions.
+
+> **Watch out!**  It is tempting to give every operator a distinct binding power so ties never happen.  Do not.  Operators at the *same* precedence (like `+` and `-`) must share a power, or `8 - 4 + 2` will group wrongly.  Ties are meaningful; the associativity rule exists precisely to resolve them.
+
+### Critical Thinking Questions
+
+> **CTQ 3.1** Trace `2 * 3 + 4` through Model 2 by hand and name the exact comparison that fails and forces a return.  Which line of code is it?
+
+> **CTQ 3.2** `8 - 4 - 2` and `2 ^ 3 ^ 2` differ only in the `+ 1`.  Explain, in terms of what the recursive call is *allowed to absorb*, why that produces opposite tree shapes.
+
+> **CTQ 3.3** The Part I ladder is four functions; Model 2 is one function plus a five-row table.  For a language with fifteen precedence levels, count each version's cost: functions written, and frames pushed to parse the single literal `5`.
+
+> **CTQ 3.4** Both approaches produce the same trees, so the choice is not about correctness.  State the case for each, and say which your team will use and why.
+
+### Try It Yourself
+
+Add operators to the table without writing a single new function.
+
+```python
+def tokenize(text):
+    out, i = [], 0
+    while i < len(text):
+        c = text[i]
+        if c.isspace():
+            i += 1
+        elif c.isdigit():
+            j = i
+            while j < len(text) and text[j].isdigit():
+                j += 1
+            out.append(text[i:j]); i = j
+        elif text[i:i+2] in ("<=", ">=", "==", "!="):
+            out.append(text[i:i+2]); i += 2
+        else:
+            out.append(c); i += 1
+    return out
+
+BINDING = {
+    "+": (10, "left"),  "-": (10, "left"),
+    "*": (20, "left"),  "/": (20, "left"),
+    "^": (30, "right"),
+    # TODO 1: add the comparison operators < <= > >= == != at a power
+    #         LOOSER than + and - , so that  a + 1 < b * 2  groups as
+    #         (a + 1) < (b * 2). What number does that mean?
+    #
+    # TODO 2: add  &&  and  ||  looser still, with && binding tighter
+    #         than ||, so  a || b && c  is  a || (b && c).
+}
+
+def parse_expr(tokens, pos=0, min_bp=0):
+    tok = tokens[pos]; pos += 1
+    if tok == "(":
+        left, pos = parse_expr(tokens, pos, 0)
+        pos += 1
+    elif tok == "-":
+        operand, pos = parse_expr(tokens, pos, 40)
+        left = ("neg", operand)
+    else:
+        left = tok
+    while pos < len(tokens):
+        op = tokens[pos]
+        if op not in BINDING:
+            break
+        bp, assoc = BINDING[op]
+        if bp < min_bp:
+            break
+        pos += 1
+        right, pos = parse_expr(tokens, pos, bp + 1 if assoc == "left" else bp)
+        left = (op, left, right)
+    return left, pos
+
+def show(node):
+    if not isinstance(node, tuple):
+        return str(node)
+    if node[0] == "neg":
+        return f"(-{show(node[1])})"
+    op, l, r = node
+    return f"({show(l)} {op} {show(r)})"
+
+for src in ["1 + 2 * 3", "1 + 2 < 3 * 4", "1 < 2 && 3 < 4 || 5 < 6"]:
+    tree, pos = parse_expr(tokenize(src))
+    consumed = "all" if pos == len(tokenize(src)) else f"only {pos}"
+    print(f"  {src:26} -> {show(tree):34} (consumed {consumed})")
+
+# TODO 3: your language must decide whether  a < b < c  is legal, and if
+#         so what it means. Python chains it (a < b and b < c); C parses
+#         it as (a < b) < c, comparing a boolean against c. Which does
+#         your table produce right now? Write the decision into SEMANTICS.md.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output as written: the first line parses fully; the other two stop early, because the operators they need are not in the table yet.  Add the rows and all three consume everything.  Note that you never wrote a parsing function to do it.
+
+# Check Your Understanding
+
+In precedence climbing, an operator's binding power encodes:
+
+[(X)] Its precedence: how tightly it grips its operands relative to other operators
+[( )] How many tokens of lookahead it needs
+[( )] Its position in the token stream
+[( )] Whether it is prefix or infix
+
+---
+
+For a left-associative operator the recursive call gets `bp + 1`; for a right-associative one it gets `bp`. The `+ 1` works because:
+
+[(X)] It stops the recursive call absorbing another operator of equal power, so that one returns and folds on the left
+[( )] It skips one token
+[( )] It increases the operator's precedence by one level
+[( )] It prevents infinite recursion
+
+---
+
+`+` and `-` must be given the *same* binding power rather than distinct ones because:
+
+[(X)] They are at one precedence level; distinct powers would make `8 - 4 + 2` group wrongly
+[( )] The parser cannot compare unequal numbers
+[( )] Otherwise subtraction would become right-associative
+[( )] It saves memory in the table
+
+---
+
+The Part I ladder and Model 2's table produce identical trees. The practical difference is:
+
+[(X)] Cost and maintenance: fifteen precedence levels need fifteen functions in a ladder but fifteen table rows and one loop here
+[( )] The ladder cannot express right associativity
+[( )] The table cannot handle parentheses
+[( )] Only the ladder is LL(1)
+
+---
+
+## Exercises
 
 1.  *Right-associative tier.*  Add exponentiation `^` binding tighter than `*` and associating right.  The loop pattern will not give right association; the original right-recursive form `power -> unary [ "^" power ]` will.  Implement it, and verify `2 ^ 3 ^ 2` yields the tree for `2 ^ (3 ^ 2)`.
 2.  *Comparison tier.*  Add `< <= > >= == !=` at a tier *looser* than `addsub` (so `a + 1 < b * 2` parses sensibly).  Decide and document: should `a < b < c` be legal in your language, and if so, what should it mean?  (Python and C disagree; your team must choose for December.)

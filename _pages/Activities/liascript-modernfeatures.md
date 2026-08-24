@@ -77,7 +77,7 @@ def describe(node):
 
 print(describe(("+", ("num", 2), ("neg", ("num", 3)))))
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 The cost and the criterion.  A new syntactic form (readability spent up front, repaid in every dissection), and questions of exhaustiveness: ML-family compilers *prove* you handled every case, a reliability win your `evaluate`'s if-chain never gets.  Notice the example: pattern matching is practically purpose-built for tree walks like yours.
 
@@ -92,6 +92,137 @@ The cost and the criterion.  A new syntactic form (readability spent up front, r
 ## 4.  Async/Await: Concurrency as Syntax
 
 **The problem.**  Programs that wait (network, disk) waste their wait, and callback-based solutions shred control flow.  **The mechanism.** `async` functions are *pausable*: `await` yields control at a wait point and resumes when the result arrives, letting one thread interleave thousands of waiting tasks; the compiler transforms your straight-line code into a state machine (a *desugaring*, industrial grade).  **The cost and the criterion.**  The "function color" problem: async functions can only be awaited from async functions, splitting the ecosystem in two; writability and performance for I/O-bound work, bought with a pervasive design constraint.
+
+## Examples: Ownership and Async, Simulated in Python
+
+Two of the four features cannot be shown in Python directly: Python has a garbage collector, so nothing enforces ownership, and its `async` is cooperative rather than compiler-transformed.  What you *can* do is build the rules yourself and watch them bite, which is the fastest way to feel why Rust's borrow checker rejects what it rejects.
+
+### Model 0a: A Borrow Checker in Thirty Lines
+
+```python
+class Owned:
+    """A value with exactly one owner. Moving invalidates the source."""
+    def __init__(self, value):
+        self.value = value
+        self.alive  = True          # False once moved out of
+        self.shared = 0             # count of outstanding & borrows
+        self.mutably_borrowed = False
+
+    def move(self):
+        if not self.alive:
+            raise RuntimeError("use after move: this value was already moved")
+        if self.shared or self.mutably_borrowed:
+            raise RuntimeError("cannot move while borrowed")
+        self.alive = False
+        return Owned(self.value)
+
+    def borrow(self):               # &T : many readers allowed
+        if not self.alive:
+            raise RuntimeError("use after move")
+        if self.mutably_borrowed:
+            raise RuntimeError("cannot borrow while mutably borrowed")
+        self.shared += 1
+        return self.value
+
+    def borrow_mut(self):           # &mut T : exactly one writer, no readers
+        if not self.alive:
+            raise RuntimeError("use after move")
+        if self.shared or self.mutably_borrowed:
+            raise RuntimeError("cannot mutably borrow while already borrowed")
+        self.mutably_borrowed = True
+        return self.value
+
+    def release(self):
+        self.shared = max(0, self.shared - 1)
+        self.mutably_borrowed = False
+
+def attempt(label, fn):
+    try:
+        print(f"  {label:44} -> ok, {fn()!r}")
+    except RuntimeError as e:
+        print(f"  {label:44} -> REJECTED: {e}")
+
+print("=== What the rules allow ===")
+a = Owned("hello")
+attempt("borrow twice (two readers)",  lambda: (a.borrow(), a.borrow())[1])
+a.release(); a.release()
+
+b = Owned("world")
+attempt("move, then use the NEW owner", lambda: b.move().borrow())
+
+print("\n=== What the rules reject ===")
+c = Owned("data")
+c.move()
+attempt("use after move",               lambda: c.borrow())
+
+d = Owned("shared")
+d.borrow()
+attempt("mutable borrow while shared",  lambda: d.borrow_mut())
+
+e = Owned("locked")
+e.borrow_mut()
+attempt("second mutable borrow",        lambda: e.borrow_mut())
+
+f = Owned("pinned")
+f.borrow()
+attempt("move while borrowed",          lambda: f.move())
+
+print("\nRust does all four of these checks at COMPILE time, so none of")
+print("these programs would ever run. Here they raise at run time, which")
+print("is precisely the binding-time difference the theory section names.")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+#### Reading the Code
+
+- `alive`, `shared`, and `mutably_borrowed` are the entire borrow checker's state.  Rust tracks the same three facts, per value, in the compiler rather than at run time.
+- The rule "many readers **or** one writer, never both" appears twice: once in `borrow` (refuse if mutably borrowed) and once in `borrow_mut` (refuse if either kind of borrow is out).  That symmetry is what prevents a reader from seeing a half-written value.
+- `move` invalidates the source rather than copying it.  That single line is why Rust needs no garbage collector: at any moment exactly one name is responsible for the value, so its lifetime is a static fact.
+- Everything here raises at run time.  The whole Rust argument is that the *same* checks, done at compile time, cost nothing at run time and cannot be skipped by an untested path.
+
+### Model 0b: Async as Interleaving, Not Parallelism
+
+```python
+import asyncio, time
+
+async def fetch(name, delay):
+    print(f"    {name} starts")
+    await asyncio.sleep(delay)          # yields control here
+    print(f"    {name} done after {delay}s")
+    return f"{name}-result"
+
+async def sequential():
+    t0 = time.monotonic()
+    a = await fetch("A", 0.3)
+    b = await fetch("B", 0.3)
+    return time.monotonic() - t0, [a, b]
+
+async def concurrent():
+    t0 = time.monotonic()
+    results = await asyncio.gather(fetch("A", 0.3), fetch("B", 0.3))
+    return time.monotonic() - t0, results
+
+async def main():
+    print("=== Awaiting one after the other ===")
+    elapsed, results = await sequential()
+    print(f"  elapsed {elapsed:.2f}s  {results}")
+
+    print("\n=== Awaiting both together ===")
+    elapsed, results = await concurrent()
+    print(f"  elapsed {elapsed:.2f}s  {results}")
+
+    print("\nOne thread, two tasks. The second run is not faster because")
+    print("it used two CPUs; it is faster because A's WAIT overlapped B's.")
+
+asyncio.run(main())
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+#### Reading the Code
+
+- `await asyncio.sleep(delay)` is the pause point.  Everything before it runs, control returns to the scheduler, and the rest resumes when the sleep finishes.  That is the state machine the theory section describes, and Python builds it from the generator machinery you met in *Control Flow Semantics*.
+- `sequential` takes about twice as long as `concurrent` while doing identical work.  Nothing ran in parallel; the waits overlapped.
+- Only `async def` functions may `await`.  Try adding `await` inside `attempt` from Model 0a and Python refuses at compile time.  That constraint is the "function colour" problem: async-ness is contagious upward through every caller.
 
 ---
 
@@ -207,7 +338,80 @@ def categorize(n):
 for val in [-3, 0, 4, 7]:
     print(f"  categorize({val}) = {categorize(val)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- Each `case` names a *shape*, not a type test followed by field access.  `case BinOp(op="+", left=l, right=r)` checks the class, checks that `op` is `"+"`, and binds `l` and `r`, in one line.
+- The wildcard `case _` is the exhaustiveness escape hatch.  A language with real exhaustiveness checking (Rust, Haskell, OCaml) would *refuse to compile* a match missing a case, and would stop needing the wildcard.
+- The unhandled node at the end is the demonstration: Python matches nothing, falls to `case _`, and reports it at run time.  In a checked language that would have been a compile error, which is the binding-time lens applied to control flow.
+
+### Try It Yourself
+
+Rewrite one dispatch from your own interpreter as a `match`, and find the case you forgot.
+
+```python
+from dataclasses import dataclass
+from typing import Any
+
+@dataclass
+class Num:   value: float
+@dataclass
+class Var:   name: str
+@dataclass
+class BinOp: op: str; left: Any; right: Any
+@dataclass
+class Neg:   expr: Any
+
+def evaluate_ifchain(node, env):
+    if isinstance(node, Num): return node.value
+    if isinstance(node, Var): return env[node.name]
+    if isinstance(node, BinOp):
+        l, r = evaluate_ifchain(node.left, env), evaluate_ifchain(node.right, env)
+        return {"+": lambda: l+r, "-": lambda: l-r,
+                "*": lambda: l*r, "/": lambda: l/r}[node.op]()
+    if isinstance(node, Neg): return -evaluate_ifchain(node.expr, env)
+    raise ValueError(f"unknown node {type(node).__name__}")
+
+def evaluate_match(node, env):
+    match node:
+        case Num(value=v):
+            return v
+        case Var(name=n):
+            return env[n]
+        case BinOp(op="+", left=l, right=r):
+            return evaluate_match(l, env) + evaluate_match(r, env)
+        case BinOp(op="*", left=l, right=r):
+            return evaluate_match(l, env) * evaluate_match(r, env)
+        # TODO 1: add the cases for "-" and "/". Note that you now write
+        #         one case per operator, where the if-chain used a dict.
+        #         Which reads better? Which would you rather EXTEND?
+        # TODO 2: add the Neg case.
+        case _:
+            raise ValueError(f"unhandled: {node!r}")
+
+env = {"x": 3.0}
+tests = [("2 + 3",     BinOp("+", Num(2), Num(3))),
+         ("2 * x",     BinOp("*", Num(2), Var("x"))),
+         ("10 - 4",    BinOp("-", Num(10), Num(4))),
+         ("-x",        Neg(Var("x")))]
+
+for label, tree in tests:
+    got_if = evaluate_ifchain(tree, env)
+    try:
+        got_match = evaluate_match(tree, env)
+    except ValueError as e:
+        got_match = f"ERROR: {e}"
+    flag = "same" if got_if == got_match else "DIFFERENT"
+    print(f"  {label:8} if-chain={got_if!r:8} match={got_match!r:40} {flag}")
+
+# TODO 3: count the lines of each version once both are complete, and say
+#         which one makes it harder to FORGET a case. That is the real
+#         argument for match, and it is about the checker, not the syntax.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output as written: the first two rows agree, and the last two report `DIFFERENT` because `match` has no case for them yet.  Those two rows are what an exhaustiveness checker would have told you before running.
 
 ### Critical Thinking Questions
 
@@ -313,7 +517,7 @@ print()
 print("Key insight: __post_init__ moves invariant checks to object construction,")
 print("ensuring no Token or ASTNode can exist in an invalid state.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -456,7 +660,7 @@ with parse_session("bad $ input") as s:
     print("Inside session with bad input")
     raise ValueError("unexpected token at position 4")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -467,10 +671,56 @@ with parse_session("bad $ input") as s:
 
 ---
 
----
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
 
-## 2.  Exercises
+# Check Your Understanding
+
+Rust achieves memory safety without a garbage collector primarily by:
+
+[( )] Forbidding heap allocation
+[( )] Checking every pointer at run time
+[(X)] Compile-time ownership and borrowing rules that prove references cannot outlive the values they point to
+[( )] Running a collector only at program exit
+
+---
+
+In Model 0a, `borrow_mut` refuses when `shared > 0`. What would break if it allowed it?
+
+[(X)] A reader could observe the value halfway through being written
+[( )] The value would be freed twice
+[( )] The move counter would overflow
+[( )] Nothing; Rust actually permits this
+
+---
+
+Model 0b's concurrent run finishes in half the time of the sequential one. That is because:
+
+[(X)] One task's waiting overlapped the other's; nothing ran on a second CPU
+[( )] `asyncio.gather` spawns a thread per task
+[( )] `asyncio.sleep` is faster than `time.sleep`
+[( )] The second run reused the first run's cached results
+
+---
+
+`match` with exhaustiveness checking is safer than an if-chain mainly because:
+
+[(X)] The checker can prove no case was forgotten, moving that error from run time to compile time
+[( )] It executes faster
+[( )] It permits fewer node types
+[( )] It removes the need for a wildcard case
+
+---
+
+A function marked `async` may only be awaited from another `async` function. This is known as:
+
+[(X)] The function colour problem: async-ness is contagious upward through every caller
+[( )] Type erasure
+[( )] The borrow checker
+[( )] Structural typing
+
+---
+
+## Exercises
 
 1.  *Feature pitch.*  Each pair writes a half-page pitch for adding their jigsaw feature (or a realistic slice of it) to the team language: the construct's syntax in your grammar's EBNF, the node it adds, the evaluator rule, and the criterion it serves.  The team votes one pitch onto the project's "stretch goals" list.
 2.  *Exhaustiveness by hand.*  Add a new node type to your AST but not to your match-based evaluate.  Run it; read the failure.  Now add a `case _:` that raises a located error listing the node type.  You have hand-built the safety net ML compilers automate; one sentence on the difference.
@@ -490,16 +740,9 @@ In your notebook: every feature today moved some check or transformation to an e
 - The Rust Book, chapter 4 (ownership): https://doc.rust-lang.org/book/
 - PEP 634 through 636 (Python structural pattern matching), especially 636, the tutorial.
 - Bob Nystrom.  "What Color is Your Function?"  (online essay), the async critique, vividly argued.
-
----
-
-## Going Deeper (Optional Pointers)
-
-The core lesson above stands on its own.  The deep-dive appendices that used to follow it now live elsewhere:
-
-> **Going further:** the material that used to live here (macros and metaprogramming: C-style textual macros and their double-evaluation hazards, quasiquotation, and hygienic expansion) is now project material: the **Macros or Hygienic Quoting** entry in the [Team Language Project's Extensions Menu](https://www.billmongan.com/Ursinus-CS374/Projects/TeamLanguage) specifies exactly what a credited macro extension must do, and [Building the Mini Language: A Complete Guide](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-project-language-guide.md) provides the interpreter foundation to build it on.  Explore it when your project or curiosity calls for it.
-
-> **Going further:** two former appendices are now self-study topics.  *Objects and OOP from closures to vtables*, method resolution order (MRO) and the diamond problem, abstract base classes, and how vtables implement dynamic dispatch, is a rich afternoon with the Python data-model docs; search "C3 linearization," "Python MRO," and "abstract base class."  *The expression problem* (why adding new node types is easy in OOP but adding new operations is easy in functional style, and never both) is the classic design tension behind your evaluator; search "expression problem Wadler" and revisit it when your team debates visitor vs. match.
+- [Team Language Project Extensions Menu](https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage): its Macros or Hygienic Quoting entry specifies exactly what a credited macro extension must do, covering C-style textual macros and their double-evaluation hazards, quasiquotation, and hygienic expansion.  [Building the Mini Language](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ProjectLanguageGuide) is the interpreter foundation to build it on.
+- Objects and OOP from closures to vtables, method resolution order and the diamond problem, abstract base classes, and how vtables implement dynamic dispatch: the Python data-model docs, plus "C3 linearization" and "Python MRO".
+- The expression problem: why adding new node types is easy in OOP and adding new operations is easy in functional style, and never both.  The design tension behind your evaluator; search "expression problem Wadler" and revisit it when your team debates visitor versus match.
 
 ---
 

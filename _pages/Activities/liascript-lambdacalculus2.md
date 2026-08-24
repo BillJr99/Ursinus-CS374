@@ -132,7 +132,7 @@ AND TRUE FALSE
 
 **Decode helper, "peek inside" a Church boolean:**
 
-```python  liascript
+```python
 TRUE  = lambda x: lambda y: x
 FALSE = lambda x: lambda y: y
 
@@ -142,13 +142,13 @@ def church_to_bool(b):
 print("church_to_bool(TRUE)  =", church_to_bool(TRUE))
 print("church_to_bool(FALSE) =", church_to_bool(FALSE))
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 Hand a Church boolean `True` and `False` (Python's built-ins) as its two arguments.  Since TRUE selects its first argument it returns `True`; FALSE returns `False`.  This is your window into the encoding.
 
 ### Church Booleans; Runnable
 
-```python  liascript
+```python
 # Church booleans: TRUE selects first, FALSE selects second.
 TRUE  = lambda x: lambda y: x          # K  (Kestrel)
 FALSE = lambda x: lambda y: y          # KI (Kite)
@@ -178,7 +178,7 @@ print("\n=== Church if-then-else ===")
 print("if TRUE  then 'yes' else 'no' =", TRUE("yes")("no"))
 print("if FALSE then 'yes' else 'no' =", FALSE("yes")("no"))
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -268,7 +268,7 @@ Try `MULT TWO THREE = λf.λx. m (n f) x` on your own with the same method and w
 
 **Decode helper, "peek inside" a Church numeral:**
 
-```python  liascript
+```python
 ZERO = lambda f: lambda x: x
 SUCC = lambda n: lambda f: lambda x: f(n(f)(x))
 
@@ -281,7 +281,7 @@ print("church_to_int(ZERO) =", church_to_int(ZERO))
 print("church_to_int(ONE)  =", church_to_int(ONE))
 print("church_to_int(TWO)  =", church_to_int(TWO))
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 Hand the numeral the successor function on Python ints and the seed 0.  If the numeral applies its function twice (as TWO does), you get `0 + 1 + 1 = 2`.  The number of applications is exactly the Church numeral's value.
 
@@ -289,7 +289,7 @@ Hand the numeral the successor function on Python ints and the seed 0.  If the n
 
 ## Church Encodings - Runnable
 
-```python  liascript
+```python
 # Church encodings, executable. Python lambdas ARE lambda calculus terms.
 
 TRUE  = lambda x: lambda y: x          # K  (Kestrel)
@@ -337,9 +337,69 @@ print("\n=== ISZERO ===")
 for n, val in [(ZERO, "ZERO"), (ONE, "ONE"), (TWO, "TWO")]:
     print(f"ISZERO({val}) = {show_bool(ISZERO(n))}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
+
+### Reading the Code
+
+- Every "value" here is a function, and nothing else exists.  `TRUE` and `FALSE` are not booleans in disguise; they are *selectors*, and `IF` works by applying its condition to the two branches and letting the condition choose.
+- `church_to_int` is a decoder, not part of the encoding.  A Church numeral `n` means "apply `f` to `x`, `n` times"; handing it Python's successor and `0` is only one way to read it back out.
+- `SUCC` wraps one more application around whatever it was given, which is why numerals compose without any arithmetic anywhere in sight.
+- `ISZERO` applies `lambda _: FALSE` exactly `n` times to `TRUE`.  Applied zero times the `TRUE` survives untouched; applied even once it is gone.  With no numbers available, that is the only way to ask "is this zero?".
+
+### Try It Yourself
+
+Build operators the deck has not given you, using nothing but functions.
+
+```python
+TRUE  = lambda x: lambda y: x
+FALSE = lambda x: lambda y: y
+IF    = lambda b: lambda t: lambda f: b(t)(f)
+
+ZERO  = lambda f: lambda x: x
+SUCC  = lambda n: lambda f: lambda x: f(n(f)(x))
+ADD   = lambda m: lambda n: lambda f: lambda x: m(f)(n(f)(x))
+MULT  = lambda m: lambda n: lambda f: m(n(f))
+
+to_int  = lambda n: n(lambda k: k + 1)(0)
+to_bool = lambda b: b(True)(False)
+
+ONE, TWO = SUCC(ZERO), SUCC(SUCC(ZERO))
+THREE    = SUCC(TWO)
+
+print("=== What you already have ===")
+print("  to_int(THREE)            = " + str(to_int(THREE)))
+print("  to_int(ADD(TWO)(THREE))  = " + str(to_int(ADD(TWO)(THREE))))
+print("  to_int(MULT(TWO)(THREE)) = " + str(to_int(MULT(TWO)(THREE))))
+
+# TODO 1: AND, OR, NOT. A Church boolean IS a selector, so each of these
+#         is written by choosing what p should select.
+#         Hint for the first: AND = lambda p: lambda q: p(q)(p)
+AND = lambda p: lambda q: p            # replace me
+OR  = lambda p: lambda q: p            # replace me
+NOT = lambda p: p                      # replace me
+
+print("\n=== Your booleans (all True until you fix the stubs) ===")
+for name, expr in [("AND(TRUE)(FALSE)", AND(TRUE)(FALSE)),
+                   ("AND(TRUE)(TRUE)",  AND(TRUE)(TRUE)),
+                   ("OR(FALSE)(TRUE)",  OR(FALSE)(TRUE)),
+                   ("NOT(TRUE)",        NOT(TRUE))]:
+    print("  " + name.ljust(20) + " = " + str(to_bool(expr)))
+print("  want: False, True, True, False")
+
+# TODO 2: POW(m)(n) is m to the power n, and it is SHORTER than MULT.
+#         Think about what happens when you apply one numeral to another.
+POW = lambda m: lambda n: m            # replace me
+print("\n  to_int(POW(TWO)(THREE)) = " + str(to_int(POW(TWO)(THREE))) + "   (want 8)")
+
+# TODO 3: to_int decodes by counting. Decode THREE a DIFFERENT way: hand it
+#         a function that appends to a string, so THREE becomes "fff".
+#         What does that tell you about what a numeral actually is?
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: the first three lines are 3, 5 and 6; your four booleans all print `True` because the stubs return `p`, and `POW` reports 2 instead of 8.  Fix the stubs and the wanted values appear.
 
 ## Model 3: Interrogate the Encodings
 
@@ -370,7 +430,7 @@ Under Church encoding, the expression `b(t)(e)` where b is a Church boolean impl
 
 **Church pairs: building linked data from functions:**
 
-```python  liascript
+```python
 # Church pairs: PAIR a b f = f a b
 # FST p = p K  (select first)
 # SND p = p KI (select second)
@@ -416,7 +476,7 @@ MINUS = lambda m: lambda n: n(PRED)(m)
 print(f"\n4 - 2 = {church_to_int(MINUS(FOUR)(TWO))}")   # 2
 print(f"3 - 4 = {church_to_int(MINUS(THREE)(FOUR))}")   # 0 (floored)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -428,8 +488,54 @@ print(f"3 - 4 = {church_to_int(MINUS(THREE)(FOUR))}")   # 0 (floored)
 
 ---
 
----
 **In-class work stops here.**  Everything below is homework and going-deeper material; attempt the exercises before the related assignment.
+
+# Check Your Understanding
+
+`TRUE = \x.\y.x` and `FALSE = \x.\y.y`. A Church boolean is best described as:
+
+[(X)] A selector: a function that picks one of the two things handed to it
+[( )] A number in disguise, 1 for true and 0 for false
+[( )] A primitive the lambda calculus provides
+[( )] A pair whose first element is a flag
+
+---
+
+`IF = \b.\t.\f. b t f` works because:
+
+[(X)] The boolean itself does the choosing; `IF` only hands it the two branches
+[( )] It compares `b` against `TRUE`
+[( )] It evaluates both branches and discards one
+[( )] It relies on short-circuit evaluation
+
+---
+
+The Church numeral `THREE` is:
+
+[(X)] A function that applies its first argument to its second, three times
+[( )] The literal 3, encoded in binary
+[( )] A list of three elements
+[( )] A pair of `TWO` and `SUCC`
+
+---
+
+`ISZERO n` applies `\_.FALSE` to `TRUE`, `n` times. That decides zero because:
+
+[(X)] Applied zero times the `TRUE` is never replaced; applied any positive number of times it becomes `FALSE`
+[( )] It compares `n` against `ZERO` directly
+[( )] `FALSE` absorbs any further application
+[( )] Church numerals carry a zero flag
+
+---
+
+`PRED` is far harder than `SUCC` because:
+
+[(X)] A numeral can only build applications outward, so removing one means rebuilding the count, classically with a pair that lags one behind
+[( )] Subtraction is undefined on natural numbers
+[( )] It requires the Y combinator
+[( )] `SUCC` is not invertible in principle
+
+---
 
 ## 4.  Exercises
 
@@ -454,16 +560,9 @@ In your notebook: numbers, booleans, pairs, and conditionals all dissolved into 
 - **Lambda-Py / pycombinator**: combinators and Church encodings in Python; run every Church encoding from today interactively in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html
 - Raymond Smullyan.  *To Mock a Mockingbird* (1985): the combinator birds.
 - Raul Rojas.  "A Tutorial Introduction to the Lambda Calculus" (online), sections on encodings.
-
----
-
-## Going Deeper (Optional Pointers)
-
-> **Going further:** the full Y-combinator derivation that used to live here (self-reference without names, the fixed-point equation $Y\ g = g\ (Y\ g)$, and the Z combinator for strict languages) now lives as the advanced section "Advanced: Deriving the Y Combinator" at the end of the dedicated tutorial: [Build a Lambda Calculus Reducer](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md).  **Direction C of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374/Assignments/Functional) builds on the Church encodings from this activity**: read that direction's section before choosing it.
-
-> **Going further:** the call-with-current-continuation appendix that used to live here: capturing "the rest of the computation" as a value, deriving break, return, exceptions, cooperative schedulers, generators, and backtracking from `call/cc`, now lives where it is assessed: **Direction B of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374/Assignments/Functional) builds on this material**; read that direction's section before choosing it.
-
-> **Going further:** the Curry-Howard correspondence appendix (programs as proofs: propositions as types, products and sums, the empty type and absurdity, a glimpse of dependent types) is a self-study topic; search "Curry-Howard correspondence" and see *Propositions as Types* by Philip Wadler when curiosity calls for it.
+- [Build a Lambda Calculus Reducer](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LambdaCalculusReducer): the full Y-combinator derivation, self-reference without names, the fixed-point equation $Y\ g = g\ (Y\ g)$, and the Z combinator for strict languages.  Direction C of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Functional) builds on the Church encodings from this activity.
+- `call/cc`: capturing the rest of the computation as a value, and deriving break, return, exceptions, cooperative schedulers, generators, and backtracking from it.  Direction B of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Functional) builds on this.
+- The Curry-Howard correspondence: propositions as types, products and sums, the empty type and absurdity, and a glimpse of dependent types.  Philip Wadler, *Propositions as Types*.
 
 ---
 

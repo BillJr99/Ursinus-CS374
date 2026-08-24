@@ -81,7 +81,7 @@ for v in test_values:
     java_style = bool(v) if isinstance(v, bool) else "TYPE ERROR"
     print(f"{str(v):<12} {str(python_result):<16} {str(c_style):<16} {str(java_style)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -126,7 +126,10 @@ def evaluate(node, env):
         return evaluate(node.then_ if truthy(cond_val) else node.else_, env)
     if isinstance(node, BinOp):
         L, R = evaluate(node.left, env), evaluate(node.right, env)
-        return {"+": L+R, "-": L-R, "*": L*R, "/": L/R}[node.op]
+        return {"+": lambda: L+R,
+                "-": lambda: L-R,
+                "*": lambda: L*R,
+                "/": lambda: L/R}[node.op]()
     raise TypeError(f"unknown: {node!r}")
 
 # Test 1: false condition, else branch evaluated, then_ (Bomb) skipped
@@ -141,7 +144,7 @@ print(f"true -> then: {result2}")   # 99
 result3 = evaluate(Cond(Num(0), Num(1), Num(2)), {})
 print(f"0 -> else: {result3}")  # 2 (0 is falsy)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -149,6 +152,58 @@ print(f"0 -> else: {result3}")  # 2 (0 is falsy)
 5.  In the `evaluate` function for `Cond`, the key line is `evaluate(node.then_ if truthy(cond_val) else node.else_, env)`.  This is a Python ternary that *chooses which recursive call to make*.  Why does this implement non-strictness, while `evaluate(node.then_, env) + evaluate(node.else_, env)` would not?
 
 ---
+
+### Reading the Code
+
+- `Bomb` is a node whose evaluation always raises.  Putting one in a branch is how you *prove* the branch was skipped: if the program prints an answer instead of exploding, the evaluator genuinely never went there.
+- The `If` case evaluates the condition, then evaluates **exactly one** of `then_` and `else_`.  Compare that with the `BinOp` case, which evaluates both children unconditionally.  That difference is the definition of non-strict.
+- This is why `if` cannot be a function in a strict language.  A function call evaluates its arguments first, so `my_if(cond, a, b)` would evaluate both `a` and `b` before `my_if` ever ran, and the Bomb would go off.
+
+### Try It Yourself
+
+Try to write `if` as an ordinary function, watch it fail, then fix it the way real languages do.
+
+```python
+from dataclasses import dataclass
+from typing import Any
+
+def boom():
+    raise ZeroDivisionError("this branch should never have run")
+
+print("=== 1. if as a FUNCTION: both arguments are evaluated first ===")
+def my_if(cond, then_val, else_val):
+    return then_val if cond else else_val
+
+try:
+    print(f"  my_if(True, 42, boom()) = {my_if(True, 42, boom())}")
+except ZeroDivisionError as e:
+    print(f"  my_if(True, 42, boom()) -> {type(e).__name__}: {e}")
+    print("  The else branch ran even though the condition was True.")
+
+print("\n=== 2. Python's own if: non-strict ===")
+print(f"  42 if True else boom() = {42 if True else boom()}")
+
+print("\n=== 3. The fix real languages use: pass THUNKS ===")
+def my_if_lazy(cond, then_thunk, else_thunk):
+    return then_thunk() if cond else else_thunk()
+
+print(f"  my_if_lazy(True, lambda: 42, lambda: boom()) = "
+      f"{my_if_lazy(True, lambda: 42, lambda: boom())}")
+
+# TODO 1: explain in one sentence why wrapping in `lambda:` fixes it.
+#         What did the lambda delay, and until when?
+
+# TODO 2: Haskell needs no thunks here, because it is lazy by default.
+#         What does that buy, and what does it cost? Name one thing that
+#         becomes harder to reason about.
+
+# TODO 3: your language's `if` is a NODE, not a function. Write the one
+#         sentence for SEMANTICS.md stating that it evaluates its condition
+#         and then exactly one branch.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: the first call raises, the second prints `42`, the third prints `42`.  That progression is why `if` is built into the grammar rather than shipped as a library function.
 
 # Part II: Short-Circuit Evaluation
 
@@ -217,7 +272,7 @@ i = 5   # out of bounds
 result = i < len(items) and items[i] > 0
 print(f"Safe guard result: {result}")   # False (never indexes out of bounds)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 The guarantee that `i < n and items[i] > 0` never indexes out of bounds depends on:
 
@@ -271,7 +326,7 @@ print("\nNote: Java 'and'/'or' always return boolean:")
 # In Java: boolean b = true && false;  // always true or false
 # Python allows: x = True and "hello"  // returns "hello"
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -279,6 +334,49 @@ print("\nNote: Java 'and'/'or' always return boolean:")
 10.  Should your project language's `and`/`or` return the deciding operand (Python style) or always return a boolean (Java style)?  Write a program whose output differs between the two choices.
 
 ---
+
+### Reading the Code
+
+- Python's `and`/`or` return an **operand**, not a boolean.  `True and "hello"` is `"hello"`.  Java's `&&` is defined to produce a `boolean`, so the same expression would not type-check there.
+- That is two independent decisions your language must make: does `and` stop early (short-circuit), and does it return a boolean or one of its operands (value-preserving)?  A language can pick either answer to each.
+- The value-preserving choice is what makes the idiom `name = user_input or "anonymous"` work.  It is also what makes `0 or "default"` return `"default"`, which surprises people, because `0` is falsy.
+
+### Try It Yourself
+
+Decide both questions for your language, and find the case where the two choices disagree.
+
+```python
+print("=== Python: and/or return an OPERAND ===")
+cases = [
+    ('True and "hello"',  True and "hello"),
+    ('False and "hello"', False and "hello"),
+    ('"" or "fallback"',  "" or "fallback"),
+    ('0 or "fallback"',   0 or "fallback"),
+    ('"a" or "b"',        "a" or "b"),
+]
+for label, value in cases:
+    print(f"  {label:22} -> {value!r:12} (type {type(value).__name__})")
+
+print("\n=== A boolean-only language would give ===")
+for label, value in cases:
+    print(f"  {label:22} -> {bool(value)!r}")
+
+# TODO 1: find the line where the two columns disagree in a way that
+#         MATTERS, not just in type. Hint: look at the fallback idiom.
+
+# TODO 2: your language has two independent decisions:
+#           (a) does `and` evaluate its right operand when the left is false?
+#           (b) does `and` return a boolean, or one of its operands?
+#         Write both answers into SEMANTICS.md. Name a language for each
+#         of the four combinations, or argue that one combination is silly.
+
+# TODO 3: implement `default(value, fallback)` as a FUNCTION and show it
+#         behaves differently from `value or fallback` for at least one
+#         input. Which behaviour do you want in your language?
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: `0 or "fallback"` gives `"fallback"` in the first column and `True` in the second.  If your language ever means "use the default only when the value is *missing*", that row is the bug waiting to happen.
 
 # Part III: Iteration
 
@@ -330,8 +428,16 @@ def evaluate(node, env):
     if isinstance(node, Var):   return env.get(node.name, 0)
     if isinstance(node, BinOp):
         L, R = evaluate(node.left, env), evaluate(node.right, env)
-        return {"+": L+R, "-": L-R, "*": L*R, "/": L/R,
-                ">": float(L>R), "<": float(L<R), "==": float(L==R)}[node.op]
+        return {"+":  lambda: L+R,
+                "-":  lambda: L-R,
+                "*":  lambda: L*R,
+                "/":  lambda: L/R,
+                ">":  lambda: float(L>R),
+                "<":  lambda: float(L<R),
+                ">=": lambda: float(L>=R),
+                "<=": lambda: float(L<=R),
+                "==": lambda: float(L==R),
+                "!=": lambda: float(L!=R)}[node.op]()
 
 def execute(stmt, env):
     if isinstance(stmt, Assign):
@@ -375,7 +481,7 @@ program = Block([
 print("First multiple of 7:")
 execute(program, env)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -385,40 +491,9 @@ execute(program, env)
 
 ---
 
-## 4.  Exercises
+# Part IV: Statements, State, and the REPL
 
-1.  *Implement the trio.*  Add `LogicOp` with short-circuit `and`/`or` and a unary `not` to your lexer, parser (new tier), and evaluator.  Reproduce the Bomb test inside *your* language: a right operand that would raise (divide by zero) but is never reached.
-2.  *Break and continue.*  Implement both using custom exception classes (`BreakSignal`, `ContinueSignal`) raised by the statements and caught by the `While` executor.  Demonstrate a search loop that exits early on finding a value.
-3.  *Desugaring.*  Implement `for (let i = 0; i < n; i = i + 1) { ... }` purely in the parser, producing the AST of the equivalent block-plus-while with no new evaluator code.  Show the `pretty` output proving the rewrite.
-4.  *Truthiness differential.*  Write one program whose output differs under booleans-only versus Python-style truthiness, and confirm your interpreter follows your documented policy.
-5.  *Step limit.*  Add a `max_steps` parameter to your `While` executor that raises `RuntimeError` after N iterations.  This protects against infinite loops in student programs.  Test it with `while 1 > 0: print 1` and a limit of 100.
-
----
-
-## Reflection Prompt
-
-In your notebook: short-circuiting means the language promises *not to look* at something.  Contracts about what will not be examined are everywhere (sealed exams, privacy policies, blind review).  Pick one and describe what breaks when the no-look promise is violated, in computing or out of it.  Also: now that you have implemented `break` via exceptions, does using exceptions for control flow seem elegant or surprising?  Under what other circumstances might you use exceptions for non-error control flow?
-
----
-
-## 5.  Further Reading
-
-- Douglas Thain.  *Introduction to Compilers and Language Design*, Chapter 6 and 7 notes on control flow.
-- Robert Nystrom.  *Crafting Interpreters*, "Control Flow" (online), including the break-via-exception trick.
-- Robert Sebesta.  *Concepts of Programming Languages*, the statement-level control structures chapter.
-- Python docs on [short-circuit evaluation](https://docs.python.org/3/reference/expressions.html#boolean-operations): the return-operand semantics documented precisely.
-
----
-
-Up next: the *Functional Programming and Higher-Order Functions* activity changes the lens entirely, and today's semantics decisions complete the Interpreter assignment's core.
-
-# From the Tree-Walking Interpretation Activity: Statements, State, and the REPL
-
-This session is Day 2 of tree-walking interpretation.  Day 1 evaluated *expressions* - a fold over the tree that returns a value.  Statements are different: they do not return values, they change state, and that difference is what the rest of this session is about.  The material below came from the interpretation activity's own Part II, which covered the same ground this session covers.
-
-# Part II: Statements, State, and the REPL (Day 2)
-
-## 2.  Executing Statements
+## 4.  Theory: Executing Statements
 
 Expressions produce values; **statements produce effects**: an `Assign` updates the environment, a `Print` writes output, a `Block` executes children in order, a `While` re-evaluates its condition.  The executor therefore threads the environment through:
 
@@ -446,7 +521,7 @@ In a tree-walking interpreter, executing the program's `while` loop one million 
 
 > **Watch out!**  A common mistake is for `execute` to return `None` (implicitly) for every branch, and then have a caller accidentally use that `None` as if it were a language value, for example, printing the result of `execute(Print(...), env)` instead of the result already printed inside `execute`.  Statements produce *effects*, not values; callers of `execute` should never inspect its return value.
 
-## Model 3: Complete Statement Executor
+## Model 5: Complete Statement Executor
 
 ```python
 from dataclasses import dataclass, field
@@ -478,9 +553,16 @@ def evaluate(node, env):
         return env[node.name]
     if isinstance(node, BinOp):
         L, R = evaluate(node.left, env), evaluate(node.right, env)
-        return {"+": L+R, "-": L-R, "*": L*R, "/": L/R,
-                ">": L>R, "<": L<R, ">=": L>=R, "<=": L<=R,
-                "==": L==R, "!=": L!=R}[node.op]
+        return {"+":  lambda: L+R,
+                "-":  lambda: L-R,
+                "*":  lambda: L*R,
+                "/":  lambda: L/R,
+                ">":  lambda: L>R,
+                "<":  lambda: L<R,
+                ">=": lambda: L>=R,
+                "<=": lambda: L<=R,
+                "==": lambda: L==R,
+                "!=": lambda: L!=R}[node.op]()
     raise TypeError(f"unknown expr node: {node!r}")
 
 def truthy(val):
@@ -524,7 +606,7 @@ program = Block([
 execute(program, env)
 print(f"env after: {env}")     # n=0, total=15
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -538,7 +620,93 @@ print(f"env after: {env}")     # n=0, total=15
 
 > **Watch out!**  Because the REPL's `env` dictionary persists across lines, a variable assigned on line 1 is still live on line 100.  This means the *order* in which the user types lines matters, and re-running the REPL from scratch will start with an empty environment.  Students sometimes expect the REPL to behave like a script (isolated, top-to-bottom) rather than a stateful session.  They are different execution models, and it is worth being explicit in your language documentation about which one your REPL provides.
 
-## Model 4: The REPL, Your Language Goes Interactive
+### Reading the Code
+
+- `execute` returns nothing.  Every branch works by *effect*: writing to `env`, printing, or looping.  It differs structurally from `evaluate`, which returns a value and touches nothing.
+- The same `env` dictionary is passed to every recursive call, never copied.  That is what makes an assignment inside a loop body visible after the loop ends, and it is the opposite of the fresh-frame-per-call discipline that closures need.
+- `While` re-evaluates its condition expression on every pass.  It does not cache it.  If it did, `while n > 0` would run forever.
+- `Block` executes its children in order and discards each result.  Order matters here in a way it never did for expressions.
+
+### Try It Yourself
+
+Add the two statements the executor is missing, using the trick real interpreters use.
+
+```python
+from dataclasses import dataclass
+from typing import Any, List
+
+@dataclass
+class Num:    value: float
+@dataclass
+class Var:    name: str
+@dataclass
+class BinOp:  op: str; left: Any; right: Any
+@dataclass
+class Assign: name: str; expr: Any
+@dataclass
+class Print:  expr: Any
+@dataclass
+class Block:  stmts: List[Any]
+@dataclass
+class While:  cond: Any; body: Any
+@dataclass
+class Break:  pass
+@dataclass
+class Continue: pass
+
+class BreakSignal(Exception):    pass
+class ContinueSignal(Exception): pass
+
+def evaluate(node, env):
+    if isinstance(node, Num): return node.value
+    if isinstance(node, Var): return env.get(node.name, 0)
+    if isinstance(node, BinOp):
+        L, R = evaluate(node.left, env), evaluate(node.right, env)
+        return {"+": lambda: L+R, "-": lambda: L-R, "*": lambda: L*R,
+                "/": lambda: L/R, ">": lambda: L>R, "<": lambda: L<R,
+                "==": lambda: L==R, "%": lambda: L%R}[node.op]()
+    raise TypeError(node)
+
+def execute(stmt, env):
+    if isinstance(stmt, Assign): env[stmt.name] = evaluate(stmt.expr, env)
+    elif isinstance(stmt, Print): print("   ", evaluate(stmt.expr, env))
+    elif isinstance(stmt, Block):
+        for s in stmt.stmts: execute(s, env)
+    elif isinstance(stmt, While):
+        while evaluate(stmt.cond, env):
+            execute(stmt.body, env)
+            # TODO 1: catch BreakSignal here and stop the loop.
+            # TODO 2: catch ContinueSignal and go to the next iteration.
+            #         Careful: where exactly does the try/except go for
+            #         continue to skip the REST of the body but still
+            #         re-check the condition?
+    elif isinstance(stmt, Break):    raise BreakSignal()
+    elif isinstance(stmt, Continue): raise ContinueSignal()
+    else: raise TypeError(stmt)
+
+#  n = 0; while n < 10 { n = n + 1; if n % 2 == 0 continue; if n > 7 break; print n }
+# Written without If for now: just exercise break.
+prog = Block([
+    Assign("n", Num(0)),
+    While(BinOp("<", Var("n"), Num(10)),
+          Block([Assign("n", BinOp("+", Var("n"), Num(1))),
+                 Print(Var("n"))])),
+])
+print("Counting to 10 with no break yet:")
+try:
+    execute(prog, {})
+except (BreakSignal, ContinueSignal) as sig:
+    print(f"  {type(sig).__name__} escaped the loop -- that is TODO 1/2.")
+
+# TODO 3: once break works, put a Break in the body and show the loop
+#         stopping early. Then answer: why is an EXCEPTION the natural
+#         mechanism here, when break is not an error?
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output as written: the numbers 1 through 10.  Add a `Break` and, until TODO 1 is done, the signal escapes the loop entirely and is caught by the outer handler, which is precisely the bug the `except` inside `While` prevents.
+
+## Model 6: The REPL, Your Language Goes Interactive
 
 ```python
 from dataclasses import dataclass
@@ -601,7 +769,10 @@ def evaluate(node, env):
         return val
     if isinstance(node, BinOp):
         L, R = evaluate(node.left, env), evaluate(node.right, env)
-        return {"+": L+R, "-": L-R, "*": L*R, "/": L/R}[node.op]
+        return {"+": lambda: L+R,
+                "-": lambda: L-R,
+                "*": lambda: L*R,
+                "/": lambda: L/R}[node.op]()
 
 # --- Simulate a REPL session ------------------------------------------------
 env = {}
@@ -626,7 +797,7 @@ for line in repl_input:
 
 print(f"\nFinal environment: {env}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -636,11 +807,63 @@ print(f"\nFinal environment: {env}")
 
 ---
 
----
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
 
-## 3.  Exercises
 
+---
+
+### Reading the Code
+
+- The REPL is a loop around the same three functions the whole session has been building: tokenize, parse, execute.  Nothing new is required to make a language interactive; you just stop reading from a file.
+- `env` lives *outside* the loop, which is what makes the session stateful: a variable defined on one line is visible on the next.  Move it inside and every line would start from nothing.
+- Errors are caught per line rather than killing the session, which is the `LangError` discipline from *Tree-Walking Interpretation* finally paying off: a user's typo prints a message and the prompt comes back.
+
+---
+
+# Check Your Understanding
+
+`if` cannot be written as an ordinary function in a strict language because:
+
+[(X)] A function call evaluates all its arguments first, so both branches would run before the function did
+[( )] Functions cannot return different types from different branches
+[( )] The condition would be evaluated twice
+[( )] `if` needs access to the environment and functions do not
+
+---
+
+In Python, `0 or "fallback"` evaluates to `"fallback"`. This shows that Python's `or` is:
+
+[(X)] Short-circuiting *and* value-preserving: it returns an operand, not a boolean
+[( )] Short-circuiting only: it returns `True` or `False`
+[( )] Neither: it evaluates both sides and returns the second
+[( )] Coercing `0` to a string
+
+---
+
+`execute` returns nothing and `evaluate` returns a value. That difference exists because:
+
+[(X)] Statements produce effects on the environment and output; expressions produce values
+[( )] Python functions cannot return from inside a `while`
+[( )] `execute` is called for its speed, not its result
+[( )] Statements are evaluated lazily
+
+---
+
+`break` is implemented by raising an exception caught in the `While` executor. Why is that natural even though `break` is not an error?
+
+[(X)] It needs to unwind out of arbitrarily nested statement execution to one known place, which is exactly what exceptions do
+[( )] Python offers no other way to leave a loop
+[( )] It makes `break` slower, which discourages its use
+[( )] Exceptions are the only values `execute` can return
+
+---
+
+# Exercises
+1.  *Implement the trio.*  Add `LogicOp` with short-circuit `and`/`or` and a unary `not` to your lexer, parser (new tier), and evaluator.  Reproduce the Bomb test inside *your* language: a right operand that would raise (divide by zero) but is never reached.
+2.  *Break and continue.*  Implement both using custom exception classes (`BreakSignal`, `ContinueSignal`) raised by the statements and caught by the `While` executor.  Demonstrate a search loop that exits early on finding a value.
+3.  *Desugaring.*  Implement `for (let i = 0; i < n; i = i + 1) { ... }` purely in the parser, producing the AST of the equivalent block-plus-while with no new evaluator code.  Show the `pretty` output proving the rewrite.
+4.  *Truthiness differential.*  Write one program whose output differs under booleans-only versus Python-style truthiness, and confirm your interpreter follows your documented policy.
+5.  *Step limit.*  Add a `max_steps` parameter to your `While` executor that raises `RuntimeError` after N iterations.  This protects against infinite loops in student programs.  Test it with `while 1 > 0: print 1` and a limit of 100.
 1.  *Complete the executor.*  Implement `execute` for all your statement nodes with the exception pattern from class, define and document `truthy` for your language, and demonstrate the summation program plus an `if/else` program.
 2.  *The REPL.* Write the read-evaluate-print loop: prompt, read a line, tokenize, parse, execute against a persistent environment, repeat, catching and printing every error class without dying.  Your language now has an interactive shell; transcript required.
 3.  *Error taxonomy.*  Construct one program each that fails in the lexer, the parser, and the evaluator.  Verify each error message names its stage and location; improve the worst one.
@@ -648,4 +871,21 @@ print(f"\nFinal environment: {env}")
 5.  *Interpreter speedup.*  Modify the `While` executor to count the number of times the loop body executes.  Then add a "step limit" parameter that raises a `RuntimeError` if the loop exceeds 10,000 iterations.  This protects against infinite loops in student-written programs.  Show it triggering on `while 1 > 0: print 1`.
 
 ---
+
+---
+
+## Reflection
+In your notebook: short-circuiting means the language promises *not to look* at something.  Contracts about what will not be examined are everywhere (sealed exams, privacy policies, blind review).  Pick one and describe what breaks when the no-look promise is violated, in computing or out of it.  Also: now that you have implemented `break` via exceptions, does using exceptions for control flow seem elegant or surprising?  Under what other circumstances might you use exceptions for non-error control flow?
+
+---
+
+## Further Reading
+- Douglas Thain.  *Introduction to Compilers and Language Design*, Chapter 6 and 7 notes on control flow.
+- Robert Nystrom.  *Crafting Interpreters*, "Control Flow" (online), including the break-via-exception trick.
+- Robert Sebesta.  *Concepts of Programming Languages*, the statement-level control structures chapter.
+- Python docs on [short-circuit evaluation](https://docs.python.org/3/reference/expressions.html#boolean-operations): the return-operand semantics documented precisely.
+
+---
+
+Up next: the *Functional Programming and Higher-Order Functions* activity changes the lens entirely, and today's semantics decisions complete the Interpreter assignment's core.
 

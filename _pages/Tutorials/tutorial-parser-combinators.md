@@ -1,17 +1,22 @@
-<!--
-author:   William Mongan
-language: en
-narrator: US English Male
+---
+layout: tutorial
+permalink: /Tutorials/ParserCombinators
+title: "CS374: Parser Combinators, Parsers as First-Class Values"
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-parser-combinators.md
+info:
+  coursenum: CS374
+  goals:
+    - "Implemented the core `Parser` type as a function from `(str, int)` to `(value, int) | None` and built atomic parsers for single characters and character classes"
+    - "Implemented the four fundamental combinators: `seq` (sequence), `alt` (alternation), `many` (repetition), and `map` (transformation)"
+    - "Built a complete expression parser for Mini arithmetic that handles operator precedence without separate grammar notation"
+    - "Connected parser combinators to the monad abstraction from the Monads activity and explained what `bind` does in the parsing context"
+    - "Compared the combinator parser to the recursive-descent parser from the interpreter assignment, identifying the tradeoffs in readability, error messages, and extensibility"
 
-import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
+tags:
+  - parsing
+  - combinators
 
-link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css/liascript-custom.css?v=2025-08-23-4
-        https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap
-
--->
-
+---
 # Tutorial: Parser Combinators, Parsers as First-Class Values
 
 ## Learning Goals
@@ -862,7 +867,6 @@ print(f"Token stream: {' '.join(tokens2)}")
 print()
 show("Standard precedence (left assoc)", PREC_STANDARD, tokens2)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -974,7 +978,6 @@ def parse(src):
 for expr in ["2+3*4", "2*3+4", "(2+3)*4", "7-2-1", "-3*2", "1+2+3+4"]:
     print(f"  {expr!r:18} -> {parse(expr)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 
@@ -1128,7 +1131,6 @@ for t in tests:
     match = "==" if pr == rd else "!="
     print(f"{t!r:<18} {str(pr):<35} {match} {rd}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 ### Critical Thinking Questions
 

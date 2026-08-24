@@ -160,9 +160,71 @@ print("    -> Variant B: familiar, zero learning overhead on syntax")
 print()
 print("  The right answer depends on the niche. Name your niche first.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!**  "Readability" and "writability" sound like opposites but they measure *different audiences*.  Readability asks "can a reader (possibly not the author) follow this code quickly?" whereas writability asks "can an author produce correct code quickly?"  A language can be highly writable but hard to read; terse symbol-heavy syntax like APL is the classic example.  Before answering the questions below, commit your team to which audience your niche prioritizes.
+
+### Reading the Code
+
+- Both variants run the *same* semantics.  Nothing below the surface differs, which is the point: everything you argue about here is syntax, and syntax is the part users meet first.
+- The token counter is a crude proxy for "syntactic overhead", and crude is fine.  It gives the team a number to argue with instead of a feeling to assert.
+- Punctuation-heavy syntax is denser to write and needs closer reading; keyword-heavy syntax is more typing and more skimmable.  Neither wins outright; you are choosing which of the four criteria your language spends on.
+
+### Try It Yourself
+
+Write the same program three ways and let the count start the argument.
+
+```python
+VARIANTS = {
+    "Python-style": """
+def max(a, b):
+    if a > b:
+        return a
+    else:
+        return b
+""".strip(),
+
+    "C-style": """
+fn max(a, b) {
+    if (a > b) {
+        return a;
+    } else {
+        return b;
+    }
+}
+""".strip(),
+
+    # TODO 1: add a third variant of YOUR team's design. Lisp-style?
+    #         ML-style with `let ... in`? Ruby-style with `end`?
+}
+
+PUNCT = set("(){}[];:,.")
+
+def measure(src):
+    return (len(src),
+            src.count("\n") + 1,
+            sum(1 for c in src if c in PUNCT),
+            len(src.replace("(", " ").replace(")", " ").split()))
+
+print("  " + "variant".ljust(16) + "chars  lines  punct  tokens")
+for name, src in VARIANTS.items():
+    c, l, p, w = measure(src)
+    print("  " + name.ljust(16) + str(c).rjust(5) + str(l).rjust(7)
+          + str(p).rjust(7) + str(w).rjust(8))
+
+# TODO 2: which variant carries the most punctuation per line? Which would
+#         a student who has seen neither find easier to read aloud? Those
+#         are two different questions and may have different answers --
+#         that gap IS the readability/writability trade.
+
+# TODO 3: count is not taste. Vote in your team on which variant you would
+#         rather WRITE and which you would rather READ six weeks from now,
+#         and record the split. If the two votes disagree, say which one
+#         your language should serve.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: one row per variant, with the C-style version carrying noticeably more punctuation for the same program.  That number is where your design argument starts, not where it ends.
 
 ### Critical Thinking Questions
 
@@ -188,7 +250,7 @@ A city planner does not just dream about roads; they produce a blueprint that ca
 Think of this model as a packing checklist before a camping trip.  You flip through each category (shelter, food, first aid) and tick off what you are bringing.  The grammar skeleton works the same way: flip through each language feature, decide yes or no, and the skeleton generates the grammar rules you need to implement.  Features you skip now do not disappear; they become explicit TODOs on your sprint backlog, which is far better than discovering a missing feature on Demo Day.
 
 
-> **The runnable grammar-v0 builder is in the project guide:** [The Project Language Guide](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-project-language-guide.md).  Use it while drafting; today's session is for deciding *what* your language is, not generating skeletons.
+> **The runnable grammar-v0 builder is in the project guide:** [The Project Language Guide](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ProjectLanguageGuide).  Use it while drafting; today's session is for deciding *what* your language is, not generating skeletons.
 
 ## Model 3: Node Inventory, Every Node Mapped
 
@@ -255,7 +317,61 @@ print()
 print("  Sprint 1 goal: zero TODOs for core nodes (Lit, BinOp, VarRef, Assign, If, While)")
 print("  Sprint 2 goal: zero TODOs for functions and your niche feature")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- The inventory has one row per node and four columns: the class, its fields, the grammar rule that produces it, and the evaluator method that consumes it.  A row with `TODO` in the last column is a node your parser can build and your evaluator cannot run.
+- Generating the table from a spec rather than maintaining it by hand means it cannot drift.  Regenerate after every sprint and the `TODO` count is your burndown.
+- The columns are the stages of your pipeline.  A node with no grammar rule can never be produced; a node with no evaluator method can never be consumed.  Both are bugs the table shows before the code does.
+
+### Try It Yourself
+
+Fill the inventory with your own language, and read the gaps straight off it.
+
+```python
+# (NodeClass, fields, grammar_rule, evaluator_method)
+# TODO: replace every row with YOUR team's nodes. Leave evaluator_method
+#       as "TODO" for anything not yet implemented -- that is the point.
+NODES = [
+    ("Num",   "value: float",           "primary -> NUMBER",             "eval_num"),
+    ("Var",   "name: str",              "primary -> IDENT",              "eval_var"),
+    ("BinOp", "op: str, left, right",   "expr -> expr OP term",          "eval_binop"),
+    ("Let",   "name: str, value, body", "stmt -> 'let' IDENT '=' expr",  "TODO"),
+    ("If",    "cond, then_, else_",     "stmt -> 'if' expr block",       "TODO"),
+    ("While", "cond, body",             "stmt -> 'while' expr block",    "TODO"),
+    ("Call",  "fn, args",               "primary -> IDENT '(' args ')'", "TODO"),
+]
+
+HEADER = ("Node", "Fields", "Grammar rule", "Evaluator")
+widths = [max(len(str(r[i])) for r in list(NODES) + [HEADER]) for i in range(4)]
+
+def line(row):
+    return "| " + " | ".join(str(c).ljust(widths[i]) for i, c in enumerate(row)) + " |"
+
+print(line(HEADER))
+print("|" + "|".join("-" * (w + 2) for w in widths) + "|")
+for row in NODES:
+    print(line(row))
+
+todo = [n for n in NODES if n[3] == "TODO"]
+print("\n  " + str(len(NODES) - len(todo)) + " of " + str(len(NODES))
+      + " nodes are wired end to end.")
+if todo:
+    print("  Still to implement: " + ", ".join(n[0] for n in todo))
+
+# TODO 1: commit this as node_inventory.py and regenerate it at the end of
+#         every sprint. The TODO count is your burndown chart.
+
+# TODO 2: add a column for "example program exercising this node". Any node
+#         with no example is a node you have never actually tested.
+
+# TODO 3: is there a node with NO grammar rule? Nothing in your parser can
+#         ever build it. Delete the node or write the rule.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: a Markdown table and a count of nodes wired end to end.  Paste the table into your design document; it is a deliverable, not a warm-up.
 
 ### Critical Thinking Questions
 
@@ -323,7 +439,7 @@ sprint1_goals = [
 for i, goal in enumerate(sprint1_goals, 1):
     print(f"  {i}. {goal}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!**  A risk score of probability × impact tells you *priority order*, not whether to act at all.  A low-probability, high-impact risk (score 5) can be more dangerous than a moderate-probability, moderate-impact risk (score 9) if you have no mitigation for it, because when it hits, it will be catastrophic.  Always read the impact column alongside the score, especially for anything with impact 5 (Demo Day failure).
 
@@ -353,6 +469,44 @@ The Coordinator is allocating Sprint 1 tasks.  The niche feature (dice rolls) is
 ---
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
 
+# Check Your Understanding
+
+Two syntax variants that run identical semantics differ only in:
+
+[(X)] Surface form, which is nevertheless what every user of the language meets first
+[( )] Their expressive power
+[( )] Which programs they can run
+[( )] How fast they parse
+
+---
+
+Counting punctuation tokens per line is useful because:
+
+[(X)] It turns a matter of taste into a number a team can argue about, without pretending the number settles it
+[( )] Fewer punctuation tokens always means a better language
+[( )] It predicts parser complexity
+[( )] It measures readability directly
+
+---
+
+In the node inventory, a row whose evaluator column reads `TODO` means:
+
+[(X)] The parser can build that node and the evaluator cannot run it, so any program using it fails at run time
+[( )] The node has not been designed yet
+[( )] Its grammar rule is missing
+[( )] The node is optional
+
+---
+
+`LogicOp` needs to be a separate node class from `BinOp` because:
+
+[(X)] Short-circuiting means its right operand must not be evaluated unconditionally, which every `BinOp` does
+[( )] It returns a boolean rather than a number
+[( )] It has different precedence
+[( )] It takes more than two operands
+
+---
+
 ## Reflection Prompt
 
 In your notebook: you have criticized languages all semester; today you became answerable for one.  Which criticism you have made of other languages do you most fear earning yourself, and what will you do before Demo Day to dodge it?  Also: the node inventory has a column for "evaluator method": every empty cell in that column is a gap between what your language promises and what it delivers.  How will your team keep that gap visible rather than invisible?
@@ -365,24 +519,13 @@ In your notebook: you have criticized languages all semester; today you became a
 - Robert Nystrom.  *Crafting Interpreters*, "The Lox Language" chapter: a master class in specifying a small language readably.
 - The project specification and rubric, reread tonight with the scorecard beside it.
 - Adrian Sampson.  "A Big Picture of PL" (Cornell CS 6110 notes, online): a one-page map of the design space your team just entered.
-
----
-
-## Going Deeper (Optional Pointers)
-
-The core studio above stands on its own.  The deep-dive appendices that used to follow it now live on the [Tutorials shelf](https://www.billmongan.com/Ursinus-CS374/Tutorials/); follow whichever pointer your project or curiosity calls for.
-
-> **Going further:** the material that used to live here (the call stack and the heap, reference counting, reference cycles, mark-and-sweep and generational collection, and what memory management means for the closures and environments in your interpreter) is covered in depth in the dedicated tutorial: [Garbage Collection: Memory Management from First Principles](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-garbage-collection.md).  Explore it when your project or curiosity calls for it.
-
-> **Going further:** the material that used to live here (foreign function interfaces, calling C from Python with `ctypes`, C-compatible structs and callbacks, name mangling, and designing an `ffi(...)` primitive for your own language) now lives as the FFI appendix of [Advanced C++: Modern Memory, Templates, and the STL](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-cpp-advanced.md).  It backs the project's **Foreign Function Interface** extension; explore it when your project or curiosity calls for it.
-
-> **Going further:** the compiler optimization passes that used to live here (constant folding, dead-code elimination, common subexpression elimination, inlining, and tail-call optimization) now live as an appendix of [Building a Bytecode VM for Mini](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md), and how compiled code becomes a running executable is covered in depth in [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-compiling-linking.md).  The broader survey of evaluation strategies is self-study, keywords: tree-walking interpreter, continuation-passing style, bytecode VM. Compare them on your own.  Explore these when your project or curiosity calls for it.
-
-> **Going further:** the complete worked path through designing and building a small language end to end (the same journey your team begins today) is covered in depth in the dedicated tutorial: [Building the Mini Language: A Complete Guide](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-project-language-guide.md).  The expression-tree folds, the five-paradigm "same problem, different minds" gallery, and the modules-and-namespaces material are self-study topics; keywords: catamorphism / fold, programming paradigms comparison, module systems and namespaces.  Explore them when your project or curiosity calls for it.
-
-> **Going further:** when your language works and you want the world to run it (packaging for pip and npm, and shipping a Docker image), the path is covered in depth in the dedicated guide: [Publishing Your Language: pip, npm, and Docker](https://www.billmongan.com/Ursinus-CS374/Tutorials/PublishingYourLanguage).  Explore it as Demo Day approaches.
-
-> **Going further:** a few former appendices are now self-study topics: live-coding pattern languages and their pattern algebra (TidalCycles and Strudel), denotational semantics and fixed-point semantics of `while`, and concurrency models (actors, channels, software transactional memory); search those keywords when curiosity calls.  Church numerals return in the Lambda Calculus activities and in [Implementing a Lambda Calculus Reducer](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md).
+- [Garbage Collection: Memory Management from First Principles](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/GarbageCollection): the call stack and the heap, reference counting, reference cycles, mark-and-sweep and generational collection, and what memory management means for the closures and environments in your interpreter.
+- [Advanced C++: Modern Memory, Templates, and the STL](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/AdvancedCpp): its FFI appendix covers foreign function interfaces, calling C from Python with `ctypes`, C-compatible structs and callbacks, name mangling, and designing an `ffi(...)` primitive for your own language.  Backs the project's Foreign Function Interface extension.
+- [Building a Bytecode VM for Mini](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BytecodeVM): its optimization appendix covers constant folding, dead-code elimination, common subexpression elimination, inlining, and tail-call optimization.
+- [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CompilingAndLinking): how compiled code becomes a running executable.
+- [Building the Mini Language: A Complete Guide](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ProjectLanguageGuide): a complete worked path through designing and building a small language end to end, the same journey your team begins today.
+- [Publishing Your Language: pip, npm, and Docker](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PublishingYourLanguage): packaging your language and shipping a Docker image, for when it works and you want the world to run it.
+- Self-study topics: expression-tree folds (catamorphisms), module systems and namespaces, live-coding pattern languages and their pattern algebra (TidalCycles and Strudel), denotational and fixed-point semantics of `while`, and concurrency models (actors, channels, software transactional memory).
 
 ---
 

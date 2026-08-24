@@ -1,19 +1,23 @@
-<!--
-author:   CS374 Course Staff
-email:    
-version:  0.0.1
-language: en
-narrator: US English Female
+---
+layout: tutorial
+permalink: /Tutorials/BytecodeVM
+title: "CS374: Building a Bytecode VM for Mini"
 
-comment: Build a stack-based bytecode VM for Mini, the same architecture used by CPython, the JVM, and Lua.  Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md
+info:
+  coursenum: CS374
+  goals:
+    - "Defined a Mini instruction set architecture (`Opcode` enum and `Instruction` dataclass) and explained why a flat instruction list is more cache-friendly than an AST"
+    - "Implemented a compiler that walks the Mini AST and emits bytecode instructions with a constant pool and jump backpatching"
+    - "Implemented a stack-based VM dispatch loop that executes bytecode using a value stack and a call stack of frames"
+    - "Implemented upvalues (the Lua trick) so that closures in the VM correctly capture variables from enclosing frames"
+    - "Verified that the VM produces identical output to the tree-walking interpreter on all provided test programs and measured the speedup"
 
-import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
+tags:
+  - vm
+  - bytecode
+  - project-extension
 
-link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css/liascript-custom.css?v=2025-08-23-4
-        https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap
-
--->
-
+---
 # Tutorial: Building a Bytecode VM for Mini
 
 ## Learning Goals
@@ -1703,9 +1707,11 @@ try:
                     result = self.eval(v, env); env[n] = result; return result
                 case BinOp(op=op, left=l, right=r):
                     lv = self.eval(l, env); rv = self.eval(r, env)
-                    return {"+":lv+rv, "-":lv-rv, "*":lv*rv, "/":lv/rv,
-                            "==":lv==rv, "!=":lv!=rv, "<":lv<rv,
-                            "<=":lv<=rv, ">":lv>rv, ">=":lv>=rv}[op]
+                    return {"+":  lambda: lv+rv,  "-":  lambda: lv-rv,
+                            "*":  lambda: lv*rv,  "/":  lambda: lv/rv,
+                            "==": lambda: lv==rv, "!=": lambda: lv!=rv,
+                            "<":  lambda: lv<rv,  "<=": lambda: lv<=rv,
+                            ">":  lambda: lv>rv,  ">=": lambda: lv>=rv}[op]()
                 case If(condition=c, then_body=t, else_body=e):
                     branch = t if self.eval(c, env) else e
                     for s in branch: self.eval(s, env)
@@ -1998,7 +2004,7 @@ By the end of this section, you will be able to:
 
 An optimization is **valid** if it *preserves program semantics*: the optimized program produces the same observable results as the original for all valid inputs.
 
-```python  liascript
+```python
 # Some "optimizations" are INVALID - they change observable behavior
 
 def f():
@@ -2028,7 +2034,6 @@ if False:
 
 print("x =", x, "  y =", y)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 **Critical Thinking Questions (CTQs)**
 
@@ -2049,7 +2054,7 @@ print("x =", x, "  y =", y)
 **Constant folding**: evaluate constant sub-expressions at compile time.
 **Constant propagation**: substitute known constant values for variables.
 
-```python  liascript
+```python
 from dataclasses import dataclass
 from typing import Any, Optional
 
@@ -2156,7 +2161,6 @@ for t in tests:
     result = fold_and_propagate(t, {})
     print(f"{pretty(t):50} -> {pretty(result)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 > **CTQ 2.1** The first test case propagates `x=3` into the body, evaluates `y=5`, then folds `3*5=15`.  What is the final result?  Is there any variable left in the output?
 
@@ -2172,7 +2176,7 @@ for t in tests:
 
 If the same expression appears twice and has no side effects in between, compute it once and reuse the result.
 
-```python  liascript
+```python
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -2269,7 +2273,6 @@ print(f"  {pretty(expr)}")
 print("\nAfter CSE:")
 print(f"  {pretty(optimized)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 > **CTQ 3.1** After CSE, `(x+1)*(x+1)` should become `let _cse1 = (x+1) in _cse1 * _cse1`.  Only ONE addition is computed instead of two.  How many operations were eliminated?
 
@@ -2287,7 +2290,7 @@ print(f"  {pretty(optimized)}")
 
 **Inlining** replaces a function call with the function body, substituting arguments for parameters.  This eliminates call overhead and enables further optimizations.
 
-```python  liascript
+```python
 from dataclasses import dataclass
 from typing import Any
 
@@ -2386,7 +2389,6 @@ print(f"\nBefore: {pretty(expr2)}")
 print(f"Inlined: {pretty(inlined2)}")
 # (After constant folding, this would become 10)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 > **CTQ 4.1** Inlining `double(5)` produces `5 + 5`.  Can we further fold this?  What optimization would you chain after inlining?
 
@@ -2402,8 +2404,12 @@ print(f"Inlined: {pretty(inlined2)}")
 
 A **tail call** is a function call that is the *last* action of a function.  Instead of creating a new stack frame, we can *reuse* the current frame.
 
-```python  liascript
+```python
 import sys
+
+# factorial(5000) has about 16,000 digits.  CPython 3.11+ refuses to render an
+# int longer than 4300 digits as a string unless you raise the cap first.
+sys.set_int_max_str_digits(100000)
 
 # Without TCO: factorial(10000) causes stack overflow in Python
 def factorial_no_tco(n):
@@ -2475,7 +2481,6 @@ fact_body = If(None,
 )
 print(f"\nfact body has tail call to 'fact': {is_tail_call(fact_body, 'fact')}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 > **CTQ 5.1** `factorial_no_tco` has `return n * factorial_no_tco(n-1)`.  Why is this NOT a tail call?  What computation happens after the recursive call returns?
 
@@ -2491,28 +2496,46 @@ print(f"\nfact body has tail call to 'fact': {is_tail_call(fact_body, 'fact')}")
 
 Which optimization is UNSAFE to apply to `result = print("hello") or True`?
 
-[(X)] Replacing `print("hello")` with its constant value (it returns `None`)
-[( )] Evaluating `True` at compile time
-[( )] Keeping the original expression unchanged
-[( )] All of the above
+- Replacing `print("hello")` with its constant value (it returns `None`)
+- Evaluating `True` at compile time
+- Keeping the original expression unchanged
+- All of the above
+
+<details><summary>Answer</summary>
+
+Replacing `print("hello")` with its constant value (it returns `None`)
+
+</details>
 
 ---
 
 Constant propagation extends the environment with `{x: 3}` when `let x = 3`.  Why is it safe to propagate this constant throughout the body?
 
-[( )] Because x is an integer
-[(X)] Because `let` creates an immutable binding: x's value cannot change in the body
-[( )] Because 3 is small enough to inline
-[( )] Because the compiler checked for side effects
+- Because x is an integer
+- Because `let` creates an immutable binding: x's value cannot change in the body
+- Because 3 is small enough to inline
+- Because the compiler checked for side effects
+
+<details><summary>Answer</summary>
+
+Because `let` creates an immutable binding: x's value cannot change in the body
+
+</details>
 
 ---
 
 A tail call optimization converts a tail-recursive call into a loop at compile time.  What benefit does this provide?
 
-[( )] Faster garbage collection
-[(X)] Constant stack space instead of O(n) stack frames: enables deep or infinite recursion without stack overflow
-[( )] Smaller bytecode
-[( )] Type safety
+- Faster garbage collection
+- Constant stack space instead of O(n) stack frames: enables deep or infinite recursion without stack overflow
+- Smaller bytecode
+- Type safety
+
+<details><summary>Answer</summary>
+
+Constant stack space instead of O(n) stack frames: enables deep or infinite recursion without stack overflow
+
+</details>
 
 ---
 
@@ -2546,7 +2569,7 @@ But be careful: only eliminate if the binding expression is pure!
 
 Combine multiple passes into a pipeline:
 
-```python  liascript
+```python
 def optimize(node):
     node = fold_and_propagate(node, {})
     node = eliminate_dead_code(node, collect_live_vars(node))
@@ -2554,7 +2577,6 @@ def optimize(node):
     node = fold_and_propagate(node, {})  # run again after inlining!
     return node
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 Test the pipeline on a program that contains all four optimization opportunities.  Show before and after.
 
 ##### Exercise 5: Mini TCO (30 min, harder)

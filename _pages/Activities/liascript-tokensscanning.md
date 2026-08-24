@@ -72,7 +72,14 @@ Tokenize by hand: `count2 = count2 + 12 >= limit`
 
 ## 2.  A Complete Tokenizer
 
-This lexer is the seed of your assignment and your project: a token specification as data, one master pattern, and a generator that yields typed tokens with positions.  Read it alongside the regex module's `finditer` discussion.
+You met the master-alternation trick in *Regular Expressions, Day 2*, where it was a
+demonstration that named groups let one pattern carry many alternatives.  Here it
+becomes the real thing: a token specification as data, one master pattern, and a
+generator that yields typed tokens **with positions**, plus an error path.  Positions
+and errors are what separate a regex demo from a lexer, and they are what the parser
+will need when it has to tell a student *where* their program went wrong.
+
+This is the seed of your Lexer assignment and of your project.
 
 ---
 
@@ -82,7 +89,7 @@ The lexer below translates the hand-tokenization rules from Model 1 into working
 
 > **Watch out!**  Whitespace is listed in `TOKEN_SPEC` as `SKIP` and is silently consumed.  If you forget to include a whitespace pattern, the `MISMATCH` catch-all will fire on every space and your error messages will be buried in noise.  Always verify that spaces and tabs are handled before testing with real programs.
 
-```python  liascript
+```python
 import re
 from collections import namedtuple
 
@@ -139,6 +146,94 @@ for tok in tokenize(code):
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
+### Reading the Code
+
+- `TOKEN_SPEC` is **ordered**, and that order is the priority rule from Part I made
+  executable.  `KEYWORD` precedes `IDENT`, so `if` is a keyword; `GE`/`LE`/`EQ`/`NE`
+  precede `ASSIGN`, `GT`, and `LT`, so `>=` is one token rather than two.
+- `MASTER` joins every pattern into one alternation with named groups.  Python's
+  alternation is **first-match, not longest-match**, which is why maximal munch here
+  is achieved by ordering rather than by the engine measuring lengths for you.  Put
+  `LT` before `LE` and `<=` silently becomes two tokens.
+- `m.lastgroup` names the alternative that fired.  That single attribute is the
+  entire type-dispatch of the lexer.
+- `line` and `line_start` are the only mutable state.  `col` is computed as
+  `m.start() - line_start + 1`, which is why the column resets at every newline.
+  Track this yourself and you get error messages a human can act on.
+- `tokenize` is a **generator**: it yields tokens lazily instead of building a list.
+  The parser can therefore start work before the whole file is scanned, and a
+  syntax error can stop the scan early.
+- `MISMATCH` is last and matches `.`, so the scanner always makes progress and always
+  has something specific to complain about.
+
+> **Watch out!**  `NUMBER` uses `\d+(\.\d+)?`, which contains an *unnamed* capture
+> group.  It happens to work here because `m.lastgroup` reports the last *named*
+> group, but nesting an extra capture inside a named alternative is a habit that
+> will bite you: write `(?:\.\d+)?` instead, and keep every helper group
+> non-capturing.
+
+### Try It Yourself
+
+This `TOKEN_SPEC` is missing a token type your language needs.  Run the tests, watch
+what a missing pattern does to a perfectly reasonable line of source, then add it in
+the right place.
+
+```python
+import re
+from collections import namedtuple
+
+Token = namedtuple("Token", ["type", "lexeme", "line", "col"])
+
+TOKEN_SPEC = [
+    ("NUMBER",   r"\d+(?:\.\d+)?"),
+    ("KEYWORD",  r"\b(?:if|else|while|let|print)\b"),
+    ("IDENT",    r"[A-Za-z_][A-Za-z0-9_]*"),
+    # TODO 1: a STRING token, a double quote to the next double quote.
+    #         Where must it go in this list, and why does it matter?
+    ("GE", r">="), ("LE", r"<="), ("EQ", r"=="), ("NE", r"!="),
+    ("ASSIGN", r"="), ("GT", r">"), ("LT", r"<"),
+    ("PLUS", r"\+"), ("MINUS", r"-"), ("STAR", r"\*"), ("SLASH", r"/"),
+    ("LPAREN", r"\("), ("RPAREN", r"\)"),
+    ("SEMI", r";"), ("NEWLINE", r"\n"), ("SKIP", r"[ \t]+"),
+    ("COMMENT", r"#[^\n]*"),
+    ("MISMATCH", r"."),
+]
+MASTER = re.compile("|".join(f"(?P<{n}>{p})" for n, p in TOKEN_SPEC))
+
+def tokenize(source):
+    line, line_start = 1, 0
+    for m in MASTER.finditer(source):
+        kind, lexeme = m.lastgroup, m.group()
+        col = m.start() - line_start + 1
+        if kind == "NEWLINE":
+            line += 1; line_start = m.end()
+        elif kind in ("SKIP", "COMMENT"):
+            continue
+        elif kind == "MISMATCH":
+            yield Token("ERROR", lexeme, line, col)
+        else:
+            yield Token(kind, lexeme, line, col)
+
+CASES = [
+    ('let x = 1;',              "the baseline: should scan cleanly"),
+    ('let s = "hi there";',     "needs STRING; without it, watch it shatter"),
+    ('if x != 1 print x;',      "!= must stay one token"),
+    ('let n = 3.14;',           "a float is ONE number token"),
+]
+
+for src, note in CASES:
+    print(f"\n{src!r}   ({note})")
+    for t in tokenize(src):
+        flag = "   <-- ERROR" if t.type == "ERROR" else ""
+        print(f"    line {t.line} col {t.col:2}  {t.type:8} {t.lexeme!r}{flag}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output before your edit: the second case shatters, emitting `ERROR '"'`,
+then `IDENT 'hi'`, `IDENT 'there'`, then another `ERROR`.  After adding `STRING` in
+the right place, it is one token.  Keep this `TOKEN_SPEC`; the Lexer assignment
+starts from it.
+
 ---
 
 ## Model 2: Read the Machine You Built
@@ -163,7 +258,7 @@ The raw `tokenize()` generator works fine for printing, but a parser needs more 
 
 A parser never calls `tokenize()` directly.  It needs two operations: **peek**, look at the next token without consuming it, and **advance**, consume and return it.  A third operation, **expect**, consumes a token and raises an error if its type does not match.  The `Lexer` class below wraps the generator and buffers exactly one token to implement these three methods.
 
-```python  liascript
+```python
 import re
 from collections import namedtuple
 
@@ -281,7 +376,7 @@ The lexer built so far handles numbers, keywords, and operators, but real progra
 
 Production lexers must handle **string literals** (e.g., `"hello world"`) and **escape sequences** (e.g., `\"`, `\\`, `\n`).  The tricky part: a naive `"[^"]*"` pattern breaks on `"say \"hi\""`.  The correct pattern uses a negative lookbehind or a two-alternative trick: match either an escaped character or any non-quote, non-backslash character inside the delimiters.
 
-```python  liascript
+```python
 import re
 from collections import namedtuple
 
@@ -376,6 +471,44 @@ The parser asks the lexer for the next token and receives `Token(NUMBER, "12", 4
 [( )] The lexeme "12" alone
 [( )] The line number, to enforce indentation
 [( )] All fields equally, at every decision
+
+---
+
+# Check Your Understanding
+
+A lexer's job, stated precisely, is to:
+
+[(X)] Turn a character stream into a token stream, discarding whitespace and comments
+[( )] Turn a token stream into a tree
+[( )] Check that the program is syntactically legal
+[( )] Resolve names to their declarations
+
+---
+
+Given the input `12foo`, a lexer with patterns for NUMBER and IDENT will most likely produce:
+
+[(X)] NUMBER `12` followed by IDENT `foo`, because each match starts fresh at the current position
+[( )] A single IDENT `12foo`
+[( )] A lexical error, since the two patterns overlap
+[( )] A single NUMBER `12`, discarding the rest
+
+---
+
+Keywords like `if` and `while` are usually recognized by:
+
+[(X)] Matching them as identifiers first, then checking the lexeme against a keyword set
+[( )] Listing each keyword as its own regex before the identifier pattern, which also works but scales worse
+[( )] The parser rather than the lexer
+[( )] A separate pass over the token stream
+
+---
+
+Lexers use regular grammars and parsers use context-free grammars because:
+
+[(X)] Token structure needs no nesting, and the weaker class buys a much faster recognizer
+[( )] Regular grammars are easier to write by hand
+[( )] Context-free grammars cannot describe identifiers
+[( )] It is a historical convention with no technical reason
 
 ---
 

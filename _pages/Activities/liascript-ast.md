@@ -115,7 +115,7 @@ Only 5 nodes remain.  The `*` is a child of `+`, which correctly encodes that mu
 
 *What problem does this solve?*  Now that we know what an AST *is*, we need a concrete way to represent one in Python.  This model shows how to define each node type as a dataclass (so fields have names, not just positions), and then how to *walk* the tree recursively with `pretty`.  Walking a tree (visiting every node in order) is the one pattern you will use for everything: printing, evaluating, type-checking, compiling.  Understand `pretty` here and the evaluator of the *Tree-Walking Interpretation* activity is trivial.
 
-```python  liascript
+```python
 from dataclasses import dataclass, field
 from typing import Any, List, Optional
 
@@ -219,9 +219,27 @@ tree2 = BinOp("+", Num(2), BinOp("*", Num(3), Num(4)))
 print("AST for 2+3*4:")
 pretty(tree2)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 1.4** The two trees have the same nodes but different shapes.  Which one evaluates to 20 and which to 14?  Verify by hand.
+
+### Reading the Code
+
+- Each node type is a `@dataclass`, so `BinOp('+', l, r)` gives you `.op`, `.left`,
+  and `.right` by name rather than by index, which is the only difference from a
+  tuple, and it is why `repr` on a dataclass reads like the tree it represents.
+- `pretty` is the **tree walk**, and it has the shape every later pass will have:
+  one `case` per node type, a recursive call per child, and a base case at the
+  leaves.  Printing, evaluating, type checking, and compiling are all this function
+  with the body changed.
+- The indentation argument is threaded down the recursion rather than tracked in a
+  global.  That is what makes the walk reentrant and, later, what makes an
+  evaluator's environment behave correctly under nesting.
+- Notice what `pretty` never sees: parentheses and grammar nonterminals.  They were
+  consumed by the parser and left no node behind.  Their entire effect survives as
+  the *shape* of what `pretty` is printing.
+
+### Critical Thinking Questions
 
 > **CTQ 1.5** `pretty` dispatches on node type and recurses on children.  Name the two or three lines you would change to make it *evaluate* instead of print.  You have just designed the interpreter of the *Tree-Walking Interpretation* activity.
 
@@ -229,13 +247,61 @@ pretty(tree2)
 
 > **Watch out!**  The `case _:` arm in `pretty` is a safety net, but in a real interpreter it is a bug waiting to happen.  If you add a new node type (say, `FunDef`) but forget to add a corresponding `case FunDef(...):` arm, Python will silently fall through to `Unknown: ...` instead of raising an error.  Every time you add a new AST node, immediately add a handler for it in *every* tree-walking function: `pretty`, `count_nodes`, `collect_vars`, `constant_fold`, and especially the evaluator.
 
+### Try It Yourself
+
+Add a node type and watch the silent-fallthrough bug happen to you, on purpose.
+
+```python
+from dataclasses import dataclass
+from typing import Any, List
+
+@dataclass
+class Num:     value: float
+@dataclass
+class Var:     name: str
+@dataclass
+class BinOp:   op: str; left: Any; right: Any
+@dataclass
+class Call:    fn: str; args: List[Any]      # <-- the NEW node type
+
+def pretty(node, indent=0):
+    pad = "  " * indent
+    match node:
+        case Num(value=v):
+            print(f"{pad}Num({v})")
+        case Var(name=n):
+            print(f"{pad}Var({n})")
+        case BinOp(op=o, left=l, right=r):
+            print(f"{pad}BinOp({o})")
+            pretty(l, indent + 1)
+            pretty(r, indent + 1)
+        # TODO: add a `case Call(fn=f, args=a):` arm that prints the function
+        #       name and then recurses on every argument.
+        case _:
+            print(f"{pad}Unknown: {node}")
+
+tree = BinOp("+", Num(1), Call("max", [Num(2), BinOp("*", Num(3), Var("x"))]))
+
+print("Before you add the Call arm:")
+pretty(tree)
+print()
+print("Notice what went wrong: the whole Call SUBTREE vanished into one")
+print("'Unknown' line. The multiplication and the variable inside it were")
+print("never visited. A missing case does not raise; it silently truncates.")
+print()
+print("Now add the arm and rerun. Every node should appear.")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output before your edit: one `Unknown:` line swallowing three nodes.  After: the full tree, six nodes deep.  Remember this the next time an evaluator "works" but quietly ignores a construct.
+
 ---
 
 ## Model 2: Tree Statistics and Analysis
 
 *What problem does this solve?*  A tree walk does not have to produce output: it can also *compute* information about a program.  This model shows three read-only analyses: counting nodes (useful for complexity budgets), measuring depth (tells you how deep the evaluator's call stack can get), and collecting all variable names (a primitive form of scope analysis).  These same patterns (accumulate a count, accumulate a maximum, accumulate a set) recur constantly in real compilers.
 
-```python  liascript
+```python
 from dataclasses import dataclass, field
 from typing import Any, List, Optional
 
@@ -332,7 +398,7 @@ deep = BinOp("+", BinOp("*", BinOp("-", Num(1), Num(2)), BinOp("+", Num(3), Num(
 print(f"\nDeep expr node count: {count_nodes(deep)}")
 print(f"Deep expr depth:      {depth(deep)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 2.1** Which feature (deeply nested arithmetic, while loops, or if/else chains) drives `depth` highest?  What does this suggest about the recursion depth needed by your evaluator?
 
@@ -348,7 +414,7 @@ print(f"Deep expr depth:      {depth(deep)}")
 
 **Preview of the connection:** the recursive-descent parser you build in the *Recursive Descent Parsing* activity constructs exactly these nodes.  The upgrade from tuples is literally one line per production, every place a parser would build a tuple, it constructs a node instead: `('+', left, right)` becomes `BinOp('+', left, right)`, while the fold-left associativity logic, the tier structure, and the lookahead stay untouched.
 
-```python  liascript
+```python
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -435,7 +501,7 @@ tree = p.parse_expr()
 print("AST for 3 + -(2 * 4):")
 pretty(tree)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 3.1** The test `('NUM', 3)` vs `Num(3)`: why does the change from tuple to dataclass make debugging easier?  Hint: try `repr(('*', Num(2), Num(3)))` vs `repr(BinOp('*', Num(2), Num(3)))`.
 
@@ -444,15 +510,193 @@ pretty(tree)
 ---
 
 
-> **Your first optimizer, constant folding as a tree transformation, moved to the tutorial shelf:** [From AST Back to Code](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-ast-to-code.md).  It is the natural warm-up for that tutorial's `unparse` work.
+## Model 4: Your First Optimizer, Constant Folding
 
-# Part III: The `unparse` Round-Trip
+Every walk so far has *read* the tree.  A walk can also **rewrite** it, returning a
+new tree instead of a value.  That is what a compiler optimization is, and the
+simplest one is **constant folding**: wherever both children of an operator are
+already known numbers, do the arithmetic now and replace the whole subtree with
+its answer.
+
+### Examples: Fold It by Hand First
+
+Take `2 * 3 + x * (4 + 1)` and fold it on paper, innermost first.  Fill in the
+node counts before you run anything:
+
+| Pass | Tree | Nodes |
+|------|------|-------|
+| original | `BinOp(+, BinOp(*, 2, 3), BinOp(*, x, BinOp(+, 4, 1)))` | 9 |
+| fold `2*3` | `BinOp(+, 6, BinOp(*, x, BinOp(+, 4, 1)))` | ? |
+| fold `4+1` | `BinOp(+, 6, BinOp(*, x, 5))` | ? |
+| anything left? | `x` is not a constant, so `x * 5` stays | ? |
+
+Two questions to settle before looking at code.  Does folding ever need a *second*
+pass over the tree?  And is `x * 0` foldable to `0`?  Argue both, then check.
+
+```python
+from dataclasses import dataclass
+from typing import Any
+
+@dataclass
+class Num:   value: float
+@dataclass
+class Var:   name: str
+@dataclass
+class BinOp: op: str; left: Any; right: Any
+
+def show(node):
+    match node:
+        case Num(value=v):                return str(int(v) if v == int(v) else v)
+        case Var(name=n):                 return n
+        case BinOp(op=o, left=l, right=r): return f"({show(l)} {o} {show(r)})"
+
+def size(node):
+    match node:
+        case BinOp(left=l, right=r): return 1 + size(l) + size(r)
+        case _:                      return 1
+
+OPS = {"+": lambda a, b: a + b, "-": lambda a, b: a - b,
+       "*": lambda a, b: a * b, "/": lambda a, b: a / b}
+
+def fold(node):
+    """Rewrite the tree, returning a NEW tree with constant subtrees collapsed."""
+    match node:
+        case BinOp(op=o, left=l, right=r):
+            l, r = fold(l), fold(r)              # children first: bottom-up
+            if isinstance(l, Num) and isinstance(r, Num):
+                if o == "/" and r.value == 0:
+                    return BinOp(o, l, r)        # refuse: leave the error for runtime
+                return Num(OPS[o](l.value, r.value))
+            return BinOp(o, l, r)
+        case _:
+            return node
+
+examples = [
+    BinOp("+", BinOp("*", Num(2), Num(3)),
+               BinOp("*", Var("x"), BinOp("+", Num(4), Num(1)))),
+    BinOp("*", BinOp("+", Num(1), Num(2)), BinOp("-", Num(10), Num(4))),
+    BinOp("+", Var("y"), Var("z")),
+    BinOp("/", Num(1), Num(0)),
+]
+
+print(f"  {'before':34} {'after':22} {'nodes':>12}")
+for tree in examples:
+    folded = fold(tree)
+    before, after = size(tree), size(folded)
+    pct = 100 * (before - after) / before
+    print(f"  {show(tree):34} {show(folded):22} {before:2} -> {after:2}  ({pct:4.0f}% gone)")
+
+print("\n=== Does folding need a second pass? ===")
+deep = BinOp("+", Num(1), BinOp("+", Num(2), BinOp("+", Num(3), Num(4))))
+print(f"  {show(deep)}")
+once = fold(deep)
+print(f"  after one pass:  {show(once)}  (nodes {size(deep)} -> {size(once)})")
+twice = fold(once)
+print(f"  after two passes: {show(twice)}")
+print("  Because fold() recurses into the children BEFORE testing the parent,")
+print("  one bottom-up pass already reaches a fixed point here.")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- `fold` returns a **tree**, not a number.  That single difference turns a read-only
+  analysis into a transformation, and it is what a compiler pass does for a living.
+- The line `l, r = fold(l), fold(r)` comes *before* the constant test.  Folding the
+  children first is what makes one bottom-up pass sufficient: by the time the parent
+  is examined, its children are already as folded as they will get.
+- The division guard refuses to fold `1 / 0`.  An optimizer must never turn a
+  program that *would have* raised at runtime into one that fails at compile time,
+  or vice versa.  Preserving observable behavior is the rule every optimization
+  obeys.
+- `Var` falls to `case _:` and is returned unchanged.  Anything the optimizer does
+  not understand, it must leave alone.
+
+> **Watch out!**  It is tempting to add algebraic rules like `x * 0 -> 0` or
+> `x + 0 -> x`.  Be careful: `x * 0` is only `0` if evaluating `x` has no side
+> effects and cannot raise.  In a language where `x` might be a function call, that
+> rewrite changes what the program does.  Real optimizers gate these rules behind
+> an effects analysis, which is why the safe fold above only touches subtrees that
+> are *already* literal numbers.
+
+### Critical Thinking Questions
+
+> **CTQ 3.3** In the first example, folding removed a third of the nodes and the
+> variable `x` prevented more.  What property of a subtree makes it foldable, stated
+> in one sentence?
+
+> **CTQ 3.4** `fold` recurses into children before testing the parent.  Rewrite that
+> order in your head, testing the parent first, and give a tree where the naive order
+> misses a fold that the bottom-up order catches.
+
+> **CTQ 3.5** The division guard leaves `1 / 0` in the tree.  Argue the other side:
+> what would be *good* about reporting the division by zero at compile time, and what
+> language design decision does that choice belong to?
+
+### Try It Yourself
+
+Extend the optimizer with one more rewrite and check that you have not broken anything.
+
+```python
+from dataclasses import dataclass
+from typing import Any
+
+@dataclass
+class Num:   value: float
+@dataclass
+class Var:   name: str
+@dataclass
+class BinOp: op: str; left: Any; right: Any
+
+def show(node):
+    match node:
+        case Num(value=v):                 return str(int(v) if v == int(v) else v)
+        case Var(name=n):                  return n
+        case BinOp(op=o, left=l, right=r): return f"({show(l)} {o} {show(r)})"
+
+OPS = {"+": lambda a, b: a + b, "-": lambda a, b: a - b,
+       "*": lambda a, b: a * b, "/": lambda a, b: a / b}
+
+def fold(node):
+    match node:
+        case BinOp(op=o, left=l, right=r):
+            l, r = fold(l), fold(r)
+            if isinstance(l, Num) and isinstance(r, Num):
+                if o == "/" and r.value == 0:
+                    return BinOp(o, l, r)
+                return Num(OPS[o](l.value, r.value))
+            # TODO 1: add the identity rules  x + 0 -> x  and  0 + x -> x
+            # TODO 2: add  x * 1 -> x  and  1 * x -> x
+            # TODO 3: decide about x * 0 -> 0. Read the Watch out! above first,
+            #         then either implement it or write down why you refused.
+            return BinOp(o, l, r)
+        case _:
+            return node
+
+cases = [
+    BinOp("+", Var("x"), Num(0)),
+    BinOp("*", Num(1), Var("y")),
+    BinOp("*", Var("z"), Num(0)),
+    BinOp("+", BinOp("*", Var("a"), Num(1)), Num(0)),
+]
+for tree in cases:
+    print(f"  {show(tree):22} -> {show(fold(tree))}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output once TODOs 1 and 2 are done: the first two collapse to `x` and `y`,
+and the fourth collapses all the way to `a`.  What you do with the third is a design
+decision you should be able to defend.
+
+---
+
+# Part IV: The `unparse` Round-Trip
 
 ## 3.  Back to Source
 
 *What problem does this solve?*  Going from source text to an AST is the job of the parser.  But can you go the other way, from an AST back to valid source text?  This is called *unparsing* (or pretty-printing), and it is crucial for testing: if you parse a string, unparse the tree, and re-parse the result, you should get an identical tree.  This round-trip property is one of the most powerful automated checks you can write for a language implementation.  It also raises a subtle challenge: the AST discards parentheses, so the unparsing pass must *re-insert* them only where operator precedence requires it, no more, no less.
 
-```python  liascript
+```python
 from dataclasses import dataclass
 from typing import Any
 
@@ -505,7 +749,7 @@ t4 = BinOp('-', Num(5), BinOp('-', Num(3), Num(1)))   # 5-(3-1) = 3 (right assoc
 print(f"(5-3)-1 unparse: {unparse(t3)}")
 print(f"5-(3-1) unparse: {unparse(t4)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 5.1** The `unparse` function adds parentheses "only when needed."  How does `parent_prec` enforce this?  Trace through `unparse(t1)` step by step.
 
@@ -513,8 +757,45 @@ print(f"5-(3-1) unparse: {unparse(t4)}")
 
 ---
 
----
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
+
+# Check Your Understanding
+
+A parse tree and an abstract syntax tree differ in that the AST:
+
+[(X)] Discards the punctuation and single-child chains that only existed to encode grammar structure
+[( )] Contains more nodes, because it records every grammar rule applied
+[( )] Is built by the lexer rather than the parser
+[( )] Cannot represent nested expressions
+
+---
+
+The AST for `2 + 3 * 4` has `+` at the root. That means `+` is:
+
+[(X)] Evaluated last: its children must be computed before it can add anything
+[( )] Evaluated first, because the root is visited first
+[( )] Of higher precedence than `*`
+[( )] Left-associative
+
+---
+
+Parentheses appear in the source but not in the AST. That is because:
+
+[(X)] Their only job was to force a grouping, and the tree's shape already records that grouping
+[( )] The lexer deletes them
+[( )] They are stored as node attributes rather than nodes
+[( )] The AST is lossy in a way that is a known limitation
+
+---
+
+Adding a new consumer of the AST (a type checker, a pretty printer, an optimizer) requires:
+
+[(X)] A new traversal over the existing node types; the nodes themselves do not change
+[( )] New node classes for each consumer
+[( )] Changes to the parser
+[( )] A new grammar
+
+---
 
 ## Exercises (Homework, ~90 minutes total)
 
@@ -543,7 +824,7 @@ Run `import ast; print(ast.dump(ast.parse("2 + 3 * 4")))` in Python.  Compare Py
 
 ---
 
-# Part IV: Expression Trees in Practice, Adapted Examples
+# Part V: Expression Trees in Practice, Adapted Examples
 
 These models adapt code from *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).  The adapted example rewrites Allison's binary-tree traversal as a typed `ExprNode` dataclass, connecting preorder/inorder/postorder traversal directly to prefix/infix/postfix notation, the same connection your parser and evaluator rely on.
 
@@ -636,7 +917,7 @@ for label, tree, expected_val in [
     print(f"  value:   {val}  ({'OK' if val == expected_val else 'WRONG'})")
     print()
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **CTQ M6.1** The two trees above represent the same tokens in a different order: `(1+2)*3` vs `1+2*3`.  What physical property of the tree (depth, root label, or shape) encodes operator precedence?  Trace `eval_tree(tree2)` step by step to confirm that multiplication is evaluated before addition.
 
@@ -693,16 +974,8 @@ The AST is the third representation of the same program (characters -> tokens ->
 - **Python `ast` module**, `ast.dump(ast.parse("2+3*4"))`: meet a production AST
 - **Douglas Thain.  "Introduction to Compilers and Language Design"**, Chapter 5
 - **"Engineering a Compiler"**, Cooper & Torczon, Chapter 5: AST construction in a real compiler
-
----
-
-## Going Deeper (Optional Pointers)
-
-The core lesson above stands on its own.  The deep-dive appendices that used to follow it now live on the Tutorials shelf:
-
-> **Going further:** the material that used to live here, expression-oriented language design (conditionals as values, `let`-expressions, sequencing, short-circuit and lazy evaluation) and the interpreter-to-compiler path (the visitor pattern, transpiling your AST to Python, JavaScript, and Haskell, and source maps), is covered in depth in the dedicated tutorial [From AST to Code: Visitors and Transpilers](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-ast-to-code.md).  Explore it when your project or curiosity calls for it; transpilation is one of the Team Language Project's extension directions.
-
-> **Going further:** the stack-machine and bytecode-compiler material that used to live here (compiling your AST to instructions and executing them on a virtual machine) is covered in depth in the dedicated tutorial: [Building a Bytecode VM for Mini](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-bytecode-vm.md).  Explore it when your project or curiosity calls for it.
+- [From AST to Code: Visitors and Transpilers](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ASTToCode): expression-oriented design (conditionals as values, `let`-expressions, sequencing, short-circuit evaluation), the visitor pattern, and transpiling your AST to Python, JavaScript, and Haskell with source maps.  Transpilation is one of the Team Language Project's extension directions.
+- [Building a Bytecode VM for Mini](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BytecodeVM): compiling your AST to instructions and running them on a virtual machine.
 
 ---
 

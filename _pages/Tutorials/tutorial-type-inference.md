@@ -1,17 +1,22 @@
-<!--
-author:   William Mongan
-language: en
-narrator: US English Male
+---
+layout: tutorial
+permalink: /Tutorials/TypeInference
+title: "CS374: Implementing Hindley-Milner Type Inference"
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-type-inference.md
+info:
+  coursenum: CS374
+  goals:
+    - "Implemented Robinson's unification algorithm with the occurs check and verified it on composed type expressions"
+    - "Implemented `apply` and `compose` for type substitutions and confirmed substitution composition is associative"
+    - "Implemented Algorithm W that walks the Mini AST and returns a principal type for every expression node"
+    - "Implemented let-polymorphism (generalization and instantiation) so that a polymorphic identity function type-checks at multiple types in the same scope"
+    - "Produced clear, position-tagged type error messages that name both conflicting types and the source location"
 
-import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
+tags:
+  - types
+  - hindley-milner
 
-link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css/liascript-custom.css?v=2025-08-23-4
-        https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap
-
--->
-
+---
 # Tutorial: Implementing Hindley-Milner Type Inference
 
 ## Learning Goals
@@ -790,5 +795,5 @@ Threading substitutions correctly is the #1 implementation challenge.  Every cal
 
 - Damas, Luis and Milner, Robin.  "Principal Type-Schemes for Functional Programs" (POPL 1982).  The original HM paper; 9 pages, completely readable.
 - Cardelli, Luca.  "Basic Polymorphic Typechecking" (1987, free online).  A tutorial implementation much like this one, in Pascal.
-- The Tree-Walking Interpreter assignment's static-typing direction (https://www.billmongan.com/Ursinus-CS374/Assignments/Interpreter): apply this tutorial to your language's AST.
+- The Tree-Walking Interpreter assignment's static-typing direction (https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Interpreter): apply this tutorial to your language's AST.
 - Pierce, Benjamin C. *Types and Programming Languages*, Chapters 22-23.  The rigorous treatment.

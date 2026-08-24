@@ -20,6 +20,7 @@ You cannot win a scope argument in the abstract, and you can settle one in about
 
 - Evaluate `let x = 2 in let x = x + 1 in x * x` by hand, drawing the environment at each step.  Then predict the answer under *dynamic* rather than lexical scope and say where they diverge.
 - Trace what your evaluator does with an unbound variable, and decide what error it should raise and when.
+- **Mystery Scoping Language.**  Write down, before class, two short programs whose output would *differ* depending on whether a language is lexically or dynamically scoped.  One of them should be as short as you can make it.  In class you will run these against an interpreter whose scoping rule is hidden and deduce the rule from the answers, so the value of a probe is entirely in whether it can tell the two apart.  Bring both, and bring your prediction of what each would print under each rule.
 
 ## What to Bring
 

@@ -79,69 +79,271 @@ Note that this grammar is **left-recursive** (`L -> L ; stmt` starts with `L`). 
 
 ---
 
-## Code Cell
+## Model 3: Test the Grammar You Just Wrote
+
+Model 2 asked you to write four grammars.  This cell lets you *run* them.  Encode
+a grammar as a dictionary, hand it a list of strings you expect to be accepted and
+a list you expect to be rejected, and it tells you where your grammar disagrees
+with your intent.
 
 ```python
-# A CFG as data, and a brute-force derivation checker for tiny grammars.
-# This is NOT how real parsers work (that is weeks away), but it makes
-# "derivable from S" concrete and testable.
+from collections import deque
 
-from itertools import count
+def derivable(grammar, target, start="S", max_len=None):
+    """Breadth-first search over sentential forms. Toy scale only."""
+    limit = max_len if max_len is not None else len(target)
+    seen, queue = {(start,)}, deque([(start,)])
+    while queue:
+        form = queue.popleft()
+        if all(sym not in grammar for sym in form):
+            if "".join(form) == target:
+                return True
+            continue
+        i = next(i for i, sym in enumerate(form) if sym in grammar)
+        for rhs in grammar[form[i]]:
+            cand = form[:i] + tuple(rhs) + form[i+1:]
+            terminals = sum(1 for sym in cand if sym not in grammar)
+            if terminals <= limit and len(cand) <= limit + 4 and cand not in seen:
+                seen.add(cand)
+                queue.append(cand)
+    return False
 
-GRAMMAR = {            # S -> aSb | ab   (the language a^n b^n)
-    "S": [["a", "S", "b"], ["a", "b"]],
-}
+def check(name, grammar, accept, reject, start="S"):
+    print(f"\n=== {name} ===")
+    wrong = 0
+    for t in accept:
+        ok = derivable(grammar, t, start)
+        if not ok: wrong += 1
+        print(f"  {t!r:10} should be ACCEPTED -> {'ok' if ok else 'REJECTED, your grammar is too narrow'}")
+    for t in reject:
+        ok = derivable(grammar, t, start)
+        if ok: wrong += 1
+        print(f"  {t!r:10} should be REJECTED -> {'ok' if not ok else 'ACCEPTED, your grammar is too loose'}")
+    print(f"  -> {'grammar matches your intent' if not wrong else str(wrong) + ' disagreement(s)'}")
 
-def derivable(target, start="S", max_steps=12):
-    """Breadth-first search over derivations; fine for short strings only."""
-    try:
-        frontier = [[start]]
-        for _ in range(max_steps):
-            next_frontier = []
-            for form in frontier:
-                if all(sym not in GRAMMAR for sym in form):   # all terminals
-                    if "".join(form) == target:
-                        return True
-                    continue
-                i = next(i for i, sym in enumerate(form) if sym in GRAMMAR)
-                for rhs in GRAMMAR[form[i]]:
-                    candidate = form[:i] + rhs + form[i+1:]
-                    if len([s for s in candidate if s not in GRAMMAR]) <= len(target):
-                        next_frontier.append(candidate)
-            frontier = next_frontier
-        return False
-    except Exception as e:
-        print(f"[grammars:derivable] {e}")
-        import traceback; traceback.print_exc()
-        return False
+# The balanced-parens grammar from the worked example: S -> (S) | SS | epsilon
+PARENS = {"S": [["(", "S", ")"], ["S", "S"], []]}
+check("Balanced parentheses", PARENS,
+      accept=["", "()", "(())", "()()", "((()))"],
+      reject=["(", ")(", "(()"])
 
-for s in ["ab", "aabb", "aaabbb", "aab", "ba", "abab"]:
-    print(f"{s:8} -> {derivable(s)}")
+# The statement list from CTQ 2.6, separator style: L -> L ; stmt | stmt
+STMTS = {"L": [["L", ";", "s"], ["s"]]}
+check("Statement list (separator style)", STMTS,
+      accept=["s", "s;s", "s;s;s"],
+      reject=["", ";s", "s;"], start="L")
+
+# TODO: encode YOUR grammar from CTQ 2.7 (declarations) and CTQ 2.8 (nested if)
+#       and call check() on each. Predict the verdicts before you run.
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
----
+### Reading the Code
+
+- A grammar is a dict from nonterminal to a list of alternatives, and each alternative is a *list of symbols*.  The empty list `[]` is $\varepsilon$, which is how `PARENS` allows the empty string.
+- `derivable` walks the leftmost nonterminal every time.  That is a choice, not a requirement; CTQ 2.9 asks what changes if you pick a different one.
+- The `terminals <= limit` prune is what keeps the search finite.  `S -> SS` can grow a form without adding terminals, so the extra `len(cand) <= limit + 4` guard stops it from spinning on nonterminals alone.
+- `check` reports *which direction* your grammar is wrong: too narrow (rejects something legal) or too loose (accepts something illegal).  Those are different bugs with different fixes.
+
+> **Watch out!**  This is a brute-force search, not a parser.  It answers "is this string derivable" by trying everything, which is exponential and gives you no parse tree.  A real parser answers the same question in linear time *and* hands you the structure, which is the whole point of the next three weeks.
 
 ### Critical Thinking Questions
 
-> **CTQ 2.9** The checker confirms `aabb` and rejects `abab`.
+> **CTQ 2.9** The checker accepts `aabb` under $S \rightarrow aSb \mid ab$ and rejects `abab`.
 >
-> - **Step 1:** Manually trace the BFS frontier after one expansion of `S` for the target `abab`.  What sentential forms are on the frontier?
-> - **Step 2:** For each form on the frontier, try expanding one more step.  Which forms can never lead to `abab`, and why?
+> - **Step 1:** Manually trace the frontier after one expansion of $S$ for the target `abab`.  What sentential forms are on it?
+> - **Step 2:** For each, expand one more step.  Which forms can never lead to `abab`, and why?
 > - **Step 3:** Which prefix of `abab` dooms every derivation?  State a general rule: "A string is not in $L(S \rightarrow aSb \mid ab)$ if and only if ..."
 
-> **CTQ 2.10** Replace the grammar dictionary with your balanced-parentheses grammar from CTQ 2.5 (use `(` and `)` as terminals) and verify three strings each way.
+> **CTQ 2.10** Encode your CTQ 2.7 declaration grammar and run `check` on it.
 >
-> - **Step 1:** Write out the new `GRAMMAR` dict as you would type it.  What are the terminals?  What are the productions?
-> - **Step 2:** Pick three strings you expect to be accepted and three you expect to be rejected.  Record your predictions before running.
-> - **Step 3:** What had to change in the grammar dict, and what did not?  (Consider: the `derivable` function itself, the start symbol, the loop.)
+> - **Step 1:** Write out the dict as you would type it.  What are the terminals?
+> - **Step 2:** Pick three strings you expect accepted and three rejected.  Record predictions *before* running.
+> - **Step 3:** If `check` reports a disagreement, is your grammar too narrow or too loose?  Fix it and rerun.
+
+> **CTQ 2.11** Trade grammars with another team.  Run their declaration grammar through `check` with *your* test strings.  Did you find a string that breaks it?  Report what you found and what rule would fix it.
 
 ---
 
+# Part III: Left Recursion, the Trap Waiting for Your Parser
 
-> **The runnable versions of these models are on their own page.**  Representing a CFG as a Python dictionary, detecting left recursion mechanically, and building parse trees as nested dicts are all in [Grammar Tooling in Python](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-grammars-in-python.md).  Work them after class; the left-recursion detector in particular will tell you whether a grammar you wrote can be parsed by recursive descent.
+## 2.  Theory: Where the Recursion Sits
 
-# Part III: Synthesis and Practice
+You have now written several grammars, and at least one of them is probably left-recursive.  A nonterminal $A$ is **directly left-recursive** if it has a production $A \rightarrow A\,\alpha$: the rule begins by mentioning itself.
+
+The statement-list rule from the worked example is one:
+
+```
+L -> L ; stmt | stmt
+```
+
+As a mathematical description this is perfect.  As a parser it is fatal.  In three weeks you will write one function per nonterminal, and `parse_L()` will begin by calling `parse_L()`, which begins by calling `parse_L()`, forever, without ever consuming a token.  The recursion never reaches a base case because nothing has been read.
+
+The fix is to move the recursion out of first position.  These two grammars describe *the same language*:
+
+```
+E -> E + T | T                      (left-recursive)
+
+E  -> T E'                          (right-recursive)
+E' -> + T E' | ε
+```
+
+Here is why they are equivalent:
+
+```
+Left-recursive generates:   T,  T+T,  T+T+T,  T+T+T+T, ...
+
+Right-recursive derives:
+  E  => T E'
+     => T + T E'          (E' -> + T E')
+     => T + T + T E'      (E' -> + T E' again)
+     => T + T + T         (E' -> epsilon)
+```
+
+Same strings, same left-to-right order.  But the right-recursive version never calls itself as its very first action, so `parse_E()` consumes a `T` before it recurses, and the recursion terminates.
+
+> **Watch out!**  Left- and right-recursion are not interchangeable once you care about *meaning*.  Left-recursive rules produce left-associative trees, which is correct for `+`, `-`, `*`, and `/`.  Right-recursive rules produce right-associative trees, correct for `^` and for assignment in many languages.  Eliminating left recursion for the parser's sake, without restoring the associativity in how you build the tree, is a silent semantic bug: your interpreter will compute `7 - 2 - 1` as `6` instead of `4`.
+
+## Examples: Spot It by Eye
+
+Before running the detector, mark each rule as left-recursive or not, and say what a recursive descent parser would do with it:
+
+| Rule | Left-recursive? | What `parse_X()` does first |
+|------|-----------------|-----------------------------|
+| `E -> E + T` | ? | ? |
+| `E -> T E'` | ? | ? |
+| `T -> T * F` | ? | ? |
+| `S -> ( S S )` | ? | ? |
+| `A -> B c` with `B -> A d` | ? | ? |
+
+The last row is the interesting one.  Neither rule starts with itself, and yet the pair is still a trap.
+
+## Model 4: A Left-Recursion Detector
+
+```python
+def find_left_recursive(grammar):
+    """Return the nonterminals that are DIRECTLY left-recursive: A -> A alpha."""
+    return {head for head, prods in grammar.items()
+            for rhs in prods if rhs and rhs[0] == head}
+
+def report(name, grammar):
+    lr = find_left_recursive(grammar)
+    if lr:
+        print(f"  {name:34} LEFT-RECURSIVE: {sorted(lr)}")
+        print(f"  {'':34} -> recursive descent will loop forever")
+    else:
+        print(f"  {name:34} no direct left recursion")
+
+# Left-recursive arithmetic (the standard textbook form)
+grammar_lr = {
+    "E": [["E", "+", "T"], ["T"]],
+    "T": [["T", "*", "F"], ["F"]],
+    "F": [["num"]],
+}
+
+# Right-recursive rewrite (suitable for recursive descent)
+grammar_rr = {
+    "E":  [["T", "E'"]],
+    "E'": [["+", "T", "E'"], []],      # empty list = epsilon
+    "T":  [["F", "T'"]],
+    "T'": [["*", "F", "T'"], []],
+    "F":  [["num"]],
+}
+
+grammar_bp    = {"S": [["(", "S", "S", ")"], []]}
+grammar_stmts = {"L": [["L", ";", "s"], ["s"]]}
+
+print("=== Direct left recursion ===")
+report("Left-recursive arithmetic",  grammar_lr)
+report("Right-recursive arithmetic", grammar_rr)
+report("Balanced parentheses",       grammar_bp)
+report("Statement list (separator)", grammar_stmts)
+
+print("\n=== The one the detector MISSES ===")
+grammar_indirect = {
+    "A": [["B", "c"]],
+    "B": [["A", "d"], ["e"]],
+}
+report("Indirect: A -> B c, B -> A d", grammar_indirect)
+print("  ...and yet parse_A() calls parse_B(), which calls parse_A().")
+print("  Neither rule begins with ITSELF, so the direct check cannot see it.")
+
+print("\n=== Watch the loop, with a depth guard so we survive it ===")
+def parse_with_guard(grammar, nt, depth=0, limit=12, path=None):
+    """Simulate recursive descent taking the FIRST alternative every time."""
+    path = (path or []) + [nt]
+    if depth >= limit:
+        print(f"    depth {limit} reached: {' -> '.join(path[:8])} ...")
+        return "LOOPED"
+    first = grammar[nt][0]
+    if not first or first[0] not in grammar:
+        return "consumed a terminal, fine"
+    return parse_with_guard(grammar, first[0], depth + 1, limit, path)
+
+for name, g, start in [("grammar_lr", grammar_lr, "E"),
+                       ("grammar_rr", grammar_rr, "E"),
+                       ("indirect",   grammar_indirect, "A")]:
+    print(f"  {name:12} starting at {start}: {parse_with_guard(g, start)}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- `find_left_recursive` is a two-line check: for every rule, is the *first* symbol of the right-hand side the same as the left-hand side?  That is the entire definition of direct left recursion.
+- `grammar_rr` introduces `E'` and `T'`, read "E-prime".  This is the standard left-recursion elimination trick, and `E' -> + T E' | ε` is where the repetition now lives.
+- The detector reports nothing for `grammar_indirect`, and then `parse_with_guard` shows the loop happening anyway.  The gap between those two outputs is CTQ 2.13.
+- `parse_with_guard` always takes the *first* alternative, which is what a naive recursive descent parser does before it has learned to look ahead.  The depth limit is there only so the cell terminates; a real parser would blow the stack.
+
+### Critical Thinking Questions
+
+> **CTQ 2.12** Using `grammar_rr`, derive `3+5+7` step by step, writing every sentential form and the rule used.  Then explain in one sentence what `E' -> + T E' | ε` accomplishes compared to `E -> E + T | T`, focusing on *where* the recursion sits.
+
+> **CTQ 2.13** The detector misses `grammar_indirect`.
+>
+> - **Step 1:** Write the two rules that create the cycle.
+> - **Step 2:** Trace what a recursive descent parser does under them.  Where exactly is the infinite loop?
+> - **Step 3:** Sketch in English how you would extend `find_left_recursive` to catch one step of indirect left recursion.  What data structure does that start to look like?
+
+> **CTQ 2.14** For `grammar_lr`, write the first three calls on the call stack when parsing the token `3` from `3 + 5`.  Then do the same for `grammar_rr`.  Where does the stack stop growing?  Complete the rule: "a recursive descent parser can handle a grammar if and only if ..."
+
+> **CTQ 2.15** `7 - 2 - 1` should be `4`.  Which of `grammar_lr` and `grammar_rr` produces the tree that computes it correctly, and what must you do in the *other* one to get the right answer anyway?
+
+### Try It Yourself
+
+Run the detector on the grammar your team drafted in Exercise 4, before you write a line of parser.
+
+```python
+def find_left_recursive(grammar):
+    return {head for head, prods in grammar.items()
+            for rhs in prods if rhs and rhs[0] == head}
+
+# TODO: encode your team's program / statement / expression rules here.
+#       Use lists of symbol strings; [] means epsilon.
+MY_GRAMMAR = {
+    "program":    [["statement", "program"], []],
+    "statement":  [["expression", ";"]],
+    "expression": [],          # TODO: fill this in, and try it BOTH ways:
+                               #   left-recursive:  [["expression", "+", "term"], ["term"]]
+                               #   right-recursive: [["term", "expression'"]]
+}
+
+lr = find_left_recursive(MY_GRAMMAR)
+if lr:
+    print(f"LEFT-RECURSIVE: {sorted(lr)}")
+    print("Rewrite these before you start the Parser assignment, or")
+    print("commit to a parsing method that tolerates them (see Table-Driven")
+    print("and LR Parsing, which handles left recursion natively).")
+else:
+    print("No direct left recursion. Recursive descent can handle this.")
+    print("Now check for INDIRECT left recursion by hand; the detector cannot.")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: with the left-recursive `expression` filled in, the detector names it.  With the right-recursive version, it reports clean.  Keep whichever you choose; it is the seed of your Parser assignment.
+
+---
+
+# Part IV: Synthesis and Practice
 
 > **Common Mistakes**
 >
@@ -152,6 +354,35 @@ for s in ["ab", "aabb", "aaabbb", "aab", "ba", "abab"]:
 > - **Forgetting that ambiguous grammars are valid as mathematical objects but break parsers.**  An ambiguous grammar is not "wrong" in theory, but it means your parser will non-deterministically produce different ASTs for the same input, a catastrophic bug that is hard to diagnose.
 > - **Thinking of grammars as "just syntax."**  The structure of a parse tree determines operator precedence and associativity.  The reason `*` binds tighter than `+` in every language you have used is that `T` is nested inside `E` in the grammar, not because a rule says "multiply first."  If you get the grammar structure wrong, your interpreter will compute wrong answers silently.
 > - **Confusing left-recursive and right-recursive in terms of associativity.**  Left-recursive rules (`E -> E + T`) produce left-associative trees (correct for `+`, `-`, `*`, `/`).  Right-recursive rules produce right-associative trees (correct for `^` and assignment in many languages).  Choosing the wrong recursion direction is a silent semantic bug.
+
+# Check Your Understanding
+
+When writing a CFG for a construct, the first question to settle is:
+
+[(X)] What the recursive case and the base case are, since every repeated or nested structure needs both
+[( )] Which parsing algorithm you will use
+[( )] How many tokens of lookahead you need
+[( )] What the AST node classes will be called
+
+---
+
+A rule written `A -> A x | x` and one written `A -> x { x }` differ in:
+
+[(X)] Parseability by recursive descent, not in the set of strings they accept
+[( )] The language they generate
+[( )] Whether they are context-free
+[( )] Nothing at all
+
+---
+
+You want a list of one or more items separated by commas. The rule is:
+
+[(X)] `list -> item { "," item }`: one required item, then zero or more comma-item pairs
+[( )] `list -> { item "," }`: zero or more item-comma pairs
+[( )] `list -> item "," list | ""`: which permits a trailing comma
+[( )] `list -> { item } { "," }`
+
+---
 
 ## 3.  Exercises
 

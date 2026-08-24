@@ -373,7 +373,87 @@ print()
 print("Free vars in (λx. x y):", free_vars(lam('x', app(var('x'), var('y')))))
 print("Free vars in (λx.λy. x):", free_vars(lam('x', lam('y', var('x')))))
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- The three tuple shapes `('var', n)`, `('lam', p, b)` and `('app', f, a)` are the *entire* grammar of the lambda calculus.  There is nothing else to represent, which is why the tracer fits on one screen.
+- `subst` is where capture avoidance lives.  It consults `free_vars` before descending into a `lam` and renames the bound variable if substituting would otherwise capture a free one.  Every hard part of this session is in that one check.
+- `step` finds the **outermost** redex first, which is normal order.  Normal order is the strategy guaranteed to reach a normal form if one exists; Python's own evaluation is the opposite, evaluating arguments first.
+- The tracer stops when `step` reports no redex.  A normal form is defined that way: not "the answer", but "nothing left to reduce".
+
+### Try It Yourself
+
+Make variable capture happen, then watch renaming prevent it.
+
+```python
+def free_vars(e):
+    tag = e[0]
+    if tag == "var": return {e[1]}
+    if tag == "lam": return free_vars(e[2]) - {e[1]}
+    return free_vars(e[1]) | free_vars(e[2])
+
+def show(e):
+    tag = e[0]
+    if tag == "var": return e[1]
+    if tag == "lam": return "(\\" + e[1] + "." + show(e[2]) + ")"
+    return "(" + show(e[1]) + " " + show(e[2]) + ")"
+
+def fresh(name, avoid):
+    n = name
+    while n in avoid:
+        n += "'"
+    return n
+
+def subst(body, var, value, rename=True):
+    """body[var := value].  Pass rename=False to watch capture happen."""
+    tag = body[0]
+    if tag == "var":
+        return value if body[1] == var else body
+    if tag == "app":
+        return ("app", subst(body[1], var, value, rename),
+                       subst(body[2], var, value, rename))
+    param, inner = body[1], body[2]
+    if param == var:
+        return body                        # var is shadowed here; stop
+    if rename and param in free_vars(value):
+        new = fresh(param, free_vars(value) | free_vars(inner))
+        inner = subst(inner, param, ("var", new), rename)
+        param = new
+    return ("lam", param, subst(inner, var, value, rename))
+
+# The classic case. Substituting y for x inside a binder that ALSO binds y.
+term  = ("lam", "y", ("app", ("var", "x"), ("var", "y")))
+value = ("var", "y")
+
+print("=== Substituting y for x inside " + show(term) + " ===")
+print("  value being substituted: " + show(value))
+
+bad  = subst(term, "x", value, rename=False)
+good = subst(term, "x", value, rename=True)
+
+print("\n  WITHOUT renaming: " + show(bad))
+print("     The free y was CAPTURED by the inner binder. Both y's are now")
+print("     the bound one, and the term means something else entirely.")
+print("\n  WITH renaming:    " + show(good))
+print("     The binder was renamed first, so the free y stays free.")
+
+print("\n  free vars without renaming: " + str(sorted(free_vars(bad))))
+print("  free vars with renaming:    " + str(sorted(free_vars(good))))
+
+# TODO 1: the correct result should still have y free. Does the bad one?
+#         The printed sets above answer it -- say why that IS the bug.
+
+# TODO 2: build a term where capture changes the ANSWER, not just the
+#         names. Apply both results to something and show they differ.
+
+# TODO 3: alpha-equivalence says two terms are the same if they differ only
+#         in bound names. Write alpha_eq(a, b) that decides it, by renaming
+#         both to a canonical form as you walk.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: without renaming you get a term whose free-variable set is **empty**; with renaming, `y` is still free.  A substitution that changes which variables are free has changed the meaning, and that is precisely what alpha renaming exists to prevent.
 
 ### Critical Thinking Questions
 
@@ -467,7 +547,7 @@ normalize(App(Lam("x", App(Var("x"), Var("x"))), Lam("y", Var("y"))))
 print("\nApply-twice: (λf.λx.f(f x)) g a")
 normalize(App(App(Lam("f", Lam("x", App(Var("f"), App(Var("f"), Var("x"))))), Var("g")), Var("a")))
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -565,7 +645,7 @@ print("De Bruijn indices for λa.λb.a:")
 print(" ", to_debruijn(lam('a', lam('b', var('a')))))
 print("They match -> alpha-equivalent.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -662,7 +742,7 @@ print("  WHNF         - outermost position is not a redex (body may still have t
 print("  Lazy evaluation (Haskell) only reduces to WHNF: avoids evaluating")
 print("  unreachable subexpressions, enabling infinite data structures.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -677,6 +757,53 @@ print("  unreachable subexpressions, enabling infinite data structures.")
 
 ---
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
+
+# Check Your Understanding
+
+The lambda calculus has exactly three syntactic forms. They are:
+
+[(X)] Variable, abstraction (`\x.E`), and application (`E1 E2`)
+[( )] Variable, number, and function
+[( )] Abstraction, application, and conditional
+[( )] Variable, application, and recursion
+
+---
+
+Beta reduction of `(\x.B) A` means:
+
+[(X)] Substitute `A` for every free occurrence of `x` in `B`
+[( )] Evaluate `A`, then evaluate `B`
+[( )] Rename `x` to `A` throughout `B`, bound occurrences included
+[( )] Apply `B` to `A`
+
+---
+
+Alpha renaming exists to prevent:
+
+[(X)] Variable capture: a free variable in the substituted term being swallowed by a binder it lands inside
+[( )] Infinite reduction sequences
+[( )] Name collisions between unrelated functions
+[( )] Ambiguity in the parser
+
+---
+
+Normal-order reduction always reduces the outermost redex first. Its guarantee is:
+
+[(X)] If a normal form exists, normal order finds it; applicative order may diverge instead
+[( )] It always terminates
+[( )] It takes the fewest steps
+[( )] It matches how Python evaluates function calls
+
+---
+
+A term is in normal form when:
+
+[(X)] It contains no redex anywhere, so no reduction step applies
+[( )] It has been reduced at least once
+[( )] Its outermost form is a lambda
+[( )] It contains no free variables
+
+---
 
 ## 4.  Exercises
 
@@ -699,16 +826,8 @@ In your notebook: Church built this system in 1936 to study what "computable" me
 - Henk Barendregt and Erik Barendsen.  "Introduction to Lambda Calculus" (online notes), for the formal substitution definition.
 - Gabriel Lebec.  "Lambda as JS, or A Flock of Functions" (talk and slides), which Part 2 follows: https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript
 - **Lambda-Py / pycombinator**; combinators and Church encodings in Python; run the calculus interactively in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html, experiment with the reductions from today's module without installing anything.
-
----
-
-## Going Deeper (Optional Pointers)
-
-The core lesson above stands on its own.  The deep-dive appendices that used to follow it now live elsewhere:
-
-> **Going further:** the material that used to live here (combinatory logic and the SKI calculus: the "flock of birds" (S, K, I, B, C, W and friends), deriving B and C from S and K, bracket abstraction, and point-free programming) is covered in depth as the advanced "Combinatory Logic and the SKI Calculus" section of the dedicated tutorial: [Implementing a Lambda Calculus Reducer](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-lambda-calculus-reducer.md).  **Direction D of the Functional assignment builds on this material.**  Explore it when your project or curiosity calls for it.
-
-> **Going further:** the material that used to live here (algebraic data types and pattern matching) is covered in the Modern Language Features activity (pattern matching, including matching on nested structures, in class) and the dedicated guide: [Typing Disciplines: Strong vs. Weak, Static vs. Dynamic, and Gradual Typing](https://www.billmongan.com/Ursinus-CS374/Tutorials/TypingDisciplines) (product and sum types).  The specific worked ADT examples from the old appendix (safe lookups, Maybe-style values, and symbolic differentiation over an expression tree) make a good self-study exercise.  Explore them when your project or curiosity calls for it.
+- [Implementing a Lambda Calculus Reducer](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LambdaCalculusReducer): combinatory logic and the SKI calculus (S, K, I, B, C, W), deriving B and C from S and K, bracket abstraction, and point-free programming.  Direction D of the Functional assignment builds on this.
+- [Typing Disciplines](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypingDisciplines): product and sum types.  Pattern matching on nested structures is in the Modern Language Features material; safe lookups, Maybe-style values, and symbolic differentiation over an expression tree make good self-study exercises.
 
 ---
 

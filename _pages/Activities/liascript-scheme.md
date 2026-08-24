@@ -134,6 +134,155 @@ In Scheme, the expression `(+ 1 2)` and the quoted form `'(+ 1 2)` differ in tha
 
 `'(+ 1 2)` is a list whose first element is the symbol `+`: **the program is a data structure the language itself manipulates**, and `(eval '(+ 1 2))` runs it.  This property, **homoiconicity**, is why Lisp dialects have **macros**: functions that receive *code as lists*, transform it, and hand the result back to the evaluator, which is your `for`-loop desugaring exercise, except performed by user programs rather than by the language implementer.  The AST you carefully constructed in Python with classes is, in Scheme, just... the list you typed.
 
+## Model 2b: Homoiconicity, Executed
+
+The claim above is easy to nod at and hard to feel.  Here it is as code you can run.  A Scheme program is a list; we represent it as a Python list, evaluate it, and then write a **macro**: an ordinary function that takes a program as data, returns a different program as data, and hands it back to the evaluator.
+
+```python
+# A Scheme program IS a list. In Python, we write it as a Python list.
+#   (+ 1 2)            ->  ["+", 1, 2]
+#   (if (> x 0) 1 -1)  ->  ["if", [">", "x", 0], 1, -1]
+
+import operator
+
+BUILTINS = {
+    "+": operator.add, "-": operator.sub, "*": operator.mul,
+    ">": operator.gt,  "<": operator.lt,  "=": operator.eq,
+}
+
+def sch_eval(expr, env):
+    if isinstance(expr, str):                 # a symbol: look it up
+        return env[expr]
+    if not isinstance(expr, list):            # a number: itself
+        return expr
+
+    head, *rest = expr
+    if head == "quote":                       # (quote X) -> X, unevaluated
+        return rest[0]
+    if head == "if":
+        test, conseq, alt = rest
+        return sch_eval(conseq if sch_eval(test, env) else alt, env)
+    if head == "let":
+        (name, value), body = rest[0], rest[1]
+        return sch_eval(body, {**env, name: sch_eval(value, env)})
+
+    fn = sch_eval(head, env)
+    return fn(*[sch_eval(a, env) for a in rest])
+
+def show(expr):
+    if isinstance(expr, list):
+        return "(" + " ".join(show(e) for e in expr) + ")"
+    return str(expr)
+
+env = {**BUILTINS, "x": 7}
+
+print("=== 1. A program is a list, and it runs ===")
+program = ["+", 1, ["*", 2, 3]]
+print(f"  as data:  {program}")
+print(f"  as text:  {show(program)}")
+print(f"  evaluated: {sch_eval(program, env)}")
+
+print("\n=== 2. Quote turns a program back into data ===")
+quoted = ["quote", ["+", 1, ["*", 2, 3]]]
+print(f"  {show(quoted):24} -> {sch_eval(quoted, env)}")
+print("  The SAME list. Evaluated it is 7; quoted it is a three-element list.")
+
+print("\n=== 3. Programs are inspectable, because they are just lists ===")
+def count_nodes(e):
+    return 1 if not isinstance(e, list) else 1 + sum(count_nodes(c) for c in e)
+print(f"  {show(program)} has {count_nodes(program)} nodes")
+print(f"  its operator is {program[0]!r}, its second argument is {program[2]}")
+
+print("\n=== 4. A MACRO: a function from program to program ===")
+def unless_macro(form):
+    """(unless test body)  ->  (if test 0 body)"""
+    _, test, body = form
+    return ["if", test, 0, body]
+
+source   = ["unless", [">", "x", 100], ["*", "x", 2]]
+expanded = unless_macro(source)
+print(f"  you wrote:   {show(source)}")
+print(f"  macro made:  {show(expanded)}")
+print(f"  which runs to: {sch_eval(expanded, env)}")
+print("  'unless' is not in the evaluator. A user added it, in six lines,")
+print("  without touching the language implementation.")
+
+print("\n=== 5. Why Python cannot do this as easily ===")
+print("  In Python, 'if x > 100: ...' is syntax, parsed into an AST object")
+print("  by the interpreter before your code ever sees it. In Scheme the")
+print("  program was ALREADY the data structure, so no parsing step stands")
+print("  between you and it. That is homoiconicity, and macros are the payoff.")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- `sch_eval` is about twenty lines and needs no parser.  The whole *Recursive Descent Parsing* session exists because most languages do not hand you the tree; Scheme does, which is what the One Syntax Rule buys.
+- `quote` is the only form that returns its argument untouched.  Everything else recurses.  That one special case is the door between program and data, in both directions.
+- `unless_macro` is an *ordinary function*.  It takes a list, returns a list, and the evaluator never knows a macro was involved.  Compare with adding `unless` to your own interpreter, which would mean a new AST node, a parser change, and an evaluator branch.
+- `count_nodes` works on programs for the same reason it would work on any nested list: there is no difference between the two.
+
+> **Watch out!**  Homoiconicity is not "Lisp has `eval`."  Python has `eval` too, and it takes a *string* that must be parsed.  The Scheme property is that the program is already the data structure the evaluator consumes, so transforming code needs no parsing and no printing back to text. That is why Lisp macros compose and string-based code generation does not.
+
+### Try It Yourself
+
+Add a form to the language without touching the evaluator.
+
+```python
+import operator
+
+BUILTINS = {"+": operator.add, "-": operator.sub, "*": operator.mul,
+            ">": operator.gt,  "<": operator.lt,  "=": operator.eq}
+
+def sch_eval(expr, env):
+    if isinstance(expr, str):   return env[expr]
+    if not isinstance(expr, list): return expr
+    head, *rest = expr
+    if head == "quote": return rest[0]
+    if head == "if":
+        test, conseq, alt = rest
+        return sch_eval(conseq if sch_eval(test, env) else alt, env)
+    if head == "let":
+        (name, value), body = rest[0], rest[1]
+        return sch_eval(body, {**env, name: sch_eval(value, env)})
+    fn = sch_eval(head, env)
+    return fn(*[sch_eval(a, env) for a in rest])
+
+def show(expr):
+    if isinstance(expr, list):
+        return "(" + " ".join(show(e) for e in expr) + ")"
+    return str(expr)
+
+env = {**BUILTINS, "x": 7, "y": 3}
+
+# TODO 1: write a macro for `when`:  (when test body) -> (if test body 0)
+def when_macro(form):
+    return form            # replace me
+
+# TODO 2: write a macro for `double`: (double e) -> (* e 2)
+#         Then apply it to (double (+ x y)) and check you get 20.
+#         Careful: does your macro evaluate `e` once, or twice? Look at
+#         (* e 2) versus (+ e e) and say which you wrote and why it matters.
+def double_macro(form):
+    return form            # replace me
+
+# TODO 3: write a macro `swap-args` that takes (op a b) and returns (op b a).
+#         Apply it to (- 10 3). What comes out, and what does that tell you
+#         about how much power a macro has over code you wrote?
+
+for name, macro, src in [("when",   when_macro,   ["when", [">", "x", 0], ["*", "x", 10]]),
+                         ("double", double_macro, ["double", ["+", "x", "y"]])]:
+    expanded = macro(src)
+    print(f"  {name:8} {show(src):28} -> {show(expanded):28}", end="  ")
+    try:
+        print(f"= {sch_eval(expanded, env)}")
+    except (KeyError, TypeError) as e:
+        print(f"(not expanded yet: {type(e).__name__})")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output as written: both lines report that the macro has not been written yet, because the unexpanded form has `when` or `double` at the head and the evaluator has never heard of either.  Once your macros return real forms, you should see `70` and `20`.
+
 ---
 
 # Part III: Runnable Models
@@ -148,7 +297,7 @@ Model 3 explores one of the most practically important differences between Schem
 
 The cell below demonstrates both a naive (non-tail) factorial and a tail-recursive accumulator version in Python, counting stack frames to make the difference concrete.
 
-```python  liascript
+```python
 import sys
 
 def fact_naive(n):
@@ -205,7 +354,7 @@ print()
 print("Key insight: Scheme tail calls are as cheap as loops.")
 print("Python tail calls still grow the stack unless you add a trampoline manually.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -228,7 +377,7 @@ Scheme's **local binding forms** give names to intermediate values.  They differ
 
 The Python simulation below models each form's scoping rule explicitly so you can observe the difference.
 
-```python  liascript
+```python
 # Simulate Scheme's let / let* / letrec scoping rules in Python
 
 def demo_let():
@@ -304,7 +453,7 @@ new_a_star = b           # new_a = 7
 new_b_star = new_a_star  # new_b sees new_a (7), not original a (3)
 print(f"let* swap: a={new_a_star}, b={new_b_star}  (WRONG - new_a leaked into new_b)")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -321,7 +470,7 @@ Model 5 brings together everything: now that you know how Scheme evaluates expre
 
 **Quasiquoting** (`\`` backtick) is a templating mechanism: the entire form is treated as data (like `'`), *except* that subexpressions preceded by `,` (unquote) or `,@` (unquote-splicing) are evaluated.  This is the foundation of Scheme macros and a powerful list-construction tool.
 
-```python  liascript
+```python
 # We cannot run Racket here, so we simulate quasiquoting semantics in Python
 # to make the evaluation rules concrete.
 
@@ -417,7 +566,7 @@ sum_of_even_squares = my_reduce(
 print("Sum of squares of even numbers:", sum_of_even_squares)
 print("Expected: 4 + 16 = 20")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -430,7 +579,7 @@ print("Expected: 4 + 16 = 20")
 
 # Part IV: Writing Real Scheme (in class)
 
-Everything above simulated Scheme semantics in Python so the cells could run here.  Now write the real thing.  **This section is the in-class hands-on:** open [try.scheme.org](https://try.scheme.org) in a browser tab; it gives you a full Scheme REPL with nothing to install.  (Alternatives: download and run the course archives [SchemeSumList.zip](https://www.billmongan.com/Ursinus-CS374/files/replit/SchemeSumList.zip) and [QuickSortScheme.zip](https://www.billmongan.com/Ursinus-CS374/files/replit/QuickSortScheme.zip).)
+Everything above simulated Scheme semantics in Python so the cells could run here.  Now write the real thing.  **This section is the in-class hands-on:** open [try.scheme.org](https://try.scheme.org) in a browser tab; it gives you a full Scheme REPL with nothing to install.  (Alternatives: download and run the course archives [SchemeSumList.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeSumList.zip) and [QuickSortScheme.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/QuickSortScheme.zip).)
 
 Complete the three tasks below in actual Scheme.  Type each definition into the REPL, then run the test calls and check your output against the expected transcript.
 
@@ -499,6 +648,53 @@ If any output differs from the transcript, read the REPL's error message aloud t
 
 ---
 
+# Check Your Understanding
+
+Scheme's One Syntax Rule is that every compound form is `(operator operand ...)`. The practical consequence is:
+
+[(X)] The program is already a tree when you type it, so the parser has almost nothing to do
+[( )] Scheme programs are shorter than equivalent Python
+[( )] Precedence is decided by a table at run time
+[( )] Every Scheme program is a single expression
+
+---
+
+`(+ 1 2)` evaluates to 3; `'(+ 1 2)` is a three-element list. The quote:
+
+[(X)] Suppresses evaluation, handing you the program itself as data
+[( )] Converts the list to a string
+[( )] Marks the expression as a comment
+[( )] Makes evaluation lazy rather than eager
+
+---
+
+A Lisp macro differs from a function in that:
+
+[(X)] It receives its argument as unevaluated code and returns code, which the evaluator then runs
+[( )] It runs faster because it is compiled
+[( )] It can access global variables that functions cannot
+[( )] It may only be defined at the top level
+
+---
+
+Python has `eval` too. Homoiconicity is still different because:
+
+[(X)] Python's `eval` takes a string that must be parsed; in Scheme the program is already the data structure the evaluator consumes
+[( )] Python's `eval` is slower
+[( )] Python cannot represent nested lists
+[( )] Python's `eval` cannot see local variables
+
+---
+
+Scheme guarantees that a tail-recursive call uses no additional stack. That means:
+
+[(X)] Recursion can express iteration with constant space, so a loop is not needed for a million-element traversal
+[( )] Recursive functions run faster than loops
+[( )] Every recursive function is automatically tail recursive
+[( )] Deep recursion is impossible
+
+---
+
 ## 4.  Exercises
 
 1.  *Warmups.*  Define and test: `(double x)`, `(average a b)`, `(my-length lst)` recursively, and `(count-if pred lst)`.
@@ -519,12 +715,10 @@ In your notebook: Scheme deletes nearly all syntax and gains the ability to trea
 - Abelson and Sussman.  *Structure and Interpretation of Computer Programs*, Chapter 1 (free online).
 - The Racket Guide, chapters 1 through 4: https://docs.racket-lang.org/guide/
 - Paul Graham.  "The Roots of Lisp" (online essay): eval in a page.
+- [Build a Complete Interpreter in Python](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BuildAnInterpreter): its metacircular Scheme evaluator section covers s-expression parsing, environment chains, the evaluator core, the global environment, and tail-call optimization via trampoline.  The Interpreter assignment has you build the same architecture for the Mini language.
 
 ---
 
-## Going Deeper (Optional Pointers)
-
-> **Going further:** the material that used to live here, the metacircular evaluator (Scheme in Python): s-expression parsing, environment chains, the evaluator core, the global environment, and tail-call optimization via trampoline, now lives as the advanced "Metacircular Scheme Evaluator" section of the dedicated tutorial: [Build a Complete Interpreter in Python: Step by Step](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md).  The Interpreter assignment has you build the same architecture for the Mini language.  Explore it when your project or curiosity calls for it.
 
 ### If you explore the evaluator: reflection prompts
 
@@ -540,7 +734,7 @@ Answer these in your course notebook if you work through the metacircular evalua
 
 ### Further reading on metacircular evaluation
 
-- **Runnable example archive**: [SchemeInterpreter.zip](https://www.billmongan.com/Ursinus-CS374/files/replit/SchemeInterpreter.zip): a complete reference implementation of this activity's evaluator, worth exploring after you have attempted the activity yourself.
+- **Runnable example archive**: [SchemeInterpreter.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeInterpreter.zip): a complete reference implementation of this activity's evaluator, worth exploring after you have attempted the activity yourself.
 
 - **SICP Chapter 4**: Abelson & Sussman, *Structure and Interpretation of Computer Programs*, 2nd ed.  The original metacircular evaluator.  MIT Press open access: [https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf)
 

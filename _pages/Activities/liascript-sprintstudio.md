@@ -50,7 +50,7 @@ Each team gets two minutes at the board to answer exactly four questions.  What 
 ---
 
 
-> **Studio tooling moved:** sprint velocity and the red-green discipline are in [CI and TDD for Interpreters](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-ci-tdd-for-interpreters.md).
+> **Studio tooling moved:** sprint velocity and the red-green discipline are in [CI and TDD for Interpreters](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CITDDForInterpreters).
 
 ## 2.  Build Time
 
@@ -155,7 +155,69 @@ print(f"  Totals: {len(buckets['FIX'])} fix / {len(buckets['DISCLOSE'])} disclos
 print()
 print("  Scribe: fill in the blanks above and commit BACKLOG.md before end of day.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- The triage rules are the method, start to finish: every risk and every question becomes a backlog item, and each is sorted into exactly one of FIX, DISCLOSE, or FUTURE.  Nothing is allowed to stay unclassified, because unclassified feedback is feedback that quietly evaporates.
+- DISCLOSE is the bucket that makes this mature rather than defensive.  A named, well-worded limitation costs a sentence at Demo Day; an unnamed one costs your credibility when someone finds it live.
+- Strengths are counted but generate no backlog items.  They are there so the walk is worth attending and so you know which parts of the design not to disturb.
+
+### Try It Yourself
+
+Run the triage on the cards your team actually received today.
+
+```python
+# TODO 1: replace this with the REAL cards from your gallery walk.
+#         (reviewer, type, text) where type is strength | question | risk
+FEEDBACK = [
+    ("Team B",     "strength", "Error messages name the line and column"),
+    ("Team B",     "risk",     "Parser crashes on an unclosed string literal"),
+    ("Team C",     "question", "What happens when you divide by zero?"),
+    ("Team C",     "risk",     "SEMANTICS.md says lexical scope, the code does dynamic"),
+    ("Instructor", "risk",     "No test covers the while loop"),
+    ("Team D",     "strength", "The REPL keeps state between lines"),
+    ("Team D",     "question", "Can functions be passed as arguments yet?"),
+]
+
+# TODO 2: classify each risk and question yourself. The rule of thumb:
+#         FIX      -- breaks the core demo story
+#         DISCLOSE -- real, acknowledged, out of scope for this sprint
+#         FUTURE   -- report material, not this term's work
+CLASSIFICATION = {
+    "Parser crashes on an unclosed string literal": "FIX",
+    "What happens when you divide by zero?":        "DISCLOSE",
+    "SEMANTICS.md says lexical scope, the code does dynamic": "FIX",
+    "No test covers the while loop":                "FIX",
+    "Can functions be passed as arguments yet?":    "FUTURE",
+}
+
+buckets = {"FIX": [], "DISCLOSE": [], "FUTURE": [], "UNCLASSIFIED": []}
+strengths = []
+for who, kind, text in FEEDBACK:
+    if kind == "strength":
+        strengths.append((who, text)); continue
+    buckets[CLASSIFICATION.get(text, "UNCLASSIFIED")].append((who, text))
+
+print("=== Strengths (no action, but do not disturb these) ===")
+for who, text in strengths:
+    print("  " + who.ljust(11) + text)
+
+for name in ("FIX", "DISCLOSE", "FUTURE", "UNCLASSIFIED"):
+    print("\n=== " + name + " (" + str(len(buckets[name])) + ") ===")
+    for who, text in buckets[name]:
+        print("  " + who.ljust(11) + text)
+
+print("\n  Backlog items to assign before anyone leaves: " + str(len(buckets["FIX"])))
+if buckets["UNCLASSIFIED"]:
+    print("  UNCLASSIFIED is not a bucket. Sort these before you close the session.")
+
+# TODO 3: every FIX item needs an owner and a date, today, in the room.
+#         Print them as assignable lines and paste into your issue tracker.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: three FIX items, one DISCLOSE, one FUTURE, and an empty UNCLASSIFIED bucket.  If your own run leaves anything unclassified, that is the session's real work.
 
 ### Critical Thinking Questions
 
@@ -260,13 +322,51 @@ elif passed >= total - 1:
 else:
     print(f"  -> {total - passed} items remaining. Triage them now.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
 10.  The checklist runs automated checks, but check 6 ("every teammate can demo the distinctive feature solo") cannot be automated.  Why does this check matter, and what would a *passing* version of it look like as an observable event rather than a feeling?
 11.  Check 4 requires SEMANTICS.md to be non-trivial (>500 bytes).  Is this a good proxy for "SEMANTICS.md is complete"?  Propose a better automated check.
 12.  The checklist is run *before* Demo Day.  On what day should the Evaluator first run it, and what should happen if any check fails with three days remaining?
+
+---
+
+# Check Your Understanding
+
+Every risk and question from the gallery walk becomes a backlog item sorted into exactly one bucket. The point of forcing a bucket is:
+
+[(X)] Unclassified feedback quietly evaporates; a bucket is a decision, even when the decision is "not now"
+[( )] It makes the list shorter
+[( )] Only FIX items matter
+[( )] It satisfies the rubric
+
+---
+
+DISCLOSE means a limitation is real, acknowledged, and out of scope. It is preferable to a rushed fix because:
+
+[(X)] A fix made the night before is untested and can break the parts of the demo that currently work
+[( )] Disclosure takes less time
+[( )] Graders penalize late commits
+[( )] It moves the problem to the report
+
+---
+
+A reviewer writes "SEMANTICS.md says X but the code does Y." The right first question is:
+
+[(X)] Which one is correct, since the answer decides whether you change the document or the code
+[( )] Whether the reviewer read the document carefully
+[( )] Whether it blocks the demo
+[( )] Whether Y is faster than X
+
+---
+
+The release checklist is written as code that must return True rather than as a list to read. That is because:
+
+[(X)] A check you can run cannot be skipped by a tired team at 2 AM, and it reports the same answer for everyone
+[( )] It is faster to execute
+[( )] It can be graded automatically
+[( )] Lists are hard to read
 
 ---
 

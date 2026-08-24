@@ -1,17 +1,22 @@
-<!--
-author:   William Mongan
-language: en
-narrator: US English Male
+---
+layout: tutorial
+permalink: /Tutorials/BuildAnInterpreter
+title: "CS374: Build a Complete Interpreter in Python, Step by Step"
 
-comment: Render with https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Tutorials/tutorial-build-an-interpreter.md
+info:
+  coursenum: CS374
+  goals:
+    - "Built a hand-written lexer that converts Mini source code into a typed token stream with line and column positions"
+    - "Built a recursive-descent parser that converts the token stream into a typed AST with one class per node type"
+    - "Implemented a tree-walking evaluator with a lexical environment chain that correctly handles nested `let` bindings"
+    - "Implemented first-class functions and closures so that inner functions capture and carry their enclosing environments"
+    - "Implemented recursive definitions (`letrec`), error reporting, and a working REPL and file-runner"
 
-import: https://raw.githubusercontent.com/liascript/CodeRunner/master/README.md
+tags:
+  - interpreter
+  - assignment-companion
 
-link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css/liascript-custom.css?v=2025-08-23-4
-        https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap
-
--->
-
+---
 # Tutorial: Build a Complete Interpreter in Python, Step by Step
 
 ## Learning Goals
@@ -897,7 +902,6 @@ examples = [
 for src in examples:
     print(f"{src!s:40s} => {parse_sexp(src)}")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -959,7 +963,6 @@ call_env = Env(params=['x'], args=[3], outer=global_env)
 print("x in call_env:", call_env.find('x')['x'])   # 3
 print("y via outer:  ", call_env.find('y')['y'])   # 10
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 The chain for `(define f (lambda (x) (+ x y)))` where `y = 10` in the global environment looks like this:
 
@@ -1228,7 +1231,6 @@ for src in tests:
     if result is not None:
         print(f"{src!s:50s} => {result}")
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -1452,7 +1454,6 @@ for src, _ in tests:
 lst = scheme_eval(parse_sexp("(list 1 2 3 4)"), genv)
 print("(list 1 2 3 4) as Python:", scheme_list_to_python(lst))
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -1656,7 +1657,6 @@ prog2 = """
 """
 print("sum 0..1000 =>", run(prog2 + "(sum-iter 1000 0)"))
 ```
-@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -1674,31 +1674,55 @@ Answer these to check your understanding before moving on.
 
 **Question 1.**  What does evaluating `(lambda (x) x)` return in our interpreter?
 
-[( )] The number `0`
-[(X)] A `Procedure` object (a closure)
-[( )] The symbol `x`
-[( )] A `SchemeError` because `x` is unbound
+- The number `0`
+- A `Procedure` object (a closure)
+- The symbol `x`
+- A `SchemeError` because `x` is unbound
+
+<details><summary>Answer</summary>
+
+A `Procedure` object (a closure)
+
+</details>
 
 **Question 2.**  The expression `(let ((x 5)) (+ x 1))` desugars to which of the following?
 
-[( )] `(define x 5) (+ x 1)`
-[(X)] `((lambda (x) (+ x 1)) 5)`
-[( )] `(set! x 5) (+ x 1)`
-[( )] `(begin (define x 5) (+ x 1))`
+- `(define x 5) (+ x 1)`
+- `((lambda (x) (+ x 1)) 5)`
+- `(set! x 5) (+ x 1)`
+- `(begin (define x 5) (+ x 1))`
+
+<details><summary>Answer</summary>
+
+`((lambda (x) (+ x 1)) 5)`
+
+</details>
 
 **Question 3.**  In `(define (square n) (* n n))`, the list `(square n)` as the first argument to `define` is:
 
-[( )] A syntax error in standard Scheme
-[( )] A pair of a function name and its return type
-[(X)] Syntactic sugar that expands to `(define square (lambda (n) (* n n)))`
-[( )] A call to the `square` function before it is defined
+- A syntax error in standard Scheme
+- A pair of a function name and its return type
+- Syntactic sugar that expands to `(define square (lambda (n) (* n n)))`
+- A call to the `square` function before it is defined
+
+<details><summary>Answer</summary>
+
+Syntactic sugar that expands to `(define square (lambda (n) (* n n)))`
+
+</details>
 
 **Question 4.**  Which component of the evaluator is directly responsible for implementing **lexical scope**?
 
-[( )] The tokenizer, which preserves symbol names
-[( )] The `scheme_eval` dispatch loop
-[(X)] The `Env` chain: each `Procedure` captures and stores its *defining* environment, which becomes the `outer` of each call frame
-[( )] The `trampoline` function
+- The tokenizer, which preserves symbol names
+- The `scheme_eval` dispatch loop
+- The `Env` chain: each `Procedure` captures and stores its *defining* environment, which becomes the `outer` of each call frame
+- The `trampoline` function
+
+<details><summary>Answer</summary>
+
+The `Env` chain: each `Procedure` captures and stores its *defining* environment, which becomes the `outer` of each call frame
+
+</details>
 
 ---
 
@@ -1737,7 +1761,6 @@ It evaluates each test in order; the first truthy test causes its associated exp
 # (cond ((< 3 0) 'neg) ((= 3 0) 'zero) (else 'pos))
 # Expected: 'pos'
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 Write the complete working implementation and verify it handles the test case above, plus a case where the first clause matches and the others are never evaluated.
 
@@ -1830,7 +1853,7 @@ Answer these questions in your course notebook after completing this section.
 
 ## Further Reading on Metacircular Evaluation
 
-- **Runnable example archive**: [SchemeInterpreter.zip](https://www.billmongan.com/Ursinus-CS374/files/replit/SchemeInterpreter.zip): a complete reference implementation of this section's evaluator, worth exploring after you have worked through this section yourself.
+- **Runnable example archive**: [SchemeInterpreter.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeInterpreter.zip): a complete reference implementation of this section's evaluator, worth exploring after you have worked through this section yourself.
 
 - **SICP Chapter 4**: Abelson & Sussman, *Structure and Interpretation of Computer Programs*, 2nd ed.  The original metacircular evaluator.  MIT Press open access: [https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf)
 
@@ -1857,7 +1880,7 @@ Adding closures to Mini requires:
 2.  A `Closure` value created at **definition time**, capturing the *current* environment
 3.  A call rule that builds the new environment parented on the **closure's captured environment**
 
-```python  liascript
+```python
 # Closure-based interpreter for Mini (simplified)
 
 class Environment:
@@ -1962,7 +1985,6 @@ ma = global_env.lookup("make_adder")
 print(f"make_adder is a Closure: {isinstance(ma, Closure)}")
 print(f"make_adder captured env has 'make_adder': {'make_adder' in ma.env._vars}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 **CTQs**
 
@@ -1978,7 +2000,7 @@ For a function to call itself recursively, it must be able to look up its own na
 
 ## Model 3: Closures Enable Recursion
 
-```python  liascript
+```python
 # Recursion requires the function to see itself in its own closure.
 # execute_fundef binds the name BEFORE returning, so:
 
@@ -2017,7 +2039,6 @@ print(f"fact(0) = {global_env.lookup('fact')(0)}")
 print(f"fact(5) = {global_env.lookup('fact')(5)}")
 print(f"fact(10) = {global_env.lookup('fact')(10)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 > **CTQ 4.1** `execute_fundef` defines the name in the *current* environment before any calls.  When `fact_body` runs and looks up `'fact'`, it finds the closure in `global_env`.  Trace the environment chain: call frame -> captured `global_env` -> finds `fact`.  What would break if we didn't define the name until after creating the closure?
 
@@ -2084,7 +2105,7 @@ And the same history as a table:
 | `c1()` | 2 | 0 | 2 |
 | `c2()` | 2 | 1 | 1 |
 
-```python  liascript
+```python
 def make_counter():
     count = 0
     def increment():
@@ -2104,14 +2125,19 @@ print("c1's captured count:", c1.__closure__[0].cell_contents)   # 2
 print("c2's captured count:", c2.__closure__[0].cell_contents)   # 1
 print("same box?", c1.__closure__[0] is c2.__closure__[0])       # False - E1 is not E2
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
 
 After `c1 = make_counter()`, `c2 = make_counter()`, then `c1(); c1(); c2()`, the returned values are 1, 2, 1 because:
 
-[( )] Each call to `c1` creates a fresh environment with `count = 0`
-[(X)] Each *call to `make_counter`* created its own environment box, so `c1` and `c2` increment different `count` bindings
-[( )] Python copies the value of `count` into each closure at definition time
-[( )] `c2` reset the shared counter
+- Each call to `c1` creates a fresh environment with `count = 0`
+- Each *call to `make_counter`* created its own environment box, so `c1` and `c2` increment different `count` bindings
+- Python copies the value of `count` into each closure at definition time
+- `c2` reset the shared counter
+
+<details><summary>Answer</summary>
+
+Each *call to `make_counter`* created its own environment box, so `c1` and `c2` increment different `count` bindings
+
+</details>
 
 **Critical Thinking Questions (CTQs)**
 
