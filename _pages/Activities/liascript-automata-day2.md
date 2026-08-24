@@ -96,6 +96,69 @@ run_nfa(ENDS_IN_AB_NFA, "aab", trace=True)
 
 > **Watch out!**  An NFA does not "guess" which path to take; that framing makes it sound like luck is involved.  The machine *explores all paths simultaneously*, and it accepts if *any* of them reaches an accepting state.  The simulation above makes this concrete: `current` is always a set, never a single lucky choice.
 
+### Reading the Code
+
+- The simulator never backtracks and never guesses.  It carries a **set** of states and advances all of them at once, which is why an NFA runs in time proportional to the input rather than exponentially.
+- That set is a DFA state in disguise.  Model 4 makes this explicit by naming each set ahead of time; here the same sets are computed lazily, one input symbol at a time.
+- Acceptance is a set-intersection test: accept if *any* reachable state is accepting.  That is the whole meaning of "the machine may guess", made deterministic.
+- A missing entry in `delta` means that path dies.  Because we track a set, one dead path does not end the run; the others carry on.
+
+### Try It Yourself
+
+Build an NFA of your own and watch the state set breathe.
+
+```python
+def run_nfa(machine, s, trace=False):
+    current = set(machine["start"])
+    if trace:
+        print(f"    start: {{{', '.join(sorted(current))}}}")
+    for ch in s:
+        nxt = set()
+        for st in current:
+            nxt |= set(machine["delta"].get((st, ch), ()))
+        current = nxt
+        if trace:
+            shown = ", ".join(sorted(current)) if current else "(dead)"
+            print(f"    after {ch!r}: {{{shown}}}")
+        if not current:
+            break
+    return bool(current & set(machine["accept"]))
+
+# Accepts strings over {a, b} that CONTAIN "aba" anywhere.
+CONTAINS_ABA = {
+    "start":  frozenset({"q0"}),
+    "accept": frozenset({"q3"}),
+    "delta": {
+        ("q0", "a"): frozenset({"q0", "q1"}),   # stay, or guess "aba" starts here
+        ("q0", "b"): frozenset({"q0"}),
+        ("q1", "b"): frozenset({"q2"}),
+        ("q2", "a"): frozenset({"q3"}),
+        ("q3", "a"): frozenset({"q3"}),         # once accepted, stay accepted
+        ("q3", "b"): frozenset({"q3"}),
+    },
+}
+
+print("=== contains 'aba' ===")
+for s in ["aba", "bbabab", "abba", "aab", ""]:
+    print(f"  {s!r:9} -> {run_nfa(CONTAINS_ABA, s)}")
+
+print("\n=== watch the state set on 'bbaba' ===")
+run_nfa(CONTAINS_ABA, "bbaba", trace=True)
+
+# TODO 1: in the trace, find the step where the set holds TWO states. What
+#         are the machine's two hypotheses at that moment, in English?
+
+# TODO 2: build an NFA for strings that END in "ab" OR END in "ba".
+#         Hint: one start state with two guesses. Test it on
+#         "ab", "ba", "aab", "abb", "b", "".
+
+# TODO 3: how many states did your NFA need? Now sketch the DFA for the
+#         same language and count ITS states. Which was easier to design?
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: `aba` and `bbabab` accepted; `abba`, `aab` and the empty string rejected.  In the trace, `{q0, q1}` is the machine simultaneously believing "this `a` begins an `aba`" and "it does not".
+
 ### Critical Thinking Questions
 
 8.  Trace `aab` by hand, writing the *set* of states after each symbol.  Where does the machine "hedge its bets," and which bet pays off?
@@ -187,6 +250,63 @@ for s in ["ab", "aab", "abab", "ba", "a", "b", ""]:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
+### Reading the Code
+
+- DFA states are `frozenset`s of NFA states, which is what lets them be dictionary keys.  The *name* of a DFA state is the set of NFA states the machine could be in.
+- The worklist loop is a breadth-first search over reachable subsets.  It terminates because $n$ NFA states have at most $2^n$ subsets, which is also the bound on the DFA's size.
+- The blow-up is real but rarely realized: this NFA has three states, so at most eight subsets, and the construction finds fewer because most are unreachable.
+- A DFA state is accepting exactly when its set contains an accepting NFA state.  Compare that with Model 3's intersection test: the same rule, computed once ahead of time instead of on every run.
+
+### Try It Yourself
+
+Find a language where the exponential blow-up actually bites.
+
+```python
+def subset_construct(nfa, alphabet):
+    start = frozenset(nfa["start"])
+    states, worklist, delta = {start}, [start], {}
+    while worklist:
+        S = worklist.pop()
+        for ch in alphabet:
+            T = frozenset(q for st in S for q in nfa["delta"].get((st, ch), ()))
+            delta[(S, ch)] = T
+            if T and T not in states:
+                states.add(T); worklist.append(T)
+    return states, delta
+
+def nth_from_end(n):
+    """Strings over {a,b} whose n-th symbol FROM THE END is 'a'.
+       Needs n+1 NFA states, and famously 2^n DFA states."""
+    delta = {("q0", "a"): frozenset({"q0", "q1"}),
+             ("q0", "b"): frozenset({"q0"})}
+    for i in range(1, n):
+        for ch in "ab":
+            delta[(f"q{i}", ch)] = frozenset({f"q{i+1}"})
+    return {"start": frozenset({"q0"}),
+            "accept": frozenset({f"q{n}"}), "delta": delta}
+
+print("=== n-th symbol from the end is 'a' ===")
+print(f"  {'n':>3}  {'NFA states':>11}  {'DFA states':>11}")
+for n in range(1, 8):
+    states, _ = subset_construct(nth_from_end(n), "ab")
+    print(f"  {n:>3}  {n+1:>11}  {len(states):>11}")
+
+# TODO 1: the NFA grows by one state per row. What does the DFA do?
+#         State the relationship as a formula and check it against the table.
+
+# TODO 2: this is the standard witness that the 2^n bound is TIGHT, not
+#         merely a worst case nobody meets. Say in one sentence why a DFA
+#         must remember so much here. (Hint: what does it need to know at
+#         the moment the string suddenly ends?)
+
+# TODO 3: your lexer converts regexes to automata. Given this blow-up, why
+#         is that still a good idea in practice? What is different about
+#         the patterns real token definitions use?
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: the DFA column doubling each row while the NFA column grows by one.  That is the exponential bound being met exactly, for a language you can state in one English sentence.
+
 ### Critical Thinking Questions
 
 11.  How many DFA states did the subset construction produce for the ends-in-ab NFA? Was there exponential blowup?  (For this NFA, the answer is no; why not?)
@@ -198,6 +318,44 @@ for s in ["ab", "aab", "abab", "ba", "a", "b", ""]:
 ---
 
 # Part III: Synthesis and Practice
+
+# Check Your Understanding
+
+An NFA can be in several states at once, yet simulating it needs no backtracking. That is because:
+
+[(X)] The simulator carries the whole set of possible states and advances all of them on each symbol
+[( )] Every NFA is secretly deterministic
+[( )] It tries each path and undoes the ones that fail
+[( )] Nondeterministic machines run in parallel on real hardware
+
+---
+
+In the subset construction, a DFA state is:
+
+[(X)] A set of NFA states: exactly the set the NFA could be in at that point
+[( )] A single NFA state chosen arbitrarily
+[( )] A pair of an NFA state and an input symbol
+[( )] A path through the NFA
+
+---
+
+The construction can produce up to `2^n` DFA states from `n` NFA states. In practice:
+
+[(X)] Most subsets are unreachable so the DFA is usually far smaller, but languages exist where the bound is met exactly
+[( )] The bound is never approached and is purely theoretical
+[( )] The bound is always met, which is why DFAs are impractical
+[( )] The bound applies only to NFAs with epsilon transitions
+
+---
+
+NFAs and DFAs recognize exactly the same class of languages. What differs is:
+
+[(X)] Size and convenience: NFAs are often far smaller and easier to design, DFAs are simpler and faster to run
+[( )] The languages they accept
+[( )] Whether they can be built from a regular expression
+[( )] Whether they terminate on all inputs
+
+---
 
 ## 4.  Exercises
 
