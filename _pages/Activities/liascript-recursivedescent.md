@@ -328,6 +328,13 @@ for source in ["print 42;", "let x = 7;", "let x 7;"]:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
+### Reading the Code
+
+- Read the parser and the grammar side by side.  Every production is one function, every alternative is one branch, every `{ ... }` repetition is one `while`.  There is no cleverness anywhere; the grammar *is* the control flow.
+- `expect(kind)` is the only place a token is consumed on pain of error.  Everything else peeks first and decides, which is what makes this LL(1): one token of lookahead is enough to pick a branch.
+- Each function returns the node it built and leaves the position just past what it consumed.  That contract is what lets the functions compose without any of them knowing about the others.
+- The error case reports the token it *found* alongside the one it wanted.  A parser that says only "syntax error" tells the user nothing they can act on, which is what CTQ 2.6 asks you to fix.
+
 ### Critical Thinking Questions
 
 > **CTQ 2.4** Annotate each parser method with the production it implements (the comments start you off).  Where does the sequence rule become consecutive calls?  Where does alternation become an `if`?
@@ -370,6 +377,136 @@ The two grammars accept the same strings; the loop version builds the *same left
 >
 > **The rule:** If you find yourself writing `peek_ahead(2)`, refactor the grammar first.
 
+## Model 2b: Watch Left Recursion Kill a Parser, Then Fix It
+
+Reading that left recursion loops forever is not the same as watching it happen.  Below are two parsers for the *same language*: one transcribed straight off `E -> E + T | T`, and one off `E -> T { + T }`.  Both are three lines of real logic.  Only one terminates.
+
+```python
+def tokenize(text):
+    return text.replace("+", " + ").split()
+
+def parse_T(tokens, pos):
+    return tokens[pos], pos + 1
+
+# --- VERSION 1: straight from  E -> E + T | T ------------------------------
+# The first thing parse_E does is call parse_E, having consumed nothing.
+calls = 0
+def parse_E_left(tokens, pos):
+    global calls
+    calls += 1
+    if calls > 20:
+        raise RecursionError(
+            f"parse_E called itself {calls} times and pos is still {pos}")
+    left, pos2 = parse_E_left(tokens, pos)        # <-- consumes nothing first
+    if pos2 < len(tokens) and tokens[pos2] == "+":
+        right, pos2 = parse_T(tokens, pos2 + 1)
+        return ("+", left, right), pos2
+    return left, pos2
+
+# --- VERSION 2: from  E -> T { "+" T } -------------------------------------
+# Consume a T FIRST, then loop. Same language, same left-leaning tree.
+def parse_E_loop(tokens, pos):
+    node, pos = parse_T(tokens, pos)              # <-- consumes before looping
+    while pos < len(tokens) and tokens[pos] == "+":
+        right, pos = parse_T(tokens, pos + 1)
+        node = ("+", node, right)                 # fold as we go: LEFT-leaning
+    return node, pos
+
+def show(node):
+    if not isinstance(node, tuple):
+        return str(node)
+    op, l, r = node
+    return f"({show(l)} {op} {show(r)})"
+
+src = "1 + 2 + 3"
+tokens = tokenize(src)
+print(f"Parsing {src!r}\n")
+
+print("=== Version 1:  E -> E + T | T  (transcribed literally) ===")
+try:
+    tree, _ = parse_E_left(tokens, 0)
+    print(f"  {show(tree)}")
+except RecursionError as e:
+    print(f"  RecursionError: {e}")
+    print("  The position never advanced, so no base case is reachable.")
+    print("  This is not a bug in the CODE. The code is a faithful")
+    print("  transcription. The bug is in the GRAMMAR's shape.")
+
+print("\n=== Version 2:  E -> T { '+' T }  (the repair) ===")
+tree, pos = parse_E_loop(tokens, 0)
+print(f"  {show(tree)}   consumed {pos}/{len(tokens)} tokens")
+print("  Left-leaning, which is what '+' should be: (1+2)+3, not 1+(2+3).")
+
+print("\n=== The repair kept associativity ===")
+for text in ["1 + 2", "1 + 2 + 3", "1 + 2 + 3 + 4"]:
+    t, _ = parse_E_loop(tokenize(text), 0)
+    print(f"  {text:16} -> {show(t)}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- The two versions differ by one structural decision: whether the *first* action consumes input.  Version 1 recurses first; version 2 calls `parse_T` first and only then loops.
+- Version 1 is stopped by a call counter rather than by Python's recursion limit, so the diagnostic can report the useful fact: `pos` is still 0 after twenty calls.  A recursive call that consumes nothing can never terminate, however deep the stack is.
+- The fold `node = ("+", node, right)` inside the loop is what preserves **left** associativity.  Build it the other way and you get `1+(2+3)`, which looks fine for addition and is wrong for subtraction.
+- The repair is not a workaround.  `E -> T { "+" T }` accepts the same language, and the loop version is what every hand-written parser in production actually does.
+
+> **Watch out!**  It is tempting to "fix" left recursion by raising Python's recursion limit.  That turns an instant crash into a slower crash.  The grammar's shape is the problem, and the only fix is to rewrite the rule so something is consumed before the recursion happens.
+
+### Try It Yourself
+
+Repair two more left-recursive rules, and confirm the tree shape survives.
+
+```python
+def tokenize(text):
+    for sym in [",", "-"]:
+        text = text.replace(sym, f" {sym} ")
+    return text.split()
+
+def show(node):
+    if not isinstance(node, tuple):
+        return str(node)
+    op, l, r = node
+    return f"({show(l)} {op} {show(r)})"
+
+def parse_atom(tokens, pos):
+    return tokens[pos], pos + 1
+
+# TODO 1:  L -> L "," x | x     (a comma-separated list)
+#          Rewrite as  L -> x { "," x }  and implement it here.
+def parse_list(tokens, pos):
+    return None, pos
+
+# TODO 2:  E -> E "-" T | T
+#          Subtraction MUST come out left-associative: 8-4-2 is 2, not 6.
+def parse_sub(tokens, pos):
+    return None, pos
+
+def evaluate(node):
+    if not isinstance(node, tuple):
+        return float(node)
+    _op, l, r = node
+    return evaluate(l) - evaluate(r)
+
+tree, _ = parse_list(tokenize("a , b , c"), 0)
+print(f"  list  a , b , c   -> {show(tree) if tree else 'not implemented yet'}")
+
+tree, _ = parse_sub(tokenize("8 - 4 - 2"), 0)
+if tree:
+    print(f"  sub   8 - 4 - 2   -> {show(tree)} = {evaluate(tree)}")
+else:
+    print(f"  sub   8 - 4 - 2   -> not implemented yet")
+
+# TODO 3: 8 - 4 - 2 must come out as 2.0. If you get 6.0 you folded the
+#         tree the wrong way. Which line changes, and why does addition
+#         hide that mistake while subtraction exposes it?
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output once both are implemented: `((a , b) , c)` and `((8 - 4) - 2) = 2.0`.  If subtraction gives `6.0`, reread the fold in Model 2b.
+
+---
+
 A teammate's `parse_expr` overflows the call stack instantly on any input.  Without seeing the code, the most likely diagnosis from today is:
 
 [( )] The lexer returned too many tokens
@@ -379,7 +516,45 @@ A teammate's `parse_expr` overflows the call stack instantly on any input.  With
 
 ---
 
-## 3.  Exercises
+# Check Your Understanding
+
+In recursive descent, one grammar nonterminal becomes:
+
+[(X)] One function, whose body mirrors the production's structure
+[( )] One entry in a parse table
+[( )] One token type in the lexer
+[( )] One AST node class
+
+---
+
+`E -> T { "+" T }` translates to a `while` loop rather than a recursive call. The loop must fold as `node = ("+", node, right)` because:
+
+[(X)] Folding the accumulated tree on the left keeps `+` left-associative, so `1+2+3` is `(1+2)+3`
+[( )] Python loops cannot build right-leaning trees
+[( )] It is faster than the other order
+[( )] Otherwise the loop would not terminate
+
+---
+
+Model 2b's version 1 fails after twenty calls with `pos` still 0. The diagnosis is:
+
+[(X)] The recursive call happens before any input is consumed, so no base case is reachable
+[( )] The tokenizer produced the wrong tokens
+[( )] Python's recursion limit is set too low
+[( )] The grammar is ambiguous
+
+---
+
+A grammar rule `stmt -> IDENT "=" expr | IDENT "(" args ")"` cannot be parsed with one token of lookahead. The standard repair is:
+
+[(X)] Left-factor it: `stmt -> IDENT stmt_tail` with `stmt_tail -> "=" expr | "(" args ")"`
+[( )] Add `peek_ahead(2)` to the parser
+[( )] Make the lexer merge `IDENT =` into a single token
+[( )] Rewrite it right-recursively
+
+---
+
+## Exercises
 
 1.  *Extend the statement set.*  Add `whilestmt` and a brace-delimited `block -> "{" { stmt } "}"` to the parser, following the table mechanically.  Demonstrate on a two-statement loop body, and show the nested tuple structure you get.
 2.  *Repair drill.*  Rewrite each as descent-ready EBNF: `L -> L "," x | x` (comma lists) and `S -> "if" E "then" S | "if" E "then" S "else" S | other` (left factor the shared prefix).  State which repair was which.
