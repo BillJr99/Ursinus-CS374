@@ -140,6 +140,51 @@ print(f"f6() twice: {f6():.4f}, {f6():.4f}")   # random
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
+### Reading the Code
+
+- The audit turns on one question per function: given the same arguments, does it always return the same value, and does it change anything outside itself?  Both halves must hold for purity.
+- `f4` reads a global without writing one.  It is still impure, because "same input, same output" fails the moment somebody else changes that global.  Purity is a property of the function *and* everything it can observe.
+- The mutation surprise at the top is the practical stake: `impure_double` looked like a transformation and was in fact an edit.  Calling it twice gives different answers from the same argument, which is exactly what referential transparency forbids.
+
+### Try It Yourself
+
+Write the test that catches the impurity, then make the function pure.
+
+```python
+LOG_LINES = []
+
+def f_impure(xs):
+    LOG_LINES.append(f"called with {len(xs)} items")
+    return [x * 2 for x in xs]
+
+def f_reads_global(x):
+    return x + len(LOG_LINES)
+
+print("=== The bug purity prevents ===")
+data = [1, 2, 3]
+print(f"  f_reads_global(10) = {f_reads_global(10)}")
+f_impure(data)                        # someone else's call, elsewhere
+print(f"  f_reads_global(10) = {f_reads_global(10)}   <- same input, new answer")
+
+# TODO 1: write an assertion that PASSES right now and FAILS after another
+#         call to f_impure. That assertion is the test CTQ 1.5 asks for,
+#         and the fact that you can write it is the definition of the bug.
+
+# TODO 2: make f_reads_global pure by turning the hidden dependency into a
+#         parameter. What is its new signature, and who now has to supply
+#         the extra argument?
+
+# TODO 3: f_impure both logs AND transforms. Split it into a pure transform
+#         and a separate logging step. Which half can you now test without
+#         any setup at all?
+
+print("\n=== After your refactor, this should hold no matter what ===")
+print("  same input -> same output, every time, forever")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: `f_reads_global(10)` returns 10 and then 11, from identical arguments.  That single changed digit is the whole argument for purity.
+
 > **CTQ 1.4** Classify each function as pure or impure.  For each impure one, name the exact disqualifying feature.
 
 > **CTQ 1.5** `f4` reads but never writes a global.  What referential transparency property does it still forfeit?  Construct a test that would *pass* today but *fail* after appending to `LOG_LINES`.
@@ -294,6 +339,57 @@ In the pipeline trace, the score 54 becomes 59 after the map stage and then vani
 [(X)] `map` transformed it (54 -> 59) and `filter` discarded it because 59 < 70
 [( )] `reduce` skipped it while folding
 [( )] It was removed before the map stage ran
+
+### Reading the Code
+
+- Each stage is a separate line producing a separate list, purely so the trace can print the intermediate results.  The one-expression version composes them without ever naming the intermediates.
+- `reduce` is the only stage that collapses.  `map` preserves length, `filter` can only shorten, and `reduce` returns one value regardless.  Knowing which stage can change the length is most of debugging a pipeline.
+- Nothing is mutated anywhere.  The "running total" column is the accumulator argument travelling from one call to the next, which is what replaces the mutable variable an imperative loop would have needed.
+
+### Try It Yourself
+
+Rebuild the big three from scratch, so you know there is nothing in them.
+
+```python
+from functools import reduce
+
+def my_map(f, xs):
+    return [f(x) for x in xs]
+
+def my_filter(p, xs):
+    return [x for x in xs if p(x)]
+
+def my_reduce(f, xs, init):
+    acc = init
+    for x in xs:
+        acc = f(acc, x)
+    return acc
+
+scores = [54, 71, 88, 63, 95, 70]
+
+print("=== yours against the library's ===")
+print(f"  my_map    {my_map(lambda s: s + 5, scores)}")
+print(f"  map       {list(map(lambda s: s + 5, scores))}")
+print(f"  my_filter {my_filter(lambda s: s >= 70, scores)}")
+print(f"  filter    {list(filter(lambda s: s >= 70, scores))}")
+print(f"  my_reduce {my_reduce(lambda a, b: a + b, scores, 0)}")
+print(f"  reduce    {reduce(lambda a, b: a + b, scores, 0)}")
+
+# TODO 1: my_reduce uses a mutable accumulator and a for loop. Rewrite it
+#         RECURSIVELY with no assignment at all. Both versions are pure
+#         from the outside -- so does the mutation inside matter? Argue it.
+
+# TODO 2: define my_map using only my_reduce. Then define my_filter using
+#         only my_reduce. What does that tell you about which of the three
+#         is the fundamental one?
+
+# TODO 3: my_reduce takes an explicit init. What goes wrong if you drop it
+#         and start from xs[0]? Try it on an empty list and say what a
+#         well-designed library should do.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: each pair of lines identical.  TODO 2 is the interesting one: `reduce` is the general fold, and the other two are special cases of it.
 
 **Critical Thinking Questions (CTQs)**
 
@@ -648,7 +744,7 @@ print(f"mergesort([5,2,8,1,9,3]) = {mergesort([5,2,8,1,9,3])}")
 
 ---
 
-## Multiple Choice
+# Check Your Understanding
 
 Which of the following is a *pure* function?
 
