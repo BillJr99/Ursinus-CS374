@@ -467,7 +467,6 @@ with parse_session("bad $ input") as s:
 
 ---
 
----
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
 
 ## 2.  Exercises
@@ -490,16 +489,9 @@ In your notebook: every feature today moved some check or transformation to an e
 - The Rust Book, chapter 4 (ownership): https://doc.rust-lang.org/book/
 - PEP 634 through 636 (Python structural pattern matching), especially 636, the tutorial.
 - Bob Nystrom.  "What Color is Your Function?"  (online essay), the async critique, vividly argued.
-
----
-
-## Going Deeper (Optional Pointers)
-
-The core lesson above stands on its own.  The deep-dive appendices that used to follow it now live elsewhere:
-
-> **Going further:** the material that used to live here (macros and metaprogramming: C-style textual macros and their double-evaluation hazards, quasiquotation, and hygienic expansion) is now project material: the **Macros or Hygienic Quoting** entry in the [Team Language Project's Extensions Menu](https://www.billmongan.com/Ursinus-CS374/Projects/TeamLanguage) specifies exactly what a credited macro extension must do, and [Building the Mini Language: A Complete Guide](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ProjectLanguageGuide) provides the interpreter foundation to build it on.  Explore it when your project or curiosity calls for it.
-
-> **Going further:** two former appendices are now self-study topics.  *Objects and OOP from closures to vtables*, method resolution order (MRO) and the diamond problem, abstract base classes, and how vtables implement dynamic dispatch, is a rich afternoon with the Python data-model docs; search "C3 linearization," "Python MRO," and "abstract base class."  *The expression problem* (why adding new node types is easy in OOP but adding new operations is easy in functional style, and never both) is the classic design tension behind your evaluator; search "expression problem Wadler" and revisit it when your team debates visitor vs. match.
+- [Team Language Project Extensions Menu](https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage): its Macros or Hygienic Quoting entry specifies exactly what a credited macro extension must do, covering C-style textual macros and their double-evaluation hazards, quasiquotation, and hygienic expansion.  [Building the Mini Language](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ProjectLanguageGuide) is the interpreter foundation to build it on.
+- Objects and OOP from closures to vtables, method resolution order and the diamond problem, abstract base classes, and how vtables implement dynamic dispatch: the Python data-model docs, plus "C3 linearization" and "Python MRO".
+- The expression problem: why adding new node types is easy in OOP and adding new operations is easy in functional style, and never both.  The design tension behind your evaluator; search "expression problem Wadler" and revisit it when your team debates visitor versus match.
 
 ---
 

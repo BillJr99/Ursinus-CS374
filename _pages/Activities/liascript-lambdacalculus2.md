@@ -428,7 +428,6 @@ print(f"3 - 4 = {church_to_int(MINUS(THREE)(FOUR))}")   # 0 (floored)
 
 ---
 
----
 **In-class work stops here.**  Everything below is homework and going-deeper material; attempt the exercises before the related assignment.
 
 ## 4.  Exercises
@@ -454,16 +453,9 @@ In your notebook: numbers, booleans, pairs, and conditionals all dissolved into 
 - **Lambda-Py / pycombinator**: combinators and Church encodings in Python; run every Church encoding from today interactively in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html
 - Raymond Smullyan.  *To Mock a Mockingbird* (1985): the combinator birds.
 - Raul Rojas.  "A Tutorial Introduction to the Lambda Calculus" (online), sections on encodings.
-
----
-
-## Going Deeper (Optional Pointers)
-
-> **Going further:** the full Y-combinator derivation that used to live here (self-reference without names, the fixed-point equation $Y\ g = g\ (Y\ g)$, and the Z combinator for strict languages) now lives as the advanced section "Advanced: Deriving the Y Combinator" at the end of the dedicated tutorial: [Build a Lambda Calculus Reducer](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LambdaCalculusReducer).  **Direction C of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374/Assignments/Functional) builds on the Church encodings from this activity**: read that direction's section before choosing it.
-
-> **Going further:** the call-with-current-continuation appendix that used to live here: capturing "the rest of the computation" as a value, deriving break, return, exceptions, cooperative schedulers, generators, and backtracking from `call/cc`, now lives where it is assessed: **Direction B of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374/Assignments/Functional) builds on this material**; read that direction's section before choosing it.
-
-> **Going further:** the Curry-Howard correspondence appendix (programs as proofs: propositions as types, products and sums, the empty type and absurdity, a glimpse of dependent types) is a self-study topic; search "Curry-Howard correspondence" and see *Propositions as Types* by Philip Wadler when curiosity calls for it.
+- [Build a Lambda Calculus Reducer](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LambdaCalculusReducer): the full Y-combinator derivation, self-reference without names, the fixed-point equation $Y\ g = g\ (Y\ g)$, and the Z combinator for strict languages.  Direction C of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Functional) builds on the Church encodings from this activity.
+- `call/cc`: capturing the rest of the computation as a value, and deriving break, return, exceptions, cooperative schedulers, generators, and backtracking from it.  Direction B of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Functional) builds on this.
+- The Curry-Howard correspondence: propositions as types, products and sums, the empty type and absurdity, and a glimpse of dependent types.  Philip Wadler, *Propositions as Types*.
 
 ---
 

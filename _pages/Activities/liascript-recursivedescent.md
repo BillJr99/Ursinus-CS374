@@ -946,20 +946,16 @@ print("meaning * is evaluated first -- this is how precedence is encoded in the 
 
 ---
 
----
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
 
-## Going Deeper (Optional Pointers)
-
-> **Going further:** the extra complete parsers that used to live here are best replaced by one polished pipeline: the dedicated tutorial [Build an Interpreter](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BuildAnInterpreter) contains a complete recursive-descent parser (Stage 3) wired into a lexer and evaluator.  The error-*recovering* parser that reports several syntax errors in one run by synchronizing at statement boundaries is a self-study topic; keywords: "panic-mode error recovery," "synchronization points," and the "Synchronizing a recursive descent parser" section of *Crafting Interpreters*, and makes a strong Parser-assignment stretch goal.
-
----
 
 ## 4.  Further Reading
 
 - Douglas Thain.  *Introduction to Compilers and Language Design*, Chapter 4.
 - Robert Nystrom.  *Crafting Interpreters*, "Parsing Expressions" (online).
 - Wirth, Niklaus.  *Compiler Construction* (online), the classic minimalist treatment.
+- [Build an Interpreter](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BuildAnInterpreter): a complete recursive-descent parser (Stage 3) wired into a lexer and an evaluator.
+- Panic-mode error recovery and synchronization points, for a parser that reports several syntax errors in one run: the "Synchronizing a recursive descent parser" section of *Crafting Interpreters*.  A strong stretch goal for the Parser assignment.
 
 ---
 

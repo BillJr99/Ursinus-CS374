@@ -417,16 +417,8 @@ In your notebook: you have now run a program in a language whose every component
 - Robert Nystrom.  *Crafting Interpreters*, "Evaluating Expressions" and "Statements and State" (online): our exact path, expanded.
 - Shriram Krishnamurthi.  *PLAI*, the interpreter chapters, for the denotational view.
 - Python's `ast.NodeVisitor`: the standard library's version of the visitor pattern you just wrote by hand.
-
----
-
-## Going Deeper (Optional Pointers)
-
-The core lesson above stands on its own.  The deep-dive appendices that used to follow it now live elsewhere:
-
-> **Going further:** the material that used to live here, the standalone start-to-finish pipeline (tokenizer, parser, evaluator, statement executor, error reporting, closures, and a complete REPL, assembled as one program), is covered in depth in the dedicated tutorial: [Build a Complete Interpreter in Python: Step by Step](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BuildAnInterpreter), the complete start-to-finish companion for the Interpreter assignment.  Explore it when your project or curiosity calls for it.
-
-> **Going further:** the operational-semantics appendix (specifying languages with inference rules: judgments, big-step and small-step rules, and derivation trees) is now a self-study topic; search "big-step operational semantics" or start with Chapter 3 of Benjamin Pierce's *Types and Programming Languages* when curiosity calls for it.
+- [Build a Complete Interpreter in Python](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BuildAnInterpreter): the whole pipeline assembled as one program, covering tokenizer, parser, evaluator, statement executor, error reporting, closures, and a REPL.  The start-to-finish companion for the Interpreter assignment.
+- Operational semantics: specifying a language with inference rules, big-step and small-step judgments, and derivation trees.  Chapter 3 of Benjamin Pierce's *Types and Programming Languages*.
 
 ---
 

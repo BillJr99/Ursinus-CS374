@@ -757,7 +757,6 @@ print(f"5-(3-1) unparse: {unparse(t4)}")
 
 ---
 
----
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
 
 ## Exercises (Homework, ~90 minutes total)
@@ -937,16 +936,8 @@ The AST is the third representation of the same program (characters -> tokens ->
 - **Python `ast` module**, `ast.dump(ast.parse("2+3*4"))`: meet a production AST
 - **Douglas Thain.  "Introduction to Compilers and Language Design"**, Chapter 5
 - **"Engineering a Compiler"**, Cooper & Torczon, Chapter 5: AST construction in a real compiler
-
----
-
-## Going Deeper (Optional Pointers)
-
-The core lesson above stands on its own.  The deep-dive appendices that used to follow it now live on the Tutorials shelf:
-
-> **Going further:** the material that used to live here, expression-oriented language design (conditionals as values, `let`-expressions, sequencing, short-circuit and lazy evaluation) and the interpreter-to-compiler path (the visitor pattern, transpiling your AST to Python, JavaScript, and Haskell, and source maps), is covered in depth in the dedicated tutorial [From AST to Code: Visitors and Transpilers](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ASTToCode).  Explore it when your project or curiosity calls for it; transpilation is one of the Team Language Project's extension directions.
-
-> **Going further:** the stack-machine and bytecode-compiler material that used to live here (compiling your AST to instructions and executing them on a virtual machine) is covered in depth in the dedicated tutorial: [Building a Bytecode VM for Mini](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BytecodeVM).  Explore it when your project or curiosity calls for it.
+- [From AST to Code: Visitors and Transpilers](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ASTToCode): expression-oriented design (conditionals as values, `let`-expressions, sequencing, short-circuit evaluation), the visitor pattern, and transpiling your AST to Python, JavaScript, and Haskell with source maps.  Transpilation is one of the Team Language Project's extension directions.
+- [Building a Bytecode VM for Mini](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BytecodeVM): compiling your AST to instructions and running them on a virtual machine.
 
 ---
 

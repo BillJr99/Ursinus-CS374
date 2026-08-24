@@ -365,24 +365,13 @@ In your notebook: you have criticized languages all semester; today you became a
 - Robert Nystrom.  *Crafting Interpreters*, "The Lox Language" chapter: a master class in specifying a small language readably.
 - The project specification and rubric, reread tonight with the scorecard beside it.
 - Adrian Sampson.  "A Big Picture of PL" (Cornell CS 6110 notes, online): a one-page map of the design space your team just entered.
-
----
-
-## Going Deeper (Optional Pointers)
-
-The core studio above stands on its own.  The deep-dive appendices that used to follow it now live on the [Tutorials shelf](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/); follow whichever pointer your project or curiosity calls for.
-
-> **Going further:** the material that used to live here (the call stack and the heap, reference counting, reference cycles, mark-and-sweep and generational collection, and what memory management means for the closures and environments in your interpreter) is covered in depth in the dedicated tutorial: [Garbage Collection: Memory Management from First Principles](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/GarbageCollection).  Explore it when your project or curiosity calls for it.
-
-> **Going further:** the material that used to live here (foreign function interfaces, calling C from Python with `ctypes`, C-compatible structs and callbacks, name mangling, and designing an `ffi(...)` primitive for your own language) now lives as the FFI appendix of [Advanced C++: Modern Memory, Templates, and the STL](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/AdvancedCpp).  It backs the project's **Foreign Function Interface** extension; explore it when your project or curiosity calls for it.
-
-> **Going further:** the compiler optimization passes that used to live here (constant folding, dead-code elimination, common subexpression elimination, inlining, and tail-call optimization) now live as an appendix of [Building a Bytecode VM for Mini](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BytecodeVM), and how compiled code becomes a running executable is covered in depth in [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CompilingAndLinking).  The broader survey of evaluation strategies is self-study, keywords: tree-walking interpreter, continuation-passing style, bytecode VM. Compare them on your own.  Explore these when your project or curiosity calls for it.
-
-> **Going further:** the complete worked path through designing and building a small language end to end (the same journey your team begins today) is covered in depth in the dedicated tutorial: [Building the Mini Language: A Complete Guide](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ProjectLanguageGuide).  The expression-tree folds, the five-paradigm "same problem, different minds" gallery, and the modules-and-namespaces material are self-study topics; keywords: catamorphism / fold, programming paradigms comparison, module systems and namespaces.  Explore them when your project or curiosity calls for it.
-
-> **Going further:** when your language works and you want the world to run it (packaging for pip and npm, and shipping a Docker image), the path is covered in depth in the dedicated guide: [Publishing Your Language: pip, npm, and Docker](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PublishingYourLanguage).  Explore it as Demo Day approaches.
-
-> **Going further:** a few former appendices are now self-study topics: live-coding pattern languages and their pattern algebra (TidalCycles and Strudel), denotational semantics and fixed-point semantics of `while`, and concurrency models (actors, channels, software transactional memory); search those keywords when curiosity calls.  Church numerals return in the Lambda Calculus activities and in [Implementing a Lambda Calculus Reducer](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LambdaCalculusReducer).
+- [Garbage Collection: Memory Management from First Principles](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/GarbageCollection): the call stack and the heap, reference counting, reference cycles, mark-and-sweep and generational collection, and what memory management means for the closures and environments in your interpreter.
+- [Advanced C++: Modern Memory, Templates, and the STL](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/AdvancedCpp): its FFI appendix covers foreign function interfaces, calling C from Python with `ctypes`, C-compatible structs and callbacks, name mangling, and designing an `ffi(...)` primitive for your own language.  Backs the project's Foreign Function Interface extension.
+- [Building a Bytecode VM for Mini](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BytecodeVM): its optimization appendix covers constant folding, dead-code elimination, common subexpression elimination, inlining, and tail-call optimization.
+- [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CompilingAndLinking): how compiled code becomes a running executable.
+- [Building the Mini Language: A Complete Guide](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ProjectLanguageGuide): a complete worked path through designing and building a small language end to end, the same journey your team begins today.
+- [Publishing Your Language: pip, npm, and Docker](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PublishingYourLanguage): packaging your language and shipping a Docker image, for when it works and you want the world to run it.
+- Self-study topics: expression-tree folds (catamorphisms), module systems and namespaces, live-coding pattern languages and their pattern algebra (TidalCycles and Strudel), denotational and fixed-point semantics of `while`, and concurrency models (actors, channels, software transactional memory).
 
 ---
 

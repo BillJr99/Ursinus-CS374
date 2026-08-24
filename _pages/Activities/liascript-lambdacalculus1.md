@@ -699,16 +699,8 @@ In your notebook: Church built this system in 1936 to study what "computable" me
 - Henk Barendregt and Erik Barendsen.  "Introduction to Lambda Calculus" (online notes), for the formal substitution definition.
 - Gabriel Lebec.  "Lambda as JS, or A Flock of Functions" (talk and slides), which Part 2 follows: https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript
 - **Lambda-Py / pycombinator**; combinators and Church encodings in Python; run the calculus interactively in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html, experiment with the reductions from today's module without installing anything.
-
----
-
-## Going Deeper (Optional Pointers)
-
-The core lesson above stands on its own.  The deep-dive appendices that used to follow it now live elsewhere:
-
-> **Going further:** the material that used to live here (combinatory logic and the SKI calculus: the "flock of birds" (S, K, I, B, C, W and friends), deriving B and C from S and K, bracket abstraction, and point-free programming) is covered in depth as the advanced "Combinatory Logic and the SKI Calculus" section of the dedicated tutorial: [Implementing a Lambda Calculus Reducer](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LambdaCalculusReducer).  **Direction D of the Functional assignment builds on this material.**  Explore it when your project or curiosity calls for it.
-
-> **Going further:** the material that used to live here (algebraic data types and pattern matching) is covered in the Modern Language Features activity (pattern matching, including matching on nested structures, in class) and the dedicated guide: [Typing Disciplines: Strong vs. Weak, Static vs. Dynamic, and Gradual Typing](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypingDisciplines) (product and sum types).  The specific worked ADT examples from the old appendix (safe lookups, Maybe-style values, and symbolic differentiation over an expression tree) make a good self-study exercise.  Explore them when your project or curiosity calls for it.
+- [Implementing a Lambda Calculus Reducer](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LambdaCalculusReducer): combinatory logic and the SKI calculus (S, K, I, B, C, W), deriving B and C from S and K, bracket abstraction, and point-free programming.  Direction D of the Functional assignment builds on this.
+- [Typing Disciplines](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypingDisciplines): product and sum types.  Pattern matching on nested structures is in the Modern Language Features material; safe lookups, Maybe-style values, and symbolic differentiation over an expression tree make good self-study exercises.
 
 ---
 

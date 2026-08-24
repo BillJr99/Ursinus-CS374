@@ -392,7 +392,6 @@ Which statement about the pipeline is correct?
 
 ---
 
----
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
 
 ## Model 4 (At Home): LL(1) Parse Table Construction and Table-Driven Parser
@@ -772,8 +771,6 @@ In an LR(0) shift-reduce parser, the stack corresponds to:
 
 ---
 
----
-
 ## Answer Key: Model 1, CTQ 1, the full parse of `2 * 3 + 4`
 
 Attempt this as a team **before** you read it.  Fourteen rows, using the ACTION/GOTO table you built above.  Stack entries are written `symbol(state)`; state 0 is always at the bottom.
@@ -812,18 +809,9 @@ In your notebook: the LR table is compiled knowledge, decisions made once, ahead
 - Douglas Thain.  *Introduction to Compilers and Language Design*, Chapter 5 (LR parsing).
 - Aho, Lam, Sethi, Ullman.  *Compilers*, sections 4.5 through 4.7, for table construction we executed but did not build.
 - Donald Knuth.  "On the Translation of Languages from Left to Right."  (1965).  Where LR was born.
-
----
-
-## Going Deeper (Optional Pointers)
-
-The deep-dive appendices that used to follow this activity now live on the Tutorials shelf:
-
-> **Going further:** the Flex/Yacc material that used to live here is covered in depth in the dedicated tutorial: [Flex and Bison from Zero to a Working Language](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/FlexAndBison): installing Flex and Bison, a complete `.l`/`.y` walkthrough of a calculator language with variables, and an appendix on LR(0) item-set construction and how Yacc builds and resolves its parse tables.  The ready-to-build mini-notation scaffold lives in the course examples at [files/examples/mininote/](https://www.billmongan.com/Ursinus-CS374/files/examples/mininote/).  Explore them when your project or curiosity calls for it.
-
-> **Going further:** the material that used to live here (compiling expressions to bytecode and executing them on a stack machine) is covered in depth in the dedicated tutorial: [Building a Bytecode VM for Mini](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BytecodeVM).  Explore it when your project or curiosity calls for it.
-
-> **Going further:** the material that used to live here (object files, symbol tables, static and dynamic linking, loaders, and the path from source to executable) is covered in depth in the dedicated tutorial: [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CompilingAndLinking).  Explore it when your project or curiosity calls for it.
+- [Flex and Bison from Zero to a Working Language](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/FlexAndBison): installing Flex and Bison, a complete `.l`/`.y` walkthrough of a calculator language with variables, and an appendix on LR(0) item-set construction and how Yacc builds and resolves its parse tables.  The ready-to-build mini-notation scaffold is in the course examples at [files/examples/mininote/](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/examples/mininote/).
+- [Building a Bytecode VM for Mini](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BytecodeVM): compiling expressions to bytecode and executing them on a stack machine.
+- [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CompilingAndLinking): object files, symbol tables, static and dynamic linking, loaders, and the path from source to executable.
 
 ---
 

@@ -659,7 +659,6 @@ Which of the following is a *pure* function?
 
 ---
 
----
 **In-class work stops here.**  Everything below is homework and going-deeper material, attempt the exercises before the related assignment.
 
 ## Exercises (Homework: ~95 minutes total)
@@ -708,18 +707,10 @@ Purity forbids a function from leaving traces on the world: which makes it trust
 - **Python `functools` documentation**: `reduce`, `partial`, `lru_cache`
 - **Haskell Tour**: for seeing what pure FP looks like at full scale: https://www.haskell.org/tutorial/
 - **"Structure and Interpretation of Computer Programs"**: online at https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf
-
----
-
-## Going Deeper (Optional Pointers)
-
-The core lesson above stands on its own.  The deep-dive appendices that used to follow it now live on the Tutorials shelf:
-
-> **Going further:** [Haskell Essentials for the Programming Languages Course](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/HaskellEssentials) covers the Haskell fundamentals behind this unit: functions, pattern matching, algebraic data types, and higher-order style.  The monads material that used to live here (the Maybe, List, and IO monads, the monad laws, do-notation, thunks, and infinite streams) is not covered in the course materials; explore it independently (keywords: "monad laws," "do-notation," "thunks and lazy evaluation," "infinite streams Haskell").  Direction A of the Functional assignment covers lazy sequences and generators in Python.
-
-> **Going further:** the material that used to live here (treating parsers themselves as composable higher-order functions) is covered in depth in the dedicated tutorial: [Parser Combinators: Parsers as First-Class Values](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ParserCombinators).  Explore it when your project or curiosity calls for it.
-
-> **Going further:** the continuation-passing style unit and the MapReduce/parallel-functional-programming unit that used to live here now live where they are assessed.  **Directions B and E of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374/Assignments/Functional) build on this material, read the tutorial pointer sections there before choosing those directions.**
+- [Haskell Essentials](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/HaskellEssentials): the Haskell behind this unit, covering functions, pattern matching, algebraic data types, and higher-order style.
+- [Parser Combinators: Parsers as First-Class Values](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ParserCombinators): parsers themselves as composable higher-order functions.
+- Monads (Maybe, List, IO), the monad laws, do-notation, thunks, and infinite streams: not covered in the course materials.  Direction A of the Functional assignment covers lazy sequences and generators in Python.
+- Continuation-passing style and MapReduce live where they are assessed: Directions B and E of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Functional).  Read those directions before choosing them.
 
 ---
 

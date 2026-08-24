@@ -519,12 +519,10 @@ In your notebook: Scheme deletes nearly all syntax and gains the ability to trea
 - Abelson and Sussman.  *Structure and Interpretation of Computer Programs*, Chapter 1 (free online).
 - The Racket Guide, chapters 1 through 4: https://docs.racket-lang.org/guide/
 - Paul Graham.  "The Roots of Lisp" (online essay): eval in a page.
+- [Build a Complete Interpreter in Python](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BuildAnInterpreter): its metacircular Scheme evaluator section covers s-expression parsing, environment chains, the evaluator core, the global environment, and tail-call optimization via trampoline.  The Interpreter assignment has you build the same architecture for the Mini language.
 
 ---
 
-## Going Deeper (Optional Pointers)
-
-> **Going further:** the material that used to live here, the metacircular evaluator (Scheme in Python): s-expression parsing, environment chains, the evaluator core, the global environment, and tail-call optimization via trampoline, now lives as the advanced "Metacircular Scheme Evaluator" section of the dedicated tutorial: [Build a Complete Interpreter in Python: Step by Step](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BuildAnInterpreter).  The Interpreter assignment has you build the same architecture for the Mini language.  Explore it when your project or curiosity calls for it.
 
 ### If you explore the evaluator: reflection prompts
 

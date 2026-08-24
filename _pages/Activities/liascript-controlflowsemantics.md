@@ -657,7 +657,6 @@ print(f"\nFinal environment: {env}")
 
 ---
 
----
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
 
 ## 3.  Exercises

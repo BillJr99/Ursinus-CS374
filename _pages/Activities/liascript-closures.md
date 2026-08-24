@@ -332,10 +332,9 @@ Two closures created by separate calls to `make_adder(5)` and `make_adder(3)` re
 
 ---
 
----
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
 
-# Going Deeper (at home): Closures vs. Objects
+# Extension: Closures vs. Objects
 
 At first glance, objects and closures look very different: one is a class instance with named fields; the other is a function bundled with hidden environment variables.  But look closer and you will find they are two sides of the same coin.  Both bundle state with behavior; both control which code can reach that state.  This model encodes a counter two ways, side-by-side, so you can see the structural parallel directly.
 
