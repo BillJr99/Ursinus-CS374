@@ -506,13 +506,13 @@ follow = compute_follow(grammar, first)
 print("FIRST sets:")
 for nt in grammar:
     symbols = sorted(x if x else 'ε' for x in first[nt])
-    print(f"  FIRST({nt:<4}) = {{ {', '.join(symbols)} }}")
+    print(f"  FIRST({nt:<4}) = " + "{ " + ", ".join(symbols) + " }")
 
 print()
 print("FOLLOW sets:")
 for nt in grammar:
     symbols = sorted(follow[nt])
-    print(f"  FOLLOW({nt:<4}) = {{ {', '.join(symbols)} }}")
+    print(f"  FOLLOW({nt:<4}) = " + "{ " + ", ".join(symbols) + " }")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 

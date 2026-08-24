@@ -71,13 +71,13 @@ ENDS_IN_AB_NFA = {
 
 def run_nfa(machine, s, trace=False):
     current = set(machine["start"])
-    if trace: print(f"  start: {{{', '.join(sorted(current))}}}")
+    if trace: print("  start: " + "{" + ", ".join(sorted(current)) + "}")
     for ch in s:
         nxt = set()
         for state in current:
             nxt |= machine["delta"].get((state, ch), frozenset())
         current = nxt
-        if trace: print(f"  '{ch}' -> {{{', '.join(sorted(current))}}}")
+        if trace: print(f"  '{ch}' -> " + "{" + ", ".join(sorted(current)) + "}")
         if not current:
             if trace: print(f"  DEAD STATE (all paths exhausted)")
             return False
@@ -111,7 +111,7 @@ Build an NFA of your own and watch the state set breathe.
 def run_nfa(machine, s, trace=False):
     current = set(machine["start"])
     if trace:
-        print(f"    start: {{{', '.join(sorted(current))}}}")
+        print("    start: " + "{" + ", ".join(sorted(current)) + "}")
     for ch in s:
         nxt = set()
         for st in current:
@@ -119,7 +119,7 @@ def run_nfa(machine, s, trace=False):
         current = nxt
         if trace:
             shown = ", ".join(sorted(current)) if current else "(dead)"
-            print(f"    after {ch!r}: {{{shown}}}")
+            print(f"    after {ch!r}: " + "{" + shown + "}")
         if not current:
             break
     return bool(current & set(machine["accept"]))

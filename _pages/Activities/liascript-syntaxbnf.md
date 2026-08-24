@@ -526,7 +526,7 @@ for nt in ["expr", "expr_rest", "term", "term_rest", "factor"]:
     tokens = sorted(t for t in first_sets[nt] if t != EPSILON)
     has_eps = EPSILON in first_sets[nt]
     eps_str = " + ε" if has_eps else ""
-    print(f"  FIRST({nt:<12}) = {{ {', '.join(tokens)} }}{eps_str}")
+    print(f"  FIRST({nt:<12}) = " + "{ " + ", ".join(tokens) + " }" + eps_str)
 
 print()
 print("Parser decision table (which rule fires for each lookahead):")
