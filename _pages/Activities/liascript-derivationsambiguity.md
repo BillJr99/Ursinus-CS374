@@ -419,7 +419,7 @@ print("  An ambiguous grammar means your parser picks one silently.")
   input and perfectly adequate as a *proof device*.
 - `max_depth` is a real limit: raising it finds more trees and costs exponentially
   more time.  A "no ambiguity found" result from this tool is evidence, not proof.
-- The contrast between `AMBIGUOUS` and `LAYERED` is the whole session in two runs: two
+- The contrast between `AMBIGUOUS` and `LAYERED` puts the session in two runs: two
   trees become one, purely because `T` was interposed.
 
 ### Critical Thinking Questions
@@ -681,7 +681,7 @@ E
 => 2 + 3 * 4
 ```
 
-Both derivations end at the same string.  That is the whole definition: the grammar admits two distinct leftmost derivations of `2 + 3 * 4`, so it is ambiguous.  Note the divergence is at the *very first step* (`E -> E + E` versus `E -> E * E`) and everything after is forced.  CTQ 2 asks where the meanings diverge; it is the root node, and nothing below it.
+Both derivations end at the same string, which is what the definition asks for: the grammar admits two distinct leftmost derivations of `2 + 3 * 4`, so it is ambiguous.  Note the divergence is at the *very first step* (`E -> E + E` versus `E -> E * E`) and everything after is forced.  CTQ 2 asks where the meanings diverge; it is the root node, and nothing below it.
 
 
 ---

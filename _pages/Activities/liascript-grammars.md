@@ -365,7 +365,7 @@ print("No FIXED number of states works for ALL n. That is the Type 3 ceiling.")
 
 - `MAX_STATES = 3` is the honest part of the simulation.  A real DFA does not have a `count` variable; its state *is* the count, so a machine with three counting states can distinguish "seen one a," "seen two a's," and "seen three a's" and nothing beyond.
 - `finite_state_recognizer` returns `False` on `aaaabbbb` with the reason "ran out of states."  That string is *in* the language.  The machine is not wrong about the string; it is too small to hold the question.
-- `stack_recognizer` never counts anything.  It pushes and pops, and the emptiness of the stack at the end is the answer.  That is the whole trick, and it is why the $L_2$ grammar's recursion depth was the memory in Part I.
+- `stack_recognizer` never counts anything.  It pushes and pops, and the emptiness of the stack at the end is the answer.  Nothing else is going on, which is why the $L_2$ grammar's recursion depth was the memory in Part I.
 - The `phase` variable enforces that all `a`s precede all `b`s.  Without it, `abab` would be accepted, since the pushes and pops balance.
 
 > **Watch out!**  It is tempting to say "just use a counter instead of states."  A counter that can hold arbitrary $n$ *is* unbounded memory, which is precisely what a finite automaton is defined not to have.  The moment you allow one, you have left Type 3.  The restriction is the definition, not an oversight.

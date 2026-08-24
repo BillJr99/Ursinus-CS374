@@ -226,7 +226,7 @@ pretty(tree2)
 ### Reading the Code
 
 - Each node type is a `@dataclass`, so `BinOp('+', l, r)` gives you `.op`, `.left`,
-  and `.right` by name rather than by index.  That is the entire difference from a
+  and `.right` by name rather than by index, which is the only difference from a
   tuple, and it is why `repr` on a dataclass reads like the tree it represents.
 - `pretty` is the **tree walk**, and it has the shape every later pass will have:
   one `case` per node type, a recursive call per child, and a base case at the
@@ -601,7 +601,7 @@ print("  one bottom-up pass already reaches a fixed point here.")
 ### Reading the Code
 
 - `fold` returns a **tree**, not a number.  That single difference turns a read-only
-  analysis into a transformation, and it is the whole idea behind a compiler pass.
+  analysis into a transformation, and it is what a compiler pass does for a living.
 - The line `l, r = fold(l), fold(r)` comes *before* the constant test.  Folding the
   children first is what makes one bottom-up pass sufficient: by the time the parent
   is examined, its children are already as folded as they will get.

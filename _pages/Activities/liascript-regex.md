@@ -123,7 +123,7 @@ for pattern, tests in patterns:
 
 ### Reading the Code
 
-- `re.fullmatch` requires the pattern to consume the **entire** string.  That is the right choice for a *theory* demonstration, because a regular expression denotes a set of strings, and `fullmatch` asks exactly "is this string in that set?"  `re.search`, which Day 2 uses, asks a different question: "does the set have a member somewhere inside this string?"
+- `re.fullmatch` requires the pattern to consume the **entire** string, which is the right choice for a *theory* demonstration, because a regular expression denotes a set of strings, and `fullmatch` asks exactly "is this string in that set?"  `re.search`, which Day 2 uses, asks a different question: "does the set have a member somewhere inside this string?"
 - `r"[0-9]+\.[0-9]+"` uses a raw string so that `\.` reaches the regex engine as an escaped dot rather than being interpreted by Python first.  Drop the `r` and Python warns you; get in the habit now.
 - `.` matches *any* character, so an unescaped `[0-9]+.[0-9]+` would happily match `3x14`.  The escape is not decoration.
 
@@ -325,7 +325,7 @@ Expected output once all four are written: every line reads `ok`.  `INT` is the 
 
 You will use regular expressions in two places this semester: inside Python, where you write your lexer, and at the shell, where you search your own source tree.  The Overview assignment asks you to submit a `grep` transcript, and you will reach for it constantly once your interpreter is a few thousand lines and "where do I construct a `BinOp` node?" is a `grep` question rather than a scrolling question.
 
-`grep` prints every **line** of its input that contains a match.  That is the whole idea.  Everything else is flags.
+`grep` prints every **line** of its input that contains a match.  Everything else it does is flags.
 
 ## The flags that earn their keep
 

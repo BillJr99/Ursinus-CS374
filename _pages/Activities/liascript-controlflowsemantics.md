@@ -203,7 +203,7 @@ print(f"  my_if_lazy(True, lambda: 42, lambda: boom()) = "
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output: the first call raises, the second prints `42`, the third prints `42`.  That progression is the whole argument for why `if` is built into the grammar rather than being a library function.
+Expected output: the first call raises, the second prints `42`, the third prints `42`.  That progression is why `if` is built into the grammar rather than shipped as a library function.
 
 # Part II: Short-Circuit Evaluation
 
@@ -622,7 +622,7 @@ print(f"env after: {env}")     # n=0, total=15
 
 ### Reading the Code
 
-- `execute` returns nothing.  Every branch works by *effect*: writing to `env`, printing, or looping.  That is the structural difference from `evaluate`, which returns a value and touches nothing.
+- `execute` returns nothing.  Every branch works by *effect*: writing to `env`, printing, or looping.  It differs structurally from `evaluate`, which returns a value and touches nothing.
 - The same `env` dictionary is passed to every recursive call, never copied.  That is what makes an assignment inside a loop body visible after the loop ends, and it is the opposite of the fresh-frame-per-call discipline that closures need.
 - `While` re-evaluates its condition expression on every pass.  It does not cache it.  If it did, `while n > 0` would run forever.
 - `Block` executes its children in order and discards each result.  Order matters here in a way it never did for expressions.
@@ -816,7 +816,7 @@ print(f"\nFinal environment: {env}")
 
 - The REPL is a loop around the same three functions the whole session has been building: tokenize, parse, execute.  Nothing new is required to make a language interactive; you just stop reading from a file.
 - `env` lives *outside* the loop, which is what makes the session stateful: a variable defined on one line is visible on the next.  Move it inside and every line would start from nothing.
-- Errors are caught per line rather than killing the session.  That is the same `LangError` discipline from *Tree-Walking Interpretation*, now paying off: a user's typo prints a message and the prompt comes back.
+- Errors are caught per line rather than killing the session, which is the `LangError` discipline from *Tree-Walking Interpretation* finally paying off: a user's typo prints a message and the prompt comes back.
 
 ---
 

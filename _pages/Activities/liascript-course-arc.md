@@ -569,7 +569,7 @@ print("="*50)
 ### Reading the Code
 
 - The three stages hand each other exactly one data structure apiece: characters become a token list, the token list becomes a tree, and the tree becomes a value.  Every session this term is one of those arrows.
-- Stage 2's AST is written out by hand rather than parsed, because the parser is four weeks away.  That is the only piece of this pipeline you are being shown rather than shown *working*.
+- Stage 2's AST is written out by hand rather than parsed, because the parser is four weeks away.  It is the one piece of this pipeline you are being shown rather than shown *working*.
 - `run2` is the same recursive walk as Model 4, trimmed.  Notice that it never consults the source text, the tokens, or the grammar; by the time it runs, all of that has already done its job.
 - Nothing here is more than about forty lines per stage.  The pipeline is not hard; it is just long, and this term is the walk down its length.
 

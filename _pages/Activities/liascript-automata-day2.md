@@ -100,7 +100,7 @@ run_nfa(ENDS_IN_AB_NFA, "aab", trace=True)
 
 - The simulator never backtracks and never guesses.  It carries a **set** of states and advances all of them at once, which is why an NFA runs in time proportional to the input rather than exponentially.
 - That set is a DFA state in disguise.  Model 4 makes this explicit by naming each set ahead of time; here the same sets are computed lazily, one input symbol at a time.
-- Acceptance is a set-intersection test: accept if *any* reachable state is accepting.  That is the whole meaning of "the machine may guess", made deterministic.
+- Acceptance is a set-intersection test: accept if *any* reachable state is accepting.  "The machine may guess" means nothing more than that, made deterministic.
 - A missing entry in `delta` means that path dies.  Because we track a set, one dead path does not end the run; the others carry on.
 
 ### Try It Yourself
@@ -305,7 +305,7 @@ for n in range(1, 8):
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output: the DFA column doubling each row while the NFA column grows by one.  That is the exponential bound being met exactly, for a language you can state in one English sentence.
+Expected output: the DFA column doubling each row while the NFA column grows by one.  The exponential bound is being met exactly here, for a language you can state in one English sentence.
 
 ### Critical Thinking Questions
 

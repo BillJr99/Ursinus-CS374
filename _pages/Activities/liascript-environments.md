@@ -156,7 +156,7 @@ except NameError as e:
 
 ### Reading the Code
 
-- `vars` and `parent` are the whole data structure.  Everything else on the class is a *walk* over that chain; there is no other state anywhere.
+- `vars` and `parent` are the entire data structure.  Everything else on the class is a *walk* over that chain; there is no other state anywhere.
 - `define` writes to `self.vars` and never looks at `parent`.  `assign` never writes to `self.vars` unless the name is already there.  That one asymmetry is the entire difference between declaring and updating, and it is where most interpreter bugs live.
 - `lookup` walks outward and stops at the *first* frame that has the name.  Shadowing is not a special case in the code; it falls out of stopping early.
 - Leaving a block is not an operation.  There is no `pop`: the code simply stops using `block`, and Python's garbage collector does the rest.  Scope ending is the absence of a reference, not an instruction.
@@ -328,7 +328,7 @@ print(f"\nEnvironment chain: {inner}")
 
 ### Reading the Code
 
-- The demo runs the same two-line program twice, once with `define` and once with `assign`, and the only difference in the output is *which frame* holds the changed value.  That is the whole lesson of Part II in one contrast.
+- The demo runs the same two-line program twice, once with `define` and once with `assign`, and the only difference in the output is *which frame* holds the changed value.  Part II comes down to that one contrast.
 - Watch `inner` after the `define` run: it has its own `x`.  After the `assign` run it is empty, and `outer`'s `x` moved instead.  Two bindings versus one.
 - Neither operation ever copies a frame.  `assign` reaches through the chain and mutates in place, which is why a change made deep inside a block is still visible after the block ends.
 

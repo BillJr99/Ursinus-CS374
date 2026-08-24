@@ -59,7 +59,7 @@ for m in re.finditer(r"order", text, flags=re.IGNORECASE):
 - `re.findall` behaves differently depending on your pattern.  With no groups it returns whole matches; with exactly one group it returns *just that group*, which is why `r"#(\d+)"` yields bare numbers rather than `#`-prefixed ones.  With two or more groups it returns tuples.  This trips up everyone once.
 - `m.groups()` unpacks all captures at once, which is how the three-part date comes apart in one line.
 - `\b` in the redaction pattern is a **word boundary**: a zero-width assertion that matches a *position*, not a character.  Without it, `\d{5}` would happily match the first five digits of a longer number.
-- `finditer` yields match objects with `.start()` and `.end()`, so you learn *where* each match sits.  That is the difference between detecting text and tokenizing it, and it is why Model 3 is built on `finditer` rather than `findall`.
+- `finditer` yields match objects with `.start()` and `.end()`, so you learn *where* each match sits.  Detecting text and tokenizing it part company right there, and it is why Model 3 is built on `finditer` rather than `findall`.
 
 ### Critical Thinking Questions
 
@@ -151,8 +151,8 @@ Matching `a*ab` against `"aaab"`, the engine's first attempt lets `a*` consume a
 
 ### Reading the Code
 
-- `max_a` is the longest run of `a`s available, computed up front.  That is the *greedy maximum*: the most `a*` could possibly take.
-- `for k in range(max_a, -1, -1)` counts **downward**.  That descending loop is greed: try the longest take first, and only give characters back when forced.  A reluctant `a*?` would count upward from 0 instead, and that single change is the whole difference.
+- `max_a` is the longest run of `a`s available, computed up front: the *greedy maximum*, or the most `a*` could possibly take.
+- `for k in range(max_a, -1, -1)` counts **downward**.  That descending loop is greed: try the longest take first, and only give characters back when forced.  A reluctant `a*?` would count upward from 0 instead, and nothing else about the algorithm changes.
 - Each iteration of that loop is one **decision point revisited**.  The number of iterations before success is the amount of backtracking the engine did.
 - The final line checks our narration against `re.fullmatch`, so the trace is not just plausible; it agrees with the real engine on every input.
 
@@ -177,7 +177,7 @@ token pattern into a single alternation with **named groups**, then walks the
 source once with `finditer`.  After each match, `m.lastgroup` tells you which
 alternative fired, which is exactly the token type.
 
-That is the whole scanner.  What follows is roughly the code you will write for
+There is nothing else to the scanner.  What follows is roughly the code you will write for
 the Lexer assignment.
 
 ```python

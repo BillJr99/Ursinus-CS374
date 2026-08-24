@@ -159,7 +159,7 @@ print("  Scribe: fill in the blanks above and commit BACKLOG.md before end of da
 
 ### Reading the Code
 
-- The triage rules are the whole method: every risk and every question becomes a backlog item, and each is sorted into exactly one of FIX, DISCLOSE, or FUTURE.  Nothing is allowed to stay unclassified, because unclassified feedback is feedback that quietly evaporates.
+- The triage rules are the method, start to finish: every risk and every question becomes a backlog item, and each is sorted into exactly one of FIX, DISCLOSE, or FUTURE.  Nothing is allowed to stay unclassified, because unclassified feedback is feedback that quietly evaporates.
 - DISCLOSE is the bucket that makes this mature rather than defensive.  A named, well-worded limitation costs a sentence at Demo Day; an unnamed one costs your credibility when someone finds it live.
 - Strengths are counted but generate no backlog items.  They are there so the walk is worth attending and so you know which parts of the design not to disturb.
 

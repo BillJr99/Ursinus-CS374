@@ -183,7 +183,7 @@ print("  same input -> same output, every time, forever")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output: `f_reads_global(10)` returns 10 and then 11, from identical arguments.  That single changed digit is the whole argument for purity.
+Expected output: `f_reads_global(10)` returns 10 and then 11, from identical arguments.  That single changed digit is the case for purity, made in one line.
 
 > **CTQ 1.4** Classify each function as pure or impure.  For each impure one, name the exact disqualifying feature.
 

@@ -291,7 +291,7 @@ The rule is short enough to state completely:
 - While the next token is an operator whose binding power is **at least** the minimum we were given, consume it and recursively parse its right operand with a minimum of `bp + 1` for left-associative operators, or `bp` for right-associative ones.
 - Fold and repeat.
 
-That `+ 1` is the whole associativity mechanism.  Passing `bp + 1` means an operator of equal power will *not* be absorbed by the recursive call, so it comes back to the loop and folds on the left.  Passing `bp` lets the recursion swallow it, folding on the right.
+That `+ 1` is the associativity mechanism, complete.  Passing `bp + 1` means an operator of equal power will *not* be absorbed by the recursive call, so it comes back to the loop and folds on the left.  Passing `bp` lets the recursion swallow it, folding on the right.
 
 ## Examples: Binding Powers, by Hand
 
@@ -392,7 +392,7 @@ print("  That single '+ 1' is the entire associativity mechanism.")
 
 ### Reading the Code
 
-- `BINDING` is the whole grammar's precedence structure, as data.  Compare it with Part I, where the same information was spread across four function definitions and their call order.
+- `BINDING` holds the grammar's precedence structure, as data.  Compare it with Part I, where the same information was spread across four function definitions and their call order.
 - `if bp < min_bp: break` is precedence.  When `parse_expr` is deep inside a `*` and meets a `+`, the comparison fails, the loop returns, and the `+` is handled by whichever caller has a low enough minimum.  No function-per-tier required.
 - `next_min = bp + 1 if assoc == "left" else bp` is associativity, in one line.  Trace `8 - 4 - 2`: the recursive call gets minimum 11, sees `-` at power 10, refuses it, and returns, so the outer loop folds left.  For `^` the call gets minimum 30, accepts the next `^`, and folds right.
 - Prefix minus is handled before the loop with a high minimum (40), which is why `-3 + 4` groups as `(-3) + 4` and not `-(3 + 4)`.

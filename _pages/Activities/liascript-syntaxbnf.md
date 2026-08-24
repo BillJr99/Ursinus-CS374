@@ -187,7 +187,7 @@ for test in ["42", "-42", "+7", "4-2", "-", "", "007"]:
 
 ### Reading the Code
 
-- The EBNF `[sign] digit {digit}` is transcribed almost symbol for symbol: the optional `[...]` becomes an `if`, and the repetition `{...}` becomes a `while`.  That correspondence is the point of the notation, and it is the whole idea behind recursive descent three weeks from now.
+- The EBNF `[sign] digit {digit}` is transcribed almost symbol for symbol: the optional `[...]` becomes an `if`, and the repetition `{...}` becomes a `while`.  That correspondence is the point of the notation, and recursive descent three weeks from now rests on it.
 - The recognizer returns a *position*, not a boolean.  Every rule consumes some prefix and reports where it stopped, which is how rules compose: the caller carries on from where the callee left off.
 - Nothing here builds a tree.  A recognizer answers only "is this legal?"  A parser answers "and what is its structure?", which is the next step up.
 

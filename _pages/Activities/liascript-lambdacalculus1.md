@@ -380,7 +380,7 @@ print("Free vars in (λx.λy. x):", free_vars(lam('x', lam('y', var('x')))))
 - The three tuple shapes `('var', n)`, `('lam', p, b)` and `('app', f, a)` are the *entire* grammar of the lambda calculus.  There is nothing else to represent, which is why the tracer fits on one screen.
 - `subst` is where capture avoidance lives.  It consults `free_vars` before descending into a `lam` and renames the bound variable if substituting would otherwise capture a free one.  Every hard part of this session is in that one check.
 - `step` finds the **outermost** redex first, which is normal order.  Normal order is the strategy guaranteed to reach a normal form if one exists; Python's own evaluation is the opposite, evaluating arguments first.
-- The tracer stops when `step` reports no redex.  That is the definition of a normal form: not "the answer", but "nothing left to reduce".
+- The tracer stops when `step` reports no redex.  A normal form is defined that way: not "the answer", but "nothing left to reduce".
 
 ### Try It Yourself
 

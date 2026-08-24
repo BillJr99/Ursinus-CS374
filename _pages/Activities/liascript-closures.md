@@ -160,7 +160,7 @@ Imagine two employees: one always looks up rules in the company handbook where t
 
 ### Reading the Code
 
-- The first block reassigns the captured variable *after* the closure is built, and the closure reports the new value.  That is the proof of capture-by-reference: if it had copied, it would still report the old one.
+- The first block reassigns the captured variable *after* the closure is built, and the closure reports the new value.  Capture by reference is proved right there: if it had copied, it would still report the old one.
 - The default-argument contrast is the control case.  `lambda v=n: v` evaluates `n` once, at definition, and stores the result.  It is not a closure over `n` at all.
 - The shared-mutable-cell block is the same mechanism used deliberately: two functions closing over one binding is how you get an object with two methods, which is exactly where Part IV's koan goes.
 
@@ -256,7 +256,7 @@ When the evaluator meets a function expression, it does **not** evaluate the bod
 Closure(param, body, env)
 ```
 
-The `param` and `body` come straight off the AST.  The third field, `env`, is the environment **at the moment the function was created**.  That is the capture.
+The `param` and `body` come straight off the AST.  The third field, `env`, is the environment **at the moment the function was created**.  Capturing it is the one thing this record exists to do.
 
 When the evaluator later meets a call, it evaluates the function, evaluates the argument, and then evaluates the body in
 
@@ -264,7 +264,7 @@ When the evaluator later meets a call, it evaluates the function, evaluates the 
 closure.env.extend(closure.param, argument)
 ```
 
-Read that carefully, because it is the whole session.  The body runs in a child of the closure's **captured** environment, not a child of the environment the call happens to be sitting in.  Change `closure.env` to the caller's `env` on that one line and you have written a dynamically scoped language.  Nothing else has to change.
+Read that line carefully, because the session turns on it.  The body runs in a child of the closure's **captured** environment, not a child of the environment the call happens to be sitting in.  Change `closure.env` to the caller's `env` on that one line and you have written a dynamically scoped language.  Nothing else has to change.
 
 ## Examples: Which Environment Wins, by Hand
 
@@ -489,7 +489,7 @@ except NameError as err:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output as written: a `NameError` naming `fact`, with the explanation.  Once TODO 1 is in, `fact(5) = 120`.  That two-line fix is the whole reason `letrec` exists.
+Expected output as written: a `NameError` naming `fact`, with the explanation.  Once TODO 1 is in, `fact(5) = 120`.  Those two lines are why `letrec` exists at all.
 
 ---
 
@@ -546,7 +546,7 @@ The code above showed the trap and two fixes; now draw it.  The broken and fixed
 
 - `[lambda: i for i in range(3)]` builds three functions that all close over the *same* `i`.  Nothing about that is a bug; it is capture-by-reference doing exactly what Model 1 demonstrated on purpose.
 - The two fixes attack different halves.  The default argument stops closing over `i` at all, so there is nothing to share.  The factory function makes a genuinely new binding per iteration, so there are three `i`s to close over instead of one.
-- JavaScript's `var` had this exact shape and `let` changed it by giving loop bodies per-iteration bindings.  That is the same decision you made in the *Environments* Try It Yourself, at ecosystem scale.
+- JavaScript's `var` had this exact shape and `let` changed it by giving loop bodies per-iteration bindings.  You made the same decision in the *Environments* Try It Yourself, at ecosystem scale.
 
 ### Try It Yourself
 
