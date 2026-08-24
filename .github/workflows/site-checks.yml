@@ -30,6 +30,11 @@ jobs:
         with:
           python-version: "3.11"
 
+      # The runner's Python has no PyYAML, and the schedule check below needs it.
+      # The audit script itself deliberately uses only the standard library.
+      - name: Install Python dependencies
+        run: python3 -m pip install --quiet pyyaml
+
       # Literal text eaten by Liquid, layouts that do not exist, and Liquid in
       # the LiaScript decks. The first of those produces no Jekyll warning at
       # all: the words just disappear from the published page.
