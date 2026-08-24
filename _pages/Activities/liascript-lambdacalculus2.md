@@ -566,4 +566,4 @@ In your notebook: numbers, booleans, pairs, and conditionals all dissolved into 
 
 ---
 
-Up next: the *Language Design Workshop* kickoff (your team's language begins) while the Church encodings you built here power the Functional assignment.
+Up next: the *Closures and First-Class Functions* activity shows what a capturing lambda costs at run time, while the Church encodings you built here power the Functional assignment.

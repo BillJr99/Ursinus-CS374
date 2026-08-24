@@ -72,7 +72,7 @@ Tokenize by hand: `count2 = count2 + 12 >= limit`
 
 ## 2.  A Complete Tokenizer
 
-You met the master-alternation trick in *Regular Expressions, Day 2*, where it was a
+You met the master-alternation trick in Part 4 of the *Regex Workshop* lab, where it was a
 demonstration that named groups let one pattern carry many alternatives.  Here it
 becomes the real thing: a token specification as data, one master pattern, and a
 generator that yields typed tokens **with positions**, plus an error path.  Positions

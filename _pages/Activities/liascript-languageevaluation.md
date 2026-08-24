@@ -12,19 +12,23 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 -->
 
-# Evaluating Languages: Readability, Writability, Reliability
+# Programming Paradigms, Evaluating Languages, and an Introduction to Functional Programming
 
-Evaluating a programming language is a lot like evaluating a tool in a workshop: a hammer and a screwdriver are both "correct" tools, but which one you reach for depends entirely on what you are building.  No language is universally best; every language embodies a set of deliberate tradeoffs that make it excellent for some tasks and awkward for others.  In this activity you will develop a systematic, criteria-driven way to evaluate those tradeoffs so that you can choose languages wisely and design your own language with open eyes.  The paradigms you toured in *Programming Paradigms* are the raw material these criteria judge.
+Evaluating a programming language is a lot like evaluating a tool in a workshop: a hammer and a screwdriver are both "correct" tools, but which one you reach for depends entirely on what you are building.  No language is universally best; every language embodies a set of deliberate tradeoffs that make it excellent for some tasks and awkward for others.
+
+Today has three parts, and they build on each other.  First we name the **paradigms**, the handful of fundamentally different stories languages tell about what a program *is*.  Then we develop a systematic, criteria-driven way to judge the tradeoffs those stories make, so you can choose languages wisely and design your own with open eyes.  Finally we open the door to the paradigm we are going to spend the next two sessions inside: **functional programming**, in the language where it is most nearly the only option.
 
 ## Learning Goals
 
 By the end of this activity, you will be able to:
 
+- Distinguish the major programming paradigms and say what each one treats as the fundamental unit of a program
 - Define the four classical language evaluation criteria (readability, writability, reliability, cost) and explain how each is measured
 - Identify specific language features (orthogonality, type checking, abstraction support, etc.) and predict their effect on each evaluation criterion
 - Analyze code examples to detect orthogonality failures and explain the programmer confusion they produce
 - Compare two languages on at least two evaluation criteria using concrete feature-level evidence rather than personal preference
 - Apply the evaluation framework as a scorecard to justify design decisions for your own language project
+- Read and write a first Scheme expression, and explain why a function can be bound to a name the same way a number can
 
 > **Before You Begin:** This activity assumes you can:
 > - Describe at least one high-level difference between a statically typed language (e.g., Java) and a dynamically typed language (e.g., Python)
@@ -33,7 +37,7 @@ By the end of this activity, you will be able to:
 >
 > If any of these feel shaky, review them first.
 
-"Which language is best?" is a bad question; "best *for what*, judged *by what criteria*" is an engineering question.  Today we adopt the classical evaluation framework (readability, writability, reliability, and cost) and the design tradeoffs that connect them, because every choice your team makes in December will trade one criterion against another.  We move today from **the criteria $\rightarrow$ the design features that drive them $\rightarrow$ tradeoffs in real languages $\rightarrow$ a scorecard for your own design**.
+"Which language is best?" is a bad question; "best *for what*, judged *by what criteria*" is an engineering question.  Today we adopt the classical evaluation framework (readability, writability, reliability, and cost) and the design tradeoffs that connect them, because every choice your team makes in December will trade one criterion against another.  We move today from **the paradigms $\rightarrow$ the criteria $\rightarrow$ the design features that drive them $\rightarrow$ tradeoffs in real languages $\rightarrow$ a first look at the functional paradigm in Scheme**.
 
 ---
 
@@ -41,9 +45,88 @@ By the end of this activity, you will be able to:
 
 Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Please think each model and question through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever you disagreed or found another approach.  After class, please respond to the reflective prompt on your own in your notebook.
 
+> **How today runs.**  Three parts in seventy-five minutes means the clock is real.  Part I (paradigms) takes about fifteen minutes, Part II and Part III (the criteria and the tradeoffs) take about thirty together, and Part V (your first Scheme) takes the last twenty and is the one I will not cut, because the next two sessions depend on you having typed something.  If we run short, **Model 1's Try It Yourself block and all of Model 2 are read-at-home**: they are worth your time, but the criteria in Part II carry the point without them, and the *Evaluating Languages and Paradigms* participation exercise walks the same ground.
+
 ---
 
-# Part I: The Criteria
+# Part I: Four Paradigms
+
+## 0.  What a Program *Is*
+
+A **paradigm** is not a syntax family; it is a claim about what the fundamental unit of a program is.  Change that claim and everything downstream changes: what you name, what you can reuse, what kinds of bugs you get, and what the language has to work hardest to support.
+
+| Paradigm | A program is... | The unit you build with | Where you have met it |
+|---|---|---|---|
+| **Imperative / procedural** | a sequence of commands that change state | the statement, the variable, the procedure | C, and most of the Python you have written |
+| **Object-oriented** | a society of objects exchanging messages | the class, the object, the method | Java, C++, and Python's other half |
+| **Functional** | an expression to be evaluated | the function, applied to values | Scheme, Haskell, and the `map`/`filter`/`lambda` corner of every modern language |
+| **Logic / declarative** | a set of facts and rules, plus a question | the relation and the query | Prolog, SQL, and the type checker you will write in November |
+
+Most languages you will use are mixtures.  That is the interesting part: Python has objects *and* closures *and* comprehensions, and every one of those was borrowed from a paradigm that took it seriously first.  Knowing which paradigm a feature came from tells you what it is for.
+
+## Model 1: The Same Problem, Four Ways
+
+One task, stated four ways: given a list of numbers, add up the squares of the even ones.
+
+```python
+data = [1, 2, 3, 4, 5, 6, 7, 8]
+
+# 1. IMPERATIVE: a sequence of commands that mutate state.
+#    The accumulator is the point; the answer accumulates in it.
+total = 0
+for n in data:
+    if n % 2 == 0:
+        total = total + n * n
+print(f"  imperative:      {total}")
+
+# 2. OBJECT-ORIENTED: state and behavior packaged together.
+#    The object owns the running total and knows how to update it.
+class EvenSquareSummer:
+    def __init__(self):
+        self.total = 0
+    def offer(self, n):
+        if n % 2 == 0:
+            self.total += n * n
+        return self
+
+summer = EvenSquareSummer()
+for n in data:
+    summer.offer(n)
+print(f"  object-oriented: {summer.total}")
+
+# 3. FUNCTIONAL: an expression, evaluated. No variable is ever updated.
+from functools import reduce
+print(f"  functional:      "
+      f"{reduce(lambda a, b: a + b, map(lambda n: n * n, filter(lambda n: n % 2 == 0, data)), 0)}")
+
+# 4. DECLARATIVE: say WHAT you want and let the machinery find it.
+#    Python's comprehension is a small, tame version of the same idea;
+#    in SQL or Prolog the machinery does considerably more work for you.
+print(f"  declarative:     {sum(n * n for n in data if n % 2 == 0)}")
+
+print()
+print("  Four answers, one number.  What differs is not the result but what")
+print("  each version asks YOU to keep track of: an accumulator, an object,")
+print("  a pipeline of functions, or nothing at all.")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- Versions 1 and 2 both maintain a running total that changes over time.  If two threads ran either one, you would have to think about it.  Versions 3 and 4 never update anything, which is the property we will chase for the next two sessions.
+- Version 3 is deliberately written the ugly way, with explicit `lambda`s, so you can see the three separate jobs: select, transform, combine.  Those three jobs have names (`filter`, `map`, `reduce`), and by the end of the functional sessions you will reach for them without thinking.
+- Version 4 is the shortest and hides the most.  Hiding machinery is what "declarative" means, and it is a tradeoff, not a free win: ask anyone who has tried to make a slow SQL query fast.
+
+### Critical Thinking Questions
+
+1.  What are some potential advantages of Functional Programming as a paradigm?
+2.  Which of the four versions would be easiest to test in isolation, and why?  Which would be hardest to debug when it produced the wrong number?
+3.  Rewrite version 1 so that it computes the sum of the *odd* squares.  Now do the same for version 3.  Which edit was more localized, and what does that tell you about where each paradigm puts the "select" decision?
+4.  Name a task where the imperative version is clearly the right one to write.  Paradigm choice is engineering, not fashion.
+
+---
+
+# Part II: The Criteria
 
 ## 1.  Four Lenses
 
@@ -59,7 +142,7 @@ Before diving into definitions, consider why we need multiple lenses at all.  Wh
 
 ---
 
-## Model 1: Orthogonality, Combining Features Without Surprises
+## Model 2: Orthogonality, Combining Features Without Surprises
 
 Imagine a language where every operator works on every type in a consistent, predictable way: no surprise exceptions, no "well, `+` works on strings but `*` only works on strings with integers, not with other strings."  That ideal is called orthogonality.  In practice, every real language falls short of it somewhere, and the gaps are exactly where programmers make mental-model mistakes.  This model makes those gaps visible by running operator experiments directly.
 
@@ -175,10 +258,10 @@ Expected output: `'at' in 'cat'` is `True` while nothing analogous works for a l
 
 ### Critical Thinking Questions
 
-1.  From the output, identify two cases where Python *is* orthogonal (the same operator works uniformly across types) and two where it is *not*.  For each non-orthogonal case, state what the programmer must remember as a special case.
-2.  Define orthogonality in your own words using these examples: which special cases break the "features combine uniformly" promise in each language?  Should `set + set` work?  Make an argument both ways using readability and reliability as criteria.
-3.  A maximally orthogonal language sounds ideal.  Propose one danger of *too much* orthogonality (hint: if everything combines with everything, what can the reader assume about any expression?).
-4.  Score C and Python (low/medium/high) on each of the four criteria for the task "a 200-line data cleaning script maintained by rotating student workers."  Defend your most contested cell.
+5.  From the output, identify two cases where Python *is* orthogonal (the same operator works uniformly across types) and two where it is *not*.  For each non-orthogonal case, state what the programmer must remember as a special case.
+6.  Define orthogonality in your own words using these examples: which special cases break the "features combine uniformly" promise in each language?  Should `set + set` work?  Make an argument both ways using readability and reliability as criteria.
+7.  A maximally orthogonal language sounds ideal.  Propose one danger of *too much* orthogonality (hint: if everything combines with everything, what can the reader assume about any expression?).
+8.  Score C and Python (low/medium/high) on each of the four criteria for the task "a 200-line data cleaning script maintained by rotating student workers."  Defend your most contested cell.
 
 ---
 
@@ -220,7 +303,7 @@ Tony Hoare called null his "billion-dollar mistake" because:
 
 ---
 
-# Part II: Tradeoffs
+# Part III: Tradeoffs
 
 ## 2.  There Is No Free Criterion
 
@@ -245,7 +328,7 @@ A team adds implicit type coercion to their language so that `"3" + 4` yields `7
 
 ---
 
-## Model 2: The Billion-Dollar Hindsight
+## Model 3: The Billion-Dollar Hindsight
 
 One of the most studied reliability failures in language design history is the null reference: the idea that a variable of any type can silently hold "nothing," and that nothing will only explode when you try to use it, potentially deep inside code far from where the bad value was introduced.  This model walks through three different language-design responses to that problem, letting you directly compare the reliability-versus-writability tradeoffs each one makes.
 
@@ -344,16 +427,70 @@ print("  Design 3 (no null):       max ceremony, compiler-guaranteed safety")
 
 ### Critical Thinking Questions
 
-8.  Express each of the three designs as a position in the reliability-versus-writability tradeoff.  Which shifts the cost of absence-handling earliest: to the programmer at write time, to the compiler at compile time, or to the user at run time?
-9.  Your project language will have to decide what happens when a variable is used before assignment.  Enumerate three possible designs (error at parse time, error at run time, default value) and score each on reliability and writability.  Which does Python use?  Which does Java use?
-10.  Hoare's mistake survived fifty years because it was *convenient*.  Name one convenience in a language you use that you now suspect is somebody's future billion-dollar regret.  Use the four criteria to defend your suspicion.
+9.  Express each of the three designs as a position in the reliability-versus-writability tradeoff.  Which shifts the cost of absence-handling earliest: to the programmer at write time, to the compiler at compile time, or to the user at run time?
+10.  Your project language will have to decide what happens when a variable is used before assignment.  Enumerate three possible designs (error at parse time, error at run time, default value) and score each on reliability and writability.  Which does Python use?  Which does Java use?
+11.  Hoare's mistake survived fifty years because it was *convenient*.  Name one convenience in a language you use that you now suspect is somebody's future billion-dollar regret.  Use the four criteria to defend your suspicion.
 
 ---
 
 
 > **Cut for time.**  The simplicity-versus-expressiveness comparison (including the Perl-golf demonstration) added length without adding a criterion beyond the four lenses in Part I. The point it made (that terseness and clarity are different axes, and that a language can optimize for either) is covered in Model 1's orthogonality discussion.
 
-# Part III: Synthesis and Practice
+# Part IV: A First Look at the Functional Paradigm
+
+## 3.  Scheme, Where the Paradigm Is Not Optional
+
+Version 3 of Model 1 was functional programming wearing a Python costume: you can write in that style, but nothing makes you, and the language will happily let you reach for a loop and an accumulator instead.  To feel a paradigm properly you have to spend time somewhere it is the *only* option.  For the next two sessions that place is **Scheme**.
+
+Scheme is to programming languages what Latin is to the Romance languages: it exposes the undiluted core the others are built from, stripped of the ornamental syntax that usually hides the machinery.  It has essentially **one syntactic rule**: everything is a parenthesized list with the operator first.
+
+| Python | Scheme |
+|---|---|
+| `f(a, b)` | `(f a b)` |
+| `2 + 3` | `(+ 2 3)` |
+| `(2 + 3) * 4` | `(* (+ 2 3) 4)` |
+| `[1, 2, 3]` | `'(1 2 3)` |
+| `def f(x): return x + 1` | `(define (f x) (+ x 1))` |
+
+There is no precedence table, because prefix notation does not need one: the nesting *is* the structure.  Hold onto that.  In a few weeks this course spends three sessions building a parser whose entire job is to recover, from flat infix text like `2 + 3 * 4`, the tree a Scheme programmer simply writes.
+
+## Model 4: Your First Scheme
+
+Get a REPL in front of you before you read the code.  [try.scheme.org](https://try.scheme.org) needs no install and works in a browser tab; the course's own [Scheme warmup exercise](https://www.billmongan.com/Ursinus-CS374-Fall2026/Modules/Scheme/Warmup/Exercise) runs Scheme in the page and checks your answer.  If you would rather install it locally, the *Functional Programming in Scheme* activity opens with four routes, and the Scheme assignment walks all of them.
+
+```scheme
+(define L (list 'a 'b 'c))
+(car L)                      ; a
+(cdr L)                      ; (b c)
+
+(define x (+ 3 2))
+(+ x 5)                      ; 10
+
+(define add +)
+(add 3 2)                    ; 5
+```
+
+### Reading the Code
+
+- `car` gives you the first element of a list and `cdr` gives you everything after it.  The names are historical accidents from 1950s IBM register names and they are not going to start making sense, so read them as "the first one" and "the rest."  Those two operations, plus recursion, are the entire engine of list processing in this language.
+- `(define x (+ 3 2))` binds the name `x` to the value 5.  Note the word: **binds**, not assigns.  You do not come back later and update `x`.  That single discipline is what makes the functional paradigm's promises (testability, safe parallelism) possible.
+- `(define add +)` is not a typo.  `+` is a *value*, the addition function, and `define` gives it a second name.  Nothing in Scheme distinguishes a name holding a number from a name holding a function.
+
+> **Watch out!**  Forgetting the quote before a list literal is the most common beginner error in this language.  `(1 2 3)` tells Scheme to call the function named `1` with arguments `2` and `3`, and since `1` is not a function you get `application: not a procedure`.  Write `'(1 2 3)` when you mean data.  Trigger the error on purpose once, right now, and read the message: it is the One Syntax Rule explaining itself.
+
+### Critical Thinking Questions
+
+15.  Translate `2 + 3 * 4` and `(2 + 3) * 4` into Scheme.  Which one needed parentheses beyond the operators' own, and why does the question almost stop making sense?
+16.  `(define add +)` works in Scheme.  What is the nearest Python equivalent, and is there anything Scheme lets you do here that Python does not?
+17.  Score Scheme's one-syntax-rule uniformity against all four criteria from Part II.  Ask anyone who has counted parentheses before you decide readability is a clean win.
+
+### Try It Yourself
+
+Before the next session: get a REPL open, type the three blocks above, and then write `(define double (lambda (n) (* n 2)))` and call it.  Bring the one expression that would not evaluate.  Debugging in the REPL is the exercise, and next session assumes you have already met the parentheses.
+
+---
+
+# Part V: Synthesis and Practice
 
 ## Runnable: Four Feature Choices, Measured on Both Axes (At Home)
 
@@ -442,9 +579,9 @@ for obj in [Duck(), Dog(), Rock()]:
 
 ### Critical Thinking Questions
 
-5.  For each of the four "feature choices" in the cell, identify which criterion it improves and which it weakens, using the vocabulary (readability/writability/reliability/cost).
-6.  The list comprehension and `for`-loop produce identical results.  A new programmer finds the loop more readable; an experienced Python programmer finds the comprehension more readable.  What does this asymmetry reveal about readability as a criterion: is it absolute or relative to the reader?
-7.  Duck typing (`make_sound`) defers the `Rock` error until `make_sound(Rock())` is actually called.  In a large program, how far might that call be from the assignment `thing = Rock()`?  Connect this to the "hidden path" problem from the types module.
+12.  For each of the four "feature choices" in the cell, identify which criterion it improves and which it weakens, using the vocabulary (readability/writability/reliability/cost).
+13.  The list comprehension and `for`-loop produce identical results.  A new programmer finds the loop more readable; an experienced Python programmer finds the comprehension more readable.  What does this asymmetry reveal about readability as a criterion: is it absolute or relative to the reader?
+14.  Duck typing (`make_sound`) defers the `Rock` error until `make_sound(Rock())` is actually called.  In a large program, how far might that call be from the assignment `thing = Rock()`?  Connect this to the "hidden path" problem from the types module.
 
 
 ## 4.  Exercises
@@ -452,7 +589,7 @@ for obj in [Duck(), Dog(), Rock()]:
 1.  *Criteria audit.*  Choose one feature of a language you know (Python indentation blocks, Java checked exceptions, C pointers, JavaScript `==` coercion).  Write a half-page evaluation through all four lenses, ending with a verdict: keep, modify, or remove, and why.
 2.  *Scorecard draft.*  Create your team's language-design scorecard: the four criteria as rows, with a sentence per row stating what your language will prioritize and what it will knowingly sacrifice.  This scorecard reappears in your project proposal.
 3.  *Holy war defusal.*  Find one online "language X versus Y" argument and translate its two loudest claims into this framework.  Does the disagreement survive translation, or does it dissolve into different weightings of the same criteria?
-4.  *Null policy.*  Write a 150-word statement for your project's SEMANTICS.md documenting your language's policy on absent values: what type/value represents absence, what happens when the programmer dereferences it, and which of the three designs from Model 2 you are choosing and why.
+4.  *Null policy.*  Write a 150-word statement for your project's SEMANTICS.md documenting your language's policy on absent values: what type/value represents absence, what happens when the programmer dereferences it, and which of the three designs from Model 3 you are choosing and why.
 5.  *Coercion matrix.*  Build a 4×4 matrix (types: int, float, string, bool) showing which of the 16 pairwise `+` operations your language will allow, which will coerce, and which will error.  For each allowed coercion, state the reliability risk.
 
 ---
@@ -474,4 +611,4 @@ In your notebook: recall the language feature that most confused you as a beginn
 
 ---
 
-Up next: the *Syntax and BNF/EBNF* activity begins the formal machinery: writing down, precisely, what programs are allowed to look like.
+Up next: *Functional Programming in Scheme, Part 2*, where we stay in the parentheses long enough for them to stop being strange, and write the recursion, composition, and closures that the paradigm is actually made of.

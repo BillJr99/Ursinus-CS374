@@ -6,7 +6,7 @@ title: "CS374: Participation Exercises - Regular Expressions and Finite Automata
 info:
   coursenum: CS374
   purpose: "To hold a regular expression and the machine that recognizes it in your head at the same time."
-  submission: "Nothing to upload.  Please bring your attempt, and the one step that stopped you, to the Regular Expressions (Day 1 of 2): Theory session.  These count toward the 15% Class Activities and Participation component, and correctness is not the standard."
+  submission: "Nothing to upload.  Please bring your attempt, and the one step that stopped you, to the Regular Expressions session.  These count toward the 15% Class Activities and Participation component, and correctness is not the standard."
 
 tags:
   - resource
@@ -29,4 +29,4 @@ Bring the construction even if it stalled, and mark the subset-construction step
 
 - [Participation Exercises]({{ site.baseurl }}/Assignments/ParticipationExercises): the full bank, and the other units.
 - [Preparing for Each Class]({{ site.baseurl }}/Participation/PreparingForClass): the routine these exercises fit into, and the participation rubric.
-- [Regular Expressions (Day 1 of 2): Theory]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-regex.md): the activity deck for the session these exercises prepare you for.
+- [Regular Expressions]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-regex.md): the activity deck for the session these exercises prepare you for.

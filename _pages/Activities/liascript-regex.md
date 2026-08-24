@@ -12,7 +12,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 -->
 
-# Regular Expressions (Day 1 of 2): Theory
+# Regular Expressions
 
 Regular expressions sit at the formal foundation of every programming language: they are the notation that defines what a *token* looks like before a parser ever sees it.  Think of a regex as a cookie cutter.  It describes a precise shape that can stamp out any number of matching strings from the dough of possible input, without caring what flavor the dough is.  Because a single pattern can describe an infinite set of strings (every valid identifier, say), regular expressions give language designers a compact, mathematically grounded way to specify lexical rules.
 
@@ -474,4 +474,4 @@ Write a paragraph about another finite description of an infinite set that you r
 
 ---
 
-> **Continued next session.**  Day 2 takes these patterns into Python and then finds their edge: [Regular Expressions, Day 2: Practice](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-regex-day2.md).
+> **Where the practice went.**  Everything that used to be a second day of this activity, Python's `re` in five verbs, watching the engine backtrack, and the one-pattern scanner, is now the first half of the [Lab: Regex Workshop](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/RegexWorkshop), handed out today.  It is written as a walkthrough: run every cell, then vary it.

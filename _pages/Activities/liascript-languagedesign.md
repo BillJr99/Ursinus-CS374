@@ -1226,4 +1226,4 @@ In your notebook: you have criticized languages all semester; today you became a
 
 ---
 
-Up next: the *Closures and First-Class Functions* activity supplies the last mechanism your evaluator needs, and from here the Team Language Project's sprints carry you to Demo Day.  Come back to the feature menu at the end of each sprint: the honest question is not which features are exciting, it is which ones you have time to implement well.
+Up next: *Lambda Calculus I* goes to the theory floor beneath the functional programming you did in September, and *Closures and First-Class Functions* later supplies the last mechanism your evaluator needs.  From here the Team Language Project's sprints carry you to Demo Day.  Come back to the feature menu at the end of each sprint: the honest question is not which features are exciting, it is which ones you have time to implement well.

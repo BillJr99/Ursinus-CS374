@@ -731,4 +731,4 @@ In your notebook: you have now run a program in a language whose every component
 
 ---
 
-Up next: the *Binding and Scope* activity confronts the first crack in this evaluator (one flat dictionary of variables) and together they anchor the Interpreter assignment.
+Up next: the *Control Flow and Statement Semantics* activity finishes the evaluator by pinning down which code runs and in what order; *Binding and Scope* follows it and confronts the first crack in this design, the single flat dictionary of variables.  Together the three anchor the Interpreter assignment.

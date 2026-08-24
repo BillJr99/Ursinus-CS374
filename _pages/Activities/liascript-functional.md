@@ -28,9 +28,11 @@ By the end of this activity, you will be able to:
 - Read Scheme's one syntactic form and explain why a language whose programs are already trees needs almost no parser
 - Write a macro: a function that takes a program as data, returns a different program, and hands it back to the evaluator
 
-With the interpreter core complete through *Control Flow Semantics*, the course turns from building languages to inhabiting one paradigm deeply.  We practice **functional programming** in Python (`lambda`, `map`, `filter`, `reduce`) with the discipline of **purity** and **immutability**, because the functional toolkit is both a daily professional skill (data pipelines, modern Java/JavaScript/Rust) and the bridge to the lambda calculus ahead.  We finish in Scheme, where the paradigm is native and where a program is literally a list you can take apart.
+This is the third and last of the sessions that open the term inside one paradigm.  You met the paradigms and typed your first s-expressions on Day 2, and spent Day 3 writing real Scheme.  Today we bring the same ideas home to **Python** (`lambda`, `map`, `filter`, `reduce`) with the discipline of **purity** and **immutability**, because the functional toolkit is both a daily professional skill (data pipelines, modern Java, JavaScript, and Rust) and the bridge to the lambda calculus in November.  We end where Scheme is strangest and most instructive: a program that is literally a list you can take apart and rewrite.
 
 Arc: **purity and why it pays -> the big three combinators -> higher-order thinking -> currying and partial application -> recursion without loops -> code as data**
+
+Everything in this deck is Python except Part V, which returns to the Scheme you have been writing since Day 2.  Nothing here assumes the parser, the interpreter, or the type checker you build later in the term; where those come up, they are previews.
 
 > **Before You Begin:** This activity assumes you can:
 > - Write and call Python functions, including functions that take other functions as arguments
@@ -748,6 +750,108 @@ print(f"mergesort([5,2,8,1,9,3]) = {mergesort([5,2,8,1,9,3])}")
 
 ---
 
+## Model 5: Recursion in a Single Expression
+
+Everything above was Python written in a functional *style*.  Here is the same recursion with nowhere left to hide: no `def`, no statement, no name except the one the lambda needs to call itself.
+
+```python
+# Define sumlist using a lambda and recursion.  This is the Scheme
+# definition from the last session, transliterated one symbol at a time:
+#
+#   (define sumlist (lambda (L) (if (null? (cdr L)) (car L) (+ (car L) (sumlist (cdr L))))))
+#
+# L[0] is (car L); L[1:] is (cdr L); len(L) == 1 is (null? (cdr L)).
+
+sumlist = lambda L: L[0] if len(L) == 1 else L[0] + sumlist(L[1:])
+
+print(f"  sumlist([1, 2, 3])        = {sumlist([1, 2, 3])}")
+print(f"  sumlist([4])              = {sumlist([4])}")
+print(f"  sumlist(list(range(101))) = {sumlist(list(range(101)))}")
+
+# The same shape, with the operator lifted out into a parameter.  This is
+# oplist from the Scheme session, and it is also reduce with the argument
+# order rearranged.
+oplist = lambda op, L: L[0] if len(L) == 1 else op(L[0], oplist(op, L[1:]))
+
+import operator
+print()
+print(f"  oplist(add, [2, 4, 6])    = {oplist(operator.add, [2, 4, 6])}")
+print(f"  oplist(mul, [2, 4, 6])    = {oplist(operator.mul, [2, 4, 6])}")
+print(f"  oplist(max, [2, 9, 6])    = {oplist(max, [2, 9, 6])}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- The conditional expression `a if test else b` is Python's `if` *as an expression*, which is the only kind Scheme has.  That is why the transliteration is symbol for symbol.
+- `sumlist` refers to itself by name inside its own body, which works because the name is bound before the lambda is ever called.  This is also the reason the lambda calculus needs the Y combinator: strip the name away and recursion becomes genuinely hard.
+- `oplist` is `sumlist` with the operator promoted to a parameter, and once you see that, `reduce` stops being a library function you memorize and becomes a shape you recognize.
+
+### Critical Thinking Questions
+
+1.  What does this code do?  How does it do it?
+2.  What are the advantages of programming this way?
+
+---
+
+## Model 6: Purity Buys Parallelism
+
+Part I claimed that pure functions parallelize safely because there is no shared state to protect.  Here is that claim as code you can time.  Nothing below takes a lock, and nothing needs one.
+
+```python
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from functools import reduce
+import operator, time
+
+# A pure function: it does not depend on or modify any shared state.
+def factorial(n):
+    return reduce(operator.mul, range(1, n + 1), 1)
+
+# Another pure function, built from the first.
+def sum_of_factorials(numbers):
+    return sum(map(factorial, numbers))
+
+def run(numbers, workers):
+    start = time.perf_counter()
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        futures = {executor.submit(factorial, n): n for n in numbers}
+        results = {}
+        for future in as_completed(futures):
+            n = futures[future]
+            try:
+                results[n] = future.result()
+            except Exception as exc:
+                print(f"  factorial of {n} raised {exc}")
+    return time.perf_counter() - start, results
+
+numbers = [5, 7, 10, 12, 15]
+for workers in (1, 2, 4, 8):
+    elapsed, results = run(numbers, workers)
+    print(f"  {workers} worker(s): {elapsed * 1000:7.2f} ms")
+
+_, results = run(numbers, 4)
+print()
+print(f"  factorials:        { {n: results[n] for n in sorted(results)} }")
+print(f"  sum of factorials: {sum_of_factorials(numbers)}")
+print()
+print("  No locks, no ordering constraints, no shared mutable state.  The only")
+print("  reason this is safe is that factorial is pure.  Make it write to a")
+print("  global and every one of those guarantees evaporates.")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- `as_completed` hands back results in whatever order they finish, which is *fine* here: each call is independent, so order carries no meaning.  That is a property of purity, not of the executor.
+- The results come back into a dict keyed by input, so the answer is reproducible even though the schedule is not.  Pure function plus deterministic key equals deterministic output.
+- Watch the timings carefully before you conclude anything about speed.  These factorials are small, and Python threads share one interpreter lock; the *safety* is real, the *speedup* here mostly is not.  Question 3 is about that gap.
+
+### Critical Thinking Questions
+
+3.  Time the following program for various numbers of threads and values for `numbers`.  What do you notice?  Then say which part of your answer is about purity and which part is about Python.
+
+---
+
 # Part V: Code as Data
 
 ## 7.  Everything Is (operator operands...)
@@ -761,28 +865,30 @@ print(f"mergesort([5,2,8,1,9,3]) = {mergesort([5,2,8,1,9,3])}")
 (lambda (x) (* x x))
 ```
 
-**Notice what vanished.**  No precedence (prefix notation needs none: the tree is explicit in the nesting), no associativity rules, no statement-versus-expression divide (everything is an expression with a value).  Your ambiguity module's entire ladder grammar exists to recover, for infix notation, the tree that Scheme's syntax simply *is*.  The parentheses are the AST, written by hand.
+**Notice what vanished.**  No precedence (prefix notation needs none: the tree is explicit in the nesting), no associativity rules, no statement-versus-expression divide (everything is an expression with a value).  The parentheses *are* the tree, written by hand.
+
+Bank that.  Starting next week this course spends most of a month on the machinery that recovers exactly that tree from flat infix text: grammars, then derivations and ambiguity, then a precedence ladder, then a recursive descent parser, then the **abstract syntax tree** the parser finally hands to an interpreter.  Every piece of it exists because `2 + 3 * 4` does not say what it means.  When you meet the ladder grammar in September, come back to this page.
 
 ---
 
-This model makes the connection between Scheme's syntax and the Abstract Syntax Trees you have been building in Python explicit.  In Python, a parser works hard to transform the flat text `2 + 3 * 4` into a tree that captures precedence; in Scheme, the programmer simply *writes* the tree directly as nested parentheses.  Model 5 asks you to feel the difference by doing the translation yourself.
+In Python, a parser has to work hard to turn the flat text `2 + 3 * 4` into a tree that captures precedence.  In Scheme, the programmer simply *writes* the tree.  Model 7 asks you to feel the difference by doing the translation yourself, before you have written a line of the parser it makes unnecessary.
 
-## Model 5: Trees Without a Parser
+## Model 7: Trees Without a Parser
 
 ### Critical Thinking Questions
 
-1.  Translate `2 + 3 * 4` and `(2 + 3) * 4` into Scheme.  Which required parentheses beyond the operators' own, and why does the question almost not make sense?
-2.  Draw the AST your CS374 parser builds for `2 + 3 * 4`, then write the Scheme expression beside it.  State the relationship in one sentence; it is the punchline of the day.
-3.  A Scheme "lexer" needs roughly four token types.  Name them, and explain what a Scheme "parser" does that your recursive descent parser did not have to sweat (hint: almost nothing; nesting is explicit).
-4.  What did Scheme's designers *pay* for this uniformity, in the *Evaluating Languages* criteria?  (Ask anyone who has counted parentheses.)
+4.  Translate `2 + 3 * 4` and `(2 + 3) * 4` into Scheme.  Which required parentheses beyond the operators' own, and why does the question almost not make sense?
+5.  Draw, by hand, the tree that `2 + 3 * 4` *means*: the multiplication has to happen first, so it hangs below the addition.  Now write the Scheme expression beside your drawing and state the relationship in one sentence.  Keep the page; in October you will build a parser whose entire output is that drawing.
+6.  A Scheme "lexer" needs roughly four token types.  Name them.  Then predict what a Scheme "parser" would have to do, given that the nesting is already explicit in the text.
+7.  What did Scheme's designers *pay* for this uniformity, in the four criteria from *Programming Paradigms, Evaluating Languages, and an Introduction to Functional Programming*?  (Ask anyone who has counted parentheses.)
 
 ---
 
 ## 8.  The Big Idea: Homoiconicity
 
-`'(+ 1 2)` is a list whose first element is the symbol `+`: **the program is a data structure the language itself manipulates**, and `(eval '(+ 1 2))` runs it.  This property, **homoiconicity**, is why Lisp dialects have **macros**: functions that receive *code as lists*, transform it, and hand the result back to the evaluator, which is your `for`-loop desugaring exercise, except performed by user programs rather than by the language implementer.  The AST you carefully constructed in Python with classes is, in Scheme, just... the list you typed.
+`'(+ 1 2)` is a list whose first element is the symbol `+`: **the program is a data structure the language itself manipulates**, and `(eval '(+ 1 2))` runs it.  This property, **homoiconicity**, is why Lisp dialects have **macros**: functions that receive *code as lists*, transform it, and hand the result back to the evaluator.  The abstract syntax tree that most languages make you construct out of classes is, in Scheme, just the list you typed.
 
-## Model 6: Homoiconicity, Executed
+## Model 8: Homoiconicity, Executed
 
 The claim above is easy to nod at and hard to feel.  Here it is as code you can run.  A Scheme program is a list; we represent it as a Python list, evaluate it, and then write a **macro**: an ordinary function that takes a program as data, returns a different program as data, and hands it back to the evaluator.
 
@@ -865,9 +971,9 @@ print("  between you and it. That is homoiconicity, and macros are the payoff.")
 
 ### Reading the Code
 
-- `sch_eval` is about twenty lines and needs no parser.  The whole *Recursive Descent Parsing* session exists because most languages do not hand you the tree; Scheme does, which is what the One Syntax Rule buys.
+- `sch_eval` is about twenty lines and needs no parser.  The *Recursive Descent Parsing* session in October exists because most languages do not hand you the tree; Scheme does, which is what the One Syntax Rule buys.
 - `quote` is the only form that returns its argument untouched.  Everything else recurses.  That one special case is the door between program and data, in both directions.
-- `unless_macro` is an *ordinary function*.  It takes a list, returns a list, and the evaluator never knows a macro was involved.  Compare with adding `unless` to your own interpreter, which would mean a new AST node, a parser change, and an evaluator branch.
+- `unless_macro` is an *ordinary function*.  It takes a list, returns a list, and the evaluator never knows a macro was involved.  Hold that against what adding `unless` will cost you in the interpreter you build this term: a new AST node, a parser change, and an evaluator branch.
 - `count_nodes` works on programs for the same reason it would work on any nested list: there is no difference between the two.
 
 > **Watch out!**  Homoiconicity is not "Lisp has `eval`."  Python has `eval` too, and it takes a *string* that must be parsed.  The Scheme property is that the program is already the data structure the evaluator consumes, so transforming code needs no parsing and no printing back to text. That is why Lisp macros compose and string-based code generation does not.
@@ -1018,61 +1124,17 @@ Compute the average word length of a paragraph using **exactly one expression**,
 
 # Extension: Going Further with Scheme
 
-> Past the 75 minutes.  Nothing in class assumes any of it, and none of it is on an assignment unless you take the Scheme direction on the Functional assignment, in which case start here.  The Scheme cells want a Racket REPL; the Python cells run in the page as usual.
+> Past the 75 minutes.  Nothing in class assumes any of it.  Read it if the Scheme assignment left you wanting more, or later in the term if you take the Scheme direction on the Functional assignment.  The Scheme cells want a real REPL; the Python cells run in the page as usual.
 
-## 9.  Recursion Is the Loop
+## 9.  Where This Picks Up
 
-Scheme has no `while`; iteration is recursion, usually on lists, which are built from `cons` cells and dissected with `car` (first element) and `cdr` (the rest):
+You already wrote recursion over `car` and `cdr` in *Functional Programming in Scheme, Part 2*, and the base-case-plus-recursive-case shape you used there is the same one `my_reduce` used above and the same one `evaluate` will use when it walks an AST in October.  This extension starts where that session stopped: what recursion *costs*, how Scheme's scoping forms differ, and how to build code out of lists on purpose.
 
-> **Watch out!** `car` and `cdr` are Scheme's names for what most languages call `head` and `tail` (or `first` and `rest`).  The names are historical accidents from 1950s IBM hardware register names.  When you see `(car lst)` think "give me the first element"; when you see `(cdr lst)` think "give me everything except the first element."  Calling `car` or `cdr` on an empty list `'()` is a runtime error; always check `(null? lst)` first in your base case.
-
-```scheme
-(define (sum lst)
-  (if (null? lst)
-      0
-      (+ (car lst) (sum (cdr lst)))))
-
-(sum '(1 2 3 4 5))    ; 15
-
-(define (my-map f lst)
-  (if (null? lst)
-      '()
-      (cons (f (car lst)) (my-map f (cdr lst)))))
-
-(my-map (lambda (x) (* x x)) '(1 2 3))   ; (1 4 9)
-```
-
-The base-case-plus-recursive-case shape is the same one your `my_reduce` exercise used, and the same shape as `evaluate` walking an AST: *the* functional pattern.
-
----
-
-Model 7 is where recursion becomes your only loop.  Every pattern you know from Python `for`-loops (mapping a function over a list, filtering elements, accumulating a sum) can be expressed as a short recursive function that peels one element off the front of a list, does something with it, and recurs on the rest.  Watch how `car` grabs the head and `cdr` returns the tail; those two operations are the entire engine.
-
-## Model 7: Run and Vary
-
-### Critical Thinking Questions
-
-5.  Trace `(sum '(1 2 3))` by hand, writing every call and return.  Where does the addition for `1` actually happen: on the way down or the way back up?
-6.  Write `(my-filter pred lst)` following the `my-map` template; predict its output on `(my-filter odd? '(1 2 3 4 5))` and verify.  Which line differs structurally from `my-map`?
-
-> **Watch out!**  Forgetting the quote `'` before a list literal is the single most common Scheme beginner error.  Writing `(1 2 3)` tells Scheme: "call the function named `1` with arguments `2` and `3`."  Since `1` is not a function, you get an error like `application: not a procedure`.  Always write `'(1 2 3)` when you mean a list of data, not a function call.
-
-7.  The quote in `'(1 2 3)` says "data, do not evaluate."  Predict the difference between `(1 2 3)` and `'(1 2 3)` at the prompt; verify; explain the error message in terms of the One Syntax Rule.
-
-In Scheme, the expression `(+ 1 2)` and the quoted form `'(+ 1 2)` differ in that:
-
-[( )] The first is a list and the second is a number
-[(X)] The first evaluates to 3, while the second is a three-element list (the unevaluated program itself, as data)
-[( )] The second contains a syntax error
-[( )] They are identical in every context
-
----
-
-Model 8 explores one of the most practically important differences between Scheme and Python: what happens when recursion goes very deep.  Scheme guarantees that a tail-recursive function uses no more stack space than a simple loop, so algorithms that are naturally recursive (like traversing a million-element list) are not just elegant but efficient.  Python offers no such guarantee, which is why Python programmers reach for `for`-loops even when recursion would be cleaner.
+Model 9 explores one of the most practically important differences between Scheme and Python: what happens when recursion goes very deep.  Scheme guarantees that a tail-recursive function uses no more stack space than a simple loop, so algorithms that are naturally recursive (like traversing a million-element list) are not just elegant but efficient.  Python offers no such guarantee, which is why Python programmers reach for `for`-loops even when recursion would be cleaner.
 
 > **Watch out!** `define` in Scheme is not assignment in the imperative sense.  Writing `(define x 5)` does not create a mutable variable you update later; it introduces a name binding in the current environment.  In functional Scheme style, you do not reassign `x`; instead, you pass updated values forward as function arguments (hence the accumulator pattern in tail recursion).  If you find yourself wanting to write `(set! x (+ x 1))` inside a loop, stop and think about how to express the same idea with a recursive accumulator parameter.
 
-## Model 8: Tail Recursion, Scheme vs Python
+## Model 9: Tail Recursion, Scheme vs Python
 
 **Tail recursion** occurs when a recursive call is the *last* operation in a function: no pending work remains after the call returns.  Scheme (and Racket) *guarantee* tail-call optimization (TCO): a tail-recursive function consumes O(1) stack space.  Python does **not** perform TCO; deep tail calls still overflow the call stack.
 
@@ -1148,7 +1210,7 @@ print("Python tail calls still grow the stack unless you add a trampoline manual
 
 Model 9 zooms in on a subtle but important question: when you write several name bindings together, can each one see the others?  The three forms `let`, `let*`, and `letrec` give three different answers to that question.  Understanding the difference matters both for reading Scheme code correctly and for appreciating why Python's `def` and assignment behave the way they do.
 
-## Model 9: let, let*, and letrec
+## Model 10: let, let*, and letrec
 
 Scheme's **local binding forms** give names to intermediate values.  They differ in *when* bindings become visible:
 
@@ -1247,7 +1309,7 @@ print(f"let* swap: a={new_a_star}, b={new_b_star}  (WRONG - new_a leaked into ne
 
 Model 10 brings together everything: now that you know how Scheme evaluates expressions and how lists are constructed, you can use Scheme's quasiquoting mechanism to build lists that are *programs*, then hand them to `eval`.  This is homoiconicity made concrete and operational.  The Python simulation in the runnable cell re-implements the same ideas so you can experiment without a Racket installation.
 
-## Model 10: Quasiquoting and List Operations
+## Model 11: Quasiquoting and List Operations
 
 **Quasiquoting** (`\`` backtick) is a templating mechanism: the entire form is treated as data (like `'`), *except* that subexpressions preceded by `,` (unquote) or `,@` (unquote-splicing) are evaluated.  This is the foundation of Scheme macros and a powerful list-construction tool.
 
@@ -1358,87 +1420,15 @@ print("Expected: 4 + 16 = 20")
 
 ---
 
-## 10.  Writing Real Scheme in a REPL
+## 10.  Taking It Back to the REPL
 
-Everything above simulated Scheme semantics in Python so the cells could run here.  Now write the real thing.  **This section is the in-class hands-on:** open [try.scheme.org](https://try.scheme.org) in a browser tab; it gives you a full Scheme REPL with nothing to install.  (Alternatives: download and run the course archives [SchemeSumList.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeSumList.zip) and [QuickSortScheme.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/QuickSortScheme.zip).)
+Everything above simulated Scheme semantics in Python so the cells could run in the page.  The real thing belongs in a real REPL, and you already have one open from *Functional Programming in Scheme, Part 2*: [try.scheme.org](https://try.scheme.org), or a local install.
 
-Complete the three tasks below in actual Scheme.  Type each definition into the REPL, then run the test calls and check your output against the expected transcript.
+The **Functional Programming with Scheme** assignment is where this gets written rather than read.  If you want more than it asks for, the natural next steps are the three below.
 
-**Task 1. `sum-list` by recursion.**  Sum a list of numbers with no loop: the empty list sums to 0; otherwise add the `car` to the sum of the `cdr`.
-
-```scheme
-(define (sum-list lst)
-  (if (null? lst)
-      0
-      (+ (car lst) (sum-list (cdr lst)))))
-```
-
-Expected transcript:
-
-```text
-> (sum-list '(1 2 3 4 5))
-15
-> (sum-list '())
-0
-> (sum-list '(10 -10 7))
-7
-```
-
-**Task 2. `my-map` from `cons`/`car`/`cdr`.**  Rebuild `map` yourself: apply `f` to the `car`, `cons` the result onto the mapped `cdr`.
-
-```scheme
-(define (my-map f lst)
-  (if (null? lst)
-      '()
-      (cons (f (car lst)) (my-map f (cdr lst)))))
-```
-
-Expected transcript:
-
-```text
-> (my-map (lambda (x) (* x x)) '(1 2 3 4))
-(1 4 9 16)
-> (my-map car '((a 1) (b 2) (c 3)))
-(a b c)
-> (my-map (lambda (x) (+ x 1)) '())
-()
-```
-
-**Task 3. a two-branch `cond`.**  Write `classify`, which returns the symbol `negative` for numbers below zero and `non-negative` otherwise, using `cond` with exactly two branches (a test branch and an `else` branch).
-
-```scheme
-(define (classify n)
-  (cond ((< n 0) 'negative)
-        (else    'non-negative)))
-```
-
-Expected transcript:
-
-```text
-> (classify -3)
-negative
-> (classify 7)
-non-negative
-> (classify 0)
-non-negative
-> (my-map classify '(-2 0 5))
-(negative non-negative non-negative)
-```
-
-If any output differs from the transcript, read the REPL's error message aloud to your group and fix the definition before moving on; debugging in the REPL *is* the exercise.
-
----
-
-### Scheme Exercises
-
-1.  *Warmups.*  Define and test: `(double x)`, `(average a b)`, `(my-length lst)` recursively, and `(count-if pred lst)`.
-2.  *The translation suite.*  Port your exercises from the *Functional Programming* activity to Scheme: the product of odds (use your `my-filter` plus a recursive `product`), and word-count's shape `(my-reduce + 0 (my-map (lambda (w) 1) ws))`.  Note which felt more natural in which language, honestly.
-3.  *Trees, of course.*  Represent your CS374 AST in Scheme as nested lists, like `'(* (+ 2 3) 4)`, and write `(evaluate tree)` for `+ - * /` in fifteen lines.  You have now written your interpreter twice; compare line counts and explain the difference in one sentence.
-4.  *Quote experiments.*  Using `car`, `cdr`, and `cons` on `'(define (square x) (* x x))`, extract the function name, the parameter list, and the body.  You are manipulating a program with a program; say so out loud.
-
----
-
----
+1.  *Trees, of course.*  Represent an arithmetic expression in Scheme as nested lists, like `'(* (+ 2 3) 4)`, and write `(evaluate tree)` for `+ - * /` in about fifteen lines.  Keep it: in October you will write the parser whose whole job is to *build* that list from the flat text `(2 + 3) * 4`, and comparing the two line counts is the punchline of the front half of this course.
+2.  *Quote experiments.*  Using `car`, `cdr`, and `cons`, take apart the list `'(+ 1 2)` and rebuild it as `'(* 1 2)`.  You have just written a program transformer, which is all a macro is.
+3.  *Tail calls for real.*  Write a tail-recursive `sum` with an accumulator and run it on a list of one million elements.  It will finish in Scheme.  Try the same depth in Python and read the traceback.
 
 ### Check Yourself on Tail Calls
 
@@ -1507,4 +1497,6 @@ Purity forbids a function from leaving traces on the world: which makes it trust
 
 ---
 
-Up next: *Language Design Workshop* turns all of this on a language of your own.  Everything here, purity through code as data, is the core of the Functional assignment.
+Up next: *Syntax and BNF/EBNF*, where we stop writing programs and start writing down, precisely, what a program is allowed to look like.  That is the machinery Scheme almost does without, and the machinery your own language will need.
+
+Everything in these three sessions, purity through code as data, comes back twice: in the **Functional Programming with Scheme** assignment handed out next week, and in the Functional Programming assignment in November.

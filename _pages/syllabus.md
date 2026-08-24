@@ -238,7 +238,7 @@ schedule:
     rlink: "https://www.billmongan.com/Ursinus-CS374-Overview"
 - week: "0"
   date: "1"
-  title: "Programming Paradigms and Evaluating Languages"
+  title: "Programming Paradigms, Evaluating Languages, and Introduction to Functional Programming"
   link: "Activities/liascript-languageevaluation.md"
   liapage: true
   deliverables:
@@ -259,6 +259,33 @@ schedule:
     rlink: "Tutorials/CompilingAndLinking"
 - week: "1"
   date: "0"
+  title: "Functional Programming in Scheme, Part 2"
+  link: "Activities/liascript-scheme.md"
+  liapage: true
+  readings:
+  - rtitle: "Continues Part 1.  Please have Scheme running before class, either installed locally or open in a browser tab at try.scheme.org, and bring the expression that would not evaluate."
+    rlink: false
+  - rtitle: "The Scheme Programming Language (Dybvig), Chapter 2: Getting Started"
+    rlink: "https://www.scheme.com/tspl3/start.html"
+  - rtitle: "Closures in Scheme (Andy Balaam)"
+    rlink: "https://www.artificialworlds.net/presentations/scheme-03-closures/scheme-03-closures.html"
+- week: "1"
+  date: "1"
+  title: "Functional Programming and Higher-Order Functions"
+  link: "Activities/liascript-functional.md"
+  liapage: true
+  deliverables:
+  - dtitle: "Participation: Exercise - Functional Programming and Higher-Order Functions Handed Out"
+    dlink: "Assignments/ParticipationExercises/FunctionalProgramming"
+  readings:
+  - rtitle: "In-class taste: the declarative paradigm in Prolog, a 15-minute SWISH warm-up (facts, rules, a query that backtracks).  Previews the Functional assignment's Logic Programming direction"
+    rlink: "https://swish.swi-prolog.org/"
+  - rtitle: "The Power of Prolog (Markus Triska)"
+    rlink: "https://www.metalevel.at/prolog"
+  - rtitle: "Haskell Essentials"
+    rlink: "Tutorials/HaskellEssentials"
+- week: "2"
+  date: "0"
   title: "Syntax and BNF/EBNF"
   link: "Activities/liascript-syntaxbnf.md"
   liapage: true
@@ -270,9 +297,17 @@ schedule:
     dlink: "Assignments/BNFWorkshop"
     points: "15"
     rubricpath: "_pages/Assignments/lab-bnfworkshop.md"
+  - dtitle: "Participation: Overview Assignment Due"
+    dlink: "Assignments/Overview"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-overview.md"
+  - dtitle: "Programming Assignment: Functional Programming with Scheme Handed Out"
+    dlink: "Assignments/Scheme"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-scheme.md"
   readings:
   - rtitle: "Allison, Ch. 6 §6.1: Context-Free Grammars and Derivations"
-- week: "1"
+- week: "2"
   date: "1"
   title: "Grammars and the Chomsky Hierarchy (Day 1 of 2)"
   link: "Activities/liascript-grammars.md"
@@ -283,31 +318,32 @@ schedule:
   readings:
   - rtitle: "Allison, Ch. 9 §9.3: The Chomsky Hierarchy"
   - rtitle: "Allison, Ch. 6 §6.1: Context-Free Grammars and Derivations"
-- week: "2"
+- week: "3"
   date: "0"
   title: "Grammars, Day 2: Writing Context-Free Grammars"
   link: "Activities/liascript-grammars-day2.md"
   liapage: true
+  deliverables:
+  - dtitle: "Programming Assignment: Functional Programming with Scheme Due"
+    dlink: "Assignments/Scheme"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-scheme.md"
   readings:
   - rtitle: "Continues Day 1.  Bring the grammar you drafted; we build on it."
     rlink: false
-- week: "2"
+- week: "3"
   date: "1"
   title: "Derivations, Parse Trees, Ambiguity, and Precedence"
   link: "Activities/liascript-derivationsambiguity.md"
   liapage: true
   deliverables:
-  - dtitle: "Participation: Overview Assignment Due"
-    dlink: "Assignments/Overview"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-overview.md"
   - dtitle: "Participation: Exercise - Derivations, Parse Trees, Ambiguity, and Precedence Handed Out"
     dlink: "Assignments/ParticipationExercises/DerivationsAndAmbiguity"
   readings:
   - rtitle: "Allison, Ch. 6 §6.2: Derivation Trees and Ambiguous Grammars (Operator Precedence and Associativity)"
-- week: "3"
+- week: "4"
   date: "0"
-  title: "Regular Expressions (Day 1 of 2): Theory"
+  title: "Regular Expressions"
   link: "Activities/liascript-regex.md"
   liapage: true
   deliverables:
@@ -330,29 +366,16 @@ schedule:
   - rtitle: "Allison, Ch. 4: The Pumping Lemma, proving a language is not regular (required for the Regex assignment's Part 4 theory questions; we work one example in class today)"
   - rtitle: "The Shell for Language Development, the grep section, which puts today's patterns to work on your own source tree"
     rlink: "Tutorials/ShellForLanguageDev"
-- week: "3"
-  date: "1"
-  title: "Regular Expressions, Day 2: Practice"
-  link: "Activities/liascript-regex-day2.md"
-  liapage: true
-  readings:
-  - rtitle: "Continues Day 1.  Please bring a regex you could not get working, and we will debug it against the backtracking model."
-    rlink: false
 - week: "4"
-  date: "0"
+  date: "1"
   title: "Finite Automata (Day 1 of 2): DFAs"
   link: "Activities/liascript-automata.md"
   liapage: true
-  deliverables:
-  - dtitle: "Lab: Regex Workshop Due"
-    dlink: "Assignments/RegexWorkshop"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-regexworkshop.md"
   readings:
   - rtitle: "Allison, Ch. 2 §2.1-2.2: Deterministic and Non-Deterministic Finite Automata"
   - rtitle: "Allison, Ch. 4 §4.2: Decision Algorithms (Is the Language Empty?)"
-- week: "4"
-  date: "1"
+- week: "5"
+  date: "0"
   title: "Finite Automata, Day 2: Nondeterminism and Equivalence"
   link: "Activities/liascript-automata-day2.md"
   liapage: true
@@ -361,19 +384,19 @@ schedule:
     dlink: "Assignments/Automata"
     points: "15"
     rubricpath: "_pages/Assignments/lab-automata.md"
+  - dtitle: "Lab: Regex Workshop Due"
+    dlink: "Assignments/RegexWorkshop"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-regexworkshop.md"
   readings:
   - rtitle: "Continues Day 1.  Bring your hand-traced DFA from last session."
     rlink: false
 - week: "5"
-  date: "0"
+  date: "1"
   title: "Tokens and Scanning: Building a Lexer"
   link: "Activities/liascript-tokensscanning.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Regular Expressions Due"
-    dlink: "Assignments/Regex"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-regex.md"
   - dtitle: "Programming Assignment: Build a Lexer Handed Out"
     dlink: "Assignments/Lexer"
     points: "100"
@@ -382,18 +405,22 @@ schedule:
     dlink: "Assignments/ParticipationExercises/TokensAndScanning"
   readings:
   - rtitle: "Allison, Ch. 2 §2.4: Machines with Output, Lexical Analysis"
-- week: "5"
-  date: "1"
+- week: "6"
+  date: "0"
   title: "Abstract Syntax Trees"
   link: "Activities/liascript-ast.md"
   liapage: true
   deliverables:
   - dtitle: "Participation: Exercise - Abstract Syntax Trees Handed Out"
     dlink: "Assignments/ParticipationExercises/AbstractSyntaxTrees"
+  - dtitle: "Programming Assignment: Regular Expressions Due"
+    dlink: "Assignments/Regex"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-regex.md"
   readings:
   - rtitle: "Allison, Ch. 6 §6.2: Expression Trees, Operator Precedence, and Associativity"
-- week: "6"
-  date: "0"
+- week: "7"
+  date: "1"
   title: "Recursive Descent Parsing: From Grammar to Code"
   link: "Activities/liascript-recursivedescent.md"
   liapage: true
@@ -407,8 +434,8 @@ schedule:
   readings:
   - rtitle: "Parser Combinators (Parsers as First-Class Values)"
     rlink: "Tutorials/ParserCombinators"
-- week: "7"
-  date: "1"
+- week: "8"
+  date: "0"
   title: "Parsing Expressions: Left Factoring, Precedence, and Chained Comparisons"
   link: "Activities/liascript-parsingexpressions.md"
   liapage: true
@@ -421,7 +448,7 @@ schedule:
   - rtitle: "For the Parser assignment (Step 3e): Property-Based Testing with Hypothesis, covering the round-trip property and how to shrink a failing case"
     rlink: "Tutorials/PropertyBasedTesting"
 - week: "8"
-  date: "0"
+  date: "1"
   title: "Table-Driven and LR Parsing"
   link: "Activities/liascript-parsertable.md"
   liapage: true
@@ -437,8 +464,8 @@ schedule:
   readings:
   - rtitle: "Allison, Ch. 5: Pushdown Automata, Adding a Stack to Finite Automata"
   - rtitle: "Allison, Ch. 6 §6.3: Equivalence of PDAs and Context-Free Grammars"
-- week: "8"
-  date: "1"
+- week: "9"
+  date: "0"
   title: "Tree-Walking Interpretation (Day 1 of 2): Evaluating the AST"
   link: "Activities/liascript-interpretation.md"
   liapage: true
@@ -462,7 +489,7 @@ schedule:
   - rtitle: "PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer and Parser assignments)"
     rlink: "Tutorials/PLYLexerAndParser"
 - week: "9"
-  date: "0"
+  date: "1"
   title: "Control Flow and Statement Semantics (Interpretation, Day 2)"
   link: "Activities/liascript-controlflowsemantics.md"
   liapage: true
@@ -473,8 +500,8 @@ schedule:
     rlink: "Tutorials/PropertyBasedTesting"
   - rtitle: "CI and TDD for Interpreters"
     rlink: "Tutorials/CITDDForInterpreters"
-- week: "9"
-  date: "1"
+- week: "10"
+  date: "0"
   title: "Binding and Scope"
   link: "Activities/liascript-bindingscope.md"
   liapage: true
@@ -493,7 +520,7 @@ schedule:
   - rtitle: "Krishnamurthi, PLAI (3rd ed.): the Stacker and SMoL Tutor, which we step through in class, and the chapters on functions, scope, and environments"
     rlink: "https://www.plai.org/"
 - week: "10"
-  date: "0"
+  date: "1"
   title: "Environments and Variable Storage"
   link: "Activities/liascript-environments.md"
   liapage: true
@@ -502,8 +529,8 @@ schedule:
     rlink: "Tutorials/BuildAnInterpreter"
   - rtitle: "Garbage Collection (Implementing Memory Management)"
     rlink: "Tutorials/GarbageCollection"
-- week: "10"
-  date: "1"
+- week: "11"
+  date: "0"
   title: "Type Systems"
   link: "Activities/liascript-types.md"
   liapage: true
@@ -526,6 +553,10 @@ schedule:
     rubricpath: "_pages/Assignments/lab-typechecker.md"
   - dtitle: "Participation: Exercise - Type Systems Handed Out"
     dlink: "Assignments/ParticipationExercises/TypeSystems"
+  - dtitle: "Lab: Environments and Scope Due"
+    dlink: "Assignments/EnvironmentsLab"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-environments.md"
   readings:
   - rtitle: "Typing Disciplines, going past today's quadrant into structural vs. nominal typing, type erasure, and algebraic data types"
     rlink: "Tutorials/TypingDisciplines"
@@ -534,25 +565,6 @@ schedule:
   - rtitle: "Allison, Ch. 10 §10.1: The Halting Problem (Why Some Questions About Programs Are Undecidable)"
   - rtitle: "Type Inference (Implementing Hindley-Milner)"
     rlink: "Tutorials/TypeInference"
-- week: "11"
-  date: "0"
-  title: "Functional Programming and Higher-Order Functions"
-  link: "Activities/liascript-functional.md"
-  liapage: true
-  deliverables:
-  - dtitle: "Lab: Environments and Scope Due"
-    dlink: "Assignments/EnvironmentsLab"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-environments.md"
-  - dtitle: "Participation: Exercise - Functional Programming and Higher-Order Functions Handed Out"
-    dlink: "Assignments/ParticipationExercises/FunctionalProgramming"
-  readings:
-  - rtitle: "In-class taste: the declarative paradigm in Prolog, a 15-minute SWISH warm-up (facts, rules, a query that backtracks).  Previews the Functional assignment's Logic Programming direction"
-    rlink: "https://swish.swi-prolog.org/"
-  - rtitle: "The Power of Prolog (Markus Triska)"
-    rlink: "https://www.metalevel.at/prolog"
-  - rtitle: "Haskell Essentials"
-    rlink: "Tutorials/HaskellEssentials"
 - week: "11"
   date: "1"
   title: "Language Design Workshop: Project Kickoff (Sprint 0)"

@@ -957,4 +957,4 @@ Then: in Model 3, the checker deduced `c : Bool` from context alone, with no ann
 
 ---
 
-Up next: *Control Flow and Statement Semantics* pins down which code runs, and the Interpreter assignment's type-checking direction builds directly on Model 2.
+Up next: the *Language Design Workshop* turns the whole term on a language of your own, and the Interpreter assignment's type-checking direction builds directly on Model 2.
