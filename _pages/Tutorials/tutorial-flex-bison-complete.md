@@ -735,9 +735,9 @@ $$
 E' \to \bullet\ E \qquad \text{(we are about to see E)}
 $$
 
-The **closure** of a set of items: if $[A \to \alpha \bullet B \beta]$ is in the set and $B \to \gamma$ is a production, add $[B \to \bullet \gamma]$.
+The **closure** of a set of items: if $$[A \to \alpha \bullet B \beta]$$ is in the set and $$B \to \gamma$$ is a production, add $$[B \to \bullet \gamma]$$.
 
-The **goto** function: $\mathrm{goto}(I, X)$ = closure of all items in $I$ where the dot is advanced over $X$.
+The **goto** function: $$\mathrm{goto}(I, X)$$ = closure of all items in $$I$$ where the dot is advanced over $$X$$.
 
 > **Watch out!**  The closure operation adds items for every production of each nonterminal that appears after a dot, including transitively.  A single starting item can generate a large closure.  Students often compute closure for only the directly referenced nonterminal and miss the transitive additions.
 

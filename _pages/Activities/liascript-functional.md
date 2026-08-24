@@ -1499,4 +1499,4 @@ Purity forbids a function from leaving traces on the world: which makes it trust
 
 Up next: *Syntax and BNF/EBNF*, where we stop writing programs and start writing down, precisely, what a program is allowed to look like.  That is the machinery Scheme almost does without, and the machinery your own language will need.
 
-Everything in these three sessions, purity through code as data, comes back twice: in the **Functional Programming with Scheme** assignment handed out next week, and in the Functional Programming assignment in November.
+Everything in these three sessions, purity through code as data, comes back twice: in the **Functional Programming with Scheme** assignment handed out today, and in the Functional Programming assignment in November.

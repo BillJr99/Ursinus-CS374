@@ -53,7 +53,7 @@ Today's path runs **get a REPL open $\rightarrow$ one syntax rule $\rightarrow$ 
 
 Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Today is hands-on, so the Manager drives the REPL and everyone predicts before running.  Please think each model through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever you disagreed or found another approach.
 
-> **How today runs.**  Parts I through III are the core.  Part III's closure model is the one to protect if we run short, because "compare closures and objects" is the question that pays off again in November.  The Scheme assignment, handed out next week and due the week after, asks you to write everything you read today, so treat the models as worked examples for homework you already have.
+> **How today runs.**  Parts I through III are the core.  Part III's closure model is the one to protect if we run short, because "compare closures and objects" is the question that pays off again in November.  The Scheme assignment goes out Thursday and is due the Thursday after, and it asks you to write everything you read today, so treat these models as worked examples for homework you already have.
 
 ---
 
@@ -463,7 +463,7 @@ A closure is:
 
 ## 5.  Exercises
 
-Everything you read today is a worked example for the **Functional Programming with Scheme** assignment, handed out next week and due the week after.  It asks you to write `czr` with its empty-list case, `reverse`, a recursive `count`, an improved `largest`, an operator-folding function like `oplist`, a `make-counter` closure, and one small program of your own.  Getting a REPL open today is the prerequisite for all of it, so do not leave here without one.
+Everything you read today is a worked example for the **Functional Programming with Scheme** assignment, handed out Thursday and due the Thursday after.  It asks you to write `czr` with its empty-list case, `reverse`, a recursive `count`, an improved `largest`, an operator-folding function like `oplist`, a `make-counter` closure, and one small program of your own.  Getting a REPL open today is the prerequisite for all of it, so do not leave here without one.
 
 Before then, and independent of the assignment:
 

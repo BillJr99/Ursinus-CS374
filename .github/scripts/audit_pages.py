@@ -19,7 +19,13 @@ Exits non-zero and prints every finding if anything is wrong.
     with no template at all: no stylesheet, no navigation, no title.  The build
     still succeeds and still deploys, so this is easy to miss.
 
-3.  Liquid of any kind in _pages/Activities.  Those files are LiaScript decks,
+3.  Single-dollar inline math.  MathJax 3 does not treat $...$ as a delimiter, so
+    such a span publishes as raw LaTeX in the middle of a sentence.  kramdown turns
+    $$...$$ into \\(...\\) even mid-sentence, which MathJax does render, and which is
+    what the rest of the repository uses.  LiaScript decks have their own renderer
+    and are exempt.
+
+4.  Liquid of any kind in _pages/Activities.  Those files are LiaScript decks,
     served raw to the viewer from the branch as well as rendered by Jekyll, so
     neither escape works: bare braces break the Jekyll build, and {% raw %} tags
     show up literally inside the Python in the viewer.  The only safe state is
@@ -43,6 +49,10 @@ OPENER = re.compile(r"\{\{|\{%")
 FENCE = re.compile(r"\s*(```|~~~)")
 INLINE_CODE = re.compile(r"`[^`]*`")
 FRONT_MATTER_LAYOUT = re.compile(r"^layout:[ \t]*([^\r\n]+)", re.M)
+DOLLAR_MATH = re.compile(r"(?<!\$)\$(?!\$)([^$\n]+?)\$(?!\$)")
+# A TeX command, an escaped space (the "\ " spacing idiom), a sub/superscript, a
+# bracketed variable, or an equation: all math, and none of it ordinary prose.
+TEX = re.compile(r"\\[a-zA-Z]+|\\[\s(){}\[\]\\]|[_^]\{|\[[A-Za-z]\]|^[^A-Za-z]*[A-Za-z][^=]*=[^=]")
 
 # Variables the site actually defines, and the tags Liquid actually has.
 KNOWN_VARS = re.compile(r"^\s*(site\.|page\.|content\b|include\.|paginator\.|forloop\.)")
@@ -112,6 +122,29 @@ def check_liquid(findings):
                         ))
 
 
+def check_dollar_math(findings):
+    for path in pages():
+        if path.startswith(DECKS + os.sep):
+            continue        # LiaScript renders $...$ itself
+        source = open(path, encoding="utf-8", errors="replace").read()
+        in_fence = False
+        for number, line in enumerate(source.split("\n"), start=1):
+            if FENCE.match(line):
+                in_fence = not in_fence
+                continue
+            if in_fence or "$" not in line:
+                continue
+            masked = INLINE_CODE.sub(lambda m: " " * len(m.group(0)), line)
+            for match in DOLLAR_MATH.finditer(masked):
+                if not TEX.search(match.group(1)):
+                    continue
+                findings.append((
+                    path, number, "single-dollar inline math",
+                    match.group(0)[:70],
+                    "MathJax 3 will not render this; it publishes as raw LaTeX. Use $$...$$.",
+                ))
+
+
 def check_layouts(findings):
     for path in pages():
         source = open(path, encoding="utf-8", errors="replace").read()
@@ -150,6 +183,7 @@ def main():
 
     findings = []
     check_liquid(findings)
+    check_dollar_math(findings)
     check_layouts(findings)
     check_decks(findings)
 

@@ -18,6 +18,7 @@ These tutorials are where you go for depth on your own schedule.  They are worke
 - [Property-Based Testing Your Language with Hypothesis](PropertyBasedTesting), *anchors required work*, companion to the Parser (Step 3e) and Interpreter (Step 2e) property-based-testing requirements
 - [Typing Disciplines: Strong vs. Weak, Static vs. Dynamic, and Gradual Typing](TypingDisciplines), *anchors required work*, required reading for the Type Systems unit
 - [Prolog in the Browser with SWISH](Prolog): companion to the Functional assignment's Logic Programming direction (Direction F)
+- [Scheme Essentials](SchemeEssentials): companion to the Functional Programming with Scheme assignment, covering the one syntax rule, list recursion, higher-order functions, and closures
 - [Haskell Essentials](HaskellEssentials): companion to the Functional Programming unit
 - [Build a Lambda Calculus Reducer](LambdaCalculusReducer): companion to the Lambda Calculus unit
 - [Flex and Bison, Complete](FlexAndBison): companion to the generator-toolchain directions of the Lexer and Parser assignments

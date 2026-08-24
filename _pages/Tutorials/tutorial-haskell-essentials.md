@@ -363,7 +363,7 @@ d1 $ every 4 (fast 2) $ sound "bd sn"
 - `every 4 (fast 2)` is a partial application: `every` needs 3 args, given 2, returns a `Pattern a -> Pattern a` function
 - `($)` applies that function to `sound "bd sn"`
 
-This is all lambda calculus! `every 4 (fast 2)` is $\lambda p.\ \texttt{every}\ 4\ (\texttt{fast}\ 2)\ p$ with the final parameter implicit.
+This is all lambda calculus! `every 4 (fast 2)` is $$\lambda p.\ \texttt{every}\ 4\ (\texttt{fast}\ 2)\ p$$ with the final parameter implicit.
 
 ---
 

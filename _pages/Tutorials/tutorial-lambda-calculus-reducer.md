@@ -101,7 +101,7 @@ print("False:   ", false_)
 
 ## 2.1 Why Free Variables Matter
 
-$x$ is **free** in a term if it is not bound by any enclosing $\lambda x$. We need to know free variables to implement capture-avoiding substitution: we cannot substitute a term $a$ for $x$ into $(\lambda y.\ e)$ if $y$ is free in $a$, because that would accidentally bind $y$.
+$$x$$ is **free** in a term if it is not bound by any enclosing $$\lambda x$$. We need to know free variables to implement capture-avoiding substitution: we cannot substitute a term $$a$$ for $$x$$ into $$(\lambda y.\ e)$$ if $$y$$ is free in $$a$$, because that would accidentally bind $$y$$.
 
 ```python
 # free_vars.py
@@ -134,7 +134,7 @@ print(free_vars(lam("x", app(var("f"), var("x")))))  # {'f'}
 
 ## 3.1 The Three Cases
 
-$e[x := a]$ replaces every free occurrence of $x$ in $e$ with $a$. The three cases:
+$$e[x := a]$$ replaces every free occurrence of $$x$$ in $$e$$ with $$a$$. The three cases:
 
 ```python
 # substitution.py
@@ -230,7 +230,7 @@ print(result2)  # (λv_2. ((y z) v_2)) or similar
 
 ## 4.1 Finding and Contracting a Redex
 
-A **redex** (reducible expression) is an application of an abstraction to an argument: $(\lambda x.\ e)\ a$. Contracting it means substituting $a$ for $x$ in $e$.
+A **redex** (reducible expression) is an application of an abstraction to an argument: $$(\lambda x.\ e)\ a$$. Contracting it means substituting $$a$$ for $$x$$ in $$e$$.
 
 ```python
 # reducer.py
@@ -743,7 +743,7 @@ print([fib_v3(n) for n in range(10)])   # [0,1,1,2,3,5,8,13,21,34]
 
 ## The Y Combinator, Formally
 
-The formal definition of Y in the lambda calculus is exactly the `Y_machinery` you built above, written in lambda notation and compressed.  The self-playing record analogy pays off here: $\lambda x.\ f\ (x\ x)$ is the "groove": a function that, when applied to itself, hands $f$ a way to replay itself.  Applied to itself, it produces $f\ (\text{the whole thing again})$. The outer $\lambda f$ makes the machinery generic: it works for *any* generator $f$, not just factorial.  The one practical obstacle is evaluation order, which forces us to use the Z variant in Python.
+The formal definition of Y in the lambda calculus is exactly the `Y_machinery` you built above, written in lambda notation and compressed.  The self-playing record analogy pays off here: $$\lambda x.\ f\ (x\ x)$$ is the "groove": a function that, when applied to itself, hands $$f$$ a way to replay itself.  Applied to itself, it produces $$f\ (\text{the whole thing again})$$. The outer $$\lambda f$$ makes the machinery generic: it works for *any* generator $$f$$, not just factorial.  The one practical obstacle is evaluation order, which forces us to use the Z variant in Python.
 
 The **Y combinator** in the pure lambda calculus is:
 
@@ -751,7 +751,7 @@ $$
 Y = \lambda f.\ (\lambda x.\ f\ (x\ x))\ (\lambda x.\ f\ (x\ x))
 $$
 
-It satisfies the **fixed-point equation**: $Y\ g = g\ (Y\ g)$ for any $g$. Let us verify this by reducing:
+It satisfies the **fixed-point equation**: $$Y\ g = g\ (Y\ g)$$ for any $$g$$. Let us verify this by reducing:
 
 $$
 Y\ g = (\lambda f.\ (\lambda x.\ f\ (x\ x))\ (\lambda x.\ f\ (x\ x)))\ g
@@ -766,7 +766,7 @@ $$
 = g\ (Y\ g)
 $$
 
-This is the **unfolding equation**: $Y\ g$ reduces to $g$ applied to $Y\ g$ applied to itself.  Exactly what a recursive call does.
+This is the **unfolding equation**: $$Y\ g$$ reduces to $$g$$ applied to $$Y\ g$$ applied to itself.  Exactly what a recursive call does.
 
 **Why we need the Z variant for strict languages:** Pure Y in Python loops:
 
@@ -843,15 +843,15 @@ factorial = fix (\rec n -> if n == 0 then 1 else n * rec (n - 1))
 
 ## Y as a Fixed-Point Operator
 
-A fixed point is a value that a function maps to itself: $g(x) = x$. For numeric functions, this is a concrete number (the fixed point of cosine is about 0.739).  For function-valued functions (generators that take a recursive call-stub and return a function) the "fixed point" is the fully recursive function itself.  This is the self-playing record in precise mathematical language: the record that, when played, produces itself as output.  The Y combinator finds that fixed point for any generator.
+A fixed point is a value that a function maps to itself: $$g(x) = x$$. For numeric functions, this is a concrete number (the fixed point of cosine is about 0.739).  For function-valued functions (generators that take a recursive call-stub and return a function) the "fixed point" is the fully recursive function itself.  This is the self-playing record in precise mathematical language: the record that, when played, produces itself as output.  The Y combinator finds that fixed point for any generator.
 
-A **fixed point** of a function $g$ is a value $x$ such that $g(x) = x$. The Y combinator computes a fixed point of $g$ in the following sense:
+A **fixed point** of a function $$g$$ is a value $$x$$ such that $$g(x) = x$$. The Y combinator computes a fixed point of $$g$$ in the following sense:
 
 $$
 Y\ g = g\ (Y\ g)
 $$
 
-The value $Y\ g$ is a program that *unfolds itself one step whenever called*, which is exactly what a recursive function does.  Recursion is **the fixed point of an unrolled computation**.
+The value $$Y\ g$$ is a program that *unfolds itself one step whenever called*, which is exactly what a recursive function does.  Recursion is **the fixed point of an unrolled computation**.
 
 ```python
 # Fixed point illustration (not Y, but the idea):
@@ -924,13 +924,13 @@ print(namespace['even'](10), namespace['odd'](11))   # True True
 
 ## Y Combinator Exercises
 
-1.  **Derive Z by hand.**  Starting from Y = $\lambda f.\ (\lambda x.\ f\ (x\ x))\ (\lambda x.\ f\ (x\ x))$, derive Z by adding the eta-expansion `lambda v:` in the right place.  Show why the unadapted Y diverges in Python by tracing the first three beta-reduction steps in applicative order.
+1.  **Derive Z by hand.**  Starting from Y = $$\lambda f.\ (\lambda x.\ f\ (x\ x))\ (\lambda x.\ f\ (x\ x))$$, derive Z by adding the eta-expansion `lambda v:` in the right place.  Show why the unadapted Y diverges in Python by tracing the first three beta-reduction steps in applicative order.
 
 2.  **Non-numeric recursion.**  Use Z to implement `reverse_list` (takes a list, returns it reversed) without any `def` or named function.  Hint: `reverse_list_gen = lambda rec: lambda lst: [] if not lst else rec(lst[1:]) + [lst[0]]`.
 
 3.  **Mutual recursion.**  Use Z to implement mutually recursive `is_even` and `is_odd` (without using `%`).  Hint: pack both into a pair, pass the pair as the self-argument, and select the correct one.
 
-4.  **Fixed-point poetry.**  The Y combinator satisfies $Y\ g = g\ (Y\ g)$. In Python, `print` is a function.  Can you write an expression (one Python line, no semicolons) that prints itself?  This is the Quine problem: a program that outputs its own source code.  It is the programming equivalent of the fixed-point equation.  Research the connection and write a two-paragraph explanation.
+4.  **Fixed-point poetry.**  The Y combinator satisfies $$Y\ g = g\ (Y\ g)$$. In Python, `print` is a function.  Can you write an expression (one Python line, no semicolons) that prints itself?  This is the Quine problem: a program that outputs its own source code.  It is the programming equivalent of the fixed-point equation.  Research the connection and write a two-paragraph explanation.
 
 5.  **Y in the wild.**  Find one real-world use of the Y combinator (or the Z combinator, or `fix`) in production code or a popular library.  (Hint: search GitHub for `fix` in Haskell libraries, or `Y` in functional JavaScript utilities.)  Write up: what is the function, what does it compute, and why was the author motivated to write it with an explicit fixed-point combinator rather than a named recursive function?
 
@@ -970,7 +970,7 @@ By the end of this section, you will be able to:
 >
 > This section assumes you are comfortable with:
 >
-> - **Lambda calculus syntax**: you can read $\lambda x.\ e$ and know that it means "a function that takes $x$ and returns $e$"
+> - **Lambda calculus syntax**: you can read $$\lambda x.\ e$$ and know that it means "a function that takes $$x$$ and returns $$e$$"
 > - **Beta-reduction**: you can apply a lambda term to an argument by substituting the argument for the bound variable
 > - **Currying**: you understand that `lambda a: lambda b: a` is a two-argument function written as two nested one-argument functions
 > - **Python lambdas**: `lambda x: x + 1` is valid Python and returns a callable
@@ -979,7 +979,7 @@ By the end of this section, you will be able to:
 
 *"To every combination there corresponds a unique bird."*, Raymond Smullyan, *To Mock a Mockingbird* (1985)
 
-In this tutorial we built computation from three syntactic forms: variables, abstraction, and application.  Here we take the abstraction away.  **Combinatory logic** is the lambda calculus with no bound variables: no $\lambda x$, no substitution, no alpha-conversion, no capture to fear.  Only application and a small fixed collection of **combinators**: functions with no free variables whose behavior is defined entirely by how they transform their arguments.  In 1924, Moses Schönfinkel proved that just two combinators, **S** and **K**, suffice to express any computable function.  The birds are named in Raymond Smullyan's puzzle book, and Gabriel Lebec's 2016 London talk "*A Flock of Functions*" demonstrates the entire menagerie live in JavaScript.  By the end of this section you will reduce terms in the combinator calculus by hand, implement all the birds in Python, derive familiar operations (function composition, `flip`, `const`, `id`) directly from the birds, and understand why SKI completeness is the combinatory-logic version of the Church-Turing thesis.
+In this tutorial we built computation from three syntactic forms: variables, abstraction, and application.  Here we take the abstraction away.  **Combinatory logic** is the lambda calculus with no bound variables: no $$\lambda x$$, no substitution, no alpha-conversion, no capture to fear.  Only application and a small fixed collection of **combinators**: functions with no free variables whose behavior is defined entirely by how they transform their arguments.  In 1924, Moses Schönfinkel proved that just two combinators, **S** and **K**, suffice to express any computable function.  The birds are named in Raymond Smullyan's puzzle book, and Gabriel Lebec's 2016 London talk "*A Flock of Functions*" demonstrates the entire menagerie live in JavaScript.  By the end of this section you will reduce terms in the combinator calculus by hand, implement all the birds in Python, derive familiar operations (function composition, `flip`, `const`, `id`) directly from the birds, and understand why SKI completeness is the combinatory-logic version of the Church-Turing thesis.
 
 ---
 
@@ -997,7 +997,7 @@ print("Ready to meet the flock.")
 
 ### 1.  Notation and Reduction Rules
 
-Before diving into the rules, orient yourself: in the lambda calculus you had *variables*, *abstractions* ($\lambda x.\ e$), and *application*.  Combinatory logic throws out variables and abstractions entirely.  What remains?  Application only, and a small fixed menu of named functions (the "birds") whose behavior is completely captured by simple rewrite rules.  Each rule says: "when this bird receives enough arguments, rewrite the whole expression."  There is no substitution, no renaming, no environment to thread around.  Reduction is pure term rewriting, like rearranging LEGO bricks according to a picture.
+Before diving into the rules, orient yourself: in the lambda calculus you had *variables*, *abstractions* ($$\lambda x.\ e$$), and *application*.  Combinatory logic throws out variables and abstractions entirely.  What remains?  Application only, and a small fixed menu of named functions (the "birds") whose behavior is completely captured by simple rewrite rules.  Each rule says: "when this bird receives enough arguments, rewrite the whole expression."  There is no substitution, no renaming, no environment to thread around.  Reduction is pure term rewriting, like rearranging LEGO bricks according to a picture.
 
 **Combinatory terms** are built from:
 
@@ -1016,11 +1016,11 @@ $$
 \mathbf{S}\ a\ b\ c \;\Rightarrow\; a\ c\ (b\ c)
 $$
 
-Application associates left, so $\mathbf{S}\ a\ b\ c$ means $(((\mathbf{S}\ a)\ b)\ c)$. A **redex** in combinatory logic is any subterm of the form $\mathbf{I}\ a$, $\mathbf{K}\ a\ b$, or $\mathbf{S}\ a\ b\ c$ (and analogously for other combinators).  Reduction is confluent, exactly as in the lambda calculus, because the combinators are derived from it.
+Application associates left, so $$\mathbf{S}\ a\ b\ c$$ means $$(((\mathbf{S}\ a)\ b)\ c)$$. A **redex** in combinatory logic is any subterm of the form $$\mathbf{I}\ a$$, $$\mathbf{K}\ a\ b$$, or $$\mathbf{S}\ a\ b\ c$$ (and analogously for other combinators).  Reduction is confluent, exactly as in the lambda calculus, because the combinators are derived from it.
 
 > **Watch out!  Argument counting**
 >
-> A combinator only fires when it has received *all* of its required arguments. $\mathbf{K}\ a$ is a partially applied function: it is waiting for its second argument and does *not* yet reduce. $\mathbf{S}\ a\ b$ is similarly stuck.  Writing $\mathbf{S}\ a\ b\ c$ is what triggers the rule.  If you try to reduce a term and nothing fires, check whether every combinator in the term is fully saturated.
+> A combinator only fires when it has received *all* of its required arguments. $$\mathbf{K}\ a$$ is a partially applied function: it is waiting for its second argument and does *not* yet reduce. $$\mathbf{S}\ a\ b$$ is similarly stuck.  Writing $$\mathbf{S}\ a\ b\ c$$ is what triggers the rule.  If you try to reduce a term and nothing fires, check whether every combinator in the term is fully saturated.
 
 **The translation from lambda calculus to combinators** (bracket abstraction) works by structural recursion:
 
@@ -1042,11 +1042,11 @@ Every lambda term becomes a combinator expression, free of variables, yet comput
 
 Reduce each expression to normal form, one rule application per line, circling the redex at each step.
 
-1. $\mathbf{I}\ (\mathbf{K}\ a\ b)$
-2. $\mathbf{K}\ (\mathbf{I}\ a)\ b$
-3. $\mathbf{S}\ \mathbf{K}\ \mathbf{K}\ a$: what well-known combinator does this behave like?
+1. $$\mathbf{I}\ (\mathbf{K}\ a\ b)$$
+2. $$\mathbf{K}\ (\mathbf{I}\ a)\ b$$
+3. $$\mathbf{S}\ \mathbf{K}\ \mathbf{K}\ a$$: what well-known combinator does this behave like?
 
-Hint for (3): what does $\mathbf{K}\ a\ (\_)$ do to any second argument?
+Hint for (3): what does $$\mathbf{K}\ a\ (\_)$$ do to any second argument?
 
 ---
 
@@ -1058,7 +1058,7 @@ $$
 \mathbf{I}\ a = a
 $$
 
-The Idiot bird passes its argument through unchanged.  In lambda calculus it is $\lambda a.\ a$. In Haskell it is `id`.  In mathematics it is the identity function on every set.  Note that $\mathbf{I}$ is not primitive given S and K: $\mathbf{S}\ \mathbf{K}\ \mathbf{K}\ a \Rightarrow \mathbf{K}\ a\ (\mathbf{K}\ a) \Rightarrow a$, so $\mathbf{I} = \mathbf{S}\ \mathbf{K}\ \mathbf{K}$.
+The Idiot bird passes its argument through unchanged.  In lambda calculus it is $$\lambda a.\ a$$. In Haskell it is `id`.  In mathematics it is the identity function on every set.  Note that $$\mathbf{I}$$ is not primitive given S and K: $$\mathbf{S}\ \mathbf{K}\ \mathbf{K}\ a \Rightarrow \mathbf{K}\ a\ (\mathbf{K}\ a) \Rightarrow a$$, so $$\mathbf{I} = \mathbf{S}\ \mathbf{K}\ \mathbf{K}$$.
 
 ```python
 I = lambda a: a
@@ -1078,7 +1078,7 @@ $$
 \mathbf{K}\ a\ b = a
 $$
 
-The Kestrel takes two arguments and returns the first, discarding the second.  In lambda calculus it is $\lambda a.\ \lambda b.\ a$, the encoding of **true** in Church booleans!  In Haskell it is `const`.  In Python:
+The Kestrel takes two arguments and returns the first, discarding the second.  In lambda calculus it is $$\lambda a.\ \lambda b.\ a$$, the encoding of **true** in Church booleans!  In Haskell it is `const`.  In Python:
 
 ```python
 I = lambda a: a
@@ -1098,13 +1098,13 @@ print(KI("ignored")("returned"))  # returned -- K(I) behaves as false / second-s
 
 ### 4.  The Bluebird, **B** (Compose)
 
-The Bluebird is the pipeline brick.  Snap two bricks together end-to-end: the output of the second feeds into the input of the first.  This is Haskell's `.` operator, and it is how real functional programs are built: not by writing big monolithic functions, but by composing small single-purpose ones.  Notice that the argument order matters: $\mathbf{B}\ f\ g$ means "do $g$ first, then $f$," which is the standard mathematical right-to-left composition.
+The Bluebird is the pipeline brick.  Snap two bricks together end-to-end: the output of the second feeds into the input of the first.  This is Haskell's `.` operator, and it is how real functional programs are built: not by writing big monolithic functions, but by composing small single-purpose ones.  Notice that the argument order matters: $$\mathbf{B}\ f\ g$$ means "do $$g$$ first, then $$f$$," which is the standard mathematical right-to-left composition.
 
 $$
 \mathbf{B}\ f\ g\ x = f\ (g\ x)
 $$
 
-The Bluebird composes two functions: apply $g$ first, then $f$. In lambda calculus it is $\lambda f.\ \lambda g.\ \lambda x.\ f\ (g\ x)$. In Haskell it is `(.)`.  It is one of the most-used birds in practice because function composition is the primary method of building programs in functional style.
+The Bluebird composes two functions: apply $$g$$ first, then $$f$$. In lambda calculus it is $$\lambda f.\ \lambda g.\ \lambda x.\ f\ (g\ x)$$. In Haskell it is `(.)`.  It is one of the most-used birds in practice because function composition is the primary method of building programs in functional style.
 
 ```python
 K = lambda a: lambda b: a
@@ -1135,7 +1135,7 @@ $$
 \mathbf{C}\ f\ a\ b = f\ b\ a
 $$
 
-The Cardinal flips the argument order of a two-argument function.  In lambda calculus it is $\lambda f.\ \lambda a.\ \lambda b.\ f\ b\ a$. In Haskell it is `flip`.
+The Cardinal flips the argument order of a two-argument function.  In lambda calculus it is $$\lambda f.\ \lambda a.\ \lambda b.\ f\ b\ a$$. In Haskell it is `flip`.
 
 ```python
 K = lambda a: lambda b: a
@@ -1156,13 +1156,13 @@ print(C_from_SK(subtract)(10)(3))   # 7
 
 ### 6.  The Starling, **S** (the Power Bird)
 
-The Starling is the "fork and merge" brick, the one that makes the calculus powerful enough to compute anything.  Given $x$, it routes $x$ down two separate paths simultaneously: one path feeds $x$ into $f$, producing a function; the other path feeds $x$ into $g$, producing an argument; then the results are merged by application.  This is the combinator encoding of *sharing*: the same input reaches two different parts of a computation.  Without this sharing capability, the calculus could only compute linear functions.
+The Starling is the "fork and merge" brick, the one that makes the calculus powerful enough to compute anything.  Given $$x$$, it routes $$x$$ down two separate paths simultaneously: one path feeds $$x$$ into $$f$$, producing a function; the other path feeds $$x$$ into $$g$$, producing an argument; then the results are merged by application.  This is the combinator encoding of *sharing*: the same input reaches two different parts of a computation.  Without this sharing capability, the calculus could only compute linear functions.
 
 $$
 \mathbf{S}\ f\ g\ x = f\ x\ (g\ x)
 $$
 
-The Starling is the heart of the calculus.  It passes $x$ to both $f$ and $g$, then applies the result of $f(x)$ to the result of $g(x)$. This is the combinator version of *sharing an argument*: both branches see $x$, so duplication is built in.  **S and K together are Turing complete**: any computable function can be expressed using only these two birds.
+The Starling is the heart of the calculus.  It passes $$x$$ to both $$f$$ and $$g$$, then applies the result of $$f(x)$$ to the result of $$g(x)$$. This is the combinator version of *sharing an argument*: both branches see $$x$$, so duplication is built in.  **S and K together are Turing complete**: any computable function can be expressed using only these two birds.
 
 ```python
 K = lambda a: lambda b: a
@@ -1184,13 +1184,13 @@ print(succ(10))  # 11
 
 ### 7.  The Mockingbird, **M** (Self-Application)
 
-The Mockingbird is the "danger" brick; handle with care.  It takes whatever you hand it and makes it eat itself.  Applied to a safe function, this produces interesting behavior (self-duplication, mirroring).  Applied to itself, it produces $\Omega$: the combinator equivalent of an infinite loop.  The Mockingbird is the combinatory seed from which fixed-point combinators and recursion grow; it demonstrates that non-termination is an intrinsic feature of any sufficiently expressive system.
+The Mockingbird is the "danger" brick; handle with care.  It takes whatever you hand it and makes it eat itself.  Applied to a safe function, this produces interesting behavior (self-duplication, mirroring).  Applied to itself, it produces $$\Omega$$: the combinator equivalent of an infinite loop.  The Mockingbird is the combinatory seed from which fixed-point combinators and recursion grow; it demonstrates that non-termination is an intrinsic feature of any sufficiently expressive system.
 
 $$
 \mathbf{M}\ a = a\ a
 $$
 
-The Mockingbird applies its argument to itself.  In lambda calculus it is $\lambda a.\ a\ a$. It is the self-application operator, and $\mathbf{M}\ \mathbf{M}$ is the combinatory equivalent of $\Omega$; it reduces forever.  But applied carefully, the Mockingbird is the basis for fixed-point combinators and recursion in the combinator calculus.
+The Mockingbird applies its argument to itself.  In lambda calculus it is $$\lambda a.\ a\ a$$. It is the self-application operator, and $$\mathbf{M}\ \mathbf{M}$$ is the combinatory equivalent of $$\Omega$$; it reduces forever.  But applied carefully, the Mockingbird is the basis for fixed-point combinators and recursion in the combinator calculus.
 
 ```python
 # We can't actually call M(M) -- infinite loop! 
@@ -1218,13 +1218,13 @@ print("M is the self-application bird")
 
 ### 8.  The Warbler, **W** (Duplicate)
 
-The Warbler is the "copy and double-feed" brick.  It takes a two-argument function and collapses its two inputs into one: whatever you hand it, it hands to $f$ twice.  This is subtly different from the Mockingbird: M makes $x$ eat *itself*, while W feeds $x$ to an *external* two-argument function $f$. The Warbler is how you derive "diagonal" operations (squaring, equality-with-self, duplication) without ever naming the argument twice.
+The Warbler is the "copy and double-feed" brick.  It takes a two-argument function and collapses its two inputs into one: whatever you hand it, it hands to $$f$$ twice.  This is subtly different from the Mockingbird: M makes $$x$$ eat *itself*, while W feeds $$x$$ to an *external* two-argument function $$f$$. The Warbler is how you derive "diagonal" operations (squaring, equality-with-self, duplication) without ever naming the argument twice.
 
 $$
 \mathbf{W}\ f\ x = f\ x\ x
 $$
 
-The Warbler duplicates its second argument, passing it twice to $f$. This is different from $\mathbf{M}$: $\mathbf{W}$ feeds $x$ to a two-argument function $f$, not to $x$ itself.
+The Warbler duplicates its second argument, passing it twice to $$f$$. This is different from $$\mathbf{M}$$: $$\mathbf{W}$$ feeds $$x$$ to a two-argument function $$f$$, not to $$x$$ itself.
 
 ```python
 W = lambda f: lambda x: f(x)(x)
@@ -1254,13 +1254,13 @@ The true power of combinatory logic is that S and K suffice for *any* lambda ter
 
 **Deriving B (Compose) from SKI:**
 
-We want $\mathbf{B}\ f\ g\ x = f\ (g\ x)$. Use $[x]\ (f\ (g\ x))$:
+We want $$\mathbf{B}\ f\ g\ x = f\ (g\ x)$$. Use $$[x]\ (f\ (g\ x))$$:
 
 $$
 [x]\ (f\ (g\ x)) = \mathbf{S}\ ([x]\ f)\ ([x]\ (g\ x)) = \mathbf{S}\ (\mathbf{K}\ f)\ (\mathbf{S}\ (\mathbf{K}\ g)\ \mathbf{I})
 $$
 
-So $\mathbf{B} = \mathbf{S}\ (\mathbf{K}\ \mathbf{S})\ \mathbf{K}$ (with one more step of abstraction).  Verify:
+So $$\mathbf{B} = \mathbf{S}\ (\mathbf{K}\ \mathbf{S})\ \mathbf{K}$$ (with one more step of abstraction).  Verify:
 
 $$
 \mathbf{S}\ (\mathbf{K}\ \mathbf{S})\ \mathbf{K}\ f\ g\ x \Rightarrow \mathbf{K}\ \mathbf{S}\ f\ (\mathbf{K}\ f)\ g\ x \Rightarrow \mathbf{S}\ (\mathbf{K}\ f)\ g\ x \Rightarrow \mathbf{K}\ f\ x\ (g\ x) \Rightarrow f\ (g\ x)
@@ -1287,16 +1287,16 @@ print(B_from_SK(str)(double)(5))       # "10": str(double(5))
 
 ---
 
-Which reduction sequence correctly shows that $\mathbf{K}\ \mathbf{I}\ a\ b \Rightarrow b$ (i.e., that $\mathbf{K}\ \mathbf{I}$ is **false** / the second-argument selector)?
+Which reduction sequence correctly shows that $$\mathbf{K}\ \mathbf{I}\ a\ b \Rightarrow b$$ (i.e., that $$\mathbf{K}\ \mathbf{I}$$ is **false** / the second-argument selector)?
 
-- $\mathbf{K}\ \mathbf{I}\ a \Rightarrow \mathbf{I}$, then $\mathbf{I}\ b \Rightarrow b$. Each step fires one combinator rule.
-- $\mathbf{K}\ \mathbf{I}\ a\ b \Rightarrow \mathbf{K}\ b$, then $\mathbf{K}\ b \Rightarrow b$.
-- $\mathbf{K}\ \mathbf{I}\ a\ b \Rightarrow \mathbf{I}\ \mathbf{I}\ b \Rightarrow b$. K fires on I and b simultaneously.
-- The reduction diverges because $\mathbf{K}\ \mathbf{I}$ contains no redex.
+- $$\mathbf{K}\ \mathbf{I}\ a \Rightarrow \mathbf{I}$$, then $$\mathbf{I}\ b \Rightarrow b$$. Each step fires one combinator rule.
+- $$\mathbf{K}\ \mathbf{I}\ a\ b \Rightarrow \mathbf{K}\ b$$, then $$\mathbf{K}\ b \Rightarrow b$$.
+- $$\mathbf{K}\ \mathbf{I}\ a\ b \Rightarrow \mathbf{I}\ \mathbf{I}\ b \Rightarrow b$$. K fires on I and b simultaneously.
+- The reduction diverges because $$\mathbf{K}\ \mathbf{I}$$ contains no redex.
 
 <details><summary>Answer</summary>
 
-$\mathbf{K}\ \mathbf{I}\ a \Rightarrow \mathbf{I}$, then $\mathbf{I}\ b \Rightarrow b$. Each step fires one combinator rule.
+$$\mathbf{K}\ \mathbf{I}\ a \Rightarrow \mathbf{I}$$, then $$\mathbf{I}\ b \Rightarrow b$$. Each step fires one combinator rule.
 
 </details>
 
@@ -1304,9 +1304,9 @@ $\mathbf{K}\ \mathbf{I}\ a \Rightarrow \mathbf{I}$, then $\mathbf{I}\ b \Rightar
 
 ### 10.  The Y Combinator in SK
 
-This section pulls together everything: if S and K are computationally complete, and if recursion is a computable operation, then S and K can express recursion, without any `def`, without any name, without any environment.  The Y combinator written in pure SK is startling precisely because it looks like nothing else you have seen: a wall of S, K, and I with no variables anywhere.  Yet it satisfies $Y\ g = g\ (Y\ g)$ for any $g$. The derivation in the Y combinator section above explains *why* this works; here the goal is to see that it is expressible at all.
+This section pulls together everything: if S and K are computationally complete, and if recursion is a computable operation, then S and K can express recursion, without any `def`, without any name, without any environment.  The Y combinator written in pure SK is startling precisely because it looks like nothing else you have seen: a wall of S, K, and I with no variables anywhere.  Yet it satisfies $$Y\ g = g\ (Y\ g)$$ for any $$g$$. The derivation in the Y combinator section above explains *why* this works; here the goal is to see that it is expressible at all.
 
-Recall from the previous section that the Y combinator satisfies $Y\ g = g\ (Y\ g)$. In strict (applicative-order) languages we use the Z combinator instead.  In pure SK combinatory logic:
+Recall from the previous section that the Y combinator satisfies $$Y\ g = g\ (Y\ g)$$. In strict (applicative-order) languages we use the Z combinator instead.  In pure SK combinatory logic:
 
 $$
 \mathbf{Y} = \mathbf{S}\ (\mathbf{K}\ (\mathbf{S}\ \mathbf{I}\ \mathbf{I}))\ (\mathbf{S}\ (\mathbf{S}\ (\mathbf{K}\ \mathbf{S})\ \mathbf{K})\ (\mathbf{K}\ (\mathbf{S}\ \mathbf{I}\ \mathbf{I})))
@@ -1385,7 +1385,7 @@ print(to_int(succ(twice)))  # 3
 
 ### 12.  Point-Free Style: Programming Without Variables
 
-Point-free programming is what happens when you take the combinator philosophy all the way to the surface of your code.  Instead of writing `lambda x: f(g(x))` (which names $x$ even though $x$ appears in only one place) you write `B(f)(g)`, which says "compose f and g" without ever mentioning what they are applied to.  This is not just an aesthetic preference: in Haskell it is the dominant style, because it emphasizes what transformations are being composed rather than what data they act on.  The LEGO metaphor completes here: point-free code is a blueprint describing how bricks connect, not a sequence of operations on a specific piece.
+Point-free programming is what happens when you take the combinator philosophy all the way to the surface of your code.  Instead of writing `lambda x: f(g(x))` (which names $$x$$ even though $$x$$ appears in only one place) you write `B(f)(g)`, which says "compose f and g" without ever mentioning what they are applied to.  This is not just an aesthetic preference: in Haskell it is the dominant style, because it emphasizes what transformations are being composed rather than what data they act on.  The LEGO metaphor completes here: point-free code is a blueprint describing how bricks connect, not a sequence of operations on a specific piece.
 
 **Point-free** (or "tacit") programming uses only combinators and function composition: no named variables, no lambdas.  It is the ultimate expression of the combinatory-logic philosophy, and it is the standard style in Haskell.  Here is the connection:
 
@@ -1432,17 +1432,17 @@ For each Python expression below, identify which bird (I, K, S, B, C, W, M, KI) 
 ### 13.  Exercises
 
 1.  **Reduction transcripts.**  Reduce to normal form, one combinator rule per line, circling the redex:
-   - (a) $\mathbf{B}\ f\ (\mathbf{B}\ g\ h)\ x$: show this equals $\mathbf{B}\ (\mathbf{B}\ f\ g)\ h\ x$ (associativity of composition)
-   - (b) $\mathbf{C}\ \mathbf{K}\ a\ b$: what does this return, and what lambda term is it equivalent to?
-   - (c) $\mathbf{W}\ \mathbf{K}\ a$: one step is enough; what does it return?
+   - (a) $$\mathbf{B}\ f\ (\mathbf{B}\ g\ h)\ x$$: show this equals $$\mathbf{B}\ (\mathbf{B}\ f\ g)\ h\ x$$ (associativity of composition)
+   - (b) $$\mathbf{C}\ \mathbf{K}\ a\ b$$: what does this return, and what lambda term is it equivalent to?
+   - (c) $$\mathbf{W}\ \mathbf{K}\ a$$: one step is enough; what does it return?
 
-2.  **Bracket abstraction.**  Use the three-rule bracket abstraction algorithm to convert $\lambda x.\ \lambda y.\ y\ x$ to an SKI expression.  Verify by reducing your expression on two concrete arguments.
+2.  **Bracket abstraction.**  Use the three-rule bracket abstraction algorithm to convert $$\lambda x.\ \lambda y.\ y\ x$$ to an SKI expression.  Verify by reducing your expression on two concrete arguments.
 
 3.  **Flock identification.**  A colleague writes `f = lambda x: lambda _: x`.  Which bird is this?  Write the bird's one-line reduction rule, its lambda term, its Haskell name, and the two-word English description that explains what it does to its arguments.
 
 4.  **Pairs from birds.**  Using only I, K, KI, V (Vireo), implement `swap` (exchange the components of a pair) as a bird expression, with no lambda.  Verify on `pair(1)(2)`.
 
-5.  **SKI Turing completeness (research).**  The combinator $\mathbf{S}\ \mathbf{K}$ applied to itself loops: $\mathbf{S}\ \mathbf{K}\ (\mathbf{S}\ \mathbf{K}) \Rightarrow \mathbf{K}\ (\mathbf{S}\ \mathbf{K})\ (\mathbf{K}\ (\mathbf{S}\ \mathbf{K})) \Rightarrow \mathbf{S}\ \mathbf{K}$. Write a one-paragraph explanation of why the existence of a non-terminating term (like $\Omega$ in the lambda calculus) is *necessary* for a system to be Turing complete, connecting to the Halting Problem.
+5.  **SKI Turing completeness (research).**  The combinator $$\mathbf{S}\ \mathbf{K}$$ applied to itself loops: $$\mathbf{S}\ \mathbf{K}\ (\mathbf{S}\ \mathbf{K}) \Rightarrow \mathbf{K}\ (\mathbf{S}\ \mathbf{K})\ (\mathbf{K}\ (\mathbf{S}\ \mathbf{K})) \Rightarrow \mathbf{S}\ \mathbf{K}$$. Write a one-paragraph explanation of why the existence of a non-terminating term (like $$\Omega$$ in the lambda calculus) is *necessary* for a system to be Turing complete, connecting to the Halting Problem.
 
 ---
 

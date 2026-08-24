@@ -601,7 +601,7 @@ The next character is a space, which is not in `[A-Z]`, so the greedy `+` has no
 
 This final model has two purposes: to make greedy-versus-reluctant matching concrete so it never surprises you again, and to close the theoretical loop by showing exactly where regular expressions run out of power.  Both lessons point to the same underlying cause: a finite automaton has no stack, so it cannot count or remember how deeply it has nested.
 
-> **Watch out!**  Regular expressions **cannot match balanced (nested) parentheses** in general: for example, the language $\{(^n)^n \mid n \geq 0\}$ (equal numbers of open and close parens) is context-free, not regular.  No matter how clever your regex, there exists a depth $n$ large enough to fool it.  When you need to match nested structure, you need a parser built from a context-free grammar, exactly what the next unit covers.
+> **Watch out!**  Regular expressions **cannot match balanced (nested) parentheses** in general: for example, the language $$\{(^n)^n \mid n \geq 0\}$$ (equal numbers of open and close parens) is context-free, not regular.  No matter how clever your regex, there exists a depth $$n$$ large enough to fool it.  When you need to match nested structure, you need a parser built from a context-free grammar, exactly what the next unit covers.
 
 ### Named Groups and the Lexer Connection
 

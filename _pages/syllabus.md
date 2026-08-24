@@ -262,9 +262,15 @@ schedule:
   title: "Functional Programming in Scheme, Part 2"
   link: "Activities/liascript-scheme.md"
   liapage: true
+  deliverables:
+  - dtitle: "Participation: Warmup Assignment Due"
+    dlink: "Assignments/Warmup"
+    points: "10"
   readings:
   - rtitle: "Continues Part 1.  Please have Scheme running before class, either installed locally or open in a browser tab at try.scheme.org, and bring the expression that would not evaluate."
     rlink: false
+  - rtitle: "Scheme Essentials for the Programming Languages Course"
+    rlink: "Tutorials/SchemeEssentials"
   - rtitle: "The Scheme Programming Language (Dybvig), Chapter 2: Getting Started"
     rlink: "https://www.scheme.com/tspl3/start.html"
   - rtitle: "Closures in Scheme (Andy Balaam)"
@@ -275,9 +281,19 @@ schedule:
   link: "Activities/liascript-functional.md"
   liapage: true
   deliverables:
+  - dtitle: "Participation: Overview Assignment Due"
+    dlink: "Assignments/Overview"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-overview.md"
+  - dtitle: "Programming Assignment: Functional Programming with Scheme Handed Out"
+    dlink: "Assignments/Scheme"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-scheme.md"
   - dtitle: "Participation: Exercise - Functional Programming and Higher-Order Functions Handed Out"
     dlink: "Assignments/ParticipationExercises/FunctionalProgramming"
   readings:
+  - rtitle: "Scheme Essentials for the Programming Languages Course"
+    rlink: "Tutorials/SchemeEssentials"
   - rtitle: "In-class taste: the declarative paradigm in Prolog, a 15-minute SWISH warm-up (facts, rules, a query that backtracks).  Previews the Functional assignment's Logic Programming direction"
     rlink: "https://swish.swi-prolog.org/"
   - rtitle: "The Power of Prolog (Markus Triska)"
@@ -290,21 +306,10 @@ schedule:
   link: "Activities/liascript-syntaxbnf.md"
   liapage: true
   deliverables:
-  - dtitle: "Participation: Warmup Assignment Due"
-    dlink: "Assignments/Warmup"
-    points: "10"
   - dtitle: "Lab: BNF Workshop Handed Out"
     dlink: "Assignments/BNFWorkshop"
     points: "15"
     rubricpath: "_pages/Assignments/lab-bnfworkshop.md"
-  - dtitle: "Participation: Overview Assignment Due"
-    dlink: "Assignments/Overview"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-overview.md"
-  - dtitle: "Programming Assignment: Functional Programming with Scheme Handed Out"
-    dlink: "Assignments/Scheme"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-scheme.md"
   readings:
   - rtitle: "Allison, Ch. 6 §6.1: Context-Free Grammars and Derivations"
 - week: "2"
@@ -313,6 +318,10 @@ schedule:
   link: "Activities/liascript-grammars.md"
   liapage: true
   deliverables:
+  - dtitle: "Programming Assignment: Functional Programming with Scheme Due"
+    dlink: "Assignments/Scheme"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-scheme.md"
   - dtitle: "Participation: Exercise - Syntax, BNF/EBNF, and Grammars Handed Out"
     dlink: "Assignments/ParticipationExercises/SyntaxAndGrammars"
   readings:
@@ -323,11 +332,6 @@ schedule:
   title: "Grammars, Day 2: Writing Context-Free Grammars"
   link: "Activities/liascript-grammars-day2.md"
   liapage: true
-  deliverables:
-  - dtitle: "Programming Assignment: Functional Programming with Scheme Due"
-    dlink: "Assignments/Scheme"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-scheme.md"
   readings:
   - rtitle: "Continues Day 1.  Bring the grammar you drafted; we build on it."
     rlink: false

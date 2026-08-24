@@ -51,6 +51,8 @@ info:
     - rtitle: "Functional Programming and Higher-Order Functions Activity"
       rlink: "Activities/liascript-functional.md"
       liapage: true
+    - rtitle: "Scheme Essentials for the Programming Languages Course"
+      rlink: "../Tutorials/SchemeEssentials"
     - rtitle: "The Scheme Programming Language (Dybvig)"
       rlink: "https://www.scheme.com/tspl3/"
 

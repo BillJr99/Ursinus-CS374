@@ -126,7 +126,7 @@ for s in tests:
 
 ## Model 4: Left Recursion Detection (Runnable)
 
-Before converting a grammar to recursive descent we need to know which nonterminals are directly left-recursive.  A nonterminal $A$ is directly left-recursive if it has a production $A \rightarrow A\,\alpha$ for some $\alpha$.
+Before converting a grammar to recursive descent we need to know which nonterminals are directly left-recursive.  A nonterminal $$A$$ is directly left-recursive if it has a production $$A \rightarrow A\,\alpha$$ for some $$\alpha$$.
 
 **Worked example, left-recursion elimination:**
 
