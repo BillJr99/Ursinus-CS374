@@ -76,7 +76,7 @@ A pure function's output depends only on its inputs, and it changes nothing outs
 
 Immutability is purity's partner.  Functional style does not modify a list; it produces a new one.
 
-```python  liascript
+```python
 # Spot the impure function, run this and observe the difference
 def pure_double(xs):
     return [x * 2 for x in xs]    # produces a NEW list
@@ -100,7 +100,7 @@ impure_double(data)
 impure_double(data)
 print(f"data after two calls to impure_double: {data}")   # [4, 8, 12], not [4, 4, 4]!
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Critical Thinking Questions (CTQs)**
 
@@ -116,7 +116,7 @@ Think of purity the way you think about a calculator: press `2 + 3` and you alwa
 
 ## Model 1: The Purity Audit
 
-```python  liascript
+```python
 import random
 
 LOG_LINES = ["startup", "config loaded"]  # module global
@@ -138,7 +138,7 @@ print(f"f4(0) = {f4(0)}")
 print(f"f5(7) = {f5(7)}")
 print(f"f6() twice: {f6():.4f}, {f6():.4f}")   # random
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 1.4** Classify each function as pure or impure.  For each impure one, name the exact disqualifying feature.
 
@@ -162,7 +162,7 @@ $$\text{reduce}(\oplus, [x_1, \dots, x_n], z) = ((z \oplus x_1) \oplus x_2) \opl
 
 Each replaces a loop pattern you have written a hundred times.  The key: `map` *transforms* every element, `filter` *selects* elements, `reduce` *collapses* a list to one value.
 
-```python  liascript
+```python
 from functools import reduce
 
 scores = [88, 92, 54, 71, 67, 95, 49, 83]
@@ -192,7 +192,7 @@ print(f"pipeline result: {pipeline_result}")
 max_score = reduce(lambda a, b: a if a > b else b, scores)
 print(f"max score: {max_score}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 2.1** Rewrite the `map` call as an explicit `for` loop.  What bookkeeping did `map` absorb?  Do the same for `filter`.
 
@@ -210,7 +210,7 @@ Python gives you two roads to the same destination: the `map`/`filter` combinato
 
 Python offers *list comprehensions* as an alternative syntax for map+filter:
 
-```python  liascript
+```python
 scores = [88, 92, 54, 71, 67, 95, 49, 83]
 
 # Using map + filter
@@ -228,7 +228,7 @@ print(f"equal: {via_combinators == via_comprehension}")
 gen = (min(s + 5, 100) for s in scores if min(s + 5, 100) >= 70)
 print(f"generator sum: {sum(gen)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 2.4** The comprehension evaluates `min(s + 5, 100)` *twice* for each element.  How would you fix this using a nested comprehension or a helper function?
 
@@ -267,7 +267,7 @@ The same computation element by element: note how the two failing scores are *tr
 
 Run the cell to see the machine agree with your paper trace, fold step by fold step:
 
-```python  liascript
+```python
 from functools import reduce
 
 scores = [88, 92, 54, 71, 67, 95, 49, 83]
@@ -286,7 +286,7 @@ print("reduce, step by step:")
 total = reduce(traced_add, passing, 0)
 print(f"total = {total}, mean = {total / len(passing):.1f}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 In the pipeline trace, the score 54 becomes 59 after the map stage and then vanishes.  Which statement is accurate?
 
@@ -313,7 +313,7 @@ You have already passed functions as arguments: every time you called `map(lambd
 
 A **higher-order function** takes functions as arguments *or* returns functions.  Today we also *return* them, creating parameterized behavior without classes.
 
-```python  liascript
+```python
 # make_adder returns a function; each call creates a new closure
 def make_adder(n):
     return lambda x: x + n
@@ -342,7 +342,7 @@ twice = lambda f: lambda x: f(f(x))
 add5_twice = twice(add5)
 print(f"add5 twice applied to 0: {add5_twice(0)}")   # 10
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 `compose = lambda f, g: lambda x: f(g(x))` is a higher-order function because it:
 
@@ -375,7 +375,7 @@ compose:   compose(f, g)(x) = f(g(x))    -- g runs FIRST, then f
 
 The cell below wraps each stage so it narrates itself, then swaps the first and last stages to show that composition order is part of the meaning:
 
-```python  liascript
+```python
 from functools import reduce
 
 def pipeline(*fns):
@@ -407,7 +407,7 @@ messy = pipeline(
 print("\nsame three functions, different order:")
 print(f"result: {messy('  Hello World  ')!r}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 Notice that `traced` is itself a higher-order function: it consumes a function and returns a new one with the same behavior plus narration, the same shape as `twice` and `compose`.
 
@@ -436,7 +436,7 @@ If higher-order functions are factories, then currying and partial application a
 
 **Currying**: transform a function `f(a, b)` into `f(a)(b)`: a chain of single-argument functions.
 
-```python  liascript
+```python
 from functools import partial
 
 # Partial application with functools.partial
@@ -474,7 +474,7 @@ process = lambda lst: reduce(lambda a, b: a + b,
                                     map(lambda x: x - 2, lst)), 0)
 print(f"process({data}) = {process(data)}")   # sum of elements > 0 after subtracting 2
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 4.4** `map_with(lambda x: x * 2)` returns a function.  How is this different from `map(lambda x: x * 2, data)`?  When is the list transformer version more useful?
 
@@ -492,7 +492,7 @@ In Python you have used `for` loops to walk through lists.  But a `for` loop req
 
 In pure functional style, **there are no loops**, only recursion.  Every loop corresponds to a recursive function:
 
-```python  liascript
+```python
 import sys
 sys.setrecursionlimit(10000)
 
@@ -531,7 +531,7 @@ def rsum(lst):
 
 print(f"rsum({nums}) = {rsum(nums)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 5.1** Each recursive function has a base case and a recursive case.  Identify them for `my_map`.  What guarantees the recursion terminates?
 
@@ -589,7 +589,7 @@ The result is identical to the loop.  The difference: the functional version has
 
 ## 6.  Mutual Recursion and Structural Recursion
 
-```python  liascript
+```python
 import sys
 sys.setrecursionlimit(10000)
 
@@ -640,7 +640,7 @@ def mergesort(lst):
 
 print(f"mergesort([5,2,8,1,9,3]) = {mergesort([5,2,8,1,9,3])}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 6.1** `tree_sum` recurses on the *structure* of the data, not a loop counter.  What property of the tree guarantees this terminates?
 

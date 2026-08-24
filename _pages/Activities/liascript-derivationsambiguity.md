@@ -159,7 +159,7 @@ print("ambiguous alternative:", evaluate(tree_wrong))     # 20
 left_assoc  = ("-", ("-", 5, 2), 1)      # (5-2)-1 = 2   <- E -> E - T
 right_assoc = ("-", 5, ("-", 2, 1))      # 5-(2-1) = 4   <- E -> T - E
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 

@@ -235,7 +235,7 @@ letstmt   -> "let" IDENT "=" expr ";"
 
 > **Intuition:** The code cell below is a near-mechanical translation of the grammar from Model 1.  Before reading it, predict what you'll see: three functions (`parse_stmt`, `parse_printstmt`, `parse_letstmt`), each consuming tokens in the order the grammar says.  The `parse_expr` at the bottom is a **stub**: it only handles numbers and identifiers; the full expression ladder comes in a later module.  Notice how the tuple return values (`("print", value)`, `("let", name, value)`) are the roots of little AST subtrees.
 
-```python  liascript
+```python
 # A recursive descent parser for the statement grammar, atop the class lexer.
 # Each function is one production; read them side by side with the grammar.
 
@@ -326,7 +326,7 @@ for source in ["print 42;", "let x = 7;", "let x 7;"]:
     except SyntaxError as e:
         print(f"ERROR: {source!r:20} -> SyntaxError: {e}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -540,7 +540,7 @@ When parsing a statement like `if ( cond ) stmt`, the parser's call sequence is:
 
 The code cell below is a **self-contained recursive descent parser** for a mini-language that includes: variable assignments, `if`/`while` statements, arithmetic expressions with full precedence (add/subtract at one level, multiply/divide at a higher level), and `print`.  It tokenizes its own input so you can run it immediately, then parses a short multi-statement program and prints the resulting AST as nested tuples.
 
-```python  liascript
+```python
 # Complete recursive descent parser: tokenizer + parser together.
 # Grammar:
 #   program  -> stmt*
@@ -720,7 +720,7 @@ import pprint
 ast = Parser(src).parse_program()
 pprint.pprint(ast)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -740,7 +740,7 @@ pprint.pprint(ast)
 >
 > Read this code as a template: swap in your own token types, your own grammar rules, and your own evaluator actions, and you have your project's core.
 
-```python  liascript
+```python
 # Mini calculator: a complete language implementation in ~80 lines.
 #
 # Grammar:
@@ -932,7 +932,7 @@ print()
 print("Notice: * node is nested DEEPER than + node,")
 print("meaning * is evaluated first -- this is how precedence is encoded in the tree.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 

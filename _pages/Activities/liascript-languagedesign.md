@@ -160,7 +160,7 @@ print("    -> Variant B: familiar, zero learning overhead on syntax")
 print()
 print("  The right answer depends on the niche. Name your niche first.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!**  "Readability" and "writability" sound like opposites but they measure *different audiences*.  Readability asks "can a reader (possibly not the author) follow this code quickly?" whereas writability asks "can an author produce correct code quickly?"  A language can be highly writable but hard to read; terse symbol-heavy syntax like APL is the classic example.  Before answering the questions below, commit your team to which audience your niche prioritizes.
 
@@ -255,7 +255,7 @@ print()
 print("  Sprint 1 goal: zero TODOs for core nodes (Lit, BinOp, VarRef, Assign, If, While)")
 print("  Sprint 2 goal: zero TODOs for functions and your niche feature")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -323,7 +323,7 @@ sprint1_goals = [
 for i, goal in enumerate(sprint1_goals, 1):
     print(f"  {i}. {goal}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!**  A risk score of probability × impact tells you *priority order*, not whether to act at all.  A low-probability, high-impact risk (score 5) can be more dangerous than a moderate-probability, moderate-impact risk (score 9) if you have no mitigation for it, because when it hits, it will be catastrophic.  Always read the impact column alongside the score, especially for anything with impact 5 (Demo Day failure).
 

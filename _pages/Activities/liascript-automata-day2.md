@@ -55,7 +55,6 @@ The NFA "ends in ab" has 3 states: start/loop (q0), saw-a (q1), saw-ab (q2).  Th
 Simulating an NFA does not require any magic or backtracking.  Instead of tracking a single current state, the simulator tracks the *set* of all states the NFA could be in right now, every live path, simultaneously.  Each input symbol advances every state in that set and unions the results.  This is the subset construction running lazily, one character at a time, and it costs at most $O(k)$ work per symbol for a $k$-state NFA.
 
 ```python
-{% raw %}
 # NFA simulation by tracking the SET of possible states: the subset
 # construction performed lazily, one input symbol at a time.
 
@@ -92,9 +91,8 @@ for s in ["ab", "aab", "abab", "ba", "a", "b", "aabb", ""]:
 
 print("\n=== Trace of 'aab' ===")
 run_nfa(ENDS_IN_AB_NFA, "aab", trace=True)
-{% endraw %}
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!**  An NFA does not "guess" which path to take; that framing makes it sound like luck is involved.  The machine *explores all paths simultaneously*, and it accepts if *any* of them reaches an accepting state.  The simulation above makes this concrete: `current` is always a set, never a single lucky choice.
 
@@ -187,7 +185,7 @@ for s in ["ab", "aab", "abab", "ba", "a", "b", ""]:
     dfa_result = run_dfa_subset(dfa, s)
     print(f"  {s!r:7}: DFA={dfa_result}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -265,7 +263,7 @@ print(f"\nAll {len(tests)} tests passed: {all_pass}")
 print("\n=== Trace of 'aab' ===")
 run_dfa(ENDS_WITH_B, "aab", trace=True)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **CTQ M5.1** If you changed `"accept": {1}` to `"accept": {0, 1}`, which new strings would now be accepted?  Explain by tracing through `run_dfa` on the empty string `""`.
 
@@ -330,7 +328,7 @@ print(f"ends-in-ab empty?      {language_is_empty(ENDS_IN_AB)}")
 print(f"dead-accept empty?     {language_is_empty(DEAD_ACCEPT)}")
 print(f"accepts-epsilon empty? {language_is_empty(ACCEPTS_EPSILON)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **CTQ M6.1** The DFS ignores *which symbol* labels each transition; it treats the NFA as a plain directed graph.  Why is this correct for the emptiness question?  What would need to change if we also wanted to find a *witness string* (the shortest string accepted)?
 
@@ -395,7 +393,7 @@ for i,(ba,bb) in enumerate(zip(a_bits, b_bits)):
     out   = total % 2; carry = total // 2
     print(f"  col {i}: ({ba}+{bb}+carry_in={carry-(total//2-carry)}) -> sum_bit={out}, carry_out={carry}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **CTQ M7.1** The `carry` variable is the machine's only state and takes exactly two values.  Draw the Mealy machine: two nodes (labeled 0 and 1) with arrows labeled `(bit_a, bit_b) / sum_bit`.  How many arrows does the complete diagram have?
 

@@ -153,7 +153,7 @@ print(f"price*qty-1 = {evaluate(tree2, env)}")  # 14.0
 tree3 = UnaryOp("-", BinOp("+", Var("price"), Num(1)))
 print(f"-(price+1) = {evaluate(tree3, env)}")   # -6.0
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Step-by-step worked example, tracing `(+ 1 (* 2 3))`**
 
@@ -243,7 +243,7 @@ print()
 result = evaluate_traced(tree, env)
 print(f"\nFinal result: {result}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -353,7 +353,7 @@ def eval_postorder(root: TreeNode) -> float:
 
 print(f"\nEvaluated result: {eval_postorder(expr_tree)}  (expected 9.0)")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **CTQ M5.1** The BFS order for `(1 + 2) * 3` is `* + 3 1 2`.  Explain precisely why you *cannot* evaluate the tree by processing nodes in this order.  Which node in the BFS order is visited before its children's values are available?
 

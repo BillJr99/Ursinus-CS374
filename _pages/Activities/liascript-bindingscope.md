@@ -88,7 +88,7 @@ print(f"\na is b? {a is b}  (same object: {id(a) == id(b)})")
 a = 200   # rebind a to a new object; b still points to 100
 print(f"After a = 200: a={a}, b={b}  (b unchanged)")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!**  A common mistake is to say "Python is dynamically typed, so Python has no binding times."  Every language has binding times; Python just moves the *type* binding from compile time to run time.  The object's type is fixed once created; what changes is which object the name points to.  When you run `x = 42` and then `x = "hello"`, Python is not changing the number `42` into a string; it is re-binding the name `x` to a completely different object.
 
@@ -159,7 +159,7 @@ def outer():
 
 print(outer())                      # ('inner', 'outer')
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!**  Students often confuse **shadowing** with **assignment**.  When `demo()` writes `x = 99`, it does *not* change the global `x`; it creates a brand-new local binding that happens to share the same name.  The global `x` still equals `10` after `demo()` returns.  Shadowing is about creating a second binding in an inner region; assignment is about updating an existing binding.  These are completely different operations with completely different effects on the enclosing scope.
 
@@ -195,7 +195,7 @@ def demo_dynamic():
 demo_dynamic()          # dynamic: show sees 99 (most recent x on stack)
 show_dynamic()          # static simulation: show sees 10 (global)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 Under static scoping, the binding that a variable use refers to can be determined:
 
@@ -256,7 +256,7 @@ print(f"Built-in 'len' found: {type(len)}")
 import builtins
 print(f"All built-ins: {len(dir(builtins))} names")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!**  Python scopes are **function-level**, not block-level.  In Java or C, a variable declared inside an `if` block or `for` loop is local to that block.  In Python, `if` blocks and `for` loops do **not** create a new scope: a variable introduced inside them belongs to the enclosing function (or module).  So a variable first assigned inside an `if` body is accessible throughout the rest of the function.  This surprises programmers coming from Java or C, and it means Python's `global` keyword is nothing like C's `global` storage class: Python's `global` is a declaration inside a function saying "when I write this name, go find it in the module scope, not here."
 
@@ -288,7 +288,7 @@ except UnboundLocalError as e:
 c = make_counter_fixed()
 print(c(), c(), c())        # 1 2 3
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -327,7 +327,7 @@ print(add10(3))   # 13, n=10 is still alive
 print(add5.__closure__[0].cell_contents)   # 5
 print(add10.__closure__[0].cell_contents)  # 10
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!**  The loop variable trap catches nearly every Python programmer eventually.  When a `lambda` (or any closure) captures a name from an enclosing scope, it captures the **name**, not the value the name held at the moment the closure was created.  By the time the loop finishes, `i` equals `4`, and every closure refers to that same `i`.  This is not a bug in Python (it is the correct behavior of late binding) but it is different from what most people intend.  The fix is to force **value capture** at creation time, either via a default argument (`i=i`) or a factory function that creates a fresh scope.
 
@@ -355,7 +355,7 @@ def make_adder(n):
 adders_fixed2 = [make_adder(i) for i in range(5)]
 print("Fixed2:", [f(0) for f in adders_fixed2])   # [0,1,2,3,4]
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 

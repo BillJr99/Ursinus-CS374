@@ -373,7 +373,7 @@ print()
 print("Free vars in (λx. x y):", free_vars(lam('x', app(var('x'), var('y')))))
 print("Free vars in (λx.λy. x):", free_vars(lam('x', lam('y', var('x')))))
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -467,7 +467,7 @@ normalize(App(Lam("x", App(Var("x"), Var("x"))), Lam("y", Var("y"))))
 print("\nApply-twice: (λf.λx.f(f x)) g a")
 normalize(App(App(Lam("f", Lam("x", App(Var("f"), App(Var("f"), Var("x"))))), Var("g")), Var("a")))
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -565,7 +565,7 @@ print("De Bruijn indices for λa.λb.a:")
 print(" ", to_debruijn(lam('a', lam('b', var('a')))))
 print("They match -> alpha-equivalent.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -662,7 +662,7 @@ print("  WHNF         - outermost position is not a redex (body may still have t
 print("  Lazy evaluation (Haskell) only reduces to WHNF: avoids evaluating")
 print("  unreachable subexpressions, enabling infinite data structures.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 

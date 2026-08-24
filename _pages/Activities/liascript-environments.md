@@ -89,9 +89,9 @@ print b;                 # line P2
 
 Run this cell to confirm your paper-machine answers from questions 1-4.
 
-This cell contains the canonical `Environment` class, the one complete build in this activity.  Later models extend or exercise this same class rather than re-printing it; keep it handy to paste into the later code cells.
+This cell contains the canonical `Environment` class, the one complete build in this activity.  Every later cell repeats it silently at the top so that each cell runs on its own; read it here once, and from then on look only at the code below the class.
 
-```python  liascript
+```python
 class Environment:
     """A chain of scopes: each environment holds bindings and a parent link."""
     def __init__(self, parent=None, name="?"):
@@ -152,7 +152,7 @@ try:
 except NameError as e:
     print("P2 c:", e)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -189,8 +189,51 @@ The **critical distinction**: `define` writes to `self.vars` without checking an
 
 Run the cell below to see all four operations interact, no new methods needed.  **Before running**, predict: what will each `print` output?
 
-```python  liascript
-# Paste your canonical Environment class from Model 1 here, then run.
+```python
+# --- The canonical Environment class from Model 1 (repeated so this cell
+# --- runs on its own; each cell in this deck is self-contained).
+class Environment:
+    """A chain of scopes: each environment holds bindings and a parent link."""
+    def __init__(self, parent=None, name="?"):
+        self.vars = {}
+        self.parent = parent
+        self.name = name   # label used in drawings and traces
+
+    def define(self, name, value):
+        """Create a NEW binding in THIS scope (a declaration: let)."""
+        self.vars[name] = value
+
+    def lookup(self, name, trace=False):
+        """Resolve a name by walking outward: static scope, executable."""
+        env = self
+        depth = 0
+        while env is not None:
+            if name in env.vars:
+                if trace:
+                    print(f"    lookup({name!r}): found in [{env.name}] "
+                          f"after {depth+1} hop(s) -> {env.vars[name]}")
+                return env.vars[name]
+            if trace:
+                print(f"    lookup({name!r}): not in [{env.name}], trying parent...")
+            env = env.parent
+            depth += 1
+        raise NameError(f"undefined variable {name!r}")
+
+    def assign(self, name, value):
+        """Update an EXISTING binding wherever it lives (an assignment: x = ...)."""
+        env = self
+        while env is not None:
+            if name in env.vars:
+                env.vars[name] = value
+                return
+            env = env.parent
+        raise NameError(f"cannot assign to undefined variable {name!r}")
+
+    def __repr__(self):
+        parts = [f"{self.name}:{self.vars}"]
+        if self.parent:
+            parts.append(repr(self.parent))
+        return " -> ".join(parts)
 
 # Demo: define vs assign difference
 outer = Environment(name="outer")
@@ -213,7 +256,7 @@ print(f"outer2.lookup('x') = {outer2.lookup('x')}")   # 99 -- changed!
 
 print(f"\nEnvironment chain: {inner}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions (Model 3)
 
@@ -229,8 +272,51 @@ print(f"\nEnvironment chain: {inner}")
 
 The most common environment bug is subtle: a student forgets that loop-counter assignments need `assign`, not `define`.  The code runs, but the outer counter never changes, producing an infinite loop (or silent wrong answers).  No new methods here either; paste your canonical class and watch the bug unfold.  (With `assign` instead, the outer counter would correctly reach 0 after three iterations; Model 4 shows that working version inside a real loop.)
 
-```python  liascript
-# Paste your canonical Environment class from Model 1 here, then run.
+```python
+# --- The canonical Environment class from Model 1 (repeated so this cell
+# --- runs on its own; each cell in this deck is self-contained).
+class Environment:
+    """A chain of scopes: each environment holds bindings and a parent link."""
+    def __init__(self, parent=None, name="?"):
+        self.vars = {}
+        self.parent = parent
+        self.name = name   # label used in drawings and traces
+
+    def define(self, name, value):
+        """Create a NEW binding in THIS scope (a declaration: let)."""
+        self.vars[name] = value
+
+    def lookup(self, name, trace=False):
+        """Resolve a name by walking outward: static scope, executable."""
+        env = self
+        depth = 0
+        while env is not None:
+            if name in env.vars:
+                if trace:
+                    print(f"    lookup({name!r}): found in [{env.name}] "
+                          f"after {depth+1} hop(s) -> {env.vars[name]}")
+                return env.vars[name]
+            if trace:
+                print(f"    lookup({name!r}): not in [{env.name}], trying parent...")
+            env = env.parent
+            depth += 1
+        raise NameError(f"undefined variable {name!r}")
+
+    def assign(self, name, value):
+        """Update an EXISTING binding wherever it lives (an assignment: x = ...)."""
+        env = self
+        while env is not None:
+            if name in env.vars:
+                env.vars[name] = value
+                return
+            env = env.parent
+        raise NameError(f"cannot assign to undefined variable {name!r}")
+
+    def __repr__(self):
+        parts = [f"{self.name}:{self.vars}"]
+        if self.parent:
+            parts.append(repr(self.parent))
+        return " -> ".join(parts)
 
 # Buggy version: define creates a fresh inner binding each iteration
 print("=== Buggy: define instead of assign ===")
@@ -244,7 +330,7 @@ for i in range(1, 4):
           f"outer counter={glob2.lookup('counter')}")
 print(f"  outer counter at end = {glob2.lookup('counter')}")  # still 3!
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions (Model 3 Extended)
 
@@ -268,8 +354,51 @@ The interpreter changes are small: `execute(Block(stmts), env)` creates `child =
 
 When a language gives every loop body its own fresh scope, a variable declared inside one iteration is invisible to the next and is gone after the loop.  The cell below simulates a `while` loop where each iteration pushes a child environment (again, nothing new to add to the class):
 
-```python  liascript
-# Paste your canonical Environment class from Model 1 here, then run.
+```python
+# --- The canonical Environment class from Model 1 (repeated so this cell
+# --- runs on its own; each cell in this deck is self-contained).
+class Environment:
+    """A chain of scopes: each environment holds bindings and a parent link."""
+    def __init__(self, parent=None, name="?"):
+        self.vars = {}
+        self.parent = parent
+        self.name = name   # label used in drawings and traces
+
+    def define(self, name, value):
+        """Create a NEW binding in THIS scope (a declaration: let)."""
+        self.vars[name] = value
+
+    def lookup(self, name, trace=False):
+        """Resolve a name by walking outward: static scope, executable."""
+        env = self
+        depth = 0
+        while env is not None:
+            if name in env.vars:
+                if trace:
+                    print(f"    lookup({name!r}): found in [{env.name}] "
+                          f"after {depth+1} hop(s) -> {env.vars[name]}")
+                return env.vars[name]
+            if trace:
+                print(f"    lookup({name!r}): not in [{env.name}], trying parent...")
+            env = env.parent
+            depth += 1
+        raise NameError(f"undefined variable {name!r}")
+
+    def assign(self, name, value):
+        """Update an EXISTING binding wherever it lives (an assignment: x = ...)."""
+        env = self
+        while env is not None:
+            if name in env.vars:
+                env.vars[name] = value
+                return
+            env = env.parent
+        raise NameError(f"cannot assign to undefined variable {name!r}")
+
+    def __repr__(self):
+        parts = [f"{self.name}:{self.vars}"]
+        if self.parent:
+            parts.append(repr(self.parent))
+        return " -> ".join(parts)
 
 # --- simulate: while (n > 0) { let t = n * 2; print t; n = n - 1; }
 glob = Environment(name="global")
@@ -295,7 +424,7 @@ try:
 except NameError as e:
     print("After loop: t is gone --", e)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 Had the body used `define` for `n` instead of `assign`, you would recreate the Model 3 Extended bug: the outer `n` would never decrease and the loop would never terminate.
 
@@ -318,8 +447,51 @@ Had the body used `define` for `n` instead of `assign`, you would recreate the M
 
 No new code is needed: your canonical `lookup` already carries the tracer (`trace=True`), and this model is where it earns its keep.  The cell below builds a three-level program and prints a full trace of every lookup at line INNER, showing which environment satisfied each one.  Extend it to trace lines MID and OUTER.
 
-```python  liascript
-# Paste your canonical Environment class from Model 1 here, then run.
+```python
+# --- The canonical Environment class from Model 1 (repeated so this cell
+# --- runs on its own; each cell in this deck is self-contained).
+class Environment:
+    """A chain of scopes: each environment holds bindings and a parent link."""
+    def __init__(self, parent=None, name="?"):
+        self.vars = {}
+        self.parent = parent
+        self.name = name   # label used in drawings and traces
+
+    def define(self, name, value):
+        """Create a NEW binding in THIS scope (a declaration: let)."""
+        self.vars[name] = value
+
+    def lookup(self, name, trace=False):
+        """Resolve a name by walking outward: static scope, executable."""
+        env = self
+        depth = 0
+        while env is not None:
+            if name in env.vars:
+                if trace:
+                    print(f"    lookup({name!r}): found in [{env.name}] "
+                          f"after {depth+1} hop(s) -> {env.vars[name]}")
+                return env.vars[name]
+            if trace:
+                print(f"    lookup({name!r}): not in [{env.name}], trying parent...")
+            env = env.parent
+            depth += 1
+        raise NameError(f"undefined variable {name!r}")
+
+    def assign(self, name, value):
+        """Update an EXISTING binding wherever it lives (an assignment: x = ...)."""
+        env = self
+        while env is not None:
+            if name in env.vars:
+                env.vars[name] = value
+                return
+            env = env.parent
+        raise NameError(f"cannot assign to undefined variable {name!r}")
+
+    def __repr__(self):
+        parts = [f"{self.name}:{self.vars}"]
+        if self.parent:
+            parts.append(repr(self.parent))
+        return " -> ".join(parts)
 
 # Three-level program:
 #   let x = 1; let y = 2;
@@ -355,7 +527,7 @@ try:
 except NameError as e:
     print("  As expected:", e)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions (Model 5)
 
@@ -406,7 +578,50 @@ Before running the trace, predict the environment chain's contents after each of
 The class itself contains nothing new; this model is pure rehearsal.  Run the trace and check each printed state against your prediction.
 
 ```python
-# Paste your canonical Environment class from Model 1 here, then run.
+# --- The canonical Environment class from Model 1 (repeated so this cell
+# --- runs on its own; each cell in this deck is self-contained).
+class Environment:
+    """A chain of scopes: each environment holds bindings and a parent link."""
+    def __init__(self, parent=None, name="?"):
+        self.vars = {}
+        self.parent = parent
+        self.name = name   # label used in drawings and traces
+
+    def define(self, name, value):
+        """Create a NEW binding in THIS scope (a declaration: let)."""
+        self.vars[name] = value
+
+    def lookup(self, name, trace=False):
+        """Resolve a name by walking outward: static scope, executable."""
+        env = self
+        depth = 0
+        while env is not None:
+            if name in env.vars:
+                if trace:
+                    print(f"    lookup({name!r}): found in [{env.name}] "
+                          f"after {depth+1} hop(s) -> {env.vars[name]}")
+                return env.vars[name]
+            if trace:
+                print(f"    lookup({name!r}): not in [{env.name}], trying parent...")
+            env = env.parent
+            depth += 1
+        raise NameError(f"undefined variable {name!r}")
+
+    def assign(self, name, value):
+        """Update an EXISTING binding wherever it lives (an assignment: x = ...)."""
+        env = self
+        while env is not None:
+            if name in env.vars:
+                env.vars[name] = value
+                return
+            env = env.parent
+        raise NameError(f"cannot assign to undefined variable {name!r}")
+
+    def __repr__(self):
+        parts = [f"{self.name}:{self.vars}"]
+        if self.parent:
+            parts.append(repr(self.parent))
+        return " -> ".join(parts)
 
 def trace_program():
     print("=== Step-by-step environment trace ===\n")
@@ -444,7 +659,7 @@ def trace_program():
 
 trace_program()
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 

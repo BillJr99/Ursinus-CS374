@@ -1621,7 +1621,7 @@ for name, ctype, example in type_map:
     print(f"  ctypes.{name:<12} value={obj.value!r:<15} "
           f"sizeof={ctypes.sizeof(ctype)} bytes")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Key insight:** `ctypes` marshals Python values into C-compatible binary representations automatically for simple types.  For complex types (structs, arrays, function pointers), you must describe the layout explicitly.
 
@@ -1705,7 +1705,7 @@ arr = IntArray5(10, 20, 30, 40, 50)
 print(f"  C array of 5 ints: {list(arr)}")
 print(f"  sizeof = {ctypes.sizeof(arr)} bytes ({ctypes.sizeof(ctypes.c_int)} × 5)")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Critical Thinking Questions 4-6**
 
@@ -1797,7 +1797,7 @@ HANDLER = ctypes.CFUNCTYPE(ctypes.c_int, ctypes.c_int, ctypes.c_int)
 cb = SafeCallback(my_handler, HANDLER)
 print(f"  Direct test of callback: my_handler(10, 3) = {cb.c_ptr(10, 3)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Critical Thinking Questions 7-9**
 
@@ -1885,7 +1885,7 @@ for cls, fn, params in examples:
     mangled = mangle_simple(cls, fn, params)
     print(f"    {cls}::{fn}({', '.join(params)}) -> {mangled}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Critical Thinking Questions 10-12**
 
@@ -2035,7 +2035,7 @@ print("  ffi load 'libc.so.6' as libc;")
 print("  let n = ffi call libc.strlen(str: 'hello');")
 print("  print n;   # 5")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Critical Thinking Questions 13-15**
 
@@ -2120,7 +2120,7 @@ else:
     sorted_words = [words[c_indices[i]] for i in range(len(c_indices))]
     print(f"Sorted by length: {sorted_words}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Exercise 2.**  Extend the `FFIRegistry` from Model 5 to support type coercion and better error messages.  Add a `validate_and_coerce` method that checks types and converts Python values:
 
@@ -2194,7 +2194,7 @@ for fn, types, args in bad_calls:
     except (TypeError, ValueError) as e:
         print(f"  python.{fn}({args}) -> {type(e).__name__}: {e}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Exercise 3.**  Implement a minimal "safe FFI" for your mini language that allows calling Python's `math` module functions.  Add lexer/parser support for the syntax `ffi("math", "sqrt", 9.0)`:
 
@@ -2253,7 +2253,7 @@ try:
 except ImportError as e:
     print(f"\n  Security block: {e}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 

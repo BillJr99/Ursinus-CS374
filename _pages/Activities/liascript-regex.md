@@ -162,7 +162,7 @@ for pattern, tests in patterns:
         m = re.fullmatch(pattern, s)
         print(f"  {s!r:12} -> {'MATCH' if m else 'no match'}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 

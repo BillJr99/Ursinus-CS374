@@ -132,7 +132,7 @@ print(categorize(50))     # fine
 print(categorize(200))    # fine
 # categorize("hello")     # would crash - static typing would catch this
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 

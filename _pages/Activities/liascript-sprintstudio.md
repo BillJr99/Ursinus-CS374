@@ -155,7 +155,7 @@ print(f"  Totals: {len(buckets['FIX'])} fix / {len(buckets['DISCLOSE'])} disclos
 print()
 print("  Scribe: fill in the blanks above and commit BACKLOG.md before end of day.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -260,7 +260,7 @@ elif passed >= total - 1:
 else:
     print(f"  -> {total - passed} items remaining. Triage them now.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 

@@ -81,7 +81,7 @@ for v in test_values:
     java_style = bool(v) if isinstance(v, bool) else "TYPE ERROR"
     print(f"{str(v):<12} {str(python_result):<16} {str(c_style):<16} {str(java_style)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -126,7 +126,10 @@ def evaluate(node, env):
         return evaluate(node.then_ if truthy(cond_val) else node.else_, env)
     if isinstance(node, BinOp):
         L, R = evaluate(node.left, env), evaluate(node.right, env)
-        return {"+": L+R, "-": L-R, "*": L*R, "/": L/R}[node.op]
+        return {"+": lambda: L+R,
+                "-": lambda: L-R,
+                "*": lambda: L*R,
+                "/": lambda: L/R}[node.op]()
     raise TypeError(f"unknown: {node!r}")
 
 # Test 1: false condition, else branch evaluated, then_ (Bomb) skipped
@@ -141,7 +144,7 @@ print(f"true -> then: {result2}")   # 99
 result3 = evaluate(Cond(Num(0), Num(1), Num(2)), {})
 print(f"0 -> else: {result3}")  # 2 (0 is falsy)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -217,7 +220,7 @@ i = 5   # out of bounds
 result = i < len(items) and items[i] > 0
 print(f"Safe guard result: {result}")   # False (never indexes out of bounds)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 The guarantee that `i < n and items[i] > 0` never indexes out of bounds depends on:
 
@@ -271,7 +274,7 @@ print("\nNote: Java 'and'/'or' always return boolean:")
 # In Java: boolean b = true && false;  // always true or false
 # Python allows: x = True and "hello"  // returns "hello"
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -330,8 +333,16 @@ def evaluate(node, env):
     if isinstance(node, Var):   return env.get(node.name, 0)
     if isinstance(node, BinOp):
         L, R = evaluate(node.left, env), evaluate(node.right, env)
-        return {"+": L+R, "-": L-R, "*": L*R, "/": L/R,
-                ">": float(L>R), "<": float(L<R), "==": float(L==R)}[node.op]
+        return {"+":  lambda: L+R,
+                "-":  lambda: L-R,
+                "*":  lambda: L*R,
+                "/":  lambda: L/R,
+                ">":  lambda: float(L>R),
+                "<":  lambda: float(L<R),
+                ">=": lambda: float(L>=R),
+                "<=": lambda: float(L<=R),
+                "==": lambda: float(L==R),
+                "!=": lambda: float(L!=R)}[node.op]()
 
 def execute(stmt, env):
     if isinstance(stmt, Assign):
@@ -375,7 +386,7 @@ program = Block([
 print("First multiple of 7:")
 execute(program, env)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -478,9 +489,16 @@ def evaluate(node, env):
         return env[node.name]
     if isinstance(node, BinOp):
         L, R = evaluate(node.left, env), evaluate(node.right, env)
-        return {"+": L+R, "-": L-R, "*": L*R, "/": L/R,
-                ">": L>R, "<": L<R, ">=": L>=R, "<=": L<=R,
-                "==": L==R, "!=": L!=R}[node.op]
+        return {"+":  lambda: L+R,
+                "-":  lambda: L-R,
+                "*":  lambda: L*R,
+                "/":  lambda: L/R,
+                ">":  lambda: L>R,
+                "<":  lambda: L<R,
+                ">=": lambda: L>=R,
+                "<=": lambda: L<=R,
+                "==": lambda: L==R,
+                "!=": lambda: L!=R}[node.op]()
     raise TypeError(f"unknown expr node: {node!r}")
 
 def truthy(val):
@@ -524,7 +542,7 @@ program = Block([
 execute(program, env)
 print(f"env after: {env}")     # n=0, total=15
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -601,7 +619,10 @@ def evaluate(node, env):
         return val
     if isinstance(node, BinOp):
         L, R = evaluate(node.left, env), evaluate(node.right, env)
-        return {"+": L+R, "-": L-R, "*": L*R, "/": L/R}[node.op]
+        return {"+": lambda: L+R,
+                "-": lambda: L-R,
+                "*": lambda: L*R,
+                "/": lambda: L/R}[node.op]()
 
 # --- Simulate a REPL session ------------------------------------------------
 env = {}
@@ -626,7 +647,7 @@ for line in repl_input:
 
 print(f"\nFinal environment: {env}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 

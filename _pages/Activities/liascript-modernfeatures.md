@@ -77,7 +77,7 @@ def describe(node):
 
 print(describe(("+", ("num", 2), ("neg", ("num", 3)))))
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 The cost and the criterion.  A new syntactic form (readability spent up front, repaid in every dissection), and questions of exhaustiveness: ML-family compilers *prove* you handled every case, a reliability win your `evaluate`'s if-chain never gets.  Notice the example: pattern matching is practically purpose-built for tree walks like yours.
 
@@ -207,7 +207,7 @@ def categorize(n):
 for val in [-3, 0, 4, 7]:
     print(f"  categorize({val}) = {categorize(val)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -313,7 +313,7 @@ print()
 print("Key insight: __post_init__ moves invariant checks to object construction,")
 print("ensuring no Token or ASTNode can exist in an invalid state.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -456,7 +456,7 @@ with parse_session("bad $ input") as s:
     print("Inside session with bad input")
     raise ValueError("unexpected token at position 4")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 

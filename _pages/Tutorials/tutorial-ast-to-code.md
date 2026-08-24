@@ -87,7 +87,7 @@ def iif(cond, then_val, else_val):
 result = iif(5 > 3, "yes", "no")
 print(f"iif result: {result}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 #### Critical Thinking Questions
 
@@ -149,7 +149,7 @@ data = [1, 5, 3, 8, 2, 9, 4]
 result3 = [y for x in data if (y := x * 2) > 8]
 print(f"doubled values > 8: {result3}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 #### Critical Thinking Questions
 
@@ -210,7 +210,7 @@ print(f"Final value: {value}")
 squares = [x**2 for x in range(1, 6)]
 print(f"Squares: {squares}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 #### Critical Thinking Questions
 
@@ -320,7 +320,7 @@ program2 = LetExpr(
 )
 print(f"let y=x*2 in if y>10 then y else 0 where x=7: {eval_expr(program2, env)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 #### Critical Thinking Questions
 
@@ -392,7 +392,7 @@ answer = lazy_if(
 )
 print(f"Result: {answer}")  # Only prints "evaluating THEN"
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 #### Critical Thinking Questions
 
@@ -548,7 +548,7 @@ class Call:
 
 print("AST nodes loaded.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -632,7 +632,7 @@ interp = Interpreter()
 ast = Let("x", Num(3), BinOp("+", BinOp("*", Var("x"), Num(2)), Num(1)))
 print("Interpreter result:", interp.visit(ast))   # 7
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!** `getattr(self, method_name, self.generic_visit)` dispatches to a method named `visit_ClassName`.  This means the method name is determined by the Python class name of the AST node, not by any tag you set.  If you rename `BinOp` to `BinaryOperation`, the dispatch will break silently, `generic_visit` will be called instead, likely raising a confusing error.  Always keep AST class names stable once you build visitors over them.
 
@@ -719,7 +719,7 @@ print("Python code:", py_code)
 result   = eval(py_code)
 print("Evaluated: ", result)   # should be 7
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -801,7 +801,7 @@ print("JavaScript code:", js_code)
 # Output: ((x) => ((x * 2) + 1))(3)
 # Paste into browser console to verify: returns 7
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -877,7 +877,7 @@ print("Haskell expression:", hs_code)
 # Output: (let x = 3 in ((x * 2) + 1))
 # Load in GHCi to verify: returns 7
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -988,7 +988,7 @@ print("\nSource map excerpt (instruction index -> operation):")
 for idx, op in tc.source_map[:8]:
     print(f"  {idx}: {op}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -1026,7 +1026,7 @@ Constant folding is the first optimizer most people write, and it is a tree tran
 
 Trees can be *transformed* as well as traversed.  The simplest transformation is **constant folding**: evaluating constant sub-expressions at compile time.
 
-```python  liascript
+```python
 from dataclasses import dataclass
 from typing import Any
 
@@ -1101,7 +1101,7 @@ for t in tests:
     folded = constant_fold(t)
     print(f"{pretty(t):30} -> {pretty(folded)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!**  Constant folding is only safe for *pure* sub-expressions; ones with no side effects.  It is tempting to fold `f() + 0` to `f()` because "adding zero does nothing," but that reasoning only applies when `f()` has no side effects.  If `f()` prints to the screen or modifies a global, folding away the `+ 0` is correct *for the arithmetic* but changes the program's observable behavior in other ways.  When in doubt, only fold sub-trees made entirely of `Num`, `Bool`, and `Str` nodes with no `Call` or `Var` nodes anywhere inside.
 

@@ -118,7 +118,7 @@ def derivable(target, start="S", max_steps=12):
 for s in ["ab", "aabb", "aaabbb", "aab", "ba", "abab"]:
     print(f"{s:8} -> {derivable(s)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 

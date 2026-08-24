@@ -82,7 +82,7 @@ The lexer below translates the hand-tokenization rules from Model 1 into working
 
 > **Watch out!**  Whitespace is listed in `TOKEN_SPEC` as `SKIP` and is silently consumed.  If you forget to include a whitespace pattern, the `MISMATCH` catch-all will fire on every space and your error messages will be buried in noise.  Always verify that spaces and tabs are handled before testing with real programs.
 
-```python  liascript
+```python
 import re
 from collections import namedtuple
 
@@ -163,7 +163,7 @@ The raw `tokenize()` generator works fine for printing, but a parser needs more 
 
 A parser never calls `tokenize()` directly.  It needs two operations: **peek**, look at the next token without consuming it, and **advance**, consume and return it.  A third operation, **expect**, consumes a token and raises an error if its type does not match.  The `Lexer` class below wraps the generator and buffers exactly one token to implement these three methods.
 
-```python  liascript
+```python
 import re
 from collections import namedtuple
 
@@ -281,7 +281,7 @@ The lexer built so far handles numbers, keywords, and operators, but real progra
 
 Production lexers must handle **string literals** (e.g., `"hello world"`) and **escape sequences** (e.g., `\"`, `\\`, `\n`).  The tricky part: a naive `"[^"]*"` pattern breaks on `"say \"hi\""`.  The correct pattern uses a negative lookbehind or a two-alternative trick: match either an escaped character or any non-quote, non-backslash character inside the delimiters.
 
-```python  liascript
+```python
 import re
 from collections import namedtuple
 

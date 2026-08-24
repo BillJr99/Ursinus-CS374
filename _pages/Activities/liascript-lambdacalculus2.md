@@ -132,7 +132,7 @@ AND TRUE FALSE
 
 **Decode helper, "peek inside" a Church boolean:**
 
-```python  liascript
+```python
 TRUE  = lambda x: lambda y: x
 FALSE = lambda x: lambda y: y
 
@@ -142,13 +142,13 @@ def church_to_bool(b):
 print("church_to_bool(TRUE)  =", church_to_bool(TRUE))
 print("church_to_bool(FALSE) =", church_to_bool(FALSE))
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 Hand a Church boolean `True` and `False` (Python's built-ins) as its two arguments.  Since TRUE selects its first argument it returns `True`; FALSE returns `False`.  This is your window into the encoding.
 
 ### Church Booleans; Runnable
 
-```python  liascript
+```python
 # Church booleans: TRUE selects first, FALSE selects second.
 TRUE  = lambda x: lambda y: x          # K  (Kestrel)
 FALSE = lambda x: lambda y: y          # KI (Kite)
@@ -178,7 +178,7 @@ print("\n=== Church if-then-else ===")
 print("if TRUE  then 'yes' else 'no' =", TRUE("yes")("no"))
 print("if FALSE then 'yes' else 'no' =", FALSE("yes")("no"))
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -268,7 +268,7 @@ Try `MULT TWO THREE = λf.λx. m (n f) x` on your own with the same method and w
 
 **Decode helper, "peek inside" a Church numeral:**
 
-```python  liascript
+```python
 ZERO = lambda f: lambda x: x
 SUCC = lambda n: lambda f: lambda x: f(n(f)(x))
 
@@ -281,7 +281,7 @@ print("church_to_int(ZERO) =", church_to_int(ZERO))
 print("church_to_int(ONE)  =", church_to_int(ONE))
 print("church_to_int(TWO)  =", church_to_int(TWO))
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 Hand the numeral the successor function on Python ints and the seed 0.  If the numeral applies its function twice (as TWO does), you get `0 + 1 + 1 = 2`.  The number of applications is exactly the Church numeral's value.
 
@@ -289,7 +289,7 @@ Hand the numeral the successor function on Python ints and the seed 0.  If the n
 
 ## Church Encodings - Runnable
 
-```python  liascript
+```python
 # Church encodings, executable. Python lambdas ARE lambda calculus terms.
 
 TRUE  = lambda x: lambda y: x          # K  (Kestrel)
@@ -337,7 +337,7 @@ print("\n=== ISZERO ===")
 for n, val in [(ZERO, "ZERO"), (ONE, "ONE"), (TWO, "TWO")]:
     print(f"ISZERO({val}) = {show_bool(ISZERO(n))}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -370,7 +370,7 @@ Under Church encoding, the expression `b(t)(e)` where b is a Church boolean impl
 
 **Church pairs: building linked data from functions:**
 
-```python  liascript
+```python
 # Church pairs: PAIR a b f = f a b
 # FST p = p K  (select first)
 # SND p = p KI (select second)
@@ -416,7 +416,7 @@ MINUS = lambda m: lambda n: n(PRED)(m)
 print(f"\n4 - 2 = {church_to_int(MINUS(FOUR)(TWO))}")   # 2
 print(f"3 - 4 = {church_to_int(MINUS(THREE)(FOUR))}")   # 0 (floored)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 

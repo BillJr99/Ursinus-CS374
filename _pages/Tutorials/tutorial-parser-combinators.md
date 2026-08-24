@@ -862,7 +862,7 @@ print(f"Token stream: {' '.join(tokens2)}")
 print()
 show("Standard precedence (left assoc)", PREC_STANDARD, tokens2)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -974,7 +974,7 @@ def parse(src):
 for expr in ["2+3*4", "2*3+4", "(2+3)*4", "7-2-1", "-3*2", "1+2+3+4"]:
     print(f"  {expr!r:18} -> {parse(expr)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -1128,7 +1128,7 @@ for t in tests:
     match = "==" if pr == rd else "!="
     print(f"{t!r:<18} {str(pr):<35} {match} {rd}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 

@@ -129,7 +129,7 @@ print("-" * 25)
 for tok in lexer:
     print(f"{tok.type:<12} {repr(tok.value)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### CTQs, Model 1
 
@@ -215,7 +215,7 @@ print("-" * 35)
 for tok in lexer:
     print(f"{tok.lineno:>4}  {tok.type:<12} {repr(tok.value)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### CTQs, Model 2
 
@@ -319,7 +319,7 @@ for expr in tests:
     result = parser.parse(expr)
     print(f"{expr:<24} {result}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### CTQs, Model 3
 
@@ -456,7 +456,7 @@ for src in sources:
     ast = parser.parse(src)
     pprint_ast(ast)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### CTQs, Model 4
 
@@ -650,7 +650,7 @@ for prog in tests:
     except Exception as e:
         print(f"  {prog!r} => Error: {e}\n")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### CTQs, Model 5
 
@@ -675,7 +675,7 @@ When PLY's parser encounters an unexpected token:
 1.  It calls `p_error(p)` with the offending token.
 2.  It enters "error mode" and pops states off the parse stack until it finds a state that can shift an `error` token.
 3.  If a rule like `'expr : error'` matches, parsing resumes from that point.
-4.  Calling `p.parser.errok()` resets the error state so the next error will also be reported.
+4.  Calling `parser.errok()` (the parser object returned by `yacc.yacc()`) resets the error state so the next error will also be reported.  PLY attaches `.lexer` to the offending token, not `.parser`, so reach for the parser you built rather than for anything hanging off `p`.
 
 ```python
 import subprocess
@@ -756,7 +756,7 @@ def p_error(p):
         errors_found.append(
             f"Syntax error at token {p.type!r} ({p.value!r})"
         )
-        p.parser.errok()   # allow the next error to be reported too
+        parser.errok()     # allow the next error to be reported too
     else:
         errors_found.append("Syntax error at end of input")
 
@@ -781,7 +781,7 @@ for prog in programs:
         print("  (no errors)")
     print()
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### CTQs, Model 6
 
@@ -789,7 +789,7 @@ for prog in programs:
 
 2.  The rule `'expr : error'` allows the parser to consume a bad expression and substitute a placeholder value.  What does PLY do internally when it encounters the special `error` token in a rule's right-hand side?
 
-3.  What does `p.parser.errok()` do, and what would happen if you removed it?  Run the code with it removed (you can add a `# ` to comment out that line) to observe the difference.
+3.  What does `parser.errok()` do, and what would happen if you removed it?  Run the code with it removed (you can add a `# ` to comment out that line) to observe the difference.
 
 4.  When would you want a parser to **stop immediately** on the first error (as an interpreter might), rather than recovering and continuing (as a batch compiler does)?
 

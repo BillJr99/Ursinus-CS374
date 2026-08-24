@@ -157,7 +157,7 @@ block  -> "{" { stmt } "}"
 
 ## Code Cell
 
-```python  liascript
+```python
 # A grammar is data. Here is the signed-integer EBNF as a Python structure,
 # and a hand-rolled recognizer that follows it: [sign] digit {digit}.
 
@@ -224,7 +224,7 @@ list -> item { "," item }
 item -> NUMBER
 ```
 
-```python  liascript
+```python
 # Both recognizers operate on a flat list of token strings.
 # Tokens are "NUM" for any number, "," for comma.
 
@@ -299,8 +299,7 @@ So far you have been deriving strings by applying rules manually.  A real parser
 
 The **FIRST set** of a grammar symbol is the set of terminals that can begin a string derivable from that symbol.  Parsers use FIRST sets to decide which rule to apply without backtracking: if the next token is in `FIRST(A)`, try rule A. Computing FIRST sets is a fixed-point algorithm: start with the obvious cases (a terminal's FIRST is itself; an epsilon production contributes epsilon) and iterate until nothing changes.
 
-```python  liascript
-{% raw %}
+```python
 # Grammar for arithmetic expressions (token-level, no whitespace).
 # We represent each production as a list of symbols.
 # "" means epsilon (empty string).
@@ -382,7 +381,6 @@ for nt in ["expr", "expr_rest", "term", "term_rest", "factor"]:
             alt_first.add(EPSILON)
         triggers = sorted(t for t in alt_first if t != EPSILON)
         print(f"  {nt} -> {alt_str:<30} fires on: {triggers}")
-{% endraw %}
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 

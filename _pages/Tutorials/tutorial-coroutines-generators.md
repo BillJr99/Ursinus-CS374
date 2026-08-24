@@ -128,7 +128,7 @@ try:
 except StopIteration:
     print("  StopIteration raised on exhausted generator")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Key insight:** A generator function's stack frame is **frozen** at every `yield`.  The local variables, loop counter, and instruction pointer are all preserved. `next()` thaws the frame and continues from the yield point.
 
@@ -212,7 +212,7 @@ print("  yield from chain:")
 for v in gen_b():
     print(f"  {v}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Check Your Understanding**, think each question through (and jot an answer) before reading on.
 
@@ -304,7 +304,7 @@ def make_generator_cps():
 
 print("  Generator-as-CPS result:", make_generator_cps())
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Check Your Understanding**, think each question through (and jot an answer) before reading on.
 
@@ -381,7 +381,7 @@ def old_event_loop(coro):
 
 old_event_loop(old_style_coroutine)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Check Your Understanding**, think each question through (and jot an answer) before reading on.
 
@@ -474,7 +474,10 @@ def eval_expr(node, env):
     if isinstance(node, BinOp):
         l = eval_expr(node.left, env)
         r = eval_expr(node.right, env)
-        return {"+": l+r, "-": l-r, "*": l*r, "/": l/r}[node.op]
+        return {"+": lambda: l+r,
+                "-": lambda: l-r,
+                "*": lambda: l*r,
+                "/": lambda: l/r}[node.op]()
     if isinstance(node, GeneratorDef):
         return node   # a generator definition evaluates to itself (like a closure)
     if isinstance(node, Call):
@@ -517,7 +520,7 @@ print("=== Key insight: Python's generator IS our interpreter's continuation ===
 print("  Each 'yield eval_expr(...)' in _run captures the frame's state.")
 print("  next() on the GeneratorObj resumes exactly where _run paused.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Check Your Understanding**, think each question through (and jot an answer) before reading on.
 
@@ -598,7 +601,7 @@ print(f"Eager (computed 10000, kept 5): {eager}")
 print(f"Lazy (computed exactly 5): {result}")
 print("Both produce the same answer; lazy is O(1) memory.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Exercise 2.**  Implement a cooperative multitasking scheduler using generators.  Each "task" is a generator that yields to give up control.  The scheduler runs tasks in round-robin:
 
@@ -629,7 +632,7 @@ def scheduler(*tasks):
 print("=== Cooperative multitasking with generators ===")
 scheduler(task_a, task_b)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Exercise 3.**  Implement a `memoize_gen` that caches yielded values so that the generator can be replayed from the beginning without recomputing:
 
@@ -676,7 +679,7 @@ print("Second pass (reads from cache, no recomputation):")
 for v in rg:
     print(f"  got {v}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Exercise 4.**  Extend the mini interpreter from Model 5 to support a `while` loop inside generator bodies.  Add a `While` AST node and a `Assign` node so you can write:
 
@@ -808,7 +811,7 @@ print("count_up(1):")
 for val in run_generator(count_up, 1, global_env):
     print(f"  {val}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Exercise 5.**  Implement a simple async event loop using generators.  Create a `Task` class, an `EventLoop` that runs tasks cooperatively, and simulate I/O with time-delayed wake-ups:
 
@@ -884,7 +887,7 @@ print("=== Simple generator-based event loop ===")
 loop = SimpleEventLoop()
 loop.run(main_coro)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 

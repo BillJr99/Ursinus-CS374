@@ -124,7 +124,7 @@ try:
 except TypeError as e:
     print(f"  dict + dict -> TypeError: {e}  FAIL")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -255,7 +255,7 @@ print("  Design 1 (implicit null): min ceremony, max crash risk")
 print("  Design 2 (Optional type): moderate ceremony, compiler-assisted")
 print("  Design 3 (no null):       max ceremony, compiler-guaranteed safety")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -353,7 +353,7 @@ for obj in [Duck(), Dog(), Rock()]:
     except AttributeError as e:
         print(f"  {type(obj).__name__}.sound() -> AttributeError: {e}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 

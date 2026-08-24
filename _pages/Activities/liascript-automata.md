@@ -146,7 +146,7 @@ print("\n=== Ends-in-ab DFA ===")
 for s in ["ab", "aab", "abab", "ba", "a", "b", "aabb", ""]:
     print(f"  {s!r:7} -> {run_dfa(ENDS_IN_AB_DFA, s)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 

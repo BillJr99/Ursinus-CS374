@@ -148,7 +148,7 @@ Model 3 explores one of the most practically important differences between Schem
 
 The cell below demonstrates both a naive (non-tail) factorial and a tail-recursive accumulator version in Python, counting stack frames to make the difference concrete.
 
-```python  liascript
+```python
 import sys
 
 def fact_naive(n):
@@ -205,7 +205,7 @@ print()
 print("Key insight: Scheme tail calls are as cheap as loops.")
 print("Python tail calls still grow the stack unless you add a trampoline manually.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -228,7 +228,7 @@ Scheme's **local binding forms** give names to intermediate values.  They differ
 
 The Python simulation below models each form's scoping rule explicitly so you can observe the difference.
 
-```python  liascript
+```python
 # Simulate Scheme's let / let* / letrec scoping rules in Python
 
 def demo_let():
@@ -304,7 +304,7 @@ new_a_star = b           # new_a = 7
 new_b_star = new_a_star  # new_b sees new_a (7), not original a (3)
 print(f"let* swap: a={new_a_star}, b={new_b_star}  (WRONG - new_a leaked into new_b)")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -321,7 +321,7 @@ Model 5 brings together everything: now that you know how Scheme evaluates expre
 
 **Quasiquoting** (`\`` backtick) is a templating mechanism: the entire form is treated as data (like `'`), *except* that subexpressions preceded by `,` (unquote) or `,@` (unquote-splicing) are evaluated.  This is the foundation of Scheme macros and a powerful list-construction tool.
 
-```python  liascript
+```python
 # We cannot run Racket here, so we simulate quasiquoting semantics in Python
 # to make the evaluation rules concrete.
 
@@ -417,7 +417,7 @@ sum_of_even_squares = my_reduce(
 print("Sum of squares of even numbers:", sum_of_even_squares)
 print("Expected: 4 + 16 = 20")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 

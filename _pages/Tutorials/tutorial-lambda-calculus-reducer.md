@@ -648,7 +648,7 @@ def factorial_named(n):
 print([factorial_named(n) for n in range(8)])
 # [1, 1, 2, 6, 24, 120, 720, 5040]
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Goal:** Rewrite `factorial` with no `def`, no name, no assignment, using only `lambda`.
 
@@ -671,7 +671,7 @@ factorial_v1 = step1(step1)
 print(factorial_v1(5))   # 120
 print(factorial_v1(7))   # 5040
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 This works!  But `step1(step1)` is repetitive, and the body has `self(self)(n-1)` instead of the clean `self(n-1)` we would prefer.  The next steps clean this up.
 
@@ -706,7 +706,7 @@ print(factorial_v2(6))   # 720
 # So rec(n-1) = self(self)(n-1)
 # Which is the same as step1's self(self)(n-1), but hidden in rec.
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 Now the body `lambda n: 1 if n == 0 else n * rec(n - 1)` looks like a normal recursive function that calls `rec`.  The self-application machinery is hidden in `rec`'s definition.
 
@@ -734,7 +734,7 @@ fib_generator  = lambda rec: lambda n: n if n <= 1 else rec(n-1) + rec(n-2)
 fib_v3         = Y_machinery(fib_generator)
 print([fib_v3(n) for n in range(10)])   # [0,1,1,2,3,5,8,13,21,34]
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **This is the Z combinator** (the applicative-order version of Y): `Y_machinery` takes any recursive-function-generator and returns the recursive function.
 
@@ -785,7 +785,7 @@ Z = lambda f: (lambda x: f(lambda v: x(x)(v)))(lambda x: f(lambda v: x(x)(v)))
 factorial_via_Z = Z(lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1))
 print([factorial_via_Z(n) for n in range(8)])
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 The Z combinator differs from Y only in the `lambda v:` wrapper: instead of `x(x)` (evaluated immediately), it is `lambda v: x(x)(v)` (a function, evaluated only when called).  This one-token change converts Y from a normal-order term to an applicative-order term.  (You can watch the difference with the reducer you built in Part 4: normal order finds the base case; applicative order hits the step limit.)
 
@@ -878,7 +878,7 @@ for n in range(8):
     assert via_Y == via_gen, f"Fixed point violated at n={n}"
 print("Fixed point verified: Z(fact_gen)(n) == fact_gen(Z(fact_gen))(n) for all tested n")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -914,7 +914,7 @@ namespace['even'] = lambda n: True  if n == 0 else namespace['odd'](n - 1)
 namespace['odd']  = lambda n: False if n == 0 else namespace['even'](n - 1)
 print(namespace['even'](10), namespace['odd'](11))   # True True
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -986,7 +986,7 @@ In this tutorial we built computation from three syntactic forms: variables, abs
 # No libraries required.
 print("Ready to meet the flock.")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -1064,7 +1064,7 @@ print(I(42))          # 42
 print(I("hello"))     # hello
 print(I(I)(42))       # 42  -- identity of identity is still identity
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -1091,7 +1091,7 @@ false = lambda a: lambda b: b   # we'll derive this from KI below
 KI    = K(I)                    # KI a b = K I a b = I b = b -- this IS Church false!
 print(KI("ignored")("returned"))  # returned -- K(I) behaves as false / second-selector
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -1123,7 +1123,7 @@ S = lambda a: lambda b: lambda c: a(c)(b(c))
 B_from_SK = S(K(S))(K)
 print(B_from_SK(add_one)(double)(5))  # 11 -- same as B(add_one)(double)(5)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -1151,7 +1151,7 @@ print(subtract_from_10(3))              # 10 - 3 = 7 (without flip: 3 - 10 = -7)
 C_from_SK = S(B(B)(S))(K(K))
 print(C_from_SK(subtract)(10)(3))   # 7
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -1180,7 +1180,7 @@ succ = S(add)(K(1))   # succ x = add x (K 1 x) = add x 1 = x + 1
 print(succ(5))   # 6
 print(succ(10))  # 11
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -1211,7 +1211,7 @@ double = lambda x: x * 2
 # This shows M is "dangerous" -- it only makes sense with combinators that expect functions
 print("M is the self-application bird")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!  Do not evaluate M(M)**
 >
@@ -1244,7 +1244,7 @@ is_zero = W(lambda x: lambda y: x == 0 and y == 0)
 print(W(eq)(5))    # eq 5 5 = True
 print(W(eq)(5))    # True -- a number always equals itself
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -1284,7 +1284,7 @@ double  = lambda x: x * 2
 print(B_from_SK(add_one)(double)(5))   # 11: same as add_one(double(5))
 print(B_from_SK(str)(double)(5))       # "10": str(double(5))
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!  SKI expressions grow quickly**
 >
@@ -1328,7 +1328,7 @@ fib_step = lambda self: lambda n: n if n <= 1 else self(n-1) + self(n-2)
 fib = Z(fib_step)
 print([fib(n) for n in range(10)])   # [0,1,1,2,3,5,8,13,21,34]
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -1380,7 +1380,7 @@ print(to_int(once))   # 1
 print(to_int(twice))  # 2
 print(to_int(succ(twice)))  # 3
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
@@ -1413,7 +1413,7 @@ pipeline = lambda *fns: reduce(lambda a, b: B(a)(b), fns) if len(fns) > 1 else f
 process = pipeline(lambda s: s.replace(" ", "_"), str.lower, str.strip)
 print(process("  Hello World  "))   # hello_world
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 

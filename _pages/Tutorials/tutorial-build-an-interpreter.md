@@ -1737,7 +1737,7 @@ It evaluates each test in order; the first truthy test causes its associated exp
 # (cond ((< 3 0) 'neg) ((= 3 0) 'zero) (else 'pos))
 # Expected: 'pos'
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 Write the complete working implementation and verify it handles the test case above, plus a case where the first clause matches and the others are never evaluated.
 
@@ -1857,7 +1857,7 @@ Adding closures to Mini requires:
 2.  A `Closure` value created at **definition time**, capturing the *current* environment
 3.  A call rule that builds the new environment parented on the **closure's captured environment**
 
-```python  liascript
+```python
 # Closure-based interpreter for Mini (simplified)
 
 class Environment:
@@ -1962,7 +1962,7 @@ ma = global_env.lookup("make_adder")
 print(f"make_adder is a Closure: {isinstance(ma, Closure)}")
 print(f"make_adder captured env has 'make_adder': {'make_adder' in ma.env._vars}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **CTQs**
 
@@ -1978,7 +1978,7 @@ For a function to call itself recursively, it must be able to look up its own na
 
 ## Model 3: Closures Enable Recursion
 
-```python  liascript
+```python
 # Recursion requires the function to see itself in its own closure.
 # execute_fundef binds the name BEFORE returning, so:
 
@@ -2017,7 +2017,7 @@ print(f"fact(0) = {global_env.lookup('fact')(0)}")
 print(f"fact(5) = {global_env.lookup('fact')(5)}")
 print(f"fact(10) = {global_env.lookup('fact')(10)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 4.1** `execute_fundef` defines the name in the *current* environment before any calls.  When `fact_body` runs and looks up `'fact'`, it finds the closure in `global_env`.  Trace the environment chain: call frame -> captured `global_env` -> finds `fact`.  What would break if we didn't define the name until after creating the closure?
 
@@ -2084,7 +2084,7 @@ And the same history as a table:
 | `c1()` | 2 | 0 | 2 |
 | `c2()` | 2 | 1 | 1 |
 
-```python  liascript
+```python
 def make_counter():
     count = 0
     def increment():
@@ -2104,7 +2104,7 @@ print("c1's captured count:", c1.__closure__[0].cell_contents)   # 2
 print("c2's captured count:", c2.__closure__[0].cell_contents)   # 1
 print("same box?", c1.__closure__[0] is c2.__closure__[0])       # False - E1 is not E2
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 After `c1 = make_counter()`, `c2 = make_counter()`, then `c1(); c1(); c2()`, the returned values are 1, 2, 1 because:
 

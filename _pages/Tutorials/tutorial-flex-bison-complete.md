@@ -688,7 +688,7 @@ print()
 print("=== n * n + n (left operand tighter) ===")
 lr_parse(["n", "*", "n", "+", "n"])
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Questions to Consider
 
@@ -796,6 +796,6 @@ for sid, items in enumerate(states):
         after  = " ".join(prod[dot:])
         print(f"  {nt} -> {before} . {after}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 The ACTION and GOTO tables Bison emits are read straight off this automaton: transitions on terminals become shift entries, transitions on nonterminals become goto entries, and any state containing a dot-at-the-end item becomes a reduce, with the LALR(1) lookahead sets deciding *which* lookahead tokens trigger each reduction.  When two of those rules claim the same table cell, you get exactly the shift/reduce and reduce/reduce conflicts described in Part 7.1 and manufactured in the experiment above.

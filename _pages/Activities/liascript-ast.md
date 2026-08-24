@@ -115,7 +115,7 @@ Only 5 nodes remain.  The `*` is a child of `+`, which correctly encodes that mu
 
 *What problem does this solve?*  Now that we know what an AST *is*, we need a concrete way to represent one in Python.  This model shows how to define each node type as a dataclass (so fields have names, not just positions), and then how to *walk* the tree recursively with `pretty`.  Walking a tree (visiting every node in order) is the one pattern you will use for everything: printing, evaluating, type-checking, compiling.  Understand `pretty` here and the evaluator of the *Tree-Walking Interpretation* activity is trivial.
 
-```python  liascript
+```python
 from dataclasses import dataclass, field
 from typing import Any, List, Optional
 
@@ -219,7 +219,7 @@ tree2 = BinOp("+", Num(2), BinOp("*", Num(3), Num(4)))
 print("AST for 2+3*4:")
 pretty(tree2)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 1.4** The two trees have the same nodes but different shapes.  Which one evaluates to 20 and which to 14?  Verify by hand.
 
@@ -235,7 +235,7 @@ pretty(tree2)
 
 *What problem does this solve?*  A tree walk does not have to produce output: it can also *compute* information about a program.  This model shows three read-only analyses: counting nodes (useful for complexity budgets), measuring depth (tells you how deep the evaluator's call stack can get), and collecting all variable names (a primitive form of scope analysis).  These same patterns (accumulate a count, accumulate a maximum, accumulate a set) recur constantly in real compilers.
 
-```python  liascript
+```python
 from dataclasses import dataclass, field
 from typing import Any, List, Optional
 
@@ -332,7 +332,7 @@ deep = BinOp("+", BinOp("*", BinOp("-", Num(1), Num(2)), BinOp("+", Num(3), Num(
 print(f"\nDeep expr node count: {count_nodes(deep)}")
 print(f"Deep expr depth:      {depth(deep)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 2.1** Which feature (deeply nested arithmetic, while loops, or if/else chains) drives `depth` highest?  What does this suggest about the recursion depth needed by your evaluator?
 
@@ -348,7 +348,7 @@ print(f"Deep expr depth:      {depth(deep)}")
 
 **Preview of the connection:** the recursive-descent parser you build in the *Recursive Descent Parsing* activity constructs exactly these nodes.  The upgrade from tuples is literally one line per production, every place a parser would build a tuple, it constructs a node instead: `('+', left, right)` becomes `BinOp('+', left, right)`, while the fold-left associativity logic, the tier structure, and the lookahead stay untouched.
 
-```python  liascript
+```python
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -435,7 +435,7 @@ tree = p.parse_expr()
 print("AST for 3 + -(2 * 4):")
 pretty(tree)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 3.1** The test `('NUM', 3)` vs `Num(3)`: why does the change from tuple to dataclass make debugging easier?  Hint: try `repr(('*', Num(2), Num(3)))` vs `repr(BinOp('*', Num(2), Num(3)))`.
 
@@ -452,7 +452,7 @@ pretty(tree)
 
 *What problem does this solve?*  Going from source text to an AST is the job of the parser.  But can you go the other way, from an AST back to valid source text?  This is called *unparsing* (or pretty-printing), and it is crucial for testing: if you parse a string, unparse the tree, and re-parse the result, you should get an identical tree.  This round-trip property is one of the most powerful automated checks you can write for a language implementation.  It also raises a subtle challenge: the AST discards parentheses, so the unparsing pass must *re-insert* them only where operator precedence requires it, no more, no less.
 
-```python  liascript
+```python
 from dataclasses import dataclass
 from typing import Any
 
@@ -505,7 +505,7 @@ t4 = BinOp('-', Num(5), BinOp('-', Num(3), Num(1)))   # 5-(3-1) = 3 (right assoc
 print(f"(5-3)-1 unparse: {unparse(t3)}")
 print(f"5-(3-1) unparse: {unparse(t4)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 5.1** The `unparse` function adds parentheses "only when needed."  How does `parent_prec` enforce this?  Trace through `unparse(t1)` step by step.
 
@@ -636,7 +636,7 @@ for label, tree, expected_val in [
     print(f"  value:   {val}  ({'OK' if val == expected_val else 'WRONG'})")
     print()
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **CTQ M6.1** The two trees above represent the same tokens in a different order: `(1+2)*3` vs `1+2*3`.  What physical property of the tree (depth, root label, or shape) encodes operator precedence?  Trace `eval_tree(tree2)` step by step to confirm that multiplication is evaluated before addition.
 

@@ -170,7 +170,7 @@ for src in expressions:
     show_tree(tree)
     print()
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -255,7 +255,7 @@ def parse_primary(self):
     raise SyntaxError(f"expected an expression, found "
                       f"{tok.lexeme!r} at line {tok.line}" if tok else "end of input")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 

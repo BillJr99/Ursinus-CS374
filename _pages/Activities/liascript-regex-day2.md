@@ -51,7 +51,7 @@ print(re.sub(r"\b\d{5}\b", "[ZIP]", text))
 for m in re.finditer(r"order", text, flags=re.IGNORECASE):
     print(f"'order' at characters {m.start()}-{m.end()}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
@@ -103,7 +103,7 @@ for s in ["aaab", "ab", "b", "aaa"]:
     real = bool(re.fullmatch(r"a*ab", s))
     print(f"  re.fullmatch agrees: {real == mine} (engine says {'MATCH' if real else 'no match'})\n")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 Matching `a*ab` against `"aaab"`, the engine's first attempt lets `a*` consume all three `a`s, and the rest of the pattern then fails.  What happens next?
 
@@ -163,7 +163,7 @@ try:
 except:
     pass
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 A teammate proposes one grand regular expression to validate fully parenthesized arithmetic of unlimited nesting depth.  The principled response is:
 

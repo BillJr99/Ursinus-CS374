@@ -1703,9 +1703,11 @@ try:
                     result = self.eval(v, env); env[n] = result; return result
                 case BinOp(op=op, left=l, right=r):
                     lv = self.eval(l, env); rv = self.eval(r, env)
-                    return {"+":lv+rv, "-":lv-rv, "*":lv*rv, "/":lv/rv,
-                            "==":lv==rv, "!=":lv!=rv, "<":lv<rv,
-                            "<=":lv<=rv, ">":lv>rv, ">=":lv>=rv}[op]
+                    return {"+":  lambda: lv+rv,  "-":  lambda: lv-rv,
+                            "*":  lambda: lv*rv,  "/":  lambda: lv/rv,
+                            "==": lambda: lv==rv, "!=": lambda: lv!=rv,
+                            "<":  lambda: lv<rv,  "<=": lambda: lv<=rv,
+                            ">":  lambda: lv>rv,  ">=": lambda: lv>=rv}[op]()
                 case If(condition=c, then_body=t, else_body=e):
                     branch = t if self.eval(c, env) else e
                     for s in branch: self.eval(s, env)
@@ -1998,7 +2000,7 @@ By the end of this section, you will be able to:
 
 An optimization is **valid** if it *preserves program semantics*: the optimized program produces the same observable results as the original for all valid inputs.
 
-```python  liascript
+```python
 # Some "optimizations" are INVALID - they change observable behavior
 
 def f():
@@ -2028,7 +2030,7 @@ if False:
 
 print("x =", x, "  y =", y)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Critical Thinking Questions (CTQs)**
 
@@ -2049,7 +2051,7 @@ print("x =", x, "  y =", y)
 **Constant folding**: evaluate constant sub-expressions at compile time.
 **Constant propagation**: substitute known constant values for variables.
 
-```python  liascript
+```python
 from dataclasses import dataclass
 from typing import Any, Optional
 
@@ -2156,7 +2158,7 @@ for t in tests:
     result = fold_and_propagate(t, {})
     print(f"{pretty(t):50} -> {pretty(result)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 2.1** The first test case propagates `x=3` into the body, evaluates `y=5`, then folds `3*5=15`.  What is the final result?  Is there any variable left in the output?
 
@@ -2172,7 +2174,7 @@ for t in tests:
 
 If the same expression appears twice and has no side effects in between, compute it once and reuse the result.
 
-```python  liascript
+```python
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -2269,7 +2271,7 @@ print(f"  {pretty(expr)}")
 print("\nAfter CSE:")
 print(f"  {pretty(optimized)}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 3.1** After CSE, `(x+1)*(x+1)` should become `let _cse1 = (x+1) in _cse1 * _cse1`.  Only ONE addition is computed instead of two.  How many operations were eliminated?
 
@@ -2287,7 +2289,7 @@ print(f"  {pretty(optimized)}")
 
 **Inlining** replaces a function call with the function body, substituting arguments for parameters.  This eliminates call overhead and enables further optimizations.
 
-```python  liascript
+```python
 from dataclasses import dataclass
 from typing import Any
 
@@ -2386,7 +2388,7 @@ print(f"\nBefore: {pretty(expr2)}")
 print(f"Inlined: {pretty(inlined2)}")
 # (After constant folding, this would become 10)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 4.1** Inlining `double(5)` produces `5 + 5`.  Can we further fold this?  What optimization would you chain after inlining?
 
@@ -2402,7 +2404,7 @@ print(f"Inlined: {pretty(inlined2)}")
 
 A **tail call** is a function call that is the *last* action of a function.  Instead of creating a new stack frame, we can *reuse* the current frame.
 
-```python  liascript
+```python
 import sys
 
 # Without TCO: factorial(10000) causes stack overflow in Python
@@ -2475,7 +2477,7 @@ fact_body = If(None,
 )
 print(f"\nfact body has tail call to 'fact': {is_tail_call(fact_body, 'fact')}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 5.1** `factorial_no_tco` has `return n * factorial_no_tco(n-1)`.  Why is this NOT a tail call?  What computation happens after the recursive call returns?
 
@@ -2546,7 +2548,7 @@ But be careful: only eliminate if the binding expression is pure!
 
 Combine multiple passes into a pipeline:
 
-```python  liascript
+```python
 def optimize(node):
     node = fold_and_propagate(node, {})
     node = eliminate_dead_code(node, collect_live_vars(node))
@@ -2554,7 +2556,7 @@ def optimize(node):
     node = fold_and_propagate(node, {})  # run again after inlining!
     return node
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 Test the pipeline on a program that contains all four optimization opportunities.  Show before and after.
 
 ##### Exercise 5: Mini TCO (30 min, harder)

@@ -70,7 +70,7 @@ Imagine hiring a contractor who was trained in your workshop.  After the worksho
 
 ## 1.  A Function Outlives Its Scope
 
-```python  liascript
+```python
 def make_adder(n):
     def adder(x):
         return x + n
@@ -87,7 +87,7 @@ print(f"add10(3) = {add10(3)}")   # 13
 print(f"add5's closure cells: {add5.__closure__[0].cell_contents}")
 print(f"add10's closure cells: {add10.__closure__[0].cell_contents}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 By the lifetime rules of the environments module, `make_adder`'s local scope should die at `return`, taking `n` with it; yet `add5` still finds `n = 5`.  The resolution: **a function value is not just code; it is a closure**, a pair of `(code, defining_environment)`.  When `adder` was created, it captured a reference to the environment where `n` was bound.  That environment survives because the closure still points to it: lifetime follows reachability.
 
@@ -111,7 +111,7 @@ Think of a closure like a security camera that watches a shelf, not a photograph
 
 ## Model 1: Closures Capture, Not Copy
 
-```python  liascript
+```python
 # CRITICAL: closures capture the VARIABLE BINDING, not the value at capture time
 
 x = 10
@@ -146,7 +146,7 @@ print(inc(), inc(), inc())   # 1 2 3
 rst()
 print(inc())                 # 1, both closures share the same count cell
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 1.4** `get_x()` returns 99 after `x = 99`.  What does this prove about whether closures copy or reference the captured binding?
 
@@ -160,7 +160,7 @@ Imagine two employees: one always looks up rules in the company handbook where t
 
 ## Model 2: Lexical vs. Dynamic Scope
 
-```python  liascript
+```python
 # Python uses LEXICAL (static) scope.
 # Let's simulate what DYNAMIC scope would look like.
 
@@ -185,7 +185,7 @@ def demo_dynamic():
 
 demo_dynamic()  # prints "demo", dynamic scope: show sees caller's x
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 2.1** Python's `show()` prints `"global"` even when called from `demo()` where `x = "demo"` is in scope.  Explain why, using the environment chain diagram.
 
@@ -206,7 +206,7 @@ The loop-variable trap is one of the most famous beginner bugs in Python and Jav
 
 ## 3.  The Famous Python Bug
 
-```python  liascript
+```python
 # The loop-variable trap, every Python programmer falls into this once
 fns = [lambda: i for i in range(3)]
 print("Results:", [f() for f in fns])     # [2, 2, 2], not [0, 1, 2]!
@@ -233,7 +233,7 @@ print("Fix 2 (factory):", [f() for f in fns_fixed2])   # [0, 1, 2]
 # The lesson: each iteration needs its OWN binding, not a shared one
 # JavaScript's 'let' fixed this at the ecosystem scale (was 'var' before)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 6.1** All three lambdas captured the same `i` binding.  After the loop, what is `i`?  Why do all three lambdas return 2?
 
@@ -283,7 +283,7 @@ The broken version's history as a timeline: the trap is a *timing* bug, because 
 | iteration 2 | 2 | lam0, lam1, lam2 | all -> 2 |
 | after the loop (calls happen here) | 2 | all three | **all -> 2** |
 
-```python  liascript
+```python
 # Evidence for the diagrams: inspect the closure cells directly
 broken = [lambda: i for i in range(3)]
 print("broken results:", [f() for f in broken])
@@ -304,7 +304,7 @@ fix1 = [lambda i=i: i for i in range(3)]
 print("\nfix1 results:", [f() for f in fix1])
 print("fix1 closures:", [f.__closure__ for f in fix1])   # [None, None, None]
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 `fns = [lambda: i for i in range(3)]` yields functions that all return 2, and `fns[0].__closure__[0] is fns[1].__closure__[0]` prints `True`.  Together these show:
 
@@ -345,7 +345,7 @@ At first glance, objects and closures look very different: one is a class instan
 
 The famous koan: "Closures are a poor man's objects; objects are a poor man's closures."  They are dual.
 
-```python  liascript
+```python
 # Objects approach: counter using a class
 class Counter:
     def __init__(self, start=0):
@@ -381,7 +381,7 @@ print(f"Closure counter: {clo_counter['value']()}")
 # Closure: count (binding in captured environment)
 # They are structurally dual.
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **CTQ 8.1** In the closure-based counter, `count` is a shared mutable cell.  In the object-based counter, `self._count` is a field.  What is the structural difference?  What is the conceptual difference?
 

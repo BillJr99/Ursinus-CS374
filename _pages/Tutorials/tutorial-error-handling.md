@@ -115,7 +115,7 @@ try:
 except OSError as e:
     print(f"Python wraps errno: e.errno={e.errno}, e.strerror={e.strerror!r}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **The fundamental problem with return codes:** They can be silently ignored.  The language provides no mechanism to force the caller to check.  In large codebases, forgotten checks cause mysterious bugs far from the actual failure.
 
@@ -214,7 +214,7 @@ try:
 except RuntimeError as e:
     print(f"  caught: {e}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!  The bare `except` antipattern**
 > Writing `except Exception` (or worse, a bare `except:` with no class at all) catches *everything*, including errors you did not anticipate: misspelled variable names (`NameError`), out-of-memory conditions (`MemoryError`), even `SystemExit`.  This silently swallows bugs and makes debugging extremely difficult because the error disappears rather than propagating.  Always catch the *most specific* exception type you actually know how to handle (e.g. `except ValueError`, `except FileNotFoundError`).  If you need a catch-all for logging, re-raise with `raise` afterward.
@@ -318,7 +318,7 @@ print("=== unwrap_or for defaults ===")
 result = pipeline("bad", 4).unwrap_or(0.0)
 print(f"pipeline('bad', 4).unwrap_or(0.0) = {result}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Check Your Understanding**, think each question through (and jot an answer) before reading on.
 
@@ -435,7 +435,7 @@ for test in ["16", "-4", "not_a_number"]:
         case Err(error=MathError(operation=op, message=m)):
             print(f"  math error in {op}: {m}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Check Your Understanding**, think each question through (and jot an answer) before reading on.
 
@@ -564,7 +564,7 @@ for label, fn in test_cases:
     except InterpreterError as e:
         print(f"  {label} => {e}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Check Your Understanding**, think each question through (and jot an answer) before reading on.
 
@@ -642,7 +642,7 @@ for target in [30, 99]:
     else:
         print(f"  result:    Err({val})")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 > **Watch out!  Go-style (value, ok) tuples require constant discipline**
 > The `find_tuple` pattern (returning `(result, ok)` and expecting callers to check the `ok` flag) has the same fundamental flaw as C return codes: nothing prevents a caller from writing `idx, _ = find_tuple(data, 99)` and then using `idx` as if it were valid.  In a large Go codebase the `if err != nil { return ..., err }` check must appear at *every* call site, and a single omission silently propagates a bad value.  The `Result` type wins precisely because the bad value is structurally impossible to use without first unwrapping it.
@@ -738,7 +738,7 @@ for s in ["16", "-4", "abc"]:
     result = safe_int(s).map(float).and_then(safe_sqrt)
     print(f"sqrt(int({s!r})) = {result}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Exercise 2.**  Implement a "stack trace" for your interpreter.  Maintain a call stack (list of strings) that records function names as they are entered/exited.  When an error occurs, attach the current stack trace to the error:
 
@@ -799,7 +799,7 @@ try:
 except InterpreterError as e:
     print(e)
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Exercise 3.**  Compare Python's `Optional[T]` type hint (from `typing`) with the `Option` dataclass from Model 3.  Write a function that accepts `Optional[int]` and one that accepts your `Option` type.  Show what happens at runtime when a caller passes `None` vs. `Nothing()` to each:
 
@@ -839,7 +839,7 @@ print("Option type:")
 print(f"  double_option(Some(5))   = {double_option(Some(5))}")
 print(f"  double_option(Nothing()) = {double_option(Nothing())}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Exercise 4.**  Add structured error reporting to a mini expression evaluator.  Extend the evaluator to collect ALL errors in an expression (not just the first one) before reporting them:
 
@@ -900,7 +900,7 @@ for t in tests:
     else:
         print(f"eval({t!r}) = {value}")
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 **Exercise 5.**  Design an error hierarchy for a complete interpreter.  Create a class hierarchy of `InterpreterError` subclasses covering: lexer errors (invalid character, unterminated string), parser errors (unexpected token, missing closing paren), and runtime errors (undefined variable, type mismatch, division by zero, stack overflow).  Write a function that pretty-prints any error with its category, location, and a helpful suggestion:
 
@@ -979,7 +979,7 @@ for err in errors:
     print(err.pretty())
     print()
 ```
-@LIA.eval(`["main.py"]`, `python3 main.py`, ``)
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 
