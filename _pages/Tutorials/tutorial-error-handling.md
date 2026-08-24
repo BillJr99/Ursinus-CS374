@@ -448,7 +448,7 @@ for test in ["16", "-4", "not_a_number"]:
 
 ```python
 # Your implementation of a "question mark operator" helper
-# (This one doesn't need @LIA.eval - sketch it on paper first)
+# (Sketch this one on paper first)
 ```
 
 How would you use it to write a multi-step `Result`-chaining function without deeply nested `and_then` calls?
