@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/HaskellEssentials
 title: "CS374: Haskell Essentials for the Programming Languages Course"
 

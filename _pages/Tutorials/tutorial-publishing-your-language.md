@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/PublishingYourLanguage
 title: "CS374: Publishing Your Language: pip, npm, and Docker"
 

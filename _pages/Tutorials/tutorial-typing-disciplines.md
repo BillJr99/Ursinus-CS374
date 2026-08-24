@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/TypingDisciplines
 title: "CS374: Typing Disciplines: Strong vs. Weak, Static vs. Dynamic, and Gradual Typing"
 

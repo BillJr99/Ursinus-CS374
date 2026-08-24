@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: default-standard
 permalink: /Tutorials/
 title: "CS374: Tutorials Shelf"
 ---

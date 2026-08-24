@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/PLYLexerAndParser
 title: "CS374: Lexing and Parsing with PLY (Python Lex-Yacc)"
 

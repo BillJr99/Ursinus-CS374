@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/LambdaCalculusReducer
 title: "CS374: Implementing a Lambda Calculus Reducer"
 

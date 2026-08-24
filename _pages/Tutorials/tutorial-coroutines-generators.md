@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/CoroutinesAndGenerators
 title: "CS374: Coroutines and Generators, Pausable Computation"
 

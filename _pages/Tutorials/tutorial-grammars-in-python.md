@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/GrammarsInPython
 title: "CS374: Grammar Tooling in Python"
 

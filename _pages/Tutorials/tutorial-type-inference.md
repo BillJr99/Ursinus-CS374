@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/TypeInference
 title: "CS374: Implementing Hindley-Milner Type Inference"
 

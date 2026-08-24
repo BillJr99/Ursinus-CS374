@@ -1,5 +1,5 @@
 ---
-layout: tutorial
+layout: notes
 permalink: /Tutorials/CompilingAndLinking
 title: "CS374: From Source to Executable: Compiling, Linking, and the ELF Format"
 
