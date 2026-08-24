@@ -759,6 +759,44 @@ print(f"5-(3-1) unparse: {unparse(t4)}")
 
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
 
+# Check Your Understanding
+
+A parse tree and an abstract syntax tree differ in that the AST:
+
+[(X)] Discards the punctuation and single-child chains that only existed to encode grammar structure
+[( )] Contains more nodes, because it records every grammar rule applied
+[( )] Is built by the lexer rather than the parser
+[( )] Cannot represent nested expressions
+
+---
+
+The AST for `2 + 3 * 4` has `+` at the root. That means `+` is:
+
+[(X)] Evaluated last: its children must be computed before it can add anything
+[( )] Evaluated first, because the root is visited first
+[( )] Of higher precedence than `*`
+[( )] Left-associative
+
+---
+
+Parentheses appear in the source but not in the AST. That is because:
+
+[(X)] Their only job was to force a grouping, and the tree's shape already records that grouping
+[( )] The lexer deletes them
+[( )] They are stored as node attributes rather than nodes
+[( )] The AST is lossy in a way that is a known limitation
+
+---
+
+Adding a new consumer of the AST (a type checker, a pretty printer, an optimizer) requires:
+
+[(X)] A new traversal over the existing node types; the nodes themselves do not change
+[( )] New node classes for each consumer
+[( )] Changes to the parser
+[( )] A new grammar
+
+---
+
 ## Exercises (Homework, ~90 minutes total)
 
 ### Exercise 1: Parser Upgrade (20 min)

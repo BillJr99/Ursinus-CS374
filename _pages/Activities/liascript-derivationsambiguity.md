@@ -511,6 +511,44 @@ The string `if A then if B then other else other` has two trees: the `else` can 
 
 # Part III: Synthesis and Practice
 
+# Check Your Understanding
+
+A grammar is ambiguous if:
+
+[(X)] Some string in its language has two or more distinct parse trees
+[( )] It contains a left-recursive rule
+[( )] It requires more than one token of lookahead
+[( )] It generates an infinite language
+
+---
+
+A layered expression grammar encodes precedence by:
+
+[(X)] Putting tighter-binding operators deeper in the nonterminal chain, which forces their nodes lower in every tree
+[( )] Listing them earlier in the file
+[( )] Consulting a precedence table at parse time
+[( )] Tagging the tokens with priorities in the lexer
+
+---
+
+Associativity is determined by:
+
+[(X)] Which side of the production the recursive nonterminal sits on
+[( )] The order of alternatives within a rule
+[( )] Whether the grammar is ambiguous
+[( )] The depth of the rule in the precedence chain
+
+---
+
+For `+`, the two trees of an ambiguous grammar give the same number. Ambiguity still matters because:
+
+[(X)] Other operators are not associative, so `8 - 4 - 2` gives 2 or 6 depending on the tree the parser happened to pick
+[( )] Addition is slower on one of the two trees
+[( )] The parser will crash on ambiguous input
+[( )] It makes the grammar left-recursive
+
+---
+
 ## 4.  Exercises
 
 1.  *Full ladder.*  Write the complete unambiguous grammar for expressions with `+ - * / ^`, unary minus, parentheses, numbers, and identifiers, with conventional precedence and associativity.  This grammar is, nearly verbatim, the one your parser assignment implements; invest accordingly.

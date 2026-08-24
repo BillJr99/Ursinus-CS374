@@ -355,6 +355,35 @@ Expected output: with the left-recursive `expression` filled in, the detector na
 > - **Thinking of grammars as "just syntax."**  The structure of a parse tree determines operator precedence and associativity.  The reason `*` binds tighter than `+` in every language you have used is that `T` is nested inside `E` in the grammar, not because a rule says "multiply first."  If you get the grammar structure wrong, your interpreter will compute wrong answers silently.
 > - **Confusing left-recursive and right-recursive in terms of associativity.**  Left-recursive rules (`E -> E + T`) produce left-associative trees (correct for `+`, `-`, `*`, `/`).  Right-recursive rules produce right-associative trees (correct for `^` and assignment in many languages).  Choosing the wrong recursion direction is a silent semantic bug.
 
+# Check Your Understanding
+
+When writing a CFG for a construct, the first question to settle is:
+
+[(X)] What the recursive case and the base case are, since every repeated or nested structure needs both
+[( )] Which parsing algorithm you will use
+[( )] How many tokens of lookahead you need
+[( )] What the AST node classes will be called
+
+---
+
+A rule written `A -> A x | x` and one written `A -> x { x }` differ in:
+
+[(X)] Parseability by recursive descent, not in the set of strings they accept
+[( )] The language they generate
+[( )] Whether they are context-free
+[( )] Nothing at all
+
+---
+
+You want a list of one or more items separated by commas. The rule is:
+
+[(X)] `list -> item { "," item }`: one required item, then zero or more comma-item pairs
+[( )] `list -> { item "," }`: zero or more item-comma pairs
+[( )] `list -> item "," list | ""`: which permits a trailing comma
+[( )] `list -> { item } { "," }`
+
+---
+
 ## 3.  Exercises
 
 1.  *Hierarchy sorting.*  Classify each language into the weakest sufficient Chomsky class, with one sentence of justification: binary strings with even parity; palindromes; strings of the form `ww` (a string repeated); legal Python indentation.

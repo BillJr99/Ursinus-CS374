@@ -474,6 +474,44 @@ The parser asks the lexer for the next token and receives `Token(NUMBER, "12", 4
 
 ---
 
+# Check Your Understanding
+
+A lexer's job, stated precisely, is to:
+
+[(X)] Turn a character stream into a token stream, discarding whitespace and comments
+[( )] Turn a token stream into a tree
+[( )] Check that the program is syntactically legal
+[( )] Resolve names to their declarations
+
+---
+
+Given the input `12foo`, a lexer with patterns for NUMBER and IDENT will most likely produce:
+
+[(X)] NUMBER `12` followed by IDENT `foo`, because each match starts fresh at the current position
+[( )] A single IDENT `12foo`
+[( )] A lexical error, since the two patterns overlap
+[( )] A single NUMBER `12`, discarding the rest
+
+---
+
+Keywords like `if` and `while` are usually recognized by:
+
+[(X)] Matching them as identifiers first, then checking the lexeme against a keyword set
+[( )] Listing each keyword as its own regex before the identifier pattern, which also works but scales worse
+[( )] The parser rather than the lexer
+[( )] A separate pass over the token stream
+
+---
+
+Lexers use regular grammars and parsers use context-free grammars because:
+
+[(X)] Token structure needs no nesting, and the weaker class buys a much faster recognizer
+[( )] Regular grammars are easier to write by hand
+[( )] Context-free grammars cannot describe identifiers
+[( )] It is a historical convention with no technical reason
+
+---
+
 ## 4.  Exercises
 
 1.  *String literals.*  Add a `STRING` token for double-quoted strings without escapes (`"hello"`), then extend it to allow `\"` inside.  Two new spec lines and three tests each; report which ordering pitfalls you hit.

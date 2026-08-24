@@ -397,6 +397,35 @@ The pattern `r"\b(?:if|else|while)\b"` uses `(?:...)` (non-capturing group) rath
 
 # Part III: Synthesis and Practice
 
+# Check Your Understanding
+
+A regex engine that backtracks can take exponential time on some inputs because:
+
+[(X)] Nested quantifiers create many ways to split the input, and the engine may try them all before failing
+[( )] Regexes cannot be compiled
+[( )] The input is scanned more than once per character
+[( )] Character classes are expanded at match time
+
+---
+
+Anchoring a token pattern with `\A` or a match at position 0 matters to a lexer because:
+
+[(X)] Without it, the pattern may match somewhere later in the input and silently skip characters
+[( )] It makes the regex faster
+[( )] Unanchored patterns cannot use quantifiers
+[( )] It is required by the `re` module
+
+---
+
+When two token patterns both match at the current position, a lexer usually resolves it by:
+
+[(X)] Longest match first, with declaration order breaking ties
+[( )] Alphabetical order of the token names
+[( )] Rejecting the input as ambiguous
+[( )] Choosing the shortest match
+
+---
+
 ## 4.  Exercises
 
 1.  *Pattern portfolio.*  Write and test patterns for: a course code (`CS374`, `MATH-111`); a time (`8:10 AM`); a quoted string with no internal quotes; a Python comment to end of line.  Each with three positive and two negative test cases, run in code.
