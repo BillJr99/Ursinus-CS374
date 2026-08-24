@@ -225,7 +225,8 @@ schedule:
 - week: "0"
   date: "0"
   title: "Welcome: Why Study Programming Languages?"
-  link: "https://www.billmongan.com/Ursinus-CS374-Overview"
+  link: "Activities/liascript-course-arc.md"
+  liapage: true
   deliverables:
   - dtitle: "Participation: Warmup Assignment Handed Out"
     dlink: "Assignments/Warmup"
@@ -233,9 +234,8 @@ schedule:
   readings:
   - rtitle: "Thain, Chapter 1"
   - rtitle: "Allison, Ch. 1: Introduction, Formal Languages and Finite State Machines"
-  - rtitle: "The Arc of This Course: From Symbols to Languages (Day 1 preview)"
-    rlink: "Activities/liascript-course-arc.md"
-    liapage: true
+  - rtitle: "Course overview: what CS374 covers, how the term is organized, and what you will have built by December"
+    rlink: "https://www.billmongan.com/Ursinus-CS374-Overview"
 - week: "0"
   date: "1"
   title: "Programming Paradigms and Evaluating Languages"
@@ -553,9 +553,6 @@ schedule:
   - dtitle: "Participation: Exercise - Functional Programming and Higher-Order Functions Handed Out"
     dlink: "Assignments/ParticipationExercises/FunctionalProgramming"
   readings:
-  - rtitle: "Optional depth, activity: Scheme and Racket as Objects of Study (required prep if you take the Scheme direction on the Functional assignment)"
-    rlink: "Activities/liascript-scheme.md"
-    liapage: true
   - rtitle: "In-class taste: the declarative paradigm in Prolog, a 15-minute SWISH warm-up (facts, rules, a query that backtracks).  Previews the Functional assignment's Logic Programming direction"
     rlink: "https://swish.swi-prolog.org/"
   - rtitle: "Optional depth, reference: The Power of Prolog (Markus Triska)"
@@ -625,9 +622,6 @@ schedule:
     points: "3"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
-  - rtitle: "Optional depth, activity: Modern Language Features, covering pattern matching, generics, ownership, and async as syntax"
-    rlink: "Activities/liascript-modernfeatures.md"
-    liapage: true
   - rtitle: "Prolog and the declarative paradigm, background for the Functional assignment's Logic Programming direction (Direction F), alongside The Power of Prolog"
     rlink: "Tutorials/Prolog"
   - rtitle: "The open-source contribution direction (Direction G) of the Functional assignment: mal, Strudel/TidalCycles, tree-sitter, or the SWI-Prolog docs, with scope approval needed in the first week"

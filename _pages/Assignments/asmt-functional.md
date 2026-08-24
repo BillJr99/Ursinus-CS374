@@ -34,11 +34,8 @@ info:
       progressing: All of the direction's required components work correctly for the provided cases, but items on the direction's depth checklist are incomplete; the demonstrations, measurements, or analyses that turn a working artifact into an argued one
       proficient: Every item on the chosen direction's depth checklist is met, all required components work on provided and edge cases, and the writeup connects the direction back to the core, stating precisely what Parts 1 and 2's pure-function and fold disciplines contributed to the direction work, demonstrating Goal 3 at full depth
   readings:
-    - rtitle: "Functional Programming Activity"
+    - rtitle: "Functional Programming Activity, including the Scheme extension for Direction C"
       rlink: "Activities/liascript-functional.md"
-      liapage: true
-    - rtitle: "Scheme Activity"
-      rlink: "Activities/liascript-scheme.md"
       liapage: true
     - rtitle: "Lambda Calculus Part 2 Activity"
       rlink: "Activities/liascript-lambdacalculus2.md"

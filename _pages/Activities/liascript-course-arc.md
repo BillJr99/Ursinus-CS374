@@ -26,7 +26,7 @@ By the end of this activity, you will be able to:
 - Explain why the theoretical machinery of this course (grammar rules, type judgments, reduction rules) and the engineering artifacts (parsers, type checkers, interpreters) are the same ideas at different levels of abstraction
 - Formulate at least one substantive question about a topic previewed today that you do not yet understand
 
-By December, you will have built a working programming language: a language you designed, with syntax you chose, with semantics you defined, that runs real programs.  Today, on the first day, we will preview every major idea you will need to get there, condensed into 90 minutes of exploration.  You will not understand everything today; that is the point.  These are the questions this course answers.
+By December, you will have built a working programming language: a language you designed, with syntax you chose, with semantics you defined, that runs real programs.  Today, on the first day, we preview every major idea you will need to get there.  Five demonstrations, one per movement of the course, each one runnable right here in the page.  You will not understand everything today; that is the point.  These are the questions this course answers.
 
 The course's arc runs in five movements.  First: what languages *are* and how to judge them (*Programming Paradigms*, *Evaluating Languages*).  Then the front end: grammars, regular expressions, automata, lexing, abstract syntax trees, and parsing, the machinery that turns source text into structured data.  Then giving programs meaning: tree-walking interpretation, binding and scope, environments, type systems, and control flow.  Then the functional lens: functional programming, Scheme, and the lambda calculus, the mathematical theory of computation published by Alonzo Church in 1936, before computers existed, showing that all of computation can be built from a single idea (functions) and three rules (variables, abstraction, application).  And finally, your language: the design workshop, the build sprints, and Demo Day, where you present a real interpreter for a language you designed yourself.  The magic is that the theory and the engineering are the same thing at different levels of abstraction: the grammar rules of the syntax unit become the parser functions of the parsing unit, which feed the evaluator of the interpretation unit, which your type checker, your extensions, and finally your team's own language build upon.
 
@@ -42,6 +42,8 @@ The course's arc runs in five movements.  First: what languages *are* and how to
 ## Directions and Group Roles
 
 Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Read each model carefully before attempting the Critical Thinking Questions.  The goal today is not to understand everything; it is to ask good questions about what you do not yet understand.
+
+> **How today runs.**  We spend the class period on the five Models, running each one and talking about what came out.  That is the whole of the in-class work.  Everything after them (the Try It Yourself, the Exercises, and the Reflection) is yours to take home, and none of it assumes anything we did not run together.
 
 ---
 
@@ -573,9 +575,9 @@ print("="*50)
 - `run2` is the same recursive walk as Model 4, trimmed.  Notice that it never consults the source text, the tokens, or the grammar; by the time it runs, all of that has already done its job.
 - Nothing here is more than about forty lines per stage.  The pipeline is not hard; it is just long, and this term is the walk down its length.
 
-### Try It Yourself
+### Try It Yourself (take home)
 
-Put the pipeline under your own hands: change the input at one stage and watch what the next stage does with it.
+This one is homework, not class work: it wants more time than the period leaves.  Put the pipeline under your own hands: change the input at one stage and watch what the next stage does with it.
 
 ```python
 import re
@@ -746,4 +748,4 @@ If an optimizer replaces the first with the second (constant folding), how much 
 
 ---
 
-This preview accompanies *Welcome: Why Study Programming Languages?*, the journey itself begins there, with *Programming Paradigms* as the first stop after it.
+This is *Welcome: Why Study Programming Languages?*, the first day of the course.  The journey begins here, and *Programming Paradigms and Evaluating Languages* is the first stop after it.
