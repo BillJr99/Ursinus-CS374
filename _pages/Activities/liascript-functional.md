@@ -285,6 +285,18 @@ print(f"generator sum: {sum(gen)}")
 
 > **CTQ 2.5** Generators are *lazy*: they produce elements one at a time on demand.  What advantage does this have for processing a file with 10 million lines?
 
+**The word for what a comprehension is doing.**  A loop is **imperative**: it tells the machine *how* to build the answer, one `append` at a time, and the answer only exists once the last step has run.  A comprehension is **declarative**: it describes *what* collection you want and leaves the construction to the language.  That is not a metaphor, it is borrowed notation.  Mathematicians have written the same thing for a century:
+
+- set-builder: $\{\, f(x) \mid x \in S,\ p(x) \,\}$
+- Python: `[f(x) for x in S if p(x)]`
+- SQL: `SELECT f(x) FROM S WHERE p(x)`
+
+Three notations, one idea: name the source, name the filter, name the transformation, and say nothing about the order of operations.  You met this in week 0 as the fourth paradigm; here it is with a syntax attached.
+
+**And the word for choosing it.**  Python programmers call the comprehension the **Pythonic** version, which is worth defining carefully because it is so often used to mean "shorter."  It does not.  *Pythonic* means idiomatic for this language: the construction a fluent reader expects, the one the language was shaped to make easy.  A comprehension is Pythonic because Python grew comprehensions on purpose; the same code translated literally into C would be neither idiomatic nor readable.  Every language has its own version of this, and part of learning one is learning which constructions its community reaches for first.
+
+> **CTQ 2.6** "Pythonic" and "short" clearly are not the same thing, since a deeply nested comprehension is short and nobody calls it Pythonic.  Propose a test a reader could apply to decide whether a given comprehension has crossed the line, and try it on the generator expression above.
+
 ---
 
 Before moving on to higher-order functions, pause and run one pipeline entirely *by hand*.  If you can produce every intermediate list on paper, `map`/`filter`/`reduce` stop being magic incantations and become bookkeeping you happen not to write yourself.
@@ -1119,6 +1131,141 @@ Take the impure `f2` and `f3` from Model 1, refactor them to be pure, and write 
 ### Exercise 5: No-Assignment Challenge (25 min)
 
 Compute the average word length of a paragraph using **exactly one expression**, no statements, no intermediate variable names (except the function parameter).  Then discuss: when does point-free style help, and when does it hurt readability?
+
+---
+
+# Extension: Pythonic and Declarative
+
+> Past the 75 minutes.  Nothing in class assumes it.  Model 2 showed that a comprehension and a `map`/`filter` pair compute the same thing.  This picks up the other question: what the comprehension *is*, why Python grew four of them, and what the declarative style costs when you actually pay for it.
+
+## Four Comprehensions, One Idea
+
+The bracket you use decides the container; everything inside is unchanged.  Predict all four outputs, then run.
+
+```python
+import sys
+
+scores = [58, 72, 91, 64, 88, 45, 70]
+
+# --- 1. The comprehension is not just for lists ------------------------------
+as_list = [min(s + 5, 100) for s in scores if s >= 60]
+as_set  = {min(s + 5, 100) for s in scores if s >= 60}
+as_dict = {s: min(s + 5, 100) for s in scores if s >= 60}
+
+print("list :", as_list)
+print("set  :", sorted(as_set), "  (duplicates collapsed, order gone)")
+print("dict :", as_dict)
+print()
+
+# --- 2. The double-evaluation problem, and the := fix -------------------------
+calls = []
+
+
+def curve(s):
+    calls.append(s)
+    return min(s + 5, 100)
+
+
+calls.clear()
+twice = [curve(s) for s in scores if curve(s) >= 70]
+print("naive comprehension called curve()", len(calls), "times for", len(scores), "scores")
+
+calls.clear()
+once = [c for s in scores if (c := curve(s)) >= 70]
+print("walrus comprehension called curve()", len(calls), "times")
+print("same answer:", twice == once)
+print()
+
+# --- 3. Nesting: the clauses read left to right, like nested for-loops --------
+pairs = [(a, b) for a in "ab" for b in [1, 2]]
+print("[(a, b) for a in 'ab' for b in [1, 2]] ->", pairs)
+print("   the FIRST for is the OUTER loop, exactly as if you had indented them")
+print()
+
+# --- 4. Same syntax, different brackets: laziness ------------------------------
+listcomp = [n * n for n in range(100000)]
+genexpr  = (n * n for n in range(100000))
+print("list comprehension holds", sys.getsizeof(listcomp), "bytes")
+print("generator expression holds", sys.getsizeof(genexpr), "bytes")
+print()
+
+# A generator can be asked about a collection too large to build.
+print("any(n * n > 1000 for n in range(10**9)):",
+      any(n * n > 1000 for n in range(10**9)))
+print("   that answered without building a billion squares: it stopped at the first True")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- **The four brackets.**  `[...]` builds a list, `{...}` a set, `{k: v ...}` a dict, and `(...)` a generator.  The clause grammar, `for` then optional `if`, never changes.  Learn it once and you have four constructions.
+- **The double evaluation** answers CTQ 2.4 with a measurement: the naive comprehension calls `curve` **11** times for 7 scores, because every element pays for the filter and the survivors pay again for the transformation.  The walrus operator `:=` binds the result inside the `if` so the body can reuse it, and the count drops to **7**.  This is the cost of a notation that has no place to put a temporary variable, and the `:=` operator was added to Python largely to give it one.
+- **Nesting order** trips nearly everyone.  `for a ... for b ...` runs `a` as the *outer* loop, the same order you would write the nested `for` statements, which is the opposite of what the reversed reading of "for b, for a" suggests.
+- **The generator** costs 208 bytes against roughly 800 KB for the list, because it stores a recipe rather than a result.  That is CTQ 2.5's answer, and the `any(...)` line is the sharper version: a generator can answer a question about a billion elements because it stops at the first one that settles the matter.  A list comprehension would have to build all billion first.
+
+## What Declarative Buys, and What It Charges
+
+The three notations from Model 2 are worth putting side by side one more time, because the equivalence is the entire argument for the style:
+
+| Notation | The same query |
+|---|---|
+| Set-builder | $\{\, f(x) \mid x \in S,\ p(x) \,\}$ |
+| Python | `[f(x) for x in S if p(x)]` |
+| SQL | `SELECT f(x) FROM S WHERE p(x)` |
+
+Each names a source, a filter, and a transformation, and **none of them says in what order to do the work**.  That silence is the point.  It is what lets SQL's optimizer decide to apply your `WHERE` before your `SELECT`, or use an index, or run the scan on eight cores, without asking you.  You gave up control of the *how* and got machinery in return.
+
+Python's comprehension is the small, tame version: the language reserves the right to build the list however it likes, and in practice it does roughly what your loop would have done, slightly faster.  Prolog and SQL are the ambitious versions, where "let the machinery find it" means a query planner or a resolution engine.  Same bargain, wildly different scale.
+
+And it is a bargain, not a gift.  What you pay:
+
+- **You cannot step into it.**  There is no line to set a breakpoint on, no place to add a `print`, no `break` when you have seen enough.  Refactoring a comprehension back into a loop is a routine debugging move, and having to do it is the cost showing up.
+- **You cannot easily short-circuit it.**  A list comprehension always runs to the end of the source.  The generator can stop early, which is why `any` and `next` pair with generators and not with list comprehensions.
+- **It stops scaling with depth.**  One `for` and one `if` reads beautifully.  Three `for`s, two `if`s, and a conditional expression in the body is a write-only line, and the loop it replaced was better.  A comprehension is a *sentence*; when it needs a paragraph, write the paragraph.
+- **Fluency is not universal.**  Week 0's language-evaluation criteria called readability relative to the reader, and comprehensions are the sharpest example in the language: the same line is clearer to a fluent Python reader and murkier to a newcomer, and both readings are correct reports about the reader.
+
+> **Watch out!**  "Pythonic" is a claim about idiom, not about brevity, and the two come apart in both directions.  A comprehension that has grown three clauses is short and thoroughly un-Pythonic; an explicit loop with a good name is longer and, at that point, the idiomatic choice.  When you catch yourself defending a line because it is clever, you have stopped arguing about idiom.
+
+### Critical Thinking Questions
+
+20.  The dict comprehension printed its pairs in the order the scores appeared, while the set printed in an order you did not choose.  Which of those two is a *guarantee* of the language and which is an accident of the implementation?  Look it up before answering, and say how you checked.
+21.  `[c for s in scores if (c := curve(s)) >= 70]` fixes the double evaluation, but a reader now has to notice that the `if` clause has a side effect on the body.  Is that a fair trade?  Give the version you would actually ship, and defend it.
+22.  SQL's optimizer is free to reorder your query because you did not specify an order.  Python's comprehension has essentially no optimizer.  What would Python have to give up in order to earn one?  (Consider: what could `f` do that a SQL expression cannot?)
+23.  A comprehension cannot `break`.  A generator plus `next` can stop whenever the consumer likes.  Explain that difference in terms of *who controls the loop*, and connect it to why `reduce` was the awkward one of the big three in Part II.
+24.  Your project language will need some way to build a collection.  Decide now whether it gets a comprehension, and write two sentences for `SEMANTICS.md`: what the syntax is, and whether it is lazy.  If you say no, say what the programmer writes instead.
+
+### Try It Yourself
+
+```python
+# TODO 1: rewrite each of these as a single comprehension, then decide, for
+#         each one, whether the comprehension is actually the better code.
+#         Say so explicitly. One of the three should be left as a loop.
+#
+#   (a) result = []
+#       for w in words:
+#           if len(w) > 3:
+#               result.append(w.upper())
+#
+#   (b) counts = {}
+#       for w in words:
+#           counts[w] = counts.get(w, 0) + 1
+#
+#   (c) best = None
+#       for w in words:
+#           if best is None or len(w) > len(best):
+#               best = w
+
+words = ["to", "be", "or", "not", "to", "be", "that", "is", "the", "question"]
+
+# TODO 2: write the SQL statement that corresponds to your answer for (a),
+#         treating `words` as a one-column table. Then say which part of your
+#         Python is the SELECT, which is the FROM, and which is the WHERE.
+
+# TODO 3: (b) counts words. Write it as a comprehension and then explain why
+#         the result is wrong, in terms of what a comprehension cannot do that
+#         the loop's accumulator could. This is the one to leave as a loop.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
 

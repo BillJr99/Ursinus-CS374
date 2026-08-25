@@ -116,6 +116,8 @@ print("  a pipeline of functions, or nothing at all.")
 - Versions 1 and 2 both maintain a running total that changes over time.  If two threads ran either one, you would have to think about it.  Versions 3 and 4 never update anything, which is the property we will chase for the next two sessions.
 - Version 3 is deliberately written the ugly way, with explicit `lambda`s, so you can see the three separate jobs: select, transform, combine.  Those three jobs have names (`filter`, `map`, `reduce`), and by the end of the functional sessions you will reach for them without thinking.
 - Version 4 is the shortest and hides the most.  Hiding machinery is what "declarative" means, and it is a tradeoff, not a free win: ask anyone who has tried to make a slow SQL query fast.
+- Say what version 4 *is*, precisely, because the notation is older than the language.  It names a source, a filter, and a transformation, and says nothing about the order of the work.  Mathematicians write $\{\, x^2 \mid x \in data,\ x \text{ even} \,\}$; SQL writes `SELECT x*x FROM data WHERE x % 2 = 0`; Python writes the comprehension you are looking at.  Three notations, one idea.  What the machinery gets in exchange for your silence about ordering is freedom: SQL's optimizer may reorder the filter, use an index, or split the work across cores, none of which you asked for or can prevent.
+- Version 1 is the opposite bargain.  It specifies the order exactly, one `append` at a time, and the answer does not exist until the last step runs.  That is what **imperative** means, and the contrast with version 4 is the cleanest one-screen illustration of the difference you will see all term.
 
 ### Critical Thinking Questions
 
@@ -123,6 +125,7 @@ print("  a pipeline of functions, or nothing at all.")
 2.  Which of the four versions would be easiest to test in isolation, and why?  Which would be hardest to debug when it produced the wrong number?
 3.  Rewrite version 1 so that it computes the sum of the *odd* squares.  Now do the same for version 3.  Which edit was more localized, and what does that tell you about where each paradigm puts the "select" decision?
 4.  Name a task where the imperative version is clearly the right one to write.  Paradigm choice is engineering, not fashion.
+5.  Version 4 does not specify the order of the work, and that silence is what lets a query planner optimize.  Name one thing you *lose* by not specifying the order.  (Try to answer from the debugging seat: where would you put a `print` inside version 4?)
 
 ---
 
@@ -517,6 +520,9 @@ for x in range(10):
         result_loop.append(x ** 2)
 
 # Option 2: comprehension (concise, rewards fluency)
+# The declarative one. Read it as a query, because that is what it is:
+#     SELECT x*x  FROM range(10)  WHERE x % 2 = 0
+# source, filter, transformation -- and no statement about ordering.
 result_comp = [x ** 2 for x in range(10) if x % 2 == 0]
 
 # Option 3: functional pipeline (composable, unfamiliar to imperative readers)
@@ -526,6 +532,8 @@ print(f"  Loop:          {result_loop}")
 print(f"  Comprehension: {result_comp}")
 print(f"  Functional:    {result_func}")
 print("  Same answer, different readability/writability profiles")
+print("  Comprehensions come back in week 1: dict and set forms, laziness,")
+print("  and what the declarative style charges you for hiding the machinery.")
 
 print()
 print("=== Exception Handling (reliability UP, writability cost) ===")
