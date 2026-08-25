@@ -330,7 +330,6 @@ schedule:
   title: "Derivations, Parse Trees, Ambiguity, and Precedence"
   link: "Activities/liascript-derivationsambiguity.md"
   liapage: true
-  deliverables:
   readings:
   - rtitle: "Allison, Ch. 6 §6.2: Derivation Trees and Ambiguous Grammars (Operator Precedence and Associativity)"
 - week: "4"
