@@ -157,7 +157,7 @@ textbooks:
   edition: "2nd Edition"
   link: https://www3.nd.edu/~dthain/compilerbook/
   isrequired: false
-  freelyavailable: https://www3.nd.edu/~dthain/compilerbook/compilerbook.pdf
+  freelyavailable: https://dthain.github.io/books/compiler/compilerbook.pdf
 - title: "Programming Languages: Application and Interpretation"
   authors: "Shriram Krishnamurthi"
   link: "https://www.plai.org/"
