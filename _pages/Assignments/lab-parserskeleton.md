@@ -15,13 +15,19 @@ info:
     - To verify parser output with tree-shape tests rather than string comparison
     - To raise a positioned ParseError stating what was expected and what was found
   rubric:
-    - weight: 70
+    - weight: 10
+      description: "Part 0: Before You Start - Recursive Descent Parsing"
+      preemerging: No pseudocode is written and no trace is attempted
+      beginning: Pseudocode is written for a non-terminal but it is not traced on any input
+      progressing: The function is traced on a three-token input but the lookahead points are not marked, or the left-recursive rule is identified without being rewritten
+      proficient: Pseudocode for one non-terminal's recursive-descent function is traced by hand on a three-token input with every lookahead marked; a rule that would make naive recursive descent loop forever is identified as left recursion and rewritten so it terminates
+    - weight: 63
       description: "The First Two Tiers (Goal 1)"
       preemerging: Neither tier runs, or the parser reads tokens without using the Lexer interface
       beginning: parse_primary handles literals but not identifiers or parenthesized expressions, or parse_unary cannot nest
       progressing: Both tiers work for the provided cases but one edge fails, e.g., double negation, or a parenthesized expression as a unary operand
       proficient: parse_primary handles number, string, boolean, identifier, and parenthesized expressions; parse_unary handles negation and logical not, nesting correctly (e.g., --x and not not x); both consume tokens only through peek/advance/expect; and the pattern is documented in one sentence per function
-    - weight: 30
+    - weight: 27
       description: "Tests and Errors (Goals 2-3)"
       preemerging: No tests, or tests compare printed strings instead of tree shapes
       beginning: Tree-shape tests exist for primaries only, and errors are bare Python exceptions
@@ -53,7 +59,20 @@ See the course schedule for the assigned and due dates.
 
 ---
 
-## Part 1: The First Two Tiers (70 points)
+## Part 0: Before You Start — Recursive Descent Parsing (10 points)
+
+Do this one **on paper before you write `parse_primary`**, and ideally before the Recursive Descent Parsing session.  You may do it alone even though the rest of this lab is pair work.
+
+Recursive descent is where a grammar turns into a program you could have written yourself.  Trace one function on three tokens and you will see exactly where lookahead lives.
+
+1.  **Write the pseudocode** of the recursive-descent function for one non-terminal of a small expression grammar, and **trace it by hand on a three-token input**, marking every point where it looks ahead.
+2.  **Identify a grammar rule that would make naive recursive descent loop forever** (left recursion), and rewrite it so it does not.
+
+Bring the trace, with the point marked where you needed **more than one token** of lookahead.  A trace that broke down partway is worth bringing; the peek/decide/consume pattern you build in Part 1 is the fix for wherever it broke.
+
+---
+
+## Part 1: The First Two Tiers (63 points)
 
 In `parser_skeleton.py`, define the AST node dataclasses you need (`Num`, `Str`, `Bool`, `Var`, `Unary`, plus a `Grouping` or pass-through for parentheses; match the node names your grammar work uses), then implement:
 
@@ -62,7 +81,7 @@ In `parser_skeleton.py`, define the AST node dataclasses you need (`Num`, `Str`,
 
 Both functions consume tokens **only** through the Lexer's `peek`/`advance`/`expect`, the discipline the whole ladder depends on.
 
-## Part 2: Tests and Errors (30 points)
+## Part 2: Tests and Errors (27 points)
 
 In `test_skeleton.py`, write **tree-shape tests**: assert on node types and fields (`isinstance(node, Unary)`, `node.op == "-"`, `node.operand.value == 42`), never on printed strings, covering every primary form and at least two nested unary cases.  Then make failure informative: parsing an input that cannot start an expression (e.g., `;`) must raise a `ParseError` stating what was expected, what was found, and the line and column from the offending token.
 
@@ -76,8 +95,9 @@ Submit a ZIP containing `parser_skeleton.py`, `test_skeleton.py` with its passin
 
 | Component | Points |
 |-----------|--------|
-| Part 1: The First Two Tiers | 70 |
-| Part 2: Tests and Errors | 30 |
+| Part 0: Recursive Descent Parsing | 10 |
+| Part 1: The First Two Tiers | 63 |
+| Part 2: Tests and Errors | 27 |
 | **Total** | **100** |
 
 ## Reflection Prompts

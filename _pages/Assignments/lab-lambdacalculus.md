@@ -15,13 +15,19 @@ info:
     - To verify Church encodings of booleans and numerals by reduction
     - To connect lambda calculus to the closures and higher-order functions of the surrounding course
   rubric:
-    - weight: 55
+    - weight: 10
+      description: "Part 0: Before You Start - Beta Reduction and Church Encodings"
+      preemerging: No reductions are attempted
+      beginning: A reduction is attempted but the steps are not shown individually
+      progressing: Both reductions are carried out step by step, but the non-terminating case is not explained, or the SUCC ZERO verification is incomplete
+      proficient: (lambda x. lambda y. x) a b is beta-reduced to normal form with every step written out; the self-application case is reduced far enough to show why it never terminates, and that is explained; SUCC ZERO is verified by reduction to behave like ONE; and the step you were least confident was legal is marked
+    - weight: 50
       description: "Beta Reduction (Goal 1)"
       preemerging: Reductions are missing or skip directly to claimed answers with no steps
       beginning: Simple reductions are correct but the capture-avoidance case substitutes blindly, capturing the free variable
       progressing: All reductions are correct including the alpha-renaming, but redexes are not marked or one sequence skips steps
       proficient: Every reduction is shown one beta-step at a time with the redex underlined or bracketed at each step, the capture case is handled by explicit alpha-renaming with a sentence explaining why, and the normal-order vs. applicative-order question is answered with the divergence example
-    - weight: 45
+    - weight: 40
       description: "Church Encodings (Goals 2, 3)"
       preemerging: Encodings are stated but never verified by reduction
       beginning: The boolean verifications are shown but the numeral ones are missing or incorrect
@@ -51,7 +57,20 @@ This **lab** is entirely on paper: you and a partner evaluate lambda calculus ex
 
 ---
 
-## Part 1: Beta Reduction (55 points)
+## Part 0: Before You Start — Beta Reduction and Church Encodings (10 points)
+
+Do this one **before the Lambda Calculus I session**.  Pencil and paper, and write every step down.
+
+Beta reduction is a rewriting rule, and you learn it by applying it slowly with each step recorded.  Two reductions will do: one that reaches a normal form and one that never will.  The second is why the lambda calculus is worth a unit of this course.
+
+1.  **Beta-reduce `(λx. λy. x) a b`** to normal form, showing each step.  Then try **`(λx. x x)(λx. x x)`** and explain what happens.
+2.  **Using the Church encodings from the reading**, verify by reduction that `SUCC ZERO` behaves like `ONE`.
+
+Bring **the reduction step you were least confident was legal**.  Those are the ones we work through at the board, and capture-avoiding substitution in Part 1 is usually the reason one felt wrong.
+
+---
+
+## Part 1: Beta Reduction (50 points)
 
 In `reductions.md`, reduce each expression to normal form, **one beta-step per line, marking the redex** you contract at each step:
 
@@ -61,7 +80,7 @@ In `reductions.md`, reduce each expression to normal form, **one beta-step per l
 4.  **The capture case:** `(λx. λy. x) y`: blind substitution captures the free `y`; alpha-rename first and add one sentence explaining what would have gone wrong without it.
 5. `(λx. x x) (λx. x x)`: reduce three steps, then state what this term tells you about termination.  Then answer: given `(λx. z) ((λx. x x) (λx. x x))`, which evaluation order (normal or applicative) terminates, and what does that imply about lazy evaluation?
 
-## Part 2: Church Encodings (45 points)
+## Part 2: Church Encodings (40 points)
 
 Using `TRUE = λt. λf. t`, `FALSE = λt. λf. f`, `AND = λp. λq. p q p`, and numerals `ZERO = λf. λx. x`, `ONE = λf. λx. f x`, `SUCC = λn. λf. λx. f (n f x)`:
 
@@ -80,8 +99,9 @@ Submit `reductions.md` (or a scanned/photographed handwritten equivalent, legibl
 
 | Component | Points |
 |-----------|--------|
-| Part 1: Beta Reduction | 55 |
-| Part 2: Church Encodings | 45 |
+| Part 0: Beta Reduction and Church Encodings | 10 |
+| Part 1: Beta Reduction | 50 |
+| Part 2: Church Encodings | 40 |
 | **Total** | **100** |
 
 ## Reflection Prompts
