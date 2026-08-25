@@ -5,42 +5,49 @@ title: "CS374: Principles of Programming Languages - Functional Programming with
 
 info:
   coursenum: CS374
-  purpose: "To get a Scheme environment running on your own machine and then write, from scratch, the list recursion, functional composition, and closures that the functional paradigm is actually made of, ending with one small program of your own."
+  purpose: "To get a Scheme environment running on your own machine and then write, from scratch, the list recursion, functional composition, and closures that the functional paradigm is actually made of, ending with an evaluator for arithmetic expressions written as nested lists."
   tilt:
-    task: "Install Scheme (or open a browser REPL), work the four guided examples, then write the exercises and one small toy program of your own, submitting real transcripts of each running."
-    criteria: "I grade this on a working environment with evidence, correct recursive list functions with their empty-list cases handled, correct use of functions as values including a closure, and a small program of your own that runs and is explained, weighted 20/35/20/25 across the four parts.  The rubric below breaks it down in full."
+    task: "Rewrite one of your own loops in a functional style, install Scheme (or open a browser REPL), work the four guided examples, then write the exercises and an evaluator for nested-list arithmetic expressions, submitting real transcripts of each running."
+    criteria: "I grade this on a defended functional rewrite of a loop you wrote, a working environment with evidence, correct recursive list functions with their empty-list cases handled, correct use of functions as values including a closure, and a working expression evaluator that handles an unknown operator and is explained, weighted 10/18/32/18/22 across the five parts.  The rubric below breaks it down in full."
   points: 100
   goals:
+    - To rewrite a loop you already know how to write into map, filter, and reduce, and to say honestly which version reads better and why
     - To install and run a Scheme implementation, or run one in a browser, and to read its error messages
     - To write recursive functions over lists using car, cdr, cons, and a base case, since Scheme has no loop
     - To compose functions and pass them as values, including building a fold that takes its operator as a parameter
     - To write a closure and explain what it captured
-    - To design, write, and explain one small program of your own in a language you met three days ago
+    - To write a recursive evaluator over a nested-list expression tree, the same structure the parser you write in October produces
   rubric:
-    - weight: 20
-      description: "Setup and the Guided Examples (Goal 1)"
+    - weight: 10
+      description: "Part 0: The Functional Rewrite (Goal 1)"
+      preemerging: No rewrite is submitted, or the original loop is not shown
+      beginning: A rewrite is submitted but it does not run, or it still uses an explicit loop
+      progressing: The rewrite runs and is equivalent to the original, but the write-up asserts a preference without arguing for it
+      proficient: Both versions are shown and run; the rewrite uses map, filter, and reduce appropriately; and the write-up argues which is more readable and separates what is about the code from what is about your own habits
+    - weight: 18
+      description: "Setup and the Guided Examples (Goal 2)"
       preemerging: No environment is running and no transcript is submitted
       beginning: A REPL is running but the transcripts are retyped by hand rather than captured, or several examples were not run
       progressing: All four guided examples run and are captured, but the write-up does not say which route was used or what went wrong along the way
       proficient: Every guided example is captured as a real transcript, the write-up names the route taken (local install or browser) with its version, and it reports at least one error you hit and how you read the message
-    - weight: 35
-      description: "List Recursion (Goal 2)"
+    - weight: 32
+      description: "List Recursion (Goal 3)"
       preemerging: The recursive functions are missing, or none returns a correct answer on a nonempty list
       beginning: Some functions work on typical lists but every one of them errors or loops forever on the empty list
       progressing: All functions are correct on nonempty lists and most handle the empty list, but at least one empty-list decision is undocumented or inconsistent with the others
       proficient: czr, reverse, count, and the improved largest are all correct; every one has a documented, defended answer for the empty list using pair? or null?; and the improvement to largest is explained in terms of how many recursive calls it makes rather than asserted
-    - weight: 20
-      description: "Functions as Values (Goals 3, 4)"
+    - weight: 18
+      description: "Functions as Values (Goals 4, 5)"
       preemerging: No function takes or returns another function
       beginning: The operator fold works for addition only, or the counter is written with a global rather than a captured binding
       progressing: The fold works for several operators and the counter increments, but two counters share state or the write-up does not say what was captured
       proficient: The fold takes its operator as a parameter and is demonstrated on at least three operators including one you define yourself; two independently created counters count independently; and the write-up names exactly what each closure captured and where it lives
-    - weight: 25
-      description: "Your Toy Program (Goal 5)"
-      preemerging: No program of your own is submitted
-      beginning: A program is submitted but does not run, or is a restatement of one of the exercises
-      progressing: The program runs on the given cases but is not tested beyond them, or the write-up describes what it does without explaining the design
-      proficient: The program runs on its own test cases including at least one edge case you chose; it uses recursion and at least one function passed as a value; and the write-up explains one design decision you made and one thing you would do differently with more time
+    - weight: 22
+      description: "The Expression Evaluator (Goal 6)"
+      preemerging: No evaluator is submitted, or it does not run
+      beginning: The evaluator handles a flat expression such as (+ 1 2) but fails on a nested one, or the operator symbol is never resolved to a procedure
+      progressing: The evaluator is correct on all the required test cases but does not detect an unknown operator, or the required extension is missing
+      proficient: The evaluator is correct on every required test case including the three-deep nesting and the division case; an unknown operator is reported rather than crashing; one of the two extensions works; and the write-up answers all three questions, including where the recursion bottoms out and why it terminates
   readings:
     - rtitle: "Programming Paradigms, Evaluating Languages, and an Introduction to Functional Programming Activity"
       rlink: "Activities/liascript-languageevaluation.md"
@@ -65,13 +72,31 @@ tags:
 
 This assignment is the written half of the three sessions we just spent in the functional paradigm.  Everything in it was worked at the board or in the activity decks, so nothing here should be a surprise; what is new is that you write it yourself, with a real interpreter telling you when you are wrong.
 
-Work it in order.  Part 1 gets Scheme running and walks four examples with you.  Parts 2 and 3 are exercises built directly on those examples.  Part 4 is one small program of your own, and it is the part I most want to read.
+Work it in order.  Part 0 is a short warmup in a language you already know, and you should do it before the Functional Programming and Higher-Order Functions session rather than after.  Part 1 gets Scheme running and walks four examples with you.  Parts 2 and 3 are exercises built directly on those examples.  Part 4 is an expression evaluator, and it is the part I most want to read.
 
 **This is individual work.**  Talk to each other about ideas and error messages as much as you like; the code and the write-up are yours.
 
 ---
 
-## Part 1: Getting Scheme Running (20 points)
+## Part 0: Before You Start — The Functional Rewrite (10 points)
+
+Do this one first, in **Python or whatever language you reach for by default**, not in Scheme.  It takes about twenty minutes, and its whole purpose is to make you notice your own habits before a new language starts rearranging them.
+
+Find a loop you have actually written: something from a previous course, a script, anything with a `for` in it that does real work.  Rewrite it using `map`, `filter`, and `reduce` (in Python, `functools.reduce`, and comprehensions count as `map`/`filter` if you say so).
+
+Then, in `part0.md`, put:
+
+1. **Both versions**, the original loop and the rewrite, and the output of each showing they agree.
+2. **Which one you find more readable**, in two or three sentences.
+3. **The honest part**: how much of your answer to (2) is about the code, and how much is about which one you have seen more often?  The first time most people do this, the functional version reads *worse* to them, and that reaction is the interesting data, not a wrong answer.
+
+If your loop refuses to translate cleanly, that is the best possible outcome here.  Say where it broke.  A loop that carries two accumulators, mutates something outside itself, or breaks early is exactly the case where the paradigms genuinely diverge, and naming why is worth more than a smooth rewrite.
+
+> **Note:** you will write a closure in Part 3 (`make-counter`, exercise 9) and trace what it captured there.  Do not do that twice; this part is only the loop.
+
+---
+
+## Part 1: Getting Scheme Running (18 points)
 
 ### Pick a route
 
@@ -86,6 +111,7 @@ You need a Scheme prompt.  Any of these gives you one, and the first two need no
   - **Mac:** `brew install mit-scheme`, provided you have installed [homebrew](https://brew.sh/)
 
 Whichever you pick, get to the point where you can run a file rather than only type at a prompt.  Every exercise below wants a file you can hand in.
+
 
 > **Watch out!**  Forgetting the quote before a list literal is the most common beginner error in this language.  `(1 2 3)` tells Scheme to call the function named `1` with arguments `2` and `3`, and since `1` is not a function you get `application: not a procedure` or similar.  Write `'(1 2 3)` when you mean data.  Trigger this error on purpose once and read the message; the write-up asks you about it.
 
@@ -167,7 +193,7 @@ In `setup.md`: which route you used and its version, the four captured transcrip
 
 ---
 
-## Part 2: List Recursion (35 points)
+## Part 2: List Recursion (32 points)
 
 Put these in `recursion.scm`, with a test call after each one.  Every function here must have a documented answer for the empty list; use `null?` or `pair?` (which returns `#t` for a nonempty list) to guard it, and say in a comment what you decided and why.
 
@@ -192,7 +218,7 @@ The improvement is not a style preference.  Count the recursive calls each versi
 
 ---
 
-## Part 3: Functions as Values (20 points)
+## Part 3: Functions as Values (18 points)
 
 Put these in `higher_order.scm`.
 
@@ -237,47 +263,136 @@ Run it with two counters interleaved.  Then answer in your write-up: what exactl
 
 ---
 
-## Part 4: A Small Program of Your Own (25 points)
+## Part 4: An Expression Evaluator (22 points)
 
-Write one small program, in `toy.scm`, that does something you find worth doing.  Small means roughly fifteen to forty lines.  It must use recursion, and it must pass at least one function as a value somewhere.
+Write this one in `evaluate.scm`.  It is about fifteen lines, and it is the oldest program in this language's history: John McCarthy's 1960 paper defined Lisp by writing an evaluator for Lisp in Lisp, and every interpreter you have ever used is a descendant of that idea.  You are going to write the arithmetic-sized version of it in your first week.
 
-**The one I would pick: a tiny expression evaluator.**  Represent an arithmetic expression as a nested list, exactly the way Scheme writes its own code, and evaluate it:
+### The representation
 
-```scheme
-(evaluate '(+ 1 2))              ; 3
-(evaluate '(* (+ 2 3) 4))        ; 20
-(evaluate '(- (* 6 7) (/ 10 2))) ; 37
+An arithmetic expression is a **nested list**, written exactly the way Scheme writes its own code.  The `car` is the operator symbol; the `cdr` is the list of operands.  A number is a leaf and stands for itself.
+
+So `(* (+ 2 3) 4)` is this list:
+
+```
+    '(* (+ 2 3) 4)              *
+     ├─ car:  *                / \
+     └─ cdr: ((+ 2 3) 4)      +   4
+                             / \
+                            2   3
 ```
 
-A number evaluates to itself.  A list is an operator and its arguments, so evaluate the arguments first (`map` is your friend here) and then apply the operator.  That is the whole program, and it is about fifteen lines.
+That picture on the right is a **syntax tree**, and it is worth knowing now that you will meet it again.  In October the Parser assignment's entire job is to build that same tree out of the flat text `(2 + 3) * 4`.  Scheme hands it to you for free, because Scheme's source code *is* the tree.  That is the trade the language made, and it is why the evaluator fits in fifteen lines here and does not there.
 
-It is also, quietly, the point of this course.  You are writing an evaluator over a syntax tree in the first week of the term.  In October you will write the *parser* whose entire job is to build that same tree out of the flat text `(2 + 3) * 4`, and comparing the two line counts is a conversation I want us to have.
+### The shape of the solution
 
-Extensions if you want them: handle unary minus; look variables up in an association list so `(evaluate '(+ x 1))` works; or use `apply` so an operator can take any number of arguments.
+Every recursion in Part 2 had the same two-case shape, and so does this one:
 
-**If you would rather work with data than syntax**, here is an equally good alternative: a small list-statistics program that reports the count, sum, mean, largest, and reversed form of a list of numbers, built entirely from functions you wrote in Parts 2 and 3, using no built-ins beyond `car`, `cdr`, `cons`, and `null?`.  Make the report itself a list you build, not a pile of `display` calls.
+```scheme
+(define evaluate
+  (lambda (expr)
+    (if (number? expr)
+        expr                     ; base case: a number evaluates to itself
+        ...)))                   ; recursive case: expr is a list
+```
 
-**Anything else of similar size is fine too.**  Run it on your own test cases, including at least one edge case you chose deliberately.
+The recursive case has three steps.  Work them in this order.
+
+**Step 1: get the operator — and read this part twice.**
+
+```scheme
+(car '(+ 1 2))                   ; +
+```
+
+That looks like it gave you addition.  It did not.  It gave you the **symbol** `+`, which is a name, not the procedure that adds.  Try `((car '(+ 1 2)) 1 2)` in your REPL and read the error; this is the single place everyone loses twenty minutes on this assignment, and you may as well lose it on purpose now.
+
+You need to turn the symbol into the procedure.  Two ways, and you should understand both:
+
+```scheme
+; Way A: dispatch with cond
+(define lookup-op
+  (lambda (sym)
+    (cond ((eq? sym '+) +)
+          ((eq? sym '-) -)
+          ((eq? sym '*) *)
+          ((eq? sym '/) /)
+          (else (error "unknown operator:" sym)))))
+
+; Way B: an association list, searched with assq
+(define ops (list (cons '+ +) (cons '- -) (cons '* *) (cons '/ /)))
+```
+
+Look at what Way B is: a list whose values *are procedures*.  That is Part 3's "functions as values" doing load-bearing work rather than sitting in an exercise.  Either way is acceptable; say in your write-up which you chose.
+
+**Step 2: evaluate the operands.**  Each operand may itself be a whole expression, so each one needs the same treatment — which is to say, `evaluate` calls itself:
+
+```scheme
+(map evaluate (cdr expr))        ; ((+ 2 3) 4)  =>  (5 4)
+```
+
+That is the same `map` from Part 1's Example 4, except the function you are passing it is the one you are in the middle of writing.
+
+**Step 3: apply.**  You now hold a procedure and a list of numbers, which is exactly what `apply` takes:
+
+```scheme
+(apply + '(5 4))                 ; 9
+```
+
+Assemble those three steps and you are done.
+
+### Required test cases
+
+Run all of these and capture the output:
+
+```scheme
+(evaluate '(+ 1 2))                        ; 3
+(evaluate '(* (+ 2 3) 4))                  ; 20
+(evaluate '(- (* 6 7) (/ 10 2)))           ; 37
+(evaluate '(+ 1 (* 2 (- 10 (/ 8 4)))))     ; 17   <- nested three deep
+(evaluate 42)                              ; 42   <- the base case, on its own
+```
+
+Then add **one edge case you chose deliberately**, and say in your write-up why you picked it and what it told you.
+
+### Required: the unknown operator
+
+What should `(evaluate '(+ 1 (& 2 3)))` do?  Your evaluator must **detect the unknown operator and report it**, naming the offending symbol, rather than crashing with whatever Scheme says by default.  `error` is the procedure you want.  This is your first error message as a language implementer, and the standard it has to meet is the one you will be held to in the Lexer and Parser assignments: say what was wrong, and say which thing was wrong.
+
+### Required: one extension, your choice of two
+
+Pick **one** and make it work:
+
+- **Any number of arguments.**  Make `(evaluate '(+ 1 2 3 4))` return `10`.  If you built Step 3 with `apply`, check whether this already works, and if it does, say why in one sentence rather than changing code.
+- **Variables.**  Give `evaluate` a second parameter, an association list of bindings, so that `(evaluate '(+ x 1) '((x . 5)))` returns `6`.  Look symbols up with `assq`, and decide what happens when a variable is not bound.  Be warned that you are building an *environment* here — the same structure the Interpreter assignment builds in November, and the same one the Environments and Scope lab makes you get right.
+
+### What to write up
+
+In `writeup.md`:
+
+- How many lines is your `evaluate`?  Count them.
+- What is `(map evaluate (cdr expr))` doing that a `for` loop over the operands would not?  Answer in terms of the nesting, not in terms of style.
+- Where does the recursion bottom out, and how do you know it terminates on every well-formed expression?
 
 ---
 
 ## Deliverables
 
-Submit a ZIP containing `setup.md` (route, version, four transcripts, one error), `recursion.scm`, `higher_order.scm`, `toy.scm`, and a `writeup.md` answering the questions raised in Parts 2, 3, and 4.  Include the output of each `.scm` file, either captured in a comment at the bottom of the file or pasted into the write-up.
+Submit a ZIP containing `part0.md` (both loop versions, their output, and your readability argument), `setup.md` (route, version, four transcripts, one error), `recursion.scm`, `higher_order.scm`, `evaluate.scm`, and a `writeup.md` answering the questions raised in Parts 2, 3, and 4.  Include the output of each `.scm` file, either captured in a comment at the bottom of the file or pasted into the write-up.
 
 ## Grading Breakdown
 
 | Component | Points |
 |-----------|--------|
-| Part 1: Getting Scheme Running | 20 |
-| Part 2: List Recursion | 35 |
-| Part 3: Functions as Values | 20 |
-| Part 4: A Small Program of Your Own | 25 |
+| Part 0: The Functional Rewrite | 10 |
+| Part 1: Getting Scheme Running | 18 |
+| Part 2: List Recursion | 32 |
+| Part 3: Functions as Values | 18 |
+| Part 4: An Expression Evaluator | 22 |
 | **Total** | **100** |
 
 ## Reflection Prompts
 
 - Which was harder: getting Scheme installed, or getting your first recursion to terminate?  What does your answer suggest about where the real cost of a new language sits?
 - Name one thing that was genuinely easier here than it would have been in Python, and one thing that was genuinely harder.
+- Your `evaluate` walks a syntax tree in about fifteen lines.  In October you will write a parser whose only job is to *build* that tree from flat text.  Before you write it: how much code do you think that will take, and what exactly is the parser doing that Scheme did for you here?  I will ask you to look back at your answer.
 - AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
 - Approximately how many hours it took you to finish this (I will not judge you for this at all; I am simply using it to gauge if the assignments are too easy or hard)?

@@ -18,19 +18,25 @@ info:
     - To verify the round-trip law with property-based testing (Hypothesis), using a recursive AST generator and an automatically shrunk counterexample
     - To report syntax errors with positions, expected tokens, and found tokens
   rubric:
-    - weight: 30
+    - weight: 10
+      description: "Part 0: Before You Start - Abstract Syntax Trees"
+      preemerging: No AST is drawn and no node types are designed
+      beginning: A tree is drawn but it is a parse tree rather than an AST, or no node types are designed
+      progressing: The AST for 3 + 4 * 5 is correct and node types are sketched, but the write-up does not say what the AST discarded, or the node types omit one of the two required constructs
+      proficient: The AST (not the parse tree) for 3 + 4 * 5 is drawn with precedence correct, and one sentence names what it threw away that the parse tree kept; node types for if/else and for function calls are designed concretely; and the one field you added out of uncertainty is marked as such
+    - weight: 27
       description: "EBNF Grammar and Parsing Theory (Goal 1: write a formal EBNF grammar covering expressions, statements, and programs, and reason about how a bottom-up parser would treat it)"
       preemerging: No grammar is provided, or the grammar is so incomplete that fewer than half the language constructs are covered
       beginning: A grammar is provided but contains ambiguities, missing precedence levels, or structural errors that would cause the parser to behave incorrectly; the theory questions are unanswered or answered without reference to parser actions
       progressing: The grammar covers all constructs and is mostly unambiguous, but the precedence ladder is incomplete (e.g., comparison operators at the wrong level) or associativity is not explicit; most theory questions are answered but one trace or conflict explanation has a mechanical error
       proficient: The grammar is complete, unambiguous, and matches the implemented parser exactly; every precedence level is a separate non-terminal, associativity is enforced by structure, and the dangling-else resolution is stated explicitly, and the parsing theory questions are answered correctly, with the shift-reduce and reduce-reduce conflicts explained in terms of stack actions, a correct hand-executed shift-reduce trace, and the left-recursion contrast stated, demonstrating mastery of formal language specification in both the top-down and bottom-up views
-    - weight: 40
+    - weight: 36
       description: "Recursive Descent Parser (Goals 2-3: implement a recursive descent parser with the full precedence ladder and correct associativity)"
       preemerging: The parser fails to run or fails most provided programs due to major structural errors
       beginning: The parser runs but fails on several test programs, e.g., it cannot parse nested constructs, or associativity is wrong at one or more tiers
       progressing: The parser passes the provided test programs but fails on edge cases, e.g., it right-associates `and`/`or` instead of left-associating as the grammar specifies, or it crashes on certain valid inputs
       proficient: A correct parser passes all provided and hidden test programs with correct precedence and associativity at every tier; parenthesized subexpressions, nested blocks, and if-else chains parse correctly; and the parser is built by importing the Lexer unchanged, demonstrating that Goals 2 and 3 are met end-to-end
-    - weight: 30
+    - weight: 27
       description: "AST Design, Tooling, and Error Reporting (Goals 4-5: produce a dataclass AST with pretty-printer/unparser, and report errors with positions)"
       preemerging: No AST node classes exist, or the tree structure does not reflect the program's meaning
       beginning: Node classes exist but the pretty-printer or unparser is missing, or error messages lack positions
@@ -62,6 +68,19 @@ tags:
 ---
 
 This assignment builds the second permanent component of your pipeline, a parser that consumes tokens and produces an AST.  The grammar you write first is the specification and the parser implements it, so the two have to agree exactly.  That holds in every direction below.
+
+---
+
+## Part 0: Before You Start — Abstract Syntax Trees (10 points)
+
+Do this one **before you write any parser code**, and ideally before the Abstract Syntax Trees session.  Pencil and paper, about twenty minutes.
+
+The difference between a parse tree and an AST is a design decision.  You are choosing what the rest of your language implementation never has to think about again.
+
+1.  **Draw the AST — not the parse tree — for `3 + 4 * 5`**, getting the precedence right, and say in one sentence what the AST *threw away* that the parse tree kept.
+2.  **Design the node types** you would use to represent `if`/`else` and function calls in your team's language, as Python dataclasses or as a `match`/`case` shape.
+
+Bring your node types, and **mark the one field you added because you were not sure you could do without it**.  Part 3 of this assignment builds tooling over these nodes, so a field you cannot justify now is one you will be maintaining in November.
 
 ---
 
@@ -124,7 +143,7 @@ See the course schedule for the assigned and due dates; this is the most substan
 
 ---
 
-## Part 1: EBNF Grammar (30 points)
+## Part 1: EBNF Grammar (27 points)
 
 ### Writing the Grammar
 
@@ -194,7 +213,7 @@ Answer these in your readme; they exercise the Table-Driven and LR Parsing sessi
 
 ---
 
-## Part 2: Recursive Descent Parser (40 points)
+## Part 2: Recursive Descent Parser (36 points)
 
 ### Step 2a: AST Node Dataclasses
 
@@ -330,7 +349,7 @@ Trace the parser's calls on this program in your writeup.
 
 ---
 
-## Part 3: AST Tooling and Error Reporting (30 points)
+## Part 3: AST Tooling and Error Reporting (27 points)
 
 ### Step 3a: Pretty Printer
 
@@ -502,9 +521,10 @@ Ensure reproducibility by listing your Python version.
 
 | Component | Points |
 |-----------|--------|
-| Part 1: EBNF Grammar | 30 |
-| Part 2: Recursive Descent Parser | 40 |
-| Part 3: AST Tooling and Error Reporting | 30 |
+| Part 0: Abstract Syntax Trees | 10 |
+| Part 1: EBNF Grammar | 27 |
+| Part 2: Recursive Descent Parser | 36 |
+| Part 3: AST Tooling and Error Reporting | 27 |
 | **Total** | **100** |
 
 ---

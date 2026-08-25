@@ -15,19 +15,25 @@ info:
     - To classify languages by Chomsky hierarchy level and justify each classification
     - To evaluate a syntax design choice against the readability, writability, and reliability criteria
   rubric:
-    - weight: 50
+    - weight: 10
+      description: "Part 0: Before You Start - Syntax, BNF/EBNF, and Grammars"
+      preemerging: No grammar of your own is drafted and no derivation is attempted
+      beginning: A BNF grammar is drafted but it is not extended to EBNF, or no derivation is produced
+      progressing: A BNF grammar is drafted and extended to EBNF and a derivation is given, but the write-up does not say what EBNF made shorter, or does not justify the non-generated string
+      proficient: A BNF grammar of your own is drafted and extended to EBNF with a note on exactly what the EBNF notation bought you; a leftmost derivation of a generated string is shown; and a string the grammar cannot generate is given with an argument for how you know
+    - weight: 45
       description: "EBNF Grammars (Goal 1)"
       preemerging: Grammars are missing or do not use BNF/EBNF notation
       beginning: One grammar is attempted but accepts clearly invalid strings or rejects clearly valid ones
       progressing: Both grammars are written and mostly correct, but one has an undefined nonterminal or accepts an edge case it should reject (or vice versa)
       proficient: Both grammars are complete and correct EBNF; every nonterminal defined, repetition and optionality expressed with EBNF operators rather than ad-hoc prose, and each is accompanied by three strings it accepts and two it rejects, verified by hand against the productions
-    - weight: 30
+    - weight: 27
       description: "Chomsky Classification (Goal 2)"
       preemerging: No classifications, or levels are assigned without reasons
       beginning: Some classifications are correct but reasons restate the level name rather than the structural property
       progressing: All classifications are correct but one or two reasons miss the structural property that forces the level (e.g., nesting requiring a stack)
       proficient: Every sample language is classified correctly with a one-sentence reason naming the structural property that forces its level (finite memory suffices; matching/nesting needs a stack; cross-serial constraints need more), and the writeup names which level the class language's tokens versus its full syntax will each need
-    - weight: 20
+    - weight: 18
       description: "Design-Criteria Argument (Goal 3)"
       preemerging: No argument, or the argument does not reference the course criteria
       beginning: The argument names a criterion but does not connect the syntax choice to a concrete consequence for programmers
@@ -61,7 +67,20 @@ See the course schedule for the assigned and due dates.  Derivation trees and am
 
 ---
 
-## Part 1: Two EBNF Grammars (50 points)
+## Part 0: Before You Start — Syntax, BNF/EBNF, and Grammars (10 points)
+
+Do this one **before the Syntax and BNF/EBNF session**, not after.  Fifteen minutes and a pencil will do it, and you may do it alone even though the rest of this lab is pair work.
+
+You can follow a grammar on a page without being able to write one.  Writing even a tiny grammar forces the decisions the reading makes look obvious: what counts as a terminal, where the recursion goes, and what the notation is actually buying you.
+
+1.  **Write a BNF grammar** for a small language of your choice.  Signed decimal numbers works; so does a boolean expression with `and`, `or`, and `not`.  Then extend it to **EBNF**, and note in one sentence what the EBNF made shorter.
+2.  **Take a short grammar from the reading** and produce a **leftmost derivation** of one string it generates.  Then give a string it *cannot* generate, and explain how you know.
+
+Bring the grammar you drafted, and mark **the rule you are least sure about**.  Rough edges are expected; that uncertain rule is usually the best discussion of the day.
+
+---
+
+## Part 1: Two EBNF Grammars (45 points)
 
 Write a complete EBNF grammar for each, in `grammars.md`, and verify each by hand with **three accepted and two rejected strings**:
 
@@ -70,7 +89,7 @@ Write a complete EBNF grammar for each, in `grammars.md`, and verify each by han
 
 Use EBNF's operators for repetition (`{ }`), optionality (`[ ]`), and grouping; the point of the exercise is expressing shape declaratively rather than in prose.
 
-## Part 2: Chomsky Classification (30 points)
+## Part 2: Chomsky Classification (27 points)
 
 For each language below, name the lowest Chomsky level that can describe it and give a one-sentence reason naming the structural property that forces it:
 
@@ -82,7 +101,7 @@ For each language below, name the lowest Chomsky level that can describe it and 
 
 Close with one sentence each: which level do the class language's *tokens* need, and which does its *full syntax* need, and what does that split tell you about why compilers have both a lexer and a parser?
 
-## Part 3: Design-Criteria Argument (20 points)
+## Part 3: Design-Criteria Argument (18 points)
 
 The configuration language's designer proposes making the trailing `;` optional.  In one paragraph, evaluate the proposal against at least two of the **readability, writability, and reliability** criteria from the Evaluating Languages session, with a concrete consequence for each (what a programmer gains or loses), state the tradeoff, and take a position.
 
@@ -96,9 +115,10 @@ Submit `grammars.md` containing all three parts, with both partners named at the
 
 | Component | Points |
 |-----------|--------|
-| Part 1: EBNF Grammars | 50 |
-| Part 2: Chomsky Classification | 30 |
-| Part 3: Design-Criteria Argument | 20 |
+| Part 0: Syntax, BNF/EBNF, and Grammars | 10 |
+| Part 1: EBNF Grammars | 45 |
+| Part 2: Chomsky Classification | 27 |
+| Part 3: Design-Criteria Argument | 18 |
 | **Total** | **100** |
 
 ## Reflection Prompts

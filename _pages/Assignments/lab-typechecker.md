@@ -15,13 +15,19 @@ info:
     - To check annotated declarations, variable uses, and operator applications, reporting errors with positions and both conflicting types
     - To state typing rules precisely on paper before encoding them
   rubric:
-    - weight: 70
+    - weight: 10
+      description: "Part 0: Before You Start - Type Systems"
+      preemerging: No program is annotated and no rejected expression is found
+      beginning: A program is annotated but no expression is identified that a checker would reject
+      progressing: An annotated program and a rejected expression are given, but the write-up does not state a preference between the static and dynamic behavior, or names no guarantee and no forbidden program
+      proficient: Each subexpression of a small program is annotated with its expected type; one expression a static checker rejects but a dynamic language would run is identified, with a defended preference for one behavior; and one guarantee a type system buys is stated alongside one program it forbids that you wish it allowed
+    - weight: 63
       description: "The Checker Core (Goals 1, 2)"
       preemerging: The checker is missing, or it never rejects an ill-typed program
       beginning: The checker rejects some ill-typed programs but misses operator mismatches, or it crashes on programs it should reject cleanly
       progressing: All provided ill-typed programs are rejected, but error messages lack positions or name only one of the two conflicting types
       proficient: Every provided well-typed program is accepted and every ill-typed program rejected with a message of the form "Type error at line L, col C" naming both conflicting types; the type environment correctly scopes annotations through nested blocks
-    - weight: 30
+    - weight: 27
       description: "Typing Rules on Paper (Goal 3)"
       preemerging: No rules are written, or they contradict the implemented checker
       beginning: Rules are written for literals only
@@ -48,7 +54,20 @@ This **lab** builds the core of the Interpreter assignment's Part 4, the small s
 
 ---
 
-## Part 1: The Checker Core (70 points)
+## Part 0: Before You Start — Type Systems (10 points)
+
+Do this one **before you write the checker**, and ideally before the Type Systems session.  About fifteen minutes.
+
+Everyone has a position on static typing, and almost nobody arrives with an example.  An example is what makes the argument worth having.
+
+1.  **Annotate each subexpression** of a small program with the type you expect.  Then find **one expression a static type checker would reject that a dynamic language would happily run**.  Which behavior do you prefer *there*, and why?
+2.  **State one guarantee** a type system buys you, and **one program it forbids that you wish it allowed**.
+
+Bring the program you wish the checker had allowed.  Come with it even if you could not settle the question; the unsettled ones are what we argue about, and Part 1 makes you take a side in code.
+
+---
+
+## Part 1: The Checker Core (63 points)
 
 Implement `check(program) -> None` in `typechecker.py`, walking the class AST (use your Parser assignment's AST nodes, or the reference AST) with a **type environment**: the same parent-chaining discipline as your Environments lab, but binding names to *types* rather than values:
 
@@ -59,7 +78,7 @@ Implement `check(program) -> None` in `typechecker.py`, walking the class AST (u
 
 Verify against the provided programs (course starter repo): six well-typed programs that must pass silently, and six ill-typed programs that must each produce a positioned error, including the classic `let x: Num = 1 + true;` (error *before* anything runs) and a shadowing case where an inner `let x: Str` legitimately changes the type of `x` for the inner scope only.
 
-## Part 2: Typing Rules on Paper (30 points)
+## Part 2: Typing Rules on Paper (27 points)
 
 In `RULES.md`, state the typing rule for each construct your checker covers: one rule per construct, premises and conclusion, in either inference-rule layout or a disciplined "if... then..." sentence (e.g., *if `e1 : Num` and `e2 : Num`, then `e1 + e2 : Num`*).  Cite, for each rule, the function or branch in `typechecker.py` that implements it.  This document becomes the seed of the Interpreter assignment's semantics writeup, and if you later choose the full Hindley-Milner direction, these rules are exactly what inference generalizes.
 
@@ -75,8 +94,9 @@ Submit a ZIP containing `typechecker.py`, the run log over the twelve provided p
 
 | Component | Points |
 |-----------|--------|
-| Part 1: The Checker Core | 70 |
-| Part 2: Typing Rules on Paper | 30 |
+| Part 0: Type Systems | 10 |
+| Part 1: The Checker Core | 63 |
+| Part 2: Typing Rules on Paper | 27 |
 | **Total** | **100** |
 
 ## Reflection Prompts

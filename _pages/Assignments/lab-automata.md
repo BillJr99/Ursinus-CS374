@@ -16,19 +16,25 @@ info:
     - To trace the subset construction and Thompson's construction by hand on small examples
     - To connect automata to the regular expressions and lexer of the surrounding course
   rubric:
-    - weight: 40
+    - weight: 10
+      description: "Part 0: Before You Start - Regular Expressions and Finite Automata"
+      preemerging: Neither the regular expression nor the NFA is attempted
+      beginning: A regular expression is written but no NFA is drawn, or the subset construction is not started
+      progressing: A regex and a matching NFA are given and the subset construction is begun, but it stalls without the stalling step identified, or no accepted string is named
+      proficient: A regular expression for a token class of your choice is given with an NFA that accepts the same language; a small NFA is converted to a DFA by hand over two or three input symbols; one string the DFA accepts is named; and if the state set stopped being obvious, that exact step is marked
+    - weight: 36
       description: "DFA Simulation and Design (Goals 1, 2)"
       preemerging: The DFA simulator fails to run or fails most provided machines due to major structural errors
       beginning: The DFA simulator runs but fails on several test cases due to minor issues such as incorrect transition lookups or missing alphabet validation
       progressing: The DFA simulator passes the provided test cases but mishandles edge cases such as the empty string or symbols outside the alphabet, or the designed DFA lacks state annotations
       proficient: A correct DFA simulator passes all provided test machines, handles the empty string and out-of-alphabet symbols deliberately, supports trace mode, and runs the designed DFA with documented state meanings and passing tests
-    - weight: 40
+    - weight: 36
       description: "NFA Simulation and Design (Goals 1, 2)"
       preemerging: The NFA simulator is missing or fails to compute epsilon-closures correctly
       beginning: The NFA simulator runs but produces incorrect results on several machines due to epsilon-closure errors or incorrect powerset tracking
       progressing: The NFA simulator passes the provided test cases but would fail on machines with epsilon cycles, or the designed NFA does not actually use nondeterminism
       proficient: A correct NFA simulator correctly computes epsilon-closures with cycle detection, tracks the set of active states, and passes all provided test machines plus the designed NFA with traced execution paths
-    - weight: 20
+    - weight: 18
       description: "By-Hand Constructions (Goals 3, 4)"
       preemerging: Neither construction is attempted, or both traces are fundamentally incorrect
       beginning: One construction is traced but the other is missing, or both contain significant errors
@@ -53,6 +59,19 @@ tags:
 In this **lab** you'll build the machines beneath your lexer.  That means general simulators for DFAs and NFAs that read machine definitions as data, one machine design of each kind, and a by-hand trace of the two classic constructions.  The simulators are short programs, and you can check their correctness against the worked traces below.  The constructions are paper exercises, so there is no code to write for those.
 
 **Pair policy.**  You may do this lab **in pairs**.  Work together at one screen or split the DFA and NFA halves and review each other's work; either way, both of you submit the same ZIP, each naming the other in the writeup, and you both earn the same grade.  You may also work alone if you prefer.  Unlike the programming assignments, no individual-work certification is required here; the reflection asks who did what instead.
+
+---
+
+## Part 0: Before You Start — Regular Expressions and Finite Automata (10 points)
+
+Do this one **on paper, before you write any simulator code**, and ideally before the Finite Automata session.  You may do it alone even though the rest of this lab is pair work.
+
+The equivalence of regular expressions and finite automata is the first place this course claims two very different-looking things are the same.  You will believe it once you have built both for a language of your own and watched them agree.  Subset construction by hand is tedious exactly once; after that it is a tool you have.
+
+1.  **Write a regular expression** for a token class of your choice — identifiers, or floating-point literals — and then **draw an NFA** that accepts the same language.
+2.  **Convert a small NFA from the reading to a DFA by hand**, doing subset construction over two or three input symbols, and name one string the resulting DFA accepts.
+
+Bring the construction even if it stalled, and **mark the subset-construction step where the state set stopped being obvious**.  That stall is the useful part, and Part 2 of this lab will have you automate exactly the step you got stuck on.
 
 ---
 
@@ -96,7 +115,7 @@ This lab is handed out once the class sessions on regular expressions and finite
 
 ---
 
-## Part 1: DFA Simulation and Design (40 points)
+## Part 1: DFA Simulation and Design (36 points)
 
 ### Machine Format
 
@@ -151,7 +170,7 @@ Test with at least four accepted and four rejected strings.
 
 ---
 
-## Part 2: NFA Simulation and Design (40 points)
+## Part 2: NFA Simulation and Design (36 points)
 
 ### NFA Machine Format
 
@@ -188,7 +207,7 @@ Hint: nondeterministically guess where `aa` occurs: your design should really us
 
 ---
 
-## Part 3: By-Hand Constructions (20 points)
+## Part 3: By-Hand Constructions (18 points)
 
 These are **paper exercises** in your writeup, no code.  The class sessions covered both algorithms; here you trace each once, on a small example, so you have personally executed what the lexer-generator tools automate.
 
@@ -231,9 +250,10 @@ Ensure reproducibility by listing your Python version.
 
 | Component | Points |
 |-----------|--------|
-| Part 1: DFA Simulation and Design | 40 |
-| Part 2: NFA Simulation and Design | 40 |
-| Part 3: By-Hand Constructions | 20 |
+| Part 0: Regular Expressions and Finite Automata | 10 |
+| Part 1: DFA Simulation and Design | 36 |
+| Part 2: NFA Simulation and Design | 36 |
+| Part 3: By-Hand Constructions | 18 |
 | **Total** | **100** |
 
 ---

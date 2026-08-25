@@ -17,19 +17,25 @@ info:
     - To report lexical errors with precise line and column positions and support both fail-fast and collect-all error modes
     - To deliver a fully tested component that the parser assignment and team project will import unchanged
   rubric:
-    - weight: 30
+    - weight: 10
+      description: "Part 0: Before You Start - Tokens and Scanning"
+      preemerging: The line is not tokenized and no token-class patterns are written
+      beginning: The line is tokenized but tokens carry no types, or the awkward cases are not addressed
+      progressing: The line is hand-tokenized with types and values and three patterns are written, but no overlapping pair is identified, or the 12foo and == cases are answered without reasoning
+      proficient: x = 12 + foo(3) is hand-tokenized with a type and value per token; 12foo and = = versus == are each answered with a defended position; three token-class patterns are written and one overlapping pair is identified with a statement of which rule wins and why order matters
+    - weight: 27
       description: "Token Specification (Goal 1: specify a complete token grammar using ordered regular-expression rules)"
       preemerging: Fewer than half the token types in the specification table are defined, or patterns are so incorrect that the lexer cannot tokenize even simple programs
       beginning: Most token types are defined but several patterns are wrong (e.g., keywords not prioritized over identifiers, or operators missing from the spec)
       progressing: All required token types are defined with correct patterns, but the specification has a minor ordering or coverage gap (e.g., multi-character operators not listed before single-character ones)
       proficient: Every token type in the specification table is defined in the correct priority order; keywords before IDENT, multi-character operators before their single-character prefixes, whitespace and comments skipped, demonstrating mastery of ordered regular-expression rule specification; the spec is externalized in a loadable JSON file (or, in the generator-toolchain direction, expressed as an ordered Flex/PLY rule specification); and the lexing theory questions (Step 1d) are answered with mechanism-level reasoning about maximal munch, keyword handling, and the lexer/parser division of labor
-    - weight: 40
+    - weight: 36
       description: "Lexer Implementation (Goal 2: harden the tokenizer into a reusable Lexer component with peek, advance, and expect)"
       preemerging: The Lexer class does not exist or the peek/advance interface is fundamentally broken
       beginning: The Lexer class exists with peek and advance, but one or both are incorrect, e.g., peek consumes input, or advance skips tokens
       progressing: peek and advance work correctly for most inputs, but edge cases fail, e.g., repeated peek calls return different tokens, or EOF is not handled gracefully
       proficient: The Lexer class implements peek, advance, and expect correctly; peek is idempotent, both return an EOF token at end of input, expect raises a located LexError on mismatch, demonstrating that the component is ready to be imported unchanged by the parser; the lexer has no side effects at import time
-    - weight: 30
+    - weight: 27
       description: "Error Handling, Positions, and Test Suite (Goals 3-5: escape sequences, precise error positions, collect-all mode, and a fully tested deliverable)"
       preemerging: Lexical errors crash Python with an unhandled exception, positions are absent, and no test suite exists
       beginning: Errors are caught and reported, but positions are missing or incorrect, and the test suite covers only a handful of token types
@@ -48,6 +54,19 @@ tags:
 ---
 
 This assignment turns the class tokenizer into a **component**, the first permanent piece of your language pipeline.  The Parser assignment imports it unchanged, and your team project ships it.  Every design decision you make here propagates forward, so please document your interface carefully.  Build in the scaffolded steps below, and test after each step before you move on.
+
+---
+
+## Part 0: Before You Start — Tokens and Scanning (10 points)
+
+Do this one **before the Tokens and Scanning session** and before you write any lexer code.  It takes about twenty minutes on paper.
+
+A scanner is easy to write for input that behaves and interesting to write for input that does not.  The awkward cases below are the ones this assignment actually turns on, so come with an opinion about them before you start implementing.
+
+1.  **Hand-tokenize** the line `x = 12 + foo(3)` into a token stream, giving each token a **type and a value**.  Then predict what your scanner should do with `12foo`, and with `= =` versus `==`.
+2.  **Write the regular expressions** your lexer would use for three token classes, and identify **one pair whose patterns overlap**: which rule wins, and why does order matter?
+
+Bring your answer for `12foo`, and whether you would call it one token, two, or an error.  Bring it even if you are not confident — disagreement about these cases is the whole point, and Part 1's ordered `TOKEN_SPEC` is where your answer becomes a design decision you have to live with.
 
 ---
 
@@ -99,7 +118,7 @@ See the course schedule for the assigned and due dates.  Your starting point is 
 
 ---
 
-## Part 1: Token Specification (30 points)
+## Part 1: Token Specification (27 points)
 
 ### Why Order Matters
 
@@ -185,7 +204,7 @@ Three written questions from the Tokens and Scanning session, graded within Part
 
 ---
 
-## Part 2: Lexer Class Implementation (40 points)
+## Part 2: Lexer Class Implementation (36 points)
 
 ### The Interface Contract
 
@@ -275,7 +294,7 @@ Load and validate the config at `Lexer.__init__` time: every pattern must compil
 
 ---
 
-## Part 3: Error Handling, Positions, and Test Suite (30 points)
+## Part 3: Error Handling, Positions, and Test Suite (27 points)
 
 ### Step 3a: Precise Error Positions
 
@@ -375,9 +394,10 @@ Ensure reproducibility by listing your Python version (`python --version`).
 
 | Component | Points |
 |-----------|--------|
-| Part 1: Token Specification | 30 |
-| Part 2: Lexer Class Implementation | 40 |
-| Part 3: Error Handling and Test Suite | 30 |
+| Part 0: Tokens and Scanning | 10 |
+| Part 1: Token Specification | 27 |
+| Part 2: Lexer Class Implementation | 36 |
+| Part 3: Error Handling and Test Suite | 27 |
 | **Total** | **100** |
 
 ---

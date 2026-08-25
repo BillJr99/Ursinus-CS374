@@ -5,30 +5,38 @@ title: "CS374: Principles of Programming Languages - Overview"
 
 info:
   coursenum: CS374
-  purpose: "To confirm your Python toolchain and capture a baseline of your relationship with languages before the build begins."
+  purpose: "To confirm your Python toolchain, judge two languages you already use against the course's evaluation criteria, and capture a baseline of your relationship with languages before the build begins."
   tilt:
-    task: "Verify your environment with the starter script and write a short Language Autobiography."
-    criteria: "I assess your work on a verified environment and a specific, reflective autobiography.  The rubric below has the details."
+    task: "Argue readability and writability tradeoffs in two languages you already know and translate a snippet across paradigms, verify your environment with the starter script, and write a short Language Autobiography."
+    criteria: "I assess your work on a defended pair of language judgments and an honest paradigm translation, a verified environment, and a specific, reflective autobiography.  The rubric below has the details."
   points: 100
   goals:
+    - To turn the reading's evaluation criteria into judgments you can defend about languages you already use
+    - To classify a snippet's paradigm and name what it costs to translate it into another
     - To verify a working Python development environment for the semester's build
     - To demonstrate baseline command-line, git, and Python-environment fluency by navigating a shell, committing to a repository, and creating a reproducible environment with uv
     - To reflect on your language background as a baseline for the course
     - To run the provided starter script that exercises the libraries used throughout the semester
   rubric:
-    - weight: 40
+    - weight: 10
+      description: "Part 0: Evaluating Languages and Paradigms"
+      preemerging: Neither the language comparison nor the paradigm translation is attempted
+      beginning: Two languages are named and a snippet is classified, but the claims are asserted without a design choice pointed to in either language
+      progressing: Each language is tied to a specific design choice and the snippet is translated, but the write-up does not say what the translation cost, or does not commit to which criterion you value more
+      proficient: Each of the two languages is tied to a named design choice that makes it more readable or more writable; the paradigm of the snippet is classified and it is translated (or the write-up argues concretely why it cannot be); the translation cost is named; and you say which criterion you would give up and why
+    - weight: 36
       description: Environment Setup and Verification
       preemerging: Little or no evidence that the environment was attempted
       beginning: Some components verified, but the transcript is missing or incomplete, or only one or two of the three verification steps are completed
       progressing: Python environment verified with a complete transcript including version information; the starter script ran but with a minor failure (missing library, wrong Python version) documented with a hypothesis and fix attempt, or the command-line and git checkpoint is incomplete
       proficient: Python 3.10 or later verified; the starter script produces the expected banner; editor/IDE identified; all three verification steps produce transcript evidence; the command-line and git checkpoint (Part 1.5) is complete, showing shell navigation and search, a git commit pushed to a remote, and a uv environment; any failure is documented with error text, hypothesis, and resolution
-    - weight: 40
+    - weight: 36
       description: Language Autobiography
       preemerging: The autobiography is missing or does not address any of the four prompts
       beginning: The autobiography addresses some prompts superficially, without specific examples
       progressing: All four prompts are addressed with specific examples drawn from the student's own experience, with limited connection to course themes (parsing, semantics, scoping)
       proficient: All four prompts are addressed with specific examples; the "language fought you" entry uses precise vocabulary (syntax, semantics, type, scope, evaluation order); the reflection question is stated as an open question, not a question whose answer the student already knows
-    - weight: 20
+    - weight: 18
       description: Submission
       preemerging: No submission, or the submission is missing major components
       beginning: The submission is present but disorganized, transcript and autobiography are hard to tell apart, or one is missing
@@ -56,6 +64,24 @@ The purpose of this warmup is to confirm your tools before the build begins, and
 The Warmup is the Teams-based onboarding survey, and the Overview is the technical setup plus the Language Autobiography.  They are separate deliverables.
 
 One pointer before you begin.  Several assignments this semester offer **directions**, which are equivalent ways of meeting the same deliverable, and some of those directions build toward live-coded music.  If a language that makes music appeals to you, please skim the [Music and Live-Coding guide]({{ site.baseurl }}/Projects/TeamLanguage#the-music-and-live-coding-path) this week.  You choose directions later, inside each assignment, so nothing is committed now.
+
+---
+
+## Part 0: Before You Start — Evaluating Languages and Paradigms (10 points)
+
+Do this one **before the Programming Paradigms and Evaluating Languages session**, not after.  It takes about fifteen minutes and a pencil, and it is the only part of this assignment that has nothing to do with your toolchain.
+
+Readability and writability are easy words to nod at and hard to use well.  They only get sharp when you point them at code you have actually written, in languages you have actually argued about.
+
+**1. Two languages you already know.**  Pick two.  Write **one sentence each** naming a specific *design choice* that makes one of them more **readable** and the other more **writable**.  A design choice is something concrete — significant whitespace, mandatory type annotations, operator overloading, list comprehensions, semicolons, `null` — not a mood.  Then say which of the two criteria you would give up if you had to, and why.
+
+**2. A snippet across paradigms.**  Take about five lines of code in any language and classify the paradigm it primarily represents (imperative, object-oriented, functional, declarative).  Then rewrite it in a *different* paradigm, and name what the translation cost you: lines, clarity, performance, or something you could no longer express at all.
+
+If you cannot finish the translation, that is a real answer and it earns full credit — as long as you say precisely where it broke and why. An argument you could not finish sets the session's agenda better than a clean page does.
+
+**What to bring to class:** the sticking point. The translation that stalled, or the design choice you could not call good or bad. That is what we start from.
+
+Put both parts in your submission under a heading `Part 0`.
 
 ---
 
@@ -231,9 +257,10 @@ Pose one question about how programming languages work that you hope this course
 ## Deliverables
 
 Submit a **single PDF** (preferred) or Markdown file containing:
-1.  The verification transcript for all three environment steps.
-2.  The command-line and git checkpoint transcript (Part 1.5: navigation/search, git commit/push, uv environment).
-3.  The language autobiography (all four prompts, approximately one page).
+1.  Part 0: the two language judgments and the paradigm translation, under a `Part 0` heading.
+2.  The verification transcript for all three environment steps.
+3.  The command-line and git checkpoint transcript (Part 1.5: navigation/search, git commit/push, uv environment).
+4.  The language autobiography (all four prompts, approximately one page).
 
 Please also answer the following questions in your submission:
 
