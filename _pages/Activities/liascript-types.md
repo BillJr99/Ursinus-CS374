@@ -403,6 +403,8 @@ for label, prog in cases:
 
 > **Watch out!**  A static checker reasons about types without ever computing a value, so it cannot catch errors that depend on runtime data: dividing by a variable that happens to be zero, or indexing an array at a position the user types in.  "Type safe" is not "bug free."  A well-typed program can still crash and can still be wrong; it just cannot fail in the specific structural ways the type system forbids.
 
+> **Watch out!**  There is a second thing a static checker cannot see, and it is about *where* it looks rather than *when*.  A C or C++ compiler checks one **translation unit**, one source file with its headers pasted in, and then forgets everything.  It never checks a *program*.  Two files can hold flatly contradictory beliefs about the same global variable and every tool in the pipeline will wave them through, because the station that finally sees both files, the linker, matches names and has no types left to compare.  The Extension at the end of this deck compiles, links, and runs exactly that program.
+
 ### Critical Thinking Questions
 
 5.  The comparison rule returns `Bool` no matter what its operands were, while the arithmetic rule returns `Int`.  Explain why comparison is the odd one out, in terms of what the *result* of the operation is.
@@ -858,7 +860,165 @@ Erasure is why a clean `tsc` run cannot protect you at runtime, which is CTQ 13'
 
 ---
 
+# Extension: When Static Typing Stops at the File Boundary
+
+Everything in Part II assumed the checker can see the program.  For C and C++ that assumption is false, and the gap is wide enough to drive a real bug through.
+
+## Two Files That Disagree
+
+Here is a complete program.  Read both files and predict what it prints.
+
+```c
+/* physics.c */
+float gravity = 9.81f;
+```
+
+```c
+/* report.c */
+#include <stdio.h>
+
+extern int gravity;
+
+int main(void) {
+    printf("gravity as int: %d\n", gravity);
+    return 0;
+}
+```
+
+Compile and link it the ordinary way:
+
+```bash
+gcc -c physics.c -o physics.o     # no warning
+gcc -c report.c  -o report.o      # no warning
+gcc physics.o report.o -o demo    # no warning
+./demo
+```
+
+It prints:
+
+```
+gravity as int: 1092416963
+```
+
+No diagnostic at any stage, not even with `-Wall -Wextra`.  A number that appears nowhere in the source is now in the output.
+
+**Why each stage stayed quiet.**  `physics.c` is internally consistent: it declares a float and initializes it with a float.  `report.c` is internally consistent too: it declares an int and prints it with `%d`.  Neither compiler invocation ever sees the other file, so neither has anything to object to.  A **translation unit** is the compiler's entire universe.
+
+Then the linker runs, and the linker is the first tool that sees both names together.  Run `nm` on the object files and you can see everything it has to work with:
+
+```
+physics.o:   0000000000000000 D gravity
+report.o:                     U gravity
+```
+
+`D` means "defined, in the data section."  `U` means "used, undefined here."  The linker matches `U gravity` to `D gravity` and it is done.  `readelf` shows the full entry, and the full entry is the point:
+
+```
+   Num:    Value          Size Type    Bind   Vis      Ndx Name
+     2: 0000000000000000     4 OBJECT  GLOBAL DEFAULT    2 gravity
+```
+
+A name.  A size.  A binding.  A section.  **There is no type field.**  Not because this linker is lazy, but because there is nowhere in the format to put one: types are a per-file, compile-time idea, and by link time they have been erased.
+
+## Model: The Same Four Bytes, Read Two Ways
+
+Predict the printed integer before you run this.  You will not get it right, and that is the lesson: nothing about `9.81` suggests it.
+
+```python
+import struct
+
+# --- What physics.c actually put in memory -----------------------------------
+raw = struct.pack("<f", 9.81)          # 'float gravity = 9.81f;'  -> 4 bytes
+
+print("physics.c:  float gravity = 9.81f;")
+print("   bytes in memory:  " + " ".join("%02x" % b for b in raw))
+print()
+
+# --- What report.c believes those same bytes are ----------------------------
+print("report.c:   extern int gravity;   printf(\"%d\", gravity);")
+print("   same bytes, read as int:  " + str(struct.unpack("<i", raw)[0]))
+print()
+print("Neither file is wrong on its own, and neither tool objected.")
+print()
+
+# --- Why no tool objected ----------------------------------------------------
+# An ELF symbol entry is roughly this much, and no more:
+physics_o = ("gravity", 4, "GLOBAL", "OBJECT")
+report_o  = ("gravity", 4, "GLOBAL", "OBJECT")
+
+print("What the linker compares:")
+print("   physics.o defines:  name=" + physics_o[0] + "  size=" + str(physics_o[1])
+      + "  bind=" + physics_o[2] + "  kind=" + physics_o[3])
+print("   report.o  uses:     name=" + report_o[0] + "  size=" + str(report_o[1])
+      + "  bind=" + report_o[2] + "  kind=" + report_o[3])
+print("   names match, sizes match  ->  linked, no diagnostic")
+print()
+print("There is no field in that entry for 'float' or 'int'. There is nowhere")
+print("to put one. The compiler knew, and threw it away.")
+print()
+
+# --- The milder variant, where a size check WOULD have a chance --------------
+wide = struct.pack("<d", 9.81)         # 'double gravity = 9.81;'  -> 8 bytes
+print("Contrast, if physics.c had used a double instead:")
+print("   double is " + str(len(wide)) + " bytes, int is " + str(len(struct.pack("<i", 0))) + " bytes")
+print("   low 4 bytes read as int:  " + str(struct.unpack("<i", wide[:4])[0]))
+print("   a size-comparing linker could at least warn here -- 8 != 4.")
+print("   float vs int gives it nothing to notice: 4 == 4.")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: the int is `1092416963`, which is exactly what the real C program prints.
+
+### Reading the Code
+
+- `struct.pack("<f", 9.81)` produces the four bytes `c3 f5 1c 41`, the IEEE-754 single-precision encoding of 9.81 on a little-endian machine.  `struct.unpack("<i", ...)` re-reads those same bytes as a two's-complement integer.  Nothing is converted; the bytes never move.  Only the *interpretation* differs, and the interpretation is exactly what the type declaration supplies.
+- The tuples standing in for symbol-table entries are not a simplification for teaching.  That really is the shape of the information, which is why the mismatch is undetectable rather than merely undetected.
+- The `float`/`int` pairing is chosen deliberately.  With `double`/`int` the sizes differ, 8 against 4, and a linker that compares sizes has something to complain about.  With `float`/`int` both are 4 bytes and the last possible check evaporates.
+
+### Critical Thinking Questions
+
+8.  Trace the *lie* through the pipeline and name, at each of the three stations from *Table-Driven and LR Parsing*, what that station knew and what it had already forgotten.  At which station did the last piece of information that could have caught this disappear?
+9.  Part I placed C in the **static, weak** quadrant.  Does this bug belong to the *static* axis or the *weak* axis?  Defend your answer, then argue the opposite one; the disagreement is the useful part.
+10.  The `# Extension: Type Erasure` section above showed Java erasing generic type arguments before runtime.  This section shows C erasing *all* types before linking.  State what the two erasures have in common in one sentence, and then state the difference in what each one costs you.
+11.  C's actual answer is a shared header: put `extern float gravity;` in `gravity.h` and `#include` it from both files.  Explain precisely why that works, then explain precisely why it is a *convention* and not a *guarantee*.  What stops `report.c` from simply not including it?
+12.  Suppose the linker did carry a type on every symbol.  Name two costs of that design.  (Think about what has to agree between two files compiled by different compilers, or in different languages, years apart.)
+13.  Your project language will eventually have more than one source file.  Write the rule for `TYPES.md` in two sentences: when a name defined in one module is used in another, what checks that the two agree, and at what moment?
+
+## What Other Languages Do About It
+
+The bug is not inevitable.  It is the price of a specific design choice, and other languages paid a different price:
+
+| Language | What crosses the module boundary | Can the mismatch happen? |
+|---|---|---|
+| **C** | A name, a size, a binding | Yes, silently, as above |
+| **C++** | Mangled names for *functions*, plain names for *variables* | Yes, for variables |
+| **Ada, Modula-2** | A compiled interface the compiler must check against | No, rejected at compile time |
+| **Java, Go, Rust** | A module or class file carrying full type information | No, rejected at compile time |
+
+C++ is the instructive middle case.  Compile a file with two overloads of `add` and one global, then look at the symbols:
+
+```
+0000000000000018 T _Z3adddd     <- double add(double, double)
+0000000000000000 T _Z3addii     <- int    add(int, int)
+0000000000000000 D gravity      <- int gravity;   ... just 'gravity'
+```
+
+Function names are **mangled**: `_Z3addii` encodes "add, taking int and int," so two files that disagree about a function's signature ask for different symbols and get an honest undefined-reference error.  That is type checking smuggled into the linker through the one field it does have, the name.  But variables are not mangled: `gravity` is `gravity`.  So C++ closes the door for functions and leaves it open for exactly the case this section is about.
+
+> **Watch out!**  The lesson here is not "C is bad."  It is that a type system's guarantee has a **boundary**, and you should always know where the boundary is.  In C the boundary is the file.  In Java it is the program.  In Python with mypy it is "the annotated parts."  When someone tells you a language is type safe, the useful follow-up question is: *safe across what?*
+
+---
+
 # Check Your Understanding
+
+`physics.c` defines `float gravity = 9.81f;` and `report.c` declares `extern int gravity;`.  The program compiles and links with no diagnostic and prints a nonsense number.  Why did static typing not catch it?
+
+[(X)] The compiler checks one translation unit at a time, and the linker that sees both files matches symbols by name, with no type information left
+[( )] `float` and `int` are compatible types in C, so there is nothing to catch
+[( )] The error is data-dependent, so only a runtime check could find it
+[( )] C is weakly typed, so it coerced the float to an int
+
+---
 
 Python raises `TypeError` on `"5" - 1`, but only when that line actually executes.  Where does Python sit on the two axes?
 

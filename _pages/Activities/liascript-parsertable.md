@@ -529,11 +529,13 @@ for nt in grammar:
 
 Today's generated parsers are one station on an industrial assembly line, and this ten-minute model walks the rest of it.  Your interpreter runs programs directly from the tree; a compiled language like C takes three more steps between source text and running behavior:
 
-1.  **Compile.**  Each source file is translated *separately* into an **object file**: machine code plus a **symbol table** listing the names it defines (`main`, `parse_expr`) and the names it uses but cannot find (`printf`, `yylex`).  An object file is a puzzle piece with labeled tabs and labeled holes.
+1.  **Compile.**  Each source file is translated *separately* into an **object file**: machine code plus a **symbol table** listing the names it defines (`main`, `parse_expr`) and the names it uses but cannot find (`printf`, `yylex`).  An object file is a puzzle piece with labeled tabs and labeled holes.  This station is itself several **passes** over the program, and you have already built most of them: scan, parse, walk the tree for semantic analysis, optimize, emit.  Recall from *Grammars and the Chomsky Hierarchy* that "every variable must be declared before use" could not be a grammar rule and had to move into a separate semantic pass; that is one of these.
 2.  **Link.**  The **linker** fits the pieces together: every "uses" hole must be filled by exactly one "defines" tab, drawn from your other object files or from libraries.  Two definitions of the same name is a *duplicate symbol* error; zero is the famous *undefined reference*.  **Static linking** copies library code into the executable; **dynamic linking** leaves a note to find it later.
 3.  **Load.**  When you run the program, the **loader** places the executable into memory, resolves the dynamic-library notes against `.so`/`.dll` files on the system, and jumps to the entry point.  Only now does behavior exist.
 
 The mini-notation scaffold you can build with flex and bison goes through exactly this pipeline: `flex` and `bison` generate C, the C compiler makes object files, the linker joins them with the C library, and the loader runs the result.
+
+> **Watch out!**  The linker matches a hole to a tab **by name, and by nothing else**.  A symbol-table entry carries a name, a size, and a binding, and that is all: there is no type in it.  The compiler knew the types and threw them away, because types are a *per-file* idea and the linker works *between* files.  Hold on to that sentence.  In *Type Systems* we will use it to build a C program that compiles without a warning, links without a warning, and prints a number that was never in the source.
 
 **CTQ (teams, 3 minutes):** Your interpreter reports an undefined variable *while the program runs*; a C program reports an undefined function *before it ever runs*.  Which of the three stations above catches the C error, and what does that tell you about when each language *binds names*?
 
@@ -545,6 +547,15 @@ Which statement about the pipeline is correct?
 - [(X)] Each file compiles separately; the linker is the first station that sees the whole program's names together
 - [( )] The loader recompiles the program each time it runs
 - [( )] Static and dynamic linking differ only in file size, never in behavior
+
+---
+
+A C file calls `helper()` on line 10 and defines it on line 80.  The compiler reaches line 10 knowing nothing about `helper` yet.  What makes this work?
+
+- [( )] The compiler reads the file backwards to find definitions first
+- [(X)] The compiler makes more than one pass, so a later pass resolves what an earlier one only recorded
+- [( )] The loader patches the call when the program starts
+- [( )] Nothing works: C requires every function to be defined before it is called
 
 > **Going deeper:** the full story (object-file formats, symbol tables you can inspect with `nm`, linker maps, and dynamic loading) is the [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CompilingAndLinking) tutorial.
 
@@ -868,6 +879,290 @@ for ctype, cause, example, fix in conflicts:
 17.  The reduce-reduce conflict arises because `A -> a b` and `B -> a b` have *identical* right-hand sides.  Explain why an LR(1) parser (which uses one token of lookahead *after* a reduction, not just before) still cannot resolve this conflict without grammar changes.
 18.  Declared precedence (yacc's `%left`, `%right`, `%nonassoc`) resolves shift-reduce conflicts by turning the ambiguous grammar into a deterministic one *without* restructuring it.  Describe the trade-off: what is gained (writability of the grammar spec) and what is lost (clarity of the formal grammar)?
 19.  Your CS374 recursive-descent parser handles precedence via *grammar structure* (the E/T/F ladder).  An LR parser can handle it via *declarations*.  Which approach would be easier to modify if your language added a new operator with a precedence between `+` and `*`?  Justify by describing the required changes in each approach.
+
+---
+
+# Extension: Multi-Pass Compilation and the Linker's Blind Spot
+
+> Past the 75 minutes.  Nothing in class assumes it.  Read it if the compile/link/load model left you wanting the machinery, and read it before *Binding and Scope* in week 10, where the same `static` keyword shows up wearing a different hat.
+
+## Why a Compiler Makes More Than One Pass
+
+A **pass** is one complete traversal of the program.  The reason a compiler needs more than one is a single stubborn problem: the **forward reference**, a use of a name whose definition appears later in the file.
+
+```c
+void main(void) { helper(); }   /* line 1: helper is used here  */
+void helper(void) { ... }       /* line 2: helper is defined here */
+```
+
+Read left to right, once, and you reach `helper()` knowing nothing about it.  You cannot emit a call instruction, because you do not yet know the address to call.  You have exactly two ways out, and both have been shipped in real languages:
+
+1.  **Make the language forbid it.**  Early Pascal required every name to be declared before use, which made a one-pass compiler possible on a machine that could not hold the whole program in memory.  The cost landed on the programmer: mutually recursive procedures were impossible until Pascal added the `forward` keyword purely to buy the restriction back.  C's function prototypes exist for the same reason.
+2.  **Make the compiler take two passes.**  Pass 1 reads everything and records *where* each name lives.  Pass 2 reads it again and emits code, resolving every reference against what pass 1 learned.
+
+That is a language-design decision, not an implementation detail: option 1 puts the cost on every programmer forever, and option 2 puts it on the compiler writer once.  Almost everything since Pascal has chosen option 2.
+
+## Model: The Two-Pass Assembler
+
+The clearest place to watch this happen is an assembler, where the "names" are jump labels and the "addresses" are instruction numbers.  Predict, before you run: which of the two `JMPZ` instructions can a single left-to-right pass resolve, and which one can it not?
+
+```python
+# A two-pass assembler.  The machine has four instructions, one word each:
+#     SET  r n    put the number n into register r
+#     ADD  r s    r = r + s
+#     JMPZ r L    if r is zero, jump to the instruction labelled L
+#     HALT
+# A label is a name followed by ':' at the start of a line.
+
+SOURCE = [
+    "start:  SET  x 0",
+    "        JMPZ x done",     # FORWARD reference: 'done' is defined below
+    "        ADD  x x",
+    "        JMPZ x start",    # BACKWARD reference: 'start' is already known
+    "done:   HALT",
+]
+
+
+def split_label(line):
+    """Return (label_or_None, instruction_text)."""
+    if ":" in line:
+        label, rest = line.split(":", 1)
+        return label.strip(), rest.strip()
+    return None, line.strip()
+
+
+# --- PASS 1: walk the source and record the address of every label. ---------
+def pass1(source):
+    labels, address = {}, 0
+    for line in source:
+        label, instruction = split_label(line)
+        if label:
+            labels[label] = address
+        if instruction:
+            address += 1
+    return labels
+
+
+# --- PASS 2: walk it AGAIN, emitting code with every label resolved. --------
+def pass2(source, labels):
+    code, address = [], 0
+    for line in source:
+        _, instruction = split_label(line)
+        if not instruction:
+            continue
+        parts = instruction.split()
+        if parts[0] == "JMPZ":
+            parts[2] = str(labels[parts[2]])   # known, because pass 1 found it
+        code.append((address, " ".join(parts)))
+        address += 1
+    return code
+
+
+labels = pass1(SOURCE)
+print("PASS 1 built the symbol table:")
+for name in sorted(labels, key=labels.get):
+    print("   " + name + " -> address " + str(labels[name]))
+
+print()
+print("PASS 2 emitted code with every jump target filled in:")
+for address, instruction in pass2(SOURCE, labels):
+    print("   " + str(address) + "   " + instruction)
+
+# --- The one-pass attempt: resolve as you go, with no advance knowledge. ----
+print()
+print("The SAME job in ONE pass, resolving each label as it is reached:")
+seen, address = {}, 0
+for line in SOURCE:
+    label, instruction = split_label(line)
+    if label:
+        seen[label] = address
+    if not instruction:
+        continue
+    parts = instruction.split()
+    if parts[0] == "JMPZ":
+        target = parts[2]
+        if target in seen:
+            print("   " + str(address) + "   JMPZ " + parts[1] + " "
+                  + str(seen[target]) + "      (backward, resolved)")
+        else:
+            print("   " + str(address) + "   JMPZ " + parts[1]
+                  + " ???     <-- FORWARD reference to '" + target
+                  + "', not defined yet")
+    else:
+        print("   " + str(address) + "   " + " ".join(parts))
+    address += 1
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- Pass 1 never emits anything.  Its whole job is the **symbol table**: `start -> 0`, `done -> 4`.  It has to count instructions as it goes, which is why it still has to look at every line.
+- Pass 2 does the same walk with the answers already in hand, so `JMPZ x done` becomes `JMPZ x 4` with no guessing.
+- The one-pass version resolves the *backward* jump to `start` perfectly and stalls on the *forward* jump to `done`.  That asymmetry is the whole argument for two passes: backward references are free, forward references are not.
+- Real assemblers do exactly this, and real linkers do it one level up, with object files in place of lines.
+
+### Critical Thinking Questions
+
+1.  A one-pass assembler could still handle forward references by emitting a placeholder and keeping a list of holes to fill in at the end.  That is called **backpatching**.  Is that genuinely one pass?  Argue both sides, then say what you think "number of passes" should count.
+2.  Pass 1 has to know how many words each instruction occupies in order to compute addresses.  On a machine with variable-length instructions, how does that complicate pass 1, and what would you have to do about it?
+3.  Your CS374 interpreter walks the AST once and evaluates as it goes.  Where would it break if the language allowed a function to be *called* textually before it is *defined*?  What is the smallest change that would fix it?  (Hint: it is a pass.)
+
+## Model: A Linker You Can Run
+
+The linker plays the same game with a coarser board.  Each object file publishes what it **defines** and what it **uses**; the linker matches holes to tabs across the whole program.  Predict each of the three outcomes before running.
+
+```python
+# Three "object files".  Each records what it DEFINES and what it USES.
+# A real ELF symbol entry carries a name, a size, and a binding
+# (GLOBAL or LOCAL).  Notice what it does not carry: a type.
+
+def obj(name, defines, uses):
+    return {"name": name, "defines": defines, "uses": uses}
+
+
+LIBC = obj("libc", [("printf", "GLOBAL")], [])
+
+
+def link(objects):
+    """Fill every 'uses' hole with exactly one GLOBAL 'defines' tab."""
+    table, errors = {}, []
+    for o in objects:
+        for name, binding in o["defines"]:
+            if binding == "LOCAL":
+                continue          # 'static': never offered to the linker at all
+            if name in table:
+                errors.append("duplicate symbol '" + name + "': defined in "
+                              + table[name] + " and again in " + o["name"])
+            else:
+                table[name] = o["name"]
+    for o in objects:
+        for name in o["uses"]:
+            if name not in table:
+                errors.append("undefined reference to '" + name
+                              + "' from " + o["name"])
+    return table, errors
+
+
+def report(title, objects):
+    table, errors = link(objects)
+    print(title)
+    if errors:
+        for e in errors:
+            print("   ld: " + e)
+    else:
+        print("   link succeeded; global symbol table:")
+        for name in sorted(table):
+            print("      " + name + "  <- " + table[name])
+    print()
+
+
+# Scenario 1: both files define a GLOBAL 'counter'.
+report("1.  Two files each define 'int counter;'",
+       [obj("a.o", [("main", "GLOBAL"), ("counter", "GLOBAL")], ["printf", "show"]),
+        obj("b.o", [("show", "GLOBAL"), ("counter", "GLOBAL")], ["printf"]),
+        LIBC])
+
+# Scenario 2: nobody supplies printf, because libc was left off the command line.
+report("2.  The same files, but libc is missing from the link",
+       [obj("a.o", [("main", "GLOBAL")], ["printf", "show"]),
+        obj("b.o", [("show", "GLOBAL")], ["printf"])])
+
+# Scenario 3: 'static int counter;' makes each copy LOCAL to its own file.
+report("3.  Both files say 'static int counter;'",
+       [obj("a.o", [("main", "GLOBAL"), ("counter", "LOCAL")], ["printf", "show"]),
+        obj("b.o", [("show", "GLOBAL"), ("counter", "LOCAL")], ["printf"]),
+        LIBC])
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- Scenario 1 is a **duplicate symbol**: two tabs with the same label, and the linker has no basis for preferring one.
+- Scenario 2 is the famous **undefined reference**: a hole with no tab.  Note that it is reported once per user, not once per missing name, which is why real link errors are so repetitive.
+- Scenario 3 is the interesting one.  `static` at file scope sets the binding to LOCAL, and the `continue` in `link` skips it entirely.  Each file keeps a private `counter` that the linker never learns about, so there is nothing to collide.
+
+## `static` at File Scope: the Keyword's Other Job
+
+Here is the whole vocabulary, in three lines of C:
+
+```c
+int counter;            /* definition, GLOBAL: offered to the linker      */
+static int counter;     /* definition, LOCAL:  hidden from the linker     */
+extern int counter;     /* declaration only:   "trust me, it is elsewhere" */
+```
+
+Run `nm` on the object file and you can see the difference directly: a global `counter` prints as an uppercase `B` or `D`, and a `static` one prints as a **lowercase** `b` or `d`.  Uppercase means global, lowercase means local, and lowercase symbols are invisible to every other file in the program.
+
+This is the single most useful thing `static` does in C, and it is the language's answer to a question your project language will also have to answer: **how does a module keep something private?**  C has no `private`, no module system, and no namespaces.  It has `static`, which says "this name stops at the edge of this file."
+
+> **Watch out!**  `static` in C does two unrelated jobs depending on where you write it.  Inside a function it changes **lifetime**: the variable survives between calls, while its scope stays the same tiny block.  At file scope it changes **linkage**: the lifetime was already the whole program, and what changes is *visibility* to the linker.  Same keyword, two different questions.  Week 10's *Binding and Scope* takes apart exactly why lifetime and visibility are separate axes.
+
+## The Bug That Was a Default: Tentative Definitions
+
+Now the historical accident.  Suppose two files each write, at file scope, with no `static` and no `extern`:
+
+```c
+/* a.c */                        /* b.c */
+#include <stdio.h>               #include <stdio.h>
+int counter;                     int counter;
+int main(void) {                 void show(void) {
+    counter = 5;                     printf("b sees %d\n", counter);
+    show();                          counter = 99;
+    printf("a sees %d\n", counter);
+    return 0;
+}                                }
+```
+
+Each of those `int counter;` lines is a **tentative definition**: C says a file-scope declaration with no initializer *might* be a definition, and the decision is deferred.  For decades, the default (`-fcommon`) let the linker quietly merge every tentative definition of a name into **one shared variable**.  Compile and run the pair above that way and it prints:
+
+```
+b sees 5
+a sees 99
+```
+
+Two files that never agreed to share anything are now writing to the same memory.  Nothing warned anybody.  Each file compiles clean, because each file is internally consistent, and the merge happens at a station that never sees your source code.
+
+GCC 10 changed the default to `-fno-common`, and the same two files now stop at the link step:
+
+```
+/usr/bin/ld: (.bss+0x0): multiple definition of `counter'; first defined here
+```
+
+Add `static` to both and the program is correct and boring: each file has its own `counter`, `b` prints `0` because its copy was never touched, and `a` prints `5`.
+
+> **Watch out!**  The bug here was never in anybody's source code.  It was in a **default**, and the fix was to change the default.  Keep that in the design notebook: the defaults your language picks are language design, and they decide what happens to the programmer who did not think about the question at all.
+
+### Critical Thinking Questions
+
+4.  Under `-fcommon`, the two-file program above is a data race waiting to happen and compiles silently.  Which of the three stations, compile, link, or load, was in the best position to catch it, and what information would it have needed that it did not have?
+5.  `static` solves the collision by hiding the name.  A module system solves it by *qualifying* the name (`a.counter` and `b.counter` can coexist).  Compare the two on the criteria from week 0: which is more writable, which is more readable, which is more reliable?
+6.  C decides "definition or declaration?" from whether an initializer is present, a rule most programmers cannot state correctly.  Propose a syntax that makes the distinction impossible to get wrong, and name what your syntax costs.
+7.  Your project language will need an answer for names that cross file boundaries.  Write the rule in two sentences for `SEMANTICS.md`: can a name be defined in two files, what happens if it is, and how does a file keep something private?
+
+### Try It Yourself
+
+The `link` function above matches purely on names.  Real symbol entries also carry a **size**, and some linkers warn when two definitions of a name disagree about it.
+
+```python
+# Paste the obj/link/report definitions from the Model above this line.
+
+# TODO 1: add a size to every symbol, so 'defines' entries look like
+#         ("counter", "GLOBAL", 4). Then make link() report a warning when a
+#         'uses' hole and its matching 'defines' tab disagree about size.
+#
+# TODO 2: now try to catch a 'float' in one file declared as an 'int' in
+#         another. Both are 4 bytes. Show that your size check cannot see it,
+#         and say what a symbol entry would have to carry in order to.
+#
+# TODO 3: 'static' hid a name from the linker entirely. Add a fourth scenario
+#         where a.o marks 'counter' LOCAL but b.o says it uses 'counter'.
+#         What should the linker do, and what does your link() actually do?
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+TODO 2 is the door into week 11.  A size check is the *most* a linker can do, and it is not enough: `float` and `int` are both four bytes, so the two files can disagree about the type of the same variable and every tool in the pipeline will pass it through without a word.  *Type Systems* picks that up and runs the program.
+
+> **Going deeper:** object-file formats, symbol tables under `nm`, linker maps, and dynamic loading are all in the [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CompilingAndLinking) tutorial.
 
 ---
 

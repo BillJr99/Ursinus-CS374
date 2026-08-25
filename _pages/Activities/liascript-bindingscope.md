@@ -171,6 +171,20 @@ demo();
 
 **Static scope prints 10** (`show`'s `x` resolves to the global, its textual surroundings); **dynamic scope prints 99** (`show`'s `x` resolves to `demo`'s, the most recent on the call chain).
 
+Essentially every language you will use is statically scoped, so the interesting differences are no longer *static or dynamic* but **what counts as a scope**.  Languages disagree about that more than you would expect, and each disagreement has a signature bug attached to it.
+
+| Language | What creates a scope | The signature surprise |
+|---|---|---|
+| **Python** | Functions, classes, modules, comprehensions.  **Not** `if`, `for`, or `while` | A name assigned *anywhere* in a function is local *everywhere* in it, including lines above the assignment |
+| **C** | Every `{ ... }` block, plus a file-wide scope outside all functions | A `for` loop's index can shadow an outer variable of the same name, silently, for the length of the loop |
+| **Java** | Every block, like C, but shadowing a local with a local is a **compile error** | A field and a local *may* share a name, and `this.x` versus `x` then decides which one you meant |
+| **JavaScript** | `let` and `const` are block-scoped; `var` is **function**-scoped and hoisted | A `var` is readable before its declaration line, as `undefined`; a `let` throws instead, from its "temporal dead zone" |
+| **Scheme** | `let`, `let*`, `letrec`, and lambda bodies | `let` binds all its names *simultaneously*, so a right-hand side cannot see its siblings; `let*` and `letrec` change exactly that |
+| **Your language** | You decide, this term | Whatever you choose, write it down before you implement it |
+
+Read the table as a menu, not as trivia: the rightmost column is a list of bugs that each design choice hands to its programmers, and by the end of the term you will have chosen one of these rows for your own language.
+
+
 ---
 
 This model makes the static-versus-dynamic distinction concrete by showing the same program behaving differently under each rule.  The key question is: when `show()` looks up `x`, does it consult the text of the program (static) or the history of calls that led here (dynamic)?  Running both resolvers side by side will make the difference unmistakable.
@@ -456,6 +470,9 @@ Scope tells you *where in the code* a name is visible; lifetime tells you *how l
 
 **Scope is the region of *text* where a binding is visible; lifetime is the span of *execution* during which its storage exists.**  The two usually align (a local lives while its block runs) but can diverge: a C `static` local has tiny scope and program-long lifetime, and, the divergence that matters most for your project, a **closure** keeps a binding *alive* after its scope has ended.
 
+> **Watch out!**  C spends the single keyword `static` on two unrelated jobs, and which one you get depends only on *where you write it*.  Written **inside a function**, it changes **lifetime**: the variable survives from call to call, while its scope stays the same tiny block it always was.  Written **at file scope**, outside every function, it changes **linkage**: the lifetime was already the whole program, and what changes is whether other files can see the name at all.  One keyword, two axes.  If you met the linker in *Table-Driven and LR Parsing*, the file-scope version is the one that keeps a name out of the symbol table entirely, which is C's only way to make something private.
+
+
 **Lifetime divergence, closures keep bindings alive:**
 
 ```python
@@ -586,6 +603,15 @@ Inside a Python function, writing `x = 1` anywhere makes `x` local for the *whol
 [( )] Python executes function bodies out of order
 [( )] Assignment always creates a global unless declared otherwise
 [( )] The interpreter cannot see the assignment until it runs
+
+---
+
+`static int n;` appears twice in a C program: once inside a function, once at file scope outside every function. What do the two occurrences have in common?
+
+[(X)] Only the spelling: inside a function it changes lifetime, at file scope it changes visibility to other files
+[( )] Both make the variable read-only after initialization
+[( )] Both give the variable program-long lifetime, which it would not otherwise have
+[( )] Both restrict the variable to the block it is written in
 
 ---
 
