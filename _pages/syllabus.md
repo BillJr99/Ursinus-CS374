@@ -122,10 +122,6 @@ instructors:
   picture: /images/profile.png
   officehourssignup: "https://cal.com/billmongan/10min"
   officehours:
-  - day: "T"
-    starttime: "11:20 AM"
-    endtime: "11:50 AM"
-    location: "Pfahler Hall 101L"
   - day: "R"
     starttime: "11:20 AM"
     endtime: "11:50 AM"
@@ -141,10 +137,6 @@ instructors:
   - day: "R"
     starttime: "3:00 PM"
     endtime: "3:30 PM"
-    location: "Pfahler Hall 101L"
-  - day: "R"
-    starttime: "4:30 PM"
-    endtime: "5:30 PM"
     location: "Pfahler Hall 101L"
 textbooks:
 - title: "Foundations of Computing: An Accessible Introduction to Formal Languages"
