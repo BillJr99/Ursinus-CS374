@@ -100,8 +100,9 @@ If your loop refuses to translate cleanly, that is the best possible outcome her
 
 ### Pick a route
 
-You need a Scheme prompt.  Any of these gives you one, and the first two need no install at all:
+You need a Scheme prompt.  Any of these gives you one, and the first three need no new install at all:
 
+- **The course dev container**: if you set up the [course container]({{ site.baseurl }}/Tutorials/DevEnvironment) in the Overview assignment, a Scheme is already installed and you are done: run `guile` for a REPL, or `guile your_file.scm` to run a file.  `mit-scheme` is in there too, on the CPU architectures Debian builds it for.  Report whichever one you use, and its version, in the write-up.
 - **[try.scheme.org](https://try.scheme.org)**: a full Scheme REPL in a browser tab.  Nothing to set up, and the fastest way to be typing in thirty seconds.
 - **The course's own runner**: the [Scheme warmup exercise]({{ site.baseurl }}/Modules/Scheme/Warmup/Exercise) runs Scheme directly in the page and checks your answer.  Do that one first; it takes two minutes and confirms your browser is not the problem.
 - **A Python Scheme, no package manager needed**: `git clone https://github.com/BillJr99/scheme-interpreter.git` gives you a `scheme.py` you run as `python scheme.py <your scheme file>`.

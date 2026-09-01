@@ -37,6 +37,7 @@ This tutorial is the reference companion to the *Functional Programming in Schem
 
 **What you need:**
 
+- **The course dev container**: already has one; `guile` gives you a REPL, `guile file.scm` runs a file (see the [Development Environment tutorial]({{ site.baseurl }}/Tutorials/DevEnvironment))
 - **[try.scheme.org](https://try.scheme.org)**: a full Scheme REPL in a browser tab, nothing to install
 - The course's own [Scheme warmup exercise]({{ site.baseurl }}/Modules/Scheme/Warmup/Exercise), which runs Scheme in the page and checks your answer
 - Or a local install, which is what you eventually want:

@@ -93,7 +93,7 @@ Complete this part by **one of two routes**; the transcript requirement at the e
 
 ### Route A (recommended): the course dev container
 
-Set up the course Docker container by following the [Development Environment tutorial]({{ site.baseurl }}/Tutorials/DevEnvironment): one container image with the entire semester's toolchain preinstalled (Python 3.11, pytest, hypothesis, PLY, and flex/bison/gcc/make for the generator-toolchain directions), bind-mounted onto a `cs374-work` GitHub repository you create in the tutorial.  Then:
+Set up the course Docker container by following the [Development Environment tutorial]({{ site.baseurl }}/Tutorials/DevEnvironment): one container image with the entire semester's toolchain preinstalled (Python 3.11, pytest, hypothesis, PLY, `uv`, a Scheme for the functional programming assignment, and flex/bison/gcc/make for the generator-toolchain directions), bind-mounted onto a `cs374-work` GitHub repository you create in the tutorial.  Then:
 
 1.  Copy `warmup_check.py` (from Step 2 of Route B below) into your `cs374-work` repository.
 2.  Enter the container and run it **inside the container**: `python3 warmup_check.py`.  Include the full transcript (the container prompt, `python3 --version`, and the script's banner output) in your submission.

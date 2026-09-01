@@ -2,8 +2,9 @@
 # ----------------------------------
 # One image that runs every CS374 assignment: the Python language pipeline
 # (lexer -> parser -> AST -> environments -> evaluator), its test suites,
-# and the generator-toolchain directions (flex/bison/gcc/make, including
-# the mininote scaffold).
+# the generator-toolchain directions (flex/bison/gcc/make, including the
+# mininote scaffold), and the Scheme assignment.  `uv`, the environment
+# manager the course standardizes on, is here too.
 #
 # Build it (from inside your work repo's .devcontainer/ folder):
 #   docker compose build
@@ -18,7 +19,7 @@
 FROM python:3.11-slim
 
 LABEL org.opencontainers.image.title="CS374 course development environment" \
-      org.opencontainers.image.description="Python 3.11 with pytest/hypothesis/ply plus flex, bison, gcc, and make for the CS374 language-pipeline assignments and generator-toolchain directions" \
+      org.opencontainers.image.description="Python 3.11 with pytest/hypothesis/ply and uv, plus flex, bison, gcc, and make for the CS374 language-pipeline assignments and generator-toolchain directions, and Scheme (guile, and mit-scheme where Debian builds it) for the functional programming assignment" \
       org.opencontainers.image.authors="CS374 course staff" \
       org.opencontainers.image.url="https://www.billmongan.com/Ursinus-CS374/"
 
@@ -28,6 +29,10 @@ LABEL org.opencontainers.image.title="CS374 course development environment" \
 #   gcc, libc6-dev, make -- compile and drive the C code that flex/bison emit
 #   git         -- commit and push your work from inside the container
 #   zip         -- package submissions
+#   curl        -- fetches the uv installer below; useful on its own
+#   guile-3.0   -- a Scheme for the Functional Programming with Scheme
+#                  assignment; Debian builds it for every CPU architecture,
+#                  so this one is always here
 # `--no-install-recommends` and the cache cleanup keep the image small.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         flex \
@@ -37,7 +42,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         make \
         git \
         zip \
+        curl \
+        guile-3.0 \
         ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Debian installs the binary as `guile-3.0`; make plain `guile` work too, so
+# the command in the tutorial is the command that runs.
+RUN command -v guile >/dev/null || ln -s "$(command -v guile-3.0)" /usr/local/bin/guile
+
+# MIT/GNU Scheme is the implementation the Scheme assignment names for Linux
+# and macOS, so install it when it exists. Debian does not build it for every
+# CPU architecture (Apple Silicon may not have it), and a missing package for
+# a second Scheme is no reason to fail the whole build -- so this one install
+# is allowed to fail, loudly, and guile remains your Scheme there. Note that
+# `apt-get update` itself is still fatal: a broken package index is a real
+# problem, not an architecture difference.
+RUN apt-get update \
+    && (apt-get install -y --no-install-recommends mit-scheme \
+        || echo ">>> mit-scheme is unavailable for this CPU architecture; use guile instead.") \
     && rm -rf /var/lib/apt/lists/*
 
 # Python packages:
@@ -45,6 +68,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 #   hypothesis -- property-based testing (see the Property-Based Testing tutorial)
 #   ply        -- optional pure-Python lex/yacc, for the PLY direction
 RUN pip install --no-cache-dir pytest hypothesis ply
+
+# uv, the Python environment manager the course standardizes on (see Part 1.5
+# of the Overview assignment). UV_INSTALL_DIR puts it on a PATH every user
+# shares; the default would hide it in root's home, where `student` could not
+# see it. INSTALLER_NO_MODIFY_PATH keeps the installer out of shell profiles,
+# and the version check makes a misplaced install fail the build here rather
+# than surprise you at the prompt.
+RUN curl -LsSf https://astral.sh/uv/install.sh \
+        | env UV_INSTALL_DIR=/usr/local/bin INSTALLER_NO_MODIFY_PATH=1 sh \
+    && uv --version
 
 # Work as a regular (non-root) user, like you would on your own machine.
 # Files you create in /workspace keep sane ownership, and a stray command

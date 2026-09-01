@@ -3,8 +3,10 @@
 One environment that runs every CS374 assignment: Python 3.11 with `pytest`,
 `hypothesis`, and `ply` for the language-pipeline assignments, plus `flex`,
 `bison`, `gcc`, and `make` for the generator-toolchain directions and the
-mininote scaffold. `git` and `zip` are included so you can commit, push, and
-package submissions from inside the container.
+mininote scaffold, `uv` for Python environments, and Scheme (`guile`, and
+`mit-scheme` where Debian builds it for your CPU) for the Functional
+Programming with Scheme assignment. `git` and `zip` are included so you can
+commit, push, and package submissions from inside the container.
 
 The full walk-through (with GitHub setup, credential options, practice steps,
 and troubleshooting) is the course [Development Environment tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/DevEnvironment).
@@ -60,8 +62,12 @@ docker compose run --rm cs374   # opens bash inside the container
 Verify the toolchain from the container prompt:
 
 ```bash
-python3 --version && pytest --version && flex --version && bison --version
+python3 --version && pytest --version && flex --version && bison --version \
+  && uv --version && guile --version
 ```
+
+`mit-scheme --version` should work too, except on CPU architectures Debian does
+not build it for (Apple Silicon among them), where `guile` is your Scheme.
 
 Exit with `exit` or Ctrl-D. `--rm` discards the container; your work is safe
 in the mounted repo.
@@ -89,9 +95,20 @@ If you cannot run Docker, install the tools directly:
 
    Students who stay on the Python-only directions do not need flex/bison at all.
 
+4.  **Only if** you take the Functional Programming with Scheme assignment,
+   install a Scheme: Debian/Ubuntu `sudo apt install mit-scheme` (or
+   `guile-3.0`), macOS `brew install mit-scheme`, Windows `guile` from the
+   Cygwin installer. [try.scheme.org](https://try.scheme.org) needs no install
+   at all. Container users already have this.
+
 ## Troubleshooting
 
 - `Cannot connect to the Docker daemon`: Docker Desktop is not running; start it.
 - Slow first build: normal; later builds reuse cached layers.
+- `fatal: detected dubious ownership in repository at '/workspace'`: the mount is
+  owned by your host account, not by the container's `student` user. Run
+  `git config --global --add safe.directory /workspace` inside the container and
+  retry. It lives in the container's `~/.gitconfig`, so a `--rm` container needs
+  it again next session.
 - Push rejected / authentication failures: see the credential section of the
   [Development Environment tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/DevEnvironment).

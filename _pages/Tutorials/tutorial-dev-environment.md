@@ -8,7 +8,7 @@ info:
   goals:
     - To build and enter the course Docker container, a single environment that runs every CS374 assignment
     - To bind-mount a GitHub-backed workspace so that all work is versioned and pushable from inside the container
-    - To configure git identity and credentials (personal access token or SSH) for use inside a container
+    - To configure git identity and credentials (personal access token or SSH) for use inside a container, and to clear git's dubious-ownership error on a bind-mounted repository
     - To practice the full daily loop end to end: start container, work, test, commit, push
     - To explain why container isolation protects the rest of your machine, and set up the native fallback if Docker is not an option
 
@@ -29,7 +29,7 @@ tags:
 
 # The Course Development Environment
 
-This tutorial sets up **one environment that runs every CS374 assignment**.  It is a Docker container with the whole course toolchain preinstalled: Python 3.11 with `pytest`, `hypothesis`, and `ply` for the language-pipeline assignments, plus `flex`, `bison`, `gcc`, and `make` for the generator-toolchain directions and the mininote scaffold.  The container is bind-mounted onto a directory on your machine that is itself a **git repository with a GitHub remote**, so everything you write inside the container is versioned and pushed like normal work.
+This tutorial sets up **one environment that runs every CS374 assignment**.  It is a Docker container with the whole course toolchain preinstalled: Python 3.11 with `pytest`, `hypothesis`, and `ply` for the language-pipeline assignments, plus `flex`, `bison`, `gcc`, and `make` for the generator-toolchain directions and the mininote scaffold, `uv` for Python environments, and a Scheme (`guile`, and `mit-scheme` where Debian builds it for your machine's CPU) for the Functional Programming with Scheme assignment.  The container is bind-mounted onto a directory on your machine that is itself a **git repository with a GitHub remote**, so everything you write inside the container is versioned and pushed like normal work.
 
 Two ideas do all the heavy lifting here, and they are worth stating up front:
 
@@ -122,7 +122,9 @@ cs374-work/
   README.md
 ```
 
-Open the Dockerfile in an editor and *read it*; it is short and every line is commented.  You built Dockerfiles' conceptual vocabulary in your intro courses' shell work; this one is deliberately simple: a base Python image, an `apt-get` layer for the C toolchain, a `pip` layer for the Python packages, a non-root `student` user, and `/workspace` as the working directory.
+Open the Dockerfile in an editor and *read it*; it is short and every line is commented.  You built Dockerfiles' conceptual vocabulary in your intro courses' shell work; this one is deliberately simple: a base Python image, an `apt-get` layer for the C toolchain and Scheme, a `pip` layer for the Python packages, a short layer that installs `uv`, a non-root `student` user, and `/workspace` as the working directory.
+
+One layer there is worth a second look, because it breaks the usual rule that any failing command fails the build: `mit-scheme` has no Debian package for *every* CPU architecture, so that single install is allowed to fail and print a note instead.  An Apple Silicon Mac may end up with only `guile`, and the image still builds.  This is what it looks like to design a Dockerfile for hardware you do not own.
 
 Commit the container files; they are part of your work:
 
@@ -203,7 +205,33 @@ flex 2.6.4
 bison (GNU Bison) 3.8.2
 ```
 
-If all five report versions, your environment is done.  Exit the container with `exit` or Ctrl-D; the `--rm` flag deletes the container (not the image, and not your files; those live in the mounted repo).
+```bash
+uv --version
+```
+
+```
+uv 0.x.x
+```
+
+```bash
+guile --version
+```
+
+```
+guile (GNU Guile) 3.0.x
+```
+
+```bash
+mit-scheme --version
+```
+
+```
+MIT/GNU Scheme 12.x
+```
+
+The Scheme assignment names `mit-scheme`, so it is installed here when Debian has a build for your CPU.  If this last command instead prints `mit-scheme: command not found`, you are almost certainly on an Apple Silicon Mac; nothing is broken, and `guile` is your Scheme for that assignment.  The other seven commands must all report versions.
+
+If they do, your environment is done.  Exit the container with `exit` or Ctrl-D; the `--rm` flag deletes the container (not the image, and not your files; those live in the mounted repo).
 
 ---
 
@@ -225,6 +253,33 @@ git config user.email "you@example.com"
 ```
 
 (The VS Code Dev Containers route copies your host `~/.gitconfig` into the container automatically, so Option A students often find this already done.)
+
+**If git refuses to touch `/workspace` at all.**  Sooner or later a git command in the container answers with this instead of doing anything:
+
+```
+fatal: detected dubious ownership in repository at '/workspace'
+To add an exception for this directory, call:
+
+        git config --global --add safe.directory /workspace
+```
+
+Take git's advice; run exactly that, inside the container:
+
+```bash
+git config --global --add safe.directory /workspace
+```
+
+Then rerun the command that failed and it will work.
+
+The reason is worth understanding, because it is the mount showing through.  `/workspace` is *your host account's* directory, and git compares the repository's owner against the user running the command.  Inside the container that user is `student` (UID 1000 by default), and on a Linux host, or whenever you use the `--user "$(id -u):$(id -g)"` workaround from Step 10, those two numbers do not match.  Git assumes a repository it does not own may have been planted by someone else and stops rather than running hooks or config from it.  Marking `/workspace` **safe** says: I know where this came from, it is my own clone.
+
+Two practical notes.  First, `--global` here means *the container's* `~/.gitconfig`, which is recreated from the image on every `docker compose run --rm`, so expect to run this once per session (the VS Code route keeps one long-lived container, so once is usually enough).  Second, if retyping it gets old, you can mark everything the container can see as safe:
+
+```bash
+git config --global --add safe.directory '*'
+```
+
+That would be a bad idea on your laptop, where it turns off the check for every repository on the machine.  In here it is a much smaller claim than it looks, and for the reason Step 8 spells out: `/workspace` is the *only* directory of yours this container can see, so "every repository visible to me" and "my own clone" are the same set.
 
 Pushing needs credentials.  Two workable choices:
 
@@ -376,7 +431,7 @@ uv run pytest --version
 uv run python -c "import hypothesis, ply; print('OK')"
 ```
 
-Expected: a pytest version banner and `OK`.  Remember to prefix course commands with `uv run` (or activate the venv) so they see these packages.
+Expected: a pytest version banner and `OK`.  Remember to prefix course commands with `uv run` (or activate the venv) so they see these packages.  (`uv` is installed in the course container too, so these exact commands work in there if you switch routes later.)
 
 **9.3: flex/bison/gcc/make, only if you take those directions.**  The generator-toolchain directions and the mininote scaffold need the C toolchain; the Python-only pipeline directions do not.  Install only if applicable:
 
@@ -386,7 +441,16 @@ Expected: a pytest version banner and `OK`.  Remember to prefix course commands 
 
 Verify with `flex --version` and `bison --version` as in Step 4.
 
-**9.4: Git.**  You already completed the git steps in the Overview assignment's Part 1.5; the Step 6 practice loop above works identically in a native terminal; do it there instead, in your `cs374-work` clone.
+**9.4: Scheme, only if you take the Functional Programming with Scheme assignment.**  Pick one:
+
+- **Debian/Ubuntu (and Windows via WSL2):** `sudo apt install mit-scheme`, or `sudo apt install guile-3.0`
+- **macOS:** `brew install mit-scheme`
+- **Windows without WSL2:** install `guile` from the Cygwin installer
+- **Nothing to install:** [try.scheme.org](https://try.scheme.org) is a full Scheme REPL in a browser tab
+
+Verify with `mit-scheme --version` or `guile --version`.  The [Scheme assignment]({{ site.baseurl }}/Assignments/Scheme) describes these routes and what its write-up asks you to report about the one you chose.
+
+**9.5: Git.**  You already completed the git steps in the Overview assignment's Part 1.5; the Step 6 practice loop above works identically in a native terminal; do it there instead, in your `cs374-work` clone.
 
 ---
 
@@ -404,6 +468,10 @@ The build fails partway with a network error.  Usually a flaky connection during
 
 **`permission denied` writing files in `/workspace` (Linux hosts).**  The container's `student` user may not match your host UID. Quick check: `id` inside the container vs. on the host.  If they differ, run the container with your UID: `docker compose run --rm --user "$(id -u):$(id -g)" cs374`.
 
+**`fatal: detected dubious ownership in repository at '/workspace'`.**  The same UID mismatch, seen from git's side; it is the usual surprise on Linux hosts, and the `--user` fix just above brings it on.  Inside the container, run `git config --global --add safe.directory /workspace`, then rerun whatever failed.  Step 5 explains what that line claims and why it is a modest claim in here.  It is written to the container's `~/.gitconfig`, so a `--rm` container will want it again next session.
+
+**`mit-scheme: command not found`.**  Expected on CPU architectures Debian does not build MIT/GNU Scheme for, Apple Silicon among them.  Nothing is wrong: the build prints a note and carries on, and `guile` is your Scheme.  Name that route (and its `guile --version` output) in the Scheme assignment's write-up.
+
 Everything is broken and you do not know why.  Nuclear option, in increasing order: exit and rerun (`--rm` gives you a fresh container); `docker compose build --no-cache` (fresh image); fresh `git clone` into a new directory (fresh workspace; this is why you push).  One of these three fixes it, and figuring out *which* tells you where the problem was.
 
 ---
@@ -414,9 +482,10 @@ Everything is broken and you do not know why.  Nuclear option, in increasing ord
 |------|---------|
 | Enter the container | `docker compose run --rm cs374` (from `.devcontainer/`) |
 | Rebuild the image | `docker compose build` |
-| Verify toolchain | `python3 --version && pytest --version && flex --version && bison --version` |
+| Verify toolchain | `python3 --version && pytest --version && flex --version && bison --version && uv --version && guile --version` |
 | One-repo git identity | `git config user.name "..."` / `git config user.email "..."` (in `/workspace`) |
 | Cache the PAT for a session | `git config credential.helper 'cache --timeout=7200'` |
+| Clear git's `dubious ownership` error | `git config --global --add safe.directory /workspace` (in the container) |
 | The daily loop | start -> work -> `pytest` -> `git add -A && git commit` -> `git push` |
 | Fresh environment | exit, then `docker compose run --rm cs374` again |
 | Native fallback | `uv venv && uv add pytest hypothesis ply` (+ OS flex/bison only if needed) |
