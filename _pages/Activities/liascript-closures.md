@@ -727,6 +727,25 @@ print(f"Closure counter: {clo_counter['value']()}")
 
 ---
 
+## 5.  Two Ways to Get What the Calculus Lacks
+
+Last week, in *Church Encodings and Combinators*, you derived $\textbf{Y}$ and then $\textbf{Z}$, and used them to make a function call itself with no name anywhere in the term.  `fact-generator` took "the rest of the recursion" as an ordinary parameter, and the combinator supplied it.  Nothing was captured and nothing was mutated; there was only application and substitution.
+
+Today's mechanism could hardly be less like that.  A closure gets its power from holding on to a *binding*, and `set!` gets its power from writing to that binding.  The counter remembers because the frame outlived the call that made it, and because somebody was allowed to change what the frame holds.
+
+It is worth being blunt about how unrelated these two are.  One is pure and needs no notion of memory at all; the other is nothing but memory.  Neither is derivable from the other in any obvious way.  And yet both exist to buy the same missing thing: the bare calculus gives you no way to refer back to something, whether that something is a function you are in the middle of defining or a value you set on the last call.  The combinator buys self-reference without names.  The closure buys names that persist without a global.
+
+This is also why CTQ 3.3 was harder than it looked.  When `Fun` runs, the function's own name is not in `env` yet, so a closure cannot capture it, and the fix in the Try It Yourself is to reach into the captured environment afterward and point the name at the closure.  That is called *tying the knot*, and it is the mutation-based answer to exactly the problem $\textbf{Y}$ solves without mutation.  Your interpreter is free to pick either one.  Most real languages pick the knot, because it is cheaper and because programmers want to write the name.
+
+> **CTQ 9.1** Scheme ships both mechanisms.  Write `factorial` twice, once with `define` and a self-reference, once with $\textbf{Z}$ and a generator.  Which one would you hand a first-year student, and which one would you rather implement in your evaluator?  Notice those may not be the same answer.
+
+> **CTQ 9.2** Tying the knot creates a cycle: an environment holds a closure whose captured environment is that same environment.  $\textbf{Z}$ creates no cycle at all.  What does that difference cost a garbage collector, and does it change your answer to CTQ 9.1?
+
+> **CTQ 9.3** A memoized function keeps a cache in a captured binding, so it mutates on every miss.  Could you memoize a $\textbf{Z}$-built function without introducing any mutation?  If not, say precisely what would have to change about the language.
+
+---
+
+
 # Check Your Understanding
 
 A closure is created when the evaluator meets a function expression. What does it store?
