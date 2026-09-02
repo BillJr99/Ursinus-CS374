@@ -6,7 +6,8 @@ One environment that runs every CS374 assignment: Python 3.11 with `pytest`,
 mininote scaffold, `uv` for Python environments, and Scheme (`guile`, and
 `mit-scheme` where Debian builds it for your CPU) for the Functional
 Programming with Scheme assignment. `git` and `zip` are included so you can
-commit, push, and package submissions from inside the container.
+commit, push, and package submissions from inside the container, and `less`,
+`nano`, and `curl` so you can page, edit, and fetch without leaving it.
 
 The full walk-through (with GitHub setup, credential options, practice steps,
 and troubleshooting) is the course [Development Environment tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/DevEnvironment).
@@ -34,6 +35,12 @@ This README is the quickstart version.
        docker-compose.yml
        devcontainer.json
    ```
+
+These are a **copy**, and they do not update themselves. The image carries a
+datestamp you can read from the container prompt with
+`echo $CS374_IMAGE_VERSION`; when it is older than the one in Step 3 of the
+[tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/DevEnvironment),
+re-download the three files over your copies, `docker compose build`, and commit.
 
 The bind mount in `docker-compose.yml` (and the `workspaceMount` in
 `devcontainer.json`) exposes **your cloned GitHub repo** (and nothing else on
@@ -63,7 +70,7 @@ Verify the toolchain from the container prompt:
 
 ```bash
 python3 --version && pytest --version && flex --version && bison --version \
-  && uv --version && guile --version
+  && uv --version && guile --version && echo $CS374_IMAGE_VERSION
 ```
 
 `mit-scheme --version` should work too, except on CPU architectures Debian does
@@ -105,6 +112,11 @@ If you cannot run Docker, install the tools directly:
 
 - `Cannot connect to the Docker daemon`: Docker Desktop is not running; start it.
 - Slow first build: normal; later builds reuse cached layers.
+- `curl: command not found`, `uv: command not found`, or any other tool above
+  missing: your `.devcontainer/` copy predates a course update. Check with
+  `echo $CS374_IMAGE_VERSION`, then re-download the three files, rebuild, and
+  commit. Do not install tools at the container prompt; a `--rm` container
+  discards them on exit. See Step 3 and Step 8 of the tutorial.
 - `fatal: detected dubious ownership in repository at '/workspace'`: the mount is
   owned by your host account, not by the container's `student` user. Run
   `git config --global --add safe.directory /workspace` inside the container and
