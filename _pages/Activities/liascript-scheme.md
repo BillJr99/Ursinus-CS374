@@ -27,6 +27,7 @@ By the end of this activity, you will be able to:
 - Write recursive functions over lists using `car`, `cdr`, `cons`, and a `null?` base case, since Scheme has no loop
 - Pass functions as values and receive them as parameters, using `map`, `apply`, and functions you write yourself
 - Explain what a closure captures, and compare a closure with an object
+- Build an object out of a closure by dispatching on a message, and capture a table rather than a number to memoize a function
 
 > **Before You Begin:** This activity assumes you can:
 >
@@ -74,6 +75,9 @@ Here is a plain-English glossary of the terms this activity uses.  Please come b
 | **quote (`'`)** | Suppresses evaluation.  `'(1 2 3)` is a list of three numbers, not a call to a function named `1` |
 | **higher-order function** | A function that takes a function as an argument or returns one |
 | **closure** | A function value that remembers the environment it was created in |
+| **`set!`** | Assignment to a binding that already exists.  The one thing that turns a captured variable into memory |
+| **message passing** | Handing a procedure a symbol so it decides which operation you meant.  A dispatcher plus a shared environment is an object |
+| **memoization** | Caching a function's answers in state only that function can see, so repeated arguments cost a lookup instead of a recomputation |
 | **tail call** | A recursive call whose result is returned directly, with no work left to do after it returns |
 
 ---
@@ -410,6 +414,210 @@ There are two functions here.  The outer one is named `plusminus` and takes `a` 
 
 ---
 
+## Model 7: `make-account` and Message Passing
+
+Question 21 asked what a closure's return value even *is* once there is more than one operation.  Here is one answer, and it is the answer Scheme programmers reached for long before anyone wrote the word `class` in a language specification.
+
+```scheme
+(define (make-account balance)
+  (define (withdraw amount)
+    (if (>= balance amount)
+        (begin (set! balance (- balance amount)) balance)
+        "insufficient funds"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (lambda (message)
+    (cond ((eq? message 'withdraw) withdraw)
+          ((eq? message 'deposit) deposit)
+          ((eq? message 'balance) balance)
+          (else (error "unknown request" message)))))
+
+(define acc (make-account 100))
+
+((acc 'deposit) 50)          ; 150
+((acc 'withdraw) 30)         ; 120
+(acc 'balance)               ; 120
+```
+
+### Reading the Code
+
+- `balance` is just the parameter of `make-account`, and `withdraw` and `deposit` were both created in the frame that holds it.  One variable, two procedures that can see it, and no way to reach it from outside.  That is the entire mechanism; there is nothing else in the box.
+- The returned lambda is not an operation.  It is a *dispatcher*: hand it a symbol and it hands you back a procedure.  That is why the call reads `((acc 'deposit) 50)` with two sets of parentheses.  The inner call chooses the operation and the outer one runs it.
+- `eq?` on symbols is a pointer comparison rather than a string comparison, because the reader interns every symbol it reads.  Dispatching on `'deposit` therefore costs about what a jump table costs, which is roughly what a method lookup costs in a language that has methods.
+- `'balance` breaks the pattern: it hands back a *number* where the other two hand back *procedures*.  That is pleasant to type and unpleasant to use, and whether it is a convenience or a design error is question 23.
+
+> **Watch out!**  The double parentheses are where everyone stubs a toe the first time.  `(acc 'deposit)` gives you a procedure and does nothing at all to the account.  `((acc 'deposit) 50)` calls that procedure.  Forget the outer pair and Scheme will cheerfully print the procedure itself, which MIT Scheme renders as `#[compound-procedure deposit]` and Guile as `#<procedure deposit (a)>`, while your balance sits exactly where it was.
+
+### Critical Thinking Questions
+
+22.  Draw the environment after `(define acc (make-account 100))`, and draw it again after `((acc 'deposit) 50)`.  How many frames are there, which one holds `balance`, and what changed between the two drawings?
+23.  Make the interface uniform, so every message returns a procedure and reading the balance is `((acc 'balance))`.  Then argue the other side: what did the inconsistent version buy, and who paid for it?
+24.  `(define acc2 (make-account 100))` gives you a second account.  What exactly is *not* shared between `acc` and `acc2`, and what *is*?  Compare your answer with your answer to question 20.
+25.  This object has no inheritance, no `self`, and no type.  Pick one of the three and sketch how you would add it using nothing but closures.  Which of the three is hardest, and what does that tell you about why languages build them in?
+
+---
+
+## Model 8: `memoize`, When the Captured State Is Not a Number
+
+`make-counter` captured an integer and `make-account` captured a number that two procedures share.  Nothing requires the captured state to be small.  A closure can capture a whole table, which is all that memoization is: a function wrapped in a cache that only it can see.
+
+```scheme
+(define (memoize f)
+  (let ((cache '()))                 ; the captured state, an association list
+    (lambda (x)
+      (let ((hit (assoc x cache)))   ; look once, name the result
+        (if hit
+            (cdr hit)
+            (let ((result (f x)))
+              (set! cache (cons (cons x result) cache))
+              result))))))
+
+(define slow-square
+  (lambda (n)
+    (display "computing ") (display n) (newline)
+    (* n n)))
+
+(define fast-square (memoize slow-square))
+
+(fast-square 4)              ; prints "computing 4", returns 16
+(fast-square 4)              ; prints nothing at all, returns 16
+```
+
+### Reading the Code
+
+- `assoc` walks the list looking for a pair whose `car` is `x`, and hands back that whole pair, or `#f` if there is no such pair.  `(cdr hit)` is therefore the cached answer.
+- Naming the lookup with `let` means the cache is searched once instead of twice.  That is the same move `largest2` made in Model 2, and it is worth noticing that the fix looks identical in a completely different setting.
+- The cache is captured, not global.  Two calls to `memoize` build two independent caches, exactly as two calls to `make-counter` built two independent counters, and nothing else in the program can reach either one.
+- `set!` earns its keep here for the second time today.  A memo table you cannot update is an empty list forever.
+
+> **Watch out!**  An association list searches in $O(n)$, so this is a teaching cache rather than a production one.  MIT Scheme spells the real thing `(make-equal-hash-table)`, `(hash-table/get cache x #f)`, and `(hash-table/put! cache x result)`; Racket spells it `make-hash`; R7RS does not standardize hash tables at all, which is why the portable version above uses `assoc`.  Write the association list when you want the code to run in any Scheme, and reach for your dialect's hash table when the cache gets big.  The hash-table version also acquires a bug that this one does not have, and that bug is question 27.
+
+### Critical Thinking Questions
+
+26.  `memoize` takes a one-argument function.  What breaks if you hand it a two-argument function, and what is the smallest change that fixes it?
+27.  Suppose you rewrite the cache with a hash table and test for a hit using `(hash-table/get cache x #f)`.  Now memoize a predicate, a function that legitimately returns `#f` sometimes.  What goes wrong, how often does it go wrong, and how would you fix it without giving up the hash table?
+28.  Memoizing `slow-square` saves nothing worth having.  Name a function you could write with what you know today whose running time memoization would drag from exponential down to linear, and say exactly which repeated work disappears.
+29.  A memoized function mutates on every cache miss, so it is not referentially transparent on the inside.  Is it still referentially transparent on the *outside*?  Defend your answer, because your team's language will have to take a position on this in December.
+
+---
+
+## Model 9: Both Closures, Instrumented
+
+Scheme fences in this deck are static, and the last two models both make claims about sharing and about cost.  Here are the same two closures in Python, counted, so the claims are numbers rather than assertions.
+
+```python
+# Model 7 and Model 8, transliterated so we can count.
+# Scheme's inner (define ...) inside a closure is Python's def inside a def.
+
+def make_account(balance):
+    # 'balance' is the captured state.  'nonlocal' is Python's set! for a
+    # captured binding: without it, the assignment would make a NEW local.
+    def withdraw(amount):
+        nonlocal balance
+        if balance >= amount:
+            balance = balance - amount
+            return balance
+        return "insufficient funds"
+
+    def deposit(amount):
+        nonlocal balance
+        balance = balance + amount
+        return balance
+
+    def dispatch(message):
+        if message == "withdraw":
+            return withdraw
+        if message == "deposit":
+            return deposit
+        if message == "balance":
+            return balance
+        raise ValueError("unknown request: " + str(message))
+
+    return dispatch
+
+
+acc = make_account(100)
+acc2 = make_account(100)
+print("deposit 50  :", acc("deposit")(50))
+print("withdraw 30 :", acc("withdraw")(30))
+print("acc balance :", acc("balance"))
+print("acc2 balance:", acc2("balance"), "(untouched, its own frame)")
+
+# ---- memoize, and the number that makes the point ----
+
+calls = dict()
+
+def counted(name, f):
+    calls[name] = 0
+    def wrapped(n):
+        calls[name] = calls[name] + 1
+        return f(n)
+    return wrapped
+
+def memoize(f):
+    cache = dict()                  # the captured state: a table, not a number
+    def wrapped(x):
+        if x not in cache:
+            cache[x] = f(x)
+        return cache[x]
+    return wrapped
+
+def fib_slow(n):
+    if n < 2:
+        return n
+    return slow(n - 1) + slow(n - 2)
+
+slow = counted("slow", fib_slow)
+
+def fib_fast(n):
+    if n < 2:
+        return n
+    return fast(n - 1) + fast(n - 2)
+
+fast = memoize(counted("fast", fib_fast))
+
+print()
+print("fib(25) naive    :", slow(25), "in", calls["slow"], "calls")
+print("fib(25) memoized :", fast(25), "in", calls["fast"], "calls")
+
+# Expected output:
+# deposit 50  : 150
+# withdraw 30 : 120
+# acc balance : 120
+# acc2 balance: 100 (untouched, its own frame)
+#
+# fib(25) naive    : 75025 in 242785 calls
+# fib(25) memoized : 75025 in 26 calls
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- `acc2` is untouched by everything done to `acc`, and it is untouched for the same reason `counter2` was: each call to the constructor allocated a fresh frame, and the two closures captured different ones.
+- `nonlocal` is the confession Python has to make out loud.  Scheme's `set!` already means "assign to the binding you can see," so Scheme needs no keyword; Python's plain `balance = ...` would create a new local instead, so it needs one.  Two languages, one mechanism, and only one of them makes you say it.
+- `242785` against `26` is the whole argument for closure state in one line.  The memoized version is the same recursion with the same base case; the only difference is a table nobody else can reach.
+
+### Try It Yourself
+
+```python
+# Start from the cell above and change three things.
+
+# TODO 1: give make_account a 'history' message that returns the list of every
+#         amount deposited or withdrawn.  Where does the list have to live for
+#         acc and acc2 to keep separate histories?
+
+# TODO 2: print len(cache) at the end by returning it from memoize somehow.
+#         You will find you cannot reach it from outside without adding a
+#         message, which is the point.  Add the message.
+
+# TODO 3: predict the two call counts for fib(30) BEFORE you run it.  Write
+#         your predictions down, then run it, then explain the naive one.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+---
+
 # Part IV: Synthesis
 
 # Check Your Understanding
@@ -459,6 +667,33 @@ A closure is:
 
 ---
 
+In `((acc 'deposit) 50)`, the inner call `(acc 'deposit)`:
+
+[(X)] Returns the `deposit` procedure without touching the account
+[( )] Deposits nothing and raises an error, since `'deposit` is not a number
+[( )] Deposits the symbol `'deposit` into the account
+[( )] Is the actual deposit, and the outer parentheses are redundant
+
+---
+
+`make-account` and `make-counter` both keep state that no other part of the program can reach.  What makes that state unreachable is:
+
+[(X)] Lexical scope: `balance` and `count` are local to a frame that only the returned procedures captured
+[( )] `set!`, which marks a variable as private
+[( )] The `define` inside the procedure body, which acts as a visibility modifier
+[( )] Scheme's garbage collector, which hides frames after their procedure returns
+
+---
+
+A cache that lives inside `memoize`'s `let` rather than at top level buys you:
+
+[(X)] One independent cache per memoized function, with no chance of two functions colliding in a shared table
+[( )] Faster lookups, because a captured variable is a register
+[( )] Referential transparency, since the mutation is hidden
+[( )] Thread safety, since each closure gets its own lock
+
+---
+
 **In-class work stops here.**  Everything below is the homework path.
 
 ## 5.  Exercises
@@ -470,6 +705,7 @@ Before then, and independent of the assignment:
 1.  Rewrite `sumlist` so that `(sumlist '())` returns 0 instead of erroring.  You will need `null?` rather than `(null? (cdr L))`.
 2.  Write `reverse` using only `car`, `cdr`, and `cons`.  Then count how many `cons` calls it makes for a list of length `n`, and say whether you are happy with that.
 3.  Take the projectile expression and factor it into a named function of `v0`, `t`, and `a`.  Then use `map` to compute the distance at `t` values `'(1 2 3 4 5)`.
+4.  Give `make-account` a fourth message, `'history`, that returns every amount deposited or withdrawn so far, most recent first.  Then explain in one sentence why `acc` and `acc2` do not share a history, using the word *frame*.
 
 ## Reflection Prompt
 
@@ -479,6 +715,7 @@ Scheme paid for its uniformity.  Name one thing about today that was genuinely h
 
 - [The Scheme Programming Language](https://www.scheme.com/tspl3/) (Dybvig): the standard reference, and readable front to back
 - [Closures in Scheme](https://www.artificialworlds.net/presentations/scheme-03-closures/scheme-03-closures.html) (Andy Balaam): where `make-counter` comes from
+- [Structure and Interpretation of Computer Programs](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/full-text/book/book.html) (Abelson and Sussman), sections 3.1 and 3.2: where `make-account` comes from, and the source of the argument that a closure and an object are the same idea seen from two sides
 - [QuickSort in Scheme](https://riptutorial.com/scheme/example/10903/quicksort): eight lines, and worth reading beside your own sorting code
 - [Implementing Python as Syntax Rules for Racket](https://github.com/pedropramos/PyonR/): what "one syntax rule" buys you, taken to its logical end
 - Runnable course archives: [SchemeSumList.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeSumList.zip), [SchemeLargestElement.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeLargestElement.zip), [czrEmptyListScheme.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/czrEmptyListScheme.zip), [ApplyScheme.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/ApplyScheme.zip), [ClosureStateScheme.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/ClosureStateScheme.zip), [QuickSortScheme.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/QuickSortScheme.zip)

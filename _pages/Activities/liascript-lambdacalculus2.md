@@ -23,6 +23,9 @@ By the end of this activity, you will be able to:
 - Encode natural numbers as Church numerals and implement successor, addition, and multiplication as lambda functions
 - Demonstrate that every combinator with no free variables can be given a permanent name, and connect this to the concept of referential transparency
 - Trace the full reduction of an arithmetic expression written in Church numeral notation to its normal form
+- Derive a fixed-point combinator twice over, once by refactoring a self-applying factorial until the machinery separates from the logic, and once algebraically by solving $\textbf{Y}\, f = f\, (\textbf{Y}\, f)$ for a self-application
+- Put any recursive function into generator form, taking the rest of the recursion as a parameter rather than calling itself by name
+- Verify the fixed-point equation by hand reduction, and explain why $\textbf{Y}$ diverges under call-by-value while $\textbf{Z}$, one eta-expansion away, does not
 
 > **Before You Begin**
 >
@@ -39,7 +42,7 @@ By the end of this activity, you will be able to:
 
 Everything you need to compute can be expressed with just functions.  Lambda calculus has no numbers, no booleans, no if-statements; yet Church showed how to encode ALL of these as pure lambda terms.  This activity builds that encoding from scratch in Python.
 
-The calculus of *The Lambda Calculus, Part 1* had no numbers, no booleans, no data, and today we discover it needs none: **everything can be built from functions alone**.  Following the same path as Gabriel Lebec's "A Flock of Functions" (our companion reading, in JavaScript), we build booleans, then numbers, then arithmetic, verifying each construction by hand and in Python.  Today's path runs **named combinators $\rightarrow$ Church booleans $\rightarrow$ Church numerals $\rightarrow$ arithmetic as function surgery**.
+The calculus of *The Lambda Calculus, Part 1* had no numbers, no booleans, no data, and today we discover it needs none: **everything can be built from functions alone**.  Following the same path as Gabriel Lebec's "A Flock of Functions" (our companion reading, in JavaScript), we build booleans, then numbers, then arithmetic, verifying each construction by hand and in Python.  Today's path runs **named combinators $\rightarrow$ Church booleans $\rightarrow$ Church numerals $\rightarrow$ arithmetic as function surgery $\rightarrow$ recursion with no names at all**.
 
 ---
 
@@ -488,6 +491,414 @@ print(f"3 - 4 = {church_to_int(MINUS(THREE)(FOUR))}")   # 0 (floored)
 
 ---
 
+# Part V: Recursion Without Names
+
+## 4.  The Problem: A Lambda Has No Name to Call
+
+Every recursive function you have ever written works because a name was bound before the body ran.  `sumlist` calls `sumlist`; `fact` calls `fact`.  Take the names away and the trick stops working, and in the pure calculus there are no names to take away: there is no `define`, so at the instant you write a term down there is nothing yet to recurse *through*.
+
+That is not a small gap.  Everything else on today's list survived the reduction to functions.  Booleans became selectors, numerals became repetition, pairs became a function holding two things.  Repetition itself is the one thing that looks like it needs something the calculus does not have.
+
+State the goal precisely before pushing any symbols.  We want a term $\textbf{Y}$ such that, for every $f$,
+
+$$
+\textbf{Y}\, f \;=_\beta\; f\, (\textbf{Y}\, f)
+$$
+
+This is the **fixed-point equation**, and a term satisfying it is a **fixed-point combinator**.  Read it as a promise rather than a formula: if $f$ is a function that, handed "the rest of the recursion," produces one more layer of a recursive definition, then $\textbf{Y}\, f$ is that definition unrolled as far as anyone ever asks for it.
+
+We are going to earn that term twice.  First we will build it from the ground up, starting from a factorial that cannot be written and fixing one problem at a time until a combinator falls out.  Then we will derive the same term backwards from the equation above in four lines, as a check that the construction was not a lucky accident.
+
+> **Watch out!**  Nothing in this Part defines recursion in terms of recursion.  Every step is beta reduction, and the finished $\textbf{Y}$ is a closed term you could write on a whiteboard from memory.  If a step ever feels circular, find where the repeated subterm came from: it always came from *substituting*, never from calling something by name.
+
+---
+
+## 5.  Deriving the Combinator, One Honest Step at a Time
+
+### Step 0: The Term You Cannot Write
+
+Here is factorial, as you want to write it, using the encodings from Part III:
+
+$$
+\text{FACT} = \lambda n.\, \text{IF}\, (\text{ISZERO}\, n)\, \overline{1}\, (\text{MULT}\, n\, (\;???\;(\text{PRED}\, n)))
+$$
+
+The whole exercise is that box.  In Scheme, `define` puts `FACT` there before the body ever runs.  Here there is no `define`, the term has no name, and a term cannot refer to itself.  So stop trying to reach outward for a name, and ask instead what a lambda term *can* get at.
+
+It can get at its arguments.  That is the only thing it can get at.
+
+### Step 1: Hand the Function a Copy of Itself
+
+If a function cannot reach itself, hand it itself.  Add a parameter for it and pass the whole term in as an ordinary argument:
+
+$$
+F = \lambda \textit{self}.\, \lambda n.\, \text{IF}\, (\text{ISZERO}\, n)\, \overline{1}\, (\text{MULT}\, n\, ((\textit{self}\ \textit{self})\, (\text{PRED}\, n)))
+$$
+
+Two things to notice.  The recursive call is $(\textit{self}\ \textit{self})$ rather than $\textit{self}$, because $\textit{self}$ arrives as a function still waiting to be handed a copy of itself.  And $F$ is not started by calling it on a number; it is started by applying it to itself, $F\, F$.
+
+Watch the recursion appear out of pure substitution:
+
+```
+F F 3
+= (λself. λn. IF (ISZERO n) 1 (MULT n ((self self) (PRED n)))) F 3
+->β (λn. IF (ISZERO n) 1 (MULT n ((F F) (PRED n)))) 3      <- self := F
+->β IF (ISZERO 3) 1 (MULT 3 ((F F) 2))
+->β MULT 3 ((F F) 2)                                        <- (F F) again: back where we began
+->β MULT 3 (MULT 2 ((F F) 1))
+->β MULT 3 (MULT 2 (MULT 1 ((F F) 0)))
+->β MULT 3 (MULT 2 (MULT 1 1))                              <- ISZERO 0 selects the base case
+=  6                                                        OK
+```
+
+That is a working recursive factorial with no name anywhere in it.  The problem is solved.  What follows is entirely about making it *tolerable*, and it is worth being clear that everything after this point is refactoring rather than new power.
+
+### Step 2: Hide the Self-Application Behind a Name
+
+The body of $F$ is unpleasant because it says $(\textit{self}\ \textit{self})$ where a reader wants to see "factorial of."  The plumbing has leaked into the arithmetic.  So bind the plumbing to a local name.  There are no `let` forms here either, but a `let` is only an applied lambda, so write it as one:
+
+$$
+F = \lambda \textit{self}.\, \underbrace{(\lambda \textit{rec}.\, \lambda n.\, \text{IF}\, (\text{ISZERO}\, n)\, \overline{1}\, (\text{MULT}\, n\, (\textit{rec}\, (\text{PRED}\, n))))}_{\text{clean: this is just factorial}}\, \underbrace{(\lambda v.\, ((\textit{self}\ \textit{self})\, v))}_{\text{the plumbing}}
+$$
+
+The underbraced left half now reads exactly like factorial written with a helper called $\textit{rec}$.  The right half is the self-application, wrapped in $\lambda v$ so that it is handed along as a function rather than run on the spot.  Hold on to that wrapper; in Step 5 we throw it away, and in section 7 we discover it was load-bearing after all.
+
+### Step 3: Lift the Logic Out
+
+The clean half no longer mentions $\textit{self}$, so nothing keeps it inside $F$.  Pull it out and give it a name of its own:
+
+$$
+G = \lambda \textit{rec}.\, \lambda n.\, \text{IF}\, (\text{ISZERO}\, n)\, \overline{1}\, (\text{MULT}\, n\, (\textit{rec}\, (\text{PRED}\, n)))
+$$
+
+$$
+F = \lambda \textit{self}.\, G\, (\lambda v.\, ((\textit{self}\ \textit{self})\, v))
+\qquad\qquad
+\text{FACT} = F\, F
+$$
+
+$G$ is the **generator**, and it is the payoff of the whole exercise.  It is not recursive.  It does not mention its own name, because it does not have one.  It is a perfectly ordinary function of one argument that happens to call whatever it is handed, and every recursive function you will ever write can be put in this shape.
+
+### Step 4: Abstract Over the Generator
+
+$F$ mentions $G$ only because we typed $G$ there.  Nothing about $F$ is specific to factorial, so make $G$ a parameter and inline $F$ into $F\, F$:
+
+$$
+\textbf{Z} = \lambda f.\, (\lambda x.\, f\, (\lambda v.\, ((x\, x)\, v)))\, (\lambda x.\, f\, (\lambda v.\, ((x\, x)\, v)))
+$$
+
+and now $\text{FACT} = \textbf{Z}\, G$.  This is a combinator: closed, generic, and finished.  Hand it any generator and it hands you back the recursive function that generator describes.  Nothing about factorials survives in it.
+
+### Step 5: Strip the Delay
+
+One piece is still unexplained.  What is $\lambda v.\, ((x\, x)\, v)$ doing?  It takes an argument and passes it straight to $(x\, x)$, unchanged.  It computes nothing.
+
+In the pure calculus, $\lambda v.\, (M\, v)$ and $M$ are interchangeable whenever $v$ is not free in $M$; that is the **eta rule**.  So delete the wrapper:
+
+$$
+\textbf{Y} = \lambda f.\, (\lambda x.\, f\, (x\, x))\, (\lambda x.\, f\, (x\, x))
+$$
+
+That is the Y combinator, and notice how it arrived: not invented, but left behind when the last piece of scaffolding was removed.  $\textbf{Y}$ is $\textbf{Z}$ with an eta-expansion undone, which is worth remembering, because section 7 is about the one situation in which undoing it is a catastrophe.
+
+---
+
+## Model 5: The Five Steps, Running
+
+Every step above is executable.  Run the cell and watch the machinery separate itself from the factorial one line at a time; each `print` corresponds to one numbered step.
+
+```python
+# The derivation, each step runnable, so you can watch the machinery
+# separate itself from the factorial one line at a time.
+
+# Step 0 does not appear here, because it cannot be written:
+#     lambda n: 1 if n == 0 else n * ???(n - 1)
+# There is no name to put where ??? is.
+
+# Step 1: hand the function a copy of itself, as an ordinary argument.
+step1 = lambda self, n: 1 if n == 0 else n * self(self, n - 1)
+print("step1 :", step1(step1, 5), "  called as step1(step1, 5)")
+
+# Step 1, curried, one argument at a time, as the calculus insists.
+# 'self' is a function you must apply to itself before you can use it.
+step1c = lambda self: lambda n: 1 if n == 0 else n * self(self)(n - 1)
+print("step1c:", step1c(step1c)(5), "  called as step1c(step1c)(5)")
+
+# Step 2: the body is ugly because self(self) is spelled out inside it.
+# Bind that self-application to a name so the body reads like factorial.
+step2 = lambda self: (
+    lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1)
+)(lambda v: self(self)(v))
+print("step2 :", step2(step2)(5), "  the inner body now says rec(n - 1)")
+
+# Step 3: that inner body never mentions self, so lift it out.  fact_gen is
+# pure factorial logic: not recursive, no name of its own, calls what it gets.
+fact_gen = lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1)
+step3 = lambda self: fact_gen(lambda v: self(self)(v))
+print("step3 :", step3(step3)(5), "  logic and machinery now separate")
+
+# Step 4: step3 mentions fact_gen only because we typed it there.  Abstract
+# over it and nothing about factorial is left.  What remains is a combinator.
+Z = lambda f: (lambda x: f(lambda v: (x(x))(v)))(
+               lambda x: f(lambda v: (x(x))(v)))
+print("step4 :", Z(fact_gen)(5), "  Z(fact_gen), and Z knows nothing of factorials")
+
+# Proof that nothing about factorial survived: hand Z other generators.
+fib_gen = lambda rec: lambda n: n if n < 2 else rec(n - 1) + rec(n - 2)
+sum_gen = lambda rec: lambda xs: 0 if not xs else xs[0] + rec(xs[1:])
+print()
+print("Z(fib_gen)(10)           =", Z(fib_gen)(10))
+print("Z(sum_gen)([1, 2, 3, 4]) =", Z(sum_gen)([1, 2, 3, 4]))
+
+# Expected output:
+# step1 : 120   called as step1(step1, 5)
+# step1c: 120   called as step1c(step1c)(5)
+# step2 : 120   the inner body now says rec(n - 1)
+# step3 : 120   logic and machinery now separate
+# step4 : 120   Z(fact_gen), and Z knows nothing of factorials
+#
+# Z(fib_gen)(10)           = 55
+# Z(sum_gen)([1, 2, 3, 4]) = 10
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- Every step prints `120`.  That is the point: no step adds power, and steps 2 through 4 are refactoring.  All the difficulty lives in step 1, and step 1 is three tokens long.
+- `step1` and `step1c` differ only in currying.  Python lets you write `self(self, n - 1)` with a comma; the calculus does not have commas, so `(self self) (PRED n)` is the honest spelling and `step1c` is the one to compare against the math.
+- `fact_gen` is the shape worth memorizing.  It takes `rec` and calls `rec(n - 1)` exactly where a recursive call belongs, and it is not recursive itself.  Any recursive function can be bent into this shape mechanically.
+- `Z(fib_gen)` and `Z(sum_gen)` are the argument that step 4 actually finished the job.  If any trace of factorial had survived in `Z`, those two lines could not work.
+
+### Critical Thinking Questions
+
+> **CTQ 5.1** Take the reduction of `F F 3` in Step 1 and continue it for `F F 4`, writing every substitution.  At which arrow does the term `(F F)` reappear, and what would happen to the reduction if `ISZERO` never selected the base case?
+
+> **CTQ 5.2** Step 2 claims the two halves are "clean" and "plumbing."  Circle every occurrence of $\textit{self}$ in Step 2's term.  How many are in the clean half?  Why does that number make Step 3 possible?
+
+> **CTQ 5.3** Write `sum_gen` for Scheme lists rather than Python lists, in the same shape as `fact_gen`, using `null?`, `car`, and `cdr`.  Then say in one sentence what `rec` is standing in for.
+
+---
+
+## 6.  The Same Term, Derived Backwards from the Equation
+
+The construction above is honest but long.  Now that we know what we are looking for, here is the four-line derivation, working from the fixed-point equation rather than from a factorial.
+
+We want a $\textbf{Y}$ with $\textbf{Y}\, f = f\, (\textbf{Y}\, f)$.  The only device we have for making a term reproduce itself is self-application, which Part 1 showed us in $\Omega = (\lambda x.\, x\, x)\, (\lambda x.\, x\, x)$.  So guess that $\textbf{Y}\, f$ is a self-application, write $\textbf{Y} = \lambda f.\, W\, W$, and solve for $W$:
+
+```
+Want:   W W  =  f (W W)
+
+Read it as a specification for W: applied to an argument x,
+W must return f applied to (x x).  Write exactly that down:
+
+        W  =  λx. f (x x)
+
+Check it, by substituting W for x:
+
+        W W = (λx. f (x x)) (λx. f (x x))
+            ->β f ((λx. f (x x)) (λx. f (x x)))
+             =  f (W W)                          OK
+
+So      Y  =  λf. (λx. f (x x)) (λx. f (x x))
+```
+
+The same term the construction produced, arrived at from the other end.  $\Omega$ was the raw material both times: Step 1's $F\, F$ is a self-application, and so is $W\, W$.  The difference between $\Omega$ and $\textbf{Y}$ is only that $\textbf{Y}$ leaves a place for $f$ to do work on the way around the loop.
+
+**The full reduction, with every substitution named**
+
+```
+Y = λf. W W          where W = λx. f (x x)
+
+Y f
+= (λf. (λx. f (x x)) (λx. f (x x))) f
+->β (λx. f (x x)) (λx. f (x x))          <- substitute f for the bound f
+                                            this is W W
+->β f ((λx. f (x x)) (λx. f (x x)))      <- substitute W for x in f (x x)
+=  f (W W)
+=  f (Y f)                                OK
+```
+
+Keep going and the pattern is the whole story of recursion:
+
+```
+Y f  ->β* f (W W)
+     ->β* f (f (W W))
+     ->β* f (f (f (W W)))
+     ->β* ...
+```
+
+Each arrow wraps one more $f$ around the same self-applying core.  Nothing decides to stop, and nothing ever will: the *term* has no normal form.  What stops is the *computation*, when some $f$ finally ignores the argument it was handed because `ISZERO n` selected the base case.  That is a real and useful distinction, and it is worth saying out loud: a divergent term can compute a terminating function, so long as evaluation never demands the divergent part.
+
+> **Watch out!**  "$\textbf{Y}$ has no normal form" and "$\textbf{Y}\, f$ never terminates" are different claims, and only the first is true.  Under normal-order reduction, `Y fact-gen 3` gets to 6 in finitely many steps, because the base case discards the unexpanded remainder before it is ever needed.
+
+---
+
+## 7.  Strictness: Why Y Hangs and Z Does Not
+
+Everything in section 6 chose to contract the outermost redex first, which is **normal order**.  Scheme, Python, JavaScript, and nearly every language you will be paid to write are **call-by-value**: an argument is reduced to a value before the function receiving it runs.
+
+Under that rule, $\textbf{Y}$ is a disaster, and it fails before $f$ ever executes a single instruction:
+
+```
+Y f
+->β W W                    where W = λx. f (x x)
+->β f (W W)                to call f, first reduce its ARGUMENT (W W):
+      W W ->β f (W W)      to call f, first reduce its argument (W W):
+        W W ->β f (W W)    ...
+                           f is never applied to anything.  No base case is
+                           ever tested, because no test is ever reached.
+```
+
+The loop is not in the factorial.  It is in the machinery, and it spins before the factorial gets a turn.
+
+Now put back the wrapper we deleted in Step 5, and follow the same rule:
+
+```
+Z f
+->β V V                    where V = λx. f (λv. ((x x) v))
+->β f (λv. ((V V) v))      the argument to f is now a LAMBDA.  A lambda is
+                           already a value, so call-by-value stops right
+                           here and hands it to f, which runs.          OK
+```
+
+That is the entire fix.  $\lambda v.\, ((x\, x)\, v)$ computes nothing, but it is a *value*, and under call-by-value the difference between a value and a computation is the difference between stopping and not stopping.  The self-application inside it happens later, when the recursive call is actually made on a real argument $v$.
+
+So the two combinators sit exactly one eta step apart, and which one you want is decided entirely by your evaluation order:
+
+| | $\textbf{Y} = \lambda f.\, (\lambda x.\, f\, (x\, x))\, (\lambda x.\, f\, (x\, x))$ | $\textbf{Z} = \lambda f.\, (\lambda x.\, f\, (\lambda v.\, ((x\, x)\, v)))\, (\lambda x.\, f\, (\lambda v.\, ((x\, x)\, v)))$ |
+|---|---|---|
+| Normal order / lazy (Haskell) | works | works |
+| Call-by-value (Scheme, Python) | diverges immediately | works |
+| Difference | one eta-expansion | |
+
+> **Watch out!**  "Y does not work" is the wrong lesson to take away.  $\textbf{Y}$ works perfectly; our machines' evaluation order does not suit it.  That distinction matters because your December language will have to choose an evaluation order, and this is one of the first places where that choice becomes visible to an ordinary programmer.
+
+---
+
+## Model 6: Y, Z, and the Order of Evaluation
+
+```python
+# Y and Z in Python.  Python is call-by-value, exactly like Scheme, so this
+# cell is a fair test of the claim section 7 makes about Y.
+import sys
+
+# The classical Y, transcribed straight off the lambda term.
+Y = lambda f: (lambda x: f(x(x)))(lambda x: f(x(x)))
+
+# Z: the same term with each self-application wrapped in one more lambda.
+Z = lambda f: (lambda x: f(lambda v: (x(x))(v)))(lambda x: f(lambda v: (x(x))(v)))
+
+# The generator from Step 3.  Notice what is NOT in it: fact_gen never
+# mentions its own name.  It takes the rest of the recursion as a parameter.
+fact_gen = lambda self: lambda n: 1 if n == 0 else n * self(n - 1)
+
+factorial = Z(fact_gen)
+print("Z: factorial(0) =", factorial(0))
+print("Z: factorial(5) =", factorial(5))
+
+# The same machinery with two recursive calls instead of one.
+fib_gen = lambda self: lambda n: n if n < 2 else self(n - 1) + self(n - 2)
+print("Z: fib(10)      =", Z(fib_gen)(10))
+
+# Now watch Y fail, for exactly the reason section 7 gives.  Note where it
+# fails: building Y(fact_gen) is already enough.  We never get to call it.
+sys.setrecursionlimit(300)
+try:
+    Y(fact_gen)
+    print("Y: built a function (this does not happen in a strict language)")
+except RecursionError:
+    print("Y: RecursionError before f ran even once")
+sys.setrecursionlimit(1000)
+
+# Expected output:
+# Z: factorial(0) = 1
+# Z: factorial(5) = 120
+# Z: fib(10)      = 55
+# Y: RecursionError before f ran even once
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+The same three definitions in Scheme, where they sit closer to the lambda terms because Scheme's `lambda` *is* the calculus's abstraction:
+
+```scheme
+; The Z combinator, transcribed from the term in section 7.
+(define Z
+  (lambda (f)
+    ((lambda (x) (f (lambda (v) ((x x) v))))
+     (lambda (x) (f (lambda (v) ((x x) v)))))))
+
+; fact-generator is not recursive.  It takes "self" as a parameter and calls
+; (self n) wherever a recursive call belongs.  It never names itself.
+(define fact-generator
+  (lambda (self)
+    (lambda (n)
+      (if (= n 0)
+          1
+          (* n (self (- n 1)))))))
+
+(define factorial (Z fact-generator))
+
+(factorial 5)                ; 120
+(factorial 0)                ; 1
+```
+
+**Step-by-step: (factorial 3)**
+
+```
+(Z fact-generator)
+ = (fact-generator self)          where self = (lambda (v) ((x x) v))
+ = (lambda (n) (if (= n 0) 1 (* n (self (- n 1)))))
+
+(factorial 3)
+->  (* 3 (self 2))               ; calling self unfolds Z one more level
+->  (* 3 (* 2 (self 1)))
+->  (* 3 (* 2 (* 1 (self 0))))
+->  (* 3 (* 2 (* 1 1)))          ; n = 0, base case, self is never called again
+=   6                                                                       OK
+```
+
+### Reading the Code
+
+- `fact-generator` is a plain function of one argument with no state, no mutation, and no name pointing back at itself.  Every recursive function you have written before today needed that name.  This one does not, and that is the whole result.
+- Each call to `self` is another application of `Z` to `fact-generator`, which is the fixed-point equation $(\textbf{Z}\, f) = (f\, (\textbf{Z}\, f))$ being cashed in one unfolding at a time.  The trace above is that equation, four times.
+- The recursion stops because `n = 0` selects the `1` branch and `self` is simply not called.  Delay is not what makes it terminate; delay is what keeps the *machinery* from running away before the base case can be tested.
+- `(lambda (v) ...)` is the only textual difference between `Y` and `Z`, and in a strict language it is the difference between a factorial and a hung REPL.
+
+### Critical Thinking Questions
+
+> **CTQ 6.1** Section 6 derived $\textbf{Y}$ in four lines and section 5 took five steps.  What does the long derivation tell you that the short one does not?  Answer in terms of what a student could reconstruct from memory a week later.
+
+> **CTQ 6.2** Write `fib-generator` in Scheme, in the same shape as `fact-generator`, and hand it to `Z`.  It has two recursive calls rather than one.  Does anything about `Z` have to change?  Predict first, then check.
+
+> **CTQ 6.3** $\lambda v.\, (M\, v)$ and $M$ are interchangeable in the calculus, yet swapping one for the other turns a working factorial into a hang.  How can two terms be equal and still behave differently?  Say exactly what "equal" is quantifying over, and what it says nothing about.
+
+> **CTQ 6.4** In the simply typed lambda calculus, $x\, x$ cannot be assigned a type at all, so $\textbf{Y}$ is not typable and every well-typed program terminates.  Connect this to the *Type Systems* activity: what did the type system buy, what did it cost, and by what mechanism do Haskell and ML get recursion back?
+
+> **CTQ 6.5** `fact-generator` receives the rest of the recursion as a parameter.  `make-counter`, from the Scheme activity, got its persistence from `set!` on a captured variable instead.  Both supply something the bare calculus lacks.  Which would you rather explain to a first-year student, and which would you rather implement in your interpreter?  They need not be the same answer.
+
+> **CTQ 6.6** Your tree-walking interpreter has to make recursion work somehow.  Find the place in it where a function's own name becomes visible inside its body, and say whether your implementation is closer to $\textbf{Z}$ or closer to `set!`.  Put the answer in `SEMANTICS.md` in one sentence.
+
+### Try It Yourself
+
+```python
+# Start from the Model 6 cell.
+
+# TODO 1: write mult_gen so that Z(mult_gen) multiplies two numbers using
+#         only addition and recursion.  The generator takes exactly one
+#         parameter, so you must decide where the second argument goes.
+
+# TODO 2: instrument Z so it prints one line every time self is called.
+#         Run factorial(4) and count the lines.  Does the count match the
+#         hand trace in Model 6?
+
+# TODO 3: define Y_lazy, a version of Y that works in Python by delaying the
+#         WHOLE call site rather than the self-application.  Compare it with
+#         Z and say which one you would put in a language specification.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+---
+
 **In-class work stops here.**  Everything below is homework and going-deeper material; attempt the exercises before the related assignment.
 
 # Check Your Understanding
@@ -537,14 +948,33 @@ The Church numeral `THREE` is:
 
 ---
 
-## 4.  Exercises
+The lambda calculus needs a fixed-point combinator because:
+
+[(X)] A term has no name at the moment it is written, so a function cannot call itself by name
+[( )] Beta reduction cannot express repetition
+[( )] Church numerals are too weak to count loop iterations
+[( )] Substitution is not powerful enough to duplicate a term
+
+---
+
+$\textbf{Y}$ diverges in Scheme but $\textbf{Z}$ does not, because:
+
+[(X)] Scheme evaluates arguments before calling, so Y's inner `(x x)` re-triggers before `f` can reach its base case; Z's extra lambda makes that self-application a value instead
+[( )] Z has a base case built into it and Y does not
+[( )] Y is not a closed term, so Scheme cannot bind its free variables
+[( )] Scheme's `lambda` is not the same construct as the calculus's abstraction
+
+---
+
+## 8.  Exercises
 
 1.  *Pairs.*  Define $\textbf{PAIR} = \lambda a. \lambda b. \lambda f.\, f\, a\, b$, with $\textbf{FST} = \lambda p.\, p\, \textbf{K}$ and $\textbf{SND} = \lambda p.\, p\, \textbf{KI}$. Verify in Python, then say what data structure you just built from nothing, and what your AST could, in principle, be encoded as.
 2.  *IS-ZERO.* Define $\textbf{ISZERO} = \lambda n.\, n\, (\lambda x.\, \textbf{FALSE})\, \textbf{TRUE}$ and verify on 0, 1, 2.  Explain the trick: what happens to TRUE if $f$ is applied even once?
 3.  *XOR.* Build XOR from the flock (any correct construction), verify all four input pairs in code, and present your reduction for one pair on the board.
 4.  *Flock report.*  Watch or skim Lebec's "A Flock of Functions" (linked below) and write a half page: one construction he presents that we did not build today, reduced or verified yourself.
 5.  *Church list.*  Build a Church-encoded linked list: `NIL`, `CONS(head)(tail)`, `HEAD`, `TAIL`, `ISNIL`.  Represent the list `[1, 2, 3]` as Church numerals in a Church list, and write a `to_python_list` function that decodes it.
-6.  *Mechanical audit.*  Choose one Church-encoding reduction you performed by hand in this module (for example, $\textbf{ISZERO}\, \overline{1}$ or $\textbf{FST}\, (\textbf{PAIR}\, a\, b)$) and verify it mechanically using Lambda-Py / pycombinator (https://finsberg.github.io/pycombinator/docs/lambda-talk.html) or your own Python reducer.  Include the transcript, and reconcile in one sentence: did the machine agree with your hand derivation step for step, and if not, which artifact erred?
+6.  *Tie the knot.*  Write `sumlist-generator` so that $\textbf{Z}$ turns it into a function that sums a Scheme list.  Then write the same thing the ordinary way, with `define` and a self-reference, and say in two sentences what the name was doing that $\textbf{Z}$ now does instead.
+7.  *Mechanical audit.*  Choose one Church-encoding reduction you performed by hand in this module (for example, $\textbf{ISZERO}\, \overline{1}$ or $\textbf{FST}\, (\textbf{PAIR}\, a\, b)$) and verify it mechanically using Lambda-Py / pycombinator (https://finsberg.github.io/pycombinator/docs/lambda-talk.html) or your own Python reducer.  Include the transcript, and reconcile in one sentence: did the machine agree with your hand derivation step for step, and if not, which artifact erred?
 
 ---
 
@@ -554,16 +984,16 @@ In your notebook: numbers, booleans, pairs, and conditionals all dissolved into 
 
 ---
 
-## 5.  Further Reading
+## 9.  Further Reading
 
 - Gabriel Lebec.  "Lambda as JS, or A Flock of Functions": https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript (talk recording also online).  This is the companion reading for today's module: every Python cell here mirrors a section of that talk.
 - **Lambda-Py / pycombinator**: combinators and Church encodings in Python; run every Church encoding from today interactively in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html
 - Raymond Smullyan.  *To Mock a Mockingbird* (1985): the combinator birds.
 - Raul Rojas.  "A Tutorial Introduction to the Lambda Calculus" (online), sections on encodings.
-- [Build a Lambda Calculus Reducer](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LambdaCalculusReducer): the full Y-combinator derivation, self-reference without names, the fixed-point equation $Y\ g = g\ (Y\ g)$, and the Z combinator for strict languages.  Direction C of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Functional) builds on the Church encodings from this activity.
+- [Build a Lambda Calculus Reducer](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LambdaCalculusReducer): builds the derivation from Part V up one step at a time in Python, from a factorial that takes a copy of itself through to the machinery separated out, and then implements the reducer that checks your hand reductions mechanically.  Direction C of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Functional) builds on the Church encodings from this activity.
 - `call/cc`: capturing the rest of the computation as a value, and deriving break, return, exceptions, cooperative schedulers, generators, and backtracking from it.  Direction B of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Functional) builds on this.
 - The Curry-Howard correspondence: propositions as types, products and sums, the empty type and absurdity, and a glimpse of dependent types.  Philip Wadler, *Propositions as Types*.
 
 ---
 
-Up next: the *Closures and First-Class Functions* activity shows what a capturing lambda costs at run time, while the Church encodings you built here power the Functional assignment.
+Up next: the *Closures and First-Class Functions* activity shows what a capturing lambda costs at run time, and sets today's fixed-point combinator beside the other way of getting something the bare calculus lacks, a captured variable you are allowed to mutate.  The Church encodings you built here power the Functional assignment.

@@ -581,6 +581,8 @@ schedule:
   - rtitle: "Church encodings: numerals, booleans, and the arithmetic you reduce by hand in the Lambda Calculus lab (today's activity, Models 2-3)"
   - rtitle: "A Flock of Functions: Combinators, Lambda Calculus, & Church Encodings in JS - Part II (Gabriel Lebec)"
     rlink: "https://www.youtube.com/watch?v=pAnLQ9jwN-E"
+  - rtitle: "Build a Lambda Calculus Reducer: the Y combinator built up one step at a time in Python, for Part V of today's activity"
+    rlink: "Tutorials/LambdaCalculusReducer"
 - week: "13"
   date: "0"
   title: "Closures and First-Class Functions"
