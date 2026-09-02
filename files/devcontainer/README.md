@@ -26,6 +26,13 @@ This README is the quickstart version.
 1.  Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
    (macOS/Windows) or Docker Engine (Linux) and confirm `docker run hello-world` works.
 2.  Create a **private** GitHub repository named `cs374-work` and clone it.
+   Keep the clone **under your home folder**: `~/cs374-work` on macOS, Linux,
+   and WSL2; `C:\Users\YOU\cs374-work` on Windows.  Docker Desktop shares
+   those locations with containers by default, so a clone on another drive or
+   a network share is the usual cause of an empty bind mount.  Note that `~`
+   is not a home-folder shorthand in the Windows Command Prompt: use
+   `%USERPROFILE%\cs374-work` there, or run these commands from PowerShell,
+   Git Bash, or WSL2, where `~` works as written.
 3.  Copy the three files above into a `.devcontainer/` folder inside the clone:
 
    ```

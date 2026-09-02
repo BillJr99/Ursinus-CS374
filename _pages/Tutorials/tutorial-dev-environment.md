@@ -71,7 +71,15 @@ Your course work lives in a private GitHub repository named `cs374-work`.  This 
 
 1.  On [github.com](https://github.com/), click **New repository**.
 2.  Name: `cs374-work`.  Visibility: **Private**.  Check **Add a README file** (so the repository is cloneable immediately).
-3.  Clone it to your machine:
+3.  Clone it to your machine.
+
+**First, where to put it, and what `~` means.**  The commands in this tutorial use the Unix shorthand `~` for your home folder.  It resolves in macOS Terminal, Linux shells, WSL2, Git Bash, and PowerShell.  It does **not** resolve in the classic Windows Command Prompt (`cmd.exe`), which will leave you in the wrong directory without printing an error.  On Windows, pick one shell and stay with it:
+
+- **PowerShell** or **Windows Terminal**: `~` works as written, as does `$HOME`.  Your home folder is `C:\Users\YOU`, so `~/cs374-work` is `C:\Users\YOU\cs374-work`.
+- **Command Prompt (`cmd.exe`)**: substitute `%USERPROFILE%` for `~`, and backslashes for forward slashes: `cd %USERPROFILE%`, and later `cd %USERPROFILE%\cs374-work\.devcontainer`.
+- **WSL2 Ubuntu**, if you have it: `~` works as written and your home is `/home/YOU`.  This is the smoothest of the three, and it is the route the native fallback in Step 9 assumes.
+
+Keep the clone **under your user profile** (or inside your WSL2 home) either way.  Docker Desktop shares those locations with containers by default; a clone on a second drive or a network share is the most common cause of an empty bind mount later.  Everywhere below that you see `~/cs374-work`, read it as whichever form your shell uses.
 
 ```bash
 cd ~
@@ -79,6 +87,8 @@ git clone https://github.com/YOURUSERNAME/cs374-work.git
 cd cs374-work
 ls -la
 ```
+
+On Windows Command Prompt, that first line is `cd %USERPROFILE%` instead; the three `git`/`ls` lines are the same everywhere (`ls -la` becomes `dir` if you are not in PowerShell or Git Bash).
 
 Expected output (abridged):
 
@@ -172,6 +182,8 @@ cd ~/cs374-work/.devcontainer
 docker compose build
 docker compose run --rm cs374
 ```
+
+(Windows: that path works as written in PowerShell, Windows Terminal, Git Bash, and WSL2.  In Command Prompt, `cd %USERPROFILE%\cs374-work\.devcontainer`.  The two `docker compose` lines are identical in every shell.)
 
 The first build takes a few minutes (downloading the base image and packages); rebuilds are nearly instant thanks to layer caching.  When it finishes you land at a prompt like:
 
@@ -492,7 +504,7 @@ Verify with `mit-scheme --version` or `guile --version`.  The [Scheme assignment
 
 **`Cannot connect to the Docker daemon` / `docker: command not found` after install.**  Docker Desktop is installed but not running (start the app and wait for it to finish launching), or your terminal predates the install (open a new terminal).  On Linux: `sudo systemctl start docker`, and add yourself to the docker group (`sudo usermod -aG docker $USER`, then log out and in).
 
-Windows: the bind mount is empty or the build cannot find files.  Two classic causes.  (1) Your clone lives on a drive or network share Docker Desktop has not been granted; keep `cs374-work` under your user profile (e.g., `C:\Users\you\cs374-work`) or, better, inside your WSL2 home directory.  (2) You ran `docker compose` from the wrong directory; the `..` in the compose file is relative to `.devcontainer/`, so run it from there.
+Windows: the bind mount is empty or the build cannot find files.  Three classic causes.  (1) Your clone lives on a drive or network share Docker Desktop has not been granted; keep `cs374-work` under your user profile (e.g., `C:\Users\you\cs374-work`) or, better, inside your WSL2 home directory.  (2) You ran `docker compose` from the wrong directory; the `..` in the compose file is relative to `.devcontainer/`, so run it from there.  (3) You typed a `cd ~/cs374-work/...` line into Command Prompt, where `~` is not a home-folder shorthand: `cmd.exe` either errors or lands you somewhere unexpected, and the mount then points at the wrong place.  Use `cd %USERPROFILE%\cs374-work\.devcontainer` there, or run the tutorial's commands from PowerShell, Git Bash, or WSL2, where `~` works as written.  `cd` with no argument prints your current directory in `cmd.exe`, and `pwd` does the same in the others; check it before you build.
 
 **`git push` rejected: `Authentication failed` or `Support for password authentication was removed`.**  GitHub does not accept account passwords over HTTPS; you must paste a **personal access token** at the password prompt.  If a token is rejected, check its scope: fine-grained tokens must list `cs374-work` under *Only select repositories* and have **Contents: Read and write**.  Expired tokens fail the same way; generate a new one.
 
