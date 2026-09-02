@@ -25,6 +25,12 @@ This README is the quickstart version.
 
 1.  Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
    (macOS/Windows) or Docker Engine (Linux) and confirm `docker run hello-world` works.
+   On Windows, install Ubuntu on WSL2 first (`wsl --install -d Ubuntu` in an
+   administrator PowerShell, then reboot), and in Docker Desktop's **Settings**
+   check **General -> Use the WSL 2 based engine** and
+   **Resources -> WSL Integration -> Ubuntu** (on), then **Apply & Restart**.
+   Work from the Ubuntu terminal; without that integration toggle, Docker
+   Desktop looks fine but Ubuntu reports `docker: command not found`.
 2.  Create a **private** GitHub repository named `cs374-work` and clone it.
    Keep the clone **under your home folder**: `~/cs374-work` on macOS, Linux,
    and WSL2; `C:\Users\YOU\cs374-work` on Windows.  Docker Desktop shares

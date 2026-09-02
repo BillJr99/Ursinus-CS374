@@ -46,6 +46,24 @@ If Docker cannot run on your machine at all, skip to **Step 9: The Native Fallba
 
 Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop/) for macOS or Windows, or [Docker Engine](https://docs.docker.com/engine/install/) on Linux.  Accept the defaults.
 
+**Windows: install Ubuntu on WSL2 first, then check two Docker settings.**  Docker Desktop on Windows does not run containers on Windows itself; it runs them inside **WSL2**, the Windows Subsystem for Linux.  Installing the Linux side first, and confirming Docker is wired to it, prevents most of the Windows trouble in this tutorial.
+
+1.  Open **PowerShell as Administrator** and install Ubuntu:
+
+    ```powershell
+    wsl --install -d Ubuntu
+    ```
+
+    Reboot if it asks.  Then launch **Ubuntu** from the Start menu and set the UNIX username and password it prompts for; these are new, and separate from your Windows account.  (If `wsl --install` is not recognized, your Windows is too old for the one-liner: update Windows, or follow Microsoft's [manual WSL2 install steps](https://learn.microsoft.com/en-us/windows/wsl/install-manual).)
+
+2.  Install Docker Desktop, start it, then open its **Settings** (the gear icon) and verify both of these:
+    - **General**: **Use the WSL 2 based engine** is checked.
+    - **Resources -> WSL Integration**: integration with your default distro is enabled, and the **Ubuntu** toggle is switched **on**.  Click **Apply & Restart**.
+
+That second setting is the one students most often miss, and its symptom is confusing: Docker Desktop looks perfectly healthy in its own window, but `docker` is not a command inside Ubuntu.
+
+Do the rest of this tutorial from the **Ubuntu** terminal.  It is the smoothest route on Windows by a wide margin: `~` means what it says, paths are ordinary Linux paths, and a repository kept in your WSL2 home directory bind-mounts far faster than one on the Windows side.
+
 **Disk note:** Docker Desktop plus the course image needs roughly **3-5 GB** of free disk.  If your laptop is tight on space, clear room first; a half-downloaded image is the most confusing failure mode in this tutorial.
 
 Start Docker Desktop (on Linux, ensure the daemon is running and your user is in the `docker` group), then verify from a terminal:
@@ -77,7 +95,7 @@ Your course work lives in a private GitHub repository named `cs374-work`.  This 
 
 - **PowerShell** or **Windows Terminal**: `~` works as written, as does `$HOME`.  Your home folder is `C:\Users\YOU`, so `~/cs374-work` is `C:\Users\YOU\cs374-work`.
 - **Command Prompt (`cmd.exe`)**: substitute `%USERPROFILE%` for `~`, and backslashes for forward slashes: `cd %USERPROFILE%`, and later `cd %USERPROFILE%\cs374-work\.devcontainer`.
-- **WSL2 Ubuntu**, if you have it: `~` works as written and your home is `/home/YOU`.  This is the smoothest of the three, and it is the route the native fallback in Step 9 assumes.
+- **WSL2 Ubuntu**, the one you installed in Step 1: `~` works as written and your home is `/home/YOU`.  This is the route the tutorial recommends and the one the native fallback in Step 9 assumes; the other two are here for students who skipped WSL2 or prefer a Windows-side shell.
 
 Keep the clone **under your user profile** (or inside your WSL2 home) either way.  Docker Desktop shares those locations with containers by default; a clone on a second drive or a network share is the most common cause of an empty bind mount later.  Everywhere below that you see `~/cs374-work`, read it as whichever form your shell uses.
 
@@ -504,7 +522,7 @@ Verify with `mit-scheme --version` or `guile --version`.  The [Scheme assignment
 
 ## Step 10: Troubleshooting
 
-**`Cannot connect to the Docker daemon` / `docker: command not found` after install.**  Docker Desktop is installed but not running (start the app and wait for it to finish launching), or your terminal predates the install (open a new terminal).  On Linux: `sudo systemctl start docker`, and add yourself to the docker group (`sudo usermod -aG docker $USER`, then log out and in).
+**`Cannot connect to the Docker daemon` / `docker: command not found` after install.**  Docker Desktop is installed but not running (start the app and wait for it to finish launching), or your terminal predates the install (open a new terminal).  On Linux: `sudo systemctl start docker`, and add yourself to the docker group (`sudo usermod -aG docker $USER`, then log out and in).  On Windows, if Docker Desktop is plainly running but Ubuntu says `docker: command not found`, the WSL integration is off: **Settings -> Resources -> WSL Integration**, switch the **Ubuntu** toggle on, **Apply & Restart**, and open a new Ubuntu terminal.  While you are there, confirm **Settings -> General -> Use the WSL 2 based engine** is checked.
 
 Windows: the bind mount is empty or the build cannot find files.  Three classic causes.  (1) Your clone lives on a drive or network share Docker Desktop has not been granted; keep `cs374-work` under your user profile (e.g., `C:\Users\you\cs374-work`) or, better, inside your WSL2 home directory.  (2) You ran `docker compose` from the wrong directory; the `..` in the compose file is relative to `.devcontainer/`, so run it from there.  (3) You typed a `cd ~/cs374-work/...` line into Command Prompt, where `~` is not a home-folder shorthand: `cmd.exe` either errors or lands you somewhere unexpected, and the mount then points at the wrong place.  Use `cd %USERPROFILE%\cs374-work\.devcontainer` there, or run the tutorial's commands from PowerShell, Git Bash, or WSL2, where `~` works as written.  `cd` with no argument prints your current directory in `cmd.exe`, and `pwd` does the same in the others; check it before you build.
 
