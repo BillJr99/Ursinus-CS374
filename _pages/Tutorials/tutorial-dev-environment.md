@@ -71,7 +71,15 @@ Your course work lives in a private GitHub repository named `cs374-work`.  This 
 
 1.  On [github.com](https://github.com/), click **New repository**.
 2.  Name: `cs374-work`.  Visibility: **Private**.  Check **Add a README file** (so the repository is cloneable immediately).
-3.  Clone it to your machine:
+3.  Clone it to your machine.
+
+**First, where to put it, and what `~` means.**  The commands in this tutorial use the Unix shorthand `~` for your home folder.  It resolves in macOS Terminal, Linux shells, WSL2, Git Bash, and PowerShell.  It does **not** resolve in the classic Windows Command Prompt (`cmd.exe`), which will leave you in the wrong directory without printing an error.  On Windows, pick one shell and stay with it:
+
+- **PowerShell** or **Windows Terminal**: `~` works as written, as does `$HOME`.  Your home folder is `C:\Users\YOU`, so `~/cs374-work` is `C:\Users\YOU\cs374-work`.
+- **Command Prompt (`cmd.exe`)**: substitute `%USERPROFILE%` for `~`, and backslashes for forward slashes: `cd %USERPROFILE%`, and later `cd %USERPROFILE%\cs374-work\.devcontainer`.
+- **WSL2 Ubuntu**, if you have it: `~` works as written and your home is `/home/YOU`.  This is the smoothest of the three, and it is the route the native fallback in Step 9 assumes.
+
+Keep the clone **under your user profile** (or inside your WSL2 home) either way.  Docker Desktop shares those locations with containers by default; a clone on a second drive or a network share is the most common cause of an empty bind mount later.  Everywhere below that you see `~/cs374-work`, read it as whichever form your shell uses.
 
 ```bash
 cd ~
@@ -79,6 +87,8 @@ git clone https://github.com/YOURUSERNAME/cs374-work.git
 cd cs374-work
 ls -la
 ```
+
+On Windows Command Prompt, that first line is `cd %USERPROFILE%` instead; the three `git`/`ls` lines are the same everywhere (`ls -la` becomes `dir` if you are not in PowerShell or Git Bash).
 
 Expected output (abridged):
 
@@ -172,6 +182,8 @@ cd ~/cs374-work/.devcontainer
 docker compose build
 docker compose run --rm cs374
 ```
+
+(Windows: that path works as written in PowerShell, Windows Terminal, Git Bash, and WSL2.  In Command Prompt, `cd %USERPROFILE%\cs374-work\.devcontainer`.  The two `docker compose` lines are identical in every shell.)
 
 The first build takes a few minutes (downloading the base image and packages); rebuilds are nearly instant thanks to layer caching.  When it finishes you land at a prompt like:
 
@@ -467,6 +479,8 @@ uv run python -c "import hypothesis, ply; print('OK')"
 
 Expected: a pytest version banner and `OK`.  Remember to prefix course commands with `uv run` (or activate the venv) so they see these packages.  (`uv` is installed in the course container too, so these exact commands work in there if you switch routes later.)
 
+**If `uv add` errors here, read the error before you panic.**  This early in the semester your clone holds no Python project: no `pyproject.toml`, no source, no tests.  So `uv add` may stop with something like ``No `pyproject.toml` found in current directory or any parent directory``, and a bare `pytest` would report `no tests ran`.  Neither is a failure of this step.  What you are checking is narrower: that the tools are **installed and on your PATH**.  The errors that would matter are `uv: command not found`, `pytest: command not found`, or `No module named pytest`, which mean the install did not take and 9.1/9.2 need another pass.  Anything that gets far enough to complain about a missing *project* has already told you the tool is there.  If you would rather watch the packages actually install, run `uv init` first to create a `pyproject.toml` and then repeat `uv add`; the first assignment sets up a real project regardless.
+
 **9.3: flex/bison/gcc/make, only if you take those directions.**  The generator-toolchain directions and the mininote scaffold need the C toolchain; the Python-only pipeline directions do not.  Install only if applicable:
 
 - **Debian/Ubuntu (and Windows via WSL2):** `sudo apt install flex bison gcc make`
@@ -492,7 +506,7 @@ Verify with `mit-scheme --version` or `guile --version`.  The [Scheme assignment
 
 **`Cannot connect to the Docker daemon` / `docker: command not found` after install.**  Docker Desktop is installed but not running (start the app and wait for it to finish launching), or your terminal predates the install (open a new terminal).  On Linux: `sudo systemctl start docker`, and add yourself to the docker group (`sudo usermod -aG docker $USER`, then log out and in).
 
-Windows: the bind mount is empty or the build cannot find files.  Two classic causes.  (1) Your clone lives on a drive or network share Docker Desktop has not been granted; keep `cs374-work` under your user profile (e.g., `C:\Users\you\cs374-work`) or, better, inside your WSL2 home directory.  (2) You ran `docker compose` from the wrong directory; the `..` in the compose file is relative to `.devcontainer/`, so run it from there.
+Windows: the bind mount is empty or the build cannot find files.  Three classic causes.  (1) Your clone lives on a drive or network share Docker Desktop has not been granted; keep `cs374-work` under your user profile (e.g., `C:\Users\you\cs374-work`) or, better, inside your WSL2 home directory.  (2) You ran `docker compose` from the wrong directory; the `..` in the compose file is relative to `.devcontainer/`, so run it from there.  (3) You typed a `cd ~/cs374-work/...` line into Command Prompt, where `~` is not a home-folder shorthand: `cmd.exe` either errors or lands you somewhere unexpected, and the mount then points at the wrong place.  Use `cd %USERPROFILE%\cs374-work\.devcontainer` there, or run the tutorial's commands from PowerShell, Git Bash, or WSL2, where `~` works as written.  `cd` with no argument prints your current directory in `cmd.exe`, and `pwd` does the same in the others; check it before you build.
 
 **`git push` rejected: `Authentication failed` or `Support for password authentication was removed`.**  GitHub does not accept account passwords over HTTPS; you must paste a **personal access token** at the password prompt.  If a token is rejected, check its scope: fine-grained tokens must list `cs374-work` under *Only select repositories* and have **Contents: Read and write**.  Expired tokens fail the same way; generate a new one.
 
