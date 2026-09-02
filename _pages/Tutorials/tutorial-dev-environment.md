@@ -479,6 +479,8 @@ uv run python -c "import hypothesis, ply; print('OK')"
 
 Expected: a pytest version banner and `OK`.  Remember to prefix course commands with `uv run` (or activate the venv) so they see these packages.  (`uv` is installed in the course container too, so these exact commands work in there if you switch routes later.)
 
+**If `uv add` errors here, read the error before you panic.**  This early in the semester your clone holds no Python project: no `pyproject.toml`, no source, no tests.  So `uv add` may stop with something like ``No `pyproject.toml` found in current directory or any parent directory``, and a bare `pytest` would report `no tests ran`.  Neither is a failure of this step.  What you are checking is narrower: that the tools are **installed and on your PATH**.  The errors that would matter are `uv: command not found`, `pytest: command not found`, or `No module named pytest`, which mean the install did not take and 9.1/9.2 need another pass.  Anything that gets far enough to complain about a missing *project* has already told you the tool is there.  If you would rather watch the packages actually install, run `uv init` first to create a `pyproject.toml` and then repeat `uv add`; the first assignment sets up a real project regardless.
+
 **9.3: flex/bison/gcc/make, only if you take those directions.**  The generator-toolchain directions and the mininote scaffold need the C toolchain; the Python-only pipeline directions do not.  Install only if applicable:
 
 - **Debian/Ubuntu (and Windows via WSL2):** `sudo apt install flex bison gcc make`

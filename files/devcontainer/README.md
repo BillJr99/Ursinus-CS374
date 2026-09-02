@@ -100,6 +100,12 @@ If you cannot run Docker, install the tools directly:
    uv run pytest --version
    ```
 
+   With no `pyproject.toml` in the repo yet, `uv add` may stop on the missing
+   project (`uv init` first if you want it to complete), and a bare `pytest`
+   will report `no tests ran`. Either is fine here; you are only confirming the
+   tools are installed. `uv: command not found` or `pytest: command not found`
+   is the result that means the install did not take.
+
 3.  **Only if** you take the generator-toolchain directions (or build the
    mininote scaffold), install the OS packages for flex/bison:
    - Debian/Ubuntu: `sudo apt install flex bison gcc make`
