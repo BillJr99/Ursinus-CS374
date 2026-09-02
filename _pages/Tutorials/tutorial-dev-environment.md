@@ -126,6 +126,30 @@ Open the Dockerfile in an editor and *read it*; it is short and every line is co
 
 One layer there is worth a second look, because it breaks the usual rule that any failing command fails the build: `mit-scheme` has no Debian package for *every* CPU architecture, so that single install is allowed to fail and print a note instead.  An Apple Silicon Mac may end up with only `guile`, and the image still builds.  This is what it looks like to design a Dockerfile for hardware you do not own.
 
+**Keeping these files current.**  What you just downloaded is a *copy*.  It lives in your repository now, and it will sit there unchanged until you replace it; when the course adds a tool to the container mid-semester, your copy does not follow.  This is the honest cost of the arrangement, and it buys you something worth having: your environment cannot change under you in the middle of an assignment.
+
+So the image carries a datestamp, and you can read it from the container prompt:
+
+```bash
+echo $CS374_IMAGE_VERSION
+```
+
+```
+2026.09.02
+```
+
+That is the current version as of this writing.  If yours prints an older date, or prints nothing at all, your container files predate a course update.  Refreshing them is Step 3 again: download the three files over the ones in `.devcontainer/`, rebuild, and commit the diff.
+
+```bash
+cd ~/cs374-work/.devcontainer
+# re-download Dockerfile, docker-compose.yml, and devcontainer.json here,
+# replacing your copies, then:
+docker compose build
+git add .devcontainer && git commit -m "Refresh course container files"
+```
+
+Announcements will say when there is something to refresh.  Checking the datestamp is also the first thing to do when a command the tutorial promises you turns up missing.
+
 Commit the container files; they are part of your work:
 
 ```bash
@@ -214,6 +238,14 @@ uv 0.x.x
 ```
 
 ```bash
+echo $CS374_IMAGE_VERSION
+```
+
+```
+2026.09.02
+```
+
+```bash
 guile --version
 ```
 
@@ -229,7 +261,7 @@ mit-scheme --version
 MIT/GNU Scheme 12.x
 ```
 
-The Scheme assignment names `mit-scheme`, so it is installed here when Debian has a build for your CPU.  If this last command instead prints `mit-scheme: command not found`, you are almost certainly on an Apple Silicon Mac; nothing is broken, and `guile` is your Scheme for that assignment.  The other seven commands must all report versions.
+The Scheme assignment names `mit-scheme`, so it is installed here when Debian has a build for your CPU.  If this last command instead prints `mit-scheme: command not found`, you are almost certainly on an Apple Silicon Mac; nothing is broken, and `guile` is your Scheme for that assignment.  The other eight commands must all produce output, and `echo $CS374_IMAGE_VERSION` must print a date at least as recent as the one in Step 3; an older date or an empty line means your container files are stale, and Step 3 tells you how to refresh them.
 
 If they do, your environment is done.  Exit the container with `exit` or Ctrl-D; the `--rm` flag deletes the container (not the image, and not your files; those live in the mounted repo).
 
@@ -413,6 +445,8 @@ The environment is disposable and reproducible.  If you ever wonder "did I break
 
 Version pinning happens once, for everyone.  The Dockerfile records the environment *as code*, in your repository, under version control, the same discipline the course asks of your language pipeline itself.
 
+That last property has a corollary that catches people, so it is worth saying outright: **do not install things at the container prompt.**  An `apt-get install` or a `curl ... | sh` typed inside a `docker compose run --rm` container works, right up until you exit, at which point it is gone along with the container, and you get to do it again tomorrow.  Worse, it is invisible: your environment now differs from everyone else's in a way no file records, which is exactly the failure mode containers exist to prevent.  If something you need is genuinely missing, there are two correct moves, and installing it by hand is neither.  Add the line to the Dockerfile and `docker compose build` (now it is versioned, and it survives); or, if it is a tool the whole course needs, tell me, and it goes in the image for everybody.  The reflex to build is the point of this course; the reflex to patch a running container is the habit to unlearn.
+
 ---
 
 ## Step 9: The Native Fallback (No Docker)
@@ -470,6 +504,27 @@ The build fails partway with a network error.  Usually a flaky connection during
 
 **`fatal: detected dubious ownership in repository at '/workspace'`.**  The same UID mismatch, seen from git's side; it is the usual surprise on Linux hosts, and the `--user` fix just above brings it on.  Inside the container, run `git config --global --add safe.directory /workspace`, then rerun whatever failed.  Step 5 explains what that line claims and why it is a modest claim in here.  It is written to the container's `~/.gitconfig`, so a `--rm` container will want it again next session.
 
+**`curl: command not found`, `uv: command not found`, or anything else from Step 4 is missing.**  Your `.devcontainer/` copy predates a course update, so you are rebuilding an older image.  Confirm it with `echo $CS374_IMAGE_VERSION` inside the container and compare against the date in Step 3: an older date, or an empty line, is the diagnosis.  The fix is to re-download the three container files over your copies, rebuild, and re-run the Step 4 checks:
+
+```bash
+cd ~/cs374-work/.devcontainer
+# re-download Dockerfile, docker-compose.yml, and devcontainer.json here
+docker compose build
+docker compose run --rm cs374
+```
+
+Commit the refreshed files afterwards; they are part of your work.  A plain `docker compose build` is enough (the changed lines invalidate their own layers); reach for `docker compose build --no-cache` only if it somehow is not.
+
+**You wanted to read a script before running it.**  Good instinct, and worth getting right, because the two pipes look alike and do very different things: `curl -LsSf URL | sh` hands the script straight to a shell and runs it sight unseen, while `curl -LsSf URL | less` only *reads* it, and installs nothing.  For actually inspecting one, save it first and then page it, so you run the same bytes you read:
+
+```bash
+curl -LsSf https://example.com/install.sh -o install.sh
+less install.sh
+sh install.sh     # only after you have read it
+```
+
+For `uv` specifically the question does not arise in here: the container already has it, and installing anything at the container prompt does not survive the container anyway (Step 8).
+
 **`mit-scheme: command not found`.**  Expected on CPU architectures Debian does not build MIT/GNU Scheme for, Apple Silicon among them.  Nothing is wrong: the build prints a note and carries on, and `guile` is your Scheme.  Name that route (and its `guile --version` output) in the Scheme assignment's write-up.
 
 Everything is broken and you do not know why.  Nuclear option, in increasing order: exit and rerun (`--rm` gives you a fresh container); `docker compose build --no-cache` (fresh image); fresh `git clone` into a new directory (fresh workspace; this is why you push).  One of these three fixes it, and figuring out *which* tells you where the problem was.
@@ -483,6 +538,8 @@ Everything is broken and you do not know why.  Nuclear option, in increasing ord
 | Enter the container | `docker compose run --rm cs374` (from `.devcontainer/`) |
 | Rebuild the image | `docker compose build` |
 | Verify toolchain | `python3 --version && pytest --version && flex --version && bison --version && uv --version && guile --version` |
+| Check your image version | `echo $CS374_IMAGE_VERSION` (in the container); compare against Step 3 |
+| Refresh the container files | re-download the three Step 3 files over your copies, then `docker compose build` |
 | One-repo git identity | `git config user.name "..."` / `git config user.email "..."` (in `/workspace`) |
 | Cache the PAT for a session | `git config credential.helper 'cache --timeout=7200'` |
 | Clear git's `dubious ownership` error | `git config --global --add safe.directory /workspace` (in the container) |
