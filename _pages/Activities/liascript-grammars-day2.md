@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Grammars, Day 2: Writing Context-Free Grammars
 
-Day 1 established what a grammar *is* and where programming languages sit in the Chomsky hierarchy.  Today we write them: you will build grammars for real constructs, argue about which nonterminal owns which decision, and learn to spot the left recursion that will break the parser you write in three weeks.
+Today you write grammars.  Day 1 defined what a grammar is and placed programming languages in the Chomsky hierarchy.  In this session you will build grammars for real language constructs, decide which nonterminal owns each decision, and learn to spot left recursion.  Left recursion is the pattern that will break the parser you write in three weeks.
 
 > This is the second of two sessions on this topic.  If you have not done Day 1, start there: [Grammars](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-grammars.md).
 
@@ -22,7 +22,9 @@ Day 1 established what a grammar *is* and where programming languages sit in the
 
 ## Model 2: Grammar Construction Workshop
 
-Your team will write CFGs for increasingly real constructs.  For each, produce the grammar, one accepted example with its derivation, and one rejected near-miss.
+Your team will write a context-free grammar (CFG) for each of four constructs, and each construct is a little more realistic than the one before.  For each one, produce three things: the grammar, one accepted example with its derivation, and one rejected string that comes close to being accepted.
+
+A derivation is the sequence of rewriting steps that turns the start symbol into a string.  Each line below is one sentential form, which means one intermediate string of terminals and nonterminals.
 
 **Worked example, deriving `()()` from $S \rightarrow (S) \mid SS \mid \varepsilon$:**
 
@@ -35,9 +37,9 @@ S
   => ( ) ( )         (used S -> epsilon on inner S)
 ```
 
-This grammar treats the empty string as a sentence, which is a design choice: it makes `()()` and `((()))` valid but also accepts the empty program.  Whether to allow the empty program is a language design decision, not a technical limitation.
+This grammar accepts the empty string as a sentence.  That is a design choice.  It makes `()()` and `((()))` valid, and it also accepts the empty program.  Whether to allow the empty program is a language design decision, not a technical limit.
 
-**Worked example: deriving `stmt;stmt` from $L \rightarrow L\,;\,stmt \mid stmt$:**
+Worked example, deriving `stmt;stmt` from $L \rightarrow L\,;\,stmt \mid stmt$:
 
 ```
 L
@@ -45,7 +47,9 @@ L
   => stmt ; stmt     (used L -> stmt, base case)
 ```
 
-Note that this grammar is **left-recursive** (`L -> L ; stmt` starts with `L`).  That is fine as a mathematical description, but it will cause a recursive descent parser to loop forever.  The same language can be described right-recursively as $L \rightarrow stmt\,;\,L \mid stmt$.
+This grammar is left-recursive: the rule `L -> L ; stmt` starts with `L`, the symbol it defines.  As a mathematical description, that is fine.  As input to a recursive descent parser, it causes an infinite loop.  The same language can be written right-recursively as $L \rightarrow stmt\,;\,L \mid stmt$.
+
+Remember two things from this model.  A derivation shows one rewriting step per line.  A rule that starts with its own name is left-recursive, and you will meet that problem again in Part III.
 
 ### Critical Thinking Questions
 
@@ -56,35 +60,32 @@ Note that this grammar is **left-recursive** (`L -> L ; stmt` starts with `L`). 
 > - **Step 3:** Does having multiple derivations mean the grammar is ambiguous in the harmful sense?  Explain.
 > - **Step 4:** Is allowing $S \rightarrow \varepsilon$ a design choice or a technical necessity?  What happens if you remove it?
 
-> **CTQ 2.6** **A statement list.**  Write a CFG for one-or-more statements separated by semicolons, where a statement is just the terminal `stmt`.
+> **CTQ 2.6** **A statement list.**  Write a CFG for one or more statements separated by semicolons, where a statement is the single terminal `stmt`.
 >
 > - **Step 1:** Write a grammar with `stmt` as the only terminal.  Derive `stmt;stmt;stmt`.
-> - **Step 2:** Modify it to *terminate* each statement with a semicolon instead of separating them.  Derive the same three-statement sequence under the new grammar.
+> - **Step 2:** Change it so that a semicolon *terminates* each statement instead of separating them.  Derive the same three-statement sequence under the new grammar.
 > - **Step 3:** Which version makes the empty program legal?  Which version requires a trailing semicolon after the last statement?
 > - **Step 4:** Name a real language that requires the terminator style and one that uses the separator style.
 
-> **CTQ 2.7** **Variable declarations.**  Write a CFG for declarations like `int x;`, `float y;`, and comma lists `int x, y, z;`.
+> **CTQ 2.7** **Variable declarations.**  Write a CFG for declarations like `int x;`, `float y;`, and comma lists like `int x, y, z;`.
 >
-> - **Step 1:** Write rules for `type` (terminals `int`, `float`), `id` (terminal `x`, `y`, `z`), and `idlist`.
+> - **Step 1:** Write rules for `type` (terminals `int`, `float`), `id` (terminals `x`, `y`, `z`), and `idlist`.
 > - **Step 2:** Write the `decl` rule that combines them with a semicolon.
 > - **Step 3:** Derive `int x, y, z;` step by step.
-> - **Step 4:** Trade with another team: each tries to break the other's grammar with a legal-looking string it rejects, or an illegal string it accepts.  Report what you found.
+> - **Step 4:** Trade with another team.  Each team tries to break the other's grammar with a legal-looking string it rejects, or an illegal string it accepts.  Report what you found.
 
-> **CTQ 2.8** **Nested if.**  Extend the `ifstmt` rule from the BNF module so that the body may itself contain `ifstmt`.
+> **CTQ 2.8** **Nested if.**  Extend the `ifstmt` rule from the BNF module so that the body may itself contain an `ifstmt`.
 >
-> - **Step 1:** Write the rule.  Which symbol on the right-hand side enables arbitrary nesting?
+> - **Step 1:** Write the rule.  Which symbol on the right-hand side allows nesting to any depth?
 > - **Step 2:** Derive a two-level nested if: `if cond then if cond then stmt`.
-> - **Step 3:** Connect to the recursion-is-memory insight from Model 1: what does each level of nesting correspond to in terms of the parser's call stack?
-> - **Step 4:** The "dangling else" ambiguity arises from `if E then S else S`, two different parse trees exist for `if a then if b then s1 else s2`.  Describe, in words, the two trees and their different meanings.
+> - **Step 3:** Connect this to the recursion-is-memory idea from Model 1.  What does each level of nesting correspond to on the parser's call stack?
+> - **Step 4:** The "dangling else" ambiguity comes from the rule `if E then S else S`: the string `if a then if b then s1 else s2` has two different parse trees.  Describe the two trees in words, and say how their meanings differ.
 
 ---
 
 ## Model 3: Test the Grammar You Just Wrote
 
-Model 2 asked you to write four grammars.  This cell lets you *run* them.  Encode
-a grammar as a dictionary, hand it a list of strings you expect to be accepted and
-a list you expect to be rejected, and it tells you where your grammar disagrees
-with your intent.
+This cell runs the grammars you wrote in Model 2.  You encode a grammar as a Python dictionary.  You give the checker one list of strings you expect it to accept and one list you expect it to reject.  The checker then tells you where your grammar disagrees with your intent.
 
 ```python
 from collections import deque
@@ -140,25 +141,27 @@ check("Statement list (separator style)", STMTS,
 
 ### Reading the Code
 
-- A grammar is a dict from nonterminal to a list of alternatives, and each alternative is a *list of symbols*.  The empty list `[]` is $\varepsilon$, which is how `PARENS` allows the empty string.
-- `derivable` walks the leftmost nonterminal every time.  That is a choice, not a requirement; CTQ 2.9 asks what changes if you pick a different one.
-- The `terminals <= limit` prune is what keeps the search finite.  `S -> SS` can grow a form without adding terminals, so the extra `len(cand) <= limit + 4` guard stops it from spinning on nonterminals alone.
-- `check` reports *which direction* your grammar is wrong: too narrow (rejects something legal) or too loose (accepts something illegal).  Those are different bugs with different fixes.
+- A grammar is a dict.  Each key is a nonterminal, and its value is a list of alternatives.  Each alternative is a *list of symbols*.  The empty list `[]` stands for $\varepsilon$, which is how `PARENS` allows the empty string.
+- `derivable` always expands the leftmost nonterminal.  That is a choice, not a requirement.  CTQ 2.9 asks what changes if you pick a different one.
+- The `terminals <= limit` test prunes the search and keeps it finite.  `S -> SS` can grow a form without adding any terminals, so the extra guard `len(cand) <= limit + 4` stops the search from spinning on nonterminals alone.
+- `check` reports *which direction* your grammar is wrong.  Too narrow means it rejects something legal.  Too loose means it accepts something illegal.  Those are different bugs with different fixes.
 
-> **Watch out!**  This is a brute-force search, not a parser.  It answers "is this string derivable" by trying everything, which is exponential and gives you no parse tree.  A real parser answers the same question in linear time *and* hands you the structure, which is the whole point of the next three weeks.
+> **Watch out!**  This is a brute-force search, not a parser.  It answers "is this string derivable" by trying everything.  That takes exponential time and gives you no parse tree.  A real parser answers the same question in linear time *and* hands you the structure.  Building that parser is the work of the next three weeks.
+
+Remember two things from this model.  The checker compares your grammar against your intent and names the direction of each mismatch.  It cannot replace a parser, because it produces no tree and does not scale.
 
 ### Critical Thinking Questions
 
 > **CTQ 2.9** The checker accepts `aabb` under $S \rightarrow aSb \mid ab$ and rejects `abab`.
 >
-> - **Step 1:** Manually trace the frontier after one expansion of $S$ for the target `abab`.  What sentential forms are on it?
-> - **Step 2:** For each, expand one more step.  Which forms can never lead to `abab`, and why?
+> - **Step 1:** By hand, trace the frontier after one expansion of $S$ for the target `abab`.  What sentential forms are on it?
+> - **Step 2:** Expand each form one more step.  Which forms can never lead to `abab`, and why?
 > - **Step 3:** Which prefix of `abab` dooms every derivation?  State a general rule: "A string is not in $L(S \rightarrow aSb \mid ab)$ if and only if ..."
 
 > **CTQ 2.10** Encode your CTQ 2.7 declaration grammar and run `check` on it.
 >
 > - **Step 1:** Write out the dict as you would type it.  What are the terminals?
-> - **Step 2:** Pick three strings you expect accepted and three rejected.  Record predictions *before* running.
+> - **Step 2:** Pick three strings you expect accepted and three you expect rejected.  Record your predictions *before* running.
 > - **Step 3:** If `check` reports a disagreement, is your grammar too narrow or too loose?  Fix it and rerun.
 
 > **CTQ 2.11** Trade grammars with another team.  Run their declaration grammar through `check` with *your* test strings.  Did you find a string that breaks it?  Report what you found and what rule would fix it.
@@ -169,7 +172,7 @@ check("Statement list (separator style)", STMTS,
 
 ## 2.  Theory: Where the Recursion Sits
 
-You have now written several grammars, and at least one of them is probably left-recursive.  A nonterminal $A$ is **directly left-recursive** if it has a production $A \rightarrow A\,\alpha$: the rule begins by mentioning itself.
+A rule that begins by naming itself will send a recursive descent parser into an infinite loop.  You have now written several grammars, and at least one of them is probably built this way.  A nonterminal $A$ is directly left-recursive if it has a production $A \rightarrow A\,\alpha$, where the right-hand side starts with $A$ itself.
 
 The statement-list rule from the worked example is one:
 
@@ -177,7 +180,7 @@ The statement-list rule from the worked example is one:
 L -> L ; stmt | stmt
 ```
 
-As a mathematical description this is perfect.  As a parser it is fatal.  In three weeks you will write one function per nonterminal, and `parse_L()` will begin by calling `parse_L()`, which begins by calling `parse_L()`, forever, without ever consuming a token.  The recursion never reaches a base case because nothing has been read.
+As a mathematical description, this rule is perfect.  As a parser, it is fatal.  In three weeks you will write one function per nonterminal.  `parse_L()` will begin by calling `parse_L()`, which begins by calling `parse_L()`, and so on forever.  No call ever consumes a token, so the recursion never reaches a base case.
 
 The fix is to move the recursion out of first position.  These two grammars describe *the same language*:
 
@@ -188,7 +191,7 @@ E  -> T E'                          (right-recursive)
 E' -> + T E' | ε
 ```
 
-Here is why they are equivalent:
+They are equivalent because they generate the same strings:
 
 ```
 Left-recursive generates:   T,  T+T,  T+T+T,  T+T+T+T, ...
@@ -200,13 +203,15 @@ Right-recursive derives:
      => T + T + T         (E' -> epsilon)
 ```
 
-Same strings, same left-to-right order.  But the right-recursive version never calls itself as its very first action, so `parse_E()` consumes a `T` before it recurses, and the recursion terminates.
+Same strings, same left-to-right order.  But the right-recursive version never calls itself as its very first action.  `parse_E()` consumes a `T` before it recurses, so the recursion terminates.
 
-> **Watch out!**  Left- and right-recursion are not interchangeable once you care about *meaning*.  Left-recursive rules produce left-associative trees, which is correct for `+`, `-`, `*`, and `/`.  Right-recursive rules produce right-associative trees, correct for `^` and for assignment in many languages.  Eliminating left recursion for the parser's sake, without restoring the associativity in how you build the tree, is a silent semantic bug: your interpreter will compute `7 - 2 - 1` as `6` instead of `4`.
+> **Watch out!**  Left recursion and right recursion are not interchangeable once you care about *meaning*.  Left-recursive rules produce left-associative trees, which is correct for `+`, `-`, `*`, and `/`.  Right-recursive rules produce right-associative trees, which is correct for `^` and for assignment in many languages.  If you remove left recursion for the parser's sake but do not restore the associativity when you build the tree, you have a silent semantic bug: your interpreter will compute `7 - 2 - 1` as `6` instead of `4`.
+
+Remember two things from this section.  A rule is directly left-recursive when its right-hand side starts with its own left-hand side, and recursive descent cannot handle it.  Rewriting the rule right-recursively keeps the language but changes the tree shape, so you must restore associativity yourself.
 
 ## Examples: Spot It by Eye
 
-Before running the detector, mark each rule as left-recursive or not, and say what a recursive descent parser would do with it:
+Before you run the detector, mark each rule as left-recursive or not, and say what a recursive descent parser would do with it first:
 
 | Rule | Left-recursive? | What `parse_X()` does first |
 |------|-----------------|-----------------------------|
@@ -289,14 +294,16 @@ for name, g, start in [("grammar_lr", grammar_lr, "E"),
 
 ### Reading the Code
 
-- `find_left_recursive` is a two-line check: for every rule, is the *first* symbol of the right-hand side the same as the left-hand side?  That is the entire definition of direct left recursion.
-- `grammar_rr` introduces `E'` and `T'`, read "E-prime".  This is the standard left-recursion elimination trick, and `E' -> + T E' | ε` is where the repetition now lives.
-- The detector reports nothing for `grammar_indirect`, and then `parse_with_guard` shows the loop happening anyway.  The gap between those two outputs is CTQ 2.13.
-- `parse_with_guard` always takes the *first* alternative, which is what a naive recursive descent parser does before it has learned to look ahead.  The depth limit is there only so the cell terminates; a real parser would blow the stack.
+- `find_left_recursive` is a two-line check.  For every rule, it asks whether the *first* symbol of the right-hand side is the same as the left-hand side.  That is the entire definition of direct left recursion.
+- `grammar_rr` introduces `E'` and `T'`, read "E-prime" and "T-prime".  This is the standard way to eliminate left recursion.  The rule `E' -> + T E' | ε` is where the repetition now lives.
+- The detector reports nothing for `grammar_indirect`, and then `parse_with_guard` shows the loop happening anyway.  The gap between those two outputs is the subject of CTQ 2.13.
+- `parse_with_guard` always takes the *first* alternative.  That is what a naive recursive descent parser does before it learns to look ahead.  The depth limit is there only so the cell terminates; a real parser would overflow the stack.
+
+Remember two things from this model.  The detector catches a rule whose right-hand side starts with its own head, and nothing else.  Indirect left recursion, where two rules call each other, still loops and still needs a check by hand.
 
 ### Critical Thinking Questions
 
-> **CTQ 2.12** Using `grammar_rr`, derive `3+5+7` step by step, writing every sentential form and the rule used.  Then explain in one sentence what `E' -> + T E' | ε` accomplishes compared to `E -> E + T | T`, focusing on *where* the recursion sits.
+> **CTQ 2.12** Using `grammar_rr`, derive `3+5+7` step by step.  Write every sentential form and the rule used.  Then explain in one sentence what `E' -> + T E' | ε` accomplishes compared to `E -> E + T | T`.  Focus on *where* the recursion sits.
 
 > **CTQ 2.13** The detector misses `grammar_indirect`.
 >
@@ -306,11 +313,11 @@ for name, g, start in [("grammar_lr", grammar_lr, "E"),
 
 > **CTQ 2.14** For `grammar_lr`, write the first three calls on the call stack when parsing the token `3` from `3 + 5`.  Then do the same for `grammar_rr`.  Where does the stack stop growing?  Complete the rule: "a recursive descent parser can handle a grammar if and only if ..."
 
-> **CTQ 2.15** `7 - 2 - 1` should be `4`.  Which of `grammar_lr` and `grammar_rr` produces the tree that computes it correctly, and what must you do in the *other* one to get the right answer anyway?
+> **CTQ 2.15** `7 - 2 - 1` should be `4`.  Which of `grammar_lr` and `grammar_rr` produces the tree that computes it correctly?  What must you do in the *other* one to get the right answer anyway?
 
 ### Try It Yourself
 
-Run the detector on the grammar your team drafted in Exercise 4, before you write a line of parser.
+Run the detector on the grammar your team drafted in Exercise 4 before you write a line of parser.
 
 ```python
 def find_left_recursive(grammar):
@@ -339,7 +346,7 @@ else:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output: with the left-recursive `expression` filled in, the detector names it.  With the right-recursive version, it reports clean.  Keep whichever you choose; it is the seed of your Parser assignment.
+Expected output: with the left-recursive `expression` filled in, the detector names it.  With the right-recursive version, it reports clean.  Keep whichever you choose.  It is the seed of your Parser assignment.
 
 ---
 
@@ -347,13 +354,13 @@ Expected output: with the left-recursive `expression` filled in, the detector na
 
 > **Common Mistakes**
 >
-> Before attempting the exercises below, review these typical errors:
+> Before you attempt the exercises below, review these typical errors:
 >
-> - **Confusing terminals and nonterminals.**  Terminals are the actual symbols that appear in strings (like `+`, `3`, `int`, `(`).  Nonterminals are the grammar variables (like `E`, `T`, `stmt`) that get rewritten.  A finished derivation contains only terminals.
-> - **Writing left-recursive rules without realizing a recursive descent parser cannot handle them.** `E -> E + T` is mathematically valid and even the standard textbook form, but a hand-written recursive descent parser will loop forever on it.  Always check for left recursion before implementing.
-> - **Forgetting that ambiguous grammars are valid as mathematical objects but break parsers.**  An ambiguous grammar is not "wrong" in theory, but it means your parser will non-deterministically produce different ASTs for the same input, a catastrophic bug that is hard to diagnose.
-> - **Thinking of grammars as "just syntax."**  The structure of a parse tree determines operator precedence and associativity.  The reason `*` binds tighter than `+` in every language you have used is that `T` is nested inside `E` in the grammar, not because a rule says "multiply first."  If you get the grammar structure wrong, your interpreter will compute wrong answers silently.
-> - **Confusing left-recursive and right-recursive in terms of associativity.**  Left-recursive rules (`E -> E + T`) produce left-associative trees (correct for `+`, `-`, `*`, `/`).  Right-recursive rules produce right-associative trees (correct for `^` and assignment in many languages).  Choosing the wrong recursion direction is a silent semantic bug.
+> - *Confusing terminals and nonterminals.*  Terminals are the actual symbols that appear in strings (like `+`, `3`, `int`, `(`).  Nonterminals are the grammar variables (like `E`, `T`, `stmt`) that get rewritten.  A finished derivation contains only terminals.
+> - *Writing left-recursive rules without noticing that a recursive descent parser cannot handle them.*  `E -> E + T` is mathematically valid and is the standard textbook form, but a hand-written recursive descent parser will loop forever on it.  Always check for left recursion before you implement.
+> - *Forgetting that ambiguous grammars are valid as mathematical objects but break parsers.*  An ambiguous grammar is not "wrong" in theory.  In practice it means your parser can produce different abstract syntax trees (ASTs) for the same input, which is a serious bug that is hard to diagnose.
+> - *Thinking of grammars as "just syntax."*  The structure of a parse tree determines operator precedence and associativity.  `*` binds tighter than `+` in every language you have used because `T` is nested inside `E` in the grammar, not because a rule says "multiply first."  If you get the grammar structure wrong, your interpreter will compute wrong answers silently.
+> - *Mixing up left recursion and right recursion when it comes to associativity.*  Left-recursive rules (`E -> E + T`) produce left-associative trees (correct for `+`, `-`, `*`, `/`).  Right-recursive rules produce right-associative trees (correct for `^` and assignment in many languages).  Choosing the wrong recursion direction is a silent semantic bug.
 
 # Check Your Understanding
 
@@ -386,8 +393,8 @@ You want a list of one or more items separated by commas. The rule is:
 
 ## 3.  Exercises
 
-1.  *Hierarchy sorting.*  Classify each language into the weakest sufficient Chomsky class, with one sentence of justification: binary strings with even parity; palindromes; strings of the form `ww` (a string repeated); legal Python indentation.
-2.  *Grammar archaeology.*  Find one production in the official grammar of a language you use (Python's reference or Java's specification) and translate it into the EBNF dialect from class, annotating each construct.
+1.  *Hierarchy sorting.*  Classify each language into the weakest Chomsky class that can describe it, with one sentence of justification: binary strings with even parity; palindromes; strings of the form `ww` (a string repeated); legal Python indentation.
+2.  *Grammar archaeology.*  Find one production in the official grammar of a language you use (Python's reference or Java's specification).  Translate it into the EBNF dialect from class, and annotate each construct.
 3.  *Ambiguity hunting.*  The grammar $S \rightarrow S + S \mid S * S \mid \mathbf{num}$ is ambiguous.  Find two distinct parse trees for `1 + 2 * 3`.  For each tree, compute the value the interpreter would return.  Then state what grammar change would make the grammar unambiguous and still compute the conventional answer.
 4.  *Project grammar, v0.*  As a team, draft the top three productions of your future language's grammar: `program`, `statement`, and `expression` (the last may be a stub).  These three lines are the seed of your December project.  Check each rule for left recursion and flag any that a recursive descent parser would not handle.
 
@@ -395,24 +402,24 @@ You want a list of one or more items separated by commas. The rule is:
 
 ## Connections
 
-The ideas in this activity connect directly to the next several topics in this course and to real systems you use every day:
+The ideas in this activity lead directly into the next several topics in this course, and they appear in real systems you use every day.
 
-**In this course (coming soon):**
+In this course (coming soon):
 
-- **Recursive descent parsing** (`recursivedescent` activity): You will implement `parseE()`, `parseT()`, `parseF()` as mutually recursive functions, one per nonterminal in `grammar_rr`.  Every rule you wrote in Model 2 becomes a function.
-- **Parser tables** (`parsertable` activity): LL(1) and LR(0/1) tables are built mechanically from a grammar.  The `FIRST` and `FOLLOW` sets you will compute are derived directly from the production rules you practiced here.
+- *Recursive descent parsing* (`recursivedescent` activity): You will implement `parseE()`, `parseT()`, and `parseF()` as mutually recursive functions, one per nonterminal in `grammar_rr`.  Every rule you wrote in Model 2 becomes a function.
+- *Parser tables* (`parsertable` activity): LL(1) and LR(0/1) tables are built mechanically from a grammar.  The `FIRST` and `FOLLOW` sets you will compute come directly from the production rules you practiced here.
 
-**Grammars in the wild:**
+Grammars in the wild:
 
-- **JSON**: The [official JSON grammar](https://www.json.org/json-en.html) is a small context-free grammar with about 10 production rules.  It covers objects, arrays, strings, numbers, and the four literal values.  It is a beautiful example of a real-world CFG you can read in five minutes.
-- **Python**: The [Python reference grammar](https://docs.python.org/3/reference/grammar.html) uses PEG (Parsing Expression Grammars), a close cousin of CFGs.  You will see rules like `funcdef: 'def' NAME parameters ':' suite`: exactly the form you practiced.
-- **HTML**: HTML is *not* context-free (attribute values can reference IDs that appear elsewhere in the document), which is part of why browsers have a hand-rolled parser rather than a generated one.  This is a real instance of a semantic constraint being too powerful for a CFG.
+- *JSON*: The [official JSON grammar](https://www.json.org/json-en.html) is a small context-free grammar with about 10 production rules.  It covers objects, arrays, strings, numbers, and the four literal values.  It is a real-world CFG you can read in five minutes.
+- *Python*: The [Python reference grammar](https://docs.python.org/3/reference/grammar.html) uses PEG (Parsing Expression Grammars), a close cousin of CFGs.  You will see rules like `funcdef: 'def' NAME parameters ':' suite`, which is exactly the form you practiced.
+- *HTML*: HTML is *not* context-free, because attribute values can reference IDs that appear elsewhere in the document.  That is part of why browsers have a hand-written parser rather than a generated one.  It is a real case of a semantic constraint that a CFG cannot express.
 
 ---
 
 ## Practice, Allison, Ch. 4 / Reading 4.2: Context-Free Languages
 
-These exercises cover context-free grammars and the Chomsky hierarchy, drawn from Allison, Ch. 4 §4.2 and Ch. 6 §6.1.
+These exercises cover context-free grammars and the Chomsky hierarchy.  They draw on Allison, Ch. 4 §4.2 and Ch. 6 §6.1.
 
 > *Exercises adapted from topics covered in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
@@ -437,9 +444,9 @@ A derivation tree (parse tree) for a grammar:
 [( )] Is always a binary tree
 [( )] Is unique for every string in the language
 
-1.  *Write a CFG.* Write a context-free grammar (in BNF) for the language of properly nested parentheses: `()`, `(())`, `()()`, `((()))`, etc. Show a derivation tree for `(()())`.
+1.  *Write a CFG.*  Write a context-free grammar (in BNF) for the language of properly nested parentheses: `()`, `(())`, `()()`, `((()))`, and so on.  Show a derivation tree for `(()())`.
 
-2.  *Write a CFG for expressions.*  Write a CFG for arithmetic expressions with `+`, `*`, numbers, and parentheses that is **unambiguous** and correctly encodes that `*` binds tighter than `+`.  Show the unique parse tree for `2 + 3 * 4`.
+2.  *Write a CFG for expressions.*  Write a CFG for arithmetic expressions with `+`, `*`, numbers, and parentheses.  The grammar must be unambiguous and must encode that `*` binds tighter than `+`.  Show the unique parse tree for `2 + 3 * 4`.
 
 3.  *Identify the hierarchy level.*  For each language below, identify the *lowest* level of the Chomsky hierarchy that recognizes it (regular, context-free, context-sensitive, or recursively enumerable) and justify your answer:
    - (a) Binary strings ending in `0`
@@ -455,7 +462,7 @@ A derivation tree (parse tree) for a grammar:
 
 ## Reflection Prompt
 
-In your notebook: the hierarchy says more expressive power costs more recognition machinery.  Where else in computing (or in life) have you met this pattern: that the price of saying more is needing more memory to listen?  Give two concrete examples from different domains.
+In your notebook: the hierarchy says that more expressive power costs more recognition machinery.  Where else in computing (or in life) have you met this pattern, where the price of saying more is needing more memory to listen?  Give two concrete examples from different domains.
 
 ---
 
@@ -463,9 +470,9 @@ In your notebook: the hierarchy says more expressive power costs more recognitio
 
 - Douglas Thain.  *Introduction to Compilers and Language Design*, Chapters 3 and 4.
 - Noam Chomsky.  "Three Models for the Description of Language."  *IRE Transactions on Information Theory* (1956).
-- Michael Sipser.  *Introduction to the Theory of Computation*, Chapters 1 and 2, for proofs we waved at.
-- [The JSON Grammar](https://www.json.org/json-en.html): a real, readable CFG in under 15 minutes.
-- [The Python Reference Grammar](https://docs.python.org/3/reference/grammar.html): PEG variant; compare to what you wrote in Model 2.
+- Michael Sipser.  *Introduction to the Theory of Computation*, Chapters 1 and 2, for the proofs we only sketched.
+- [The JSON Grammar](https://www.json.org/json-en.html): a real, readable CFG you can finish in under 15 minutes.
+- [The Python Reference Grammar](https://docs.python.org/3/reference/grammar.html): a PEG variant; compare it to what you wrote in Model 2.
 
 ---
 
