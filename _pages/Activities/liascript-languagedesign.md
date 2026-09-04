@@ -14,63 +14,65 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Language Design Studio: Sprint 0
 
-Programming languages are not magic handed down from on high; they are deliberate design choices made by people who had a problem to solve.  Understanding those choices matters even if you never ship a language of your own, because every time you pick up a new language, reach for a library, or decide how to structure an API, you are making the same tradeoffs language designers make.  Think of it like car mechanics: you do not need to rebuild an engine to drive, but a driver who understands what the transmission does makes better decisions on icy roads.  This activity puts you in the designer's seat so you can become a more intentional user of every tool in your toolbox.
+Every programming language is a set of design choices made by people who had a problem to solve.  Those choices matter to you even if you never ship a language of your own.  Each time you learn a new language, choose a library, or decide how to structure an API (application programming interface), you make the same tradeoffs a language designer makes.  Think of driving a car: you do not need to rebuild an engine to drive, but a driver who knows what the transmission does makes better decisions on icy roads.  The analogy stops there, because today you open the engine.  This activity puts you in the designer's seat so that you use every tool in your toolbox on purpose.
 
 ## Learning Goals
 
 By the end of this activity, you will be able to:
 
-- Construct a language identity statement that identifies a target niche, a distinctive feature, and the non-negotiable implementation requirements
-- Evaluate two syntax variants of the same language on the criteria of readability, writability, and learnability, citing specific syntactic evidence
+- Construct a language identity statement that names a target niche, a distinctive feature, and the non-negotiable implementation requirements
+- Evaluate two syntax variants of the same language on readability, writability, and learnability, citing specific syntactic evidence
 - Apply the language design scorecard to score and justify design decisions for your own language project
 - Define the required components of a Sprint 0 language specification: grammar sketch, node inventory, and design document outline
 - Compare the consequences of at least two specific syntax design choices (e.g., keyword blocks vs. brace blocks) for both users and implementers
 - Weigh pattern matching, generics, ownership, and async against one another as candidates for your own language, and defend which ones earn their place
 - Write an evaluator branch with `match`/`case` and say what the exhaustiveness checker does that an if-chain cannot
 
-The team project begins today.  With the whole pipeline behind you, capped by the Church encodings of *The Lambda Calculus, Part 2*, your team will design and implement **a programming language of your own**, assembling the lexer, parser, AST, environments, and evaluator you each built into one system with an identity, a grammar, and a Demo Day.  Today is Sprint 0, which means identity, scorecard, grammar v0, and a working plan, in this order: **what makes a language yours $\rightarrow$ the design scorecard $\rightarrow$ grammar and node inventory v0 $\rightarrow$ sprint roles and cadence**.
+The team project begins today.  You have built the whole pipeline, capped by the Church encodings of *The Lambda Calculus, Part 2*.  Your team will now design and implement **a programming language of your own**.  You will assemble the lexer, parser, AST (abstract syntax tree), environments, and evaluator you each built into one system with an identity, a grammar, and a Demo Day.  The work runs in sprints.  A sprint is a short, fixed block of work that ends with something runnable and reviewed; here, the sprints line up with the in-class studio days.  Today is Sprint 0, the planning sprint.  It produces four things, in this order: **what makes a language yours $\rightarrow$ the design scorecard $\rightarrow$ grammar and node inventory v0 $\rightarrow$ sprint roles and cadence**.
 
 > **Before You Begin:** This activity assumes you can:
-> - Read and write a basic recursive-descent parser and understand how grammar rules map to parsing functions
+> - Read and write a basic recursive-descent parser and explain how grammar rules map to parsing functions
 > - Explain what an AST node is and how an evaluator walks the tree to produce a result
-> - Describe lexical scoping: what an environment chain is and how variable lookup traverses it
+> - Describe lexical scoping: what an environment chain is and how variable lookup walks it
 >
-> If any of these feel shaky, review your lexer/parser/evaluator assignments before continuing; this activity builds directly on that vocabulary.
+> If any of these feel shaky, review your lexer, parser, and evaluator assignments before continuing.  This activity builds directly on that vocabulary.
 
 ---
 
 ## Directions and Group Roles
 
-From today through Demo Day, your team works in **project roles, rotated every sprint**:
+From today through Demo Day, your team works in **project roles**, rotated every sprint:
 
-- **Coordinator**: owns the sprint plan, runs stand-ups, watches scope.
+- **Coordinator**: owns the sprint plan, runs stand-ups, and watches scope.
 - **Builder(s)**: own the code increment of the sprint.
 - **Evaluator**: owns the test suite, the sample programs, and release readiness.
-- **Scribe**: owns the design documents, `SEMANTICS.md`, meeting notes, and decision log.
+- **Scribe**: owns the design documents, `SEMANTICS.md`, meeting notes, and the decision log.
 
-Every member holds every role at least once before Demo Day, and the Scribe records today's rotation schedule.  After class, please respond to the reflective prompt on your own in your notebook.
+Every member holds every role at least once before Demo Day.  The Scribe records today's rotation schedule.  After class, respond to the reflection prompt on your own in your notebook.
 
-> **How today runs.**  Parts I through III are the workshop and they produce today's deliverables, so protect that time first.  Part IV is the feature menu and Part V is the one feature you will almost certainly use, pattern matching on your own AST nodes; if the period runs out before them, read those two at home before you write Sprint 1's evaluator.  The extension at the end holds the models for the features we only had a paragraph for.
+> **How today runs.**  Parts I through III are the workshop.  They produce today's deliverables, so protect that time first.  Part IV is the feature menu.  Part V covers the one feature you will almost certainly use: pattern matching on your own AST nodes.  If the period runs out before Parts IV and V, read them at home before you write Sprint 1's evaluator.  The extension at the end holds the runnable models for the features that only got a paragraph in class.
 
 ---
 
-When a restaurant opens, the first question isn't what goes on the menu.  It's who are we cooking for.  A fine-dining spot and a food truck can serve the same ingredients and still make completely different choices about presentation, speed, and price.  Your language works the same way.  Every syntax decision, and every feature you include or cut, follows once you have answered who this is for.  Part I helps you find that answer and commit to it before you write a single grammar rule.
+When a restaurant opens, the first question is not what goes on the menu.  It is who the restaurant cooks for.  A fine-dining room and a food truck can buy the same ingredients and still make different choices about presentation, speed, and price.  Your language works the same way.  Every syntax decision, and every feature you include or cut, follows from the answer to "who is this for?"  Part I helps you find that answer and commit to it before you write a single grammar rule.
 
 # Part I: Identity
 
 ## 1.  A Language Is a Point of View
 
-Your language needs a reason to exist beyond the assignment.  The strongest student languages pick a *niche* and let it drive decisions: a language for dice-game scripting, for turtle-style drawing, for survey logic, for recipe scaling, for music patterns, for grading rules.  The niche supplies your example programs, your Demo Day story, and the tiebreaker for every design argument ("which choice serves dice players?").  General-purpose-but-tiny is also legitimate; what is not legitimate is having no answer to "who is this for?"
+Your language needs a reason to exist beyond the assignment.  The strongest student languages pick a *niche* and let it drive every decision.  A niche is the specific group of users and the specific kind of program your language exists to serve: dice-game scripting, turtle-style drawing, survey logic, recipe scaling, music patterns, or grading rules.  The niche supplies your example programs, your Demo Day story, and the tiebreaker for every design argument ("which choice serves dice players?").  A tiny general-purpose language is also legitimate.  What is not legitimate is having no answer to "who is this for?"
 
-**Constraints (the non-negotiables).**  Your language must include: variables with your documented scoping; arithmetic with full precedence; booleans, comparisons, and short-circuit logic; selection and iteration; strings or another non-numeric type; and at least one **distinctive feature** that required real design (functions with closures, pattern slices, a domain-specific statement, a desugared construct).  It must be implemented on your own pipeline components, ship with a REPL and a file-runner, and include at least five sample programs.
+**Constraints (the non-negotiables).**  Your language must include: variables with your documented scoping; arithmetic with full precedence; booleans, comparisons, and short-circuit logic; selection and iteration; strings or another non-numeric type; and at least one distinctive feature that required real design (functions with closures, pattern slices, a domain-specific statement, or a desugared construct).  You must implement it on your own pipeline components, ship it with a REPL (read-eval-print loop) and a file-runner, and include at least five sample programs.
 
 ---
 
-Imagine two cookbooks with identical recipes but one uses bullet-point steps and the other uses dense paragraphs.  The instructions are equivalent, but the experience of following them is completely different.  Syntax is your language's "cookbook format": it does not change what the program means, but it profoundly shapes how easy it is to write, read, and teach.  This model puts two syntactically different versions of the same language side by side so you can measure that difference rather than just feel it.
+Two cookbooks can hold identical recipes, one written as numbered steps and the other as dense paragraphs.  The recipes are the same, but following them feels completely different.  Syntax is your language's cookbook format.  It does not change what a program means, but it shapes how easy the program is to write, read, and teach.  This model puts two syntactically different versions of the same language side by side so that you can measure that difference instead of only feeling it.
 
 ## Model 1: Syntax Choices Make a Language Feel Like Itself
 
-Every language has a "feel": the texture a programmer encounters after typing thirty lines.  That feel comes from small, consistent choices: what brackets wrap blocks, whether keywords or punctuation separate constructs, how the language names assignment versus equality.  The cell below implements a tiny interpreter for *two syntax variants* of the same language to make the feel concrete and measurable.
+Every language has a feel: the texture a programmer meets after typing thirty lines.  That feel comes from small, consistent choices.  Which brackets wrap a block?  Do keywords or punctuation separate constructs?  How does the language write assignment versus equality?  The cell below runs a tiny tokenizer over *two syntax variants* of the same language so that the feel becomes concrete and countable.
+
+Before you run it, fix the vocabulary.  The design scorecard you build today rates a language on four criteria.  Readability asks whether a reader who did not write the code can follow it quickly.  Writability asks whether an author can produce correct code quickly.  Reliability asks how well the language keeps a program from doing the wrong thing without anyone noticing.  Cost, for this project, means the cost of implementation, which is your scarcest resource.  Learnability, a fifth word you will see below, asks how fast a newcomer picks up the syntax.
 
 ```python
 # Two syntax variants of the same tiny language.
@@ -166,13 +168,13 @@ print("  The right answer depends on the niche. Name your niche first.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-> **Watch out!**  "Readability" and "writability" sound like opposites but they measure *different audiences*.  Readability asks "can a reader (possibly not the author) follow this code quickly?" whereas writability asks "can an author produce correct code quickly?"  A language can be highly writable but hard to read; terse symbol-heavy syntax like APL is the classic example.  Before answering the questions below, commit your team to which audience your niche prioritizes.
+> **Watch out!**  "Readability" and "writability" sound like opposites, but they measure *different audiences*.  Readability asks whether a reader (possibly not the author) can follow the code quickly.  Writability asks whether an author can produce correct code quickly.  A language can be highly writable and hard to read; terse, symbol-heavy syntax like APL is the classic example.  Before you answer the questions below, commit your team to the audience your niche puts first.
 
 ### Reading the Code
 
-- Both variants run the *same* semantics.  Nothing below the surface differs, which is the point: everything you argue about here is syntax, and syntax is the part users meet first.
+- Both variants run the *same* semantics.  Nothing below the surface differs, and that is the point: everything you argue about here is syntax, and syntax is the part users meet first.
 - The token counter is a crude proxy for "syntactic overhead", and crude is fine.  It gives the team a number to argue with instead of a feeling to assert.
-- Punctuation-heavy syntax is denser to write and needs closer reading; keyword-heavy syntax is more typing and more skimmable.  Neither wins outright; you are choosing which of the four criteria your language spends on.
+- Punctuation-heavy syntax is denser to write and needs closer reading.  Keyword-heavy syntax takes more typing and skims more easily.  Neither wins outright; you are choosing which of the four criteria your language spends on.
 
 ### Try It Yourself
 
@@ -218,7 +220,7 @@ for name, src in VARIANTS.items():
 
 # TODO 2: which variant carries the most punctuation per line? Which would
 #         a student who has seen neither find easier to read aloud? Those
-#         are two different questions and may have different answers --
+#         are two different questions and may have different answers;
 #         that gap IS the readability/writability trade.
 
 # TODO 3: count is not taste. Vote in your team on which variant you would
@@ -232,33 +234,33 @@ Expected output: one row per variant, with the C-style version carrying noticeab
 
 ### Critical Thinking Questions
 
-1.  Draft your scorecard: for readability, writability, reliability, and cost (of implementation, your scarcest resource), one sentence on what your language prioritizes and one on what it knowingly sacrifices, *in service of the niche*.
-2.  Stress-test the niche: each teammate writes one program (five to ten lines, in imagined syntax) your users would actually want.  Do the four sketches agree on syntax?  Catalog every disagreement; each is a design decision with your team's name on it.
+1.  Draft your scorecard.  For each of readability, writability, reliability, and cost (of implementation, your scarcest resource), write one sentence on what your language favors and one on what it knowingly gives up, *in service of the niche*.
+2.  Stress-test the niche.  Each teammate writes one program (five to ten lines, in imagined syntax) that your users would want.  Do the four sketches agree on syntax?  Catalog every disagreement.  Each one is a design decision with your team's name on it.
 3.  Based on the token count table: does C-style punctuation increase writability or decrease it compared to keyword-based delimiters?  For which programmer audience?
 4.  Apply the third lens: pick the two most contested decisions from question 2 and resolve each with an explicit appeal to the scorecard, recording the loser's strongest argument in the decision log.  (Decisions with recorded dissent reverse gracefully; decisions by fatigue do not.)
 
 ---
 
-A city planner does not just dream about roads; they produce a blueprint that can be handed to a construction crew.  Before your team writes a single line of interpreter code, you need the same thing: a grammar blueprint that can be handed to your parser writer.  Part II walks you from a vague language idea to a concrete EBNF grammar and a complete inventory of every AST node your evaluator will need to handle.
+A city planner does not only dream about roads.  They produce a blueprint that a construction crew can build from.  Your team needs the same thing before it writes a line of interpreter code: a grammar blueprint you can hand to your parser writer.  Part II takes you from a vague language idea to a concrete grammar in EBNF (Extended Backus-Naur Form, the notation from the syntax module) and a complete inventory of every AST node your evaluator must handle.
 
 # Part II: Grammar v0 and the Node Inventory
 
 ## 2.  Write It Down or It Is Not Designed
 
-**Grammar v0.**  Produce the EBNF for your full statement set and your expression ladder, niche constructs included, in the dialect from the syntax module.  Mark every place your grammar differs from the class language, because each difference is parser work, and Sprint 1 is sized by this list.
+Part II has three written outputs.
 
-**Node inventory.**  One table: every AST node, its fields, the parser rule that builds it, and the evaluator rule that consumes it.  Empty cells are the sprint backlog, made visible.
+1.  *Grammar v0.*  Write the EBNF for your full statement set and your expression ladder, niche constructs included, in the dialect from the syntax module.  Mark every place where your grammar differs from the class language.  Each difference is parser work, and Sprint 1 is sized by this list.
+2.  *Node inventory.*  Make one table with a row for every AST node: its fields, the parser rule that builds it, and the evaluator rule that consumes it.  Empty cells are the sprint backlog, made visible.
+3.  *`SEMANTICS.md` v0.*  Import every decision your assignments already made you document (truthiness, division by zero, scoping, loop scopes, type strictness).  Then add the niche feature's semantics in the same style: exhaustive, with examples, and no "etc."
 
-**`SEMANTICS.md` v0.**  Import every decision your assignments already made you document (truthiness, division by zero, scoping, loop scopes, type strictness), then add the niche feature's semantics in the same style: exhaustive, exampled, no "etc."
-
-Think of this model as a packing checklist before a camping trip.  You flip through each category (shelter, food, first aid) and tick off what you are bringing.  The grammar skeleton works the same way: flip through each language feature, decide yes or no, and the skeleton generates the grammar rules you need to implement.  Features you skip now do not disappear; they become explicit TODOs on your sprint backlog, which is far better than discovering a missing feature on Demo Day.
+The grammar skeleton in the project guide works like a checklist.  You go through each language feature, decide yes or no, and the skeleton generates the grammar rules you need to implement.  Features you skip do not disappear.  They become explicit TODOs on your sprint backlog, which is far better than discovering a missing feature on Demo Day.
 
 
-> **The runnable grammar-v0 builder is in the project guide:** [The Project Language Guide](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ProjectLanguageGuide).  Use it while drafting; today's session is for deciding *what* your language is, not generating skeletons.
+> **The runnable grammar-v0 builder is in the project guide:** [The Project Language Guide](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ProjectLanguageGuide).  Use it while drafting.  Today's session is for deciding *what* your language is, not for generating skeletons.
 
 ## Model 3: Node Inventory, Every Node Mapped
 
-The node inventory is the living specification of your interpreter.  Every AST node class appears here with its fields, the grammar rule that emits it, and the evaluator method that handles it.  Use the cell below as a template; complete the empty cells as a team.
+The node inventory is the living specification of your interpreter.  Every AST node class appears here with its fields, the grammar rule that emits it, and the evaluator method that handles it.  Use the cell below as a template, and complete the empty cells as a team.
 
 ```python
 # Node inventory generator: produces a Markdown table from a node spec.
@@ -326,8 +328,8 @@ print("  Sprint 2 goal: zero TODOs for functions and your niche feature")
 ### Reading the Code
 
 - The inventory has one row per node and four columns: the class, its fields, the grammar rule that produces it, and the evaluator method that consumes it.  A row with `TODO` in the last column is a node your parser can build and your evaluator cannot run.
-- Generating the table from a spec rather than maintaining it by hand means it cannot drift.  Regenerate after every sprint and the `TODO` count is your burndown.
-- The columns are the stages of your pipeline.  A node with no grammar rule can never be produced; a node with no evaluator method can never be consumed.  Both are bugs the table shows before the code does.
+- The script generates the table from a spec instead of asking you to maintain it by hand, so the table cannot drift from the code.  Regenerate it after every sprint; the `TODO` count is your burndown.
+- The columns are the stages of your pipeline.  A node with no grammar rule can never be produced.  A node with no evaluator method can never be consumed.  Both are bugs the table shows before the code does.
 
 ### Try It Yourself
 
@@ -336,7 +338,7 @@ Fill the inventory with your own language, and read the gaps straight off it.
 ```python
 # (NodeClass, fields, grammar_rule, evaluator_method)
 # TODO: replace every row with YOUR team's nodes. Leave evaluator_method
-#       as "TODO" for anything not yet implemented -- that is the point.
+#       as "TODO" for anything not yet implemented; that is the point.
 NODES = [
     ("Num",   "value: float",           "primary -> NUMBER",             "eval_num"),
     ("Var",   "name: str",              "primary -> IDENT",              "eval_var"),
@@ -375,29 +377,34 @@ if todo:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output: a Markdown table and a count of nodes wired end to end.  Paste the table into your design document; it is a deliverable, not a warm-up.
+Expected output: a Markdown table and a count of nodes wired end to end.  Paste the table into your design document.  It is a deliverable, not a warm-up.
 
 ### Critical Thinking Questions
 
-8.  Count the TODO rows.  Each TODO is a task.  Assuming each evaluator method takes roughly 45 minutes to implement and test, estimate the total hours for Sprint 1 (core nodes only).  Is this realistic for one sprint?
+8.  Count the TODO rows.  Each TODO is a task.  Assume each evaluator method takes roughly 45 minutes to implement and test, and estimate the total hours for Sprint 1 (core nodes only).  Is this realistic for one sprint?
 9. `LogicOp` is separate from `BinOp` even though `and`/`or` look like binary operators.  What property of their evaluation requires a distinct node class?  (Hint: what must *not* happen when the left operand is false for `and`?)
 10. `Call` has `callee: str`: it stores the function *name* as a string, not the function value.  What would need to change to support first-class functions (functions stored in variables and passed as arguments)?  Write the new field type.
 
 ---
 
-A ship captain does not just know the destination; they know which rocks are in the water.  Part III shifts from "what will our language be" to "how will we actually build it without sinking."  The sprint plan and risk pre-mortem you produce here are not bureaucracy; they are the navigational chart that keeps your team coordinated when the unexpected happens (and it will).
+Part III shifts from "what will our language be" to "how will we build it without sinking."  The sprint plan and the risk pre-mortem you produce here are not paperwork.  They are the chart that keeps your team coordinated when something unexpected happens, and something will.
 
 # Part III: The Plan
 
 ## 3.  Sprints to Demo Day
 
-The remaining weeks run in sprints aligned with in-class studio days (see the sprint studio activity for the protocols).  Each sprint ends with: a runnable increment, passing tests (the Evaluator demonstrates), updated documents (the Scribe demonstrates), and the role rotation.  The standard arc, adjusted to your design's risk: **Sprint 1** merges members' components into one pipeline running the class language; **Sprint 2** implements grammar v0's differences and the distinctive feature's skeleton; **Sprint 3** completes the feature, hardens errors, and builds the sample program suite; the **gallery walk** then triages polish from disclosure for **Demo Day**.
+The remaining weeks run in sprints aligned with in-class studio days (see the sprint studio activity for the protocols).  Each sprint ends with four things: a runnable increment, passing tests (the Evaluator demonstrates), updated documents (the Scribe demonstrates), and the role rotation.  The standard arc, adjusted to your design's risk, is:
 
-Before NASA launches a rocket, engineers hold a "failure review": they deliberately imagine every way the mission could go wrong and build mitigations before leaving the launchpad.  You have the same tool available right now, before a single line of your language's code is written.  A pre-mortem is more honest than optimistic planning because it starts from failure and works backward, which forces the team to name the fears they would otherwise suppress.
+1.  Sprint 1 merges members' components into one pipeline that runs the class language.
+2.  Sprint 2 implements grammar v0's differences and the skeleton of the distinctive feature.
+3.  Sprint 3 completes the feature, hardens errors, and builds the sample program suite.
+4.  The gallery walk then decides what to polish and what to disclose for Demo Day.
+
+Before NASA launches a rocket, engineers hold a "failure review".  They deliberately picture every way the mission could go wrong and build mitigations before leaving the launchpad.  You have the same tool available right now, before you write a line of your language's code.  A pre-mortem starts from failure and works backward.  That is more honest than optimistic planning, because it forces the team to name the fears it would otherwise suppress.
 
 ## Model 4: Risk Pre-Mortem, Surface Your Threats Now
 
-The most useful planning tool is **working backwards from failure**.  Imagine it is Demo Day and your language did not work.  What went wrong?  The cell below simulates a risk pre-mortem session: teams identify the top threats, rank them by probability × impact, and assign a mitigation experiment.
+The most useful planning tool is working backwards from failure.  Suppose it is Demo Day and your language did not work.  What went wrong?  The cell below simulates a risk pre-mortem session: the team lists its top threats, ranks them by probability × impact, and assigns a mitigation experiment to each.
 
 ```python
 # Risk pre-mortem template.
@@ -445,13 +452,13 @@ for i, goal in enumerate(sprint1_goals, 1):
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-> **Watch out!**  A risk score of probability × impact tells you *priority order*, not whether to act at all.  A low-probability, high-impact risk (score 5) can be more dangerous than a moderate-probability, moderate-impact risk (score 9) if you have no mitigation for it, because when it hits, it will be catastrophic.  Always read the impact column alongside the score, especially for anything with impact 5 (Demo Day failure).
+> **Watch out!**  A risk score of probability × impact tells you *priority order*, not whether to act at all.  A low-probability, high-impact risk (score 5) can be more dangerous than a moderate-probability, moderate-impact risk (score 9) if you have no mitigation for it, because when it hits, it is catastrophic.  Always read the impact column beside the score, especially for anything with impact 5 (Demo Day failure).
 
 ### Critical Thinking Questions
 
-11.  The highest-scoring risk is merge conflict at the parser level.  Why is the parser (not the lexer or evaluator) the most collision-prone component?  (Think about what two team members are both editing simultaneously.)
-12.  "Write 3 failing tests before any sprint" is a red-green discipline.  What does a *failing* test (before the code exists) prove that a passing test cannot?  Why is it more valuable to write tests before the code?
-13.  The mitigation for "Demo Day: sample programs not ready" is "1 sample program per sprint."  Rewrite this as a Definition of Done criterion: a sentence that Sprint Review will use to decide whether the sprint succeeded.
+11.  The highest-scoring risk is a merge conflict at the parser level.  Why is the parser (not the lexer or evaluator) the most collision-prone component?  (Think about what two team members are both editing at the same time.)
+12.  "Write 3 failing tests before any sprint" is a red-green discipline.  What does a *failing* test (written before the code exists) prove that a passing test cannot?  Why is it more valuable to write tests before the code?
+13.  The mitigation for "Demo Day: sample programs not ready" is "1 sample program per sprint."  Rewrite this as a Definition of Done criterion: one sentence that Sprint Review will use to decide whether the sprint succeeded.
 
 The Coordinator is allocating Sprint 1 tasks.  The niche feature (dice rolls) is exciting but risky.  The best allocation strategy is:
 
@@ -464,11 +471,11 @@ The Coordinator is allocating Sprint 1 tasks.  The niche feature (dice rolls) is
 
 # Part IV: Choosing Your Feature Set
 
-> **Intuition:** Each of the four features in this part is presented through the same three-lens template: the *problem* it solves (what was painful before), the *mechanism* (the language construct that solves it), and the *cost* (what the programmer gives up to get the benefit).  As you read, keep connecting back to your own interpreter project; several of these features apply directly to the code you have already written.
+> **Intuition:** This part presents each of four features through the same three-lens template: the *problem* it solves (what was painful before), the *mechanism* (the language construct that solves it), and the *cost* (what the programmer gives up to get the benefit).  As you read, keep connecting back to your own interpreter project.  Several of these features apply directly to the code you have already written.
 
 ## 4.  Pattern Matching: Branching on Shape
 
-**The problem.**  Code that dissects structured data degenerates into nested ifs and field accesses.  **The mechanism.**  A `match` tests a value against *patterns* that simultaneously check shape and bind variables; Python (3.10) joined Rust, Scala, and the ML family:
+*The problem.*  Code that takes apart structured data decays into nested ifs and field accesses.  *The mechanism.*  A `match` tests a value against *patterns* that check shape and bind variables at the same time.  Python (3.10) joined Rust, Scala, and the ML family:
 
 ```python
 def describe(node):
@@ -491,30 +498,30 @@ print(describe(("+", ("num", 2), ("neg", ("num", 3)))))
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-The cost and the criterion.  A new syntactic form (readability spent up front, repaid in every dissection), and questions of exhaustiveness: ML-family compilers *prove* you handled every case, a reliability win your `evaluate`'s if-chain never gets.  Notice the example: pattern matching is practically purpose-built for tree walks like yours.
+*The cost and the criterion.*  A new syntactic form spends readability up front and repays it in every dissection.  Exhaustiveness is the other half: ML-family compilers *prove* you handled every case, a reliability win your `evaluate`'s if-chain never gets.  Notice the example: pattern matching is practically purpose-built for tree walks like yours.
 
 ## 5.  Generics: Abstraction over Types
 
-**The problem.**  A statically typed list-of-int and list-of-string need the same code twice, or an unsafe any-type escape hatch.  **The mechanism.**  Parameterize the *type itself*: `List[T]`, `def first(items: list[T]) -> T`.  The checker verifies the code once *for all* T, and call sites stay fully checked.  **The cost and the criterion.**  Type-system complexity (Java's wildcards, variance puzzles) traded for reliability-with-reuse; dynamically typed languages get the reuse for free and the checking never.  Connect to the types module: generics exist precisely to keep static typing's early binding without its duplication.
+*The problem.*  In a statically typed language, a list-of-int and a list-of-string need the same code written twice, or an unsafe any-type escape hatch.  *The mechanism.*  Parameterize the *type itself*: `List[T]`, `def first(items: list[T]) -> T`.  The checker verifies the code once *for all* T, and call sites stay fully checked.  *The cost and the criterion.*  Type-system complexity (Java's wildcards, variance puzzles) is traded for reliability with reuse.  Dynamically typed languages get the reuse for free and the checking never.  Connect this to the types module: generics exist to keep static typing's early binding without its duplication.
 
 ## 6.  Ownership: Memory Safety without a Garbage Collector
 
-**The problem.**  C frees memory manually (use-after-free, leaks, security holes); Java collects garbage at runtime (safe, but with pauses and overhead).  **The mechanism.**  Rust's third way: every value has exactly **one owner**; assignment *moves* ownership; **borrows** lend access temporarily (many readers or one writer, never both); the compiler proves at compile time that no reference outlives its value, so the program needs neither `free` nor a collector.  **The cost and the criterion.**  A famously steep learning curve ("fighting the borrow checker"): writability spent for reliability *and* performance simultaneously, which is why Rust keeps winning systems-programming converts.  Binding-time lens: Rust moved memory-correctness from runtime (GC) or never (C) to compile time.
+*The problem.*  C frees memory by hand (use-after-free, leaks, security holes).  Java collects garbage at run time (safe, but with pauses and overhead).  *The mechanism.*  Rust's third way: every value has exactly one owner; assignment *moves* ownership; *borrows* lend access temporarily (many readers or one writer, never both); and the compiler proves at compile time that no reference outlives its value.  The program needs neither `free` nor a collector.  *The cost and the criterion.*  A famously steep learning curve ("fighting the borrow checker"): writability spent for reliability *and* performance at the same time, which is why Rust keeps winning systems-programming converts.  Through the binding-time lens, Rust moved memory correctness from run time (the garbage collector, or GC) or never (C) to compile time.
 
 ## 7.  Async/Await: Concurrency as Syntax
 
-**The problem.**  Programs that wait (network, disk) waste their wait, and callback-based solutions shred control flow.  **The mechanism.** `async` functions are *pausable*: `await` yields control at a wait point and resumes when the result arrives, letting one thread interleave thousands of waiting tasks; the compiler transforms your straight-line code into a state machine (a *desugaring*, industrial grade).  **The cost and the criterion.**  The "function color" problem: async functions can only be awaited from async functions, splitting the ecosystem in two; writability and performance for I/O-bound work, bought with a pervasive design constraint.
+*The problem.*  Programs that wait (network, disk) waste their wait, and callback-based solutions shred control flow.  *The mechanism.*  An `async` function is *pausable*: `await` yields control at a wait point and resumes when the result arrives, so one thread can interleave thousands of waiting tasks.  The compiler transforms your straight-line code into a state machine, a *desugaring* at industrial grade.  *The cost and the criterion.*  The "function color" problem: async functions can only be awaited from async functions, which splits the ecosystem in two.  You buy writability and performance for I/O-bound work with a pervasive design constraint.
 
 ## Model 5: Three Lenses, Four Features
 
-> **Intuition:** The three-lens template (problem / mechanism / cost) is a general framework for evaluating *any* language feature, not just the four covered here.  When you encounter a new feature in the wild (Python's walrus operator `:=`, JavaScript's optional chaining `?.`, Kotlin's coroutines) you can immediately ask these three questions to understand it.  Notice that "cost" is not always a drawback: sometimes you are deliberately spending writability to buy reliability, or spending simplicity to buy performance.  The interesting question is always *whether the trade is worth it* in your target use case.
+> **Intuition:** The three-lens template (problem / mechanism / cost) works for evaluating *any* language feature, not only the four covered here.  When you meet a new feature in the wild (Python's walrus operator `:=`, JavaScript's optional chaining `?.`, Kotlin's coroutines), ask these three questions to understand it.  "Cost" is not always a drawback.  Sometimes you deliberately spend writability to buy reliability, or spend simplicity to buy performance.  The interesting question is always *whether the trade is worth it* in your target use case.
 
 ### Critical Thinking Questions
 
 1.  Complete the jigsaw grid as a class: for each feature, the problem, the mechanism in one sentence, the criterion served, and the criterion taxed.
-2.  Run the pattern-matching cell, then rewrite *your interpreter's* `evaluate` dispatch as a `match` on node classes (`case Num(value=n):` works on your classes!).  Report: lines saved, readability verdict, and one behavior the if-chain allowed that match's structure discourages.
+2.  Run the pattern-matching cell, then rewrite *your interpreter's* `evaluate` dispatch as a `match` on node classes (`case Num(value=n):` works on your classes).  Report: lines saved, a readability verdict, and one behavior the if-chain allowed that match's structure discourages.
 3.  Ownership and garbage collection are both answers to "when may memory be reclaimed?"  Place C, Java/Python, and Rust on a binding-time axis for that decision, and state each position's billion-dollar risk.
-4.  Which of the four features could a *tree-walking interpreter team* plausibly implement a slice of in three weeks, and which are out of reach?  Justify with reference to which pipeline stage each feature lives in (parser? evaluator? a checker between them?).
+4.  Which of the four features could a *tree-walking interpreter team* plausibly implement a slice of in three weeks, and which are out of reach?  Justify with reference to the pipeline stage each feature lives in (parser? evaluator? a checker between them?).
 
 Rust achieves memory safety without a garbage collector primarily by:
 
@@ -529,9 +536,9 @@ Rust achieves memory safety without a garbage collector primarily by:
 
 ## Model 6: Pattern Matching (Python 3.10+ match/case)
 
-> **Intuition:** Before `match`, writing a tree-walking evaluator in Python meant chains of `if isinstance(node, Num):` checks, followed by manual attribute accesses (`node.value`), all nested inside each other.  With `match`, you write `case Num(value=n):` and in one line you have checked the type, extracted the field, and bound it to a local variable.  The code mirrors the structure of the data it processes, which is exactly what you want when the data *is* a tree.
+> **Intuition:** Before `match`, a tree-walking evaluator in Python meant chains of `if isinstance(node, Num):` checks, followed by manual attribute accesses (`node.value`), all nested inside each other.  With `match`, you write `case Num(value=n):`, and in one line you have checked the type, extracted the field, and bound it to a local variable.  The code mirrors the structure of the data it processes, which is exactly what you want when the data *is* a tree.
 
-Python's `match` statement (PEP 634) goes far beyond a simple switch: it matches on *structure*, destructures into bindings, supports guards, and handles class patterns.  The cell below walks through each capability with your CS374 AST as the running example.
+Python's `match` statement (PEP 634, a Python Enhancement Proposal) is more than a switch.  It matches on *structure*, destructures values into bindings, supports guards, and handles class patterns.  The cell below walks through each capability with your CS374 AST as the running example.
 
 ```python
 import sys
@@ -619,9 +626,9 @@ for val in [-3, 0, 4, 7]:
 
 ### Reading the Code
 
-- Each `case` names a *shape*, not a type test followed by field access.  `case BinOp(op="+", left=l, right=r)` checks the class, checks that `op` is `"+"`, and binds `l` and `r`, in one line.
-- The wildcard `case _` is the exhaustiveness escape hatch.  A language with real exhaustiveness checking (Rust, Haskell, OCaml) would *refuse to compile* a match missing a case, and would stop needing the wildcard.
-- The unhandled node at the end is the demonstration: Python matches nothing, falls to `case _`, and reports it at run time.  In a checked language that would have been a compile error, which is the binding-time lens applied to control flow.
+- Each `case` names a *shape*, not a type test followed by field access.  `case BinOp(op="+", left=l, right=r)` checks the class, checks that `op` is `"+"`, and binds `l` and `r`, all in one line.
+- The wildcard `case _` is the exhaustiveness escape hatch.  A language with real exhaustiveness checking (Rust, Haskell, OCaml) would *refuse to compile* a match that is missing a case, and would no longer need the wildcard.
+- The unhandled node at the end is the demonstration.  Python matches nothing, falls to `case _`, and reports it at run time.  In a checked language that would have been a compile error, which is the binding-time lens applied to control flow.
 
 ### Try It Yourself
 
@@ -692,26 +699,26 @@ Expected output as written: the first two rows agree, and the last two report `D
 
 ### Critical Thinking Questions
 
-5.  The `evaluate` function uses `case Num(value=n)` to match a namedtuple.  What does Python check to decide this pattern matches: the type, the field name, the value, or all three?  Contrast with a plain `isinstance` check.
-6.  The `case _:` wildcard arm raises a `TypeError`.  Remove it and run the `Call` test.  What does Python return silently?  Explain why an ML compiler's exhaustiveness check is a stronger reliability guarantee than Python's runtime behavior.
+5.  The `evaluate` function uses `case Num(value=n)` to match a namedtuple.  What does Python check to decide that this pattern matches: the type, the field name, the value, or all three?  Contrast this with a plain `isinstance` check.
+6.  The `case _:` wildcard arm raises a `TypeError`.  Remove it and run the `Call` test.  What does Python return silently?  Explain why an ML compiler's exhaustiveness check is a stronger reliability guarantee than Python's run-time behavior.
 7.  The `Let` arm creates `new_env = {**env, name: ...}`.  Why does it use a *copy* of the environment rather than mutating `env` directly?  Connect this to the distinction between static and dynamic scope.
 8.  Rewrite `categorize` using `if/elif/else` chains.  Count the lines.  Then describe one pattern-match capability (structural decomposition, guard, variable binding) that the `if` version cannot express without additional code.
 
 ---
 
-> **Watch out!**  Python's `match` does **not** enforce exhaustiveness at compile time.  If no arm matches, Python silently returns `None`; it does not raise an error.  In Rust, OCaml, and Haskell, a non-exhaustive `match` is a *compile error* or at least a warning.  This means that in Python, if you add a new AST node type and forget to add a case for it, your evaluator will silently return `None` and the bug may not surface until much later.  The `case _: raise ...` wildcard arm is your manual safety net.
+> **Watch out!**  Python's `match` does not enforce exhaustiveness at compile time.  If no arm matches, Python silently returns `None`; it does not raise an error.  In Rust, OCaml, and Haskell, a non-exhaustive `match` is a *compile error* or at least a warning.  So in Python, if you add a new AST node type and forget to add a case for it, your evaluator silently returns `None`, and the bug may not surface until much later.  The `case _: raise ...` wildcard arm is your manual safety net.
 
 
 ## 8.  Exercises (Today's Deliverables)
 
 1.  *The one-pager.*  Language name, niche, the four-row scorecard, and the team's three-sentence pitch.  Post it; it is the cover page of your proposal.
 2.  *Grammar v0 and node inventory.*  As specified above, committed to the team repository with the decision log.  Use the Model 3 skeleton as a starting point: edit the feature flags, run it, copy the output into your grammar file, then hand-edit the niche feature's rules.
-3.  *Sprint 1 plan.*  The Coordinator drafts: whose lexer, whose parser, whose evaluator seed the merge (a real decision; discuss kindly), the merge order, and each member's first task with a date.
+3.  *Sprint 1 plan.*  The Coordinator drafts: whose lexer, whose parser, and whose evaluator seed the merge (a real decision; discuss kindly), the merge order, and each member's first task with a date.
 4.  *Risk pre-mortem.*  As a team, name the **three** technical risks most likely to derail you (the Model 4 template gives structure), rank them by probability × impact, assign the mitigation experiment for the top risk, and commit the result to your design repo as `RISKS.md`.
-5.  *SEMANTICS.md skeleton.*  Using your prior assignment documentation, populate a `SEMANTICS.md` with at minimum: truthiness policy, division by zero policy, scoping rules (lexical or dynamic, block or function scope), variable-before-assignment behavior, and your null/absent-value policy.  Each section: the rule, an example program, and the expected output.
+5.  *SEMANTICS.md skeleton.*  Using your prior assignment documentation, populate a `SEMANTICS.md` with at minimum: truthiness policy, division by zero policy, scoping rules (lexical or dynamic, block or function scope), variable-before-assignment behavior, and your null/absent-value policy.  Each section holds the rule, an example program, and the expected output.
 
 ---
-**In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
+**In-class work stops here.**  Everything below is homework and going-deeper material.  Attempt the exercises before the related assignment.
 
 # Check Your Understanding
 
@@ -782,11 +789,11 @@ In the node inventory, a row whose evaluator column reads `TODO` means:
 
 # Extension: The Rest of the Feature Menu
 
-> Past the 75 minutes.  Four features got a paragraph each in class and only pattern matching got a model; these are the models for the other three, plus the Python machinery you will want while building.  Read the ones your language is actually going to use, and skip the rest until it does.
+> Past the 75 minutes.  Four features got a paragraph each in class, and only pattern matching got a model.  These are the models for the other three, plus the Python machinery you will want while building.  Read the ones your language is going to use, and skip the rest until it does.
 
 ## Examples: Ownership and Async, Simulated in Python
 
-Two of the four features cannot be shown in Python directly: Python has a garbage collector, so nothing enforces ownership, and its `async` is cooperative rather than compiler-transformed.  What you *can* do is build the rules yourself and watch them bite, which is the fastest way to feel why Rust's borrow checker rejects what it rejects.
+Python cannot show two of the four features directly.  Python has a garbage collector, so nothing enforces ownership, and its `async` is cooperative rather than compiler-transformed.  What you *can* do is build the rules yourself and watch them bite.  That is the fastest way to feel why Rust's borrow checker rejects what it rejects.
 
 ### A Borrow Checker in Thirty Lines
 
@@ -867,7 +874,7 @@ print("is precisely the binding-time difference the theory section names.")
 #### Reading the Code
 
 - `alive`, `shared`, and `mutably_borrowed` are the entire borrow checker's state.  Rust tracks the same three facts, per value, in the compiler rather than at run time.
-- The rule "many readers **or** one writer, never both" appears twice: once in `borrow` (refuse if mutably borrowed) and once in `borrow_mut` (refuse if either kind of borrow is out).  That symmetry is what prevents a reader from seeing a half-written value.
+- The rule "many readers *or* one writer, never both" appears twice: once in `borrow` (refuse if mutably borrowed) and once in `borrow_mut` (refuse if either kind of borrow is out).  That symmetry is what keeps a reader from seeing a half-written value.
 - `move` invalidates the source rather than copying it.  That single line is why Rust needs no garbage collector: at any moment exactly one name is responsible for the value, so its lifetime is a static fact.
 - Everything here raises at run time.  The whole Rust argument is that the *same* checks, done at compile time, cost nothing at run time and cannot be skipped by an untested path.
 
@@ -913,15 +920,15 @@ asyncio.run(main())
 
 - `await asyncio.sleep(delay)` is the pause point.  Everything before it runs, control returns to the scheduler, and the rest resumes when the sleep finishes.  That is the state machine the theory section describes, and Python builds it from the generator machinery you met in *Control Flow Semantics*.
 - `sequential` takes about twice as long as `concurrent` while doing identical work.  Nothing ran in parallel; the waits overlapped.
-- Only `async def` functions may `await`.  Try adding `await` inside `attempt` from the borrow-checker cell above and Python refuses at compile time.  That constraint is the "function colour" problem: async-ness is contagious upward through every caller.
+- Only `async def` functions may `await`.  Try adding `await` inside `attempt` from the borrow-checker cell above, and Python refuses at compile time.  That constraint is the "function colour" problem: async-ness is contagious upward through every caller.
 
 ---
 
 ## Model 7: Dataclasses and __post_init__
 
-> **Intuition:** A `@dataclass` is Python's shortcut for a class whose job is primarily to hold data.  Instead of writing `__init__`, `__repr__`, and `__eq__` by hand (all of which are boilerplate that mirrors the field list you already wrote as annotations), `@dataclass` generates them for you.  The `__post_init__` hook is the place to add any validation logic that goes beyond "assign these fields": it runs after the generated `__init__`, so you can check invariants and raise errors before the object escapes into the rest of the program.
+> **Intuition:** A `@dataclass` is Python's shortcut for a class whose main job is to hold data.  Instead of writing `__init__`, `__repr__`, and `__eq__` by hand (boilerplate that mirrors the field list you already wrote as annotations), `@dataclass` generates them for you.  The `__post_init__` hook is the place for any validation beyond "assign these fields".  It runs after the generated `__init__`, so you can check invariants and raise errors before the object escapes into the rest of the program.
 
-Python's `@dataclass` decorator (PEP 557) auto-generates `__init__`, `__repr__`, and `__eq__` from field annotations.  The `__post_init__` hook runs *after* the generated `__init__`, allowing validation and derived fields, a lightweight version of the invariant-checking constructors common in strongly typed languages.
+Python's `@dataclass` decorator (PEP 557) generates `__init__`, `__repr__`, and `__eq__` from field annotations.  The `__post_init__` hook runs *after* the generated `__init__`, which allows validation and derived fields.  It is a lightweight version of the invariant-checking constructors common in strongly typed languages.
 
 ```python
 from dataclasses import dataclass, field
@@ -1014,20 +1021,20 @@ print("ensuring no Token or ASTNode can exist in an invalid state.")
 
 ### Critical Thinking Questions
 
-9. `@dataclass` generates `__init__` from the annotated fields.  What is the advantage of having the generated `__init__` call `__post_init__` rather than placing validation in a separate `validate()` method you call manually?
-10. `@dataclass(frozen=True)` makes instances immutable and auto-generates `__hash__`.  Explain why mutability and hashability conflict, and name a use case in your CS374 project where an immutable, hashable AST node would be useful.
+9. `@dataclass` generates `__init__` from the annotated fields.  What is the advantage of having the generated `__init__` call `__post_init__` rather than placing validation in a separate `validate()` method that you call by hand?
+10. `@dataclass(frozen=True)` makes instances immutable and generates `__hash__`.  Explain why mutability and hashability conflict, and name a use case in your CS374 project where an immutable, hashable AST node would be useful.
 11.  The `NumNode.__post_init__` coerces `self.value` to `float`.  This is a *type coercion* at construction time.  Compare this to a statically typed language where the field type annotation would prevent a non-float from being passed at all.  Which approach is more *writable*?  Which is more *reliable*?
 12.  Design a `FunctionDef` dataclass for your interpreter with fields `name`, `params` (a list of strings), and `body` (an `ASTNode`).  Write the `__post_init__` that enforces: at least one parameter, no duplicate parameter names, and `body` is actually an `ASTNode`.  Write only the class definition, not the full interpreter.
 
 ---
 
-> **Watch out!** `@dataclass(frozen=True)` makes an instance *immutable after construction*, but it is not the same as a deeply immutable object.  If a frozen dataclass has a field that holds a mutable list, the list's contents can still change; `frozen` prevents reassignment of the field itself (`obj.field = new_value` will raise `FrozenInstanceError`), but does not prevent mutation of the object the field points to (`obj.field.append(x)` still works).  For true immutability, all fields must themselves be immutable.
+> **Watch out!** `@dataclass(frozen=True)` makes an instance *immutable after construction*, but that is not the same as a deeply immutable object.  If a frozen dataclass has a field that holds a mutable list, the list's contents can still change.  `frozen` prevents reassignment of the field itself (`obj.field = new_value` raises `FrozenInstanceError`), but it does not prevent mutation of the object the field points to (`obj.field.append(x)` still works).  For true immutability, every field must itself be immutable.
 
 ## Model 8: Type Annotations, Generators, and Context Managers
 
-> **Intuition:** This model covers three Python features that look unrelated but share a common theme: each one lets you express a program's *intent* more precisely without changing its runtime behavior.  Type annotations document the expected shapes of data.  Generators let you describe a lazy sequence without materializing it.  Context managers let you express "this block needs setup and guaranteed teardown" as a first-class construct rather than a try/finally pattern you must remember to write.  All three are about making the code's intent visible and verifiable: to other programmers, to type checkers, and to the runtime.
+> **Intuition:** This model covers three Python features that look unrelated but share one theme: each lets you state a program's *intent* more precisely without changing its run-time behavior.  Type annotations document the expected shapes of data.  Generators describe a lazy sequence without building the whole thing in memory.  Context managers express "this block needs setup and guaranteed teardown" as a first-class construct rather than a try/finally pattern you must remember to write.  All three make the code's intent visible and checkable: to other programmers, to type checkers, and to the runtime.
 
-Python's type system, generators, and context managers are three orthogonal features that each address a distinct design concern: **static documentation**, **lazy computation**, and **resource safety**.  The cell explores all three in the context of a token stream, a structure your compiler pipeline uses.
+Python's type annotations, generators, and context managers are three independent features.  Each addresses a distinct design concern: static documentation, lazy computation, and resource safety.  The cell explores all three in the context of a token stream, a structure your compiler pipeline uses.
 
 ```python
 from typing import Iterator, Generator, List, Optional, TypeVar
@@ -1158,17 +1165,17 @@ with parse_session("bad $ input") as s:
 ### Critical Thinking Questions
 
 13.  The return type annotation `Generator[tuple[str, str], None, None]` has three type parameters.  Look up what each means (yield type, send type, return type).  Why is the send type `None` for a tokenizer, and when would a non-`None` send type be useful?
-14.  Compare `tokenize` (returns a list) with `tokenize_lazy` (yields tokens).  For a 1 GB source file, which is preferable and why?  Identify the specific trade-off in terms of memory usage versus random access capability.
-15.  The `@contextmanager` decorator wraps a generator function with a single `yield`.  The code *before* `yield` is `__enter__`; code *after* is `__exit__`.  Rewrite `parse_session` as a class with explicit `__enter__` and `__exit__` methods.  Which form is more readable, and which is more explicit about the resource lifecycle?
-16.  Python's type annotations are not enforced at runtime (without a separate checker).  Name one scenario in your CS374 project where a type error that annotations would expose at type-check time actually caused a runtime bug during testing.  If you cannot recall one, invent a plausible example involving mismatched AST node types.
+14.  Compare `tokenize` (returns a list) with `tokenize_lazy` (yields tokens).  For a 1 GB source file, which is preferable, and why?  Identify the specific trade-off between memory usage and random access.
+15.  The `@contextmanager` decorator wraps a generator function that has a single `yield`.  The code *before* `yield` is `__enter__`; the code *after* is `__exit__`.  Rewrite `parse_session` as a class with explicit `__enter__` and `__exit__` methods.  Which form is more readable, and which is more explicit about the resource lifecycle?
+16.  Python's type annotations are not enforced at run time (without a separate checker).  Name one scenario in your CS374 project where a type error that annotations would expose at type-check time caused a run-time bug during testing.  If you cannot recall one, invent a plausible example involving mismatched AST node types.
 
 ---
 
 ## Exercises
 
 1.  *Feature pitch.*  Each pair writes a half-page pitch for adding their jigsaw feature (or a realistic slice of it) to the team language: the construct's syntax in your grammar's EBNF, the node it adds, the evaluator rule, and the criterion it serves.  The team votes one pitch onto the project's "stretch goals" list.
-2.  *Exhaustiveness by hand.*  Add a new node type to your AST but not to your match-based evaluate.  Run it; read the failure.  Now add a `case _:` that raises a located error listing the node type.  You have hand-built the safety net ML compilers automate; one sentence on the difference.
-3.  *Color audit.*  Sketch (no implementation) what adding async to your language would split: which built-ins become awaitable, which functions change color, what the REPL does with a pending value.  Conclude with a recommendation and its rationale.
+2.  *Exhaustiveness by hand.*  Add a new node type to your AST but not to your match-based evaluate.  Run it and read the failure.  Now add a `case _:` that raises a located error naming the node type.  You have hand-built the safety net that ML compilers automate; write one sentence on the difference.
+3.  *Color audit.*  Sketch (no implementation) what adding async to your language would split: which built-ins become awaitable, which functions change color, and what the REPL does with a pending value.  Conclude with a recommendation and its rationale.
 4.  *Feature archaeology.*  Each teammate picks one feature that *arrived* in a mainstream language during their lifetime (Python match 2021, Java records 2020, JS async 2017, C++ lambdas 2011) and reports the proposal document's stated motivation versus what we identified today.
 
 ---
@@ -1197,7 +1204,7 @@ The async simulation's concurrent run finishes in half the time of the sequentia
 
 ## Reflection Prompt
 
-In your notebook: you have criticized languages all semester; today you became answerable for one.  Which criticism you have made of other languages do you most fear earning yourself, and what will you do before Demo Day to dodge it?  Also: the node inventory has a column for "evaluator method": every empty cell in that column is a gap between what your language promises and what it delivers.  How will your team keep that gap visible rather than invisible?
+In your notebook: you have criticized languages all semester, and today you became answerable for one.  Which criticism you have made of other languages do you most fear earning yourself, and what will you do before Demo Day to avoid it?  Also: the node inventory has a column for "evaluator method".  Every empty cell in that column is a gap between what your language promises and what it delivers.  How will your team keep that gap visible rather than invisible?
 
 ---
 
@@ -1207,23 +1214,23 @@ In your notebook: you have criticized languages all semester; today you became a
 - PEP 634 through 636 (Python structural pattern matching), especially 636, the tutorial.
 - Bob Nystrom.  "What Color is Your Function?"  (online essay), the async critique, vividly argued.
 - [Team Language Project Extensions Menu](https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage): its Macros or Hygienic Quoting entry specifies exactly what a credited macro extension must do, covering C-style textual macros and their double-evaluation hazards, quasiquotation, and hygienic expansion.  [Building the Mini Language](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ProjectLanguageGuide) is the interpreter foundation to build it on.
-- Objects and OOP from closures to vtables, method resolution order and the diamond problem, abstract base classes, and how vtables implement dynamic dispatch: the Python data-model docs, plus "C3 linearization" and "Python MRO".
-- The expression problem: why adding new node types is easy in OOP and adding new operations is easy in functional style, and never both.  The design tension behind your evaluator; search "expression problem Wadler" and revisit it when your team debates visitor versus match.
+- Objects and object-oriented programming (OOP) from closures to vtables, method resolution order and the diamond problem, abstract base classes, and how vtables implement dynamic dispatch: the Python data-model docs, plus "C3 linearization" and "Python MRO".
+- The expression problem: adding new node types is easy in OOP and adding new operations is easy in functional style, and never both.  This is the design tension behind your evaluator; search "expression problem Wadler" and revisit it when your team debates visitor versus match.
 
 ---
 
 - Your own assignment codebases, reread as a library you are about to depend on.
-- Robert Nystrom.  *Crafting Interpreters*, "The Lox Language" chapter: a master class in specifying a small language readably.
+- Robert Nystrom.  *Crafting Interpreters*, "The Lox Language" chapter: a model of how to specify a small language readably.
 - The project specification and rubric, reread tonight with the scorecard beside it.
 - Adrian Sampson.  "A Big Picture of PL" (Cornell CS 6110 notes, online): a one-page map of the design space your team just entered.
 - [Garbage Collection: Memory Management from First Principles](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/GarbageCollection): the call stack and the heap, reference counting, reference cycles, mark-and-sweep and generational collection, and what memory management means for the closures and environments in your interpreter.
-- [Advanced C++: Modern Memory, Templates, and the STL](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/AdvancedCpp): its FFI appendix covers foreign function interfaces, calling C from Python with `ctypes`, C-compatible structs and callbacks, name mangling, and designing an `ffi(...)` primitive for your own language.  Backs the project's Foreign Function Interface extension.
+- [Advanced C++: Modern Memory, Templates, and the STL](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/AdvancedCpp): its appendix on foreign function interfaces (FFI) covers calling C from Python with `ctypes`, C-compatible structs and callbacks, name mangling, and designing an `ffi(...)` primitive for your own language.  It backs the project's Foreign Function Interface extension.
 - [Building a Bytecode VM for Mini](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BytecodeVM): its optimization appendix covers constant folding, dead-code elimination, common subexpression elimination, inlining, and tail-call optimization.
 - [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CompilingAndLinking): how compiled code becomes a running executable.
-- [Building the Mini Language: A Complete Guide](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ProjectLanguageGuide): a complete worked path through designing and building a small language end to end, the same journey your team begins today.
+- [Building the Mini Language: A Complete Guide](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ProjectLanguageGuide): a complete worked path through designing and building a small language end to end, the same path your team starts today.
 - [Publishing Your Language: pip, npm, and Docker](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PublishingYourLanguage): packaging your language and shipping a Docker image, for when it works and you want the world to run it.
 - Self-study topics: expression-tree folds (catamorphisms), module systems and namespaces, live-coding pattern languages and their pattern algebra (TidalCycles and Strudel), denotational and fixed-point semantics of `while`, and concurrency models (actors, channels, software transactional memory).
 
 ---
 
-Up next: *Lambda Calculus I* goes to the theory floor beneath the functional programming you did in September, and *Closures and First-Class Functions* later supplies the last mechanism your evaluator needs.  From here the Team Language Project's sprints carry you to Demo Day.  Come back to the feature menu at the end of each sprint: the honest question is not which features are exciting, it is which ones you have time to implement well.
+Up next: *Lambda Calculus I* goes to the theory floor beneath the functional programming you did in September, and *Closures and First-Class Functions* later supplies the last mechanism your evaluator needs.  From here, the Team Language Project's sprints carry you to Demo Day.  At the end of each sprint, come back to the feature menu and ask one question: which features do you have time to implement well?
