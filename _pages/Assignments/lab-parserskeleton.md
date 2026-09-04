@@ -9,7 +9,7 @@ info:
   tilt:
     task: "With a partner, implement parse_primary and parse_unary over the Lexer interface, with tree-shape tests and one positioned parse error."
     criteria: "I grade correct primary and unary parsing with passing tree-shape tests, and a positioned error on invalid input, weighted 70/30 across the two parts.  The rubric below spells out each row."
-  points: 100
+  points: 15
   goals:
     - To implement the primary and unary tiers of a recursive descent parser over the Lexer's peek/advance/expect interface
     - To verify parser output with tree-shape tests rather than string comparison
@@ -59,7 +59,7 @@ See the course schedule for the assigned and due dates.
 
 ---
 
-## Part 0: Before You Start - Recursive Descent Parsing (10 points)
+## Part 0: Before You Start - Recursive Descent Parsing (10%)
 
 Do this part on paper before you write `parse_primary`, and ideally before the Recursive Descent Parsing session.  You may do it alone even though the rest of this lab is pair work.
 
@@ -72,7 +72,7 @@ Bring the trace, with the point marked where you needed more than one token of l
 
 ---
 
-## Part 1: The First Two Tiers (63 points)
+## Part 1: The First Two Tiers (63%)
 
 In `parser_skeleton.py`, first define the AST (abstract syntax tree) node dataclasses you need: `Num`, `Str`, `Bool`, `Var`, `Unary`, plus a `Grouping` node or a pass-through for parentheses.  Match the node names your grammar work uses.  Then implement two functions:
 
@@ -81,7 +81,7 @@ In `parser_skeleton.py`, first define the AST (abstract syntax tree) node datacl
 
 Both functions consume tokens only through the Lexer's `peek`, `advance`, and `expect`.  The whole ladder depends on that discipline.  Document the pattern in one sentence per function.
 
-## Part 2: Tests and Errors (27 points)
+## Part 2: Tests and Errors (27%)
 
 In `test_skeleton.py`, write tree-shape tests.  A tree-shape test asserts on node types and fields, for example `isinstance(node, Unary)`, `node.op == "-"`, and `node.operand.value == 42`.  Never compare printed strings.  Cover every primary form and at least two nested unary cases.
 
@@ -95,12 +95,14 @@ Submit a ZIP containing `parser_skeleton.py`, `test_skeleton.py` with its passin
 
 ## Grading Breakdown
 
-| Component | Points |
+This lab is worth 15 points, as the course schedule states.  Each part's weight below is a percentage of those 15 points, and the rubric rows use the same percentages.
+
+| Component | Weight |
 |-----------|--------|
-| Part 0: Recursive Descent Parsing | 10 |
-| Part 1: The First Two Tiers | 63 |
-| Part 2: Tests and Errors | 27 |
-| **Total** | **100** |
+| Part 0: Recursive Descent Parsing | 10% |
+| Part 1: The First Two Tiers | 63% |
+| Part 2: Tests and Errors | 27% |
+| **Total** | **100% (15 points)** |
 
 ## Reflection Prompts
 

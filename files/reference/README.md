@@ -2,16 +2,20 @@
 
 If an earlier stage of your language pipeline is broken, you should never be
 blocked on the next assignment.  Each reference implementation below is
-released **when the assignment that depends on it is handed out**, so you can
-swap it in for your own component and keep moving.
+released when the assignment that depends on it is handed out, so you can
+swap it in for your own component and keep moving.  The course schedule on
+the syllabus is the source of truth for when each stage is released: the
+reference lexer arrives with the Parser assignment, the reference parser and
+AST with the Interpreter assignment, and the reference interpreter with the
+team project's build phase.
 
-## Release schedule
+## The three stages
 
-| Release | Zip | Released | With |
-|---------|-----|----------|------|
-| Reference **Lexer** | `reference-lexer.zip` | **Oct 15** | the Parser assignment hand-out |
-| Reference **Parser + AST** | `reference-parser.zip` | **Oct 27** | the Interpreter assignment hand-out |
-| Reference **Interpreter** | `reference-interpreter.zip` | **Nov 12** | the team-project build phase |
+| Stage | Zip | Released with |
+|-------|-----|---------------|
+| Reference **Lexer** | `reference-lexer.zip` | the Parser assignment hand-out |
+| Reference **Parser + AST** | `reference-parser.zip` | the Interpreter assignment hand-out |
+| Reference **Interpreter** | `reference-interpreter.zip` | the team project's build phase |
 
 Each zip is **self-contained**: the parser zip includes a copy of the
 reference lexer, and the interpreter zip includes copies of both the

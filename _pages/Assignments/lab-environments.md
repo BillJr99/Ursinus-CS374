@@ -9,7 +9,7 @@ info:
   tilt:
     task: "With a partner, implement an Environment class with parent chaining, distinguish define from assign, and verify shadowing, scope restoration, and name-error behavior against a provided test script."
     criteria: "I grade a correct Environment class that passes all provided behavior tests, and a short trace exercise that predicts scope behavior on paper, weighted 70/30 across the two parts.  The full breakdown is in the rubric below."
-  points: 100
+  points: 15
   goals:
     - To implement an Environment class with parent chaining supporting nested scopes
     - To distinguish definition (creating a name in the current scope) from assignment (updating the nearest enclosing binding)
@@ -55,7 +55,7 @@ In this lab you build `Environment`, the class that makes scope real in your int
 
 ---
 
-## Part 0: Before You Start - Binding and Scope (10 points)
+## Part 0: Before You Start - Binding and Scope (10%)
 
 Do this part on paper before you write the `Environment` class.  It has two halves, one for each of the two class sessions it prepares you for.  You may do it alone even though the rest of this lab is pair work.
 
@@ -78,7 +78,7 @@ A half-finished trace is worth more than a blank page.  Part 1's distinction bet
 
 ---
 
-## Part 1: The Environment Class (63 points)
+## Part 1: The Environment Class (63%)
 
 Implement `Environment` in `environment.py`.  It stands alone: no AST or evaluator is needed, and its interface is plain Python.
 
@@ -97,7 +97,7 @@ Verify your class against the provided behavior script `test_environment.py` in 
 
 The signature behavior to get right is the Interpreter assignment's shadowing program: an inner `let x` shadows the outer one and prints `51`, and after the block exits the outer `x` is intact and prints `2`.
 
-## Part 2: Scope Trace Exercise (27 points)
+## Part 2: Scope Trace Exercise (27%)
 
 Write your predictions in `trace.md` before you run anything.  The test script comes with a short program of three nested blocks that mix `define` and `assign`.
 
@@ -113,12 +113,14 @@ Submit a ZIP containing `environment.py`, the passing `test_environment.py` outp
 
 ## Grading Breakdown
 
-| Component | Points |
+This lab is worth 15 points, as the course schedule states.  Each part's weight below is a percentage of those 15 points, and the rubric rows use the same percentages.
+
+| Component | Weight |
 |-----------|--------|
-| Part 0: Binding and Scope | 10 |
-| Part 1: The Environment Class | 63 |
-| Part 2: Scope Trace Exercise | 27 |
-| **Total** | **100** |
+| Part 0: Binding and Scope | 10% |
+| Part 1: The Environment Class | 63% |
+| Part 2: Scope Trace Exercise | 27% |
+| **Total** | **100% (15 points)** |
 
 ## Reflection Prompts
 

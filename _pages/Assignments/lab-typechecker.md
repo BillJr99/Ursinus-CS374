@@ -9,7 +9,7 @@ info:
   tilt:
     task: "With a partner, implement a checker that walks the class AST with a type environment, verifying annotated declarations, variable uses, and operator applications, and reporting positioned type errors."
     criteria: "I grade this on a checker that accepts the well-typed programs and rejects each ill-typed program with a positioned two-type error message, plus a set of typing-rule statements written on paper, weighted 70/30 across the two parts.  See the rubric below for the full breakdown."
-  points: 100
+  points: 15
   goals:
     - To implement a static checking pass over the class AST using a type environment that mirrors the Environment class
     - To check annotated declarations, variable uses, and operator applications, reporting errors with positions and both conflicting types
@@ -54,7 +54,7 @@ This **lab** builds the core of the Interpreter assignment's Part 4: a small sta
 
 ---
 
-## Part 0: Before You Start - Type Systems (10 points)
+## Part 0: Before You Start - Type Systems (10%)
 
 Do this part before you write the checker, and ideally before the Type Systems session.  Plan on about fifteen minutes with pencil and paper.
 
@@ -67,7 +67,7 @@ Bring the program you wish the checker had allowed, even if you could not settle
 
 ---
 
-## Part 1: The Checker Core (63 points)
+## Part 1: The Checker Core (63%)
 
 Implement `check(program) -> None` in `typechecker.py`.  The function walks the class AST (use your Parser assignment's AST nodes, or the reference AST) and reports a type error as soon as it finds one.  A well-typed program produces no output.
 
@@ -92,7 +92,7 @@ Verify your checker against the provided programs in the course starter repo.  S
 
 Two things to remember from this part.  The checker never evaluates anything; it only compares types.  And every error message names the position and both conflicting types.
 
-## Part 2: Typing Rules on Paper (27 points)
+## Part 2: Typing Rules on Paper (27%)
 
 In `RULES.md`, state the typing rule for each construct your checker covers, one rule per construct.  A typing rule has premises (what must already be true about the parts) and a conclusion (what then holds for the whole).  Write each rule in either inference-rule layout (premises above a line, conclusion below it) or a disciplined "if... then..." sentence (e.g., *if `e1 : Num` and `e2 : Num`, then `e1 + e2 : Num`*).  For each rule, cite the function or branch in `typechecker.py` that implements it.
 
@@ -111,12 +111,14 @@ Submit a ZIP containing `typechecker.py`, the run log over the twelve provided p
 
 ## Grading Breakdown
 
-| Component | Points |
+This lab is worth 15 points, as the course schedule states.  Each part's weight below is a percentage of those 15 points, and the rubric rows use the same percentages.
+
+| Component | Weight |
 |-----------|--------|
-| Part 0: Type Systems | 10 |
-| Part 1: The Checker Core | 63 |
-| Part 2: Typing Rules on Paper | 27 |
-| **Total** | **100** |
+| Part 0: Type Systems | 10% |
+| Part 1: The Checker Core | 63% |
+| Part 2: Typing Rules on Paper | 27% |
+| **Total** | **100% (15 points)** |
 
 ## Reflection Prompts
 

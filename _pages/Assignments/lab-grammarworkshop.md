@@ -9,7 +9,7 @@ info:
   tilt:
     task: "With a partner, write the EBNF grammar the Parser assignment's Part 1 requires, produce leftmost derivations and parse trees for two worked programs, and show how the grammar's shape enforces precedence and associativity."
     criteria: "I grade this on a complete and correct EBNF grammar, correct derivations with matching parse trees, and a demonstrated precedence and ambiguity analysis, weighted 50/25/25 across the three parts.  The rubric below has the details."
-  points: 100
+  points: 15
   goals:
     - To write a complete EBNF grammar for the class language's expressions and statements
     - To construct leftmost derivations and parse trees that verify the grammar against concrete programs
@@ -61,7 +61,7 @@ This **lab** is the Parser assignment's Part 1, done early and with a partner.  
 
 ---
 
-## Part 0: Before You Start - Derivations, Ambiguity, and Precedence (10 points)
+## Part 0: Before You Start - Derivations, Ambiguity, and Precedence (10%)
 
 Do this part first, before the rest of the lab, and ideally before the Derivations, Parse Trees, Ambiguity, and Precedence session.  You may do it alone even though the rest of this lab is pair work.
 
@@ -75,7 +75,7 @@ If the rewrite fell apart on you, bring it anyway.  Where it fell apart is what 
 
 ---
 
-## Part 1: The EBNF Grammar (45 points)
+## Part 1: The EBNF Grammar (45%)
 
 Write the complete EBNF grammar for the class language used across the Lexer, Parser, and Interpreter assignments.  Cover these constructs:
 
@@ -86,14 +86,14 @@ Write the complete EBNF grammar for the class language used across the Lexer, Pa
 
 Structure the expression productions as a ladder: one production per precedence level, from `or` at the top down through `and`, comparison, additive, multiplicative, unary, and primary.  This is exactly the shape the Parser assignment's Part 2 transcribes into functions.
 
-## Part 2: Derivations and Parse Trees (23 points)
+## Part 2: Derivations and Parse Trees (23%)
 
 Produce a leftmost derivation and the matching parse tree for each of these two programs.  Cite the production applied at every step of each derivation.
 
 1. `let x = 1 + 2 * 3;`
 2. `while x < 10 { x = x + 1; }`
 
-## Part 3: Precedence and Ambiguity (22 points)
+## Part 3: Precedence and Ambiguity (22%)
 
 Using your derivation of program 1, explain which productions force `*` to bind tighter than `+`.  Show the wrong second tree that a flat single-level expression grammar would also permit.  Then state how your grammar makes `1 - 2 - 3` associate left, and verify with a three-line derivation sketch.
 
@@ -105,13 +105,15 @@ Submit `grammar.md` containing all three parts, with both partners named at the 
 
 ## Grading Breakdown
 
-| Component | Points |
+This lab is worth 15 points, as the course schedule states.  Each part's weight below is a percentage of those 15 points, and the rubric rows use the same percentages.
+
+| Component | Weight |
 |-----------|--------|
-| Part 0: Derivations, Ambiguity, and Precedence | 10 |
-| Part 1: EBNF Grammar | 45 |
-| Part 2: Derivations and Parse Trees | 23 |
-| Part 3: Precedence and Ambiguity Analysis | 22 |
-| **Total** | **100** |
+| Part 0: Derivations, Ambiguity, and Precedence | 10% |
+| Part 1: EBNF Grammar | 45% |
+| Part 2: Derivations and Parse Trees | 23% |
+| Part 3: Precedence and Ambiguity Analysis | 22% |
+| **Total** | **100% (15 points)** |
 
 ## Reflection Prompts
 

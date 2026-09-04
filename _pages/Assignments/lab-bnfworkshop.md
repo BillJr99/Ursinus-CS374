@@ -9,7 +9,7 @@ info:
   tilt:
     task: "With a partner, write EBNF grammars for two toy languages, classify a set of sample languages by Chomsky level, and argue one syntax design choice against the readability, writability, and reliability criteria."
     criteria: "I grade your work on correct and complete EBNF grammars, correct Chomsky classifications with reasons, and a design argument grounded in the course criteria, weighted 50/30/20 across the three parts.  See the rubric below for the full breakdown."
-  points: 100
+  points: 15
   goals:
     - To write EBNF grammars for small formal languages
     - To classify languages by Chomsky hierarchy level and justify each classification
@@ -69,7 +69,7 @@ See the course schedule for the assigned and due dates.  Derivation trees and am
 
 ---
 
-## Part 0: Before You Start - Syntax, BNF/EBNF, and Grammars (10 points)
+## Part 0: Before You Start - Syntax, BNF/EBNF, and Grammars (10%)
 
 Do this part before the Syntax and BNF/EBNF session, not after.  Fifteen minutes and a pencil will do it.  You may do this part alone even though the rest of this lab is pair work.
 
@@ -84,7 +84,7 @@ Bring the grammar you drafted, and mark the rule you are least sure about.  Roug
 
 ---
 
-## Part 1: Two EBNF Grammars (45 points)
+## Part 1: Two EBNF Grammars (45%)
 
 Write a complete EBNF grammar for each language below in `grammars.md`.  Then verify each grammar by hand with three strings it accepts and two it rejects.
 
@@ -93,7 +93,7 @@ Write a complete EBNF grammar for each language below in `grammars.md`.  Then ve
 
 Use EBNF's operators for repetition (`{ }`), optionality (`[ ]`), and grouping.  The point of the exercise is to express shape in the notation rather than in prose.
 
-## Part 2: Chomsky Classification (27 points)
+## Part 2: Chomsky Classification (27%)
 
 The Chomsky hierarchy ranks languages by how much memory a machine needs to recognize them.  Regular languages need only finite memory.  Context-free languages need a stack, because they match or nest symbols.  Languages with cross-serial constraints, such as equal counts in three separate places, need more than a stack.
 
@@ -107,7 +107,7 @@ For each language below, name the lowest Chomsky level that can describe it.  Gi
 
 Close with one sentence for each of these three questions.  Which level do the class language's tokens need?  Which level does its full syntax need?  What does that split tell you about why compilers have both a lexer and a parser?
 
-## Part 3: Design-Criteria Argument (18 points)
+## Part 3: Design-Criteria Argument (18%)
 
 The configuration language's designer proposes making the trailing `;` optional.  Write one paragraph that evaluates the proposal against at least two of the readability, writability, and reliability criteria from the Evaluating Languages session.  For each criterion, give a concrete consequence: what a programmer gains or loses.  State the tradeoff, and take a position.
 
@@ -119,13 +119,15 @@ Submit `grammars.md` containing all three parts, with both partners named at the
 
 ## Grading Breakdown
 
-| Component | Points |
+This lab is worth 15 points, as the course schedule states.  Each part's weight below is a percentage of those 15 points, and the rubric rows use the same percentages.
+
+| Component | Weight |
 |-----------|--------|
-| Part 0: Syntax, BNF/EBNF, and Grammars | 10 |
-| Part 1: EBNF Grammars | 45 |
-| Part 2: Chomsky Classification | 27 |
-| Part 3: Design-Criteria Argument | 18 |
-| **Total** | **100** |
+| Part 0: Syntax, BNF/EBNF, and Grammars | 10% |
+| Part 1: EBNF Grammars | 45% |
+| Part 2: Chomsky Classification | 27% |
+| Part 3: Design-Criteria Argument | 18% |
+| **Total** | **100% (15 points)** |
 
 ## Reflection Prompts
 

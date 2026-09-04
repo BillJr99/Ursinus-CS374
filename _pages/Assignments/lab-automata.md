@@ -9,7 +9,7 @@ info:
   tilt:
     task: "With a partner, build DFA and NFA simulators that read machines from JSON, design one machine of each kind, and trace the subset construction and Thompson's construction by hand on small examples."
     criteria: "I grade correct simulators that handle the stated edge cases, two annotated machine designs, and by-hand construction traces, weighted 10/36/36/18 across the four parts.  The rubric below breaks this down in full."
-  points: 100
+  points: 15
   goals:
     - To implement general DFA and NFA simulators over machine definitions loaded from JSON
     - To design one DFA and one NFA for specified languages and encode them as data
@@ -64,7 +64,7 @@ The simulators are short programs, and you can check them against the worked tra
 
 ---
 
-## Part 0: Before You Start - Regular Expressions and Finite Automata (10 points)
+## Part 0: Before You Start - Regular Expressions and Finite Automata (10%)
 
 Do this part on paper before you write any simulator code, and ideally before the Finite Automata class session.  You may do it alone even though the rest of this lab is pair work.
 
@@ -117,7 +117,7 @@ I hand out this lab after the class sessions on regular expressions and finite a
 
 ---
 
-## Part 1: DFA Simulation and Design (36 points)
+## Part 1: DFA Simulation and Design (36%)
 
 ### Machine Format
 
@@ -174,7 +174,7 @@ Test with at least four accepted and four rejected strings.
 
 ---
 
-## Part 2: NFA Simulation and Design (36 points)
+## Part 2: NFA Simulation and Design (36%)
 
 ### NFA Machine Format
 
@@ -217,7 +217,7 @@ Hint: nondeterministically guess where `aa` occurs: your design should really us
 
 ---
 
-## Part 3: By-Hand Constructions (18 points)
+## Part 3: By-Hand Constructions (18%)
 
 These are paper exercises in your writeup, with no code.  The class sessions covered both algorithms.  Here you trace each once on a small example, so you have run by hand what lexer-generator tools automate.
 
@@ -267,13 +267,15 @@ List your Python version in the writeup so I can reproduce your results.
 
 ## Grading Breakdown
 
-| Component | Points |
+This lab is worth 15 points, as the course schedule states.  Each part's weight below is a percentage of those 15 points, and the rubric rows use the same percentages.
+
+| Component | Weight |
 |-----------|--------|
-| Part 0: Regular Expressions and Finite Automata | 10 |
-| Part 1: DFA Simulation and Design | 36 |
-| Part 2: NFA Simulation and Design | 36 |
-| Part 3: By-Hand Constructions | 18 |
-| **Total** | **100** |
+| Part 0: Regular Expressions and Finite Automata | 10% |
+| Part 1: DFA Simulation and Design | 36% |
+| Part 2: NFA Simulation and Design | 36% |
+| Part 3: By-Hand Constructions | 18% |
+| **Total** | **100% (15 points)** |
 
 ---
 

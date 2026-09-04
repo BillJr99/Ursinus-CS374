@@ -9,7 +9,7 @@ info:
   tilt:
     task: "With a partner, carry out step-by-step beta reductions including a capture-avoidance case, and verify Church-encoded booleans and numerals by reduction."
     criteria: "I assess your work on correct, fully-shown reduction sequences and correct Church-encoding verifications, weighted 55/45 across the two parts.  Please read the rubric below for the details."
-  points: 100
+  points: 15
   goals:
     - To perform beta reduction step by step, identifying redexes and applying capture-avoiding substitution
     - To verify Church encodings of booleans and numerals by reduction
@@ -65,7 +65,7 @@ Five terms come up throughout, so here they are in one place:
 
 ---
 
-## Part 0: Before You Start - Beta Reduction and Church Encodings (10 points)
+## Part 0: Before You Start - Beta Reduction and Church Encodings (10%)
 
 Do this part before the Lambda Calculus I session.  Use pencil and paper, and write every step down.
 
@@ -78,7 +78,7 @@ Bring the reduction step you were least confident was legal.  Those are the step
 
 ---
 
-## Part 1: Beta Reduction (50 points)
+## Part 1: Beta Reduction (50%)
 
 In `reductions.md`, reduce each expression below to normal form.  Write one beta-step per line, and mark the redex you contract at each step by underlining or bracketing it.  Before each step, ask whether the substitution would capture a free variable; if it would, alpha-rename first.
 
@@ -90,7 +90,7 @@ In `reductions.md`, reduce each expression below to normal form.  Write one beta
 
 For item 5, normal order reduces the leftmost outermost redex first, and applicative order reduces arguments before applying the function.  Remember from this part: every reduction is a sequence of single steps, each with its redex marked, and the capture case is the one place you must rename before you substitute.
 
-## Part 2: Church Encodings (40 points)
+## Part 2: Church Encodings (40%)
 
 A Church encoding represents a value such as a boolean or a number as a lambda term, so that the calculus needs no built-in data at all.  Using `TRUE = λt. λf. t`, `FALSE = λt. λf. f`, `AND = λp. λq. p q p`, and numerals `ZERO = λf. λx. x`, `ONE = λf. λx. f x`, `SUCC = λn. λf. λx. f (n f x)`:
 
@@ -109,12 +109,14 @@ Submit `reductions.md` (or a scanned/photographed handwritten equivalent, legibl
 
 ## Grading Breakdown
 
-| Component | Points |
+This lab is worth 15 points, as the course schedule states.  Each part's weight below is a percentage of those 15 points, and the rubric rows use the same percentages.
+
+| Component | Weight |
 |-----------|--------|
-| Part 0: Beta Reduction and Church Encodings | 10 |
-| Part 1: Beta Reduction | 50 |
-| Part 2: Church Encodings | 40 |
-| **Total** | **100** |
+| Part 0: Beta Reduction and Church Encodings | 10% |
+| Part 1: Beta Reduction | 50% |
+| Part 2: Church Encodings | 40% |
+| **Total** | **100% (15 points)** |
 
 ## Reflection Prompts
 
