@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Abstract Syntax Trees
 
-Think of source code as a recipe written in dense prose, readable by a human, but awkward for a program to act on.  The AST is the structured outline a chef actually follows: every step is a labeled node, ingredients are children, and the nesting encodes what happens before what.  Every compiler, interpreter, linter, and code formatter you have ever used is really just a program that walks this tree.  Understanding the AST is understanding the beating heart of language implementation.
+An abstract syntax tree (AST) is a tree that records what a program means and leaves out everything else.  Each node in the tree stands for one construct: a number, a variable, an addition, a loop.  A node's children are the smaller pieces that construct is built from, so an addition node has two children, its left and right operands.  Source code is a recipe written in prose for a person to read; the AST is the same recipe as a labeled outline that a program can follow step by step.  The analogy stops there, because an AST also fixes the order of evaluation through its nesting, which a written outline does not.  Every compiler, interpreter, linter, and code formatter you have used is a program that walks this tree, so learning the AST is learning the center of language implementation.
 
 ## Learning Goals
 
@@ -26,7 +26,7 @@ By the end of this activity, you will be able to:
 - Build an AST by hand for a given arithmetic or assignment expression, annotating each node with its type and children
 - Apply tree transformations (constant folding, dead-code elimination) and explain how each transformation preserves program semantics
 
-In *Tokens and Scanning: Building a Lexer* you turned characters into tokens; this session builds the structure those tokens are destined for: the **abstract syntax tree (AST)**, the central data structure of every language implementation and the hinge of your whole project.  The recursive-descent parser you build in the *Recursive Descent Parsing* activity constructs exactly these nodes; here you learn to build, walk, and transform them by hand first.  Today's path runs **parse trees vs. ASTs -> node classes -> building trees in the parser -> walking trees (printing today, evaluating soon) -> transforming trees (optimizing)**
+In *Tokens and Scanning: Building a Lexer* you turned characters into tokens.  This session builds the structure those tokens feed: the AST, the central data structure of every language implementation and of your whole project.  The recursive-descent parser you build in the *Recursive Descent Parsing* activity constructs exactly these nodes.  Here you build, walk, and transform them by hand first.  Today's path runs from parse trees and ASTs, to node classes, to building trees in the parser, to walking trees (printing today, evaluating soon), to transforming trees (optimizing).
 
 > **Before You Begin:** This activity assumes you can:
 > - Use Python dataclasses (`@dataclass`, typed fields, `field(...)`)
@@ -48,9 +48,9 @@ Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Pr
 
 ## 1.  Abstract Means On Purpose
 
-*What problem does this solve?*  When a parser recognizes `(2 + 3)`, it must record every grammar rule it fired (`expr`, `additive`, `primary`, the parentheses) just to prove the string is valid.  But the *evaluator* downstream does not care about parentheses or which nonterminal fired; it only cares that there is an addition of two numbers.  The AST strips away that grammatical scaffolding so every later phase gets a clean, uniform data structure to walk.  The fewer irrelevant details each phase has to handle, the simpler and less error-prone each phase becomes.
+An AST keeps only the nodes that carry meaning.  A parse tree keeps everything: it records every grammar rule the parser fired.  When a parser recognizes `(2 + 3)`, it fires `expr`, `additive`, `primary`, and the parenthesis rules only to prove the string is valid.  The evaluator that runs later does not care about parentheses or about which nonterminal fired.  It only needs to know that this is an addition of two numbers.  The AST strips away that grammar scaffolding, so every later phase gets one clean, uniform structure to walk.  Each phase then handles fewer irrelevant details, which makes it simpler and less error prone.
 
-A parse tree records every grammar step; an AST records only meaning.  The parse tree for `(2 + 3)` contains nodes for `expr`, `addsub`, `muldiv`, `primary`, and the parentheses: the full derivation.  The AST keeps only the addition and its two operands.  Parentheses vanish (their *effect*, the tree shape, remains), and single-child chains collapse.
+Compare the two trees for `(2 + 3)`.  The parse tree contains nodes for `expr`, `addsub`, `muldiv`, `primary`, and the parentheses: the full derivation.  The AST keeps only the addition and its two operands.  The parentheses vanish, although their effect (the tree shape) remains, and chains of single-child nodes collapse into one node.
 
 Each node type captures one construct.  A practical design gives every construct a class with named fields:
 
@@ -61,19 +61,19 @@ While(cond, body)     If(cond, then_, otherwise)   Block(statements)
 FunDef(name, params, body)   Call(callee, args)
 ```
 
-The set of node classes *is* your language's semantic inventory: if a construct has no node, your language cannot mean it.
+The set of node classes is your language's inventory of meanings.  If a construct has no node, your language cannot mean it.
 
-> **Watch out!**  Students often confuse the **parse tree** with the **AST**.  The parse tree is a record of the grammar derivation: it includes every intermediate nonterminal and every piece of punctuation.  The AST keeps *only meaning-bearing* nodes.  Parentheses disappear entirely (their effect lives in the tree shape), and long single-child chains like `expr -> additive -> multiplicative -> primary -> Num` collapse to a single `Num` node.  If your AST looks like your grammar, it is probably not abstract enough.
+> **Watch out!**  Students often confuse the parse tree with the AST.  The parse tree is a record of the grammar derivation: it includes every intermediate nonterminal and every piece of punctuation.  The AST keeps only the nodes that carry meaning.  Parentheses disappear entirely (their effect lives in the tree shape), and long single-child chains like `expr -> additive -> multiplicative -> primary -> Num` collapse to a single `Num` node.  If your AST looks like your grammar, it is probably not abstract enough.
 
-**Worked example, tracing `1 + 2 * 3` from tokens to AST:**
+Here is a worked example that traces `1 + 2 * 3` from tokens to AST.
 
-**Step 1.  Tokens:**
+Step 1, the tokens:
 
 ```
 NUM(1)  OP(+)  NUM(2)  OP(*)  NUM(3)
 ```
 
-**Step 2.  Parse tree** (using a ladder grammar with separate `additive` and `multiplicative` levels):
+Step 2, the parse tree (using a ladder grammar with separate `additive` and `multiplicative` levels):
 
 ```
 expr
@@ -88,9 +88,10 @@ expr
          `- multiplicative
             `- primary -> NUM(3)
 ```
+
 The parse tree has 10+ nodes, most of them grammar scaffolding.
 
-**Step 3.  AST** (scaffolding collapsed, precedence now encoded in tree shape):
+Step 3, the AST (scaffolding collapsed, precedence now encoded in the tree shape):
 
 ```
 BinOp('+')
@@ -99,11 +100,14 @@ BinOp('+')
    |- Num(2)
    `- Num(3)
 ```
+
 Only 5 nodes remain.  The `*` is a child of `+`, which correctly encodes that multiplication binds tighter: `2 * 3` is evaluated first.  No nonterminals, no parentheses, no grammar-level noise.
+
+To remember: the parse tree records how the grammar matched the input, and the AST records only what the input means.  Grouping and precedence survive as tree shape, not as nodes.
 
 **Critical Thinking Questions (CTQs)**
 
-> **CTQ 1.1** For the source `(2 + 3) * 4`, sketch both the full parse tree under the ladder grammar and the AST. Count nodes in each.  What fraction of the parse-tree nodes was scaffolding (existed only to enforce precedence)?
+> **CTQ 1.1** For the source `(2 + 3) * 4`, sketch both the full parse tree under the ladder grammar and the AST.  Count the nodes in each.  What fraction of the parse-tree nodes was scaffolding (existed only to enforce precedence)?
 
 > **CTQ 1.2** Parentheses appear nowhere in the AST, yet `(2 + 3) * 4` and `2 + 3 * 4` get different ASTs.  Resolve the apparent paradox in two sentences.
 
@@ -113,7 +117,7 @@ Only 5 nodes remain.  The `*` is a child of `+`, which correctly encodes that mu
 
 ## Model 1: Node Classes and the `pretty` Printer
 
-*What problem does this solve?*  Now that we know what an AST *is*, we need a concrete way to represent one in Python.  This model shows how to define each node type as a dataclass (so fields have names, not just positions), and then how to *walk* the tree recursively with `pretty`.  Walking a tree (visiting every node in order) is the one pattern you will use for everything: printing, evaluating, type-checking, compiling.  Understand `pretty` here and the evaluator of the *Tree-Walking Interpretation* activity is trivial.
+This model represents an AST in Python.  Each node type is a dataclass, so its fields have names instead of positions.  Then `pretty`, a pretty printer, walks the tree and prints each node on its own indented line, so you can read the tree's shape at a glance.  A tree walk visits every node in order, and it is the one pattern you will use for everything: printing, evaluating, type checking, compiling.  Once you understand `pretty`, the evaluator in the *Tree-Walking Interpretation* activity is a small step.
 
 ```python
 from dataclasses import dataclass, field
@@ -225,19 +229,10 @@ pretty(tree2)
 
 ### Reading the Code
 
-- Each node type is a `@dataclass`, so `BinOp('+', l, r)` gives you `.op`, `.left`,
-  and `.right` by name rather than by index, which is the only difference from a
-  tuple, and it is why `repr` on a dataclass reads like the tree it represents.
-- `pretty` is the **tree walk**, and it has the shape every later pass will have:
-  one `case` per node type, a recursive call per child, and a base case at the
-  leaves.  Printing, evaluating, type checking, and compiling are all this function
-  with the body changed.
-- The indentation argument is threaded down the recursion rather than tracked in a
-  global.  That is what makes the walk reentrant and, later, what makes an
-  evaluator's environment behave correctly under nesting.
-- Notice what `pretty` never sees: parentheses and grammar nonterminals.  They were
-  consumed by the parser and left no node behind.  Their entire effect survives as
-  the *shape* of what `pretty` is printing.
+- Each node type is a `@dataclass`, so `BinOp('+', l, r)` gives you `.op`, `.left`, and `.right` by name rather than by index.  That is the only difference from a tuple, and it is why `repr` on a dataclass reads like the tree it represents.
+- `pretty` is the **tree walk**, and it has the shape every later pass will have: one `case` per node type, a recursive call per child, and a base case at the leaves.  A function of this shape, one that visits every node and does one thing per node type, is called a visitor.  Printing, evaluating, type checking, and compiling are all this function with the body changed.
+- The indentation argument passes down through the recursion instead of living in a global.  That keeps the walk reentrant, and later it is what makes an evaluator's environment behave correctly under nesting.
+- `pretty` never sees parentheses or grammar nonterminals.  The parser consumed them and left no node behind.  Their whole effect survives as the shape of the tree that `pretty` prints.
 
 ### Critical Thinking Questions
 
@@ -245,7 +240,7 @@ pretty(tree2)
 
 > **CTQ 1.6** The recursion visits children before finishing the parent's subtree.  For evaluation, must children be processed before or after the parent's operation?  Which traversal order is that (pre-order, in-order, or post-order)?
 
-> **Watch out!**  The `case _:` arm in `pretty` is a safety net, but in a real interpreter it is a bug waiting to happen.  If you add a new node type (say, `FunDef`) but forget to add a corresponding `case FunDef(...):` arm, Python will silently fall through to `Unknown: ...` instead of raising an error.  Every time you add a new AST node, immediately add a handler for it in *every* tree-walking function: `pretty`, `count_nodes`, `collect_vars`, `constant_fold`, and especially the evaluator.
+> **Watch out!**  The `case _:` arm in `pretty` is a safety net, but in a real interpreter it is a bug waiting to happen.  If you add a new node type (say, `FunDef`) but forget to add a matching `case FunDef(...):` arm, Python silently falls through to `Unknown: ...` instead of raising an error.  Every time you add a new AST node, immediately add a handler for it in every tree-walking function: `pretty`, `count_nodes`, `collect_vars`, `constant_fold`, and especially the evaluator.
 
 ### Try It Yourself
 
@@ -293,13 +288,15 @@ print("Now add the arm and rerun. Every node should appear.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output before your edit: one `Unknown:` line swallowing three nodes.  After: the full tree, six nodes deep.  Remember this the next time an evaluator "works" but quietly ignores a construct.
+Expected output before your edit: one `Unknown:` line swallowing three nodes.  After your edit: the full tree, six nodes deep.  Remember this the next time an evaluator "works" but quietly ignores a construct.
+
+To remember: a dataclass per node type gives every field a name, and a tree walk is one `case` per node type plus a recursive call per child.  Every new node type needs a new `case` in every walk, or the walk will skip it without complaint.
 
 ---
 
 ## Model 2: Tree Statistics and Analysis
 
-*What problem does this solve?*  A tree walk does not have to produce output: it can also *compute* information about a program.  This model shows three read-only analyses: counting nodes (useful for complexity budgets), measuring depth (tells you how deep the evaluator's call stack can get), and collecting all variable names (a primitive form of scope analysis).  These same patterns (accumulate a count, accumulate a maximum, accumulate a set) recur constantly in real compilers.
+A tree walk does not have to print anything.  It can also compute facts about a program.  This model shows three read-only analyses: counting nodes (useful for complexity budgets), measuring depth (which tells you how deep the evaluator's call stack can get), and collecting all variable names (a first form of scope analysis).  Each one accumulates something different on the way back up the recursion: a count, a maximum, or a set.  These same three patterns recur constantly in real compilers.
 
 ```python
 from dataclasses import dataclass, field
@@ -404,15 +401,17 @@ print(f"Deep expr depth:      {depth(deep)}")
 
 > **CTQ 2.2** `collect_vars` returns the set of all variable *references*, not all variable *definitions*.  How would you modify it to distinguish defined names from referenced-but-not-defined names?  What programming analysis would that enable?
 
+To remember: an analysis is a tree walk that returns a value instead of printing.  Each leaf returns a base value, and each parent combines what its children returned.
+
 ---
 
 # Part II: Building Trees in the Parser
 
 ## 2.  The One-Line Upgrade
 
-*What problem does this solve?*  A first parser often returns nested tuples like `('+', left, right)`.  Tuples work, but they are fragile: you have to remember that index 0 is the operator, index 1 is the left child, and so on.  A dataclass gives every field a *name*, making the tree self-documenting and letting Python's structural pattern matching work cleanly.
+Switching a parser from tuples to node classes takes one line per grammar rule.  A first parser often returns nested tuples like `('+', left, right)`.  Tuples work, but they are fragile: you have to remember that index 0 is the operator, index 1 is the left child, and so on.  A dataclass gives every field a name, which makes the tree self-documenting and lets Python's structural pattern matching work cleanly.
 
-**Preview of the connection:** the recursive-descent parser you build in the *Recursive Descent Parsing* activity constructs exactly these nodes.  The upgrade from tuples is literally one line per production, every place a parser would build a tuple, it constructs a node instead: `('+', left, right)` becomes `BinOp('+', left, right)`, while the fold-left associativity logic, the tier structure, and the lookahead stay untouched.
+The recursive-descent parser you build in the *Recursive Descent Parsing* activity constructs exactly these nodes.  Every place the parser would build a tuple, it builds a node instead: `('+', left, right)` becomes `BinOp('+', left, right)`.  The fold-left associativity logic, the tier structure, and the lookahead stay untouched.
 
 ```python
 from dataclasses import dataclass, field
@@ -507,21 +506,18 @@ pretty(tree)
 
 > **CTQ 3.2** The parser's structure is unchanged after the upgrade.  What does this tell you about the relationship between syntax (parsing) and representation (AST)?
 
+To remember: the parser decides the tree's shape, and the node classes decide only how each node is stored.  Changing the storage from tuples to dataclasses leaves the parsing logic alone.
+
 ---
 
 
 ## Model 4: Your First Optimizer, Constant Folding
 
-Every walk so far has *read* the tree.  A walk can also **rewrite** it, returning a
-new tree instead of a value.  That is what a compiler optimization is, and the
-simplest one is **constant folding**: wherever both children of an operator are
-already known numbers, do the arithmetic now and replace the whole subtree with
-its answer.
+Every walk so far has read the tree.  A walk can also rewrite it, returning a new tree instead of a value.  That is what a compiler optimization is.  The simplest one is **constant folding**: wherever both children of an operator are already known numbers, do the arithmetic now and replace the whole subtree with its answer.
 
 ### Examples: Fold It by Hand First
 
-Take `2 * 3 + x * (4 + 1)` and fold it on paper, innermost first.  Fill in the
-node counts before you run anything:
+Take `2 * 3 + x * (4 + 1)` and fold it on paper, innermost first.  Fill in the node counts before you run anything:
 
 | Pass | Tree | Nodes |
 |------|------|-------|
@@ -530,8 +526,7 @@ node counts before you run anything:
 | fold `4+1` | `BinOp(+, 6, BinOp(*, x, 5))` | ? |
 | anything left? | `x` is not a constant, so `x * 5` stays | ? |
 
-Two questions to settle before looking at code.  Does folding ever need a *second*
-pass over the tree?  And is `x * 0` foldable to `0`?  Argue both, then check.
+Settle two questions before you look at the code.  Does folding ever need a second pass over the tree?  And is `x * 0` foldable to `0`?  Argue both, then check.
 
 ```python
 from dataclasses import dataclass
@@ -600,38 +595,20 @@ print("  one bottom-up pass already reaches a fixed point here.")
 
 ### Reading the Code
 
-- `fold` returns a **tree**, not a number.  That single difference turns a read-only
-  analysis into a transformation, and it is what a compiler pass does for a living.
-- The line `l, r = fold(l), fold(r)` comes *before* the constant test.  Folding the
-  children first is what makes one bottom-up pass sufficient: by the time the parent
-  is examined, its children are already as folded as they will get.
-- The division guard refuses to fold `1 / 0`.  An optimizer must never turn a
-  program that *would have* raised at runtime into one that fails at compile time,
-  or vice versa.  Preserving observable behavior is the rule every optimization
-  obeys.
-- `Var` falls to `case _:` and is returned unchanged.  Anything the optimizer does
-  not understand, it must leave alone.
+- `fold` returns a tree, not a number.  That single difference turns a read-only analysis into a transformation, and a transformation is what a compiler pass does for a living.
+- The line `l, r = fold(l), fold(r)` comes before the constant test.  Folding the children first is what makes one bottom-up pass enough: by the time `fold` examines the parent, its children are already as folded as they will get.
+- The division guard refuses to fold `1 / 0`.  An optimizer must never turn a program that would have raised at runtime into one that fails at compile time, or the reverse.  Every optimization obeys this rule: preserve observable behavior.
+- `Var` falls to `case _:` and comes back unchanged.  Anything the optimizer does not understand, it must leave alone.
 
-> **Watch out!**  It is tempting to add algebraic rules like `x * 0 -> 0` or
-> `x + 0 -> x`.  Be careful: `x * 0` is only `0` if evaluating `x` has no side
-> effects and cannot raise.  In a language where `x` might be a function call, that
-> rewrite changes what the program does.  Real optimizers gate these rules behind
-> an effects analysis, which is why the safe fold above only touches subtrees that
-> are *already* literal numbers.
+> **Watch out!**  It is tempting to add algebraic rules like `x * 0 -> 0` or `x + 0 -> x`.  Be careful: `x * 0` is only `0` if evaluating `x` has no side effects and cannot raise.  In a language where `x` might be a function call, that rewrite changes what the program does.  Real optimizers gate these rules behind an effects analysis, which is why the safe fold above only touches subtrees that are already literal numbers.
 
 ### Critical Thinking Questions
 
-> **CTQ 3.3** In the first example, folding removed a third of the nodes and the
-> variable `x` prevented more.  What property of a subtree makes it foldable, stated
-> in one sentence?
+> **CTQ 3.3** In the first example, folding removed a third of the nodes and the variable `x` prevented more.  What property of a subtree makes it foldable, stated in one sentence?
 
-> **CTQ 3.4** `fold` recurses into children before testing the parent.  Rewrite that
-> order in your head, testing the parent first, and give a tree where the naive order
-> misses a fold that the bottom-up order catches.
+> **CTQ 3.4** `fold` recurses into children before testing the parent.  Rewrite that order in your head, testing the parent first, and give a tree where the naive order misses a fold that the bottom-up order catches.
 
-> **CTQ 3.5** The division guard leaves `1 / 0` in the tree.  Argue the other side:
-> what would be *good* about reporting the division by zero at compile time, and what
-> language design decision does that choice belong to?
+> **CTQ 3.5** The division guard leaves `1 / 0` in the tree.  Argue the other side: what would be *good* about reporting the division by zero at compile time, and what language design decision does that choice belong to?
 
 ### Try It Yourself
 
@@ -684,9 +661,9 @@ for tree in cases:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output once TODOs 1 and 2 are done: the first two collapse to `x` and `y`,
-and the fourth collapses all the way to `a`.  What you do with the third is a design
-decision you should be able to defend.
+Expected output once TODOs 1 and 2 are done: the first two collapse to `x` and `y`, and the fourth collapses all the way to `a`.  What you do with the third is a design decision you should be able to defend.
+
+To remember: an optimizer is a tree walk that returns a new tree, and it folds children before parents so one pass is enough.  It may only rewrite what it can prove leaves the program's behavior unchanged.
 
 ---
 
@@ -694,7 +671,7 @@ decision you should be able to defend.
 
 ## 3.  Back to Source
 
-*What problem does this solve?*  Going from source text to an AST is the job of the parser.  But can you go the other way, from an AST back to valid source text?  This is called *unparsing* (or pretty-printing), and it is crucial for testing: if you parse a string, unparse the tree, and re-parse the result, you should get an identical tree.  This round-trip property is one of the most powerful automated checks you can write for a language implementation.  It also raises a subtle challenge: the AST discards parentheses, so the unparsing pass must *re-insert* them only where operator precedence requires it, no more, no less.
+Unparsing turns an AST back into valid source text.  The parser goes from text to tree; `unparse` (also called pretty-printing) goes the other way.  This matters for testing: if you parse a string, unparse the tree, and parse the result again, you should get an identical tree.  This round-trip property is one of the strongest automated checks you can write for a language implementation.  It also raises a challenge: the AST discards parentheses, so `unparse` must put them back only where operator precedence requires them, no more and no less.
 
 ```python
 from dataclasses import dataclass
@@ -755,6 +732,8 @@ print(f"5-(3-1) unparse: {unparse(t4)}")
 
 > **CTQ 5.2** The round-trip test `parse(unparse(parse(s))) == parse(s)` is a **property test**.  What property is it testing?  Why is this important for a language implementation?
 
+To remember: `unparse` walks the tree and passes each node the precedence of its parent, adding parentheses only when the child binds more loosely.  Parse, unparse, and parse again should give the same tree every time.
+
 ---
 
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
@@ -770,7 +749,7 @@ A parse tree and an abstract syntax tree differ in that the AST:
 
 ---
 
-The AST for `2 + 3 * 4` has `+` at the root. That means `+` is:
+The AST for `2 + 3 * 4` has `+` at the root.  That means `+` is:
 
 [(X)] Evaluated last: its children must be computed before it can add anything
 [( )] Evaluated first, because the root is visited first
@@ -779,7 +758,7 @@ The AST for `2 + 3 * 4` has `+` at the root. That means `+` is:
 
 ---
 
-Parentheses appear in the source but not in the AST. That is because:
+Parentheses appear in the source but not in the AST.  That is because:
 
 [(X)] Their only job was to force a grouping, and the tree's shape already records that grouping
 [( )] The lexer deletes them
@@ -801,11 +780,11 @@ Adding a new consumer of the AST (a type checker, a pretty printer, an optimizer
 
 ### Exercise 1: Parser Upgrade (20 min)
 
-Convert your expression parser from tuples to the node classes, and extend to cover your statement forms (`Assign`/`Let`, `Print`, `While`, `Block`, `If`).  Demonstrate `pretty` on a three-statement program.
+Convert your expression parser from tuples to the node classes, and extend it to cover your statement forms (`Assign`/`Let`, `Print`, `While`, `Block`, `If`).  Demonstrate `pretty` on a three-statement program.
 
 ### Exercise 2: Round-Trip (20 min)
 
-Write `unparse(node)` producing valid source text from an AST. Verify `parse(unparse(parse(s)))` yields an identical tree for five inputs.  This round-trip test will live in your project test suite forever.
+Write `unparse(node)`, which produces valid source text from an AST.  Verify that `parse(unparse(parse(s)))` yields an identical tree for five inputs.  This round-trip test will live in your project test suite forever.
 
 ### Exercise 3: Tree Statistics (15 min)
 
@@ -813,10 +792,10 @@ Write `count_nodes` and `depth` as tree walks.  Report both for three programs: 
 
 ### Exercise 4: Constant Folding (20 min)
 
-Extend `constant_fold` from Model 3 to handle:
+Extend the `fold` function from Model 4 to handle:
 - Boolean constant folding: `true and false -> false`, `true or x -> true`
 - Dead code elimination: `if true { body1 } else { body2 }` -> `body1`
-Test on at least 5 cases, including one where folding is NOT safe (function call with side effects).
+Test on at least 5 cases, including one where folding is NOT safe (a function call with side effects).
 
 ### Exercise 5: Python's ast Module (15 min)
 
@@ -826,18 +805,19 @@ Run `import ast; print(ast.dump(ast.parse("2 + 3 * 4")))` in Python.  Compare Py
 
 # Part V: Expression Trees in Practice, Adapted Examples
 
-These models adapt code from *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).  The adapted example rewrites Allison's binary-tree traversal as a typed `ExprNode` dataclass, connecting preorder/inorder/postorder traversal directly to prefix/infix/postfix notation, the same connection your parser and evaluator rely on.
+These models adapt code from *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).  The adapted example rewrites Allison's binary-tree traversal as a typed `ExprNode` dataclass.  It connects preorder, inorder, and postorder traversal directly to prefix, infix, and postfix notation, the same connection your parser and evaluator rely on.
 
 ---
 
 ## Model 6: Prefix, Infix, and Postfix, Three Views of One Tree
 
-An expression tree encodes *both* the values *and* the operator order, but different traversal orders produce different notation styles:
-- **Preorder** (root -> left -> right): prefix / Polish notation, operator comes first
-- **Inorder** (left -> root -> right): infix, operator is between operands (needs parentheses for unambiguity)
-- **Postorder** (left -> right -> root): postfix / reverse Polish, operator comes last, used by stack machines
+An expression tree encodes both the values and the operator order.  Different traversal orders (the order in which a walk visits the root and its children) produce different notations for the same tree:
 
-Understanding this connection makes the AST concrete: it is not just a compiler data structure; it is a *notation* for expressions, and different tree walks serialize it differently.
+- Preorder (root, then left, then right) gives prefix or Polish notation, with the operator first
+- Inorder (left, then root, then right) gives infix notation, with the operator between its operands (this one needs parentheses to stay unambiguous)
+- Postorder (left, then right, then root) gives postfix or reverse Polish notation, with the operator last, which is what stack machines use
+
+This connection makes the AST concrete.  The tree is a compiler data structure, and it is also a *notation* for expressions: each tree walk writes it out in a different order.
 
 > *Adapted from [`polish.py`](https://github.com/chuckallison/foundations-of-computing/blob/main/code/polish.py) in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
@@ -921,9 +901,11 @@ for label, tree, expected_val in [
 
 **CTQ M6.1** The two trees above represent the same tokens in a different order: `(1+2)*3` vs `1+2*3`.  What physical property of the tree (depth, root label, or shape) encodes operator precedence?  Trace `eval_tree(tree2)` step by step to confirm that multiplication is evaluated before addition.
 
-**CTQ M6.2** Postfix notation is used by stack machines (RPN calculators, the JVM bytecode verifier).  Write a `eval_postfix(tokens: list[str]) -> float` function that evaluates a postfix expression using only a stack.  Verify it gives the same result as `eval_tree` for both trees above.
+**CTQ M6.2** Stack machines (RPN calculators, the JVM bytecode verifier) use postfix notation.  Write an `eval_postfix(tokens: list[str]) -> float` function that evaluates a postfix expression using only a stack.  Verify that it gives the same result as `eval_tree` for both trees above.
 
-**CTQ M6.3** The `to_infix` function adds parentheses around every subexpression.  This is safe but verbose; `((1 + 2) * 3)` has more parentheses than needed.  Modify `to_infix` to include parentheses only where necessary (i.e., only when a child's operator has lower precedence than the parent's).  Test on `1 + 2 * 3` to confirm it produces `1 + 2 * 3` not `(1 + (2 * 3))`.
+**CTQ M6.3** The `to_infix` function adds parentheses around every subexpression.  This is safe but verbose; `((1 + 2) * 3)` has more parentheses than needed.  Modify `to_infix` to include parentheses only where necessary (that is, only when a child's operator has lower precedence than the parent's).  Test on `1 + 2 * 3` to confirm that it produces `1 + 2 * 3`, not `(1 + (2 * 3))`.
+
+To remember: one tree, three traversal orders, three notations.  Postorder matches how an evaluator works, because it finishes both children before it applies the operator at the root.
 
 ---
 
@@ -952,19 +934,19 @@ In an expression tree for `a + b * c`, the root node contains:
 
 1.  *Tree construction.*  Build `ExprNode` trees for: (a) `2 + 3 * 4`, (b) `(2 + 3) * 4`, (c) `a - b + c` (left-associative).  For each, print all three notations and the numeric value (using `a=2, b=3, c=4`).
 
-2.  *Postfix evaluator.*  Implement `eval_postfix(tokens)` using a stack: push numbers, and on each operator pop two operands, apply the operation, and push the result.  Verify it matches `eval_tree` for both trees in Model 6.
+2.  *Postfix evaluator.*  Implement `eval_postfix(tokens)` using a stack: push numbers, and on each operator pop two operands, apply the operation, and push the result.  Verify that it matches `eval_tree` for both trees in Model 6.
 
-3.  *Parse prefix.*  Write `from_prefix(tokens: list[str]) -> ExprNode` that reconstructs a tree from a prefix token list (recursively: if the next token is an operator, read two subtrees; otherwise it's a leaf).  Test it by doing the round-trip `from_prefix(to_prefix(tree).split()) == tree` for both trees in Model 6.
+3.  *Parse prefix.*  Write `from_prefix(tokens: list[str]) -> ExprNode`, which rebuilds a tree from a prefix token list (recursively: if the next token is an operator, read two subtrees; otherwise it is a leaf).  Test it with the round-trip `from_prefix(to_prefix(tree).split()) == tree` for both trees in Model 6.
 
-4.  *Depth and balance.*  Write `tree_depth(node)` and `count_leaves(node)`.  For a perfectly balanced binary tree of depth $d$, what is the relationship between `count_leaves` and $d$? Verify with a tree of depth 3.
+4.  *Depth and balance.*  Write `tree_depth(node)` and `count_leaves(node)`.  For a perfectly balanced binary tree of depth $d$, what is the relationship between `count_leaves` and $d$?  Verify with a tree of depth 3.
 
-5.  *AST for your language.*  Using the `ExprNode` structure as a template, design node classes for all constructs in your team's language (not just arithmetic).  Draw the tree for a `while` loop with a compound body.  What fields does each node type need?
+5.  *AST for your language.*  Using the `ExprNode` structure as a template, design node classes for all constructs in your team's language (not only arithmetic).  Draw the tree for a `while` loop with a compound body.  What fields does each node type need?
 
 ---
 
 ## Reflection Prompt
 
-The AST is the third representation of the same program (characters -> tokens -> tree), each one closer to meaning and farther from what the programmer typed.  What is gained and what is honestly lost at each translation?  The tree is now the interface between the front end (lexer, parser) and the back end (evaluator, optimizer, compiler): what does this separation buy you as a language implementer?
+The AST is the third representation of the same program (characters -> tokens -> tree).  Each one is closer to meaning and farther from what the programmer typed.  What is gained and what is honestly lost at each translation?  The tree is now the interface between the front end (lexer, parser) and the back end (evaluator, optimizer, compiler): what does this separation buy you as a language implementer?
 
 ---
 

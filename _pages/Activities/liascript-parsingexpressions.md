@@ -14,41 +14,41 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Parsing Expressions: Left Factoring, Precedence, and Iteration
 
-Expression parsing is the most common and most tricky part of building any language: without deliberate grammar design, `2 + 3 * 4` can parse as `(2 + 3) * 4 = 20` instead of the correct `2 + (3 * 4) = 14`.  The solution (a layered grammar where each precedence level is its own rule) is elegant, but turning that grammar into a top-down parser requires eliminating left recursion, which this module does systematically.  Two complementary strategies (recursive descent with tiered functions, and Pratt parsing with numeric binding powers) solve exactly the same problem; understanding both gives you the vocabulary to handle any operator grammar you will encounter in your career.
+Expression parsing is the most common and the trickiest part of building a language.  Without a deliberate grammar, `2 + 3 * 4` can parse as `(2 + 3) * 4 = 20` instead of the correct `2 + (3 * 4) = 14`.  The fix is a layered grammar: each precedence level gets its own rule.  A top-down parser cannot run that grammar until you remove its left recursion, and this activity shows you how, one tier at a time.  The "left factoring" in the title is the family of grammar rewrites that prepare a grammar for top-down parsing; removing left recursion is the member of that family you need today.  You will see two strategies that solve the same problem: recursive descent with one function per tier, and Pratt parsing with numeric binding powers.  Knowing both lets you handle any operator grammar you meet later.
 
 ## Learning Goals
 
 By the end of this activity, you will be able to:
 
-- Rewrite a left-recursive expression grammar into an equivalent iterative (loop) form suitable for recursive descent
-- Implement a multi-tier expression parser that enforces operator precedence through the depth of the parsing function chain
-- Trace the left-fold accumulation loop and predict the AST it produces for a given sequence of same-precedence operators
-- Explain why left-folding (rather than right-folding) is required for left-associative operators such as subtraction and division
-- Extend the expression grammar to include unary negation and parenthesized subexpressions, and implement the corresponding parser functions
+- Rewrite a left-recursive expression grammar into an equivalent loop form that recursive descent can run
+- Implement a multi-tier expression parser whose chain of functions enforces operator precedence
+- Trace the left-fold accumulation loop and predict the abstract syntax tree (AST) it builds for a run of same-precedence operators
+- Explain why left-associative operators such as subtraction and division need a left fold rather than a right fold
+- Extend the grammar with unary negation and parenthesized subexpressions, and write the matching parser functions
 
-This session is the heart of your parser: turning the layered expression grammar (the cure for ambiguity) into running code, with explicit, careful attention to the move students find hardest: rewriting left recursion as the iteration pattern `term { (op) term }` and folding the loop's results into a left-leaning structure.  We build it slowly, one operator tier at a time, exactly as your assignment will.  Here is where today goes: **the ladder restated for descent $\rightarrow$ one tier in code $\rightarrow$ chaining operators in the loop $\rightarrow$ the full ladder with parentheses and unary minus**.
+This session turns the layered expression grammar, the cure for ambiguity you met earlier, into running code.  We spend the most time on the move students find hardest: rewriting left recursion as the pattern `term { (op) term }` and folding the loop's results into a left-leaning tree.  We build the parser slowly, one operator tier at a time, exactly as your assignment will.  The plan for today: restate the ladder for descent, write one tier in code, chain operators in the loop, then finish the full ladder with parentheses and unary minus.
 
 > **Before You Begin**, make sure you are comfortable with:
 >
-> - **Recursive-descent parsing basics** (from the *Recursive Descent Parsing* activity): writing a function per grammar rule, calling `peek()` / `advance()` / `expect()`, and recognizing the shape `rule -> A B C`.
-> - **Operator precedence and associativity**: why `*` binds tighter than `+`, why `7 - 2 - 1` means `(7 - 2) - 1` (left-associative) rather than `7 - (2 - 1)`, and how a layered (unambiguous) grammar encodes both properties.
-> - **Python dataclasses for AST nodes**: the `@dataclass` decorator, field annotations, and constructing nested node objects; you will use these when the assignment upgrades tuples to typed nodes.
+> - Recursive-descent parsing basics (from the *Recursive Descent Parsing* activity): writing one function per grammar rule, calling `peek()` / `advance()` / `expect()`, and recognizing the shape `rule -> A B C`.
+> - Operator precedence and associativity.  Precedence says which operator binds tighter, so `*` wins over `+`.  Associativity says how a run of equal operators groups, so `7 - 2 - 1` means `(7 - 2) - 1` (left-associative) rather than `7 - (2 - 1)`.  A layered, unambiguous grammar encodes both properties.
+> - Python dataclasses for AST nodes: the `@dataclass` decorator, field annotations, and constructing nested node objects.  You will use these when the assignment upgrades tuples to typed nodes.
 
 ---
 
 ## Directions and Group Roles
 
-Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Please think each model and question through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever you disagreed or found another approach.  After class, please respond to the reflective prompt on your own in your notebook.
+Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Think each model and question through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever you disagreed or found another approach.  After class, respond to the reflective prompt on your own in your notebook.
 
 ---
 
 # Part I: The Ladder, Descent-Ready
 
-The unambiguous layered grammar you saw earlier used left recursion (`E -> E + T`) to enforce left-associativity, but a recursive descent parser that calls itself on the left spirals straight into infinite recursion.  Part I shows you the mechanical fix.  Replace every left-recursive rule with an equivalent `while` loop, then show that the loop's left-fold behavior preserves exactly the associativity the recursion would have produced.
+The unambiguous layered grammar you saw earlier used left recursion (`E -> E + T`) to force left-associativity.  A recursive descent function for that rule begins by calling itself, so it never consumes a token and never stops.  Part I gives you the mechanical fix.  Replace every left-recursive rule with an equivalent `while` loop, then check that the loop folds left and so keeps the associativity the recursion would have produced.
 
 ## 1.  From Left Recursion to Loops, Tier by Tier
 
-The unambiguous ladder used left recursion, which descent cannot run.  We rewrite **every tier** in the loop form, and the whole grammar becomes:
+Rewrite every tier in loop form and the whole grammar becomes:
 
 ```
 expr   -> addsub
@@ -58,26 +58,26 @@ unary  -> "-" unary | primary
 primary-> NUMBER | IDENT | "(" expr ")"
 ```
 
-Read the shape: each tier parses one item of the *next tighter* tier, then loops over its own operators.  Precedence is still the depth of the chain; associativity now lives in **how the loop folds**: if each iteration wraps the running result as the *left* child of a new node, the chain leans left, exactly what `-` and `/` require.
+Read the shape.  Each tier parses one item of the next tighter tier, then loops over its own operators.  Precedence is still the depth of the chain.  Associativity now lives in **how the loop folds**: each iteration wraps the running result as the left child of a new node, so the chain leans left, which is exactly what `-` and `/` require.
 
 $$
 a - b - c \;\Rightarrow\; \texttt{(("-",("-",a,b),c))} \quad \text{left fold, left lean}
 $$
 
-> **Watch out!**  Left recursion (`addsub -> addsub ("+" | "-") muldiv`) is fatal for top-down parsers: a recursive descent function that begins by calling itself will loop infinitely before consuming a single token.  You **must** eliminate it (either by rewriting to the loop form shown above or by using a Pratt parser) before attempting a top-down implementation.
+> **Watch out!**  Left recursion (`addsub -> addsub ("+" | "-") muldiv`) is fatal for top-down parsers.  A recursive descent function that begins by calling itself loops forever before it consumes a single token.  Remove it before you attempt a top-down implementation, either by rewriting to the loop form above or by using a Pratt parser.
 
 ---
 
 ## Model 0: The Expression Grammar, Recap and Final Form
 
-Before writing any parser code, you need a *correct grammar* to implement.  You built this grammar's ingredients piece by piece in the *Recursive Descent Parsing* activity; the recap box below compresses that construction, and the final ladder grammar your parser implements follows.
+You need a correct grammar before you write any parser code.  You built this grammar piece by piece in the *Recursive Descent Parsing* activity.  The recap box compresses that construction, and the final ladder grammar your parser implements follows it.
 
 > **Recap, from the *Recursive Descent Parsing* activity:**
 >
-> - A naive rule like `expr -> expr "+" expr | expr "*" expr | NUMBER` describes the right language but is **ambiguous**; it says nothing about precedence.
-> - The cure is one nonterminal per precedence level: lower-precedence operators sit closer to `expr`, higher-precedence operators sit deeper in the ladder.
-> - Left recursion (`expr -> expr "+" term`) encodes left-associativity but sends a top-down parser into infinite recursion before it consumes a single token; the EBNF repetition `expr -> term { ("+" | "-") term }` says the same thing in a form descent can run.
-> - In code, `{ ... }` becomes a `while` loop that **folds left** (the running node always becomes the *left* child of the new node) so `7 - 2 - 1` parses as `(7 - 2) - 1`.
+> - A naive rule like `expr -> expr "+" expr | expr "*" expr | NUMBER` describes the right language but is ambiguous: it says nothing about precedence.
+> - The cure is one nonterminal per precedence level.  Lower-precedence operators sit closer to `expr`; higher-precedence operators sit deeper in the ladder.
+> - Left recursion (`expr -> expr "+" term`) encodes left-associativity but sends a top-down parser into infinite recursion before it consumes a single token.  The EBNF (Extended Backus-Naur Form) repetition `expr -> term { ("+" | "-") term }` says the same thing in a form descent can run.
+> - In code, `{ ... }` becomes a `while` loop that folds left: the running node always becomes the left child of the new node, so `7 - 2 - 1` parses as `(7 - 2) - 1`.
 >
 > If any bullet feels shaky, review that activity before continuing.
 
@@ -97,7 +97,9 @@ primary  -> NUMBER | FLOAT | STRING | "true" | "false"
           | IDENT | "(" expr ")"
 ```
 
-Every `{ ... }` in the EBNF becomes a `while` loop; every `[ ... ]` becomes an `if`; every `|` in a rule becomes an `if/elif` chain.  The grammar *is* the code.
+Every `{ ... }` in the EBNF becomes a `while` loop.  Every `[ ... ]` becomes an `if`.  Every `|` in a rule becomes an `if/elif` chain.  The grammar is the code.
+
+The demonstration below implements the `expr` and `term` tiers with tuples `(op, left, right)` as lightweight AST nodes.  Run it and compare each printed tree with the grammar.
 
 ```python
 # Demonstration: the while-loop pattern produces left-associative trees.
@@ -174,25 +176,25 @@ for src in expressions:
 
 ### Critical Thinking Questions
 
-**CTQ 0.1** Run the parser on `7 - 2 - 1`.  The tree should be `(-, (-, 7, 2), 1)`, which evaluates to `4`.  If the tree were `(-, 7, (-, 2, 1))` instead, what value would it produce?  Which is "correct" for subtraction, and what does this tell you about the importance of left-associativity?
+**CTQ 0.1** Run the parser on `7 - 2 - 1`.  The tree should be `(-, (-, 7, 2), 1)`, which evaluates to `4`.  If the tree were `(-, 7, (-, 2, 1))` instead, what value would it produce?  Which tree is correct for subtraction, and what does this tell you about why left-associativity matters?
 
-**CTQ 0.2** The grammar has `factor -> "-" factor` (unary minus, right-recursive).  This rule *is* right-recursive, but it doesn't cause infinite loops in a recursive-descent parser.  Why not?
+**CTQ 0.2** The grammar has `factor -> "-" factor` (unary minus).  This rule is right-recursive, and it does not cause infinite loops in a recursive-descent parser.  Why not?
 
-**CTQ 0.3** Add a `parse_factor` method that handles unary negation: if the current token is `-`, consume it and recursively call `parse_factor`; otherwise call `parse_primary`.  Test on `-3`, `--3`, and `-(2 + 3)`.
+**CTQ 0.3** Add a `parse_factor` method that handles unary negation.  If the current token is `-`, consume it and recursively call `parse_factor`; otherwise call `parse_primary`.  Test on `-3`, `--3`, and `-(2 + 3)`.
 
 ---
 
 ## Model 1: Trace the Loop
 
-This model asks you to simulate the `parse_addsub` loop by hand so you can see exactly where associativity comes from.  The thing to see is that the running `node` variable acts as a left-accumulator: each new operator wraps the *accumulated result so far* as its left child, producing a left-leaning tree.  Changing which side receives the accumulator changes associativity, and therefore the numeric result.
+In this model you simulate the `parse_addsub` loop by hand (the loop is in the Code Cell below) so you can see exactly where associativity comes from.  The running `node` variable is a left accumulator.  Each new operator wraps the result so far as its left child, so the tree leans left.  Change which side receives the accumulator and you change the associativity, and with it the numeric result.
 
 Consider `addsub` parsing the token stream for `7 - 2 - 1`.
 
 ### Critical Thinking Questions
 
-1.  Walk the loop by hand: what does the first `parse_muldiv()` return; what happens on each `while` iteration; what is the running `node` after each?  The Recorder draws the tree growing.
+1.  Walk the loop by hand.  What does the first `parse_muldiv()` return?  What happens on each `while` iteration?  What is the running `node` after each one?  The Recorder draws the tree as it grows.
 2.  Suppose the loop body instead wrapped the new operand as the left child and the running result as the right.  What tree, and what wrong value, results for `7 - 2 - 1`?  You have just located associativity in a single line of code.
-3.  Why does the loop in `addsub` test for `+` *or* `-` while leaving `*` to a different function entirely?  Connect to the depth-equals-precedence principle.
+3.  Why does the loop in `addsub` test for `+` or `-` while leaving `*` to a different function entirely?  Connect this to the depth-equals-precedence principle.
 
 
 > The worked answers to this session's models are in the **Answer Key** at the end of this page.  Attempt them with your team first.
@@ -261,11 +263,11 @@ def parse_primary(self):
 
 # Part II: Stress and Extend
 
-Part II consolidates and extends what you built in Part I. You will first check your conceptual grip with a targeted multiple-choice question, then meet **Pratt parsing** (a second strategy that encodes precedence as numbers rather than as a chain of functions) and finally push the parser into new territory: right-associative operators, comparison tiers, and function-call syntax.  These exercises mirror the exact extensions your project language will need, so treat them as early project work rather than isolated drills.
+Part II checks and extends what you built in Part I.  First you answer one multiple-choice question about the fold.  Then you meet Pratt parsing, a second strategy that encodes precedence as numbers rather than as a chain of functions.  Finally you push the parser further: right-associative operators, comparison tiers, and function-call syntax.  Your project language will need these same extensions, so treat the exercises as early project work rather than as isolated drills.
 
-> **Watch out!**  Right-associative operators like `**` (exponentiation) cannot be handled by the `while`-loop (left-fold) pattern; that pattern is inherently left-associative.  Instead, use the original right-recursive grammar rule `power -> unary [ "^" power ]` (a single optional recursive call, not a loop), which naturally builds a right-leaning tree.  In a Pratt parser the equivalent move is to pass `bp - 1` rather than `bp` as the minimum binding power for the right-hand recursive call.
+> **Watch out!**  The `while`-loop (left-fold) pattern cannot handle right-associative operators like `**` (exponentiation), because that pattern always folds left.  Use the original right-recursive rule `power -> unary [ "^" power ]` instead.  It makes one optional recursive call, not a loop, so it builds a right-leaning tree.  In a Pratt parser the equivalent move is to pass `bp - 1` rather than `bp` as the minimum binding power for the right-hand recursive call.
 
-## 2.  Owning the Pattern
+## 2.  One Line Decides Associativity
 
 In `parse_addsub`, the line `node = (op, node, right)` places the previous result as the left child.  Changing nothing else, this single line determines that:
 
@@ -279,19 +281,19 @@ In `parse_addsub`, the line `node = (op, node, right)` places the previous resul
 
 ## 3.  Theory: The Ladder Does Not Scale
 
-The ladder works, and it has a cost you can count.  Every precedence level is one function, and every one of those functions calls down to the next even when the input has nothing to do with that level.  Parsing the single token `5` in the grammar from Part I still walks `expr -> addsub -> muldiv -> unary -> primary`: four calls to reach one number.
+The ladder works, and its cost is easy to count.  Every precedence level is one function.  Every one of those functions calls down to the next even when the input has nothing to do with that level.  Parsing the single token `5` in the Part I grammar still walks `expr -> addsub -> muldiv -> unary -> primary`: four calls to reach one number.
 
-C has **fifteen** precedence levels.  Written as a ladder, that is fifteen functions, fifteen frames per literal, and fifteen near-identical bodies to keep in sync when you add an operator.  Adding one operator at a new level means writing a new function and editing its two neighbours.
+C has fifteen precedence levels.  As a ladder, that is fifteen functions, fifteen stack frames per literal, and fifteen near-identical bodies to keep in sync when you add an operator.  Adding one operator at a new level means writing a new function and editing its two neighbours.
 
-**Precedence climbing** (also called **Pratt parsing**, after Vaughan Pratt's 1973 paper) replaces the chain of functions with a *number*.  Each operator gets a **binding power**: how tightly it grips its operands.  One loop then reads operators and decides, purely by comparing numbers, whether to keep going or return.
+Precedence climbing (also called Pratt parsing, after Vaughan Pratt's 1973 paper) replaces the chain of functions with a number.  Each operator gets a **binding power**: a number that says how tightly it grips its operands.  One loop then reads operators and decides, by comparing numbers alone, whether to keep going or return.
 
 The rule is short enough to state completely:
 
 - Parse a left operand.
-- While the next token is an operator whose binding power is **at least** the minimum we were given, consume it and recursively parse its right operand with a minimum of `bp + 1` for left-associative operators, or `bp` for right-associative ones.
+- While the next token is an operator whose binding power is at least the minimum we were given, consume it and recursively parse its right operand.  Pass a minimum of `bp + 1` for left-associative operators, or `bp` for right-associative ones.
 - Fold and repeat.
 
-That `+ 1` is the associativity mechanism, complete.  Passing `bp + 1` means an operator of equal power will *not* be absorbed by the recursive call, so it comes back to the loop and folds on the left.  Passing `bp` lets the recursion swallow it, folding on the right.
+That `+ 1` is the whole associativity mechanism.  Passing `bp + 1` means the recursive call will not absorb an operator of equal power, so that operator comes back to the loop and folds on the left.  Passing `bp` lets the recursion swallow it, so it folds on the right.
 
 ## Examples: Binding Powers, by Hand
 
@@ -307,12 +309,12 @@ Now trace `2 + 3 * 4` by hand with a minimum binding power of 0:
 
 1. Parse the left operand: `2`.
 2. Next token is `+`, power 10, and 10 >= 0, so consume it.  Recurse for the right operand with a minimum of 11.
-3. Inside that call, parse `3`.  Next is `*`, power 20, and 20 >= 11, so consume and recurse with minimum 21.
-4. Inside *that*, parse `4`.  Next token is end of input, so return `4`.
-5. Fold `3 * 4`, return it.  Back in step 2's call, next is end of input, return.
+3. Inside that call, parse `3`.  Next is `*`, power 20, and 20 >= 11, so consume it and recurse with a minimum of 21.
+4. Inside that call, parse `4`.  Next token is end of input, so return `4`.
+5. Fold `3 * 4` and return it.  Back in step 2's call, next is end of input, so return.
 6. Fold `2 + (3 * 4)`.
 
-Now do `2 * 3 + 4` yourself and find the step where the comparison **fails** and forces a return.  That failure is precedence, expressed as arithmetic instead of as a call chain.
+Now do `2 * 3 + 4` yourself and find the step where the comparison fails and forces a return.  That failure is precedence, expressed as arithmetic instead of as a call chain.
 
 ## Model 2: The Whole Ladder, as a Table
 
@@ -392,19 +394,19 @@ print("  That single '+ 1' is the entire associativity mechanism.")
 
 ### Reading the Code
 
-- `BINDING` holds the grammar's precedence structure, as data.  Compare it with Part I, where the same information was spread across four function definitions and their call order.
-- `if bp < min_bp: break` is precedence.  When `parse_expr` is deep inside a `*` and meets a `+`, the comparison fails, the loop returns, and the `+` is handled by whichever caller has a low enough minimum.  No function-per-tier required.
+- `BINDING` holds the grammar's precedence structure as data.  Compare it with Part I, where the same information was spread across four function definitions and their call order.
+- `if bp < min_bp: break` is precedence.  When `parse_expr` is deep inside a `*` and meets a `+`, the comparison fails and the loop returns.  Whichever caller has a low enough minimum then handles the `+`.  No function per tier is required.
 - `next_min = bp + 1 if assoc == "left" else bp` is associativity, in one line.  Trace `8 - 4 - 2`: the recursive call gets minimum 11, sees `-` at power 10, refuses it, and returns, so the outer loop folds left.  For `^` the call gets minimum 30, accepts the next `^`, and folds right.
-- Prefix minus is handled before the loop with a high minimum (40), which is why `-3 + 4` groups as `(-3) + 4` and not `-(3 + 4)`.
-- The ladder and this table produce **identical trees**.  They are two encodings of one grammar, and knowing both is what lets you pick: the ladder reads more like the grammar, the table scales to fifteen levels without fifteen functions.
+- Prefix minus is handled before the loop with a high minimum (40).  That is why `-3 + 4` groups as `(-3) + 4` and not `-(3 + 4)`.
+- The ladder and this table produce **identical trees**.  They are two encodings of one grammar.  Knowing both lets you choose: the ladder reads more like the grammar, and the table scales to fifteen levels without fifteen functions.
 
-> **Watch out!**  It is tempting to give every operator a distinct binding power so ties never happen.  Do not.  Operators at the *same* precedence (like `+` and `-`) must share a power, or `8 - 4 + 2` will group wrongly.  Ties are meaningful; the associativity rule exists precisely to resolve them.
+> **Watch out!**  It is tempting to give every operator a distinct binding power so ties never happen.  Do not.  Operators at the same precedence (like `+` and `-`) must share a power, or `8 - 4 + 2` will group wrongly.  Ties are meaningful; the associativity rule exists to resolve them.
 
 ### Critical Thinking Questions
 
 > **CTQ 3.1** Trace `2 * 3 + 4` through Model 2 by hand and name the exact comparison that fails and forces a return.  Which line of code is it?
 
-> **CTQ 3.2** `8 - 4 - 2` and `2 ^ 3 ^ 2` differ only in the `+ 1`.  Explain, in terms of what the recursive call is *allowed to absorb*, why that produces opposite tree shapes.
+> **CTQ 3.2** `8 - 4 - 2` and `2 ^ 3 ^ 2` differ only in the `+ 1`.  Explain, in terms of what the recursive call is allowed to absorb, why that produces opposite tree shapes.
 
 > **CTQ 3.3** The Part I ladder is four functions; Model 2 is one function plus a five-row table.  For a language with fifteen precedence levels, count each version's cost: functions written, and frames pushed to parse the single literal `5`.
 
@@ -486,7 +488,7 @@ for src in ["1 + 2 * 3", "1 + 2 < 3 * 4", "1 < 2 && 3 < 4 || 5 < 6"]:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output as written: the first line parses fully; the other two stop early, because the operators they need are not in the table yet.  Add the rows and all three consume everything.  Note that you never wrote a parsing function to do it.
+Expected output as written: the first line parses fully, and the other two stop early because the operators they need are not in the table yet.  Add the rows and all three consume everything.  You never wrote a parsing function to do it.  TODO 3 asks about a chained comparison, which is two comparison operators in a row with no parentheses, such as `a < b < c`.  Python reads it as `a < b and b < c`; C reads it as `(a < b) < c`.  Your language has to pick one, or reject the form.
 
 # Check Your Understanding
 
@@ -528,9 +530,9 @@ The Part I ladder and Model 2's table produce identical trees. The practical dif
 
 ## Exercises
 
-1.  *Right-associative tier.*  Add exponentiation `^` binding tighter than `*` and associating right.  The loop pattern will not give right association; the original right-recursive form `power -> unary [ "^" power ]` will.  Implement it, and verify `2 ^ 3 ^ 2` yields the tree for `2 ^ (3 ^ 2)`.
-2.  *Comparison tier.*  Add `< <= > >= == !=` at a tier *looser* than `addsub` (so `a + 1 < b * 2` parses sensibly).  Decide and document: should `a < b < c` be legal in your language, and if so, what should it mean?  (Python and C disagree; your team must choose for December.)
-3.  *Torture tests.*  Run your full parser on: `-(3 + 4) * -2`, `((1))`, `1 + + 2` (should fail; check the message), and `8 / 4 / 2` (must be 1, not 4, once evaluated).  Submit the trees or errors for each.
+1.  *Right-associative tier.*  Add exponentiation `^` that binds tighter than `*` and associates right.  The loop pattern will not give right association; the original right-recursive form `power -> unary [ "^" power ]` will.  Implement it, and verify that `2 ^ 3 ^ 2` yields the tree for `2 ^ (3 ^ 2)`.
+2.  *Comparison tier.*  Add `< <= > >= == !=` at a tier looser than `addsub`, so that `a + 1 < b * 2` parses sensibly.  Decide and document whether the chained comparison `a < b < c` is legal in your language, and if so, what it means.  Python and C disagree, and your team must choose for December.
+3.  *Torture tests.*  Run your full parser on `-(3 + 4) * -2`, `((1))`, `1 + + 2` (this should fail; check the message), and `8 / 4 / 2` (this must be 1, not 4, once evaluated).  Submit the trees or errors for each.
 4.  *Function calls.*  Extend `primary` so an identifier may be followed by an argument list: `IDENT "(" [ expr { "," expr } ] ")"`.  Note which EBNF constructs you used and which code shapes they became.  Your project language will thank you.
 
 ---
@@ -545,19 +547,19 @@ In your notebook: the hardest conceptual move in this activity was seeing that a
 
 - Douglas Thain.  *Introduction to Compilers and Language Design*, Chapter 4.
 - Robert Nystrom.  *Crafting Interpreters*, "Parsing Expressions" (online): the same ladder with pictures.
-- Vaughan Pratt.  "Top Down Operator Precedence" (1973), the original paper behind Model 4.
+- Vaughan Pratt.  "Top Down Operator Precedence" (1973), the original paper behind Model 2.
 
 ---
 
-**Up next:** the *Table-Driven and LR Parsing* activity shows the bottom-up, table-driven alternative that parser generators emit; the tiered expression parser you finished here goes directly into the Parser assignment.
+**Up next:** the *Table-Driven and LR Parsing* activity shows the bottom-up, table-driven alternative that parser generators emit.  The tiered expression parser you finished here goes directly into the Parser assignment.
 
 # Answer Key
 
-Work the models above with your team before reading these.  Each one answers a Critical Thinking Question the session poses; seeing the answer first turns the exercise into transcription.
+Work the models above with your team before reading these.  Each entry answers a Critical Thinking Question from the session; reading the answer first turns the exercise into transcription.
 
 ### Worked Example: `7 - 2 - 1`, one iteration at a time
 
-Answer CTQ 1 yourself before reading.  The column that matters is `node`: watch it become its own left child.
+Answer Model 1, question 1 yourself before reading.  The column that matters is `node`: watch it become its own left child.
 
 | Point in the loop | `node` (the accumulator) | Tokens left | What just happened |
 |---|---|---|---|
@@ -578,7 +580,7 @@ The tree, leaning left:
 
 Evaluated bottom-up: `(7 - 2) = 5`, then `5 - 1 = 4`.  Correct.
 
-**CTQ 2, answered.**  Swap the two children in the wrap (make the *new* operand the left child and the accumulator the right) and the same tokens build:
+**Model 1, question 2, answered.**  Swap the two children in the wrap (make the new operand the left child and the accumulator the right) and the same tokens build:
 
 ```
         (-)
@@ -590,7 +592,7 @@ Evaluated bottom-up: `(7 - 2) = 5`, then `5 - 1 = 4`.  Correct.
 
 which evaluates as `1 - (2 - 7) = 6`.  Wrong.  Not a parse error, not a crash: a silently wrong number, from a one-line change in which side receives the accumulator.
 
-That is the point of the model: **associativity is not a property of the `-` operator, it is a property of which side of the wrap the accumulator lands on.**  Right-associative operators (`**` in Python, `^` in many languages) are built by *recursing* instead of looping (`parse_pow()` calls itself for the right operand rather than accumulating in a `while`), which puts the growth on the right side of the tree instead of the left.
+That is the point of the model: associativity is not a property of the `-` operator.  It is a property of which side of the wrap the accumulator lands on.  Right-associative operators (`**` in Python, `^` in many languages) are built by recursing instead of looping: `parse_pow()` calls itself for the right operand rather than accumulating in a `while`, which puts the growth on the right side of the tree instead of the left.
 
 ---
 

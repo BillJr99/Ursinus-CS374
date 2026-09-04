@@ -27,7 +27,6 @@ tags:
   - final-project
 ---
 
-# Tutorial: CI/CD and Test-Driven Development for Language Projects
 
 <!--
 author:   William Mongan

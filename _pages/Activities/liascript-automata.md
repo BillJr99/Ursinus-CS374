@@ -14,22 +14,22 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Finite Automata
 
-Think of a turnstile at a subway station.  It has exactly two states (**locked** and **unlocked**) and two transitions: inserting a coin moves it from locked to unlocked, and pushing moves it from unlocked back to locked.  That tiny machine already captures the essence of a finite automaton: a fixed set of states, arrows triggered by input symbols, and a yes/no verdict at the end.  The remarkable fact you will discover today is that this humble model is *exactly* as powerful as every pattern you wrote in the *Regular Expressions* activity.
+A finite automaton is a machine with a fixed set of states, arrows between those states that fire on input symbols, and a yes or no verdict when the input ends.  A subway turnstile is one.  It has two states, **locked** and **unlocked**, and two transitions: a coin moves it from locked to unlocked, and a push moves it from unlocked back to locked.  The turnstile never gives a verdict, so the analogy stops there.  Today you will see that this small model recognizes exactly the patterns you wrote in the *Regular Expressions* activity, no more and no less.
 
 ## Learning Goals
 
 By the end of this activity, you will be able to:
 
-- Define a DFA as a five-tuple and trace its execution on an input string, identifying the state after each symbol and determining acceptance or rejection
-- Construct a DFA for a specified regular language by identifying the finite information the machine must track and assigning one state per distinguishable memory value
-- Encode a DFA as a transition table and simulate it, connecting the automaton model to the operation of a regex-based lexer
+- Define a DFA (deterministic finite automaton) as a five-tuple and trace it on an input string, naming the state after each symbol and deciding acceptance or rejection
+- Build a DFA for a given regular language by finding the finite information the machine must track and assigning one state per distinct memory value
+- Encode a DFA as a transition table, simulate it, and connect that simulation to the way a regex-based lexer runs
 - Predict how many states a pattern needs before you draw it, by asking what the machine must remember
-- Demonstrate concretely where finite memory fails, and name the language class that failure puts you in
+- Show concretely where finite memory fails, and name the language class that failure puts you in
 
-A regular expression *describes* a set of strings; a **finite automaton** *recognizes* one.  It is a machine so simple it is just states and arrows, and yet exactly as powerful as the regex notation.  Over two days we build the machine view: **DFAs $\rightarrow$ designing them $\rightarrow$ NFAs $\rightarrow$ their surprising equivalence**, the theory under your next assignment and the engine inside every lexer, including yours.
+A regular expression *describes* a set of strings.  A finite automaton *recognizes* one: you hand it a string and it answers yes or no.  The machine is only states and arrows, and it is exactly as powerful as regex notation.  Over two days we build the machine view in this order: **DFAs $\rightarrow$ designing them $\rightarrow$ NFAs (nondeterministic finite automata) $\rightarrow$ their equivalence**.  This is the theory under your next assignment and the engine inside every lexer, including yours.
 
 > **Before You Begin**, make sure you can:
-> - Describe what a regular expression *denotes* (the set of strings it matches), not just write one
+> - Describe what a regular expression *denotes* (the set of strings it matches), rather than only writing one
 > - Create and look up values in a Python `dict`, including a dict whose values are themselves dicts
 > - Trace a simple `for` loop by hand, tracking the value of one variable through each iteration
 
@@ -37,7 +37,7 @@ A regular expression *describes* a set of strings; a **finite automaton** *recog
 
 ## Directions and Group Roles
 
-Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Trace on paper before you run anything: every model in this deck is designed so that you can predict its output, and the moments where your prediction and the machine disagree are the ones worth talking about.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever your team disagreed or found another approach.
+Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Trace each model on paper before you run it.  Every model in this deck lets you predict its output, and the places where your prediction and the machine disagree are the ones worth discussing.  The Recorder posts your answers to the Class Activity Questions discussion board.  The Presenter reports out wherever your team disagreed or found another approach.
 
 ---
 
@@ -45,11 +45,19 @@ Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Pr
 
 ## 1.  Theory: The Machine
 
-**A DFA is a five-tuple** $M = (Q, \Sigma, \delta, q_0, F)$: a finite set of states $Q$, an input alphabet $\Sigma$, a transition function $\delta: Q \times \Sigma \rightarrow Q$, a start state $q_0$, and accepting states $F \subseteq Q$.  The machine reads the input one symbol at a time, moving deterministically; it **accepts** exactly when it finishes in an accepting state.
+A DFA is a five-tuple $M = (Q, \Sigma, \delta, q_0, F)$.  Each part has a plain meaning:
 
-The machine's entire memory is *which state it is in*.  Finitely many states means finite memory, which is why this is the hierarchy's bottom rung.  Hold on to that sentence; Part II is built on it.
+- $Q$ is a finite set of states.  A state is the machine's whole memory at one moment.
+- $\Sigma$ is the input alphabet: the set of symbols the machine can read.
+- $\delta: Q \times \Sigma \rightarrow Q$ is the transition function.  Given the current state and one input symbol, it names the next state.  There is exactly one next state, and that is what "deterministic" means.
+- $q_0$ is the start state.
+- $F \subseteq Q$ is the set of accepting states.
 
-Here is a DFA accepting binary strings with an **even number of 1s**:
+The machine reads the input one symbol at a time and follows $\delta$ at each step.  It **accepts** the string exactly when the last symbol leaves it in an accepting state.
+
+The machine's entire memory is which state it is in.  Finitely many states means finite memory, and finite memory is why the DFA sits on the bottom rung of the Chomsky hierarchy.  Hold on to that sentence; Part II is built on it.
+
+Here is a DFA that accepts binary strings with an even number of 1s:
 
 ```
             0                0
@@ -60,11 +68,13 @@ Here is a DFA accepting binary strings with an **even number of 1s**:
           `-------1---------+
 ```
 
-Two states suffice because the machine only needs to remember one bit: the parity so far.
+Two states are enough because the machine only needs to remember one bit: the parity of the 1s so far.
+
+Remember two things from this section.  A DFA is states, an alphabet, a transition function, a start state, and accepting states.  Its only memory is the state it is in right now.
 
 ## Examples: Tracing `1011` by Hand
 
-Do this trace yourself before reading the table.  The point of writing it out rather than "just running it" is that you can do this on paper in an exam, in a design meeting, or before the code exists.
+Trace this yourself before you read the table.  Writing it out matters because you can do this on paper in an exam or a design meeting, before any code exists.
 
 | Step | State before | Symbol read | Transition used | State after |
 |------|--------------|-------------|-----------------|-------------|
@@ -74,9 +84,9 @@ Do this trace yourself before reading the table.  The point of writing it out ra
 | 3 | `odd` | `1` | `odd --1--> even` | `even` |
 | 4 | `even` | `1` | `even --1--> odd` | `odd` |
 
-Final state `odd`, which is **not** accepting, so `1011` is **rejected**.  It has three `1`s, and this machine accepts an even count.
+The final state is `odd`, which is not accepting, so the machine rejects `1011`.  The string has three `1`s, and this machine accepts only an even count.
 
-Two habits worth forming from this small table.  First, the `0` transitions are self-loops: reading a `0` never changes the answer, which is the machine *saying* that zeros are irrelevant to parity.  A DFA's self-loops are always a claim about what the machine chooses to ignore.  Second, the state after step 4 is the entire memory of the computation.  The machine has forgotten that it read `1011` and remembers only "odd so far."  That is exactly the limitation you will run into in CTQ 4.
+Two habits come from this small table.  First, the `0` transitions are self-loops.  Reading a `0` never changes the answer, so the machine is saying that zeros do not matter to parity.  A self-loop is always a claim about what the machine chooses to ignore.  Second, the state after step 4 is the entire memory of the run.  The machine has forgotten that it read `1011`; it remembers only "odd so far."  That is the limitation you will meet in CTQ 4 (Critical Thinking Question 4).
 
 ## Model 1: Trace and Design
 
@@ -84,14 +94,14 @@ Now design two machines of your own.  Draw them; do not write code yet.
 
 ### Critical Thinking Questions
 
-1.  Trace `1011` through the parity DFA, listing the state after each symbol.  Accepted or rejected?  The Recorder writes the trace.
-2.  Design (draw) a DFA over $\{a, b\}$ accepting strings that **end in `ab`**.  How many states did your team need, and what does each state remember?
-3.  Design a DFA accepting strings **containing** the substring `aa`.  Compare with question 2: ending-in versus containing changes which states are accepting.  Articulate how.
-4.  Try to design a DFA for $a^n b^n$.  Where does finite memory fail you, and which prior module predicted this?
+1.  Trace `1011` through the parity DFA and list the state after each symbol.  Is the string accepted or rejected?  The Recorder writes the trace.
+2.  Draw a DFA over $\{a, b\}$ that accepts strings that end in `ab`.  How many states did your team need, and what does each state remember?
+3.  Draw a DFA that accepts strings containing the substring `aa`.  Compare it with question 2: "ends in" versus "contains" changes which states are accepting.  Explain how.
+4.  Try to draw a DFA for $a^n b^n$.  Where does finite memory fail you, and which earlier module predicted this?
 
 ## Model 2: DFA Simulation, a Dictionary and a Loop
 
-The formal five-tuple maps almost directly onto a Python data structure: states become string keys, the transition function becomes a `dict` of `dict`s, and the whole simulation is a loop that does one dictionary lookup per character.
+The five-tuple maps almost directly onto Python data.  States become string keys.  The transition function becomes a `dict` of `dict`s.  The simulation is one loop that does one dictionary lookup per character.
 
 ```python
 # DFA as data: states are strings, delta is a dict of dicts.
@@ -145,16 +155,16 @@ for s in ["ab", "aab", "abab", "ba", "a", "b", "aabb", ""]:
 
 ### Reading the Code
 
-- `EVEN_ONES` is the five-tuple, field for field: `states` is $Q$, `delta` is $\delta$, `start` is $q_0$, `accept` is $F$.  The alphabet $\Sigma$ is implicit in the keys of the inner dicts.
-- `run_dfa` is the entire recognizer, and it never changes.  Only the *data* describing the machine changes.  That separation between the runner and the machine description is exactly the architecture your lexer assignment uses.
-- The `if ch not in ...` guard implements the **dead state** without giving it a name.  A textbook DFA is required to have a transition for every symbol from every state, so a real one would send `abc`'s `a` to an explicit trap state.  This version short-circuits instead, which is why `"abc"` returns `False` rather than raising.
-- In `ENDS_IN_AB_DFA`, look at `q_ab` on input `a`.  It goes back to `q_a`, not to `q0`.  That `a` is not wasted: it might be the start of the *next* `ab`.  Getting that arrow wrong is the single most common bug in hand-built DFAs.
+- `EVEN_ONES` is the five-tuple, field for field: `states` is $Q$, `delta` is $\delta$, `start` is $q_0$, and `accept` is $F$.  The alphabet $\Sigma$ is implicit in the keys of the inner dicts.
+- `run_dfa` is the entire recognizer, and it never changes.  Only the data that describes the machine changes.  Your lexer assignment uses the same split between the runner and the machine description.
+- The `if ch not in ...` guard implements a dead state without naming it.  A dead state is a trap: once the machine enters it, no further input can lead to acceptance.  A textbook DFA must have a transition for every symbol from every state, so a complete version would send the `a` in `abc` to an explicit trap state.  This version returns early instead, which is why `"abc"` returns `False` rather than raising an error.
+- In `ENDS_IN_AB_DFA`, look at `q_ab` on input `a`.  It goes to `q_a`, not to `q0`.  That `a` is not wasted; it might be the start of the next `ab`.  Getting that arrow wrong is the most common bug in hand-built DFAs.
 
 ### Critical Thinking Questions
 
-5.  The empty string is accepted by `EVEN_ONES`.  Point to the line of code *and* the part of the formal definition that together make that happen, then decide whether it is correct for "even number of 1s."
-6.  Encode your ends-in-`ab` DFA from CTQ 2 in the same dictionary format and test five strings.  What was mechanical and what required thought?  That split is the point: the *design* is the thinking; the *runner* is ten lines forever.
-7.  `ENDS_IN_AB_DFA` has three states.  If the target were "ends in `abc`", how many states would be needed, and what would each remember?
+5.  `EVEN_ONES` accepts the empty string.  Point to the line of code *and* the part of the formal definition that together make that happen.  Then decide whether accepting it is correct for "even number of 1s."
+6.  Encode your ends-in-`ab` DFA from CTQ 2 in the same dictionary format and test five strings.  What was mechanical, and what required thought?  That split is the point: the design is the thinking, and the runner is ten lines that never change.
+7.  `ENDS_IN_AB_DFA` has three states.  If the target were "ends in `abc`", how many states would you need, and what would each remember?
 
 ### Try It Yourself
 
@@ -203,7 +213,7 @@ print("difference between 'contains' and 'ends in'. Name it in one sentence.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output once your table is filled in: the two machines agree on `aa` and `baa` and disagree on `aab` and `baab`, which contain `aa` but do not end in it.
+Expected output once you fill in the table: the two machines agree on `aa` and `baa` and disagree on `aab` and `baab`, which contain `aa` but do not end in it.
 
 ---
 
@@ -213,19 +223,21 @@ Expected output once your table is filled in: the two machines agree on `aa` and
 
 Designing a DFA looks like art the first time and becomes mechanical the second, once you know the question to ask:
 
-> **After reading some prefix of the input, what is the least I must remember in order to finish the job correctly?**
+> **After reading some prefix of the input, what is the least I must remember to finish the job correctly?**
 
 Every distinct answer to that question is one state.  That is the whole method.
 
-For "even number of 1s," the answer is a single bit of parity, so there are two states.  For "ends in `ab`," the answer is how much of the pattern `ab` you have just finished: nothing, an `a`, or a whole `ab`.  Three answers, three states.  For "ends in `abc`," four.  The pattern generalizes: a pattern of length $k$ needs about $k+1$ states, because the thing you must remember is *how much of the pattern is currently in progress*.
+For "even number of 1s," the answer is one bit of parity, so there are two states.  For "ends in `ab`," the answer is how much of the pattern `ab` you have just finished: nothing, an `a`, or a whole `ab`.  Three answers, three states.  For "ends in `abc`," four.  In general, a pattern of length $k$ needs about $k+1$ states, because the thing you must remember is how much of the pattern is in progress right now.
 
-Now turn the method against a language it cannot handle.  For $a^n b^n$, what must you remember after reading some `a`s?  The count, exactly, because you will need to demand the same number of `b`s.  And $n$ is unbounded.  Every distinct count is a distinct state, so the machine needs infinitely many states, and a DFA has finitely many by definition.
+Now turn the method on a language it cannot handle.  For $a^n b^n$, what must you remember after reading some `a`s?  The exact count, because you will need to demand the same number of `b`s.  And $n$ has no upper bound.  Every distinct count is a distinct state, so the machine needs infinitely many states, and a DFA has finitely many by definition.
 
 That is not a failure of cleverness.  It is a proof, and it is the same boundary you met in *Grammars and the Chomsky Hierarchy*: regular languages end exactly where unbounded counting begins.
 
+Remember two things from this section.  Each distinct thing the machine must remember is one state.  When that set of things is unbounded, no DFA exists.
+
 ## Examples: Deriving the Ends-in-`ab` Machine
 
-Rather than drawing arrows and hoping, build the machine by tabulating the answer to the question.  Work down this table with your team before running the model:
+Instead of drawing arrows and hoping, build the machine by tabulating the answer to the design question.  Work down this table with your team before you run the model:
 
 | After reading... | What must I remember? | State |
 |------------------|-----------------------|-------|
@@ -237,11 +249,11 @@ Rather than drawing arrows and hoping, build the machine by tabulating the answe
 | `"b"` | nothing useful | `q0` |
 | `"aa"` | still just an `a` pending, the older one is irrelevant | `q_a` |
 
-Notice that the fourth and seventh rows *reuse* existing states.  That reuse is the finiteness: infinitely many input prefixes collapse into three buckets, because within a bucket the future behaves identically.
+The fourth and seventh rows reuse existing states.  That reuse is the finiteness: infinitely many input prefixes collapse into three buckets, because within a bucket the future behaves the same way.
 
 ## Model 3: How State Count Grows, and Where It Explodes
 
-This model builds "ends in `p`" machines automatically for patterns of increasing length, so you can watch the state count track the pattern, and then tries the same trick on $a^n b^n$ and fails on purpose.
+This model builds "ends in `p`" machines automatically for patterns of increasing length, so you can watch the state count follow the pattern length.  It then tries the same trick on $a^n b^n$ and fails on purpose.
 
 ```python
 def build_ends_with(pattern, alphabet):
@@ -328,22 +340,22 @@ print("  is why a^n b^n needs the stack you met in the Grammars activity.")
 ### Reading the Code
 
 - `build_ends_with` is the Examples table, automated.  Its state is the integer `i`, meaning "I have just completed the first `i` characters of the pattern."
-- The `while k > 0 and cand[-k:] != pattern[:k]` loop is the interesting line: after reading `ch`, it finds the *longest* suffix of what you have that is still a live prefix of the pattern.  That is the same reasoning as the `q_ab --a--> q_a` arrow you were warned about in Model 2, done in general.  It is also, not coincidentally, the heart of the Knuth-Morris-Pratt string search algorithm.
-- `build_anbn_up_to` is deliberately doomed.  Its state is a `(phase, count)` pair, and `max_n` caps the count because a DFA must have a finite state set.  Every choice of `max_n` yields a machine that is wrong on some legal string.
+- The `while k > 0 and cand[-k:] != pattern[:k]` loop is the interesting line.  After reading `ch`, it finds the longest suffix of what you have that is still a live prefix of the pattern.  That is the `q_ab --a--> q_a` arrow from Model 2, done in general.  It is also the heart of the Knuth-Morris-Pratt string search algorithm.
+- `build_anbn_up_to` is doomed on purpose.  Its state is a `(phase, count)` pair, and `max_n` caps the count because a DFA must have a finite state set.  Every choice of `max_n` gives a machine that is wrong on some legal string.
 - The `<-- WRONG` marks are the point of the model.  They are not bugs in the code; they are the theorem.
 
-> **Watch out!**  "Just use a bigger `max_n`" feels like a fix and is not one.  The definition of a regular language demands *one* machine that is correct on *all* inputs.  A family of machines, one per input size, is a different and much weaker claim.  If you find yourself saying "big enough for the inputs we care about," you have left theory and entered engineering, which is fine, but say which one you are doing.
+> **Watch out!**  "Just use a bigger `max_n`" feels like a fix and is not one.  The definition of a regular language demands one machine that is correct on all inputs.  A family of machines, one per input size, is a different and much weaker claim.  If you find yourself saying "big enough for the inputs we care about," you have left theory and entered engineering.  That is fine, but say which one you are doing.
 
 ### Critical Thinking Questions
 
-8.  In `build_ends_with`, trace by hand what state the pattern `"abcab"` machine is in after reading `"abca"`.  Then after reading one more `b`.  Why does the machine *not* go back to state 0 when the input stops matching?
+8.  In `build_ends_with`, trace by hand which state the `"abcab"` machine is in after reading `"abca"`, and then after one more `b`.  Why does the machine *not* go back to state 0 when the input stops matching?
 9.  Run the pattern `"aaa"` through `build_ends_with` and predict the transition on `a` from the accepting state.  Is it a self-loop?  Explain in terms of "what must I remember."
-10.  The model already runs `max_n` at 3, 5, and 20, and each machine is defeated by its own witness.  Add `max_n = 500` to the list.  Which strings are handled now, and what is the witness that still defeats it?  Write the formula for the witness in terms of `max_n`, and use it to explain why no finite choice ever works.
+10.  The model runs `max_n` at 3, 5, and 20, and each machine loses to its own witness.  Add `max_n = 500` to the list.  Which strings are handled now, and which witness still defeats it?  Write the formula for the witness in terms of `max_n`, then use it to explain why no finite choice ever works.
 11.  Connect back: *Grammars and the Chomsky Hierarchy* showed a stack machine handling $a^n b^n$ easily.  State in one sentence what a stack has that a state set does not.
 
 ### Try It Yourself
 
-Use `build_ends_with` to answer CTQ 7 empirically, then break it.
+Use `build_ends_with` to answer CTQ 7 by experiment, then break it.
 
 ```python
 def build_ends_with(pattern, alphabet):
@@ -382,7 +394,7 @@ for pattern in ["abc", "aaa", "abab"]:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output: `"abc"` has 4 states; `"aaa"` has 4; `"abab"` has 5, and its state 4 goes to state 3 on `a`, not to 0.  Say why in one sentence.
+Expected output: `"abc"` has 4 states, `"aaa"` has 4, and `"abab"` has 5.  State 4 of the `"abab"` machine goes to state 3 on `a`, not to 0.  Say why in one sentence.
 
 ---
 
@@ -426,33 +438,33 @@ A pattern of length $k$ needs roughly how many states in an "ends with" DFA?
 
 # Exercises
 
-**Exercise 1.**  Draw and then encode a DFA over $\{0,1\}$ accepting binary numbers divisible by 3, reading most-significant bit first.  Hint: apply the design question.  What must you remember about the number so far?
+**Exercise 1.**  Draw, then encode, a DFA over $\{0,1\}$ that accepts binary numbers divisible by 3, reading the most significant bit first.  Hint: apply the design question.  What must you remember about the number so far?
 
-**Exercise 2.**  Take `build_ends_with` and write the mirror function `build_contains`, which accepts any string *containing* the pattern.  You should be able to do it by changing one thing about the accepting state's transitions.  Say what and why.
+**Exercise 2.**  Start from `build_ends_with` and write the mirror function `build_contains`, which accepts any string that *contains* the pattern.  You can do it by changing one thing about the accepting state's transitions.  Say what and why.
 
-**Exercise 3.**  The `run_dfa` in this deck short-circuits on a missing transition instead of using an explicit dead state.  Rewrite `EVEN_ONES` as a *complete* DFA over the alphabet `{0,1,a,b,c}` with a real trap state, and confirm it gives the same answers.  Which version would you rather debug, and which is closer to the definition?
+**Exercise 3.**  The `run_dfa` in this deck returns early on a missing transition instead of using an explicit dead state.  Rewrite `EVEN_ONES` as a *complete* DFA over the alphabet `{0,1,a,b,c}` with a real trap state, and confirm it gives the same answers.  Which version would you rather debug, and which is closer to the definition?
 
-**Exercise 4.**  For your project's lexer, pick one token class (identifiers, integer literals, or string literals) and draw its DFA.  How many states?  What does each remember?  Then say whether you will actually implement it as a DFA or hand it to a regex engine, and why.
+**Exercise 4.**  For your project's lexer, pick one token class (identifiers, integer literals, or string literals) and draw its DFA.  How many states does it have, and what does each remember?  Then say whether you will implement it as a DFA or hand it to a regex engine, and why.
 
-**Exercise 5.**  Instrument `run_dfa` to record the sequence of states visited, then run it on a 1000-character random binary string with `EVEN_ONES`.  How much memory did the *machine* use, as opposed to your instrumentation?  Use this to explain the phrase "finite memory" precisely.
+**Exercise 5.**  Instrument `run_dfa` to record the sequence of states it visits, then run it on a 1000-character random binary string with `EVEN_ONES`.  How much memory did the *machine* use, apart from your instrumentation?  Use the answer to explain the phrase "finite memory" precisely.
 
 ---
 
 # Reflection
 
-In your notebook: the design question for a DFA is "what is the least I must remember?"  That question has nothing to do with automata; it is the question behind every cache, every summary, every progress bar, and every time you have written something down so you could stop holding it in your head.
+The design question for a DFA is "what is the least I must remember?"  That question is not really about automata.  It is the question behind every cache, every summary, and every progress bar, and behind every time you wrote something down so you could stop holding it in your head.
 
-Write a paragraph about a time you found the right thing to remember and the problem got easy.  Then write two sentences about $a^n b^n$: what does it feel like to prove that no amount of cleverness will work, rather than merely failing to find a solution?
+In your notebook, write a paragraph about a time you found the right thing to remember and the problem got easy.  Then write two sentences about $a^n b^n$: what does it feel like to prove that no amount of cleverness will work, rather than merely failing to find a solution?
 
 ---
 
 # Answer Key
 
-Worked answers to the *mechanical* questions.  The design questions (2, 3, 4, 6) are deliberately left open; bring your machines to class.
+Worked answers to the *mechanical* questions.  The design questions (2, 3, 4, 6) are left open on purpose; bring your machines to class.
 
 **CTQ 1.**  The trace is the table in the Examples section: `even`, `odd`, `odd`, `even`, `odd`.  Final state `odd` is not accepting, so `1011` is rejected.
 
-**CTQ 5.**  In code, the `for` loop body never executes for `""`, so `state` is still `machine["start"]`, which is `"even"`, and `"even" in machine["accept"]` is `True`.  In the definition, $\varepsilon$ is accepted exactly when $q_0 \in F$.  It is correct: zero is an even number.
+**CTQ 5.**  In code, the `for` loop body never runs for `""`, so `state` is still `machine["start"]`, which is `"even"`, and `"even" in machine["accept"]` is `True`.  In the definition, $\varepsilon$ is accepted exactly when $q_0 \in F$.  It is correct: zero is an even number.
 
 **CTQ 7.**  Four states, remembering: nothing, just saw `a`, just saw `ab`, just saw `abc`.
 

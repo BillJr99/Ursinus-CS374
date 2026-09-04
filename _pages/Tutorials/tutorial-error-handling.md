@@ -135,7 +135,7 @@ except OSError as e:
 
 ## Model 2: Exceptions, Non-Local Control Flow
 
-**Intuition:** Return codes require every caller to check: what if you could install an "emergency exit" somewhere up the call stack, so that any failure anywhere below it automatically jumps to that exit?  That is exceptions in a nutshell.  The function that detects the error does not need to know who called it or whether anyone will handle the error; it just raises.  The nearest matching `except` block, potentially many frames away, catches it.  This decoupling is powerful for separating error-detection from error-recovery, but it comes at a cost: the control flow becomes invisible: a function can silently exit through an exception channel that is not visible in its signature.
+**Intuition:** Return codes require every caller to check: what if you could install an "emergency exit" somewhere up the call stack, so that any failure anywhere below it automatically jumps to that exit?  That is the whole idea of exceptions.  The function that detects the error does not need to know who called it or whether anyone will handle the error; it just raises.  The nearest matching `except` block, potentially many frames away, catches it.  This decoupling is powerful for separating error-detection from error-recovery, but it comes at a cost: the control flow becomes invisible: a function can silently exit through an exception channel that is not visible in its signature.
 
 Exceptions decouple error signaling from error handling.  A function can raise an exception at any depth; the nearest matching `catch`/`except` in the call stack handles it.
 

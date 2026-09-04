@@ -11,6 +11,7 @@ These tutorials are where you go for depth on your own schedule.  They are worke
 ## Companions to the Assignments
 
 - [Parser Combinators: Parsers as First-Class Values](ParserCombinators): companion to Recursive Descent Parsing
+- [Building a Lexer and Parser with PLY](PLYLexerAndParser): the generator-toolchain route through the Lexer and Parser assignments, and the reading for the first interpretation session
 - [Grammars in Python](GrammarsInPython): CFGs as dictionaries, left-recursion detection, parse trees as data, a derivation tracer, and an ambiguity detector
 - [Your Course Development Environment: Docker, Git, and GitHub](DevEnvironment), *anchors required work*, the recommended setup route in the Overview assignment: the course container, a GitHub-backed workspace, and the commit/push workflow
 - [Build an Interpreter](BuildAnInterpreter): start-to-finish companion for the Tree-Walking Interpreter assignment
