@@ -18,13 +18,13 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 By the end of this activity, you will be able to:
 
-- Translate each BNF/EBNF grammar production mechanically into a corresponding Python parsing function
+- Translate each BNF/EBNF (Backus-Naur Form and Extended BNF) grammar production mechanically into a corresponding Python parsing function
 - Implement the `peek`/`advance` token-consumption pattern and explain why one token of lookahead suffices for LL(1) grammars
 - Identify left recursion in a grammar and rewrite the affected production as an iterative loop
 - Construct a working recursive descent parser for a statement-level grammar including assignments, conditionals, and while loops
 - Produce informative error messages by detecting and reporting unexpected tokens at each parsing decision point
 
-The parser is where the grammar becomes a program, and **recursive descent** is the technique that makes the translation nearly mechanical: **one function per nonterminal**, where each function's body mirrors its production's right-hand side.  We learn the mapping, meet its one famous landmine (left recursion), and parse real statements.  Today's route runs **the grammar-to-code mapping $\rightarrow$ a working statement parser $\rightarrow$ left recursion and lookahead $\rightarrow$ error messages worth reading**.  In the *Abstract Syntax Trees* activity you designed the trees a parser should build; today you build the machine that produces them.
+Recursive descent is a way to write a parser by hand: **one function per nonterminal**, where each function's body follows its production's right-hand side.  The parser is where the grammar becomes a program, and this technique makes the translation nearly mechanical.  Today you learn the mapping, meet the one grammar shape that breaks it (left recursion), and parse real statements.  The route is the grammar-to-code mapping $\rightarrow$ a working statement parser $\rightarrow$ left recursion and lookahead $\rightarrow$ error messages worth reading.  In the *Abstract Syntax Trees* activity you designed the trees a parser should build.  Today you build the machine that produces them.
 
 ---
 
@@ -35,15 +35,13 @@ The parser is where the grammar becomes a program, and **recursive descent** is 
 > - **EBNF/BNF Grammars**: you need to read a grammar and trace derivations.  Review: [Syntax and BNF/EBNF Activity](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-syntaxbnf.md)
 > - **Abstract Syntax Trees (ASTs)**: you need to understand what the parser is building.  Review: [AST Activity](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-ast.md)
 >
-> **Why this matters:** Recursive descent is the technique you will use to write the parser for your final project.  Every grammar rule you write will directly become a Python function using the pattern below.  Master this pattern and the rest of the parser writes itself.
+> **Why this matters:** Recursive descent is the technique you will use to write the parser for your final project.  Every grammar rule you write becomes one Python function using the pattern below.  Once you know this pattern, the rest of the parser follows from the grammar.
 
 ---
 
 ## The Core Mapping Rule
 
-> **The one rule that unlocks everything:**
->
-> Every grammar rule becomes **exactly one Python function**.  The function's body is a direct, mechanical translation of the production's right-hand side.
+> **The rule:** Every grammar rule becomes exactly one Python function.  The function's body is a direct, mechanical translation of the production's right-hand side.
 >
 > ```
 > Rule:  expr -> term ( ('+' | '-') term )*
@@ -81,13 +79,13 @@ Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Pr
 
 ## 1.  One Nonterminal, One Function
 
-The parser drives the lexer through exactly two operations: `peek()` (look at the next token without consuming) and `advance()` (consume it).  A grammar is **LL(1)**, parseable by this technique with one token of lookahead, when every alternation can be decided by peeking at a single token; the grammars we write for your project are designed to be LL(1) on purpose.
+The parser drives the lexer through exactly two operations.  `peek()` looks at the next token without consuming it, and `advance()` consumes it.  The parser decides what to do next by peeking at one token; that single-token look is called **lookahead**.  The set of tokens that can begin a nonterminal `X` is called the FIRST set of `X`, so "the next token begins `X`" in the table above means "the next token is in FIRST(`X`)".  A grammar is LL(1) when one token of lookahead decides every alternation.  The name stands for "Left-to-right scan, Leftmost derivation, 1 token of lookahead."  Parsing this way, where the next token predicts which rule to apply, is called predictive parsing, and recursive descent is its hand-written form.  The grammars we write for your project are LL(1) on purpose.
 
 ---
 
 ## How the Mapping Works: A Worked Example
 
-Let's take a concrete expression grammar and trace exactly how each production becomes a function.  This is the same transformation you will perform for every grammar rule in your project.
+Take a concrete expression grammar and trace how each production becomes a function.  You will perform this same transformation for every grammar rule in your project.
 
 **Step 0.  Start with the grammar:**
 
@@ -149,11 +147,11 @@ def parse_factor():
         raise SyntaxError(...)
 ```
 
-**Key insight:** Notice that `parse_expr` calls `parse_term`, which calls `parse_factor`, which can call back to `parse_expr` (via the parenthesized subexpression).  This is the **recursive** part of "recursive descent": the mutual recursion between functions mirrors the nesting in the grammar.
+Notice that `parse_expr` calls `parse_term`, which calls `parse_factor`, which can call `parse_expr` again through the parenthesized subexpression.  This mutual recursion is the "recursive" part of "recursive descent."  The functions call each other in the same pattern that the grammar rules nest.
 
 ### Worked Example: `1 + 2 * 3` on the full ladder, with the tree
 
-The Practice section later traces `1 + 2` on a one-level grammar, where precedence never comes up.  This is the one that matters: `1 + 2 * 3` on the full `expr / term / factor` ladder, where the answer must be 7 and not 9.
+The Practice section later traces `1 + 2` on a one-level grammar, where precedence never comes up.  This example traces `1 + 2 * 3` on the full `expr / term / factor` ladder, where the answer must be 7 and not 9.
 
 Grammar:
 
@@ -163,7 +161,7 @@ term   -> factor { ('*' | '/') factor }
 factor -> NUMBER | '(' expr ')'
 ```
 
-Indentation shows the call stack. `pos` is the index of the next unconsumed token; tokens are `1 + 2 * 3`.
+Indentation shows the call stack.  `pos` is the index of the next unconsumed token; tokens are `1 + 2 * 3`.
 
 ```
 call parse_expr()                      pos=0
@@ -200,12 +198,13 @@ The tree that comes back:
       ('num',2)  ('num',3)
 ```
 
-**Where precedence actually happened.**  Look at the two `peek()='+' `lines.  The *first* one is inside `parse_term`, and `+` is not in `term`'s operator set, so `term` returns immediately with just `1`.  The `+` is left on the input for `parse_expr` to handle.  The `*`, by contrast, *is* in `term`'s set, so the second `parse_term` call consumes it and builds the product before returning.
+Precedence happened at the two `peek()='+'` lines.  The first one is inside `parse_term`.  The `+` is not in `term`'s operator set, so `term` returns right away with the bare `1` and leaves the `+` on the input for `parse_expr` to handle.  The `*` is in `term`'s set, so the second `parse_term` call consumes it and builds the product before returning.
 
-That is the whole mechanism: **`term` gets first refusal on every operator, and it only accepts the tight ones.**  The `*` node is finished and returned before the `+` node is ever constructed, so `*` ends up deeper in the tree, and deeper means evaluated first.  Nothing in the code says "multiplication has higher precedence."  The grammar's layering says it, and the call stack enacts it.
+That is the whole mechanism: `term` sees every operator first, and it accepts only the tight ones.  The `*` node is finished and returned before the `+` node is built, so `*` sits deeper in the tree, and deeper means evaluated first.  Nothing in the code says "multiplication has higher precedence."  The grammar's layering says it, and the call stack carries it out.
 
-Compare this against the LR table you will build in the *Table-Driven and LR Parsing* activity: there, the same decision lives in one cell of a table (shift on `*`, reduce on `+`).  Here it lives in which function's loop is willing to consume which token.  Same precedence, two completely different places to look for it.
+Compare this with the LR table you will build in the *Table-Driven and LR Parsing* activity.  There, the same decision lives in one cell of a table (shift on `*`, reduce on `+`).  Here it lives in which function's loop is willing to consume which token.  Same precedence, two different places to look for it.
 
+Remember two things from this section.  Each nonterminal is one function, and precedence comes from which function's loop consumes which operator.
 
 ---
 
@@ -219,7 +218,7 @@ printstmt -> "print" expr ";"
 letstmt   -> "let" IDENT "=" expr ";"
 ```
 
-> **Intuition:** The parser's job is to look at the current token and decide which rule to apply.  For `stmt`, there are two choices: if the current token is `print`, take the `printstmt` path; if it's `let`, take the `letstmt` path.  This single-token decision is called **lookahead**.  Each path then consumes tokens in the exact order the grammar specifies; this is the "descent" part.
+> **Intuition:** The parser looks at the current token and decides which rule to apply.  For `stmt` there are two choices.  If the current token is `print`, take the `printstmt` path; if it is `let`, take the `letstmt` path.  This single-token decision is lookahead.  Each path then consumes tokens in the exact order the grammar specifies; this is the "descent" part.
 
 ### Critical Thinking Questions
 
@@ -233,7 +232,7 @@ letstmt   -> "let" IDENT "=" expr ";"
 
 ## Model 2: Read the Parser
 
-> **Intuition:** The code cell below is a near-mechanical translation of the grammar from Model 1.  Before reading it, predict what you'll see: three functions (`parse_stmt`, `parse_printstmt`, `parse_letstmt`), each consuming tokens in the order the grammar says.  The `parse_expr` at the bottom is a **stub**: it only handles numbers and identifiers; the full expression ladder comes in a later module.  Notice how the tuple return values (`("print", value)`, `("let", name, value)`) are the roots of little AST subtrees.
+> **Intuition:** The code cell below is a near-mechanical translation of the grammar from Model 1.  Before reading it, predict what you will see: three functions (`parse_stmt`, `parse_printstmt`, `parse_letstmt`), each consuming tokens in the order the grammar says.  The `parse_expr` at the bottom is a stub: it handles only numbers and identifiers.  The full expression ladder comes in a later module.  The tuple return values (`("print", value)`, `("let", name, value)`) are the roots of small AST subtrees.
 
 ```python
 # A recursive descent parser for the statement grammar, atop the class lexer.
@@ -330,10 +329,10 @@ for source in ["print 42;", "let x = 7;", "let x 7;"]:
 
 ### Reading the Code
 
-- Read the parser and the grammar side by side.  Every production is one function, every alternative is one branch, every `{ ... }` repetition is one `while`.  There is no cleverness anywhere; the grammar *is* the control flow.
-- `expect(kind)` is the only place a token is consumed on pain of error.  Everything else peeks first and decides, which is what makes this LL(1): one token of lookahead is enough to pick a branch.
-- Each function returns the node it built and leaves the position just past what it consumed.  That contract is what lets the functions compose without any of them knowing about the others.
-- The error case reports the token it *found* alongside the one it wanted.  A parser that says only "syntax error" tells the user nothing they can act on, which is what CTQ 2.6 asks you to fix.
+- Read the parser and the grammar side by side.  Every production is one function, every alternative is one branch, and every `{ ... }` repetition is one `while`.  There is no cleverness anywhere; the grammar *is* the control flow.
+- `expect(kind)` is the only place that consumes a token or raises an error.  Everything else peeks first and then decides.  That is what makes the parser LL(1): one token of lookahead is enough to pick a branch.
+- Each function returns the node it built and leaves the position one past what it consumed.  That contract lets the functions compose without any of them knowing about the others.
+- The error case reports the token it *found* next to the one it wanted.  A parser that says only "syntax error" gives the user nothing to act on.  CTQ 2.6 asks you to fix that.
 
 ### Critical Thinking Questions
 
@@ -345,41 +344,41 @@ for source in ["print 42;", "let x = 7;", "let x 7;"]:
 
 ---
 
-# Part II: The Landmine and the Lookahead
+# Part II: Left Recursion and Lookahead
 
 ## 2.  Left Recursion Kills Descent
 
-> **Watch out!  Left recursion will infinite-loop your parser.**
+> **Watch out!  Left recursion sends your parser into an infinite loop.**
 >
-> The grammar `E -> E + T | T` is **left-recursive**: `parse_E` calls `parse_E` as its very first action, before consuming any input.  This causes infinite recursion and a stack overflow.
+> A production is left-recursive when its right-hand side starts with the nonterminal it defines.  The grammar `E -> E + T | T` is left-recursive: `parse_E` calls `parse_E` as its very first action, before consuming any input.  The result is infinite recursion and a stack overflow.
 >
-> **Transform it to:** `E -> T E'` where `E' -> + T E' | ε`
+> Transform it to `E -> T E'` where `E' -> + T E' | ε`.
 >
-> Or equivalently in EBNF (which is what we use in practice): `E -> T { '+' T }`
+> Or, equivalently, in EBNF (which is what we use in practice): `E -> T { '+' T }`
 >
-> The EBNF version uses a `while` loop in code: no recursion, no infinite loop, same left-associative tree.
+> The EBNF version becomes a `while` loop in code: no recursion, no infinite loop, same left-associative tree.
 >
-> **The rule:** If your grammar has `A -> A something`, rewrite it as `A -> something { something }`.
+> The rule: if your grammar has `A -> A something`, rewrite it as `A -> something { something }`.
 
-Recall the expression ladder's rule `E -> E + T | T`.  Translate it naively: `parse_E` immediately calls `parse_E`, which immediately calls `parse_E`... infinite recursion before consuming a single token.  **Left-recursive productions cannot be parsed by recursive descent directly.**  The standard repair converts left recursion into EBNF repetition, which the translation table turns into a loop:
+Recall the expression ladder's rule `E -> E + T | T`.  Translate it naively and `parse_E` immediately calls `parse_E`, which immediately calls `parse_E`, and so on.  The recursion never consumes a token.  Recursive descent cannot parse a left-recursive production directly.  The standard repair converts left recursion into EBNF repetition, which the translation table turns into a loop:
 
 $$
 E \rightarrow E + T \mid T \quad \Longrightarrow \quad E \rightarrow T \; \{ + \; T \}
 $$
 
-The two grammars accept the same strings; the loop version builds the *same left-leaning tree* if your loop folds as it goes (next module makes this concrete).  Likewise **left factoring** repairs alternations that share a prefix: `A -> xy | xz` becomes `A -> x (y | z)`, restoring one-token decidability.
+The two grammars accept the same strings.  The loop version builds the same left-leaning tree if your loop folds as it goes (the next module makes this concrete).  A related repair, left factoring, fixes alternations that share a prefix: `A -> xy | xz` becomes `A -> x (y | z)`, which restores one-token decidability.
 
 > **Watch out!  Lookahead and grammar design are linked.**
 >
-> Most recursive descent parsers only look at the **current token** to decide which rule to apply.  This is called **LL(1)**: "Left-to-right scan, Leftmost derivation, 1 token of lookahead."
+> Most recursive descent parsers look only at the current token to decide which rule to apply.  This is the LL(1) property from Part I: "Left-to-right scan, Leftmost derivation, 1 token of lookahead."
 >
-> If your grammar requires looking 2+ tokens ahead, your grammar probably needs refactoring, not your parser.  For example, a grammar like `stmt -> IDENT '=' expr | IDENT '(' args ')'` requires seeing the token *after* the IDENT to decide which rule to use.  The fix is usually to left-factor: `stmt -> IDENT stmt_tail` where `stmt_tail -> '=' expr | '(' args ')'`.
+> If your grammar requires looking two or more tokens ahead, refactor the grammar, not the parser.  For example, `stmt -> IDENT '=' expr | IDENT '(' args ')'` requires seeing the token *after* the IDENT to decide which rule to use.  The fix is usually to left-factor: `stmt -> IDENT stmt_tail` where `stmt_tail -> '=' expr | '(' args ')'`.
 >
-> **The rule:** If you find yourself writing `peek_ahead(2)`, refactor the grammar first.
+> The rule: if you find yourself writing `peek_ahead(2)`, refactor the grammar first.
 
 ## Model 2b: Watch Left Recursion Kill a Parser, Then Fix It
 
-Reading that left recursion loops forever is not the same as watching it happen.  Below are two parsers for the *same language*: one transcribed straight off `E -> E + T | T`, and one off `E -> T { + T }`.  Both are three lines of real logic.  Only one terminates.
+Reading that left recursion loops forever is not the same as watching it happen.  Below are two parsers for the *same language*.  One is transcribed straight from `E -> E + T | T`, and one from `E -> T { + T }`.  Both are three lines of real logic.  Only one terminates.
 
 ```python
 def tokenize(text):
@@ -446,12 +445,12 @@ for text in ["1 + 2", "1 + 2 + 3", "1 + 2 + 3 + 4"]:
 
 ### Reading the Code
 
-- The two versions differ by one structural decision: whether the *first* action consumes input.  Version 1 recurses first; version 2 calls `parse_T` first and only then loops.
-- Version 1 is stopped by a call counter rather than by Python's recursion limit, so the diagnostic can report the useful fact: `pos` is still 0 after twenty calls.  A recursive call that consumes nothing can never terminate, however deep the stack is.
-- The fold `node = ("+", node, right)` inside the loop is what preserves **left** associativity.  Build it the other way and you get `1+(2+3)`, which looks fine for addition and is wrong for subtraction.
-- The repair is not a workaround.  `E -> T { "+" T }` accepts the same language, and the loop version is what every hand-written parser in production actually does.
+- The two versions differ by one decision: whether the *first* action consumes input.  Version 1 recurses first.  Version 2 calls `parse_T` first and only then loops.
+- A call counter stops version 1, rather than Python's recursion limit, so the diagnostic can report the useful fact: `pos` is still 0 after twenty calls.  A recursive call that consumes nothing can never terminate, however deep the stack is.
+- The fold `node = ("+", node, right)` inside the loop preserves **left** associativity.  Build it the other way and you get `1+(2+3)`, which looks fine for addition and is wrong for subtraction.
+- The repair is not a workaround.  `E -> T { "+" T }` accepts the same language, and the loop version is what hand-written parsers in production do.
 
-> **Watch out!**  It is tempting to "fix" left recursion by raising Python's recursion limit.  That turns an instant crash into a slower crash.  The grammar's shape is the problem, and the only fix is to rewrite the rule so something is consumed before the recursion happens.
+> **Watch out!**  It is tempting to "fix" left recursion by raising Python's recursion limit.  That turns an instant crash into a slower crash.  The grammar's shape is the problem.  The only fix is to rewrite the rule so the function consumes something before it recurses.
 
 ### Try It Yourself
 
@@ -565,7 +564,7 @@ A grammar rule `stmt -> IDENT "=" expr | IDENT "(" args ")"` cannot be parsed wi
 
 ## Practice, Parser Tracing: Hand-Simulate a Descent Parser
 
-These exercises build confidence in the grammar-to-code mapping and the call structure of a recursive descent parser by hand-simulating the exact sequence of function calls and token consumption.  They prepare you for the parser assignment by showing the execution you will later trace in a debugger.
+These exercises build your confidence in the grammar-to-code mapping and the call structure of a recursive descent parser.  You hand-simulate the exact sequence of function calls and token consumption.  They prepare you for the parser assignment by showing the execution you will later trace in a debugger.
 
 > *Exercises adapted from the recursive descent parsing technique covered in standard compiler texts, including Douglas Thain's *Introduction to Compilers and Language Design* (Chapter 4).*
 
@@ -624,9 +623,9 @@ When parsing a statement like `if ( cond ) stmt`, the parser's call sequence is:
    
    Trace:
    - `parse_stmt()` is called
-   - `peek()` is `'let'` -> checks first alternative ('print'), fails because lookahead is 'let' not 'print'
-   - Checks second alternative ('let'), succeeds because lookahead matches
-   - Calls the path for 'let IDENT = expr'
+   - `peek()` is `'let'` -> the first alternative ('print') fails because the lookahead is 'let', not 'print'
+   - The second alternative ('let') succeeds because the lookahead matches
+   - The parser follows the path for 'let IDENT = expr'
    - Show which function made which token consumption decision
    - Final tree structure (as a tuple or object)
 
@@ -639,7 +638,7 @@ When parsing a statement like `if ( cond ) stmt`, the parser's call sequence is:
    expr -> INT
    ```
    
-   Input: empty (just EOF)
+   Input: empty (only EOF)
    
    Question: Does `parse_stmt_list()` on empty input:
    - Return an empty list (the `{ }` allows zero statements)?
@@ -711,9 +710,9 @@ When parsing a statement like `if ( cond ) stmt`, the parser's call sequence is:
 
 ## Model 3: Complete Recursive Descent Parser
 
-> **Intuition:** The code cell below is a **self-contained recursive descent parser**: it includes its own tokenizer (lexer) and parser together, with no external dependencies.  The grammar it parses supports variable assignments, `if`/`while` statements, arithmetic with full precedence (`*` and `/` bind tighter than `+` and `-`), and `print`.  Read the parser functions top-to-bottom and notice that the call graph between functions exactly mirrors the grammar's nesting.  The `parse_expr` -> `parse_term` -> `parse_factor` chain is how precedence is encoded: deeper in the call stack = higher precedence.
+> **Intuition:** The code cell below is a self-contained recursive descent parser: its tokenizer (lexer) and parser live together, with no external dependencies.  The grammar supports variable assignments, `if`/`while` statements, arithmetic with full precedence (`*` and `/` bind tighter than `+` and `-`), and `print`.  Read the parser functions top to bottom.  The call graph between functions mirrors the grammar's nesting.  The `parse_expr` -> `parse_term` -> `parse_factor` chain encodes precedence: deeper in the call stack means higher precedence.
 
-The code cell below is a **self-contained recursive descent parser** for a mini-language that includes: variable assignments, `if`/`while` statements, arithmetic expressions with full precedence (add/subtract at one level, multiply/divide at a higher level), and `print`.  It tokenizes its own input so you can run it immediately, then parses a short multi-statement program and prints the resulting AST as nested tuples.
+The cell tokenizes its own input, so you can run it right away.  It parses a short multi-statement program and prints the resulting AST as nested tuples.
 
 ```python
 # Complete recursive descent parser: tokenizer + parser together.
@@ -911,9 +910,9 @@ pprint.pprint(ast)
 
 ## Model 4: Mini Calculator Language, Lexer, Parser, and Evaluator Together
 
-> **Intuition:** This is the payoff.  The calculator language has only five kinds of tokens (numbers, `+`, `*`, `(`, `)`) and three grammar rules.  Yet it is already a complete language implementation: the lexer breaks input into tokens, the parser turns tokens into an AST, and the evaluator walks the AST to compute the answer.  Everything you need to build a language for your final project follows this same three-layer pattern, just with more rules.
+> **Intuition:** The calculator language has only five kinds of tokens (numbers, `+`, `*`, `(`, `)`) and three grammar rules.  It is already a complete language implementation.  The lexer breaks input into tokens, the parser turns tokens into an AST, and the evaluator walks the AST to compute the answer.  Your final project follows this same three-layer pattern, with more rules.
 >
-> Read this code as a template: swap in your own token types, your own grammar rules, and your own evaluator actions, and you have your project's core.
+> Read this code as a template.  Swap in your own token types, your own grammar rules, and your own evaluator actions, and you have your project's core.
 
 ```python
 # Mini calculator: a complete language implementation in ~80 lines.
