@@ -14,24 +14,24 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Names, Binding, and Scope
 
-Every program you write is a web of names (`x`, `count`, `add`, `config`) and the language decides, sometimes before you even run the code, what each name means and where that meaning is visible.  Scope is like the visibility rules at a party: you can only introduce yourself to people in the same room or outer rooms, not rooms you haven't entered yet.  Understanding these rules is what separates a programmer who debugs by intuition from one who reasons about their code with confidence.
+A program is full of names: `x`, `count`, `add`, `config`.  The language decides what each name means and where that meaning can be seen.  A binding attaches a name to a meaning.  A scope is the region of the program where that binding is visible.  Scope works like the rooms at a party: you can talk to people in your own room or in any outer room you walked through, but not to people in a room you never entered.  The analogy stops there, because a program's rooms are fixed by its text, not by where you happen to wander.  Once you know these rules, you can predict what a name means by reading the code instead of guessing.
 
 ## Learning Goals
 
 By the end of this activity, you will be able to:
 
-- Classify a name's binding time (language-design time, compile time, load time, or run time) and justify the classification for examples in Python and Java
+- Classify a name's binding time (language design time, compile time, load time, or run time) and justify the classification for examples in Python and Java
 - Distinguish static (lexical) scope from dynamic scope by tracing name resolution under each rule for a program with nested function calls
-- Define the concepts of binding, declaration, use, shadowing, and lifetime, and apply each term correctly to code examples
-- Analyze the trade-offs of static versus dynamic typing as a binding-time decision, articulating what each buys and what each costs
-- Specify the scoping and binding rules for a new language design, defending the chosen rules in terms of predictability, flexibility, and implementation complexity
+- Define binding, declaration, use, shadowing, and lifetime, and apply each term correctly to code examples
+- Analyze static versus dynamic typing as a binding-time decision, stating what each buys and what each costs
+- Specify the scoping and binding rules for a new language design, and defend the chosen rules in terms of predictability, flexibility, and implementation complexity
 
-Your interpreter from *Tree-Walking Interpretation* currently stores every variable in one flat dictionary, and that simplicity is about to fail you: what happens when two parts of a program use the same name?  Today we develop the vocabulary of **binding** (attaching a name to a meaning) and **scope** (where that attachment is visible), the semantics decisions at the heart of your interpreter assignment.  Here is the path for today: **binding times $\rightarrow$ static versus dynamic scope $\rightarrow$ lifetime $\rightarrow$ design decisions for your language**.
+Your interpreter from *Tree-Walking Interpretation* stores every variable in one flat dictionary.  That design breaks as soon as two parts of a program use the same name for different things.  Today you build the vocabulary to fix it: **binding** (attaching a name to a meaning) and scope (where that attachment is visible).  These are the semantics decisions at the center of your interpreter assignment.  The path for today runs from binding times, to static versus dynamic scope, to lifetime, to the design decisions for your own language.
 
 > **Before You Begin:** This activity assumes you can:
 > - Write and call Python functions, including nested (inner) functions
-> - Explain what a variable assignment does in Python (creates or updates a name-value association)
-> - Describe in general terms what a compiler or interpreter does when it encounters a name in source code
+> - Explain what a variable assignment does in Python (it creates or updates a name-value association)
+> - Describe in general terms what a compiler or interpreter does when it meets a name in source code
 >
 > If any of these feel shaky, review them first.
 
@@ -47,13 +47,13 @@ Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Pr
 
 ## 1.  When Does a Name Get Its Meaning?
 
-**A binding is an association between a name and an attribute** (a value, a type, a memory location), and the central question is *when* it happens.  The classical **binding times**, from earliest to latest: language design time (`+` means addition), compile time (a static type), load or startup time (a global's address), and run time (a variable's current value).  Earlier binding buys efficiency and checkability; later binding buys flexibility.  A language is, in large part, a schedule of binding times.
+A **binding** is an association between a name and an attribute, such as a value, a type, or a memory location.  The central question about a binding is when it happens.  That moment is its binding time.  The classical binding times, from earliest to latest, are: language design time (`+` means addition), compile time (a static type), load or startup time (a global's address), and run time (a variable's current value).  Earlier binding buys efficiency and checkability.  Later binding buys flexibility.  A language is, in large part, a schedule of binding times.
 
-Declarations create bindings; scope rules govern their reach.  In `let x = 5;`, the declaration binds `x`; every later mention of `x` is a *use* that must be **resolved** to some binding.  When the same name is declared in nested regions, the inner declaration **shadows** the outer: both bindings exist, but the inner one wins within its region.
+A declaration creates a binding.  In `let x = 5;`, the declaration binds `x`.  Every later mention of `x` is a use, and the language must resolve each use to some binding.  Scope rules decide which binding a use reaches.  When the same name is declared in nested regions, the inner declaration shadows the outer one: both bindings exist, but the inner one wins inside its own region.
 
 ---
 
-This model establishes the central vocabulary: a **binding** is the attachment of a name to some attribute (a value, a type, a memory address), and the moment that attachment is made is the **binding time**.  The earlier a binding is made, the more the language can check and optimize ahead of time; the later it is made, the more flexibility the programmer has at runtime.  As you work through the table, ask yourself: could the language have determined this earlier, and what would it gain or lose by doing so?
+This model puts the vocabulary above to work.  As you fill in the table, ask two questions about each fact: could the language have decided this earlier, and what would it gain or lose by doing so?  The earlier a binding happens, the more the language can check and optimize ahead of time.  The later it happens, the more the programmer can change at run time.
 
 ## Model 1: Binding Time Sort
 
@@ -64,7 +64,7 @@ This model establishes the central vocabulary: a **binding** is the attachment o
 | The type of `count` in Python after `count = 3` | ? |
 | The value of `count` during a loop | ? |
 
-**Explore Python's binding times interactively:**
+Run this cell to watch Python bind types at run time:
 
 ```python
 # Python binds types at runtime, not compile time
@@ -92,13 +92,13 @@ print(f"After a = 200: a={a}, b={b}  (b unchanged)")
 
 ### Reading the Code
 
-- The three reassignments of `x` never mutate an object.  Each one makes the *name* point somewhere new, which is why `type(x)` changes while no integer ever became a string.
-- The `a is b` probe uses identity, not equality.  Two names can be equal without being the same object; here they are the same object, until `a = 200` rebinds one of them.
-- Nothing in this cell is about scope yet.  It is entirely about *when* the association between a name and an attribute is fixed, which is the question Part II then asks in space rather than in time.
+- The three assignments to `x` never change an object.  Each one points the name `x` at a new object.  That is why `type(x)` changes while no integer ever turned into a string.
+- The `a is b` probe tests identity, not equality.  Two names can hold equal values without naming the same object.  Here they name the same object until `a = 200` rebinds one of them.
+- Nothing in this cell is about scope yet.  It is only about when the link between a name and an attribute is fixed.  Part II asks the same question in space (where) instead of in time (when).
 
 ### Try It Yourself
 
-Find the binding time of each fact below by experiment rather than by assertion.
+Find the binding time of each fact below by experiment, not by assertion.
 
 ```python
 # For each probe: predict FIRST, in writing, then run.
@@ -133,16 +133,16 @@ show_limit()
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output: probe 2 prints `[1]` and then `[1, 2]`, not `[1]` twice.  That surprise is a binding-time fact, and naming it correctly is the exercise.
+Expected output: probe 2 prints `[1]` and then `[1, 2]`, not `[1]` twice.  That surprise is a binding-time fact.  Naming it correctly is the exercise.
 
-> **Watch out!**  A common mistake is to say "Python is dynamically typed, so Python has no binding times."  Every language has binding times; Python just moves the *type* binding from compile time to run time.  The object's type is fixed once created; what changes is which object the name points to.  When you run `x = 42` and then `x = "hello"`, Python is not changing the number `42` into a string; it is re-binding the name `x` to a completely different object.
+> **Watch out!**  A common mistake is to say "Python is dynamically typed, so Python has no binding times."  Every language has binding times.  Python moves the type binding from compile time to run time, and that is the only difference.  An object's type is fixed once the object exists.  What changes is which object the name points to.  When you run `x = 42` and then `x = "hello"`, Python does not turn the number `42` into a string.  It rebinds the name `x` to a different object.
 
 ### Critical Thinking Questions
 
-1.  Complete the binding time table above, justifying each answer in a clause.
-2.  Java binds `count`'s type earlier than Python does.  Restate the static-versus-dynamic-typing debate from the language evaluation module as a *binding time* decision: what is bought and what is paid at each time?
-3.  Your project language must decide: may a variable be assigned a number and later a string?  State your team's provisional answer and the binding-time language for it.
-4.  When Python executes `a = 200`, does it change the object `100` refers to, or does it change what name `a` refers to?  What does this imply about Python's mutation model?
+1.  Complete the binding time table above.  Justify each answer in a clause.
+2.  Java binds the type of `count` earlier than Python does.  Restate the static-versus-dynamic-typing debate from the language evaluation module as a binding-time decision: what does each choice buy, and what does each choice cost?
+3.  Your project language must decide: may a variable hold a number and later a string?  State your team's provisional answer, and state it in binding-time terms.
+4.  When Python executes `a = 200`, does it change the object that `100` refers to, or does it change what the name `a` refers to?  What does this imply about Python's mutation model?
 
 ---
 
@@ -150,11 +150,13 @@ Expected output: probe 2 prints `[1]` and then `[1, 2]`, not `[1]` twice.  That 
 
 ## 2.  Where Does a Binding Reach?
 
-Static (lexical) scope: resolve names by the program's text.  A use of `x` refers to the declaration in the innermost *textually enclosing* region.  The resolution can be done by reading the code, without running it, which is why it is called static, and it is the choice of essentially every modern language.
+A scope rule says which binding a use of a name reaches.  Two rules matter.
 
-Dynamic scope: resolve names by the call history.  A use of `x` refers to the most recent declaration *in the chain of active calls*, whatever code that was.  Early Lisps worked this way; the behavior is occasionally convenient and chronically surprising, because a function's meaning depends on who called it.
+Static (lexical) scope resolves names by the program's text.  A use of `x` refers to the declaration in the innermost region that textually encloses the use.  You can do this resolution by reading the code, without running it.  That is why it is called static, and it is the choice of almost every modern language.
 
-Consider this program in a language with functions:
+Dynamic scope resolves names by the call history.  A use of `x` refers to the most recent declaration of `x` in the chain of active calls, whatever code made that declaration.  Early Lisps worked this way.  The behavior is sometimes convenient and often surprising, because a function's meaning depends on who called it.
+
+The two rules disagree only about free variables.  A free variable is a name that a function uses but does not declare itself.  In the program below, `x` is free in `show`:
 
 ```
 let x = 10;
@@ -169,9 +171,9 @@ function demo() {
 demo();
 ```
 
-**Static scope prints 10** (`show`'s `x` resolves to the global, its textual surroundings); **dynamic scope prints 99** (`show`'s `x` resolves to `demo`'s, the most recent on the call chain).
+Static scope prints 10, because the `x` in `show` resolves to the global `x`, its textual surroundings.  Dynamic scope prints 99, because the `x` in `show` resolves to the `x` in `demo`, the most recent binding on the call chain.
 
-Essentially every language you will use is statically scoped, so the interesting differences are no longer *static or dynamic* but **what counts as a scope**.  Languages disagree about that more than you would expect, and each disagreement has a signature bug attached to it.
+Almost every language you will use is statically scoped.  So the interesting differences are no longer static versus dynamic.  They are about **what counts as a scope**.  Languages disagree about that more than you would expect, and each disagreement comes with its own signature bug.
 
 | Language | What creates a scope | The signature surprise |
 |---|---|---|
@@ -182,16 +184,16 @@ Essentially every language you will use is statically scoped, so the interesting
 | **Scheme** | `let`, `let*`, `letrec`, and lambda bodies | `let` binds all its names *simultaneously*, so a right-hand side cannot see its siblings; `let*` and `letrec` change exactly that |
 | **Your language** | You decide, this term | Whatever you choose, write it down before you implement it |
 
-Read the table as a menu, not as trivia: the rightmost column is a list of bugs that each design choice hands to its programmers, and by the end of the term you will have chosen one of these rows for your own language.
+Read the table as a menu, not as trivia.  The rightmost column lists the bugs that each design choice hands to its programmers.  By the end of the term you will have chosen one of these rows for your own language.
 
 
 ---
 
-This model makes the static-versus-dynamic distinction concrete by showing the same program behaving differently under each rule.  The key question is: when `show()` looks up `x`, does it consult the text of the program (static) or the history of calls that led here (dynamic)?  Running both resolvers side by side will make the difference unmistakable.
+This model runs the same program under both rules so you can watch them disagree.  When `show()` looks up `x`, does it consult the text of the program (static) or the history of calls that led here (dynamic)?  Running both resolvers side by side makes the difference plain.
 
 ## Model 2: Be Both Resolvers
 
-**Python is statically scoped.  Verify it:**
+Python is statically scoped.  Verify it:
 
 ```python
 # Static scope in action: Python resolves print(x) inside show() textually.
@@ -220,17 +222,17 @@ print(outer())                      # ('inner', 'outer')
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-> **Watch out!**  Students often confuse **shadowing** with **assignment**.  When `demo()` writes `x = 99`, it does *not* change the global `x`; it creates a brand-new local binding that happens to share the same name.  The global `x` still equals `10` after `demo()` returns.  Shadowing is about creating a second binding in an inner region; assignment is about updating an existing binding.  These are completely different operations with completely different effects on the enclosing scope.
+> **Watch out!**  Students often confuse shadowing with assignment.  When `demo()` writes `x = 99`, it does not change the global `x`.  It creates a new local binding that happens to share the same name.  The global `x` still equals `10` after `demo()` returns.  Shadowing creates a second binding in an inner region.  Assignment updates a binding that already exists.  These are different operations with different effects on the enclosing scope.
 
-**Step-by-step trace of name lookup under static scope** (for the `demo()` -> `show()` call above):
+Here is the step-by-step trace of name lookup under static scope for the `demo()` -> `show()` call above:
 
-1. `demo()` is called.  Python creates a new local frame for `demo`.  It executes `x = 99`, binding `x` to `99` **in `demo`'s local frame only**.
-2. `show()` is called from inside `demo`.  Python creates a new local frame for `show`.  It has no local `x`.
-3. `show` uses `x` in `print(...)`.  Python walks **textual** enclosing regions: first `show`'s own locals (no `x`), then the **global module scope** (where `x = 10` lives).  It finds `x = 10` there and uses it.
-4.  Python never looks at `demo`'s frame when resolving `show`'s names; `demo` is not a textual enclosing region of `show`.  Both `show` and `demo` are defined at the top level; they are siblings, not parent and child in the text.
-5.  After both calls return, the global `x` is still `10`, untouched.
+1. `demo()` is called.  Python creates a new local frame for `demo`.  It executes `x = 99`, which binds `x` to `99` in `demo`'s local frame only.
+2. `show()` is called from inside `demo`.  Python creates a new local frame for `show`.  That frame has no `x`.
+3. `show` uses `x` in `print(...)`.  Python walks the textual enclosing regions: first `show`'s own locals (no `x`), then the global module scope, where `x = 10` lives.  It finds `x = 10` there and uses it.
+4.  Python never looks at `demo`'s frame when resolving `show`'s names, because `demo` does not textually enclose `show`.  Both functions are defined at the top level.  They are siblings in the text, not parent and child.
+5.  After both calls return, the global `x` is still `10`.
 
-**Simulate dynamic scope in Python:**
+Now simulate dynamic scope in Python:
 
 ```python
 # Dynamic scope simulation using a stack
@@ -258,21 +260,16 @@ show_dynamic()          # static simulation: show sees 10 (global)
 
 ### Reading the Code
 
-- `scope_stack` is a list used as a stack of frames, and `lookup_dynamic` walks it with `reversed(...)`: newest frame first.  That single line *is* dynamic scope.
-- Compare it with how Python resolved the same program above.  Python walked *textual* regions; this walks the *call history*.  Same program, same names, different answer, and the only difference is which chain you follow.
-- `demo_dynamic` pushes and pops around the call.  Forgetting the `pop()` is the classic dynamic-scope bug: a binding leaks into every function called afterwards.
-- Note that the second `show_dynamic()` prints 10.  Once the frame is popped the 99 is gone, which is the "time" half of the scope-versus-lifetime distinction Part III makes.
+- `scope_stack` is a list used as a stack of frames.  `lookup_dynamic` walks it with `reversed(...)`, newest frame first.  That single line is dynamic scope.
+- Compare it with how Python resolved the same program above.  Python walked the textual regions.  This code walks the call history.  Same program, same names, different answer, and the only difference is which chain you follow.
+- `demo_dynamic` pushes a frame before the call and pops it after.  Forgetting the `pop()` is the classic dynamic-scope bug: the binding leaks into every function called afterwards.
+- The second `show_dynamic()` prints 10.  Once the frame is popped, the 99 is gone.  That is the "time" half of the scope-versus-lifetime distinction that Part III makes.
 
 ### Try It Yourself: The Mystery Scoping Language
 
-Below is an interpreter for a tiny language.  Its scoping rule is hidden inside `RULE`,
-which is set from a value you cannot read off the code.  **Do not try to reason it out
-from the source.  Deduce it by experiment**, the way you would probe a language whose
-implementation you did not have.
+Below is an interpreter for a tiny language.  Its scoping rule is hidden inside `RULE`, which is set from a value you cannot read off the code.  Do not try to reason it out from the source.  Deduce it by experiment, the way you would probe a language whose implementation you did not have.
 
-Write a program in the mini-language whose *output differs* depending on the rule, run
-it, and use the answer to identify `RULE`.  Then predict what your own interpreter's
-`Environment` will do with the same program.
+Write a program in the mini-language whose output differs depending on the rule.  Run it, and use the answer to identify `RULE`.  Then predict what your own interpreter's `Environment` will do with the same program.
 
 ```python
 from dataclasses import dataclass
@@ -357,7 +354,7 @@ print(f"\n  ...and the answer, once you have committed: RULE = {RULE!r}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output: one number for probe 1, and then the rule revealed on the last line.  The exercise is worthless if you read the last line first, so cover it, predict, and only then run.
+Expected output: one number for probe 1, and then the rule revealed on the last line.  The exercise is worthless if you read the last line first.  Cover it, predict, and only then run.
 
 ---
 
@@ -377,18 +374,18 @@ A function `f` uses a variable `config` that it does not declare.  Under **dynam
 
 ### Critical Thinking Questions
 
-4.  Trace the program under each rule, writing the chain each resolver follows (textual nesting versus call stack).  Confirm the 10 versus 99 split.
-5.  Argue each side in one sentence: what is convenient about dynamic scope (think: configuration that functions silently inherit), and what makes it hard to read?
-6.  Which rule lets a compiler resolve every name before the program runs?  Connect to the binding-time framework.
-7.  Python is statically scoped.  Why can Python not implement dynamic scope *without* changing the language?
+4.  Trace the program under each rule.  Write out the chain each resolver follows (textual nesting versus call stack), and confirm the 10 versus 99 split.
+5.  Argue each side in one sentence: what is convenient about dynamic scope (think of configuration that functions silently inherit), and what makes it hard to read?
+6.  Which rule lets a compiler resolve every name before the program runs?  Connect your answer to the binding-time framework.
+7.  Python is statically scoped.  Why can Python not implement dynamic scope without changing the language?
 
 ---
 
-Python does not merely distinguish "local" from "global"; it has four distinct scope layers that are searched in a fixed order.  This model traces that order and surfaces the single most common Python scope bug: assigning to a name inside a function makes Python treat that name as local *throughout the entire function*, even lines before the assignment.  This behavior is surprising, but completely consistent once you understand the rule.
+Python does more than distinguish "local" from "global."  It has four scope layers, and it searches them in a fixed order.  This model traces that order and shows the single most common Python scope bug: assigning to a name anywhere inside a function makes Python treat that name as local throughout the entire function, even on lines before the assignment.  This behavior is surprising at first, and completely consistent once you know the rule.
 
 ## Model 3: Python's LEGB Rule
 
-Python resolves names in order: **L**ocal -> **E**nclosing -> **G**lobal -> **B**uilt-in.
+Python resolves names in this order: **L**ocal -> **E**nclosing -> **G**lobal -> **B**uilt-in.
 
 ```python
 # LEGB Rule in action
@@ -422,9 +419,9 @@ print(f"All built-ins: {len(dir(builtins))} names")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-> **Watch out!**  Python scopes are **function-level**, not block-level.  In Java or C, a variable declared inside an `if` block or `for` loop is local to that block.  In Python, `if` blocks and `for` loops do **not** create a new scope: a variable introduced inside them belongs to the enclosing function (or module).  So a variable first assigned inside an `if` body is accessible throughout the rest of the function.  This surprises programmers coming from Java or C, and it means Python's `global` keyword is nothing like C's `global` storage class: Python's `global` is a declaration inside a function saying "when I write this name, go find it in the module scope, not here."
+> **Watch out!**  Python scopes are function-level, not block-level.  In Java or C, a variable declared inside an `if` block or `for` loop is local to that block.  In Python, `if` blocks and `for` loops do not create a new scope.  A variable introduced inside them belongs to the enclosing function (or module).  So a variable first assigned inside an `if` body is accessible throughout the rest of the function.  This surprises programmers coming from Java or C.  It also means Python's `global` keyword is nothing like C's storage classes.  Python's `global` is a declaration inside a function that says "when I write this name, find it in the module scope, not here."
 
-**The `nonlocal` keyword, fixing the counter bug:**
+The `nonlocal` keyword fixes the counter bug:
 
 ```python
 # Classic bug: cannot assign to enclosing scope without 'nonlocal'
@@ -457,23 +454,23 @@ print(c(), c(), c())        # 1 2 3
 ### Critical Thinking Questions
 
 8.  In `make_counter_broken`, why does Python raise `UnboundLocalError`?  What rule does Python apply when it sees an assignment inside a function?
-9.  The `nonlocal` keyword explicitly names the enclosing scope.  Why might language designers prefer `nonlocal` (explicit) over always allowing silent enclosing-scope mutation?
-10.  Scheme uses `set!` to mutate a binding and `define` to create one.  How would you design your interpreter to distinguish "create new binding" from "update existing binding"?
+9.  The `nonlocal` keyword names the enclosing scope explicitly.  Why might language designers prefer `nonlocal` (explicit) over always allowing silent mutation of the enclosing scope?
+10.  Scheme uses `set!` to mutate a binding and `define` to create one.  How would you design your interpreter to distinguish "create a new binding" from "update an existing binding"?
 
 ---
 
 # Part III: Lifetime, and Your Language
 
-Scope tells you *where in the code* a name is visible; lifetime tells you *how long in time* the storage for a value persists.  These two concepts usually travel together (a local variable exists only while its function runs), but closures are a dramatic exception.  When an inner function escapes its enclosing scope (by being returned or stored), it carries its enclosing bindings with it, keeping them alive indefinitely.  This section shows both the power and the classic pitfall of that mechanism.
+Scope tells you where in the code a name is visible.  Lifetime tells you how long in time the storage for a value persists.  The two usually travel together: a local variable exists only while its function runs.  Closures are the big exception.  When an inner function escapes its enclosing scope (by being returned or stored), it carries its enclosing bindings with it and keeps them alive indefinitely.  This section shows both the power of that mechanism and its classic pitfall.
 
 ## 3.  Scope Is Space; Lifetime Is Time
 
-**Scope is the region of *text* where a binding is visible; lifetime is the span of *execution* during which its storage exists.**  The two usually align (a local lives while its block runs) but can diverge: a C `static` local has tiny scope and program-long lifetime, and, the divergence that matters most for your project, a **closure** keeps a binding *alive* after its scope has ended.
+**Scope is the region of text where a binding is visible; lifetime is the span of execution during which its storage exists.**  The two usually line up: a local lives while its block runs.  But they can diverge.  A C `static` local has a tiny scope and a program-long lifetime.  And, in the divergence that matters most for your project, a closure keeps a binding alive after its scope has ended.
 
-> **Watch out!**  C spends the single keyword `static` on two unrelated jobs, and which one you get depends only on *where you write it*.  Written **inside a function**, it changes **lifetime**: the variable survives from call to call, while its scope stays the same tiny block it always was.  Written **at file scope**, outside every function, it changes **linkage**: the lifetime was already the whole program, and what changes is whether other files can see the name at all.  One keyword, two axes.  If you met the linker in *Table-Driven and LR Parsing*, the file-scope version is the one that keeps a name out of the symbol table entirely, which is C's only way to make something private.
+> **Watch out!**  C spends the single keyword `static` on two unrelated jobs, and which job you get depends only on where you write it.  Written inside a function, it changes lifetime: the variable survives from call to call, while its scope stays the same small block it always was.  Written at file scope, outside every function, it changes linkage: the lifetime was already the whole program, and what changes is whether other files can see the name at all.  One keyword, two axes.  If you met the linker in *Table-Driven and LR Parsing*, the file-scope version is the one that keeps a name out of the symbol table entirely.  That is C's only way to make something private.
 
 
-**Lifetime divergence, closures keep bindings alive:**
+Closures keep bindings alive after their scope ends:
 
 ```python
 def make_adder(n):
@@ -496,9 +493,9 @@ print(add10.__closure__[0].cell_contents)  # 10
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-> **Watch out!**  The loop variable trap catches nearly every Python programmer eventually.  When a `lambda` (or any closure) captures a name from an enclosing scope, it captures the **name**, not the value the name held at the moment the closure was created.  By the time the loop finishes, `i` equals `4`, and every closure refers to that same `i`.  This is not a bug in Python (it is the correct behavior of late binding) but it is different from what most people intend.  The fix is to force **value capture** at creation time, either via a default argument (`i=i`) or a factory function that creates a fresh scope.
+> **Watch out!**  The loop variable trap catches nearly every Python programmer eventually.  When a `lambda` (or any closure) captures a name from an enclosing scope, it captures the name, not the value the name held when the closure was created.  By the time the loop finishes, `i` equals `4`, and every closure refers to that same `i`.  This is not a bug in Python.  It is the correct behavior of late binding.  It is also different from what most people intend.  The fix is to force value capture at creation time, either with a default argument (`i=i`) or with a factory function that creates a fresh scope.
 
-**The loop variable trap, scope vs lifetime:**
+The loop variable trap, scope versus lifetime:
 
 ```python
 # Classic bug: all closures share the SAME variable
@@ -526,10 +523,10 @@ print("Fixed2:", [f(0) for f in adders_fixed2])   # [0,1,2,3,4]
 
 ### Reading the Code
 
-- `make_adder` returns and its frame disappears, yet `n` is still readable through the returned function.  Scope (where a name is *visible*) ended; lifetime (how long the *value* survives) did not.  Those are the two axes this Part is about.
-- `__closure__` is Python showing you the captured cells directly.  Everything the returned function can still reach is in there, and nothing else is.
-- The late-binding loop bug is not a scoping bug.  Every lambda correctly refers to the same `i`; the surprise is that `i`'s *lifetime* outlasts each iteration, so they all read its final value.
-- The two fixes attack the two different halves: the default argument copies the *value* at creation time, and the factory function creates a fresh *scope* per iteration.  Knowing which one you reached for, and why, is the check that you have the distinction.
+- `make_adder` returns and its frame disappears, yet `n` is still readable through the returned function.  Scope (where a name is visible) ended.  Lifetime (how long the value survives) did not.  Those are the two axes this Part is about.
+- `__closure__` shows you the captured cells directly.  Everything the returned function can still reach is in there, and nothing else is.
+- The late-binding loop bug is not a scoping bug.  Every lambda correctly refers to the same `i`.  The surprise is that the lifetime of `i` outlasts each iteration, so every lambda reads its final value.
+- The two fixes attack the two different halves.  The default argument copies the value at creation time.  The factory function creates a fresh scope per iteration.  Knowing which one you reached for, and why, is the check that you have the distinction.
 
 ### Try It Yourself
 
@@ -550,7 +547,7 @@ print(f"  c1: {c1()}, {c1()}, {c1()}")
 print(f"  c2: {c2()}")
 # TODO 1: c2 restarted at 1. How many `count` variables exist right now,
 #         and where does each one live? Neither is reachable by name from
-#         out here -- so what is keeping them alive?
+#         out here, so what is keeping them alive?
 
 print("\n=== The loop again, three ways ===")
 late  = [lambda: i for i in range(3)]
@@ -567,19 +564,19 @@ print("\n=== The decision for YOUR language ===")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output: `1, 2, 3` then `1`, and `[2, 2, 2]` against `[0, 1, 2]`.  The two counters not interfering is the same mechanism as the two fixes to the loop bug, seen from the other side.
+Expected output: `1, 2, 3` then `1`, and `[2, 2, 2]` against `[0, 1, 2]`.  The two counters do not interfere with each other.  That is the same mechanism as the two fixes to the loop bug, seen from the other side.
 
 ### Critical Thinking Questions
 
-11.  In the loop variable trap, all five closures capture the same `i`.  Why?  What is the difference between capturing a *name* and capturing a *value*?
-12.  The `i=i` default-argument trick works because default arguments are evaluated *once* at function definition.  This is a Python-specific workaround; describe how your project interpreter should handle the analogous case with proper closure semantics.
+11.  In the loop variable trap, all five closures capture the same `i`.  Why?  What is the difference between capturing a name and capturing a value?
+12.  The `i=i` default-argument trick works because Python evaluates default arguments once, at function definition.  This is a Python-specific workaround.  Describe how your project interpreter should handle the analogous case with proper closure semantics.
 13.  A C `static` local variable has function scope but program lifetime.  Name one use case where this combination is deliberately useful (not a bug).
 
 ---
 
 # Check Your Understanding
 
-A name is bound to a *type* at compile time in Java and at run time in Python. This difference is best described as:
+A name is bound to a type at compile time in Java and at run time in Python.  This difference is best described as:
 
 [(X)] A binding-time decision, trading early checkability for later flexibility
 [( )] Java having types and Python not having them
@@ -588,7 +585,7 @@ A name is bound to a *type* at compile time in Java and at run time in Python. T
 
 ---
 
-In the Mystery Scoping Language probe, `f` is defined where `x` is 10 and called where `x` is 99. Printing 99 tells you the language is:
+In the Mystery Scoping Language probe, `f` is defined where `x` is 10 and called where `x` is 99.  Printing 99 tells you the language is:
 
 [(X)] Dynamically scoped: names resolve against the call history
 [( )] Lexically scoped: names resolve against the program text
@@ -597,7 +594,7 @@ In the Mystery Scoping Language probe, `f` is defined where `x` is 10 and called
 
 ---
 
-Inside a Python function, writing `x = 1` anywhere makes `x` local for the *whole* function, including lines above the assignment. That rule exists because:
+Inside a Python function, writing `x = 1` anywhere makes `x` local for the whole function, including lines above the assignment.  That rule exists because:
 
 [(X)] Python decides each name's scope once for the entire function body, before executing any of it
 [( )] Python executes function bodies out of order
@@ -606,7 +603,7 @@ Inside a Python function, writing `x = 1` anywhere makes `x` local for the *whol
 
 ---
 
-`static int n;` appears twice in a C program: once inside a function, once at file scope outside every function. What do the two occurrences have in common?
+`static int n;` appears twice in a C program: once inside a function, once at file scope outside every function.  What do the two occurrences have in common?
 
 [(X)] Only the spelling: inside a function it changes lifetime, at file scope it changes visibility to other files
 [( )] Both make the variable read-only after initialization
@@ -615,7 +612,7 @@ Inside a Python function, writing `x = 1` anywhere makes `x` local for the *whol
 
 ---
 
-`make_adder(5)` returns, and its frame is gone, but the returned function still reads `n`. This shows that:
+`make_adder(5)` returns, and its frame is gone, but the returned function still reads `n`.  This shows that:
 
 [(X)] Lifetime and scope are different: `n` is no longer *visible* by name, but its value is still *alive*
 [( )] Python leaks memory when functions return
@@ -626,17 +623,17 @@ Inside a Python function, writing `x = 1` anywhere makes `x` local for the *whol
 
 # Exercises
 
-1.  *Scope archaeology.*  Run a three-level nested function experiment in Python (global, enclosing, local all binding `v`) and report which binding each level's `print` resolves to.  Then state Python's resolution order (LEGB) in your own words.
-2.  *Design memo.*  Write your project language's scoping rules in five sentences or fewer: static or dynamic; do blocks create scopes; is shadowing legal; what happens on use of an undeclared name; do loop bodies create a scope.  Add it to `SEMANTICS.md`.
-3.  *Bug forensics.*  Construct a program where shadowing causes a quiet wrong answer rather than an error.  Propose one language rule that would catch it, and what that rule costs.
-4.  *Nonlocal simulator.*  Implement a `ScopeChain` class with `define(name, val)`, `lookup(name)`, and `assign(name, val)` methods where `assign` walks the chain to find the existing binding (like `nonlocal`) rather than creating a new one in the current scope.  Show it corrects the counter bug.
-5.  *Closure inspector.*  Write a Python function that takes any closure (a function with `__closure__` not None) and prints a table of each captured name and its current value.  Test it on `make_adder(7)` and on a counter closure.
+1.  *Scope archaeology.*  Run a three-level nested function experiment in Python (global, enclosing, and local each binding `v`).  Report which binding each level's `print` resolves to.  Then state Python's resolution order (LEGB) in your own words.
+2.  *Design memo.*  Write your project language's scoping rules in five sentences or fewer: static or dynamic; whether blocks create scopes; whether shadowing is legal; what happens on use of an undeclared name; whether loop bodies create a scope.  Add it to `SEMANTICS.md`.
+3.  *Bug forensics.*  Construct a program where shadowing causes a quiet wrong answer rather than an error.  Propose one language rule that would catch it, and say what that rule costs.
+4.  *Nonlocal simulator.*  Implement a `ScopeChain` class with `define(name, val)`, `lookup(name)`, and `assign(name, val)` methods.  `assign` walks the chain to find the existing binding (like `nonlocal`) rather than creating a new one in the current scope.  Show that it corrects the counter bug.
+5.  *Closure inspector.*  Write a Python function that takes any closure (a function whose `__closure__` is not None) and prints a table of each captured name and its current value.  Test it on `make_adder(7)` and on a counter closure.
 
 ---
 
 ## Reflection Prompt
 
-In your notebook: shadowing lets inner code reuse a name without consulting outer code, which is both modularity and a trap.  When you reuse a word with a private meaning in your own notes or conversation, what keeps you from confusing yourself, and is there a language-design lesson in your answer?  Now that you understand the loop-variable trap, how does it change how you'll write closures in production Python code?
+In your notebook: shadowing lets inner code reuse a name without consulting outer code.  That is both modularity and a trap.  When you reuse a word with a private meaning in your own notes or conversation, what keeps you from confusing yourself, and is there a language-design lesson in your answer?  Now that you understand the loop-variable trap, how will it change the way you write closures in production Python code?
 
 ---
 
