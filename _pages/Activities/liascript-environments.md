@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Environments: Implementing Scope
 
-Every running program needs a way to answer the question: "what value does the name `x` refer to right now?"  An **environment** is that answer: a data structure mapping names to values, much like a phone book.  But one phone book is not enough: entering a block or function needs a fresh page that can shadow outer entries, torn out and discarded on exit.  Nested environments form a **chain of phone books**, each consulted first, then deferring outward when a name is not found locally.  Building and manipulating this chain is the foundation of every scope rule your interpreter will enforce.
+A running program must answer one question over and over: what value does the name `x` hold right now?  An **environment** is the data structure that answers it.  An environment is a table that pairs each variable name with its current value; one such pair is a binding.  One table is not enough.  A block or a function can declare its own `x` that hides the outer `x`, and that inner `x` must disappear when the block ends.  So each block gets its own environment, and each environment keeps a pointer to the environment that encloses it, called its parent.  Following those pointers outward is the parent chain.  Building and walking that chain is how your interpreter enforces every scope rule.
 
 ## Learning Goals
 
@@ -22,24 +22,24 @@ By the end of this activity, you will be able to:
 
 - Implement an `Environment` class as a chain of dictionaries linked by parent pointers, and explain why a flat dictionary cannot model nested scope
 - Trace the four environment operations (`define`, `lookup`, `assign`, and scope entry/exit) on a program with nested blocks
-- Predict the value printed at each point in a program with shadowed variable names, explaining each step of the chain-walk lookup
-- Construct the environment chain diagram for a given program snapshot and identify the lifetime and scope of each binding
-- Integrate the `Environment` class into a tree-walking interpreter so that block statements correctly push and pop scopes
+- Predict the value printed at each point in a program with shadowed variable names, and explain each step of the chain walk
+- Draw the environment chain for a given program snapshot and identify the lifetime and scope of each binding
+- Wire the `Environment` class into a tree-walking interpreter so that block statements push and pop scopes correctly
 
 > **Before You Begin:** This activity assumes you can:
-> - Explain the difference between *scope* (where a name is visible in source text) and *lifetime* (how long its storage exists at runtime)
+> - Explain the difference between *scope* (where a name is visible in the source text) and *lifetime* (how long its storage exists at runtime)
 > - Read and write basic Python dictionaries and classes (including `__init__`, instance variables, and simple `while` loops)
 > - Describe static (lexical) scoping: a name resolves to the innermost enclosing declaration at the point where it appears in the source
 >
 > If any of these feel shaky, review them first.
 
-The scope rules of *Binding and Scope* become today's data structure: the **environment**, a chain of dictionaries linked by parent pointers, in which lookup walks outward exactly as static scoping demands.  This session builds the `Environment` class your interpreter assignment requires.  The path today: **why one dict fails $\rightarrow$ the chain $\rightarrow$ the four operations $\rightarrow$ blocks creating and discarding scopes**.
+In *Binding and Scope* you learned the rules.  Today you build the data structure that enforces them: a chain of dictionaries linked by parent pointers.  Lookup walks outward through the chain, which is exactly what static scoping requires.  The `Environment` class you build here is the one your interpreter assignment needs.  The path today: why one dict fails $\rightarrow$ the chain $\rightarrow$ the four operations $\rightarrow$ blocks that create and discard scopes.
 
 ---
 
 ## Directions and Group Roles
 
-Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Please think each model and question through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever you disagreed or found another approach.  After class, please respond to the reflective prompt on your own in your notebook.
+Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Think each model and question through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board.  The Presenter reports out wherever you disagreed or found another approach.  After class, respond to the reflection prompt on your own in your notebook.
 
 ---
 
@@ -47,23 +47,23 @@ Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Pr
 
 ## 1.  One Dictionary Cannot Shadow
 
-Your interpreter's flat `env = {}` makes every variable global: a block that declares `x` overwrites any outer `x` forever, and nothing is discarded when the block ends.  The cure mirrors the textual nesting itself: **one dictionary per scope, each holding a pointer to its parent**.  Entering a block pushes a fresh child environment; leaving it returns to the parent, and the child's bindings vanish with it.
+Right now your interpreter keeps every variable in one flat dictionary, `env = {}`.  That makes every variable global.  A block that declares `x` overwrites any outer `x` for good, and nothing goes away when the block ends.  The fix mirrors the nesting in the source text: one dictionary per scope, and each dictionary holds a pointer to its parent.  Entering a block creates a fresh child environment.  Leaving the block returns to the parent, and the child's bindings vanish with it.  When an inner binding hides an outer binding with the same name, we say the inner one shadows the outer one.
 
-**Lookup walks the chain.**  To resolve `x`: check the current environment; if absent, ask the parent; continue to the global; fail (a name error) only past the root:
+Lookup is the operation that finds the value of a name, and it walks the chain.  To resolve `x`, check the current environment first.  If `x` is not there, ask the parent.  Keep going until you reach the global environment.  Only past the root do you fail with a name error:
 
 $$
 \text{lookup}(x, E) = \begin{cases} E.\text{vars}[x] & x \in E.\text{vars} \\ \text{lookup}(x, E.\text{parent}) & \text{otherwise, if a parent exists} \\ \text{NameError} & \text{at the root} \end{cases}
 $$
 
-This walk *is* static scope: innermost first, then outward.
+That walk is static scope in code: innermost first, then outward.
 
 ---
 
-**Intuition for Model 1:** Think of a notepad with sticky notes: global clues live on the page, and each inner section gets a sticky note placed on top.  You check the sticky note first, then the page beneath; when the section ends, the note is peeled off and discarded, and anything it covered is visible again.  This model lets you trace exactly that process with a two-scope program.
+**Intuition for Model 1:** A page of notes with sticky notes on top is a good model of the chain.  Global bindings live on the page.  Each inner block adds a sticky note on top.  You read the top note first, then the page under it.  When the block ends, you peel the note off and throw it away, and anything it covered is visible again.  The analogy stops at one point: a real note covers everything under it, but an environment hides only the names it defines.  Model 1 traces this process with a two-scope program.
 
 ## Model 1: Paper Machine
 
-The program (block braces create scopes):
+A paper machine is a trace you run by hand: you play the interpreter and draw each environment as a box.  The program (block braces create scopes):
 
 ```
 let a = 1;
@@ -79,17 +79,17 @@ print b;                 # line P2
 ### Critical Thinking Questions
 
 1.  Draw the environment picture at line P1: two boxes (global and block), their contents, and the parent arrow.  The Recorder keeps the drawing.
-2.  Resolve each of `a`, `b`, `c` at P1 by walking the chain; report each walk's length and the printed value.
-3.  At P2, the block environment is gone.  What does `print b` produce, and what happened to the binding `c`?  Name the concept (scope, lifetime, or both?) that just ended for `c`.
-4.  Predict what `print c` at P2 would do, and which line of the lookup definition fires.
+2.  Resolve each of `a`, `b`, and `c` at P1 by walking the chain.  Report the length of each walk and the printed value.
+3.  At P2, the block environment is gone.  What does `print b` produce, and what happened to the binding `c`?  Which concept ended for `c` at that moment: its scope, its lifetime, or both?
+4.  Predict what `print c` at P2 would do, and say which line of the lookup definition fires.
 
 ---
 
 ## Model 1 Code Cell: The Paper Machine, Executed
 
-Run this cell to confirm your paper-machine answers from questions 1-4.
+Run this cell to check your answers to questions 1 through 4.
 
-This cell contains the canonical `Environment` class, the one complete build in this activity.  Every later cell repeats it silently at the top so that each cell runs on its own; read it here once, and from then on look only at the code below the class.
+This cell holds the canonical `Environment` class, the one complete build in this activity.  Every later cell repeats the class at the top so that each cell runs on its own.  Read it here once.  In later cells, look only at the code below the class.
 
 ```python
 class Environment:
@@ -156,15 +156,15 @@ except NameError as e:
 
 ### Reading the Code
 
-- `vars` and `parent` are the entire data structure.  Everything else on the class is a *walk* over that chain; there is no other state anywhere.
-- `define` writes to `self.vars` and never looks at `parent`.  `assign` never writes to `self.vars` unless the name is already there.  That one asymmetry is the entire difference between declaring and updating, and it is where most interpreter bugs live.
-- `lookup` walks outward and stops at the *first* frame that has the name.  Shadowing is not a special case in the code; it falls out of stopping early.
-- Leaving a block is not an operation.  There is no `pop`: the code simply stops using `block`, and Python's garbage collector does the rest.  Scope ending is the absence of a reference, not an instruction.
-- `__repr__` renders the chain outward with `->`, which is why the printed trace reads exactly like the boxes you drew on paper.
+- `vars` and `parent` are the whole data structure.  Each `Environment` object is one frame: one box in your drawing.  Every method on the class is a walk over the chain of frames.  There is no other state anywhere.
+- `define` writes to `self.vars` and never looks at `parent`.  `assign` never writes to `self.vars` unless the name is already there.  That one asymmetry is the whole difference between declaring and updating, and it is where most interpreter bugs live.
+- `lookup` walks outward and stops at the first frame that has the name.  Shadowing is not a special case in the code.  It falls out of stopping early.
+- Leaving a block is not an operation.  There is no `pop`.  The code stops using `block`, so nothing points to it anymore.  Memory that nothing points to is garbage, and Python's garbage collector reclaims it.  A scope ends when its last reference disappears, not when an instruction says so.
+- `__repr__` prints the chain outward with `->`, which is why the printed trace reads like the boxes you drew on paper.
 
 ### Try It Yourself
 
-Break the chain on purpose, and watch which operation notices.
+Break the chain on purpose and watch which operation notices.
 
 ```python
 class Environment:
@@ -220,31 +220,31 @@ print(f"  glob : {glob}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output before you edit anything: one line showing `inner:{} -> global:{'total': 0}`, twice.  Each TODO changes exactly one thing, so run after each one rather than all at the end.
+Before you edit anything, the chain prints as `inner:{} -> global:{'total': 0}` at the start and again at the end.  Each TODO changes exactly one thing, so run the cell after each one rather than after all three.
 
 ---
 
-**Intuition for Model 2:** Read the class as three post-office operations: `define` drops a letter into the current mailbox only; `lookup` asks each mailbox up the chain; `assign` updates the *existing* copy wherever it lives rather than creating a duplicate.  Confusing `define` with `assign` is the single most common environment bug.
+**Intuition for Model 2:** Read the class as three operations that differ in where they write.  `define` writes to the current frame only.  `lookup` reads, asking each frame up the chain in turn.  `assign` updates the existing binding wherever it lives and never creates a duplicate.  Mixing up `define` and `assign` is the most common environment bug.
 
 ## Model 2: Read the Class
 
 ### Critical Thinking Questions
 
-5. `define` writes only to `self.vars`; `assign` walks the chain.  Construct a two-line program where confusing the two produces a wrong answer rather than an error, and state the rule: `let` means which method, bare `=` means which?
-6.  Verify your question 2 walk lengths using the built-in tracer: call `lookup(..., trace=True)`.  Does the executable machine agree with your paper machine?
-7.  "Leaving the block" is just ceasing to use the child environment.  What reclaims its memory in Python, and why does the parent never need to know the child existed?
+5.  `define` writes only to `self.vars`; `assign` walks the chain.  Construct a two-line program where confusing the two produces a wrong answer rather than an error.  Then state the rule: `let` means which method, and bare `=` means which?
+6.  Verify your question 2 walk lengths with the built-in tracer: call `lookup(..., trace=True)`.  Does the executable machine agree with your paper machine?
+7.  Leaving the block means the interpreter stops using the child environment, and nothing else happens.  What reclaims the child's memory in Python, and why does the parent never need to know the child existed?
 
 ---
 
 # Part II: The Four Operations in Practice
 
-**Intuition for Model 3:** At a hotel front desk, `define` is checking *in*: always a fresh entry, even if a same-named guest is registered on a higher floor. `assign` is the manager walking every floor to hand the *existing* guest a new key, never a new entry.  This model runs both operations side-by-side so you can see the difference concretely.
+**Intuition for Model 3:** `define` is a hotel check-in.  It always creates a fresh entry on the current floor, even if a guest with the same name is registered on a higher floor.  `assign` is the manager walking the floors to hand the existing guest a new key; it never adds an entry.  The analogy stops at the search order: a manager might start anywhere, but `assign` always starts at the innermost frame and moves outward.  Model 3 runs both operations side by side so you can see the difference.
 
-> **Watch out!**  Using `define` when you meant `assign` silently creates a *shadow copy* in the inner scope and leaves the outer binding unchanged, no error, just a subtly wrong answer.  Always ask: am I *declaring* a new variable, or *updating* an existing one?
+> Watch out: `define` in place of `assign` silently creates a shadow copy in the inner scope and leaves the outer binding unchanged.  There is no error, only a wrong answer.  Before each write, ask: am I declaring a new variable, or updating an existing one?
 
 ## Model 3: The Four Operations in Practice
 
-The `Environment` class exposes exactly four operations; which scope each one targets is the entire implementation story for variable handling.
+The `Environment` class has exactly four operations.  Which scope each one targets is the whole story of variable handling in your interpreter.
 
 | Operation | Method | Scope targeted | Used for |
 |-----------|--------|----------------|----------|
@@ -253,9 +253,9 @@ The `Environment` class exposes exactly four operations; which scope each one ta
 | **Assign** | `assign(name, val)` | walks outward, updates first match | bare `x = ...` assignments |
 | **Push** | `Environment(parent=e)` | creates a new innermost | entering a block `{ ... }` |
 
-The **critical distinction**: `define` writes to `self.vars` without checking ancestors (a child silently creates a *new* shadowing binding); `assign` walks before writing, updating the binding where it was first declared.
+The critical distinction: `define` writes to `self.vars` without checking ancestors, so a child silently creates a new shadowing binding.  `assign` walks first and then writes, updating the binding where it was first declared.
 
-Run the cell below to see all four operations interact, no new methods needed.  **Before running**, predict: what will each `print` output?
+Run the cell below to see all four operations interact; no new methods are needed.  Before you run it, predict what each `print` will output.
 
 ```python
 # --- The canonical Environment class from Model 1 (repeated so this cell
@@ -312,7 +312,7 @@ inner.define('y', 20)
 # define creates a NEW binding in inner
 inner.define('x', 99)    # shadows outer x
 print(f"inner.lookup('x') = {inner.lookup('x')}")   # 99
-print(f"outer.lookup('x') = {outer.lookup('x')}")   # 10 -- unaffected!
+print(f"outer.lookup('x') = {outer.lookup('x')}")   # 10, unaffected
 
 # assign modifies the EXISTING binding (walks to outer)
 outer2 = Environment(name="outer2")
@@ -320,7 +320,7 @@ outer2.define('x', 10)
 inner2 = Environment(parent=outer2, name="inner2")
 inner2.assign('x', 99)   # modifies outer2's x
 print(f"inner2.lookup('x') = {inner2.lookup('x')}")   # 99
-print(f"outer2.lookup('x') = {outer2.lookup('x')}")   # 99 -- changed!
+print(f"outer2.lookup('x') = {outer2.lookup('x')}")   # 99, changed
 
 print(f"\nEnvironment chain: {inner}")
 ```
@@ -328,23 +328,23 @@ print(f"\nEnvironment chain: {inner}")
 
 ### Reading the Code
 
-- The demo runs the same two-line program twice, once with `define` and once with `assign`, and the only difference in the output is *which frame* holds the changed value.  Part II comes down to that one contrast.
-- Watch `inner` after the `define` run: it has its own `x`.  After the `assign` run it is empty, and `outer`'s `x` moved instead.  Two bindings versus one.
-- Neither operation ever copies a frame.  `assign` reaches through the chain and mutates in place, which is why a change made deep inside a block is still visible after the block ends.
+- The demo runs the same two-line program twice, once with `define` and once with `assign`.  The only difference in the output is which frame holds the changed value.  Part II comes down to that one contrast.
+- Look at `inner` after the `define` run: it holds its own `x`.  Look at `inner2` after the `assign` run: it is empty, and `outer2`'s `x` changed instead.  Two bindings versus one.
+- Neither operation ever copies a frame.  `assign` reaches through the chain and changes the binding in place.  That is why a change made deep inside a block is still visible after the block ends.
 
 ### Critical Thinking Questions (Model 3)
 
-8.  After `inner.define('x', 99)`, the chain contains *two* bindings for `x`.  How many environments does `inner.lookup('x')` visit before returning?  How many does `outer.lookup('x')` visit?
-9. `inner2.assign('x', 99)` mutated `outer2`'s binding, while `inner.define('x', 99)` left `outer`'s binding unchanged.  In one sentence, state the rule: what is the correct behavior for a bare `=` assignment in a statically scoped language, and why does `assign` (not `define`) implement it?
-10.  The canonical class's `__repr__` method (Model 1) uses `->` to render the chain.  If you add a third level (`deep = Environment(parent=inner, name="deep")`) and define a new variable `z = 5` in it, predict what `print(deep)` will show before running.  Then add those two lines to the cell and verify.
+8.  After `inner.define('x', 99)`, the chain contains two bindings for `x`.  How many environments does `inner.lookup('x')` visit before returning?  How many does `outer.lookup('x')` visit?
+9.  `inner2.assign('x', 99)` changed `outer2`'s binding, while `inner.define('x', 99)` left `outer`'s binding unchanged.  In one sentence, state the rule: what is the correct behavior for a bare `=` assignment in a statically scoped language, and why does `assign` (not `define`) implement it?
+10.  The canonical class's `__repr__` method (Model 1) uses `->` to print the chain.  Add a third level (`deep = Environment(parent=inner, name="deep")`) and define a new variable `z = 5` in it.  Predict what `print(deep)` will show before running.  Then add those two lines to the cell and verify.
 
 ---
 
-**Intuition for Model 3 Extended:** Writing a package's new status on a *fresh sticky note* placed over the original record never changes the record, and when the note is discarded, the status looks untouched.  That is what `define` does to a loop counter.  This model shows the bug in slow motion.
+**Intuition for Model 3 Extended:** A `define` inside a loop body writes a fresh binding into the body's frame each time around.  The outer counter is never touched, so it never changes.  This model shows that bug in slow motion.
 
 ## Model 3 Extended: Define-when-you-meant-Assign
 
-The most common environment bug is subtle: a student forgets that loop-counter assignments need `assign`, not `define`.  The code runs, but the outer counter never changes, producing an infinite loop (or silent wrong answers).  No new methods here either; paste your canonical class and watch the bug unfold.  (With `assign` instead, the outer counter would correctly reach 0 after three iterations; Model 4 shows that working version inside a real loop.)
+The most common environment bug is quiet.  A student forgets that updating a loop counter needs `assign`, not `define`.  The code runs, but the outer counter never changes, so the loop runs forever (or returns wrong answers without complaint).  Nothing new goes into the class here.  Run the cell and watch the bug unfold.  With `assign` instead, the outer counter would reach 0 after three iterations; Model 4 shows that working version inside a real loop.
 
 ```python
 # --- The canonical Environment class from Model 1 (repeated so this cell
@@ -409,8 +409,8 @@ print(f"  outer counter at end = {glob2.lookup('counter')}")  # still 3!
 ### Critical Thinking Questions (Model 3 Extended)
 
 11.  In the buggy version, the outer `counter` never decreases.  Explain step by step why `body_env2.define('counter', ...)` fails to update `glob2`'s binding, even though `glob2` is the parent environment.
-12.  In your mini-language, `let x = ...` should map to `define` and bare `x = ...` should map to `assign`.  Suppose a student writes `let x = 1` inside a `while` loop (intending to update `x` each iteration).  What actually happens, and what error would you report?
-13.  What would happen if `assign` could not find the variable anywhere in the chain, for example, the programmer wrote `x = 5` without ever declaring `let x = ...`?  Should this be a `NameError` (strict) or should your interpreter auto-declare it in the global scope (permissive)?  List one language that takes each approach.
+12.  In your mini-language, `let x = ...` should map to `define` and bare `x = ...` should map to `assign`.  Suppose a student writes `let x = 1` inside a `while` loop, intending to update `x` each iteration.  What actually happens, and what error would you report?
+13.  Suppose `assign` cannot find the variable anywhere in the chain, because the programmer wrote `x = 5` without ever declaring `let x = ...`.  Should this be a `NameError` (strict), or should your interpreter auto-declare the variable in the global scope (permissive)?  List one language that takes each approach.
 
 ---
 
@@ -418,15 +418,15 @@ print(f"  outer counter at end = {glob2.lookup('counter')}")  # still 3!
 
 ## 2.  Blocks Push, Statements Thread
 
-The interpreter changes are small: `execute(Block(stmts), env)` creates `child = Environment(parent=env)` and executes the statements against `child`; `Let` calls `define` on the *current* environment; `Assign` calls `assign`; `Var` evaluation calls `lookup`.  Conditionals and loops then inherit a design decision: does an `if` or `while` body get its own scope?  (C says yes with braces; Python says no; your language must say something, in `SEMANTICS.md`.)
+The interpreter changes are small.  `execute(Block(stmts), env)` creates `child = Environment(parent=env)` and executes the statements against `child`.  `Let` calls `define` on the current environment.  `Assign` calls `assign`.  Evaluating a `Var` calls `lookup`.  Conditionals and loops then inherit a design decision: does an `if` or `while` body get its own scope?  C says yes with braces.  Python says no.  Your language must say something, in `SEMANTICS.md`.
 
-> **Watch out!**  Every recursive call to `execute` or `evaluate` must receive the *correct* environment as an argument, never a global variable.  It is easy to pass the *outer* environment into a block body instead of the freshly created child.  If variables suddenly resolve to wrong values inside blocks, first check that the right environment is threaded through every recursive call.
+> Watch out: every recursive call to `execute` or `evaluate` must receive the correct environment as an argument, never through a global variable.  It is easy to pass the outer environment into a block body instead of the freshly created child.  If variables resolve to wrong values inside blocks, first check that the right environment is threaded through every recursive call.
 
-**Intuition for Model 4:** Each assembly-line item gets a fresh clipboard for local notes, but the shared count lives on the factory whiteboard and must be updated there.  That is per-iteration scope: locals live in the iteration's child environment; shared loop counters live in the parent, updated with `assign`.
+**Intuition for Model 4:** On an assembly line, each item gets a fresh clipboard for local notes, but the shared count lives on the factory whiteboard and must be updated there.  That is per-iteration scope: locals live in the iteration's child environment, and shared loop counters live in the parent, updated with `assign`.  The analogy stops at cleanup: a clipboard has to be handed back, but a child environment disappears on its own once nothing refers to it.
 
 ## Model 4: Blocks, Loops, and Per-Iteration Scope
 
-When a language gives every loop body its own fresh scope, a variable declared inside one iteration is invisible to the next and is gone after the loop.  The cell below simulates a `while` loop where each iteration pushes a child environment (again, nothing new to add to the class):
+When a language gives every loop body its own fresh scope, a variable declared in one iteration is invisible to the next and gone after the loop.  The cell below simulates a `while` loop where each iteration pushes a child environment.  Again, nothing new goes into the class.
 
 ```python
 # --- The canonical Environment class from Model 1 (repeated so this cell
@@ -500,13 +500,13 @@ except NameError as e:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Had the body used `define` for `n` instead of `assign`, you would recreate the Model 3 Extended bug: the outer `n` would never decrease and the loop would never terminate.
+If the body used `define` for `n` instead of `assign`, you would recreate the Model 3 Extended bug: the outer `n` would never decrease, and the loop would never end.
 
 ### Reading the Code
 
-- `loop_env` is rebuilt inside the `while`, once per iteration.  Move that line above the loop and every iteration would share one frame, which is exactly the closure-capture decision from *Names, Binding, and Scope*, now visible in the interpreter rather than in Python.
-- `n` is updated with `assign`, so it reaches out to `glob` and the loop can terminate.  `t` is created with `define`, so it stays in `loop_env` and vanishes each iteration.  Swap those two calls and you get an infinite loop, which is the single most common bug in this assignment.
-- The final lookup of `t` raising `NameError` is the *proof* that per-iteration scope worked.  A test that only checks the printed values would pass even if `t` leaked.
+- `loop_env` is rebuilt inside the `while`, once per iteration.  Move that line above the loop and every iteration shares one frame.  That is the closure-capture decision from *Names, Binding, and Scope*, now visible in the interpreter rather than in Python.
+- `n` is updated with `assign`, so the write reaches out to `glob` and the loop can end.  `t` is created with `define`, so it stays in `loop_env` and vanishes each iteration.  Swap those two calls and you get an infinite loop, the most common bug in this assignment.
+- The final lookup of `t` raising `NameError` is the proof that per-iteration scope worked.  A test that only checks the printed values would pass even if `t` leaked.
 
 ### Try It Yourself
 
@@ -571,26 +571,26 @@ print(f"  remembered values: {run(False)}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output: `[0, 1, 2]` and then `[2, 2, 2]`.  If you have seen `[2, 2, 2]` before, that is the point: it is the same bug, one level down.
+Expected output: `[0, 1, 2]` and then `[2, 2, 2]`.  If you have seen `[2, 2, 2]` before, that is the point.  It is the same bug, one level down.
 
 ### Critical Thinking Questions (Model 4)
 
-14.  In the first loop, `t` is defined anew each iteration and disappears at the end of each iteration.  Is `t`'s *scope* per-iteration, or is its *lifetime* per-iteration, or both?  Define your terms before answering.
-15.  Suppose the loop body called `loop_env.define("n", ...)` instead of `assign`, the bug from Model 3 Extended.  Explain precisely why the loop would never terminate: what does `define` do that prevents `glob`'s `n` from ever decreasing?
-16.  In C, a `for` loop's init clause (`int i = 0`) creates a variable that is in scope for the entire loop but gone after.  Where in the environment chain would you model that binding in your interpreter?  Would it live in the same environment as the loop body, or a separate one?
-17.  Python does **not** give loop bodies their own scope: a variable declared inside a `for` loop is visible after the loop ends.  Design an experiment (two small programs in your own language) that would tell a user whether your language follows Python's rule or C's rule.  State which rule your team chose and document it in `SEMANTICS.md`.
+14.  In the first loop, `t` is defined anew each iteration and disappears at the end of each iteration.  Is `t`'s scope per-iteration, is its lifetime per-iteration, or both?  Define your terms before answering.
+15.  Suppose the loop body called `loop_env.define("n", ...)` instead of `assign`, the bug from Model 3 Extended.  Explain precisely why the loop would never end: what does `define` do that prevents `glob`'s `n` from ever decreasing?
+16.  In C, a `for` loop's init clause (`int i = 0`) creates a variable that is in scope for the entire loop but gone after it.  Where in the environment chain would you model that binding in your interpreter?  Would it live in the same environment as the loop body, or in a separate one?
+17.  Python does not give loop bodies their own scope: a variable declared inside a `for` loop is visible after the loop ends.  Design an experiment (two small programs in your own language) that would tell a user whether your language follows Python's rule or C's rule.  State which rule your team chose and document it in `SEMANTICS.md`.
 
 ---
 
-**Intuition for Model 5:** In a statically scoped language the chain is determined by *where code was defined*, not *who called it*: a three-level nest stacks three phone books in textual-enclosure order, searched innermost-out.  The tracer in `lookup` lets you watch every hop and check the counts against your mental model.
+**Intuition for Model 5:** In a statically scoped language, the chain is fixed by where code appears in the source, not by who called it.  A three-level nest stacks three frames in the order the blocks enclose one another, and lookup searches innermost first.  The tracer built into `lookup` prints every hop, so you can check the counts against your own trace.
 
-> **Watch out!**  In **lexical (static) scoping** the environment chain follows the *source code structure*; in **dynamic scoping** it follows the runtime *call stack*.  Your class is lexical because the parent pointer is set when the child environment is *created* (at block entry), not when a function is *called*.  Set parents from the call stack instead, and your language silently becomes dynamically scoped, almost certainly not what you want.
+> Watch out: in lexical (static) scoping, the environment chain follows the source code structure.  In dynamic scoping, it follows the runtime call stack.  Your class is lexical because the parent pointer is set when the child environment is created (at block entry), not when a function is called.  Set parents from the call stack instead and your language silently becomes dynamically scoped, which is almost certainly not what you want.
 
-**Before running the cell**, trace line INNER by hand: `lookup("x")` misses twice and finds `x = 1` in `global` (**3 hops**); `lookup("y")` finds the shadowing `y = 20` in `mid-block` (**2 hops**; the first match beats `global`'s `y = 2`); `lookup("z")` and `lookup("w")` hit immediately in `inner-block` (**1 hop** each).  Total hops: **3 + 2 + 1 + 1 = 7**; the result is `1 + 20 + 300 + 400 = 721`.  Verify against the trace output.
+Before you run the cell, trace line INNER by hand.  `lookup("x")` misses in `inner-block` and `mid-block` and finds `x = 1` in `global`: 3 hops.  `lookup("y")` finds the shadowing `y = 20` in `mid-block`: 2 hops, because the first match beats `global`'s `y = 2`.  `lookup("z")` and `lookup("w")` hit at once in `inner-block`: 1 hop each.  Total hops: 3 + 2 + 1 + 1 = 7.  The result is 1 + 20 + 300 + 400 = 721.  Check both numbers against the trace output.
 
 ## Model 5: A Three-Level Environment Chain Trace
 
-No new code is needed: your canonical `lookup` already carries the tracer (`trace=True`), and this model is where it earns its keep.  The cell below builds a three-level program and prints a full trace of every lookup at line INNER, showing which environment satisfied each one.  Extend it to trace lines MID and OUTER.
+No new code is needed.  Your canonical `lookup` already carries the tracer (`trace=True`), and this model is where it earns its keep.  The cell below builds a three-level program and prints a full trace of every lookup at line INNER, showing which environment satisfied each one.  Extend it to trace lines MID and OUTER.
 
 ```python
 # --- The canonical Environment class from Model 1 (repeated so this cell
@@ -676,15 +676,15 @@ except NameError as e:
 
 ### Reading the Code
 
-- Three frames, three `define` calls at different depths, and every printed lookup reports the *hop count* that found it.  Read the hop counts as the cost of a name: a variable two blocks out costs two pointer follows on every use.
-- `x` is found at the global frame from all three depths, and `z` resolves to a different value depending on where you stand.  Same name, same program, three answers, all correct.
-- The `w` lookup from MID raising `NameError` is the containment check: inner names are invisible from outside, which is the property that makes blocks safe to nest.
+- Three frames, three groups of `define` calls at different depths, and every printed lookup reports the hop count that found it.  Read the hop count as the cost of a name: a variable two blocks out costs two pointer follows on every use.
+- `x` is found in the global frame from all three depths.  `z` resolves to a different value depending on where you stand.  Same name, same program, three answers, all correct.
+- The `w` lookup from MID raising `NameError` is the containment check.  Inner names are invisible from outside, and that property is what makes blocks safe to nest.
 
 ### Critical Thinking Questions (Model 5)
 
-18.  At line INNER, how many total environment hops do all four lookups together require?  Count from the trace output.  Could you reduce this count without changing semantics?  (Hint: think about which variable is looked up most often in a real program.)
-19.  The trace shows that `y` resolves to 20 at INNER (found in `mid-block`) rather than 2 (in `global`).  This is shadowing.  Now suppose your language also has a keyword `outer` that explicitly requests the *enclosing* scope's binding (skipping the innermost match).  How would you modify `lookup` to support `outer.y` vs. `y`?
-20.  At line OUTER, `w` and `z` are gone.  Is this a scope end, a lifetime end, or both?  Can you construct a scenario in a language with closures where the *lifetime* of a binding outlives its lexical *scope*?  (You do not need to implement this; describe it.)
+18.  At line INNER, how many environment hops do all four lookups together require?  Count from the trace output.  Could you reduce this count without changing semantics?  (Hint: think about which variable is looked up most often in a real program.)
+19.  The trace shows that `y` resolves to 20 at INNER (found in `mid-block`) rather than 2 (in `global`).  This is shadowing.  Now suppose your language also has a keyword `outer` that explicitly requests the enclosing scope's binding, skipping the innermost match.  How would you modify `lookup` to support `outer.y` vs. `y`?
+20.  At line OUTER, `w` and `z` are gone.  Is this a scope end, a lifetime end, or both?  Can you construct a scenario in a language with closures where the lifetime of a binding outlives its lexical scope?  (You do not need to implement this; describe it.)
 
 ---
 
@@ -710,9 +710,9 @@ A student writes `inner.define("x", 99)` when they meant to update the outer sco
 
 ## Model 6 (At Home): Dictionary-Based Environment, Walking Through Every Operation
 
-Before wiring the `Environment` class into your interpreter, trace every environment operation on a concrete program: this model runs one step by step, printing the state of every dictionary at each moment.  The goal: to predict the chain's exact contents at any point in any program, without running it.
+Before you wire the `Environment` class into your interpreter, trace every environment operation on one concrete program.  This model runs that program step by step and prints the state of every dictionary at each moment.  The goal is to predict the chain's exact contents at any point in any program, without running it.
 
-**The program we will trace:**
+The program to trace:
 
 ```
 let total = 0;
@@ -724,7 +724,7 @@ let n = 5;
 print total;
 ```
 
-Before running the trace, predict the environment chain's contents after each of these moments: both `let` statements, block entry, `let i = 1`, the assignment `total = total + i`, and block exit.
+Before you run the trace, predict the chain's contents after each of these moments: both `let` statements, block entry, `let i = 1`, the assignment `total = total + i`, and block exit.
 
 The class itself contains nothing new; this model is pure rehearsal.  Run the trace and check each printed state against your prediction.
 
@@ -814,11 +814,11 @@ trace_program()
 
 ### Critical Thinking Questions
 
-**CTQ 6.1** In Step 6 of the trace (`total = total + i`), the lookup for `total` walks to the global environment, but the assign also updates the global.  Walk through the `assign` method step by step to show exactly why `inner.assign("total", 1)` updates `glob.vars["total"]` rather than creating a new `inner.vars["total"]`.
+**CTQ 6.1** In Step 6 of the trace (`total = total + i`), the lookup for `total` walks to the global environment, and the assign also updates the global.  Walk through the `assign` method step by step to show exactly why `inner.assign("total", 1)` updates `glob.vars["total"]` rather than creating a new `inner.vars["total"]`.
 
-**CTQ 6.2** The `__repr__` method prints the chain as `inner:{...} -> global:{...}`.  After Step 6, what does the full chain print?  Write it out before running the code and confirm.
+**CTQ 6.2** The `__repr__` method prints the chain as `inner:{...} -> global:{...}`.  After Step 6, what does the full chain print?  Write it out before running the code, then confirm.
 
-**CTQ 6.3** Extend the cell with a shadowing experiment: `outer` holds `x = 10`, child `inner2` holds its own `x = 99`. `inner2.assign("x", 42)` updates the *inner* binding (the first match on the walk).  With `inner2.define("x", 42)` instead, what would `inner2.lookup("x")` and `outer.lookup("x")` return?  State the `define`/`assign` difference in one sentence.
+**CTQ 6.3** Extend the cell with a shadowing experiment: `outer` holds `x = 10`, and its child `inner2` holds its own `x = 99`.  `inner2.assign("x", 42)` updates the inner binding, because that is the first match on the walk.  With `inner2.define("x", 42)` instead, what would `inner2.lookup("x")` and `outer.lookup("x")` return?  State the `define`/`assign` difference in one sentence.
 
 ---
 
@@ -826,21 +826,21 @@ trace_program()
 
 ## 3.  Exercises
 
-1.  *Interpreter surgery.*  Replace your interpreter's flat dict with `Environment`, wiring `Let`, `Assign`, `Var`, and `Block` as above.  Re-run last module's summation program (it must still work), then run the paper-machine program and confirm 51 and 2.
+1.  *Interpreter surgery.*  Replace your interpreter's flat dict with `Environment`, wiring `Let`, `Assign`, `Var`, and `Block` as Section 2 describes.  Re-run last module's summation program (it must still work).  Then run the paper-machine program and confirm 51 and 2.
 
-2.  *Nested shadowing torture.*  Write a three-level program (global, block, inner block) where the same name is bound at all three levels, and a fourth name is read from each level.  Hand-draw the environment chain at the innermost print, then confirm by execution.
+2.  *Nested shadowing torture.*  Write a three-level program (global, block, inner block) where the same name is bound at all three levels and a fourth name is read from each level.  Hand-draw the environment chain at the innermost print, then confirm by execution.
 
-3.  *Error message upgrade.*  Upgrade the `NameError` messages to also list the names visible in the entire chain ("undefined variable 'pritnValue'; did you mean one of: printValue, x, n, total?") via a `suggestions()` helper in `lookup` that collects visible names by walking the chain.  Show a before-and-after transcript on a plausible typo.
+3.  *Error message upgrade.*  Upgrade the `NameError` messages to also list the names visible in the entire chain ("undefined variable 'pritnValue'; did you mean one of: printValue, x, n, total?").  Do this with a `suggestions()` helper in `lookup` that collects visible names by walking the chain.  Show a before-and-after transcript on a plausible typo.
 
-4.  *Design decision: if/while scope.*  Do `if` and `while` bodies create fresh child environments, or execute in the enclosing environment?  Implement **both** behaviors behind a flag (`body_creates_scope: bool`), write one program whose output differs between the choices, and document your team's decision in `SEMANTICS.md` with the evidence program as justification.
+4.  *Design decision: if/while scope.*  Do `if` and `while` bodies create fresh child environments, or do they execute in the enclosing environment?  Implement both behaviors behind a flag (`body_creates_scope: bool`).  Write one program whose output differs between the two choices.  Document your team's decision in `SEMANTICS.md`, with that program as the evidence.
 
-5.  *Instrumented environment.*  Add a `lookup_count` counter to `Environment` that accumulates across the chain and resets at each top-level `execute` call; print it after the Model 5 trace program.  Then make `lookup` cache the most recent successful lookup per name, and benchmark (`time.perf_counter`) the speedup on a tight loop reading the same variable 10,000 times.
+5.  *Instrumented environment.*  Add a `lookup_count` counter to `Environment` that accumulates across the chain and resets at each top-level `execute` call; print it after the Model 5 trace program.  Then make `lookup` cache the most recent successful lookup per name, and benchmark (`time.perf_counter`) the speedup on a tight loop that reads the same variable 10,000 times.
 
 ---
 
 ## Reflection Prompt
 
-In your notebook: the environment chain makes "context" an explicit, inspectable object: you can print the whole chain at any moment.  Where in your own debugging or thinking would you benefit from printing the chain of contexts you are currently inside?
+In your notebook: the environment chain makes "context" an explicit object you can inspect.  You can print the whole chain at any moment.  Where in your own debugging or thinking would it help to print the chain of contexts you are currently inside?
 
 ---
 
@@ -852,5 +852,4 @@ In your notebook: the environment chain makes "context" an explicit, inspectable
 
 ---
 
-Up next: the *Type Systems* activity asks what your interpreter should do with senseless values, while the `Environment` you built here goes straight into the Interpreter assignment.
-
+Up next: the *Type Systems* activity asks what your interpreter should do with senseless values.  The `Environment` you built here goes straight into the Interpreter assignment.
