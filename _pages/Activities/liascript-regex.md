@@ -14,39 +14,39 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Regular Expressions
 
-Regular expressions sit at the formal foundation of every programming language: they are the notation that defines what a *token* looks like before a parser ever sees it.  Think of a regex as a cookie cutter.  It describes a precise shape that can stamp out any number of matching strings from the dough of possible input, without caring what flavor the dough is.  Because a single pattern can describe an infinite set of strings (every valid identifier, say), regular expressions give language designers a compact, mathematically grounded way to specify lexical rules.
+A regular expression (regex) is a short pattern that describes a whole set of strings at once.  Every programming language uses regular expressions to say what a *token* looks like before the parser ever sees the source text.  One pattern can describe an infinite set, such as every valid identifier, so a language designer gets a compact and mathematically grounded way to state the lexical rules.  A regex is like a cookie cutter: one shape stamps out any number of matching strings from the dough of possible input.  The analogy stops there, because a regex also rejects strings that do not fit, and a cookie cutter never says no.
 
 ## Learning Goals
 
 By the end of *today*, you will be able to:
 
-- Define the three fundamental regular expression operators (concatenation, alternation, Kleene star) and construct regular expressions for specified string sets using only these operators
-- Trace a regular expression against a target string to predict whether it matches, citing operator precedence rules where applicable
-- Show that every convenience of practical regex syntax (`+`, `?`, `[a-z]`, `{n,m}`) is shorthand, by rewriting a pattern in the three primitives and demonstrating the two describe the same language
-- Write the regular expression for a programming language token type (identifier, integer literal, floating-point literal) suitable for use in a lexer specification
+- Define the three basic regular expression operators (concatenation, alternation, Kleene star) and write regular expressions for given string sets using only those operators
+- Trace a regular expression against a target string to predict whether it matches, citing the precedence rules where they apply
+- Show that each convenience in practical regex syntax (`+`, `?`, `[a-z]`, `{n,m}`) is shorthand, by rewriting a pattern in the three primitives and checking that both versions describe the same language
+- Write the regular expression for a programming language token type (identifier, integer literal, floating-point literal) that a lexer specification could use
 - Search a source tree with `grep`, choosing the right flags and avoiding the BRE-versus-ERE trap
 
-Day 2 takes these into practice: Python's `re` in five verbs, how the engine backtracks, greed, and the point where regular expressions run out of power.
+Day 2 puts these into practice: Python's `re` in five verbs, how the engine backtracks, greed, and the point where regular expressions run out of power.
 
-The Chomsky hierarchy's bottom rung (mapped in *Grammars and the Chomsky Hierarchy*), regular languages, comes with the most widely used notation in computing.  Today: **the three operators $\rightarrow$ precedence $\rightarrow$ from primitives to real token patterns $\rightarrow$ regex at the shell**.
+Regular languages are the bottom rung of the Chomsky hierarchy, which the *Grammars and the Chomsky Hierarchy* activity mapped.  They come with the most widely used notation in computing.  Today's path is the three operators, then precedence, then real token patterns built from the primitives, then regex at the shell.
 
 > **Before You Begin**, make sure you are comfortable with the following:
 >
-> - **Lexers and tokens**: recall that a lexer reads source text and groups characters into *tokens* (an integer literal, an identifier, a keyword).  Its job is essentially pattern matching: each token type has a pattern it must fit.
-> - **Finite automata, conceptually**: you do not need to draw one yet, but you should know that a finite automaton is a machine with a fixed set of states and no unbounded memory.  Regular expressions and finite automata turn out to describe exactly the same class of languages; that connection is the bridge to the next module.
-> - **Python `re` basics**: you should know how to `import re` and call `re.search`; if not, skim the [Python `re` HOWTO](https://docs.python.org/3/howto/regex.html) for five minutes.
+> - Lexers and tokens: a lexer reads source text and groups characters into *tokens* (an integer literal, an identifier, a keyword).  Its job is pattern matching.  Each token type has a pattern that the text must fit.
+> - Finite automata, in outline: you do not need to draw one yet.  You should know that a finite automaton is a machine with a fixed set of states and no unbounded memory.  Regular expressions and finite automata describe exactly the same class of languages, and that connection is the bridge to the next module.
+> - Python `re` basics: you should know how to `import re` and call `re.search`.  If not, skim the [Python `re` HOWTO](https://docs.python.org/3/howto/regex.html) for five minutes.
 
 ---
 
 ## Directions and Group Roles
 
-Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Every model here is a predict-then-verify exercise: write down what you think each pattern matches *before* you press run.  The patterns where you were wrong are worth more than the ones where you were right, so mark them.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever your team disagreed.
+Work in your POGIL team with your rotated roles (Manager, Recorder, Presenter, Reflector).  Every model here is a predict-then-verify exercise.  Write down what you think each pattern matches *before* you press run.  The patterns you got wrong teach you more than the ones you got right, so mark them.  The Recorder posts your answers to the Class Activity Questions discussion board.  The Presenter reports out wherever your team disagreed.
 
 ---
 
 ## Key Concepts
 
-A plain-English glossary.  Come back to it whenever one of these starts to feel slippery.
+A plain-English glossary.  Come back to it whenever one of these terms starts to feel slippery.
 
 | Term | Plain-English meaning | Why it matters |
 |------|-----------------------|----------------|
@@ -54,11 +54,12 @@ A plain-English glossary.  Come back to it whenever one of these starts to feel 
 | **Concatenation** | Gluing patterns side by side: "this, then that" | The invisible default operator; most of any pattern is concatenation |
 | **Alternation (`\|`)** | "Either this or that" | Lets one pattern cover several spellings, like `if\|else\|while` |
 | **Kleene star (`*`)** | "Zero or more repeats of the thing just before me" | The only source of infinity in a regex; identifiers of any length need it |
-| **Character class (`[0-9]`, `\d`)** | "Any one character from this menu" | Abbreviates long alternations and keeps patterns readable |
-| **Anchor (`^`, `$`, `\b`)** | Matches a *position* (start, end, word edge), not a character | Stops a match from beginning or ending mid-word |
-| **Capture group `(...)`** | Parentheses that *remember* the text they matched | How you extract data from text rather than merely detect it |
-| **Greedy quantifier** | Takes as many characters as it can, giving some back only when forced | Explains most "my regex matched too much" surprises |
-| **Token** | The smallest meaningful chunk of source code (a number, a name, an operator) | The lexer's output; each token type is defined by one regex |
+| **Quantifier (`*`, `+`, `?`, `{n,m}`)** | A suffix that says how many times the thing just before it may repeat | `*` is the primitive; the rest are shorthand for it |
+| **Character class (`[0-9]`, `\d`)** | "Any one character from this menu" | Abbreviates a long alternation and keeps the pattern readable |
+| **Anchor (`^`, `$`, `\b`)** | Matches a *position* (start, end, word edge), not a character | Stops a match from beginning or ending in the middle of a word |
+| **Capture group `(...)`** | Parentheses that *remember* the text they matched | How you extract data from text instead of only detecting it |
+| **Greedy quantifier** | Takes as many characters as it can, and gives some back only when forced | Explains most "my regex matched too much" surprises |
+| **Token** | The smallest meaningful chunk of source code (a number, a name, an operator) | The lexer's output; one regex defines each token type |
 
 ---
 
@@ -66,27 +67,27 @@ A plain-English glossary.  Come back to it whenever one of these starts to feel 
 
 ## 1.  Theory: The Entire Toolkit
 
-Every regular expression you will ever write, however elaborate, is built from exactly three primitive ideas.  Convince yourself intuitively before the formalism: you can glue strings together, pick one of several alternatives, and repeat something zero or more times.  That is all of it.
+Every regular expression you will ever write is built from three ideas.  You can glue strings together, you can pick one of several alternatives, and you can repeat something zero or more times.  That is the whole toolkit.  Convince yourself of that before the formalism.
 
-A regular expression denotes a set of strings.  Given expressions $r$ and $s$ denoting languages $L(r)$ and $L(s)$:
+A regular expression denotes a set of strings, called its language.  Given expressions $r$ and $s$ that denote languages $L(r)$ and $L(s)$, the three operators are:
 
 $$
 \underbrace{r\,s}_{\text{concatenation}} \quad \underbrace{r \mid s}_{\text{alternation (union)}} \quad \underbrace{r^*}_{\text{Kleene star: zero or more}}
 $$
 
-plus single characters and the empty string $\varepsilon$.  Everything else in practical regex is shorthand:
+Concatenation $r\,s$ means "a string from $r$, then a string from $s$."  Alternation $r \mid s$ means "a string from $r$ or a string from $s$."  The Kleene star $r^*$ means "zero or more strings from $r$, one after another."  Add single characters and the empty string $\varepsilon$, and you have all of it.  Everything else in practical regex is shorthand:
 
 $$r^+ = r\,r^* \qquad r? = (r \mid \varepsilon) \qquad [abc] = (a \mid b \mid c)$$
 
-These three operators generate exactly the regular languages: the same class as the Type 3 grammars of the last module and, next module, the finite automata.  Three notations, one idea.
+These three operators generate exactly the regular languages.  That is the same class as the Type 3 grammars of the last module and, next module, the finite automata.  Three notations, one idea.
 
-**Precedence.**  Star binds tightest, then concatenation, then alternation.  So `ab*c` is `a`, then zero-or-more `b`, then `c`, and *not* zero-or-more `ab` followed by `c`.  If you want that, you must say `(ab)*c`.  This is the same design move you met in *Derivations, Parse Trees, Ambiguity, and Precedence*: an ambiguous notation is disambiguated by convention, and parentheses override the convention.
+Precedence decides how a pattern groups when you leave out parentheses.  Star binds tightest, then concatenation, then alternation.  So `ab*c` is `a`, then zero or more `b`, then `c`.  It is *not* zero or more `ab` followed by `c`.  If you want that, write `(ab)*c`.  You met this design move in *Derivations, Parse Trees, Ambiguity, and Precedence*: a convention disambiguates the notation, and parentheses override the convention.
 
-> **Watch out!**  The `*` in a regular expression is the **Kleene star**: zero or more repetitions of the preceding element.  It is *not* the glob wildcard you know from the shell, where `*.py` means "any filename ending in `.py`."  In regex, "any characters" is `.*`, and a bare `*` with nothing before it is a syntax error.
+> **Watch out.**  The `*` in a regular expression is the Kleene star: zero or more repetitions of the element before it.  It is *not* the glob wildcard from the shell, where `*.py` means "any filename ending in `.py`."  In regex, "any characters" is `.*`, and a bare `*` with nothing before it is a syntax error.
 
 ## Examples: Parse the Pattern Before You Run It
 
-Read each pattern the way the engine does, left to right, applying precedence.  Fill in the third column with your team *before* looking at any output.
+Read each pattern the way the engine does: left to right, applying precedence.  Fill in the third column with your team *before* you look at any output.
 
 | Pattern | How precedence groups it | What set does it denote? |
 |---------|--------------------------|--------------------------|
@@ -96,11 +97,11 @@ Read each pattern the way the engine does, left to right, applying precedence.  
 | `ab\|cd` | (`a` · `b`) \| (`c` · `d`) | ? |
 | `[0-9]+\.[0-9]+` | one-or-more digits · literal `.` · one-or-more digits | ? |
 
-The fourth row is the one that catches people.  Alternation binds *loosest*, so `ab|cd` is "either `ab` or `cd`", not "`a`, then `b` or `c`, then `d`".  Write out the two-member and one-non-member for each row now.
+The fourth row catches people.  Alternation binds *loosest*, so `ab|cd` means "either `ab` or `cd`."  It does not mean "`a`, then `b` or `c`, then `d`."  For each row, write two members of the set and one non-member now.
 
 ## Model 1: Read Before You Write
 
-Commit to your predictions above, then run this and mark every row where the machine disagreed with you.
+Commit to your predictions above.  Then run this and mark every row where the machine disagreed with you.
 
 ```python
 import re
@@ -123,9 +124,9 @@ for pattern, tests in patterns:
 
 ### Reading the Code
 
-- `re.fullmatch` requires the pattern to consume the **entire** string, which is the right choice for a *theory* demonstration, because a regular expression denotes a set of strings, and `fullmatch` asks exactly "is this string in that set?"  `re.search`, which Day 2 uses, asks a different question: "does the set have a member somewhere inside this string?"
-- `r"[0-9]+\.[0-9]+"` uses a raw string so that `\.` reaches the regex engine as an escaped dot rather than being interpreted by Python first.  Drop the `r` and Python warns you; get in the habit now.
-- `.` matches *any* character, so an unescaped `[0-9]+.[0-9]+` would happily match `3x14`.  The escape is not decoration.
+- `re.fullmatch` requires the pattern to consume the entire string.  That is the right choice for a *theory* demonstration.  A regular expression denotes a set of strings, and `fullmatch` asks exactly "is this string in that set?"  `re.search`, which Day 2 uses, asks a different question: "does the set have a member somewhere inside this string?"
+- `r"[0-9]+\.[0-9]+"` uses a raw string, so `\.` reaches the regex engine as an escaped dot instead of being interpreted by Python first.  Drop the `r` and Python warns you.  Get in the habit now.
+- `.` matches *any* character, so an unescaped `[0-9]+.[0-9]+` would also match `3x14`.  The escape is not decoration.
 
 ### Critical Thinking Questions
 
@@ -136,7 +137,7 @@ for pattern, tests in patterns:
 
 ### Try It Yourself
 
-Write patterns for three specified sets, then check them against inputs designed to catch the usual mistakes.
+Write patterns for three specified sets.  Then check them against inputs designed to catch the usual mistakes.
 
 ```python
 import re
@@ -168,7 +169,9 @@ for pattern, desc, yes, no in tasks:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output once all three are written: every line reads `ok`.  The third task is the interesting one; think about what "a pair of characters" looks like as a single starred group.
+Expected output once all three are written: every line reads `ok`.  The third task is the interesting one.  Think about what "a pair of characters" looks like as a single starred group.
+
+To remember from Part I: three operators (concatenation, alternation, star) build every regular expression, and star binds tightest while alternation binds loosest.  When precedence would group a pattern the wrong way, parentheses fix it.
 
 ---
 
@@ -187,13 +190,13 @@ Practical regex syntax is large, and almost none of it adds power.  Each conveni
 | `r{2}` | `r r` | exactly two |
 | `r{1,3}` | `(r \| rr \| rrr)` | between one and three |
 
-This matters for two reasons.  First, it tells you that the class of languages you can describe never grows, no matter how much syntax a regex dialect piles on: it is regular, full stop.  Second, when a pattern misbehaves, expanding the sugar in your head is often the fastest way to see why.
+This matters for two reasons.  First, the class of languages you can describe never grows, no matter how much syntax a regex dialect adds.  It stays regular.  Second, when a pattern misbehaves, expanding the sugar in your head is often the fastest way to see why.
 
-There is one important exception, and it is worth naming now so you are not surprised later: **backreferences** (`(a+)\1`, "the same text again") genuinely leave the regular languages behind.  Most modern "regex" engines are not, strictly, regular expression engines.  Day 2 returns to this when it looks at what the engine actually does.
+There is one exception, and you should know it now so it does not surprise you later.  A backreference (`(a+)\1`, meaning "the same text again") leaves the regular languages behind.  Most modern "regex" engines are therefore not, strictly, regular expression engines.  Day 2 returns to this when it looks at what the engine actually does.
 
 ## Examples: Building an Identifier Pattern by Hand
 
-Most languages define an identifier as: a letter or underscore, followed by any number of letters, digits, or underscores.  Build it up in stages, on paper, before running anything.
+Most languages define an identifier as a letter or underscore, followed by any number of letters, digits, or underscores.  Build the pattern in stages, on paper, before you run anything.
 
 | Stage | Pattern | Reasoning |
 |-------|---------|-----------|
@@ -205,10 +208,10 @@ Most languages define an identifier as: a letter or underscore, followed by any 
 
 Now do the same for two more token types before you look at the code:
 
-- an **integer literal**: one or more digits
-- a **float literal**: digits, a dot, digits
+- an integer literal: one or more digits
+- a float literal: digits, a dot, digits
 
-Write each one twice: once in the three primitives only, and once with sugar.  You are about to prove the two versions describe the same language.
+Write each one twice: once in the three primitives only, and once with sugar.  You are about to check that the two versions describe the same language.
 
 ## Model 2: Sugar and Primitives Describe the Same Set
 
@@ -265,12 +268,12 @@ print("and the disagreements vanish. Sugar adds no power, only readability.")
 
 ### Reading the Code
 
-- The `integer` row is the honest one: `[0-9]+` and the fully spelled-out ten-way alternation agree on *every* input, because the primitive version has the full digit menu.
-- The `identifier` and `float` rows deliberately shrink the alphabet so the lines stay readable.  Where they disagree, look at *which* input caused it; it will always be a character outside the abbreviated menu, never a structural difference.
-- `-?[0-9]+` versus `(-|)...` shows `?` expanding to an alternation with the empty string.  Note that `(-|)` is legal: the right branch of the alternation is $\varepsilon$.
-- Nothing here needs `re.search`; `fullmatch` is the set-membership question, which is what "these two patterns denote the same language" means.
+- The `integer` row is the honest one.  `[0-9]+` and the fully spelled-out ten-way alternation agree on *every* input, because the primitive version has the full digit menu.
+- The `identifier` and `float` rows shrink the alphabet on purpose so the lines stay readable.  Where they disagree, look at *which* input caused it.  It will always be a character outside the abbreviated menu, never a structural difference.
+- `-?[0-9]+` versus `(-|)...` shows `?` expanding to an alternation with the empty string.  `(-|)` is legal: the right branch of the alternation is $\varepsilon$.
+- Nothing here needs `re.search`.  `fullmatch` asks the set-membership question, and that question is what "these two patterns denote the same language" means.
 
-> **Watch out!**  `[0-9]+` and `\d+` are *almost* the same thing.  In Python, `\d` matches Unicode decimal digits, which includes characters like the Devanagari digit `४`.  For a lexer, that is usually not what you want, and `[0-9]` says exactly what you mean.  Be deliberate.
+> **Watch out.**  `[0-9]+` and `\d+` are *almost* the same thing.  In Python, `\d` matches Unicode decimal digits, which include characters like the Devanagari digit `४`.  For a lexer, that is usually not what you want, and `[0-9]` says exactly what you mean.  Be deliberate.
 
 ### Critical Thinking Questions
 
@@ -319,15 +322,17 @@ for name, pattern in SPEC.items():
 
 Expected output once all four are written: every line reads `ok`.  `INT` is the hard one, because "no leading zeros unless the number is 0" is an alternation, not a repetition.
 
+To remember from Part II: `+`, `?`, character classes, and `{n,m}` are shorthand for the three primitives, so they add readability and no power.  Backreferences are the one common feature that does add power, and they take you outside the regular languages.
+
 ---
 
 # Part III: Regex at the Command Line
 
-You will use regular expressions in two places this semester: inside Python, where you write your lexer, and at the shell, where you search your own source tree.  The Overview assignment asks you to submit a `grep` transcript, and you will reach for it constantly once your interpreter is a few thousand lines and "where do I construct a `BinOp` node?" is a `grep` question rather than a scrolling question.
+You will use regular expressions in two places this semester.  Inside Python, you write your lexer with them.  At the shell, you search your own source tree with them.  The Overview assignment asks you to submit a `grep` transcript, and you will reach for `grep` constantly once your interpreter is a few thousand lines long and "where do I construct a `BinOp` node?" becomes a search question instead of a scrolling question.
 
-`grep` prints every **line** of its input that contains a match.  Everything else it does is flags.
+`grep` prints every line of its input that contains a match.  Everything else it does is flags.
 
-## The flags that earn their keep
+## The flags you will use most
 
 | Flag | Does | Use it when |
 |------|------|-------------|
@@ -335,11 +340,11 @@ You will use regular expressions in two places this semester: inside Python, whe
 | `-r` | recurse into a directory tree | searching a project rather than one file |
 | `-i` | ignore case | you are unsure how something was capitalized |
 | `-w` | match whole words only | searching `eval` without hitting `evaluate` |
-| `-v` | invert: print lines that do **not** match | filtering noise out of a log |
+| `-v` | invert: print lines that do not match | filtering noise out of a log |
 | `-c` | print only the count of matching lines | "how many `TODO`s are left?" |
 | `-o` | print only the matched part, not the whole line | harvesting every token name from a file |
 | `-l` | print only the filenames that matched | "which files mention `Environment`?" |
-| `-E` | use **extended** regex syntax | any pattern with `+`, `?`, `\|`, or `()` |
+| `-E` | use extended regex syntax | any pattern with `+`, `?`, `\|`, or `()` |
 
 ```bash
 grep -rn "def parse_" src/                   # every parse function, with line numbers
@@ -361,11 +366,11 @@ grep -nE "[0-9]+\.[0-9]+"      lexer.py     # a float literal; note the escaped 
 grep -nE "[[:alpha:]_][[:alnum:]_]*" lexer.py   # POSIX class: an identifier
 ```
 
-Two portability notes worth knowing now rather than at 2am.  `\d` and `\w` are **not** POSIX and may not work in every `grep`; the portable spellings are `[0-9]` and `[[:alnum:]_]`.  And `.` still means "any character," so a literal dot needs escaping: `[0-9]+\.[0-9]+` matches `3.14`, while `[0-9]+.[0-9]+` would also match `3x14`.
+Two portability notes, so you learn them now rather than at 2am.  `\d` and `\w` are not POSIX and may not work in every `grep`.  The portable spellings are `[0-9]` and `[[:alnum:]_]`.  And `.` still means "any character," so a literal dot needs escaping: `[0-9]+\.[0-9]+` matches `3.14`, while `[0-9]+.[0-9]+` would also match `3x14`.
 
-## The one thing that surprises everyone: BRE vs ERE
+## BRE versus ERE
 
-Plain `grep` uses **POSIX Basic Regular Expressions (BRE)**, where `+`, `?`, `|`, `(` and `)` are *literal characters*.  To get the meanings you know from Python, you must either escape them with a backslash or pass `-E` for **Extended** regular expressions.
+Plain `grep` uses POSIX Basic Regular Expressions (BRE).  In BRE, `+`, `?`, `|`, `(` and `)` are *literal characters*.  To get the meanings you know from Python, you must either escape them with a backslash or pass `-E` for Extended Regular Expressions (ERE).
 
 | You want | BRE (plain `grep`) | ERE (`grep -E`) | Python `re` |
 |---|---|---|---|
@@ -380,7 +385,7 @@ grep -n  "TODO\|FIXME" notes.md     # BRE: escaped alternation
 grep -nE "TODO|FIXME"   notes.md    # ERE: reads like Python
 ```
 
-**Just use `-E`.**  The escaping rules in BRE are a historical artifact, and every pattern you write in this course is already in the syntax `-E` expects.  (`egrep` is the same thing under an older name.)
+**Use `-E` every time.**  The escaping rules in BRE are a historical artifact, and every pattern you write in this course is already in the syntax `-E` expects.  (`egrep` is the same thing under an older name.)
 
 > **Check yourself.**  You run
 >
@@ -392,7 +397,9 @@ grep -nE "TODO|FIXME"   notes.md    # ERE: reads like Python
 >
 > Plain `grep` uses BRE, where `|` is a literal character, so it searched for the seven-character string `lexer|parser`.  Use `grep -nE`, or escape it as `lexer\|parser`.
 
-> **Watch out!**  `grep` is line-oriented, so it cannot match a pattern spanning a newline.  When you find yourself wanting that ("find every function whose body contains `raise`"), you have left regular-language territory and you want a parser.  That is the same boundary Day 2 draws between regular expressions and context-free grammars, and it shows up in your tools as well as in your theory.
+> **Watch out.**  `grep` is line-oriented, so it cannot match a pattern that spans a newline.  When you want that ("find every function whose body contains `raise`"), you have left regular-language territory and you want a parser.  That is the same boundary Day 2 draws between regular expressions and context-free grammars.  It shows up in your tools as well as in your theory.
+
+To remember from Part III: `grep -rnE` covers nearly every search you will run, and plain `grep` treats `+`, `?`, `|`, and parentheses as literal characters.  Escape the dot when you mean a dot.
 
 ---
 
@@ -407,7 +414,7 @@ Which set does `ab*c` denote?
 
 ---
 
-`ab|cd` does **not** match `abd`.  Why?
+`ab|cd` does not match `abd`.  Why?
 
 [(X)] Alternation binds loosest, so the pattern means "either `ab` or `cd`" and neither is `abd`
 [( )] `|` is a literal character in Python's `re`
@@ -439,7 +446,7 @@ Adding `{n,m}`, `[a-z]`, `?` and `+` to a regex dialect:
 [(X)] Adds convenience but no power; the class of describable languages stays regular
 [( )] Moves the dialect up to context-free
 [( )] Makes patterns match faster
-[( )] Is required in order to describe identifiers
+[( )] Is required to describe identifiers
 
 ---
 
@@ -461,17 +468,17 @@ Adding `{n,m}`, `[a-z]`, `?` and `+` to a regex dialect:
 
 In your notebook: a regular expression is a *finite* description of a possibly *infinite* set.  That is a strange and powerful thing, and you already use it every day without remarking on it.
 
-Write a paragraph about another finite description of an infinite set that you rely on: a recipe, a rule, a definition, a piece of notation.  What does the description let you do that listing the members never could?  Then, two sentences: which of the three operators do you think does the most work in that analogy, and why?
+Write a paragraph about another finite description of an infinite set that you rely on: a recipe, a rule, a definition, a piece of notation.  What does the description let you do that listing the members never could?  Then, in two sentences: which of the three operators do you think does the most work in that analogy, and why?
 
 ---
 
 # Further Reading
 
 - Allison, Chapter 3 §3.1-3.2, on regular expressions and their equivalence to finite automata.
-- Allison, Chapter 4, on the pumping lemma; required for the Regex assignment's Part 4 theory questions, and we work one example in class on Day 2.
+- Allison, Chapter 4, on the pumping lemma (the standard tool for proving that a language is *not* regular, by showing that every long enough string in it has a piece you can repeat).  It is required for the Regex assignment's Part 4 theory questions, and we work one example in class on Day 2.
 - The Python [`re` HOWTO](https://docs.python.org/3/howto/regex.html), which Day 2 works through in five verbs.
 - [The Shell for Language Development](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ShellForLanguageDev), whose grep appendix goes further than Part III: named capture groups and a full log-triage walkthrough that turns unstructured log lines into structured records.
 
 ---
 
-> **Where the practice went.**  Everything that used to be a second day of this activity, Python's `re` in five verbs, watching the engine backtrack, and the one-pattern scanner, is now the first half of the [Lab: Regex Workshop](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/RegexWorkshop), handed out today.  It is written as a walkthrough: run every cell, then vary it.
+> **Where the practice went.**  Everything that used to be a second day of this activity (Python's `re` in five verbs, watching the engine backtrack, and the one-pattern scanner) is now the first half of the [Lab: Regex Workshop](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/RegexWorkshop), handed out today.  It is written as a walkthrough: run every cell, then vary it.

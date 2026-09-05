@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Tree-Walking Interpretation
 
-You have a lexer (*Tokens and Scanning*) that turns characters into tokens and a parser (*Recursive Descent Parsing*) that turns tokens into trees.  Now comes the payoff: the **evaluator** turns those trees into *values*; it is the part that actually *runs* your program.  Think of it as a universal translator: given any sentence in the source language (an AST node), it produces the meaning (a Python value) directly, by asking the same question recursively of every sub-sentence.  After today, no magic remains between source code and output.
+You have a lexer (*Tokens and Scanning*) that turns characters into tokens, and a parser (*Recursive Descent Parsing*) that turns tokens into trees.  Today you build the third piece, the evaluator, which turns those trees into values.  The evaluator is the part that runs your program.  Two words matter here.  An *expression* is a piece of source code that describes a computation, such as `3 + price * 2`.  A *value* is the finished result of that computation, such as `13.0`.  The parser stores each expression as an abstract syntax tree (AST).  The evaluator computes the value of each AST node from the values of that node's children, and it uses the same rule at every node.  Because it walks the tree one node at a time, this kind of interpreter is called a tree-walking interpreter.  After today, no magic remains between source code and output.
 
 ## Learning Goals
 
@@ -24,9 +24,9 @@ By the end of this activity, you will be able to:
 - Evaluate arithmetic, boolean, and comparison expressions by dispatching on AST node type and combining child values
 - Explain the semantics of assignment, print, while, and if statements as implemented in the evaluator, including how control flow is handled
 - Identify and resolve the semantic design decisions embedded in an evaluator (short-circuit evaluation, type coercion, division semantics)
-- Integrate a lexer, parser, and evaluator into a functioning REPL and trace the complete pipeline from source string to printed output
+- Integrate a lexer, parser, and evaluator into a working read-eval-print loop (REPL) and trace the complete pipeline from source string to printed output
 
-The pipeline completes its first full circuit: this two-day module builds the **evaluator**, the recursive tree walk that turns ASTs into values, upgrading your pretty-printer's skeleton into an interpreter.  With lexer, parser, and evaluator joined, you will run a program in a language that exists because you built it.  Today's route runs **evaluation as recursion $\rightarrow$ the evaluator in code $\rightarrow$ semantics decisions hiding in plain sight $\rightarrow$ the REPL**.
+This two-day module builds the evaluator: a recursive tree walk that turns ASTs into values.  Your pretty-printer from the AST module already has the right skeleton; the evaluator upgrades it to return values instead of printing text.  With lexer, parser, and evaluator joined, you will run a program in a language that exists because you built it.  Today's route runs **evaluation as recursion $\rightarrow$ the evaluator in code $\rightarrow$ semantics decisions hiding in plain sight $\rightarrow$ the REPL**.
 
 ---
 
@@ -34,7 +34,7 @@ The pipeline completes its first full circuit: this two-day module builds the **
 > - Write recursive Python functions that call themselves on sub-parts of a data structure (tree recursion)
 > - Define and instantiate Python `dataclass` types (`@dataclass`, field access with `node.field`)
 > - Read and modify a Python dictionary (`env["x"] = 5`, `env.get("x")`, `"x" in env`)
-> - Understand what a post-order tree traversal means (children processed before their parent)
+> - Explain what a post-order tree traversal means (children processed before their parent)
 >
 > If any of these feel shaky, review them first.
 
@@ -50,16 +50,16 @@ Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Pr
 
 ## 0.  Interpreters and Compilers: When Does Translation Happen?
 
-Before writing the evaluator, place it on the map.  There are two fundamentally different ways to make source text run, and the difference is *when* the translation work happens:
+Before you write the evaluator, place it on the map.  There are two ways to make source text run, and the difference is *when* the translation work happens.  An interpreter reads the AST and computes values now.  A compiler translates the AST into another language, such as machine code or bytecode, that runs later.
 
 | | **Interpreter** (what you build in this course) | **Compiler** |
 |---|---|---|
 | What it does with the AST | Walks it and computes values *now* | Translates it into another language (machine code, bytecode) to run *later* |
-| When errors like `1 + "hello"` surface | While the program runs, at that expression | Potentially before the program ever runs |
+| When errors like `1 + "hello"` surface | While the program runs, at that expression | Possibly before the program runs at all |
 | Cost model | Pays a small translation tax on every execution of every node | Pays translation once, then runs at full speed |
-| Change the source? | Just run again | Recompile first |
+| Change the source? | Run it again | Recompile first |
 
-The pipeline you have built so far (lexer -> parser -> AST) is **identical for both**.  They diverge only at this step: a compiler of your class language would consume the very same AST your parser produces and emit instructions instead of values.  (That path is walked in the *Table-Driven and LR Parsing* session's compile-link-load model and the *Build a Bytecode VM* tutorial.)  Everything you learn today about evaluation order and environments applies to both worlds.
+The pipeline you have built so far (lexer -> parser -> AST) is the same for both.  They part ways only at this step.  A compiler for your class language would take the very same AST your parser produces and emit instructions instead of values.  (The *Table-Driven and LR Parsing* session's compile-link-load model and the *Build a Bytecode VM* tutorial walk that path.)  Everything you learn today about evaluation order and environments (the store of variable values) applies to both.
 
 Quick check: a tree-walking interpreter and a compiler for the same language both receive the AST for `x * (y + 1)`.  What does each produce from it?
 
@@ -68,26 +68,26 @@ Quick check: a tree-walking interpreter and a compiler for the same language bot
 - [( )] The interpreter produces machine code; the compiler produces the answer
 - [( )] Both produce new source text in a different language
 
-The central idea of Part I is deceptively simple: **the value of any expression is computed entirely from the values of its sub-expressions.**  A number node is its own value; an addition node evaluates both children and adds the results.  This recursive definition is both the formal semantics of the language and the literal shape of the code you will write.
+The central idea of Part I is simple to state: **the value of any expression is computed entirely from the values of its sub-expressions.**  A number node is its own value.  An addition node evaluates both children and adds the results.  This recursive definition is both the formal meaning of the language and the literal shape of the code you will write.
 
 ## 1.  The Recursive Definition of Meaning
 
-The value of a node is defined in terms of the values of its children.  This is denotational thinking made executable:
+The value of a node is defined in terms of the values of its children.  Written as rules, the definition looks like this:
 
 $$
 \mathcal{E}[\![\text{Num}(n)]\!] = n \qquad
 \mathcal{E}[\![\text{BinOp}(+, l, r)]\!] = \mathcal{E}[\![l]\!] + \mathcal{E}[\![r]\!]
 $$
 
-and so on for every node class: evaluate children first (post-order, exactly as Model 2 of the AST module predicted), then combine with the node's operation.  Where the pretty-printer printed, the evaluator returns; the recursion structure is identical, which is why a tree walk is the most accurate possible name.
+Read $\mathcal{E}$ as "the value of."  The first rule says the value of a number node is the number itself.  The second says the value of an addition node is the value of its left child plus the value of its right child.  There is one such rule for every node class.  To apply them, evaluate the children first (post-order, exactly as Model 2 of the AST module predicted), then combine the results with the node's operation.  Functional programmers call this pattern a fold: one function walks the whole structure and combines each node's children into a single result.  Where the pretty-printer printed, the evaluator returns.  The recursion structure is identical, which is why "tree walk" is the most accurate possible name.
 
 ---
 
-**Model 1 preview:** This model shows the minimal but complete core of a tree-walking evaluator.  It handles numbers, variables, unary negation, and the four arithmetic operators.  What matters here is that every case follows the same pattern: inspect the node type, recursively evaluate any children, then combine.  Notice that the environment (`env`) is passed into every call so that variable lookups always reflect current state.
+**Model 1 preview:** This model is the smallest complete core of a tree-walking evaluator.  It handles numbers, variables, unary negation, and the four arithmetic operators.  Every case follows the same pattern: inspect the node type, evaluate any children recursively, then combine.  The environment, `env`, is a Python dictionary that maps each variable name to its current value.  It is passed into every call so that a variable lookup always sees the current state.
 
 ## Model 1: The Evaluator, Build it from Scratch
 
-This is the complete evaluator.  Every line is consequential.  Read it, trace it, then run it:
+This is the complete evaluator.  Every line matters.  Read it, trace it, then run it:
 
 ```python
 from dataclasses import dataclass, field
@@ -157,7 +157,7 @@ print(f"-(price+1) = {evaluate(tree3, env)}")   # -6.0
 
 **Step-by-step worked example, tracing `(+ 1 (* 2 3))`**
 
-Suppose the AST is `BinOp("+", Num(1), BinOp("*", Num(2), Num(3)))` and `env = {}`.
+Suppose the AST is `BinOp("+", Num(1), BinOp("*", Num(2), Num(3)))` and `env = {}` (no variables yet).
 
 ```
 evaluate( BinOp("+", Num(1), BinOp("*", Num(2), Num(3))), env )
@@ -172,20 +172,20 @@ evaluate( BinOp("+", Num(1), BinOp("*", Num(2), Num(3))), env )
   1 + 6 = 7 -> return 7
 ```
 
-**Key observations:** (1) Multiplication finishes entirely before addition sees any result.  (2) The environment is threaded through every call but never consulted for `Num` nodes.  (3) Operator precedence was *already encoded* in the tree structure by the parser; the evaluator never re-derives it.
+Three things to notice.  First, multiplication finishes entirely before addition sees any result.  Second, the environment is passed through every call but never consulted for `Num` nodes.  Third, the parser *already encoded* operator precedence in the tree's shape; the evaluator never re-derives it.
 
 ### Reading the Code
 
-- The whole evaluator is one `if isinstance(...)` chain, and each branch corresponds to exactly one line of the recursive definition of meaning in section 1.  That correspondence is the point: the definition *is* the program.
-- The two `Num` and `Var` branches are the **base cases**; they return without recursing.  Every other branch recurses first and combines afterward.  A recursive function over a tree always has this shape.
-- `env` is passed to every call, including calls that cannot possibly use it.  That uniformity is what lets you later swap the flat dictionary for a chained environment without touching any other branch.
-- Nothing in the file mentions precedence, parentheses, or the grammar.  Those did their work in the parser, and the tree that arrives here has already recorded the answer in its shape.
+- The whole evaluator is one `if isinstance(...)` chain.  Each branch matches exactly one line of the recursive definition of meaning in section 1.  That match is the point: the definition *is* the program.
+- The `Num` and `Var` branches are the base cases; they return without recursing.  Every other branch recurses first and combines afterward.  A recursive function over a tree always has this shape.
+- `env` is passed to every call, including calls that cannot use it.  That uniformity lets you later swap the flat dictionary for a chained environment without touching any other branch.
+- Nothing in the file mentions precedence, parentheses, or the grammar.  The parser did that work, and the tree that arrives here already records the answer in its shape.
 
-> **Watch out!**  Students often try to evaluate the operator before the children (pre-order) by writing `result = node.op` and then recursing.  That will fail: you need the children's *values* before you can apply the operator.  Evaluation is always post-order for expressions.
+> **Watch out!**  Students often try to evaluate the operator before the children (pre-order) by writing `result = node.op` and then recursing.  That fails: you need the children's *values* before you can apply the operator.  Evaluation of an expression is always post-order.
 
 ### Try It Yourself
 
-Add a node type to the evaluator without touching any branch that already works.  This is the "new consumer of the AST" recipe from CTQ 4, run in the other direction: a new *producer*.
+Add a node type to the evaluator without touching any branch that already works.  This is the "new consumer of the AST" recipe from Critical Thinking Question (CTQ) 4, run in the other direction: a new *producer*.
 
 ```python
 from dataclasses import dataclass
@@ -208,7 +208,7 @@ def evaluate(node, env):
 
     # TODO 1: add the Min branch. Evaluate BOTH children, then return the
     #         smaller. Notice you cannot decide which child to return until
-    #         both have been evaluated -- that is post-order again.
+    #         both have been evaluated: that is post-order again.
 
     raise ValueError(f"unknown node: {type(node).__name__}")
 
@@ -232,18 +232,18 @@ Expected output once `Min` is in place: `3`, `6`, and `11`.  Before you write it
 
 ### Critical Thinking Questions
 
-1.  Trace `evaluate` on `3 + price * 2`, writing every call with its arguments and return value in order.  Where in your trace does the multiplication happen relative to the addition, and which week's design decision (which module) put it there?
-2.  The evaluator never consults precedence, parentheses, or the grammar.  State precisely where precedence "went," and why this separation of concerns is the architecture lesson of the whole pipeline.
+1.  Trace `evaluate` on `3 + price * 2`.  Write every call with its arguments and return value, in order.  Where in your trace does the multiplication happen relative to the addition, and which week's design decision (which module) put it there?
+2.  The evaluator never consults precedence, parentheses, or the grammar.  State exactly where precedence "went," and explain why this separation of concerns is the architecture lesson of the whole pipeline.
 3.  We chose to make division by zero raise an error with a custom message.  List two other behaviors your team could have chosen (return infinity, return zero) and one language that makes each choice.  Record your project's decision.
-4.  Compare `evaluate` and a tree pretty-printer line by line.  Write the general recipe: to add a new *consumer* of the AST (a type checker, an optimizer, a compiler), what do you write and what do you never touch?
+4.  Compare `evaluate` and a tree pretty-printer line by line.  Write the general recipe: to add a new *consumer* of the AST (a type checker, an optimizer, a compiler), what do you write, and what do you never touch?
 
 ---
 
-**Model 2 preview:** Model 1 was correct but silent.  This model adds instrumented tracing so you can *see* the call tree printed as `evaluate` runs.  It is the same recursion wearing a lab coat: each call announces itself before recursing and reports its result when it returns.  Studying this output is the fastest way to build the mental model you need before writing evaluators for richer node types.
+**Model 2 preview:** Model 1 was correct but silent.  This model adds tracing so you can *see* the call tree printed as `evaluate` runs.  It is the same recursion wearing a lab coat: each call announces itself before recursing and reports its result when it returns.  Study this output to build the mental picture you need before you write evaluators for richer node types.
 
 ## Model 2: Tracing Evaluation Step by Step
 
-Instrumented evaluator that shows the call tree:
+This instrumented evaluator prints the call tree as it runs:
 
 ```python
 from dataclasses import dataclass
@@ -301,14 +301,14 @@ print(f"\nFinal result: {result}")
 
 ### Reading the Code
 
-- `evaluate_traced` is a thin wrapper that does nothing but manage indentation; `_eval_inner` is Model 1's evaluator with `print` statements added.  The recursion is unchanged, which is why the trace is trustworthy: you are watching the real thing, not a simulation of it.
-- Each `BinOp` prints twice: once *before* recursing ("evaluating children...") and once *after* ("`2 * 4 = 8`").  The gap between those two lines in the output is exactly the subtree's evaluation.
+- `evaluate_traced` is a thin wrapper that only manages indentation.  `_eval_inner` is Model 1's evaluator with `print` statements added.  The recursion is unchanged, so the trace is trustworthy: you are watching the real thing, not a simulation of it.
+- Each `BinOp` prints twice: once *before* recursing ("evaluating children...") and once *after* ("`2 * 4 = 8`").  The lines between those two are exactly the subtree's evaluation.
 - Indentation depth equals call-stack depth.  Read the output as a picture of the stack: every indent is a frame that has not returned yet.
-- `ops` is a dict of lambdas, so only the selected operator is applied.  Built as a dict of computed values, every entry would run, and a division by zero anywhere in the tree would surface at the wrong node.
+- `ops` is a dictionary of lambdas, so only the selected operator runs.  If it were a dictionary of computed values, every entry would run, and a division by zero anywhere in the tree would surface at the wrong node.
 
 ### Try It Yourself
 
-Make the tracer answer CTQ 6 for you: print the depth alongside the indentation, and make it robust to the failure the "Watch out!" below describes.
+Make the tracer answer CTQ 6 for you: print the depth alongside the indentation.  Then guard it against the failure the "Watch out!" note below describes.
 
 ```python
 from dataclasses import dataclass
@@ -364,7 +364,7 @@ for attempt in (1, 2):
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output as written: the second trace is indented *wrongly*, because `_depth` was never decremented when the exception unwound.  Fix TODO 1 and the two traces become identical.
+Expected output as written: the second trace is indented *wrongly*, because `_depth` was never decremented when the exception unwound the stack.  Fix TODO 1 and the two traces become identical.
 
 ### Critical Thinking Questions
 
@@ -372,7 +372,7 @@ Expected output as written: the second trace is indented *wrongly*, because `_de
 6.  How would you modify the tracer to also print the *depth* of recursion?  What would that depth correspond to in terms of the tree's structure?
 7.  If a `BinOp` node is at depth 3 in the trace, how deep is the tree at that point?  Does depth in the call stack correspond exactly to depth in the AST?
 
-> **Watch out!**  The global `_depth` counter works here because Python is single-threaded and evaluation is deterministic, but it is fragile: if `evaluate_traced` ever raises an exception mid-recursion, `_depth` is left in a wrong state and all future indentation will be off.  In production tracing code, use a `try/finally` block to ensure `_depth -= 1` always runs.
+> **Watch out!**  The global `_depth` counter works here because Python is single-threaded and evaluation is deterministic.  But it is fragile: if `evaluate_traced` ever raises an exception mid-recursion, `_depth` is left wrong and all later indentation is off.  In production tracing code, use a `try/finally` block so that `_depth -= 1` always runs.
 
 ---
 
@@ -381,15 +381,15 @@ Expected output as written: the second trace is indented *wrongly*, because `_de
 
 ## 2.  Theory: An Error Is a Result Too
 
-Model 1 quietly assumed every tree it received was sensible.  Real input is not.  A `Var` node can name something the environment has never heard of; a `/` node can be handed a zero; an operator can arrive that the evaluator does not implement.  Each of those is a decision your language has to make *on purpose*, and the decision belongs in `SEMANTICS.md`.
+Model 1 quietly assumed every tree it received made sense.  Real input does not.  A `Var` node can name something the environment has never heard of.  A `/` node can be handed a zero.  An operator can arrive that the evaluator does not implement.  Each of those is a decision your language has to make *on purpose*, and the decision belongs in `SEMANTICS.md`.
 
 There are three separate questions, and they are easy to run together:
 
-- **What counts as an error?**  Is `1 / 0` an error, or is it infinity?  Is an unbound variable an error, or does it default to zero?  Different languages answer differently and both answers are defensible.
-- **When is it detected?**  Your evaluator finds these *while running*, which is the dynamic checking of the *Type Systems* session.  A static checker would find the unbound variable before the program started.
-- **What does the user see?**  An error that says `KeyError: 'prise'` is a bug report about your interpreter.  An error that says `undefined variable 'prise' at line 3, column 12` is a bug report about the user's program.  Only the second is useful, and the difference is entirely in what you chose to carry through the recursion.
+- What counts as an error?  Is `1 / 0` an error, or is it infinity?  Is an unbound variable an error, or does it default to zero?  Different languages answer differently, and both answers are defensible.
+- When is it detected?  Your evaluator finds these *while running*, which is the dynamic checking of the *Type Systems* session.  A static checker would find the unbound variable before the program started.
+- What does the user see?  An error that says `KeyError: 'prise'` is a bug report about your interpreter.  An error that says `undefined variable 'prise' at line 3, column 12` is a bug report about the user's program.  Only the second is useful, and the difference is entirely in what you chose to carry through the recursion.
 
-The practical consequence is that error handling is not an afterthought bolted onto a finished evaluator; it changes what every branch returns.  Deciding it now is much cheaper than retrofitting it in week 12.
+The practical consequence: error handling is not an afterthought bolted onto a finished evaluator.  It changes what every branch returns.  Deciding it now is much cheaper than retrofitting it in week 12.
 
 ## Examples: Three Failures, by Hand
 
@@ -404,6 +404,8 @@ For each tree below, say what your evaluator *should* do, before looking at what
 The middle row is the interesting one.  A helpful interpreter can notice that `prise` is one character away from `price` and say so.  That costs about four lines, and it is the difference between a language people tolerate and one they enjoy.
 
 ## Model 3: Errors That Name the Program, Not the Interpreter
+
+This evaluator carries a line and column number on every node, and it raises its own error type when the user's program is at fault:
 
 ```python
 from dataclasses import dataclass
@@ -477,18 +479,18 @@ print("bug reports about the user's program, which is the whole difference.")
 
 ### Reading the Code
 
-- Every node now carries `line` and `col`.  The parser is what fills these in; the evaluator only has to *pass them along* to the error.  That is why deciding on errors early matters: adding these fields later means touching every node class and every place a node is built.
-- `LangError` is a distinct class from Python's built-ins on purpose.  When you catch `LangError` in your REPL you know it is the user's mistake; when a bare `KeyError` escapes, that is *your* bug and it should crash loudly.
+- Every node now carries `line` and `col`.  The parser fills these in; the evaluator only has to *pass them along* to the error.  That is why deciding on errors early matters: adding these fields later means touching every node class and every place a node is built.
+- `LangError` is a separate class from Python's built-in exceptions on purpose.  When you catch `LangError` in your REPL, you know it is the user's mistake.  When a bare `KeyError` escapes, that is *your* bug, and it should crash loudly.
 - The `difflib.get_close_matches` call is the entire "did you mean" feature.  Four lines, and it is what students will remember about your language.
-- The `/` check happens *before* the `ops` dict is consulted, because `1 / 0` must produce your message rather than Python's `ZeroDivisionError`.
-- The final `raise` is a real safety net: an evaluator that silently returns `None` for an unknown node type produces a wrong answer somewhere far away instead of an error here.
+- The `/` check happens *before* the `ops` dictionary is consulted, because `1 / 0` must produce your message rather than Python's `ZeroDivisionError`.
+- The final `raise` is a real safety net.  An evaluator that silently returns `None` for an unknown node type produces a wrong answer somewhere far away instead of an error here.
 
-> **Watch out!**  It is tempting to make the evaluator return a sentinel like `None` or `-1` on error instead of raising.  Do not.  A sentinel propagates: `None + 1` fails somewhere else entirely, and the reported line number belongs to innocent code.  Raise at the point of discovery, where you still know which node was to blame.
+> **Watch out!**  It is tempting to make the evaluator return a sentinel (a placeholder value such as `None` or `-1`) on error instead of raising.  Do not.  A sentinel propagates: `None + 1` fails somewhere else entirely, and the reported line number belongs to innocent code.  Raise at the point of discovery, where you still know which node was to blame.
 
 ### Critical Thinking Questions
 
 8.  Model 3 raises on an unbound variable.  Name a real language that instead gives unbound names a default value, and describe one bug that choice makes easy to write and hard to find.
-9.  The `line`/`col` fields are threaded through the AST but the evaluator never *reads* them except when raising.  What would it cost, in lines changed, to add them to a language that did not have them from the start?
+9.  The `line`/`col` fields are threaded through the AST, but the evaluator never *reads* them except when raising.  What would it cost, in lines changed, to add them to a language that did not have them from the start?
 10. `LangError` is caught by the caller, not by `evaluate`.  Where should your REPL catch it, and what should it do afterward: exit, or print and continue reading?  What does Python's REPL do?
 
 ### Try It Yourself
@@ -548,7 +550,7 @@ for label, tree in [("7 % 2", BinOp("%", Num(7,1,1), Num(2,1,5), 1, 3)),
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output as written: the first two report that `%` is unsupported, and the third divides by zero.  Once your TODOs are in, write the three resulting behaviors into `SEMANTICS.md` as one sentence each; that paragraph is a deliverable of the Interpreter assignment.
+Expected output as written: the first two report that `%` is unsupported, and the third divides by zero.  Once your TODOs are in, write the three resulting behaviors into `SEMANTICS.md` as one sentence each.  That paragraph is a deliverable of the Interpreter assignment.
 
 ---
 
@@ -558,7 +560,7 @@ Expected output as written: the first two report that `%` is unsupported, and th
 
 ## Model 4: BFS vs DFS, Why Evaluators Use Post-Order
 
-When you evaluate an AST, you always use *depth-first, post-order* traversal: left child first, right child next, then the current node.  But why not breadth-first search?  After all, BFS is the "level-by-level" traversal, and it seems simpler.  This model shows both traversals on the same tree and makes the answer concrete: evaluating a node requires its children's *values*, which are only available after the children have been fully evaluated.  BFS visits children of a node before it visits their children's children; it cannot satisfy the "children before parent" requirement of evaluation.
+When you evaluate an AST, you always use *depth-first, post-order* traversal: left child first, right child next, then the current node.  Depth-first search (DFS) follows one branch all the way down before it moves to the next branch.  Breadth-first search (BFS) visits the tree level by level instead: the root, then all of its children, then all of their children.  BFS looks simpler, so why not use it?  This model runs both traversals on the same tree and makes the answer concrete.  Evaluating a node requires its children's *values*, and those exist only after the children have been fully evaluated.  BFS visits a node before any of its children, so it can never satisfy the "children before parent" requirement of evaluation.
 
 > *Adapted from [`bfs.py`](https://github.com/chuckallison/foundations-of-computing/blob/main/code/bfs.py) in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
@@ -651,11 +653,11 @@ print(f"\nEvaluated result: {eval_postorder(expr_tree)}  (expected 9.0)")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-**CTQ M4.1** The BFS order for `(1 + 2) * 3` is `* + 3 1 2`.  Explain precisely why you *cannot* evaluate the tree by processing nodes in this order.  Which node in the BFS order is visited before its children's values are available?
+**CTQ M4.1** The BFS order for `(1 + 2) * 3` is `* + 3 1 2`.  Explain exactly why you *cannot* evaluate the tree by processing nodes in this order.  Which node in the BFS order is visited before its children's values are available?
 
 **CTQ M4.2** Post-order guarantees that every node is processed *after all its descendants*.  Is this property true of DFS pre-order as well?  Give a concrete example of a case where pre-order evaluation fails for the same reason BFS fails.
 
-**CTQ M4.3** The `eval_postorder` function uses recursion, but the call stack is implicit.  Rewrite it iteratively using an explicit stack, producing the same result.  What is the relationship between the recursive call stack and the explicit stack you used?
+**CTQ M4.3** The `eval_postorder` function uses recursion, so the call stack is implicit.  Rewrite it iteratively using an explicit stack, producing the same result.  What is the relationship between the recursive call stack and the explicit stack you used?
 
 ---
 
@@ -731,4 +733,4 @@ In your notebook: you have now run a program in a language whose every component
 
 ---
 
-Up next: the *Control Flow and Statement Semantics* activity finishes the evaluator by pinning down which code runs and in what order; *Binding and Scope* follows it and confronts the first crack in this design, the single flat dictionary of variables.  Together the three anchor the Interpreter assignment.
+Up next: the *Control Flow and Statement Semantics* activity finishes the evaluator by pinning down which code runs and in what order.  *Binding and Scope* follows it and confronts the first crack in this design, the single flat dictionary of variables.  Together the three anchor the Interpreter assignment.

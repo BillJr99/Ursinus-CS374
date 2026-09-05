@@ -14,21 +14,21 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Closures and First-Class Functions
 
-Have you ever wondered how a function can "remember" a value from a context that no longer exists?  Think of a closure like a letter that carries its own envelope: even after the post office (the enclosing scope) closes for the day, the letter still knows exactly where it came from.  Closures are the mechanism that makes callbacks, iterators, and the entire functional-programming style of JavaScript, Python, and Scheme possible; understanding them means understanding how scope and state really work at runtime.
+A closure is a function packaged together with the environment that was in force when the function was created.  That package is how a function can still read a variable after the scope that created the variable has returned.  Closures are the mechanism behind callbacks, iterators, and the functional style of JavaScript, Python, and Scheme.  Once you can trace a closure, you understand how scope and state behave at runtime.
 
 ## Learning Goals
 
 By the end of this activity, you will be able to:
 
-- Define a closure as a pair of code and its defining environment, and explain why it is necessary in a language with first-class functions and static scope
+- Define a closure as a pair of code and its defining environment, and explain why a language with first-class functions and static scope needs it
 - Trace environment diagrams for closure creation and invocation, identifying captured variable bindings and parent environment pointers
 - Implement closure creation and application in an interpreter by storing and restoring the defining environment at call time
 - Identify the loop-variable capture trap and explain why closures in loops capture a reference rather than a value
 - Compare closures and objects as dual mechanisms for bundling state with behavior
 
-With your team's language now underway from the *Language Design Workshop* kickoff, every thread of the semester knots together today: when a language with **first-class functions** and **static scope** lets a function escape the scope where it was born, the function must carry its birthplace with it, and what it carries is exactly the environment model you built in *Environments and Variable Storage*.  That bundle of code plus captured environment is a **closure**: the mechanism behind `make_adder`, behind every Church encoding, and behind the `FunDef` node your interpreter will support.
+Your team's language is underway after the *Language Design Workshop* kickoff, and today ties two earlier ideas together.  A language has **first-class functions** when a function is an ordinary value: you can store it in a variable, pass it as an argument, and return it from another function.  A language has static scope when a name refers to the variable declared where the function was written.  Put those two rules together and a function can escape the scope where it was born.  To keep working, it must carry that scope with it.  What it carries is the environment model you built in *Environments and Variable Storage*.  The bundle of code plus captured environment is a closure.  It is the mechanism behind `make_adder`, behind every Church encoding, and behind the `FunDef` node your interpreter will support.
 
-Arc: **the problem closures solve -> the mechanism drawn precisely -> closures in your interpreter -> the loop-variable trap -> objects vs closures**
+Today's arc runs in five steps: the problem closures solve, the mechanism drawn precisely, closures in your own interpreter, the loop-variable trap, and objects compared with closures.
 
 > **Before You Begin:** This activity assumes you can:
 > - Define what an environment (scope chain) is, and trace a simple variable lookup through nested scopes
@@ -41,32 +41,33 @@ Arc: **the problem closures solve -> the mechanism drawn precisely -> closures i
 
 ## Directions and Group Roles
 
-Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Please think each model through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever you disagreed or found another approach.  After class, please respond to the reflective prompt on your own in your notebook.
+Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Think each model through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board.  The Presenter reports out wherever you disagreed or found another approach.  After class, respond to the reflective prompt on your own in your notebook.
 
 ---
 
 ## Key Concepts
 
-Here is a plain-English glossary of the terms this activity uses.  Please come back to this table whenever one of them starts to feel slippery.
+This glossary defines the terms the activity uses.  Come back to it whenever a term starts to feel slippery.
 
 | Term | Plain-English meaning | Why it matters |
 |------|-----------------------|----------------|
-| **Closure** | A function bundled with the environment where it was defined | The mechanism that lets a function remember variables after their scope ends |
+| **Closure** | A function bundled with the environment where it was defined | The mechanism that lets a function read variables after their scope ends |
 | **First-class function** | A function treated as an ordinary value: stored, passed, returned | Without this, closures never arise; with it, they are unavoidable |
 | **Defining environment** | The scope chain in effect at the moment a function is created | This is what the closure captures, never the caller's environment |
+| **Captured variable** | A variable from an enclosing scope that an inner function reads or writes | The closure keeps that variable alive after its scope returns |
 | **Capture by reference** | The closure holds a pointer to the *binding*, not a snapshot of the value | Explains why closures see later changes, and the loop-variable trap |
 | **Lexical (static) scope** | Names resolve where the function was *written* in the source | The rule Python, JavaScript, and Scheme use; implemented by one parent-pointer choice |
 | **Dynamic scope** | Names resolve in whoever *called* the function | The historical alternative; a contrast that shows what lexical scope buys |
 | **Environment diagram** | Boxes for scopes, arrows for parent and capture pointers | The picture that makes every closure question answerable |
-| **Loop-variable trap** | All closures made in a loop share one binding, so all see its final value | The most famous closure bug in Python and JavaScript alike |
+| **Loop-variable trap** | All closures made in a loop share one binding, so all see its final value | The most common closure bug in Python and JavaScript alike |
 | **Factory function** | A function whose every call creates a fresh scope and returns a closure over it | The standard fix for the trap, and the pattern behind `make_adder` |
-| **Mutable cell / `nonlocal`** | The way an inner function assigns into a captured binding | How closures hold changing *state*, not just constants |
+| **Mutable cell / `nonlocal`** | The way an inner function assigns into a captured binding | How closures hold changing *state* as well as constants |
 
 ---
 
 # Part I: The Problem and the Mechanism
 
-Imagine hiring a contractor who was trained in your workshop.  After the workshop closes, the contractor still knows all its tools and rules; they carry that knowledge with them wherever they go.  In the same way, a function defined inside another function "remembers" the variables from its birth environment even after the enclosing function has returned.  This section shows the classic `make_adder` example that demonstrates why this behavior is necessary and useful.
+A function defined inside another function keeps reading the variables of its birth environment after the enclosing function has returned.  One analogy: a contractor trained in your workshop still knows the workshop's tools and rules after the workshop closes.  The analogy stops there, because the contractor carries a memory of the workshop while a closure carries a live link to it.  This section uses the classic `make_adder` example to show why this behavior is necessary and useful.
 
 ## 1.  A Function Outlives Its Scope
 
@@ -89,25 +90,27 @@ print(f"add10's closure cells: {add10.__closure__[0].cell_contents}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-By the lifetime rules of the environments module, `make_adder`'s local scope should die at `return`, taking `n` with it; yet `add5` still finds `n = 5`.  The resolution: **a function value is not just code; it is a closure**, a pair of `(code, defining_environment)`.  When `adder` was created, it captured a reference to the environment where `n` was bound.  That environment survives because the closure still points to it: lifetime follows reachability.
+By the lifetime rules of the environments module, `make_adder`'s local scope should die at `return` and take `n` with it.  Yet `add5` still finds `n = 5`.  The resolution is that **a function value is not just code; it is a closure**, a pair of `(code, defining_environment)`.  When Python created `adder`, it captured a reference to the environment where `n` was bound.  That environment survives because the closure still points to it.  Lifetime follows reachability.
 
 $$\text{closure} = \langle \text{params}, \text{body}, E_{\text{def}} \rangle$$
 
-Calling a closure resurrects its birthplace.  The call `add5(10)` creates a fresh environment for the parameter (`x = 10`) whose **parent is the closure's captured environment** (where `n = 5`), not the caller's.  This is static scoping enforced at runtime, the entire difference between lexical and dynamic scope, implemented in one decision about which parent pointer to use.
+Calling a closure brings its birthplace back into use.  The call `add5(10)` creates a fresh environment for the parameter (`x = 10`).  The parent of that environment is the closure's captured environment (where `n = 5`), not the caller's environment.  That parent choice is static scoping enforced at runtime.  The entire difference between lexical and dynamic scope is one decision about which parent pointer to use.
+
+Remember two things from this section.  A closure is code plus its defining environment.  A call runs the body in a child of that captured environment.
 
 **Critical Thinking Questions (CTQs)**
 
 > **CTQ 1.1** Draw the environment diagram at `print(add5(3))`: the global frame, the still-alive `make_adder` frame holding `n = 5`, the call frame holding `x = 3`, and every parent arrow.  Which arrow embodies "static scope"?
 
-> **CTQ 1.2** After `add5 = make_adder(5)` and `add10 = make_adder(10)`, how many `make_adder` environments exist simultaneously?  What does each closure's captured pointer tell you about whether closures *copy* or *reference* their environment?
+> **CTQ 1.2** After `add5 = make_adder(5)` and `add10 = make_adder(10)`, how many `make_adder` environments exist at the same time?  What does each closure's captured pointer tell you about whether closures *copy* or *reference* their environment?
 
 > **CTQ 1.3** In the lambda calculus, `(λn. λx. x + n) 5` reduces to `λx. x + 5` by *substitution*: the 5 is pasted into the body.  State the relationship: closures are an *implementation strategy* for what substitution *specifies*.  Why might an interpreter prefer environments over literal substitution for large function bodies?
 
 ---
 
-Think of a closure like a security camera that watches a shelf, not a photograph of what is on the shelf right now.  When you look at the camera feed later, you see whatever is currently on the shelf, not what was there when the camera was installed.  This model shows that closures hold a live reference to a variable binding, so changes to that variable after the closure is created are visible through the closure.
+A closure holds a live reference to a variable binding.  Any change to that variable after the closure is created is visible through the closure.  One analogy: a closure is a security camera pointed at a shelf, not a photograph of the shelf.  When you look at the feed later, you see whatever is on the shelf now.  The analogy stops at the camera's one-way view, because a closure can also write to the shelf through `nonlocal` or a mutable cell.
 
-> **Watch out!**  A common mistake is to think a closure *copies* the value of a variable at the moment the closure is created.  It does not: it captures a *reference* to the binding.  If the variable changes after the closure is defined, the closure will see the new value.  The `get_x` example below demonstrates this directly.
+> **Watch out!**  A common mistake is to think a closure *copies* the value of a variable at the moment the closure is created.  It does not.  It captures a *reference* to the binding.  If the variable changes after the closure is defined, the closure sees the new value.  The `get_x` example below demonstrates this directly.
 
 ## Model 1: Closures Capture, Not Copy
 
@@ -154,15 +157,17 @@ print(inc())                 # 1, both closures share the same count cell
 
 ---
 
-Imagine two employees: one always looks up rules in the company handbook where they were originally trained (lexical scope), and another asks whoever is currently standing next to them (dynamic scope).  Python uses the first approach: a function's variable lookups are always resolved against the environment where the function was *defined*, not the environment where it is *called*.  This model makes that contrast concrete.
+Model 2, below, contrasts two scope rules.  Under lexical scope, a function looks names up in the environment where the function was *defined*.  Under dynamic scope, a function looks names up in the environment of whoever *called* it.  One analogy: one employee checks the handbook from the office where they were trained, and another asks whoever is standing next to them right now.  The analogy stops at the people, because a function never chooses; the language fixes the rule for every call.  Python uses lexical scope.
 
-> **Watch out!**  Students sometimes expect that calling a function from inside another function will let the called function "see" the caller's local variables.  This would be dynamic scope, and Python does *not* work that way.  The `show()` / `demo()` example below will surprise you if you carry this assumption in.
+> **Watch out!**  Students sometimes expect that calling a function from inside another function lets the called function "see" the caller's local variables.  That would be dynamic scope, and Python does *not* work that way.  The `show()` / `demo()` example in Model 2 will surprise you if you carry this assumption in.
 
 ### Reading the Code
 
-- The first block reassigns the captured variable *after* the closure is built, and the closure reports the new value.  Capture by reference is proved right there: if it had copied, it would still report the old one.
-- The default-argument contrast is the control case.  `lambda v=n: v` evaluates `n` once, at definition, and stores the result.  It is not a closure over `n` at all.
-- The shared-mutable-cell block is the same mechanism used deliberately: two functions closing over one binding is how you get an object with two methods, which is exactly where Part IV's koan goes.
+These notes cover the Model 1 code.
+
+- The first block reassigns the captured variable *after* the closure is built, and the closure reports the new value.  That proves capture by reference.  If the closure had copied, it would still report the old value.
+- The default-argument contrast is the control case.  `get_x_snapshot(val=x)` evaluates `x` once, at definition, and stores the result in `val`.  It is not a closure over `x` at all.
+- The shared-mutable-cell block is the same mechanism used on purpose.  Two functions closing over one binding is how you get an object with two methods, which is where the Extension on closures and objects goes.
 
 ### Try It Yourself
 
@@ -210,7 +215,7 @@ Expected output: `'original'`, then `'changed'`, then a dict with exactly one en
 
 ```python
 # Python uses LEXICAL (static) scope.
-# Let's simulate what DYNAMIC scope would look like.
+# Simulate what DYNAMIC scope would look like.
 
 x = "global"
 
@@ -239,7 +244,7 @@ demo_dynamic()  # prints "demo", dynamic scope: show sees caller's x
 
 > **CTQ 2.2** Early Lisp used dynamic scope by accident.  Under dynamic scope, `show_dynamic(local_env)` prints `"demo"`.  Write a scenario where dynamic scope causes a bug: a function `show_name()` that reads a variable `name` from the environment, and a caller that accidentally shadows `name` with a different value.
 
-> **CTQ 2.3** The single decision that implements static scope in the evaluator is: when creating a closure, save the **defining environment**, not the calling environment.  Locate this decision in Model 3's `Call` branch in Part II; it is a single line, and the model runs the same program with it set both ways.
+> **CTQ 2.3** The single decision that implements static scope in the evaluator is: when creating a closure, save the **defining environment**, not the calling environment.  Locate this decision in Model 3's `Call` branch in Part II.  It is a single line, and the model runs the same program with it set both ways.
 
 ---
 
@@ -248,7 +253,7 @@ demo_dynamic()  # prints "demo", dynamic scope: show sees caller's x
 
 ## 2.  Theory: One Field, One Line
 
-Everything above was Python showing you *its* closures.  Now build them.  The surprising part is how little it takes: a closure is a three-field record, and the entire static-versus-dynamic decision is one word in one line.
+Part I used Python to show you *its* closures.  Now you build your own.  It takes very little: a closure is a three-field record, and the entire static-versus-dynamic decision is one word in one line.
 
 When the evaluator meets a function expression, it does **not** evaluate the body.  It packages three things and returns them:
 
@@ -256,7 +261,7 @@ When the evaluator meets a function expression, it does **not** evaluate the bod
 Closure(param, body, env)
 ```
 
-The `param` and `body` come straight off the AST.  The third field, `env`, is the environment **at the moment the function was created**.  Capturing it is the one thing this record exists to do.
+The `param` and `body` come straight off the AST.  The third field, `env`, is the environment at the moment the function was created.  This is the function's lexical environment: the scope chain in force where the function appears in the source.  Capturing it is the one thing this record exists to do.
 
 When the evaluator later meets a call, it evaluates the function, evaluates the argument, and then evaluates the body in
 
@@ -264,7 +269,7 @@ When the evaluator later meets a call, it evaluates the function, evaluates the 
 closure.env.extend(closure.param, argument)
 ```
 
-Read that line carefully, because the session turns on it.  The body runs in a child of the closure's **captured** environment, not a child of the environment the call happens to be sitting in.  Change `closure.env` to the caller's `env` on that one line and you have written a dynamically scoped language.  Nothing else has to change.
+Read that line carefully, because the session turns on it.  The body runs in a child of the closure's captured environment, not a child of the environment where the call sits.  Change `closure.env` to the caller's `env` on that one line and you have written a dynamically scoped language.  Nothing else has to change.
 
 ## Examples: Which Environment Wins, by Hand
 
@@ -288,7 +293,7 @@ Now say which line of code you would change to move from one row to the other.  
 
 ## Model 3: Build the Closure, Then Flip the Switch
 
-This is a complete evaluator for a language with first-class functions.  The `LEXICAL` flag at the top selects which environment a call body runs in, and the *same* program is run under both settings.
+This is a complete evaluator for a language with first-class functions.  The `LEXICAL` flag at the top selects which environment a call body runs in, and the *same* program runs under both settings.
 
 ```python
 from dataclasses import dataclass
@@ -384,13 +389,15 @@ for lexical in (True, False):
 
 ### Reading the Code
 
-- The `Fun` branch is three words long and never touches the body.  A function value is *not* a running thing; it is a suspended thing plus the environment it was suspended in.
-- `Closure.env` is the field CTQ 2.3 asks you to find.  It is filled in at `Fun`, read at `Call`, and never modified.
-- `base = fn.env if lexical else env` is the entire scoping discipline of the language, on one line.  Everything students find hard about scope reduces to which of those two names you write there.
+- The `Fun` branch is three words long and never touches the body.  A function value is *not* a running thing.  It is a suspended thing plus the environment it was suspended in.
+- `Closure.env` is the field CTQ 2.3 asks you to find.  The evaluator fills it in at `Fun`, reads it at `Call`, and never modifies it.
+- `base = fn.env if lexical else env` is the entire scoping discipline of the language, on one line.  Every hard question about scope reduces to which of those two names you write there.
 - `extend` returns a *new* `Env` rather than mutating.  That is what lets two calls to the same closure run without seeing each other's arguments, and it is why recursion works at all.
-- Note that `Call` evaluates `fn` and `arg` in the *current* `env` under both settings.  Only the body's environment changes.  Getting that wrong gives a language where even the argument expression resolves strangely.
+- `Call` evaluates `fn` and `arg` in the *current* `env` under both settings.  Only the body's environment changes.  Getting that wrong gives a language where even the argument expression resolves strangely.
 
-> **Watch out!**  It is tempting to store the *values* of the free variables in the closure instead of the environment: capture `x = 10` rather than a pointer to the frame holding `x`.  That works until something reassigns `x`, and then your closure is reading a stale copy while Python's would see the update.  Model 1 already showed the difference; this is where you either preserve it or lose it.
+> **Watch out!**  It is tempting to store the *values* of the free variables in the closure instead of the environment: capture `x = 10` rather than a pointer to the frame holding `x`.  That works until something reassigns `x`.  Then your closure reads a stale copy while Python's would see the update.  Model 1 already showed the difference; this is where you either preserve it or lose it.
+
+Remember two things from this part.  `Fun` captures the defining environment and evaluates nothing.  `Call` extends that captured environment, and swapping it for the caller's environment is the whole difference between lexical and dynamic scope.
 
 ### Critical Thinking Questions
 
@@ -404,7 +411,7 @@ for lexical in (True, False):
 
 ### Try It Yourself
 
-Add recursion, which is the thing the model above deliberately cannot do.
+Add recursion, which is the one thing the model above cannot do.
 
 ```python
 from dataclasses import dataclass
@@ -495,9 +502,9 @@ Expected output as written: a `NameError` naming `fact`, with the explanation.  
 
 # Part III: The Loop-Variable Trap
 
-The loop-variable trap is one of the most famous beginner bugs in Python and JavaScript alike.  Imagine handing every worker in a factory floor the *same* whiteboard marker and telling them to write down the current job number.  By the time they all pick up the marker to write, the job number has moved on to the last value; they all write the same thing.  This is exactly what happens when closures in a loop all capture the same variable binding instead of their own private copy.
+The loop-variable trap is one of the most common beginner bugs in Python and JavaScript alike.  It happens when every closure created in a loop captures the same variable binding instead of its own private copy.  One analogy: every worker on a factory floor shares one whiteboard for the current job number.  By the time any worker reads the board, the number has moved on to the last job.  The analogy stops at the sharing, because the fix in code is to give each closure its own board, which a factory cannot do by rewriting one line.
 
-> **Watch out!**  When you write `[lambda: i for i in range(3)]`, all three lambdas capture *one* variable `i`, the same loop variable.  By the time any of them is called, the loop has finished and `i` is `2`.  This is not a bug in Python; it is the correct behavior of reference capture.  The two fixes shown (default argument and factory function) both work by creating a separate binding per iteration.
+> **Watch out!**  When you write `[lambda: i for i in range(3)]`, all three lambdas capture *one* variable `i`, the same loop variable.  By the time any of them is called, the loop has finished and `i` is `2`.  This is not a bug in Python.  It is the correct behavior of reference capture.  The two fixes shown (default argument and factory function) both work by creating a separate binding per iteration.
 
 ## 3.  The Famous Python Bug
 
@@ -532,7 +539,7 @@ print("Fix 2 (factory):", [f() for f in fns_fixed2])   # [0, 1, 2]
 
 > **CTQ 6.1** All three lambdas captured the same `i` binding.  After the loop, what is `i`?  Why do all three lambdas return 2?
 
-> **CTQ 6.2** Fix 1 uses `lambda i=i: i`.  The outer `i` (the default argument value) is evaluated at *definition time*, capturing the current value.  Why does this work, while the capture in the original version doesn't?
+> **CTQ 6.2** Fix 1 uses `lambda i=i: i`.  Python evaluates the outer `i` (the default argument value) at *definition time*, which captures the current value.  Why does this work, while the capture in the original version does not?
 
 > **CTQ 6.3** Fix 2 uses a factory function `make_fn(i)` that creates a new scope.  Draw the environment diagram showing why each returned lambda has a *different* captured environment.
 
@@ -540,13 +547,13 @@ print("Fix 2 (factory):", [f() for f in fns_fixed2])   # [0, 1, 2]
 
 ---
 
-The code above showed the trap and two fixes; now draw it.  The broken and fixed versions differ by exactly one thing (how many environment boxes exist) and the box diagram makes the bug visible at a glance.
+The code above showed the trap and two fixes.  The notes below explain the code, the Try It Yourself asks you to predict five variants, and Model 5 then draws the trap as boxes.  The broken and fixed versions differ by exactly one thing (how many environment boxes exist), and the box diagram makes the bug visible at a glance.
 
 ### Reading the Code
 
-- `[lambda: i for i in range(3)]` builds three functions that all close over the *same* `i`.  Nothing about that is a bug; it is capture-by-reference doing exactly what Model 1 demonstrated on purpose.
-- The two fixes attack different halves.  The default argument stops closing over `i` at all, so there is nothing to share.  The factory function makes a genuinely new binding per iteration, so there are three `i`s to close over instead of one.
-- JavaScript's `var` had this exact shape and `let` changed it by giving loop bodies per-iteration bindings.  You made the same decision in the *Environments* Try It Yourself, at ecosystem scale.
+- `[lambda: i for i in range(3)]` builds three functions that all close over the *same* `i`.  Nothing about that is a bug.  It is capture-by-reference doing exactly what Model 1 demonstrated on purpose.
+- The two fixes attack different halves.  The default argument stops closing over `i` at all, so there is nothing to share.  The factory function makes a new binding per iteration, so there are three `i`s to close over instead of one.
+- JavaScript's `var` had this exact shape, and `let` changed it by giving loop bodies per-iteration bindings.  You made the same decision in the *Environments* Try It Yourself, at ecosystem scale.
 
 ### Try It Yourself
 
@@ -582,11 +589,11 @@ print("or why there isn't one.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output: `a` and `d` give `[2, 2, 2]`; `b`, `c`, and `e` give `[0, 1, 2]`.  If you predicted the comprehension and the for-loop would differ, note that they do not: the comprehension's scope is not what saves you.
+Expected output: `a` and `d` give `[2, 2, 2]`; `b`, `c`, and `e` give `[0, 1, 2]`.  If you predicted the comprehension and the for-loop would differ, note that they do not.  The comprehension's scope is not what saves you.
 
 ## Model 5: The Loop Trap, Drawn as Boxes
 
-**Broken:** `fns = [lambda: i for i in range(3)]`.  The comprehension runs in a single scope, so there is exactly **one** box holding `i`, and every lambda's capture arrow points at it:
+**Broken:** `fns = [lambda: i for i in range(3)]`.  The comprehension runs in a single scope, so there is exactly one box holding `i`, and every lambda's capture arrow points at it:
 
 ```
         +----------------------------+
@@ -611,7 +618,7 @@ Expected output: `a` and `d` give `[2, 2, 2]`; `b`, `c`, and `e` give `[0, 1, 2]
    three closures, three boxes: one binding per closure
 ```
 
-The broken version's history as a timeline: the trap is a *timing* bug, because capture is by reference and the calls happen after the last write:
+Here is the broken version's history as a timeline.  The trap is a *timing* bug: capture is by reference, and the calls happen after the last write.
 
 | Loop step | Shared box's `i` | Closures created so far | What each would return *if called now* |
 |-----------|------------------|-------------------------|----------------------------------------|
@@ -650,6 +657,8 @@ print("fix1 closures:", [f.__closure__ for f in fix1])   # [None, None, None]
 [( )] Python evaluates lambda bodies eagerly at definition time
 [( )] The list comprehension copied the last lambda three times
 
+Remember two things from this part.  Closures made in one scope share one binding, so they all see its final value.  A factory call makes a fresh scope, so each closure gets its own binding.
+
 **Critical Thinking Questions (CTQs)**
 
 > **CTQ 7.1** Which single line of the cell's output is direct evidence for the "three arrows, one box" picture?  Which line is evidence for "three boxes"?
@@ -669,17 +678,17 @@ Two closures created by separate calls to `make_adder(5)` and `make_adder(3)` re
 
 ---
 
-**In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
+**In-class work stops here.**  Everything below is homework and going-deeper material.  Attempt the exercises before the related assignment.
 
 # Extension: Closures vs. Objects
 
-At first glance, objects and closures look very different: one is a class instance with named fields; the other is a function bundled with hidden environment variables.  But look closer and you will find they are two sides of the same coin.  Both bundle state with behavior; both control which code can reach that state.  This model encodes a counter two ways, side-by-side, so you can see the structural parallel directly.
+Objects and closures do the same job.  Both bundle state with behavior, and both control which code can reach that state.  They look different at first: an object is a class instance with named fields, and a closure is a function bundled with hidden environment variables.  This model builds a counter both ways, side by side, so you can see the parallel directly.
 
-> **Watch out!**  Closures are not limited to functional languages.  Python, JavaScript, Ruby, and even Java (via lambdas) all have closures.  A common misconception is that "closures = Haskell/Scheme only."  In modern JavaScript, closures are used every time you write a callback, event handler, or `useEffect` hook in React.
+> **Watch out!**  Closures are not limited to functional languages.  Python, JavaScript, Ruby, and Java (through lambdas) all have closures.  A common misconception is that "closures = Haskell/Scheme only."  In modern JavaScript, you use a closure every time you write a callback, an event handler, or a `useEffect` hook in React.
 
-## 4.  The Koan: Closures Are Poor Man's Objects
+## 4.  Closures and Objects Are Two Views of One Idea
 
-The famous koan: "Closures are a poor man's objects; objects are a poor man's closures."  They are dual.
+A well-known saying in the field puts it this way: "Closures are a poor man's objects; objects are a poor man's closures."  Each can stand in for the other.  They are dual.
 
 ```python
 # Objects approach: counter using a class
@@ -729,13 +738,13 @@ print(f"Closure counter: {clo_counter['value']()}")
 
 ## 5.  Two Ways to Get What the Calculus Lacks
 
-Last week, in *Church Encodings and Combinators*, you derived $\textbf{Y}$ and then $\textbf{Z}$, and used them to make a function call itself with no name anywhere in the term.  `fact-generator` took "the rest of the recursion" as an ordinary parameter, and the combinator supplied it.  Nothing was captured and nothing was mutated; there was only application and substitution.
+Last week, in *Church Encodings and Combinators*, you derived $\textbf{Y}$ and then $\textbf{Z}$, and used them to make a function call itself with no name anywhere in the term.  `fact-generator` took "the rest of the recursion" as an ordinary parameter, and the combinator supplied it.  Nothing was captured and nothing was mutated.  There was only application and substitution.
 
-Today's mechanism could hardly be less like that.  A closure gets its power from holding on to a *binding*, and `set!` gets its power from writing to that binding.  The counter remembers because the frame outlived the call that made it, and because somebody was allowed to change what the frame holds.
+Today's mechanism is nothing like that.  A closure gets its power from holding on to a *binding*, and `set!` gets its power from writing to that binding.  The counter remembers because the frame outlived the call that made it, and because somebody was allowed to change what the frame holds.
 
-It is worth being blunt about how unrelated these two are.  One is pure and needs no notion of memory at all; the other is nothing but memory.  Neither is derivable from the other in any obvious way.  And yet both exist to buy the same missing thing: the bare calculus gives you no way to refer back to something, whether that something is a function you are in the middle of defining or a value you set on the last call.  The combinator buys self-reference without names.  The closure buys names that persist without a global.
+The two mechanisms are unrelated.  One is pure and needs no notion of memory at all; the other is nothing but memory.  Neither is derivable from the other in any obvious way.  And yet both exist to buy the same missing thing.  The bare calculus gives you no way to refer back to something, whether that something is a function you are in the middle of defining or a value you set on the last call.  The combinator buys self-reference without names.  The closure buys names that persist without a global.
 
-This is also why CTQ 3.3 was harder than it looked.  When `Fun` runs, the function's own name is not in `env` yet, so a closure cannot capture it, and the fix in the Try It Yourself is to reach into the captured environment afterward and point the name at the closure.  That is called *tying the knot*, and it is the mutation-based answer to exactly the problem $\textbf{Y}$ solves without mutation.  Your interpreter is free to pick either one.  Most real languages pick the knot, because it is cheaper and because programmers want to write the name.
+This is also why CTQ 3.3 was harder than it looked.  When `Fun` runs, the function's own name is not in `env` yet, so a closure cannot capture it.  The fix in the Try It Yourself is to reach into the captured environment afterward and point the name at the closure.  That is called *tying the knot*, and it is the mutation-based answer to exactly the problem $\textbf{Y}$ solves without mutation.  Your interpreter is free to pick either one.  Most real languages pick the knot, because it is cheaper and because programmers want to write the name.
 
 > **CTQ 9.1** Scheme ships both mechanisms.  Write `factorial` twice, once with `define` and a self-reference, once with $\textbf{Z}$ and a generator.  Which one would you hand a first-year student, and which one would you rather implement in your evaluator?  Notice those may not be the same answer.
 
@@ -804,7 +813,7 @@ Reproduce the loop-variable trap in your language (or Python), apply both fixes,
 
 ### Exercise 4: Scope Flip Experiment (20 min)
 
-Apply the one-token change from CTQ 3.1 to make your interpreter dynamically scoped.  Rerun the `show`/`demo` program from the *Binding and Scope* activity.  Report the output difference and explain with a diagram which environment chain the dynamically scoped version follows.
+Apply the one-token change from Model 3 (CTQ 3.1) to make your interpreter dynamically scoped.  Rerun the `show`/`demo` program from the *Binding and Scope* activity.  Report the output difference and explain with a diagram which environment chain the dynamically scoped version follows.
 
 ---
 
@@ -825,7 +834,7 @@ A closure carries its context everywhere, so it always means what it meant at ho
 
 ## Going Further (at home)
 
-The core lesson above stands on its own.  Two full self-paced tutorials extend today's mechanism into runtime territory that feeds the Interpreter assignment's extensions and the team project:
+The core lesson above stands on its own.  Two self-paced tutorials extend today's mechanism into runtime territory that feeds the Interpreter assignment's extensions and the team project:
 
 - [Coroutines and Generators: Pausable Computation](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CoroutinesAndGenerators): how `yield` freezes a stack frame, how `async`/`await` desugars to a state machine, and how to add generator objects to your interpreter
 - [Error Handling: From Return Codes to Algebraic Effects](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ErrorHandling): return codes, exceptions, Option/Maybe, Result/Either, and designing error propagation for your interpreter

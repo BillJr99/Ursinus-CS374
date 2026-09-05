@@ -9,7 +9,7 @@ info:
   tilt:
     task: "With a partner, implement a checker that walks the class AST with a type environment, verifying annotated declarations, variable uses, and operator applications, and reporting positioned type errors."
     criteria: "I grade this on a checker that accepts the well-typed programs and rejects each ill-typed program with a positioned two-type error message, plus a set of typing-rule statements written on paper, weighted 70/30 across the two parts.  See the rubric below for the full breakdown."
-  points: 100
+  points: 15
   goals:
     - To implement a static checking pass over the class AST using a type environment that mirrors the Environment class
     - To check annotated declarations, variable uses, and operator applications, reporting errors with positions and both conflicting types
@@ -48,41 +48,60 @@ tags:
 
 ---
 
-This **lab** builds the core of the Interpreter assignment's Part 4, the small static type checker that runs between parsing and evaluation.  Here you get the machinery working on the checker's three foundational cases, which are literals, variables, and operators, with a partner.  The assignment then has you extend it to call sites and return types on your own.  Plan on one working session for it.
+This **lab** builds the core of the Interpreter assignment's Part 4: a small static type checker that runs between parsing and evaluation.  A static type checker reads the abstract syntax tree (AST) of a program and decides whether each operation makes sense before any of the program runs.  With a partner, you get the checker working on its three simplest cases: literals, variables, and operators.  The Interpreter assignment then has you extend it on your own to call sites and return types.  Plan on one working session.
 
-**Pair policy.**  You may do this lab **in pairs**.  Submit the same files with each other named in them, and you will both earn the same grade.  Working alone is allowed.  The Interpreter assignment remains individual work: you may both carry this shared checker core into it, but the extension to calls and returns must be your own.
-
----
-
-## Part 0: Before You Start — Type Systems (10 points)
-
-Do this one **before you write the checker**, and ideally before the Type Systems session.  About fifteen minutes.
-
-Everyone has a position on static typing, and almost nobody arrives with an example.  An example is what makes the argument worth having.
-
-1.  **Annotate each subexpression** of a small program with the type you expect.  Then find **one expression a static type checker would reject that a dynamic language would happily run**.  Which behavior do you prefer *there*, and why?
-2.  **State one guarantee** a type system buys you, and **one program it forbids that you wish it allowed**.
-
-Bring the program you wish the checker had allowed.  Come with it even if you could not settle the question; the unsettled ones are what we argue about, and Part 1 makes you take a side in code.
+**Pair policy.**  You may do this lab in pairs.  Submit the same files, name both partners in them, and you will both earn the same grade.  Working alone is also allowed.  The Interpreter assignment remains individual work: both partners may carry this shared checker core into it, but the extension to calls and returns must be your own.
 
 ---
 
-## Part 1: The Checker Core (63 points)
+## Part 0: Before You Start - Type Systems (10%)
 
-Implement `check(program) -> None` in `typechecker.py`, walking the class AST (use your Parser assignment's AST nodes, or the reference AST) with a **type environment**: the same parent-chaining discipline as your Environments lab, but binding names to *types* rather than values:
+Do this part before you write the checker, and ideally before the Type Systems session.  Plan on about fifteen minutes with pencil and paper.
+
+The point of Part 0 is to arrive with an example.  Everyone has an opinion about static typing; an example is what makes the argument worth having.
+
+1.  Write a small program and annotate each subexpression with the type you expect it to have.  Then find one expression that a static type checker would reject but a dynamic language would run.  Say which behavior you prefer there, and why.
+2.  State one guarantee a type system gives you, and one program it forbids that you wish it allowed.
+
+Bring the program you wish the checker had allowed, even if you could not settle the question.  The unsettled cases are the ones we argue about, and Part 1 makes you take a side in code.
+
+---
+
+## Part 1: The Checker Core (63%)
+
+Implement `check(program) -> None` in `typechecker.py`.  The function walks the class AST (use your Parser assignment's AST nodes, or the reference AST) and reports a type error as soon as it finds one.  A well-typed program produces no output.
+
+The checker carries a type environment as it walks.  A type environment uses the same parent-chaining discipline as the `Environment` class from your Environments lab, but it binds each name to a *type* instead of a value.  Entering a block creates a child environment, and leaving the block discards it.
+
+Your checker enforces these rules:
 
 - **Literals:** numbers are `Num`, strings are `Str`, booleans are `Bool`.
 - **Declarations:** `let x: Num = expr;` checks that `expr`'s type equals the annotation, then binds `x : Num` in the current scope.  A mismatch is an error naming both types.
 - **Variables:** a use of `x` looks up its declared type; an undeclared use is a positioned error.
 - **Operators:** `+ - * /` require `Num` operands and yield `Num`; `< <= > >=` require `Num` and yield `Bool`; `== !=` require both sides to have the same type and yield `Bool`; `and`/`or`/`not` require `Bool`.  Every violation is reported as `Type error at line L, col C: ...` naming **both** conflicting types.
 
-Verify against the provided programs (course starter repo): six well-typed programs that must pass silently, and six ill-typed programs that must each produce a positioned error, including the classic `let x: Num = 1 + true;` (error *before* anything runs) and a shadowing case where an inner `let x: Str` legitimately changes the type of `x` for the inner scope only.
+A workable order of construction:
 
-## Part 2: Typing Rules on Paper (27 points)
+1.  Write the type environment: a way to bind a name to a type in the current scope, and a lookup that follows the parent chain.
+2.  Handle literals, so the simplest programs type-check.
+3.  Handle declarations and variable uses, which exercise the environment and its scoping.
+4.  Handle operators one family at a time: arithmetic, then comparison, then equality, then the boolean operators.
+5.  Run the provided programs after each step and keep the output as your run log.
 
-In `RULES.md`, state the typing rule for each construct your checker covers: one rule per construct, premises and conclusion, in either inference-rule layout or a disciplined "if... then..." sentence (e.g., *if `e1 : Num` and `e2 : Num`, then `e1 + e2 : Num`*).  Cite, for each rule, the function or branch in `typechecker.py` that implements it.  This document becomes the seed of the Interpreter assignment's semantics writeup, and if you later choose the full Hindley-Milner direction, these rules are exactly what inference generalizes.
+Verify your checker against the provided programs in the course starter repo.  Six well-typed programs must pass silently.  Six ill-typed programs must each produce a positioned error; these include the classic `let x: Num = 1 + true;` (the error must appear *before* anything runs) and a shadowing case where an inner `let x: Str` legitimately changes the type of `x` for the inner scope only.
 
-Close `RULES.md` with two theory questions from the Type Systems session: (1) place four languages (Python, C, Haskell, and JavaScript) on the **static/dynamic × strong/weak** quadrant, with one sentence of justification each; (2) your checker makes the class language *gradually* typed in spirit (annotated declarations are checked, unannotated territory is documented as unchecked); state one benefit and one risk of that middle ground, using the mypy/TypeScript comparison from class.
+Two things to remember from this part.  The checker never evaluates anything; it only compares types.  And every error message names the position and both conflicting types.
+
+## Part 2: Typing Rules on Paper (27%)
+
+In `RULES.md`, state the typing rule for each construct your checker covers, one rule per construct.  A typing rule has premises (what must already be true about the parts) and a conclusion (what then holds for the whole).  Write each rule in either inference-rule layout (premises above a line, conclusion below it) or a disciplined "if... then..." sentence (e.g., *if `e1 : Num` and `e2 : Num`, then `e1 + e2 : Num`*).  For each rule, cite the function or branch in `typechecker.py` that implements it.
+
+This document becomes the seed of the Interpreter assignment's semantics writeup.  If you later choose the full Hindley-Milner direction (type inference, which works out types with no annotations at all), these rules are exactly what inference generalizes.
+
+Close `RULES.md` with two theory questions from the Type Systems session:
+
+1.  Place four languages (Python, C, Haskell, and JavaScript) on the static/dynamic × strong/weak quadrant, with one sentence of justification each.
+2.  Your checker makes the class language *gradually* typed in spirit: annotated declarations are checked, and unannotated territory is documented as unchecked.  State one benefit and one risk of that middle ground, using the mypy/TypeScript comparison from class.
 
 ---
 
@@ -92,12 +111,14 @@ Submit a ZIP containing `typechecker.py`, the run log over the twelve provided p
 
 ## Grading Breakdown
 
-| Component | Points |
+This lab is worth 15 points, as the course schedule states.  Each part's weight below is a percentage of those 15 points, and the rubric rows use the same percentages.
+
+| Component | Weight |
 |-----------|--------|
-| Part 0: Type Systems | 10 |
-| Part 1: The Checker Core | 63 |
-| Part 2: Typing Rules on Paper | 27 |
-| **Total** | **100** |
+| Part 0: Type Systems | 10% |
+| Part 1: The Checker Core | 63% |
+| Part 2: Typing Rules on Paper | 27% |
+| **Total** | **100% (15 points)** |
 
 ## Reflection Prompts
 
@@ -108,15 +129,15 @@ Submit a ZIP containing `typechecker.py`, the run log over the twelve provided p
 
 ## From the Type Systems Activity: A Dynamically, Strongly Typed Core
 
-The material below was previously delivered in the *Type Systems* class session.  It lives here instead, because it is this lab: a runtime checker for the interpreter you are building, traced on compound expressions, with a worked type-error postmortem.  Read it before you start Part 1.
+The material below was previously delivered in the *Type Systems* class session.  It lives here instead because it is this lab: a runtime checker for the interpreter you are building, traced on compound expressions, followed by a worked type-error postmortem.  Read it before you start Part 1.
 
 ## Part II: Types in Your Interpreter
 
-**Intuition for Model 2:** Your interpreter already evaluates binary expressions like `3.0 + 4.0`.  This model shows you how to add a gatekeeper at the top of that evaluation: before you touch the operands, check whether the combination makes sense and raise a clear error if it does not.  Think of it like a bouncer who checks IDs before letting values into an operation: `float + float` gets in, `float + string` does not.
+**Intuition for Section 2.**  Your interpreter already evaluates binary expressions like `3.0 + 4.0`.  This section adds a gatekeeper at the top of that evaluation: before you touch the operands, check whether the combination makes sense, and raise a clear error if it does not.  Think of a bouncer who checks IDs before letting values into an operation: `float + float` gets in, `float + string` does not.  The analogy stops there, because a bouncer turns people away quietly while your checker must raise an error that names both types.
 
 ### 2.  A Dynamically, Strongly Typed Core
 
-Your language (like Python) will check at runtime and refuse silent coercion: a respectable, implementable choice.  The implementation pattern: each evaluated value carries its Python type along naturally; binary operations *check before computing*.
+Your language checks types at runtime and refuses silent coercion, the same choice Python makes.  Coercion is a conversion the language performs on its own, such as turning the number `5` into the string `"5"` so that it can be concatenated.  Refusing to coerce is what makes the typing *strong*; checking while the program runs, rather than before it starts, is what makes it *dynamic*.  The implementation pattern is short: each evaluated value already carries its Python type, so the binary-operation evaluator checks the operand types before it computes.
 
 ```python
 # Adding strong dynamic typing to the BinOp evaluator: check, then compute.
@@ -158,6 +179,8 @@ for l, op, r in [(3.0, "+", 4.0), ("ab", "+", "cd"), (3.0, "+", "cd"),
         print(f"  {l!r} {op} {r!r} -> {type(e).__name__}: {e}")
 ```
 
+Read the code in this order.  `type_name` turns a Python type into the name your error messages will print.  The first `if` in `eval_binop` handles arithmetic: it allows string concatenation, refuses booleans, computes on two floats, and refuses everything else.  The second `if` handles comparisons, which require both sides to have the same type.  The loop at the bottom runs six operand pairs, three that pass and three that fail.
+
 #### Critical Thinking Questions
 
 5.  Identify the lines that make this typing *strong* (refusals) versus the line that would make it *weak* if you replaced a refusal with `float(...)` coercion.  Make the weak version mentally: what does `3.0 + "cd"` return, and what bug class did you just legalize?
@@ -190,11 +213,11 @@ Type inference
 
 </details>
 
-> **Watch out!**  Duck typing (Python's "if it walks like a duck and quacks like a duck, treat it as a duck") is *still* a form of typing: it is a dynamic, structural approach where compatibility is checked by whether an object supports the required operations, not by its declared class.  Saying a language "has no types" because it uses duck typing is incorrect.  Duck typing is a deliberate design choice that trades the early-error benefits of nominal or structural static checks for maximum flexibility.
+> **Watch out!**  Duck typing (Python's "if it walks like a duck and quacks like a duck, treat it as a duck") is still a form of typing.  It is a dynamic, structural approach: compatibility is checked by whether an object supports the required operations, not by its declared class.  Saying a language "has no types" because it uses duck typing is incorrect.  Duck typing is a deliberate design choice that trades the early-error benefits of nominal or structural static checks for maximum flexibility.
 
 ---
 
-**Intuition for Model 2:** A dynamically typed interpreter never checks anything in advance: every check rides along with evaluation itself.  Picture evaluation as water flowing up from the leaves of the AST: values form at the literals, meet at each operator, and *at each meeting point* the bouncer from Section 2 checks the pair before combining them.  This model slows that flow down to one step at a time so you can see exactly when each check fires, and, just as important, what has already irrevocably happened by the time a check fails.
+**Intuition for Model 2.**  A dynamically typed interpreter never checks anything in advance; every check rides along with evaluation itself.  Picture evaluation as water rising from the leaves of the AST: values form at the literals and meet at each operator, and at each meeting point the bouncer from Section 2 checks the pair before combining them.  This model slows that flow to one step at a time, so you can see exactly when each check fires and, just as important, what has already happened by the time a check fails.
 
 ### Model 2: Tracing the Runtime Checker on a Compound Expression
 
@@ -214,7 +237,9 @@ Three checks, three passes, one final value.  Now the same trace for `(3.0 + 4.0
 | 2 | `"total: " + 12.0` | `"total: "` : string | `12.0` : number | `+` **not** licensed for string, number | **TypeError** |
 | 3 | `... < ...` | - | - | never reached | - |
 
-Step 1 completed *before* the error: its work is done and cannot be undone.  The `<` at step 3 never runs at all.  That is dynamic checking in one picture: checks are interleaved with execution, so an error stops the program mid-flight rather than before takeoff.
+Step 1 completed *before* the error, so its work is done and cannot be undone.  The `<` at step 3 never runs at all.  That is dynamic checking in one picture: checks are interleaved with execution, so an error stops the program in flight rather than before takeoff.
+
+The program below performs both traces and narrates each check as it fires.
 
 ```python
 def type_name(v):
@@ -289,13 +314,15 @@ At the moment the `+` on `"a"` and `1.0` is evaluated, after `3.0 + 4.0` has alr
 9.  In the failing trace, step 1 finished before the TypeError at step 2.  Suppose step 1 had been `print("charging card...")` instead of an addition.  What does this tell you about *where in a program's lifetime* you would prefer type errors to fire, and which typing discipline delivers that?
 10.  Redo the failing trace as a *static* checker would perform it, before execution: rewrite the table with types only, no values.  Which columns disappear, and which check still fails?
 
+Remember from this model: a runtime check fires only after both operands have been evaluated.  Whatever those evaluations did has already happened when the check fails.
+
 ---
 
-**Intuition for Model 3:** Type inference is the party trick where the compiler figures out every variable's type from context alone: you write `let a = 2` and the checker deduces `a: int` without you saying so.  Mechanically, it is just a tree walk: visit each node, compute what type it must produce, and propagate that information upward.  When two branches disagree on type (e.g., adding an `int` to a `str`), the checker reports an error *at that node*, which may feel far from the actual mistake if the mistake was made pages earlier.
+**Intuition for Model 3.**  Type inference is the trick where the checker works out every variable's type from context alone: you write `let a = 2` and it deduces `a: int` without you saying so.  Mechanically, it is a tree walk.  Visit each node, compute the type it must produce, and pass that type upward.  When two branches disagree (for example, adding an `int` to a `str`), the checker reports an error *at that node*, which can be far from the actual mistake if the mistake was made pages earlier.
 
 ### Model 3: Type Inference by Hand
 
-**Implementing Hindley-Milner style inference in miniature:**
+The program below implements Hindley-Milner style inference in miniature.  Read `infer` from the top: each `if kind == ...` branch is one typing rule, and the `let` branch is where the type environment grows.
 
 ```python
 # Mini type inference: propagate types through a simple expression AST
@@ -378,7 +405,7 @@ except TypeError as e:
 
 Consider the small program: `let a = 2; let b = a + 3; let c = b < 10; in c`
 
-The `infer` function walks this AST top-down, building a **type environment** (a mapping from variable names to their inferred types) as it goes:
+The `infer` function walks this AST top-down and builds a type environment (a mapping from variable names to their inferred types) as it goes:
 
 | Step | Node visited | Type environment before | Result type deduced |
 |------|-------------|------------------------|---------------------|
@@ -398,7 +425,7 @@ Now trace the *error* program: `let a = 2; a + "hello"`
 | 2 | Extend env; recurse into body `("add", ("var","a"), ("str",))` | `{a: TInt}` | - |
 | 3 | left: look up `a` -> `TInt`; right: `("str",)` -> `TStr` | `{a: TInt}` | `TInt + TStr` -> **TypeError**: `cannot add int and str` |
 
-Notice that the error is reported at the `add` node (step 3), but the root cause is the choice made at step 1.  This distance between the error location and the root cause is a recurring challenge in type inference systems, and why good inference error messages are hard to write.
+The error is reported at the `add` node (step 3), but the root cause is the choice made at step 1.  This distance between the error location and the root cause is a recurring problem in type inference, and the reason good inference error messages are hard to write.
 
 #### Critical Thinking Questions
 
@@ -406,9 +433,11 @@ Notice that the error is reported at the `add` node (step 3), but the root cause
 12.  When inference encounters `a + "hello"`, it reports the error at the `add` expression.  But the *root cause* is that `a` was given an int value.  How far is the reported error from the root cause, and what does this say about inference error message quality?
 13.  What would need to change to support `let a = 2; let b = a + 3.0;`?  (Hint: numeric type widening, `int + float -> float`.)  Modify the `infer` function to allow this.
 
+Remember from this model: inference computes a type for every node without running the program, so it is static.  The price is that an error surfaces where the types collide, not where the mistake was made.
+
 ---
 
-**Intuition for Model 4:** Weak typing's danger is not crashes: it is the *absence* of crashes.  When a language coerces instead of refusing, a type mistake does not stop the program; it flows onward disguised as a plausible-looking value, and the first symptom appears far from the cause, often outside the program entirely.  This model performs a postmortem on one such incident, step by step, with the strong-typing alternative traced alongside for contrast.
+**Intuition for Model 4.**  The danger of weak typing is not crashes; it is the absence of crashes.  When a language coerces instead of refusing, a type mistake does not stop the program.  The mistake flows onward disguised as a plausible-looking value, and the first symptom appears far from the cause, often outside the program entirely.  This model performs a postmortem on one such incident, step by step, with the strong-typing alternative traced alongside for contrast.
 
 ### Model 4: A Type-Error Postmortem
 
@@ -429,7 +458,9 @@ The intended arithmetic: `(19.99 + 5.00) * 1.06 = 24.99 * 1.06 = 26.49`.  What t
 | 3 | `"19.995" * 1.06` | coerces `"19.995"` -> `19.995`, then multiplies | `21.1947` (number) | never reached |
 | 4 | charge the customer | charges `$21.19` with no error anywhere | wrong by `$5.30` | bug reported at step 2, with a line number |
 
-Note the direction flip: at step 2 the `+` coerced the *number toward the string*, but at step 3 the `*` coerced the *string toward the number*.  The same pair of types flowed in opposite directions depending on the operator; that inconsistency, not any single conversion, is what makes weak typing treacherous.  And notice what is missing from the weak column: any error, at any step.  The only symptom is money.
+Note the direction flip.  At step 2 the `+` coerced the *number toward the string*, but at step 3 the `*` coerced the *string toward the number*.  The same pair of types flowed in opposite directions depending on the operator.  That inconsistency, not any single conversion, is what makes weak typing treacherous.  And notice what is missing from the weak column: any error, at any step.  The only symptom is money.
+
+The program below simulates both disciplines on the same buggy input.
 
 ```python
 # Simulate both typing disciplines on the same buggy program.
@@ -491,5 +522,6 @@ Silent coercion lets a type mistake flow through the program as plausible-lookin
 16.  The weak-mode run produces no error at any point; the bug would surface only as customer complaints.  Name two other places in the software pipeline (besides the language's type system) where this bug could have been caught, and what each catch would cost compared to a step-2 TypeError.
 17.  For your project language: which, if any, of these coercions will you allow?  Record the decision in `SEMANTICS.md`, citing this postmortem as evidence for or against.
 
----
+Remember from this model: a strong type system reports the mistake at the line where the types first disagree.  A weak one lets the mistake travel until something outside the program notices.
 
+---

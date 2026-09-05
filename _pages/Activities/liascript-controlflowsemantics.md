@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Control Flow Semantics
 
-Think of a program as a choose-your-own-adventure book: every time you reach a decision point, the story branches, and you only read one of the two paths that follow.  Control flow semantics are the rules that determine *which* page you turn to next, and critically, whether the unchosen pages are ever glanced at at all.  In this activity you will pin down those rules precisely enough to implement them in your own interpreter.  You pinned down *what values are* in the *Type Systems* activity; today you pin down *which code runs*.
+Control flow semantics are the rules that decide which code runs next, and which code never runs at all.  In the *Type Systems* activity you pinned down what values are.  Today you pin down which code runs, precisely enough to implement the rules in your own interpreter.
 
 ## Learning Goals
 
@@ -26,7 +26,7 @@ By the end of this activity, you will be able to:
 - Implement a `truthy` predicate and a short-circuiting `and`/`or` evaluator consistent with a chosen policy
 - Analyze how the design choices of truthiness and short-circuit semantics interact with a language's type system
 
-`if` and `while` look trivial until you must implement them, at which point a swarm of decisions appears: what counts as true? are both branches evaluated? does `and` evaluate its right side when the left already decides?  Today we pin down **control flow semantics** for your interpreter assignment, with special attention to **truthiness** and **short-circuit evaluation**, two places where languages quietly disagree.  We move today from **selection semantics $\rightarrow$ truthiness $\rightarrow$ short-circuiting $\rightarrow$ iteration and its design questions**.
+`if` and `while` look simple until you implement them.  Then you must answer several questions.  What counts as true?  Are both branches evaluated?  Does `and` evaluate its right side when the left side already decides the answer?  Today we settle these control flow semantics for your interpreter assignment, with special attention to truthiness and short-circuit evaluation, two places where languages disagree.  We move from selection semantics to truthiness, then to short-circuiting, and finally to iteration and the design questions it raises.
 
 > **Before You Begin:** This activity assumes you can:
 > - Write and trace basic Python `if`/`elif`/`else` and `while` statements, including nested conditions
@@ -45,25 +45,25 @@ Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Pr
 
 # Part I: Selection and Truth
 
-Before we get into code, consider what an `if` statement actually promises.  It will look at a condition and then read *exactly one* of two possible continuations.  That promise has consequences that run deep.  It is what makes guarded divisions safe, it forces you to define what counts as true, and it is what separates `if` from every ordinary function call in your language.
+An `if` statement makes one promise: it evaluates the condition, then runs exactly one of its two branches.  That promise has three consequences.  It makes guarded divisions safe.  It forces you to define what counts as true.  And it separates `if` from every ordinary function call in your language.
 
 ## 1.  The Semantics of If
 
-Selection evaluates the condition, then exactly one branch.  The "exactly one" is load-bearing: in `if (x != 0) { print 10 / x; } else { print 0; }`, evaluating the untaken branch would divide by zero.  Your executor already respects this (the Python `if` inside `execute` chooses *which subtree to walk*), and naming the property matters: `if` is our first **non-strict** construct, one that deliberately does not evaluate all of its parts.
+Selection evaluates the condition, then exactly one branch.  The words "exactly one" matter.  In `if (x != 0) { print 10 / x; } else { print 0; }`, evaluating the untaken branch would divide by zero.  Your executor already respects this rule, because the Python `if` inside `execute` chooses which subtree to walk.  The rule deserves a name: `if` is your first **non-strict** construct.  A non-strict construct deliberately leaves some of its parts unevaluated.
 
-Truthiness: what may stand as a condition?  Three coherent policies: (a) **booleans only** (Java): `if (count)` is a type error; (b) **everything has a truth value** (Python: zero, empty string, and empty collections are falsy; the rest truthy); (c) **a designated set** (C: zero is false, any nonzero number true).  The policy interacts with your type system: a booleans-only language catches `if (x = 5)`-style accidents that permissive languages execute happily.
+Truthiness is the rule that says which values may stand as a condition.  Three policies are common.  (a) Booleans only (Java): `if (count)` is a type error.  (b) Everything has a truth value (Python): zero, the empty string, and empty collections are falsy, and everything else is truthy.  (c) A designated set (C): zero is false, and any nonzero number is true.  The policy interacts with your type system.  A booleans-only language catches accidents like `if (x = 5)` that permissive languages run without complaint.
 
-> **Watch out!**  The string `"false"` is *truthy* in Python because it is a non-empty string; its content is irrelevant to the truthiness test.  This surprises many beginners who expect the *meaning* of a value to determine its truth.  If your language adopts Python-style universal truthiness, make sure your documentation spells this out explicitly.
+> **Watch out!**  The string `"false"` is truthy in Python because it is a non-empty string.  Its content plays no part in the truthiness test.  This surprises many beginners who expect the meaning of a value to decide its truth.  If your language adopts Python-style universal truthiness, spell this out in your documentation.
 
 ---
 
-## Model 1: The Truthiness Tribunal
+## Model 1: Which Values Count as True?
 
-Every language designer must answer the question: "What values are allowed to appear as a condition?"  Python says almost anything goes: zero and empty collections are false, everything else is true.  Java says only actual booleans are allowed.  C says zero is false and any nonzero number is true.  None of these is obviously "right"; each reflects a different trade-off between convenience and catching bugs at compile time.  In this model you will run all three policies side by side so the differences become concrete.
+Every language designer must answer one question: which values are allowed to appear as a condition?  Python accepts almost anything: zero and empty collections are false, and everything else is true.  Java accepts only actual booleans.  C treats zero as false and any nonzero number as true.  None of these is the one right answer.  Each trades convenience against catching bugs at compile time.  In this model you run all three policies side by side so the differences become concrete.
 
 The condition values: `0`, `1`, `-3`, `""`, `"false"`, an empty list, the boolean `false`.
 
-**Run the Python truthiness table:**
+Run the Python truthiness table:
 
 ```python
 test_values = [0, 1, -3, "", "false", [], False, True, None, 0.0, 0.1]
@@ -85,17 +85,17 @@ for v in test_values:
 
 ### Critical Thinking Questions
 
-1.  For each value, rule its truth under policies (a), (b), and (c) (write "error" where the policy rejects it).  Where do the policies disagree most surprisingly?  (`"false"` deserves the team's attention; it's a non-empty string, so it's truthy in Python even though it *looks* false.)
-2.  The classic C bug `if (x = 5)` (assignment, not comparison) runs and is always true.  Which policy, and separately which *grammar* decision (is assignment an expression?), each independently prevents it?  Your language gets two chances to kill this bug; choose at least one.
+1.  For each value, rule its truth under policies (a), (b), and (c) (write "error" where the policy rejects it).  Where do the policies disagree most surprisingly?  (`"false"` deserves the team's attention; it is a non-empty string, so it is truthy in Python even though it looks false.)
+2.  The classic C bug `if (x = 5)` (assignment, not comparison) runs and is always true.  Which policy, and separately which grammar decision (is assignment an expression?), each independently prevents it?  Your language gets two chances to stop this bug; choose at least one.
 3.  Decide your project's truthiness policy and write the `truthy(value)` specification in `SEMANTICS.md` language: exhaustive, no "etc."
 
 ---
 
 ## Model 2: If Is Non-Strict
 
-It is one thing to say "the untaken branch is not evaluated" and another to *prove* it.  In this model a special `Bomb` node plays the role of a branch that would crash the program if it were ever executed.  If the interpreter is truly non-strict, the bomb never goes off, and that silence is itself the evidence.  Pay close attention to the single line that makes this work: the Python ternary that *chooses which recursive call to make*, rather than making both.
+Saying "the untaken branch is not evaluated" is one thing.  Proving it is another.  In this model a special `Bomb` node plays the role of a branch that would crash the program if it were ever executed.  If the interpreter is truly non-strict, the bomb never goes off, and that silence is the evidence.  Watch the single line that makes this work: a Python ternary that chooses which recursive call to make, rather than making both.
 
-**Prove that if does not evaluate the untaken branch:**
+Prove that `if` does not evaluate the untaken branch:
 
 ```python
 from dataclasses import dataclass
@@ -148,20 +148,20 @@ print(f"0 -> else: {result3}")  # 2 (0 is falsy)
 
 ### Critical Thinking Questions
 
-4.  The Bomb proves non-evaluation by *absence of explosion*.  Why is this a better test than inspecting return values, and what general testing idea (observing side effects to detect evaluation) did you just use?
-5.  In the `evaluate` function for `Cond`, the key line is `evaluate(node.then_ if truthy(cond_val) else node.else_, env)`.  This is a Python ternary that *chooses which recursive call to make*.  Why does this implement non-strictness, while `evaluate(node.then_, env) + evaluate(node.else_, env)` would not?
+4.  The Bomb proves non-evaluation by absence of explosion.  Why is this a better test than inspecting return values, and what general testing idea (observing side effects to detect evaluation) did you just use?
+5.  In the `evaluate` function for `Cond`, the key line is `evaluate(node.then_ if truthy(cond_val) else node.else_, env)`.  This is a Python ternary that chooses which recursive call to make.  Why does this implement non-strictness, while `evaluate(node.then_, env) + evaluate(node.else_, env)` would not?
 
 ---
 
 ### Reading the Code
 
-- `Bomb` is a node whose evaluation always raises.  Putting one in a branch is how you *prove* the branch was skipped: if the program prints an answer instead of exploding, the evaluator genuinely never went there.
-- The `If` case evaluates the condition, then evaluates **exactly one** of `then_` and `else_`.  Compare that with the `BinOp` case, which evaluates both children unconditionally.  That difference is the definition of non-strict.
+- `Bomb` is a node whose evaluation always raises.  Putting one in a branch is how you prove the branch was skipped.  If the program prints an answer instead of exploding, the evaluator never went there.
+- The `If` case evaluates the condition, then evaluates exactly one of `then_` and `else_`.  Compare that with the `BinOp` case, which always evaluates both children.  That difference is the definition of non-strict.
 - This is why `if` cannot be a function in a strict language.  A function call evaluates its arguments first, so `my_if(cond, a, b)` would evaluate both `a` and `b` before `my_if` ever ran, and the Bomb would go off.
 
 ### Try It Yourself
 
-Try to write `if` as an ordinary function, watch it fail, then fix it the way real languages do.
+Write `if` as an ordinary function, watch it fail, then fix it the way real languages do.  The fix uses a thunk: a function that takes no arguments and wraps an expression so the expression is not evaluated until someone calls the function.
 
 ```python
 from dataclasses import dataclass
@@ -205,27 +205,29 @@ print(f"  my_if_lazy(True, lambda: 42, lambda: boom()) = "
 
 Expected output: the first call raises, the second prints `42`, the third prints `42`.  That progression is why `if` is built into the grammar rather than shipped as a library function.
 
+Remember two things from Part I.  `if` evaluates its condition and then exactly one branch, which makes it non-strict.  Your truthiness policy decides which values may serve as that condition, and you must write the policy down.
+
 # Part II: Short-Circuit Evaluation
 
-You have seen that `if` skips one whole branch.  Now consider what happens *inside* the condition itself: does evaluating `a and b` always look at both `a` and `b`?  In most languages the answer is no, and that "no" is not a performance trick, it is a guarantee programs are written to depend on.  This part examines exactly when `and` and `or` are allowed to stop early, and why your interpreter must handle them differently from ordinary binary operators.
+You have seen that `if` skips one whole branch.  Now look inside the condition itself.  Does evaluating `a and b` always look at both `a` and `b`?  In most languages the answer is no.  That "no" is not a performance trick.  It is a guarantee, and programs are written to depend on it.  This part examines when `and` and `or` may stop early, and why your interpreter must treat them differently from ordinary binary operators.
 
 ## 2.  And/Or That Stop Early
 
-**Short-circuit operators evaluate left to right and stop as soon as the answer is known**: `false and X` never evaluates `X`; `true or X` never evaluates `X`.  This is not an optimization but a *semantic guarantee* programs rely on: `if (i < len(a) and a[i] > 0)` is only safe because the bounds check guards the access.  Implementing it means `and`/`or` cannot be ordinary `BinOp`s (your `BinOp` case evaluates both children first, post-order); they need their own node and their own evaluation rule.
+Short-circuit operators evaluate left to right and stop as soon as the answer is known.  `false and X` never evaluates `X`.  `true or X` never evaluates `X`.  This is a semantic guarantee rather than an optimization.  The test `if (i < len(a) and a[i] > 0)` is only safe because the bounds check guards the access.  To implement this guarantee, `and` and `or` cannot be ordinary `BinOp`s, because your `BinOp` case evaluates both children first (post-order).  They need their own node and their own evaluation rule.
 
 $$
 \mathcal{E}[\![l \text{ and } r]\!] = \begin{cases} \mathcal{E}[\![l]\!] & \text{if } \mathcal{E}[\![l]\!] \text{ is falsy} \\ \mathcal{E}[\![r]\!] & \text{otherwise} \end{cases}
 $$
 
-(Note the Python-style refinement: returning the deciding *operand* rather than a normalized boolean is itself a design choice; Java normalizes, Python does not.)
+(Note the Python-style refinement: returning the deciding operand rather than a normalized boolean is itself a design choice.  Java normalizes; Python does not.)
 
-> **Watch out!**  Short-circuit evaluation is **not universal**.  Some languages (notably older Fortran, and certain functional languages with call-by-value semantics) evaluate both operands of `and`/`or` before applying the operator.  If you are porting code that relies on short-circuiting as a guard, always check the target language's specification; you cannot assume the right operand is skipped.
+> **Watch out!**  Short-circuit evaluation is not universal.  Some languages (notably older Fortran, and certain functional languages with call-by-value semantics) evaluate both operands of `and`/`or` before applying the operator.  If you port code that relies on short-circuiting as a guard, check the target language's specification.  You cannot assume the right operand is skipped.
 
 ---
 
 ## Model 3: Short-Circuit in Action
 
-The key insight here is that `and` and `or` cannot simply be added to your existing `BinOp` evaluator, because `BinOp` always evaluates both children before doing anything with them.  Logical operators need their own node type with their own evaluation rule, one that only reaches for the right child after deciding whether it is necessary.  The Bomb-based test makes this difference visible: if the right side were always evaluated, the bomb would explode.
+`and` and `or` cannot simply be added to your existing `BinOp` evaluator, because `BinOp` always evaluates both children before doing anything with them.  Logical operators need their own node type with their own evaluation rule, one that reaches for the right child only after deciding whether it is needed.  The Bomb test makes this difference visible.  If the right side were always evaluated, the bomb would explode.
 
 ```python
 # Short-circuit logic as its own node type: the right child is evaluated
@@ -281,7 +283,7 @@ The guarantee that `i < n and items[i] > 0` never indexes out of bounds depends 
 [(X)] The semantic rule that and does not evaluate its right operand when the left is falsy
 [( )] The type checker proving i is a number
 
-In Python, `x or "default"` returns `"default"` when `x` is falsy.  This behavior (returning the *operand* rather than normalizing to `True`/`False`) is called:
+In Python, `x or "default"` returns `"default"` when `x` is falsy.  This behavior (returning the operand rather than normalizing to `True`/`False`) is called:
 
 [( )] Type coercion
 [( )] Lazy evaluation
@@ -292,13 +294,13 @@ In Python, `x or "default"` returns `"default"` when `x` is falsy.  This behavio
 
 6.  Trace why `LogicOp` cannot be folded into your `BinOp` case: quote the one line of the BinOp evaluator that makes it impossible.
 7.  Your parser must give `and`/`or` a precedence tier.  Should `a == b and c == d` parse as `(a == b) and (c == d)`?  Place the new tier in your precedence ladder (looser or tighter than comparison?) and justify with that example.
-8.  Python's `and`/`or` return one of their *operands*, not necessarily a boolean.  So `"hello" and "world"` returns `"world"`, and `"" or "default"` returns `"default"`.  Is this surprising?  Name one production use of this behavior.
+8.  Python's `and`/`or` return one of their operands, not necessarily a boolean.  So `"hello" and "world"` returns `"world"`, and `"" or "default"` returns `"default"`.  Is this surprising?  Name one production use of this behavior.
 
 ---
 
 ## Model 4: Language Comparison
 
-You now know *that* `and`/`or` short-circuit, but there is a second independent question: *what do they return?*  Python returns the actual operand that decided the outcome (not a normalized boolean), which opens up concise idioms like `name or "Anonymous"`.  Java always returns `true` or `false`.  Both are internally consistent choices; this model lets you see their practical consequences side by side before you commit to one in your own language.
+You now know that `and`/`or` short-circuit.  A second, independent question remains: what do they return?  Python returns the operand that decided the outcome, not a normalized boolean.  That choice allows short idioms like `name or "Anonymous"`.  Java always returns `true` or `false`.  Both choices are internally consistent.  This model shows their practical consequences side by side before you commit to one in your own language.
 
 ```python
 # Python's short-circuit with value-preserving semantics
@@ -337,8 +339,8 @@ print("\nNote: Java 'and'/'or' always return boolean:")
 
 ### Reading the Code
 
-- Python's `and`/`or` return an **operand**, not a boolean.  `True and "hello"` is `"hello"`.  Java's `&&` is defined to produce a `boolean`, so the same expression would not type-check there.
-- That is two independent decisions your language must make: does `and` stop early (short-circuit), and does it return a boolean or one of its operands (value-preserving)?  A language can pick either answer to each.
+- Python's `and`/`or` return an operand, not a boolean.  `True and "hello"` is `"hello"`.  Java's `&&` is defined to produce a `boolean`, so the same expression would not type-check there.
+- Your language must make two independent decisions.  Does `and` stop early (short-circuit)?  Does it return a boolean or one of its operands (value-preserving)?  A language can pick either answer to each.
 - The value-preserving choice is what makes the idiom `name = user_input or "anonymous"` work.  It is also what makes `0 or "default"` return `"default"`, which surprises people, because `0` is falsy.
 
 ### Try It Yourself
@@ -376,23 +378,25 @@ for label, value in cases:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output: `0 or "fallback"` gives `"fallback"` in the first column and `True` in the second.  If your language ever means "use the default only when the value is *missing*", that row is the bug waiting to happen.
+Expected output: `0 or "fallback"` gives `"fallback"` in the first column and `True` in the second.  If your language ever means "use the default only when the value is missing", that row is the bug waiting to happen.
+
+Remember two things from Part II.  `and` and `or` stop as soon as the left operand decides the answer, so they need their own node and rule instead of the `BinOp` case.  Whether they return a boolean or the deciding operand is a separate choice, and you must document both.
 
 # Part III: Iteration
 
-Loops are where control flow gets its most dramatic power, and its most dangerous failure mode.  A `while` loop keeps re-reading the same page of the adventure book as long as the condition holds, and you need to know precisely when the condition is re-checked, whether the body gets a fresh environment each time, and what it means to exit the loop early.  These are not cosmetic details; they determine what programs your language can express correctly.
+Loops give control flow its most useful power and its most dangerous failure mode.  A `while` loop runs its body again and again as long as the condition holds.  You need to know exactly when the condition is re-checked, whether the body gets a fresh environment each time, and what it means to exit the loop early.  These details decide which programs your language can express correctly.
 
 ## 3.  While, and the Questions It Raises
 
-Your `While` executor re-evaluates the condition before each pass: definite semantics, easy to implement, and the source of three design questions your team must answer in `SEMANTICS.md`:
+Your `While` executor re-evaluates the condition before each pass.  The semantics are definite and easy to implement, and they raise three design questions your team must answer in `SEMANTICS.md`:
 
 1.  Does the body create a fresh scope per iteration?
 2.  Do you provide `break`/`continue`, and if so, how?
 3.  Will you offer a counting `for`, and is it core syntax or sugar?
 
-**The break/continue trick, use exception classes:**
+The break/continue trick: use exception classes.  A `break` statement raises a `BreakSignal`, and the `While` executor catches it and leaves the loop.  `continue` works the same way with a `ContinueSignal`.
 
-> **Watch out!** `break` and `continue` behave differently across languages.  In Python, `break` inside a `for`/`while` exits only the *innermost* loop; a `break` nested three loops deep does not escape all three.  Some languages (Java, Kotlin) offer labeled breaks to exit an outer loop directly.  When implementing these statements in your interpreter, decide up front how deeply nested `break` can reach, and document it: the choice affects what programs are expressible and what complexity the interpreter must track.
+> **Watch out!** `break` and `continue` behave differently across languages.  In Python, `break` inside a `for`/`while` exits only the innermost loop; a `break` nested three loops deep does not escape all three.  Some languages (Java, Kotlin) offer labeled breaks to exit an outer loop directly.  When you implement these statements in your interpreter, decide up front how deeply nested `break` can reach, and document it.  The choice affects which programs are expressible and how much state the interpreter must track.
 
 ```python
 from dataclasses import dataclass
@@ -487,7 +491,7 @@ execute(program, env)
 
 11.  The `BreakSignal` and `ContinueSignal` exception classes contain no data.  Why use custom exception classes rather than a boolean flag variable?
 12.  When `ContinueSignal` is caught by the `While` executor's `except ContinueSignal: continue`, what Python statement does the bare `continue` refer to?  Trace the control flow carefully.
-13.  **Desugaring.**  Implement `for (let i = 0; i < n; i = i + 1) { body }` as a parser transformation that produces the AST of `{ let i = 0; while (i < n) { body; i = i + 1; } }`.  What is this called, and why does it mean you get `for` loops for free with no new evaluator code?
+13.  **Desugaring.**  Implement `for (let i = 0; i < n; i = i + 1) { body }` as a parser transformation that produces the abstract syntax tree (AST) of `{ let i = 0; while (i < n) { body; i = i + 1; } }`.  What is this called, and why does it mean you get `for` loops for free with no new evaluator code?
 
 ---
 
@@ -495,7 +499,7 @@ execute(program, env)
 
 ## 4.  Theory: Executing Statements
 
-Expressions produce values; **statements produce effects**: an `Assign` updates the environment, a `Print` writes output, a `Block` executes children in order, a `While` re-evaluates its condition.  The executor therefore threads the environment through:
+An expression produces a value.  A statement produces an effect.  An `Assign` updates the environment, a `Print` writes output, a `Block` (a list of statements) executes its children in order, and a `While` re-evaluates its condition.  The executor therefore passes the environment through every call:
 
 ```python
 def execute(stmt, env):
@@ -506,7 +510,7 @@ def execute(stmt, env):
     While(c, body)    -> while truthy(evaluate(c, env)): execute(body, env)
 ```
 
-Notice `truthy`: your language must decide what counts as true (only a boolean? any nonzero number? an empty string?), a semantics decision with daily consequences.
+Notice `truthy`.  Your language must decide what counts as true (only a boolean? any nonzero number? an empty string?).  That semantics decision has daily consequences.
 
 In a tree-walking interpreter, executing the program's `while` loop one million times will re-walk the loop body's subtree one million times.  The principal cost this design accepts, relative to compilation, is:
 
@@ -517,9 +521,9 @@ In a tree-walking interpreter, executing the program's `while` loop one million 
 
 ---
 
-**Model 3 preview:** Where expressions *return* values, statements *change the world*: they update the environment, produce output, or repeat a block.  This model introduces `execute`, a sibling function to `evaluate` that handles the statement layer.  The single most important design rule here is that `execute` must always pass the *same* `env` dictionary through every recursive call so that assignments made inside a loop body are visible after the loop ends.
+**Model 5 preview:** Where expressions return values, statements change the world.  They update the environment, produce output, or repeat a block.  This model introduces `execute`, a sibling function to `evaluate` that handles the statement layer.  The most important design rule is that `execute` must always pass the same `env` dictionary through every recursive call, so that assignments made inside a loop body are visible after the loop ends.
 
-> **Watch out!**  A common mistake is for `execute` to return `None` (implicitly) for every branch, and then have a caller accidentally use that `None` as if it were a language value, for example, printing the result of `execute(Print(...), env)` instead of the result already printed inside `execute`.  Statements produce *effects*, not values; callers of `execute` should never inspect its return value.
+> **Watch out!**  A common mistake is for `execute` to return `None` (implicitly) for every branch, and for a caller to use that `None` as if it were a language value.  For example, a caller might print the result of `execute(Print(...), env)` instead of relying on the output already printed inside `execute`.  Statements produce effects, not values.  Callers of `execute` should never inspect its return value.
 
 ## Model 5: Complete Statement Executor
 
@@ -616,13 +620,13 @@ print(f"env after: {env}")     # n=0, total=15
 
 ---
 
-**Model 4 preview:** The REPL (Read-Eval-Print Loop) is what makes your language *feel* like a language.  It chains the entire pipeline (tokenize, parse, evaluate) inside a loop that persists a single `env` across lines, so earlier assignments are visible in later ones.  This model uses a simulated REPL (a list of inputs instead of real keyboard input) so it can run non-interactively here, but the architecture is identical to what you would wire up with Python's `input()`.
+**Model 6 preview:** The REPL (Read-Eval-Print Loop) is what makes your language feel like a language.  It runs the whole pipeline (tokenize, parse, evaluate) inside a loop that keeps a single `env` across lines, so earlier assignments are visible in later ones.  This model uses a simulated REPL (a list of inputs instead of real keyboard input) so it can run here without interaction.  The structure is the same as what you would wire up with Python's `input()`.
 
-> **Watch out!**  Because the REPL's `env` dictionary persists across lines, a variable assigned on line 1 is still live on line 100.  This means the *order* in which the user types lines matters, and re-running the REPL from scratch will start with an empty environment.  Students sometimes expect the REPL to behave like a script (isolated, top-to-bottom) rather than a stateful session.  They are different execution models, and it is worth being explicit in your language documentation about which one your REPL provides.
+> **Watch out!**  Because the REPL's `env` dictionary persists across lines, a variable assigned on line 1 is still live on line 100.  So the order in which the user types lines matters, and re-running the REPL from scratch starts with an empty environment.  Students sometimes expect the REPL to behave like a script (isolated, top-to-bottom) rather than a stateful session.  They are different execution models.  State in your language documentation which one your REPL provides.
 
 ### Reading the Code
 
-- `execute` returns nothing.  Every branch works by *effect*: writing to `env`, printing, or looping.  It differs structurally from `evaluate`, which returns a value and touches nothing.
+- `execute` returns nothing.  Every branch works by effect: writing to `env`, printing, or looping.  It differs structurally from `evaluate`, which returns a value and touches nothing.
 - The same `env` dictionary is passed to every recursive call, never copied.  That is what makes an assignment inside a loop body visible after the loop ends, and it is the opposite of the fresh-frame-per-call discipline that closures need.
 - `While` re-evaluates its condition expression on every pass.  It does not cache it.  If it did, `while n > 0` would run forever.
 - `Block` executes its children in order and discards each result.  Order matters here in a way it never did for expressions.
@@ -704,9 +708,9 @@ except (BreakSignal, ContinueSignal) as sig:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output as written: the numbers 1 through 10.  Add a `Break` and, until TODO 1 is done, the signal escapes the loop entirely and is caught by the outer handler, which is precisely the bug the `except` inside `While` prevents.
+Expected output as written: the numbers 1 through 10.  Add a `Break` and, until TODO 1 is done, the signal escapes the loop entirely and the outer handler catches it.  That is precisely the bug the `except` inside `While` prevents.
 
-## Model 6: The REPL, Your Language Goes Interactive
+## Model 6: The REPL
 
 ```python
 from dataclasses import dataclass
@@ -801,22 +805,24 @@ print(f"\nFinal environment: {env}")
 
 ### Critical Thinking Questions
 
-11.  A real REPL must handle errors without dying: if the user types `1/0` or `undefined_var`, the REPL should print an error and continue.  Wrap the inner call in a `try/except` and identify the *three error classes* you must catch (one per stage: lex, parse, eval).
+11.  A real REPL must handle errors without dying: if the user types `1/0` or `undefined_var`, the REPL should print an error and continue.  Wrap the inner call in a `try/except` and identify the three error classes you must catch (one per stage: lex, parse, eval).
 12.  The REPL above has a persistent `env` dictionary.  If a user types `x = 10` and then `x = 20`, what should happen?  Should the language allow rebinding?
 13.  REPLs for functional languages (Haskell's `ghci`, Scheme's REPL) do not allow mutation.  How would you implement a purely functional REPL where each "assignment" introduces a new immutable binding rather than updating an old one?
 
 ---
 
-**In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
+**In-class work stops here.**  Everything below is homework and going-deeper material.  Attempt the exercises before the related assignment.
 
 
 ---
 
 ### Reading the Code
 
-- The REPL is a loop around the same three functions the whole session has been building: tokenize, parse, execute.  Nothing new is required to make a language interactive; you just stop reading from a file.
-- `env` lives *outside* the loop, which is what makes the session stateful: a variable defined on one line is visible on the next.  Move it inside and every line would start from nothing.
-- Errors are caught per line rather than killing the session, which is the `LangError` discipline from *Tree-Walking Interpretation* finally paying off: a user's typo prints a message and the prompt comes back.
+- The REPL is a loop around the same three functions the whole session has been building: tokenize, parse, execute.  Nothing new is required to make a language interactive.  You stop reading from a file and start reading from the user.
+- `env` lives outside the loop, which is what makes the session stateful.  A variable defined on one line is visible on the next.  Move it inside the loop and every line would start from nothing.
+- Errors are caught per line rather than ending the session.  This is the `LangError` discipline from *Tree-Walking Interpretation* at work: a user's typo prints a message and the prompt comes back.
+
+Remember two things from Parts III and IV.  `while` re-checks its condition before every pass, and `break` and `continue` unwind to the loop by raising signal exceptions.  `execute` works by effect and threads one shared `env` through every call, and the REPL is that same pipeline wrapped in a loop that keeps `env` alive between lines.
 
 ---
 
@@ -859,7 +865,7 @@ In Python, `0 or "fallback"` evaluates to `"fallback"`. This shows that Python's
 ---
 
 # Exercises
-1.  *Implement the trio.*  Add `LogicOp` with short-circuit `and`/`or` and a unary `not` to your lexer, parser (new tier), and evaluator.  Reproduce the Bomb test inside *your* language: a right operand that would raise (divide by zero) but is never reached.
+1.  *Implement the trio.*  Add `LogicOp` with short-circuit `and`/`or` and a unary `not` to your lexer, parser (new tier), and evaluator.  Reproduce the Bomb test inside your language: a right operand that would raise (divide by zero) but is never reached.
 2.  *Break and continue.*  Implement both using custom exception classes (`BreakSignal`, `ContinueSignal`) raised by the statements and caught by the `While` executor.  Demonstrate a search loop that exits early on finding a value.
 3.  *Desugaring.*  Implement `for (let i = 0; i < n; i = i + 1) { ... }` purely in the parser, producing the AST of the equivalent block-plus-while with no new evaluator code.  Show the `pretty` output proving the rewrite.
 4.  *Truthiness differential.*  Write one program whose output differs under booleans-only versus Python-style truthiness, and confirm your interpreter follows your documented policy.
@@ -875,7 +881,7 @@ In Python, `0 or "fallback"` evaluates to `"fallback"`. This shows that Python's
 ---
 
 ## Reflection
-In your notebook: short-circuiting means the language promises *not to look* at something.  Contracts about what will not be examined are everywhere (sealed exams, privacy policies, blind review).  Pick one and describe what breaks when the no-look promise is violated, in computing or out of it.  Also: now that you have implemented `break` via exceptions, does using exceptions for control flow seem elegant or surprising?  Under what other circumstances might you use exceptions for non-error control flow?
+In your notebook: short-circuiting means the language promises not to look at something.  Contracts about what will not be examined are everywhere (sealed exams, privacy policies, blind review).  Pick one and describe what breaks when the no-look promise is violated, in computing or out of it.  Also: now that you have implemented `break` via exceptions, does using exceptions for control flow seem elegant or surprising?  Under what other circumstances might you use exceptions for non-error control flow?
 
 ---
 
@@ -887,5 +893,5 @@ In your notebook: short-circuiting means the language promises *not to look* at 
 
 ---
 
-Up next: the *Binding and Scope* activity asks where a name's value actually lives once functions can nest, and today's semantics decisions complete the Interpreter assignment's core.
+Up next: the *Binding and Scope* activity asks where a name's value actually lives once functions can nest.  Today's semantics decisions complete the Interpreter assignment's core.
 

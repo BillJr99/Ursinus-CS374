@@ -14,35 +14,35 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Derivations, Parse Trees, Ambiguity, and Precedence
 
-Consider the English sentence "I saw the man with the telescope."  Did you use the telescope to see him, or did he have the telescope?  Both readings are grammatically valid; the sentence is ambiguous.  Formal grammars for programming languages can have exactly the same problem: a single expression like `2 + 3 * 4` can fit the grammar in two different ways, producing two different parse trees with two different values.  Unlike the telescope sentence, ambiguity in a grammar is silent and dangerous; your parser will just pick one interpretation and quietly give you the wrong answer.
+A grammar can accept the right strings and still give one program two meanings.  The English sentence "I saw the man with the telescope" shows the problem.  Did you use the telescope to see him, or did he carry the telescope?  Both readings follow the rules of English, so the sentence is ambiguous.  A grammar for a programming language can have the same problem.  A single expression like `2 + 3 * 4` can fit the grammar in two different ways, producing two different parse trees (two different pictures of how the grammar built the string) with two different values.  Unlike the telescope sentence, ambiguity in a grammar is silent and dangerous.  Your parser picks one reading and quietly gives you the wrong answer.
 
 ## Learning Goals
 
 By the end of this activity, you will be able to:
 
-- Construct a leftmost derivation and draw the corresponding parse tree for a given string under a provided context-free grammar
-- Define grammar ambiguity precisely and demonstrate it by producing two distinct parse trees for the same string under an ambiguous grammar
-- Explain how a layered (stratified) expression grammar encodes operator precedence and associativity in its structure rather than in external rules
-- Construct an unambiguous expression grammar that enforces a specified precedence and associativity for multiple operator levels, and verify it by deriving a target expression
-- Analyze an existing grammar to determine whether it correctly captures left or right associativity, and modify it to reverse the associativity if needed
+- Write a leftmost derivation and draw the matching parse tree for a given string under a given context-free grammar
+- Define grammar ambiguity precisely, and show it by drawing two distinct parse trees for the same string under an ambiguous grammar
+- Explain how a layered (stratified) expression grammar encodes operator precedence and associativity in its structure instead of in external rules
+- Write an unambiguous expression grammar that enforces a given precedence and associativity for several operator levels, and verify it by deriving a target expression
+- Analyze an existing grammar to decide whether it captures left or right associativity correctly, and change it to reverse the associativity when needed
 
-A grammar of the kind you wrote in *Grammars and the Chomsky Hierarchy* can accept the right strings and still mean the wrong things: if `2 + 3 * 4` has *two* parse trees, the language has two meanings for one program.  Today we build, slowly and deliberately, the standard cure: a layered expression grammar in which **precedence and associativity live in the grammar's shape**.  This build-up is the single most important preparation for your parser assignment.  Today we work from **derivations and trees $\rightarrow$ ambiguity diagnosed $\rightarrow$ the layered grammar, constructed step by step $\rightarrow$ associativity**.
+A grammar of the kind you wrote in *Grammars and the Chomsky Hierarchy* can accept the right strings and still mean the wrong things.  If `2 + 3 * 4` has *two* parse trees, the language has two meanings for one program.  Two ideas fix this.  Precedence says which operator groups first when two different operators meet (`*` before `+`).  Associativity says which way a chain of the same operator groups (`5 - 2 - 1` as `(5 - 2) - 1`).  Today you build the standard cure slowly and deliberately: a layered expression grammar in which precedence and associativity live in the grammar's shape.  This build-up is the single most important preparation for your parser assignment.  The path is derivations and trees $\rightarrow$ ambiguity diagnosed $\rightarrow$ the layered grammar, built step by step $\rightarrow$ associativity.
 
 ---
 
-> **Before you begin**, please make sure you are comfortable with these ideas:
+> **Before you begin**, make sure you are comfortable with these ideas:
 >
-> - **BNF/EBNF grammar notation**: you can read a rule like `E -> E + T | T` and name its nonterminals, terminals, and alternative productions.
-> - **Parse trees**: you know that a parse tree shows which productions were applied to derive a string, with the start symbol at the root and input tokens as leaves.
-> - **Left vs. right associativity**: you know that `a - b - c` evaluates as `(a - b) - c` in most languages (left-associative), and that `2 ^ 3 ^ 2` evaluates as `2 ^ (3 ^ 2)` in languages where exponentiation is right-associative.
+> - BNF (Backus-Naur Form) and EBNF (Extended BNF) grammar notation: you can read a rule like `E -> E + T | T` and name its nonterminals, terminals, and alternative productions.
+> - Parse trees: a parse tree shows which productions were applied to derive a string, with the start symbol at the root and the input tokens as leaves.
+> - Left versus right associativity: `a - b - c` evaluates as `(a - b) - c` in most languages (left-associative), and `2 ^ 3 ^ 2` evaluates as `2 ^ (3 ^ 2)` in languages where exponentiation is right-associative.
 >
-> If any of these feel shaky, review your grammar notes before continuing.
+> If any of these feel shaky, review your grammar notes before you continue.
 
 ---
 
 ## Directions and Group Roles
 
-Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Please think each model and question through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever you disagreed or found another approach.  After class, please respond to the reflective prompt on your own in your notebook.
+Work in your POGIL (Process Oriented Guided Inquiry Learning) team with your rotated roles (Manager, Recorder, Presenter, Reflector).  Think each model and question through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board.  The Presenter reports out wherever you disagreed or found another approach.  After class, respond to the reflection prompt on your own in your notebook.
 
 ---
 
@@ -50,19 +50,19 @@ Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Pr
 
 ## 1.  From Derivations to Parse Trees
 
-*Intuition: A derivation is a recipe, a sequence of grammar rule applications that turns a start symbol into a string of tokens.  A parse tree is that same recipe drawn as a picture, where the cooking order no longer matters.  The shape of the tree is what your interpreter will actually execute, so two different trees for the same string mean two different programs hiding in identical source code.*
+*Intuition: A derivation is a recipe.  It is the sequence of grammar rule applications that turns the start symbol into a string of tokens.  A parse tree is that same recipe drawn as a picture, and in the picture the cooking order no longer matters.  The shape of the tree is what your interpreter runs, so two different trees for the same string are two different programs hiding in identical source code.*
 
-A parse tree records a derivation with the order forgotten.  The root is the start symbol; each internal node is a nonterminal whose children are the right-hand side of the production applied to it; the leaves, read left to right, spell the input.  A **leftmost derivation** always expands the leftmost nonterminal first; every parse tree corresponds to exactly one leftmost derivation, which is why we can speak of trees and derivations interchangeably.
+A parse tree records a derivation with the order forgotten.  The root is the start symbol.  Each internal node is a nonterminal, and its children are the right-hand side of the production applied to it.  The leaves, read left to right, spell the input.  A leftmost derivation always expands the leftmost nonterminal first.  Every parse tree corresponds to exactly one leftmost derivation, so we can speak of trees and derivations interchangeably.
 
-The tree is the meaning.  When your interpreter evaluates `2 + 3 * 4`, it will evaluate children before parents; the *shape* of the tree therefore decides whether the answer is 14 or 20.  Syntax design is meaning design.
+The tree is the meaning.  When your interpreter evaluates `2 + 3 * 4`, it evaluates children before parents.  The *shape* of the tree therefore decides whether the answer is 14 or 20.  Syntax design is meaning design.
 
 ---
 
 ## Model 1: One String, Two Trees
 
-*Intuition: The grammar `E -> E + E | E * E | num` looks perfectly reasonable at first glance: it says an expression can be a sum, a product, or a number.  The problem is that it says nothing about which operation groups first, so a parser following it has equal freedom to build either tree.  This model makes that ambiguity concrete by constructing both trees by hand.*
+*Intuition: The grammar `E -> E + E | E * E | num` looks reasonable at first glance.  It says an expression can be a sum, a product, or a number.  The problem is that it says nothing about which operation groups first, so a parser following it is free to build either tree.  This model makes that ambiguity concrete: you build both trees by hand.*
 
-> **Watch out!**  An ambiguous grammar produces **multiple valid parse trees for the same input string**.  This is not a runtime error or a warning; the grammar and parser will both succeed, and you will get a silently wrong result.  Always look for witness strings (inputs with two trees) when you design a grammar.
+> **Watch out.**  An ambiguous grammar produces more than one valid parse tree for the same input string.  This is not a runtime error or a warning.  The grammar and the parser both succeed, and you get a silently wrong result.  When you design a grammar, always look for witness strings (inputs with two trees).
 
 The naive expression grammar:
 
@@ -72,23 +72,23 @@ E -> E + E | E * E | num
 
 ### Critical Thinking Questions
 
-1.  Draw (on paper or the board) **two distinct parse trees** for `2 + 3 * 4` under this grammar.  The Recorder photographs or transcribes both.
+1.  Draw (on paper or the board) two distinct parse trees for `2 + 3 * 4` under this grammar.  The Recorder photographs or transcribes both.
 2.  Evaluate each tree bottom-up (children before parents).  Which tree yields 14 and which 20?  Mark on each tree the node where the meanings diverge.
-3.  State the definition this exercise has earned: a grammar is **ambiguous** when... (finish the sentence precisely; "confusing" is not precise).
+3.  State the definition this exercise has earned: a grammar is ambiguous when... (finish the sentence precisely; "confusing" is not precise).
 4.  Is ambiguity a property of the *string*, the *grammar*, or the *language*?  Test your answer: could a different grammar for the same language be unambiguous?
 
 
-> The worked answers to this session's models are in the **Answer Key** at the end of this page.  Attempt them with your team first.
+> The worked answers to this session's models are in the Answer Key at the end of this page.  Attempt them with your team first.
 
 # Part II: The Cure, Built One Layer at a Time
 
 ## 2.  Step 1: Separate the Precedence Levels
 
-*Intuition: The fix for ambiguity is to take the precedence rules that lived in your head ("multiply before you add") and bake them into the grammar's structure.  Each precedence level gets its own nonterminal, and the nonterminals are chained so that tighter-binding operators always appear deeper in the tree, meaning they always evaluate first.*
+*Intuition: The fix for ambiguity is to take the precedence rule that lived in your head ("multiply before you add") and build it into the grammar's structure.  Each precedence level gets its own nonterminal.  The nonterminals form a chain, so tighter-binding operators always sit deeper in the tree.  Deeper nodes always evaluate first.*
 
-> **Watch out!**  Fixing ambiguity requires **rewriting the grammar**, not just adding a note to the parser.  A parser that reads an ambiguous grammar and "picks the right tree by convention" is fragile: different parser generators may pick differently, and the ambiguity can resurface in edge cases you didn't test.
+> **Watch out.**  Fixing ambiguity means rewriting the grammar, not adding a note to the parser.  A parser that reads an ambiguous grammar and "picks the right tree by convention" is fragile.  Different parser generators may pick differently, and the ambiguity can resurface in edge cases you did not test.
 
-The insight: make the grammar's shape mirror the binding strength.  Operators that bind tighter should live *deeper* in the grammar, so they end up *lower* in every tree.  We introduce one nonterminal per precedence level.  Start with two levels, addition (loose) and multiplication (tight):
+The idea: make the grammar's shape mirror the binding strength.  Operators that bind tighter live *deeper* in the grammar, so they land *lower* in every tree.  Give each precedence level one nonterminal.  Start with two levels, addition (loose) and multiplication (tight):
 
 ```
 E -> E + T | T        (expressions: additions of terms)
@@ -96,27 +96,27 @@ T -> T * F | F        (terms: multiplications of factors)
 F -> num | ( E )      (factors: atoms, and the reset button)
 ```
 
-Walk the logic: an `E` is a sum of `T`s; each `T` is a product of `F`s; a parenthesized `E` is demoted back to an atom, which is why parentheses override everything.  Try to derive the 20-valued tree for `2 + 3 * 4` now: you cannot, because `*` can only appear *inside* a `T`, below any `+`.
+Walk the logic.  An `E` is a sum of `T`s.  Each `T` is a product of `F`s.  A parenthesized `E` is demoted back to an atom, which is why parentheses override everything.  Now try to derive the 20-valued tree for `2 + 3 * 4`.  You cannot, because `*` can only appear *inside* a `T`, below any `+`.
 
 ---
 
 ## Model 2: Verify the Cure
 
-*Intuition: The best way to convince yourself the layered grammar actually works is to try to derive the "wrong" tree and fail.  If you cannot build a tree where `+` sits below `*`, the grammar has successfully encoded precedence.  Work through the leftmost derivation step by step; each expansion will force you down the nonterminal chain in only one valid way.*
+*Intuition: The best way to convince yourself the layered grammar works is to try to derive the "wrong" tree and fail.  If you cannot build a tree where `+` sits below `*`, the grammar has encoded precedence.  Work through the leftmost derivation step by step.  Each expansion forces you down the nonterminal chain in only one valid way.*
 
 ### Critical Thinking Questions
 
-5.  Derive `2 + 3 * 4` from the layered grammar (leftmost derivation, every step).  Confirm exactly one tree exists and that it evaluates to 14.
+5.  Derive `2 + 3 * 4` from the layered grammar (leftmost derivation, every step).  Confirm that exactly one tree exists and that it evaluates to 14.
 6.  Derive `(2 + 3) * 4`.  Identify the production that lets the parentheses hoist the addition above the multiplication.
-7.  Add a new tightest-binding level: exponentiation `^`.  Decide as a team where the new nonterminal slots into the chain `E, T, F`, write the modified grammar, and verify on `2 * 3 ^ 2` (should be 18, not 36).
+7.  Add a new tightest-binding level: exponentiation `^`.  Decide as a team where the new nonterminal slots into the chain `E, T, F`, write the modified grammar, and verify it on `2 * 3 ^ 2` (the answer should be 18, not 36).
 
 ## 3.  Step 2: Associativity Is Direction of Recursion
 
-*Intuition: Once you have separate precedence levels, you still need to decide how a chain of the same operator groups: does `5 - 2 - 1` mean `(5-2)-1 = 2` or `5-(2-1) = 4`?  The grammar encodes this entirely through which side the recursion appears on: left recursion means the leftmost operation groups first (left-associativity), and right recursion means the rightmost groups first.*
+*Intuition: Separate precedence levels settle which operator groups first when the operators differ.  You still need to decide how a chain of the same operator groups: does `5 - 2 - 1` mean `(5-2)-1 = 2` or `5-(2-1) = 4`?  The grammar encodes this entirely through the side the recursion appears on.  Left recursion means the leftmost operation groups first (left-associativity).  Right recursion means the rightmost operation groups first.*
 
-> **Watch out!**  Operator precedence and associativity are **two separate things encoded in two separate grammar properties**.  Precedence is controlled by the depth of the nonterminal in the chain (deeper = tighter binding).  Associativity is controlled by which side of the production the recursive nonterminal appears on (left side = left-associative).  Getting one right does not automatically get the other right.
+> **Watch out.**  Precedence and associativity are two separate things, encoded by two separate grammar properties.  Precedence comes from the depth of the nonterminal in the chain (deeper means tighter binding).  Associativity comes from the side of the production where the recursive nonterminal appears (left side means left-associative).  Getting one right does not get the other right.
 
-Look again at `E -> E + T`.  The recursion is on the **left**, so `a - b - c` parses as `(a - b) - c`: **left-associative**, which is what subtraction requires (5 - 2 - 1 is 2, not 4).  Had we written `E -> T + E`, the same operator would group to the right.  Exponentiation conventionally associates right (`2 ^ 3 ^ 2` is `2 ^ (3 ^ 2)` = 512), so its rule should recurse on the right.  **Associativity is not an annotation; it is which side the recursion sits on.**
+Look again at `E -> E + T`.  The recursion is on the left, so `a - b - c` parses as `(a - b) - c`.  That is left-associative, which is what subtraction requires (5 - 2 - 1 is 2, not 4).  Had we written `E -> T + E`, the same operator would group to the right.  Exponentiation conventionally associates right (`2 ^ 3 ^ 2` is `2 ^ (3 ^ 2)` = 512), so its rule should recurse on the right.  Associativity is not an annotation.  It is the side the recursion sits on.
 
 $$
 E \rightarrow E + T \ \text{(left assoc.)} \qquad P \rightarrow F \,\hat{}\, P \mid F \ \text{(right assoc.)}
@@ -183,23 +183,14 @@ print("  Exponentiation conventionally associates RIGHT, so 512 is correct.")
 
 ### Reading the Code
 
-- Nothing here parses anything.  These are trees built **by hand**, exactly as you
-  drew them, so the only thing being tested is what each *shape* computes.  That is
-  the point: the grammar's job is to pick the shape, and the shape decides the answer.
-- `tree_correct` and `tree_wrong` are both legal under the *naive* grammar
-  `E -> E + E | E * E | num`, and they disagree by 6.  A parser given that grammar
-  has no principled reason to prefer either.
-- The associativity pair changes nothing but which subtree is nested, and the answer
-  moves from 2 to 4.  Note that both trees have `-` at the root; the root operator
-  does not tell you the grouping.
-- `OPS` is a dict of lambdas rather than values, so only the selected operator runs.
-  Built as a dict of computed values, `2 ^ 3 ^ 2` would evaluate every entry,
-  including divisions you never asked for.
+- Nothing here parses anything.  These trees are built by hand, exactly as you drew them, so the only thing under test is what each *shape* computes.  That is the point: the grammar's job is to pick the shape, and the shape decides the answer.
+- `tree_correct` and `tree_wrong` are both legal under the naive grammar `E -> E + E | E * E | num`, and they disagree by 6.  A parser given that grammar has no principled reason to prefer either.
+- The associativity pair changes nothing but which subtree is nested, and the answer moves from 2 to 4.  Both trees have `-` at the root, so the root operator does not tell you the grouping.
+- `OPS` is a dict of lambdas rather than values, so only the selected operator runs.  Built as a dict of computed values, `2 ^ 3 ^ 2` would evaluate every entry, including divisions you never asked for.
 
 ### Try It Yourself
 
-Do CTQ 7's exponentiation question with trees instead of prose, and find the case
-that distinguishes precedence from associativity.
+Do CTQ 7 (Critical Thinking Question 7) with trees instead of prose, and find the case that separates precedence from associativity.
 
 ```python
 OPS = {"+": lambda a, b: a + b, "-": lambda a, b: a - b,
@@ -238,17 +229,13 @@ if not trees_for_2_3_2:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output for TODO 1: `18` and `36`.  Your grammar should force `18`.  TODO 3
-is the one to bring to the discussion: it is the case where precedence has nothing to
-say and only associativity decides.
+Expected output for TODO 1: `18` and `36`.  Your grammar should force `18`.  Bring TODO 3 to the discussion.  It is the case where precedence has nothing to say and only associativity decides.
 
 ---
 
 ## Model 6: A Derivation Tracer
 
-You have written leftmost derivations by hand for two sessions.  This traces them
-mechanically, so you can check yours and, more importantly, watch a **rightmost**
-derivation take a different path to the *same* tree.
+You have written leftmost derivations by hand for two sessions.  This program traces them mechanically, so you can check yours.  More importantly, you can watch a rightmost derivation (one that expands the rightmost nonterminal first at every step) take a different path to the *same* tree.
 
 ```python
 # Derivations of a SPECIFIC string, driven by its parse tree.
@@ -317,38 +304,22 @@ for label in ("Leftmost", "Rightmost"):
 
 ### Reading the Code
 
-- The string is **parsed once**, and both derivations are then read off that one tree.
-  That is why they cannot disagree about the final string: they are describing the
-  same tree in two different orders.
-- The only difference between the two runs is `idxs[0]` versus `idxs[-1]`: which
-  nonterminal gets expanded next.  That one index is the entire distinction between a
-  leftmost and a rightmost derivation.
-- A naive tracer that just takes each rule's first alternative would loop forever
-  here, because `E -> E + T` is left-recursive and would keep rewriting `E` without
-  ever consuming input.  That is the same trap you met in *Grammars, Day 2*, and it
-  is why this version is driven by a parse tree instead.
-- Both runs take the same number of steps because each step applies exactly one
-  production, and the tree contains a fixed number of productions.  CTQ 9 asks you to
-  say that carefully.
+- The string is parsed once, and both derivations are then read off that one tree.  That is why they cannot disagree about the final string: they describe the same tree in two different orders.
+- The only difference between the two runs is `idxs[0]` versus `idxs[-1]`: which nonterminal gets expanded next.  That one index is the entire distinction between a leftmost and a rightmost derivation.
+- A naive tracer that takes each rule's first alternative would loop forever here.  `E -> E + T` is left-recursive, so the tracer would keep rewriting `E` without ever consuming input.  That is the same trap you met in *Grammars, Day 2*, and it is why this version is driven by a parse tree instead.
+- Both runs take the same number of steps because each step applies exactly one production, and the tree contains a fixed number of productions.  CTQ 9 asks you to say that carefully.
 
 ### Critical Thinking Questions
 
-8.  Both derivations start from `E` and end at the same terminal string.  What is that
-    string?  Read the last line of each run.
-9.  Count the steps in each.  Are they equal?  Explain why the number of steps must
-    always be equal for a given derivation of a given string, in terms of how many
-    nonterminals each production removes and adds.
-10. Swap the two alternatives of `F` so that `["num"]` comes first.  Predict whether
-    the derivation gets shorter, longer, or stays the same, then check.
+8.  Both derivations start from `E` and end at the same terminal string.  What is that string?  Read the last line of each run.
+9.  Count the steps in each.  Are they equal?  Explain why the number of steps must always be equal for a given derivation of a given string, in terms of how many nonterminals each production removes and adds.
+10. Swap the two alternatives of `F` so that `["num"]` comes first.  Predict whether the derivation gets shorter, longer, or stays the same, then check.
 
 ---
 
 ## Model 7: An Ambiguity Detector
 
-To prove a grammar is ambiguous you need exactly one witness: a single string with two
-distinct parse trees.  This enumerates all trees up to a depth bound and reports any
-string that has more than one.  **Run this on your own project grammar before you build
-a parser on it.**
+To prove a grammar is ambiguous you need exactly one witness: a single string with two distinct parse trees.  This program enumerates every tree up to a depth bound and reports any string that has more than one.  **Run it on your own project grammar before you build a parser on it.**
 
 ```python
 from itertools import product
@@ -414,28 +385,19 @@ print("  An ambiguous grammar means your parser picks one silently.")
 
 ### Reading the Code
 
-- `gen_trees` enumerates rather than parses.  It builds every tree the grammar permits
-  up to `max_depth` and then filters by leaf sequence, which is far too slow for real
-  input and perfectly adequate as a *proof device*.
-- `max_depth` is a real limit: raising it finds more trees and costs exponentially
-  more time.  A "no ambiguity found" result from this tool is evidence, not proof.
-- The contrast between `AMBIGUOUS` and `LAYERED` puts the session in two runs: two
-  trees become one, purely because `T` was interposed.
+- `gen_trees` enumerates rather than parses.  It builds every tree the grammar permits up to `max_depth` and then filters by leaf sequence.  That is far too slow for real input and adequate as a *proof device*.
+- `max_depth` is a real limit.  Raising it finds more trees and costs exponentially more time.  A "no ambiguity found" result from this tool is evidence, not proof.
+- The contrast between `AMBIGUOUS` and `LAYERED` puts the whole session in two runs: two trees become one, purely because `T` was interposed.
 
 ### Critical Thinking Questions
 
-11. Write both trees for `a + b + c` in parenthesized notation.  Which does the
-    left-recursive grammar `E -> E + T | T` force?  Which would the right-recursive
-    form force?
-12. For addition both trees give the same value.  Name a binary operator where
-    `(a OP b) OP c` differs from `a OP (b OP c)`, and verify with numbers.  This is why
-    ambiguity matters even when both trees share a root operator.
-13. `E -> E + E | id` is ambiguous and `E -> E + T | T` with `T -> id` is not.  Describe
-    in one sentence the structural property that forces exactly one tree.
+11. Write both trees for `a + b + c` in parenthesized notation.  Which one does the left-recursive grammar `E -> E + T | T` force?  Which one would the right-recursive form force?
+12. For addition, both trees give the same value.  Name a binary operator where `(a OP b) OP c` differs from `a OP (b OP c)`, and verify with numbers.  This is why ambiguity matters even when both trees share a root operator.
+13. `E -> E + E | id` is ambiguous, and `E -> E + T | T` with `T -> id` is not.  Describe in one sentence the structural property that forces exactly one tree.
 
 ### Try It Yourself
 
-Run the detector on the grammar your team is actually going to build a parser for.
+Run the detector on the grammar your team is going to build a parser for.
 
 ```python
 from itertools import product
@@ -483,14 +445,13 @@ print("Then rerun and watch the count drop to 1.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output with the grammar as given: several trees for both targets, because it
-is ambiguous on purpose.  With a properly layered replacement, both lines read `1`.
+Expected output with the grammar as given: several trees for both targets, because the grammar is ambiguous on purpose.  With a properly layered replacement, both lines read `1`.
 
 ---
 
 ## Model 8: The Dangling Else
 
-*Intuition: Ambiguity is not limited to arithmetic expressions.  Any grammar rule that allows a construct to attach to more than one parent can be ambiguous.  The dangling `else` is the most famous example from real language design; virtually every language that has `if/else` has had to make an explicit choice to resolve it.*
+*Intuition: Ambiguity is not limited to arithmetic expressions.  Any grammar rule that lets a construct attach to more than one parent can be ambiguous.  The dangling `else` is the most famous example from real language design.  Nearly every language with `if/else` has had to make an explicit choice to resolve it.*
 
 Expression ambiguity is not the only kind.  Consider:
 
@@ -504,8 +465,8 @@ The string `if A then if B then other else other` has two trees: the `else` can 
 
 ### Critical Thinking Questions
 
-17.  Sketch both attachments.  Which `if` owns the `else` in C, Java, and Python's grammar tradition (the conventional answer: the *nearest* unmatched `if`)?
-18.  Your team's language must resolve this.  List the three standard remedies (grammar rewriting, a disambiguating rule in the parser, or required braces/end markers) and pick one for your project, recording the rationale.
+17.  Sketch both attachments.  Which `if` owns the `else` in the grammar tradition of C, Java, and Python (the conventional answer: the *nearest* unmatched `if`)?
+18.  Your team's language must resolve this.  List the three standard remedies (grammar rewriting, a disambiguating rule in the parser, or required braces/end markers), pick one for your project, and record your rationale.
 
 ---
 
@@ -540,7 +501,7 @@ Associativity is determined by:
 
 ---
 
-For `+`, the two trees of an ambiguous grammar give the same number. Ambiguity still matters because:
+For `+`, the two trees of an ambiguous grammar give the same number.  Ambiguity still matters because:
 
 [(X)] Other operators are not associative, so `8 - 4 - 2` gives 2 or 6 depending on the tree the parser happened to pick
 [( )] Addition is slower on one of the two trees
@@ -551,9 +512,9 @@ For `+`, the two trees of an ambiguous grammar give the same number. Ambiguity s
 
 ## 4.  Exercises
 
-1.  *Full ladder.*  Write the complete unambiguous grammar for expressions with `+ - * / ^`, unary minus, parentheses, numbers, and identifiers, with conventional precedence and associativity.  This grammar is, nearly verbatim, the one your parser assignment implements; invest accordingly.
+1.  *Full ladder.*  Write the complete unambiguous grammar for expressions with `+ - * / ^`, unary minus, parentheses, numbers, and identifiers, with conventional precedence and associativity.  This grammar is, nearly verbatim, the one your parser assignment implements, so invest accordingly.
 2.  *Tree drawing drill.*  For `1 + 2 * (3 + 4) - 5`, draw the unique parse tree under your full ladder and evaluate it bottom-up, showing the value at every internal node.
-3.  *Ambiguity hunt.*  Each teammate writes a small grammar (three to five rules) that is secretly ambiguous; the team finds a witness string with two trees for each.  Hardest-to-spot ambiguity wins.
+3.  *Ambiguity hunt.*  Each teammate writes a small grammar (three to five rules) that is secretly ambiguous.  The team finds a witness string with two trees for each.  Hardest-to-spot ambiguity wins.
 4.  *Convention archaeology.*  Find one language whose precedence or associativity surprises you (APL evaluates right-to-left; Smalltalk gives all binary operators equal precedence).  Report the rule and one expression where it bites.
 
 ---
@@ -597,20 +558,20 @@ The "dangling else" ambiguity occurs because:
 
 4.  *Associativity in parse trees.*  Show that the grammar `E -> E - E | NUMBER` produces two parse trees for `5 - 3 - 1`.  Modify the grammar to enforce left-associativity and draw the single parse tree that results.
 
-5.  *EBNF to BNF.* Convert the EBNF rule `expr -> term { ("+" | "-") term }` to standard BNF (no `{...}` or `[...]`).  How does the BNF version encode left-associativity?  Compare the derivation trees produced by both versions for `1 + 2 + 3`.
+5.  *EBNF to BNF.*  Convert the EBNF rule `expr -> term { ("+" | "-") term }` to standard BNF (no `{...}` or `[...]`).  How does the BNF version encode left-associativity?  Compare the derivation trees produced by both versions for `1 + 2 + 3`.
 
 ---
 
 ## Reflection Prompt
 
-In your notebook: precedence conventions are pure social agreement; mathematics worked fine before PEMDAS was standardized.  What does today suggest about how much of "correctness" in computing is convention, and who gets to set it?  Connect to one convention your team will set unilaterally in December.
+In your notebook: precedence conventions are pure social agreement, and mathematics worked fine before PEMDAS was standardized.  What does today suggest about how much of "correctness" in computing is convention, and who gets to set it?  Connect this to one convention your team will set unilaterally in December.
 
 ---
 
 ## 5.  Further Reading
 
 - Douglas Thain.  *Introduction to Compilers and Language Design*, Chapter 4.
-- Robert Nystrom.  *Crafting Interpreters*, "Representing Code" and "Parsing Expressions" (online), the same layering with beautiful diagrams.
+- Robert Nystrom.  *Crafting Interpreters*, "Representing Code" and "Parsing Expressions" (online), the same layering with clear diagrams.
 - Aho, Lam, Sethi, Ullman.  *Compilers: Principles, Techniques, and Tools*, section 4.3, for the formal treatment.
 
 ---
@@ -619,13 +580,13 @@ Up next: the *Regular Expressions* activity drops to the hierarchy's bottom rung
 
 # Answer Key
 
-Work the models above with your team before reading these.  Each one answers a Critical Thinking Question the session poses; seeing the answer first turns the exercise into transcription.
+Work the models above with your team before you read these.  Each one answers a Critical Thinking Question the session poses.  Seeing the answer first turns the exercise into transcription.
 
 ### Worked Example: both trees for `2 + 3 * 4`, drawn
 
-Do CTQ 1 yourself first.  Then check against this: the point is not the answer, it is seeing that *both* derivations are legal under the same grammar.
+Do CTQ 1 yourself first.  Then check against this.  The point is not the answer; it is seeing that *both* derivations are legal under the same grammar.
 
-**Tree A, `+` on top (multiply first, value 14):**
+Tree A, `+` on top (multiply first, value 14):
 
 ```
             E
@@ -653,7 +614,7 @@ E
 => 2 + 3 * 4
 ```
 
-**Tree B, `*` on top (add first, value 20):**
+Tree B, `*` on top (add first, value 20):
 
 ```
             E
@@ -681,14 +642,14 @@ E
 => 2 + 3 * 4
 ```
 
-Both derivations end at the same string, which is what the definition asks for: the grammar admits two distinct leftmost derivations of `2 + 3 * 4`, so it is ambiguous.  Note the divergence is at the *very first step* (`E -> E + E` versus `E -> E * E`) and everything after is forced.  CTQ 2 asks where the meanings diverge; it is the root node, and nothing below it.
+Both derivations end at the same string, which is what the definition asks for.  The grammar admits two distinct leftmost derivations of `2 + 3 * 4`, so it is ambiguous.  The divergence happens at the *very first step* (`E -> E + E` versus `E -> E * E`), and everything after it is forced.  CTQ 2 asks where the meanings diverge: at the root node, and nowhere below it.
 
 
 ---
 
 ### Worked Example: the layered grammar admits only one tree
 
-CTQ 5 asks you to derive `2 + 3 * 4` from the layered grammar.  Here is that derivation, and then the failure you should try to produce for the other tree.
+CTQ 5 asks you to derive `2 + 3 * 4` from the layered grammar.  Here is that derivation, followed by the failure you should try to produce for the other tree.
 
 ```
 E
@@ -721,7 +682,7 @@ The resulting tree, with `*` forced below `+`:
          2   3
 ```
 
-**Now try to build Tree B and watch it fail.**  To put `*` at the root you would need `E -> E * ...`, but no production for `E` mentions `*` at all; `*` appears only in `T -> T * F`, and every `T` sits *below* an `E`.  There is no path.  That impossibility is the cure working: precedence is not a convention the parser applies, it is a shape the grammar cannot violate.
+**Now try to build Tree B and watch it fail.**  To put `*` at the root you would need `E -> E * ...`, but no production for `E` mentions `*` at all.  `*` appears only in `T -> T * F`, and every `T` sits *below* an `E`.  There is no path.  That impossibility is the cure working: precedence is not a convention the parser applies, it is a shape the grammar cannot violate.
 
 For CTQ 6, the production that lets parentheses win is `F -> ( E )`.  It demotes a whole expression back down to a factor, which is why `(2 + 3) * 4` can put `+` beneath `*`:
 

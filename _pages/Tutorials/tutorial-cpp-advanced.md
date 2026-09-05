@@ -30,7 +30,7 @@ By the end of this tutorial, you will have:
 - Explained how type erasure in `std::function` achieves runtime polymorphism without virtual dispatch
 
 > **Prerequisites:** C++ fundamentals, basic pointers, classes/structs
-> **Goal:** Master modern C++ memory management, generic programming, the STL, and how C++ achieves zero-cost abstractions through templates and type erasure.
+> **Goal:** Learn modern C++ memory management, generic programming, and the STL, and see how C++ achieves zero-cost abstractions through templates and type erasure.
 
 ---
 
@@ -1564,7 +1564,7 @@ A **Foreign Function Interface (FFI)** is the mechanism by which one language ca
 
 1.  **C is the universal ABI:** Nearly all languages can call C; C is the *lingua franca* of system interfaces.
 2.  **Performance:** Native code runs without an interpreter loop.
-3.  **Library reuse:** Millions of battle-tested C libraries exist.
+3.  **Library reuse:** Millions of mature, widely used C libraries exist.
 
 The challenge: the high-level language's runtime and the C runtime make different assumptions about data layout, memory ownership, error handling, and calling conventions.
 

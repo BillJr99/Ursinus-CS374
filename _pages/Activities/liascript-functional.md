@@ -14,30 +14,30 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Functional Programming
 
-When you give someone driving directions, you say "turn left on Main, go two blocks, turn right."  That is imperative programming: a step-by-step recipe for *how* to get somewhere.  Functional programming is like giving the destination instead: you describe *what* you want the data to look like, and let the language figure out how to get there.  This shift in thinking is why functional ideas now show up in every modern language (Python, JavaScript, Java, Rust) and why mastering them makes you a dramatically more expressive programmer.
+Functional programming describes *what* you want the data to become and leaves the step-by-step work to the language.  Compare it to driving directions.  Imperative programming says "turn left on Main, go two blocks, turn right": a recipe for *how* to get somewhere.  Functional programming names the destination instead.  The comparison stops there, because the language does not pick its own route; it follows the rules for `map`, `filter`, and `reduce` that you learn today.  Every modern language (Python, JavaScript, Java, Rust) now carries these ideas, and learning them gives you a shorter and clearer way to say what a program does.
 
 ## Learning Goals
 
 By the end of this activity, you will be able to:
 
-- Distinguish pure functions from impure ones and explain why purity enables referential transparency, testability, and safe parallelism
-- Apply `map`, `filter`, and `reduce` to transform and aggregate data without explicit loops
-- Write higher-order functions that accept and return other functions, including anonymous `lambda` expressions
-- Use currying and partial application to build specialized functions from general ones
-- Implement recursive solutions to iterative problems without using mutable state or assignment
-- Read Scheme's one syntactic form and explain why a language whose programs are already trees needs almost no parser
+- Tell a pure function from an impure one, and explain why purity gives you referential transparency, easy testing, and safe parallelism
+- Apply `map`, `filter`, and `reduce` to transform and combine data without writing a loop
+- Write higher-order functions that take other functions as arguments and return functions, including anonymous `lambda` expressions
+- Use currying and partial application to build a specialized function from a general one
+- Solve iterative problems recursively, with no mutable state and no assignment
+- Read Scheme's single syntactic form and explain why a language whose programs are already trees needs almost no parser
 - Write a macro: a function that takes a program as data, returns a different program, and hands it back to the evaluator
 
-This is the third and last of the sessions that open the term inside one paradigm.  You met the paradigms and typed your first s-expressions on Day 2, and spent Day 3 writing real Scheme.  Today we bring the same ideas home to **Python** (`lambda`, `map`, `filter`, `reduce`) with the discipline of **purity** and **immutability**, because the functional toolkit is both a daily professional skill (data pipelines, modern Java, JavaScript, and Rust) and the bridge to the lambda calculus in November.  We end where Scheme is strangest and most instructive: a program that is literally a list you can take apart and rewrite.
+This is the third and last of the sessions that open the term inside one paradigm.  On Day 2 you met the paradigms and typed your first s-expressions.  On Day 3 you wrote real Scheme.  Today you bring the same ideas to Python (`lambda`, `map`, `filter`, `reduce`) and add the discipline of purity and immutability.  This toolkit matters twice.  It is a daily professional skill (data pipelines, modern Java, JavaScript, and Rust), and it is the bridge to the lambda calculus in November.  The deck ends where Scheme is strangest and most instructive: a program that is literally a list you can take apart and rewrite.
 
-Arc: **purity and why it pays -> the big three combinators -> higher-order thinking -> currying and partial application -> recursion without loops -> code as data**
+Arc: purity and why it pays -> the big three combinators -> higher-order thinking -> currying and partial application -> recursion without loops -> code as data
 
-Everything in this deck is Python except Part V, which returns to the Scheme you have been writing since Day 2.  Nothing here assumes the parser, the interpreter, or the type checker you build later in the term; where those come up, they are previews.
+Everything in this deck is Python except Part V, which returns to the Scheme you have been writing since Day 2.  Nothing here assumes the parser, the interpreter, or the type checker you build later in the term.  Where those come up, they are previews.
 
 > **Before You Begin:** This activity assumes you can:
 > - Write and call Python functions, including functions that take other functions as arguments
-> - Use Python lists and understand that lists are mutable (they can be changed in place)
-> - Recognize a `for` loop and describe what it does step by step
+> - Use Python lists and explain that lists are mutable (they can be changed in place)
+> - Read a `for` loop and describe what it does step by step
 >
 > If any of these feel shaky, review them first.
 
@@ -45,28 +45,28 @@ Everything in this deck is Python except Part V, which returns to the Scheme you
 
 ## Directions and Group Roles
 
-Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Please think each model and question through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever you disagreed or found another approach.
+Work in your POGIL team with your rotated roles (Manager, Recorder, Presenter, Reflector).  Think each model and question through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board.  The Presenter reports out wherever you disagreed or found another approach.
 
-> **How today runs.**  Parts I through IV are the core, and Part V (code as data) is the payoff we want to reach together, so keep an eye on the clock: if the period is running short, Part IV's recursive rewrites of `map`, `filter`, and `reduce` are the ones to read at home, since Exercise 3 has you write them anyway.  Everything after *Check Your Understanding* is homework, and the Scheme extension at the end is there for whoever takes the Scheme direction on the Functional assignment.
+> **How today runs.**  Parts I through IV are the core.  Part V (code as data) is the goal we want to reach together, so watch the clock.  If the period runs short, read Part IV's recursive rewrites of `map`, `filter`, and `reduce` at home; Exercise 3 has you write them anyway.  Everything after *Check Your Understanding* is homework.  The Scheme extension at the end is for whoever takes the Scheme direction on the Functional assignment.
 
 ---
 
 ## Key Concepts
 
-Here is a plain-English glossary of the terms this activity uses.  Please come back to this table whenever one of them starts to feel slippery.
+This table defines the terms the activity uses, in plain English.  Come back to it whenever a term starts to feel slippery.
 
 | Term | Plain-English meaning | Why it matters |
 |------|-----------------------|----------------|
-| **Pure function** | Output depends only on inputs; nothing outside the function changes | Pure functions can be tested, cached, substituted, and parallelized fearlessly |
-| **Side effect** | Anything a function does besides return a value: mutating, printing, reading globals | Side effects are exactly what purity forbids; spotting them is a skill |
-| **Immutability** | Never modify existing data; build new data instead | Removes an entire class of "who changed my list?" bugs |
-| **Referential transparency** | A call can be replaced by its result anywhere without changing behavior | The formal payoff of purity; the license for safe refactoring |
+| **Pure function** | The output depends only on the inputs, and nothing outside the function changes | You can test, cache, substitute, and parallelize a pure function without fear |
+| **Side effect** | Anything a function does besides return a value: changing data in place, printing, reading a global | Side effects are exactly what purity forbids; spotting them is a skill |
+| **Immutability** | Never change existing data; build new data instead | Removes a whole class of "who changed my list?" bugs |
+| **Referential transparency** | You can replace a call with its result anywhere without changing behavior | The formal reward for purity, and the license for safe refactoring |
 | **`map`** | Transform every element of a list with a function | Replaces the "loop that builds a new list" pattern |
-| **`filter`** | Keep only the elements that satisfy a test | Replaces the "loop with an `if` inside" pattern |
+| **`filter`** | Keep only the elements that pass a test | Replaces the "loop with an `if` inside" pattern |
 | **`reduce` (fold)** | Collapse a whole list into one value with a two-argument function | Replaces the "loop with an accumulator variable" pattern |
-| **Higher-order function** | A function that takes functions as arguments or returns one | The mechanism behind combinators, decorators, and callbacks |
-| **Lambda** | A small anonymous function written inline | Lets you hand behavior to `map`/`filter`/`reduce` without naming it |
-| **Currying / partial application** | Supplying a function's arguments one at a time to build specialized functions from general ones | Turns general tools into custom ones; central to Haskell and the lambda calculus ahead |
+| **Higher-order function** | A function that takes a function as an argument or returns one | The mechanism behind combinators, decorators, and callbacks |
+| **Lambda** | A small anonymous function written inline | Lets you hand behavior to `map`, `filter`, and `reduce` without naming it |
+| **Currying / partial application** | Supply a function's arguments one at a time to build a specialized function from a general one | Turns general tools into custom ones; central to Haskell and to the lambda calculus ahead |
 
 ---
 
@@ -74,13 +74,13 @@ Here is a plain-English glossary of the terms this activity uses.  Please come b
 
 ## 1.  Functions Like Mathematics Meant
 
-A pure function's output depends only on its inputs, and it changes nothing outside itself.  No mutation of arguments, no global reads or writes, no printing, no randomness.  Purity buys three concrete powers:
+A pure function's output depends only on its inputs, and it changes nothing outside itself.  It does not change its arguments, read or write globals, print, or use randomness.  Purity buys three concrete powers:
 
-1.  **Substitution**: a call can be replaced by its result anywhere (referential transparency)
-2.  **Testability**: no setup, no teardown: just input -> expected output
-3.  **Parallel safety**: no shared state means no interference
+1.  Substitution: you can replace a call with its result anywhere (this is referential transparency)
+2.  Testability: no setup and no teardown, only input -> expected output
+3.  Parallel safety: no shared state means no interference
 
-Immutability is purity's partner.  Functional style does not modify a list; it produces a new one.
+Immutability is purity's partner.  Functional style does not modify a list; it produces a new one.  Run the cell below and watch what happens to `original`.
 
 ```python
 # Spot the impure function, run this and observe the difference
@@ -110,15 +110,15 @@ print(f"data after two calls to impure_double: {data}")   # [4, 8, 12], not [4, 
 
 **Critical Thinking Questions (CTQs)**
 
-> **CTQ 1.1** `pure_double` and `impure_double` return the same value for `[1, 2, 3]`, yet they differ fundamentally.  What is the difference, and why does it matter when a function is called more than once?
+> **CTQ 1.1** `pure_double` and `impure_double` return the same value for `[1, 2, 3]`, yet they differ in a basic way.  What is the difference, and why does it matter when a function is called more than once?
 
-> **CTQ 1.2** The rule "calling a pure function twice with the same input always gives the same output" is called **referential transparency**.  Which functions in the code above have this property?  Which do not?
+> **CTQ 1.2** The rule "calling a pure function twice with the same input always gives the same output" is called referential transparency.  Which functions in the code above have this property?  Which do not?
 
 > **CTQ 1.3** Could `pure_double` safely run on two halves of the list in parallel and merge the results?  Could `impure_double`?  Explain.
 
 ---
 
-Think of purity the way you think about a calculator: press `2 + 3` and you always get `5`, no matter how many times you press it and no matter what else is on your desk.  Model 1 gives you six functions and asks you to decide which ones behave like that trustworthy calculator and which ones secretly remember (or change) the world around them.  Use what you learned from the opening example above to guide your classification.
+A pure function behaves like a calculator: press `2 + 3` and you get `5` every time, no matter how many times you press it or what else is on your desk.  The comparison stops at memory, because a real calculator has a memory key and a pure function has none.  Model 1 gives you six functions.  Decide which ones behave like that calculator and which ones secretly remember, or change, the world around them.  Use the opening example above to guide your classification.
 
 ## Model 1: The Purity Audit
 
@@ -148,9 +148,9 @@ print(f"f6() twice: {f6():.4f}, {f6():.4f}")   # random
 
 ### Reading the Code
 
-- The audit turns on one question per function: given the same arguments, does it always return the same value, and does it change anything outside itself?  Both halves must hold for purity.
+- The audit asks one question per function: given the same arguments, does it always return the same value, and does it change anything outside itself?  Both halves must hold for purity.
 - `f4` reads a global without writing one.  It is still impure, because "same input, same output" fails the moment somebody else changes that global.  Purity is a property of the function *and* everything it can observe.
-- The mutation surprise at the top is the practical stake: `impure_double` looked like a transformation and was in fact an edit.  Calling it twice gives different answers from the same argument, which is exactly what referential transparency forbids.
+- The mutation surprise at the top is the practical stake.  `impure_double` looked like a transformation and was in fact an edit.  Calling it twice gives different answers from the same argument, which is exactly what referential transparency forbids.
 
 ### Try It Yourself
 
@@ -189,7 +189,7 @@ print("  same input -> same output, every time, forever")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output: `f_reads_global(10)` returns 10 and then 11, from identical arguments.  That single changed digit is the case for purity, made in one line.
+Expected output: `f_reads_global(10)` returns 10 and then 11, from identical arguments.  That one changed digit is the whole case for purity, made in one line.
 
 > **CTQ 1.4** Classify each function as pure or impure.  For each impure one, name the exact disqualifying feature.
 
@@ -199,9 +199,9 @@ Expected output: `f_reads_global(10)` returns 10 and then 11, from identical arg
 
 # Part II: The Big Three Combinators
 
-The next two models focus on the three combinators that replace nearly every explicit loop you have ever written.  Before we look at any code, notice that each combinator corresponds to a question you already ask about data: "what does each element look like after a change?", "which elements do I want to keep?", "what single summary value do these elements produce?"  You have been answering these questions with `for` loops; now you will answer them with a single function call.
+The next two models cover the three combinators that replace nearly every explicit loop you have written.  A combinator is a function that takes a function and a list and builds a result from them.  Each of the three answers a question you already ask about data: "what does each element look like after a change?", "which elements do I want to keep?", and "what single summary value do these elements produce?"  You have been answering those questions with `for` loops.  Now you will answer them with one function call each.
 
-> **Watch out!**  Python's `map` and `filter` do not prevent you from passing in an impure function, one that prints, mutates globals, or reads from a file.  The combinators themselves are pure, but they will faithfully execute whatever function you hand them.  Always make sure the lambda or function you pass in has no side effects, or you lose the guarantees that make functional style valuable.
+> **Watch out!**  Python's `map` and `filter` do not stop you from passing in an impure function, one that prints, changes a global, or reads a file.  The combinators themselves are pure, but they run whatever function you hand them.  Make sure the lambda or function you pass in has no side effects.  Otherwise you lose the guarantees that make functional style worth using.
 
 ## 2.  Map, Filter, Reduce
 
@@ -211,7 +211,7 @@ $$\text{filter}(p, [x_1, \dots, x_n]) = [x_i \mid p(x_i) = \text{True}]$$
 
 $$\text{reduce}(\oplus, [x_1, \dots, x_n], z) = ((z \oplus x_1) \oplus x_2) \oplus \cdots \oplus x_n$$
 
-Each replaces a loop pattern you have written a hundred times.  The key: `map` *transforms* every element, `filter` *selects* elements, `reduce` *collapses* a list to one value.
+Each formula replaces a loop pattern you have written a hundred times.  `map` *transforms* every element, `filter` *selects* elements, and `reduce` *collapses* a list to one value.  In the `reduce` formula, $z$ is the starting value (the seed) and $\oplus$ is the two-argument function that combines the running result with the next element.
 
 ```python
 from functools import reduce
@@ -253,13 +253,13 @@ print(f"max score: {max_score}")
 
 ---
 
-Python gives you two roads to the same destination: the `map`/`filter` combinators you just saw, and *list comprehensions*, which borrow syntax from mathematical set-builder notation.  Model 2 puts them side by side so you can see that they produce identical results while looking quite different.  Understanding both is practical (you will encounter both in real Python codebases) and comparing them deepens your intuition for what "transforming a collection" really means.
+Python gives you two roads to the same result: the `map`/`filter` combinators you just saw, and *list comprehensions*, a syntax borrowed from mathematical set-builder notation.  Model 2 puts them side by side so you can see that they produce identical results while looking quite different.  You will meet both in real Python code, and comparing them sharpens your sense of what "transforming a collection" means.
 
-> **Watch out!**  Immutability does not mean "constant."  In Python, writing `x = 5` creates a variable that you could reassign at any time.  True immutability in functional programming means that once a data structure is built you never modify it; instead you build a new one.  Python's `tuple` is immutable; a `list` is not.  When you call `pure_double` above, `original` stays unchanged not because Python enforces it, but because the function was *written* to build a new list.  Nothing stops you from writing an impure version; discipline and code review do.
+> **Watch out!**  Immutability does not mean "constant."  In Python, `x = 5` creates a variable that you could reassign at any time.  Immutability in functional programming means that once you build a data structure you never modify it; you build a new one instead.  Python's `tuple` is immutable; a `list` is not.  When you call `pure_double` above, `original` stays unchanged because the function was *written* to build a new list, not because Python enforces it.  Nothing stops you from writing an impure version.  Discipline and code review do.
 
 ## Model 2: Comprehensions vs. Combinators
 
-Python offers *list comprehensions* as an alternative syntax for map+filter:
+Python offers *list comprehensions* as a second syntax for map plus filter:
 
 ```python
 scores = [88, 92, 54, 71, 67, 95, 49, 83]
@@ -285,21 +285,21 @@ print(f"generator sum: {sum(gen)}")
 
 > **CTQ 2.5** Generators are *lazy*: they produce elements one at a time on demand.  What advantage does this have for processing a file with 10 million lines?
 
-**The word for what a comprehension is doing.**  A loop is **imperative**: it tells the machine *how* to build the answer, one `append` at a time, and the answer only exists once the last step has run.  A comprehension is **declarative**: it describes *what* collection you want and leaves the construction to the language.  That is not a metaphor, it is borrowed notation.  Mathematicians have written the same thing for a century:
+Here is the word for what a comprehension does.  A loop is *imperative*: it tells the machine *how* to build the answer, one `append` at a time, and the answer exists only after the last step runs.  A comprehension is *declarative*: it describes *what* collection you want and leaves the construction to the language.  That is not a metaphor.  It is borrowed notation, and mathematicians have written the same thing for a century:
 
 - set-builder: $\{\, f(x) \mid x \in S,\ p(x) \,\}$
 - Python: `[f(x) for x in S if p(x)]`
 - SQL: `SELECT f(x) FROM S WHERE p(x)`
 
-Three notations, one idea: name the source, name the filter, name the transformation, and say nothing about the order of operations.  You met this in week 0 as the fourth paradigm; here it is with a syntax attached.
+Three notations, one idea: name the source, name the filter, name the transformation, and say nothing about the order of operations.  You met this in week 0 as the fourth paradigm.  Here it is with a syntax attached.
 
-**And the word for choosing it.**  Python programmers call the comprehension the **Pythonic** version, which is worth defining carefully because it is so often used to mean "shorter."  It does not.  *Pythonic* means idiomatic for this language: the construction a fluent reader expects, the one the language was shaped to make easy.  A comprehension is Pythonic because Python grew comprehensions on purpose; the same code translated literally into C would be neither idiomatic nor readable.  Every language has its own version of this, and part of learning one is learning which constructions its community reaches for first.
+And here is the word for choosing it.  Python programmers call the comprehension the *Pythonic* version.  The term needs a careful definition because people so often use it to mean "shorter."  It does not mean that.  *Pythonic* means idiomatic for this language: the construction a fluent reader expects, the one the language was shaped to make easy.  A comprehension is Pythonic because Python grew comprehensions on purpose.  The same code translated word for word into C would be neither idiomatic nor readable.  Every language has its own version of this, and part of learning a language is learning which constructions its community reaches for first.
 
 > **CTQ 2.6** "Pythonic" and "short" clearly are not the same thing, since a deeply nested comprehension is short and nobody calls it Pythonic.  Propose a test a reader could apply to decide whether a given comprehension has crossed the line, and try it on the generator expression above.
 
 ---
 
-Before moving on to higher-order functions, pause and run one pipeline entirely *by hand*.  If you can produce every intermediate list on paper, `map`/`filter`/`reduce` stop being magic incantations and become bookkeeping you happen not to write yourself.
+Before you move on to higher-order functions, run one pipeline entirely by hand.  Once you can produce every intermediate list on paper, `map`, `filter`, and `reduce` stop being incantations and become bookkeeping you happen not to write yourself.
 
 ## Model 3: Tracing a Map-Filter-Reduce Pipeline by Hand
 
@@ -315,7 +315,7 @@ passing   [93, 97, 76, 72, 100, 88]
 total     526                            mean = 526 / 6 = 87.7
 ```
 
-The same computation element by element: note how the two failing scores are *transformed* by `map` but *discarded* by `filter`, so they never reach `reduce`:
+Here is the same computation element by element.  Notice that `map` *transforms* the two failing scores but `filter` *discards* them, so they never reach `reduce`:
 
 | Element | After `map` (`min(s+5, 100)`) | Passes `>= 70`? | Running total in `reduce` |
 |---------|-------------------------------|-----------------|---------------------------|
@@ -328,7 +328,7 @@ The same computation element by element: note how the two failing scores are *tr
 | 49 | 54 | no | 438 (unchanged) |
 | 83 | 88 | yes | 438 + 88 = 526 |
 
-Run the cell to see the machine agree with your paper trace, fold step by fold step:
+Run the cell to see the machine agree with your paper trace, one fold step at a time:
 
 ```python
 from functools import reduce
@@ -360,13 +360,13 @@ In the pipeline trace, the score 54 becomes 59 after the map stage and then vani
 
 ### Reading the Code
 
-- Each stage is a separate line producing a separate list, purely so the trace can print the intermediate results.  The one-expression version composes them without ever naming the intermediates.
+- Each stage is a separate line that produces a separate list, purely so the trace can print the intermediate results.  The one-expression version composes them without ever naming the intermediates.
 - `reduce` is the only stage that collapses.  `map` preserves length, `filter` can only shorten, and `reduce` returns one value regardless.  Knowing which stage can change the length is most of debugging a pipeline.
-- Nothing is mutated anywhere.  The "running total" column is the accumulator argument travelling from one call to the next, which is what replaces the mutable variable an imperative loop would have needed.
+- Nothing is mutated anywhere.  The "running total" column is the accumulator argument travelling from one call to the next.  That argument replaces the mutable variable an imperative loop would have needed.
 
 ### Try It Yourself
 
-Rebuild the big three from scratch, so you know there is nothing in them.
+Rebuild the big three from scratch, so you can see there is nothing hidden in them.
 
 ```python
 from functools import reduce
@@ -395,7 +395,7 @@ print(f"  reduce    {reduce(lambda a, b: a + b, scores, 0)}")
 
 # TODO 1: my_reduce uses a mutable accumulator and a for loop. Rewrite it
 #         RECURSIVELY with no assignment at all. Both versions are pure
-#         from the outside -- so does the mutation inside matter? Argue it.
+#         from the outside, so does the mutation inside matter? Argue it.
 
 # TODO 2: define my_map using only my_reduce. Then define my_filter using
 #         only my_reduce. What does that tell you about which of the three
@@ -413,7 +413,7 @@ Expected output: each pair of lines identical.  TODO 2 is the interesting one: `
 
 > **CTQ 3.1** Recompute the running-total column yourself to confirm 526.  Which two original scores never reach `reduce`, and which stage eliminated each one?
 
-> **CTQ 3.2** The stage diagram materializes two whole intermediate lists (`curved`, `passing`) because the code calls `list(...)`.  In the one-expression pipeline from Section 2 (no `list` calls), do those intermediate lists ever exist in memory?  Connect your answer to the laziness you observed in CTQ 2.5.
+> **CTQ 3.2** The stage diagram builds two whole intermediate lists (`curved`, `passing`) because the code calls `list(...)`.  In the one-expression pipeline from Section 2 (no `list` calls), do those intermediate lists ever exist in memory?  Connect your answer to the laziness you observed in CTQ 2.5.
 
 > **CTQ 3.3** The running-total column is exactly the accumulator variable from an imperative loop, yet nothing here is mutated.  Where does the "updated" accumulator live on each fold step instead?  And is `reduce` with `traced_add` still pure?  (Careful: `traced_add` prints.)
 
@@ -421,11 +421,11 @@ Expected output: each pair of lines identical.  TODO 2 is the interesting one: `
 
 # Part III: Higher-Order Functions
 
-You have already passed functions as arguments: every time you called `map(lambda x: x*2, data)` you handed a function to another function.  Part III asks: what if a function could also *return* a new function?  Think of it like a factory: instead of building one widget, the factory builds a machine that builds widgets. `make_adder(5)` is that factory: call it once and you get back a custom addition function, ready to use anywhere.
+You have already passed functions as arguments: every call to `map(lambda x: x*2, data)` hands a function to another function.  Part III adds the other direction: a function can also *return* a new function.  Think of a factory that builds machines instead of widgets.  `make_adder(5)` is that factory: call it once and you get back a custom addition function, ready to use anywhere.  The comparison stops there, because the returned function is not a physical thing.  It is a closure: a function bundled with the values it could see when it was created.
 
 ## 3.  Functions That Make Functions
 
-A **higher-order function** takes functions as arguments *or* returns functions.  Today we also *return* them, creating parameterized behavior without classes.
+A higher-order function takes functions as arguments *or* returns functions.  Today you also *return* them, which creates parameterized behavior without classes.
 
 ```python
 # make_adder returns a function; each call creates a new closure
@@ -467,11 +467,11 @@ print(f"add5 twice applied to 0: {add5_twice(0)}")   # 10
 
 ---
 
-A composed pipeline like `clean` reads as a single gesture, but the machine executes it one function at a time.  Tracing a composition call by call (writing down each intermediate value) is the fastest way to convince yourself that data really does flow left to right through `pipeline`, and right to left through `compose`.
+A composed pipeline like `clean` reads as one gesture, but the machine runs it one function at a time.  Tracing a composition call by call, writing down each intermediate value, is the fastest way to see that data flows left to right through `pipeline` and right to left through `compose`.
 
 ## Model 4: Composition, Traced One Call at a Time
 
-**Worked example.**  Trace `clean("  Hello World  ")` where `clean = pipeline(str.strip, str.lower, lambda s: s.replace(' ', '_'))`.  Since `pipeline` folds with `lambda v, f: f(v)`, the string threads through the functions in order:
+**Worked example.**  Trace `clean("  Hello World  ")` where `clean = pipeline(str.strip, str.lower, lambda s: s.replace(' ', '_'))`.  Because `pipeline` folds with `lambda v, f: f(v)`, the string threads through the functions in order:
 
 | Step | Function applied | Input value | Output value |
 |------|------------------|-------------|--------------|
@@ -480,14 +480,14 @@ A composed pipeline like `clean` reads as a single gesture, but the machine exec
 | 2 | `str.lower` | `"Hello World"` | `"hello world"` |
 | 3 | `s.replace(' ', '_')` | `"hello world"` | `"hello_world"` |
 
-As a flow diagram, and contrast with `compose`, which runs right to left:
+Here is the same trace as a flow diagram, next to `compose`, which runs right to left:
 
 ```bash
 pipeline:  x --> [strip] --> [lower] --> [replace ' '->'_'] --> "hello_world"
-compose:   compose(f, g)(x) = f(g(x))    -- g runs FIRST, then f
+compose:   compose(f, g)(x) = f(g(x))    (g runs FIRST, then f)
 ```
 
-The cell below wraps each stage so it narrates itself, then swaps the first and last stages to show that composition order is part of the meaning:
+The cell below wraps each stage so it narrates itself.  It then swaps the first and last stages to show that composition order is part of the meaning:
 
 ```python
 from functools import reduce
@@ -523,7 +523,7 @@ print(f"result: {messy('  Hello World  ')!r}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Notice that `traced` is itself a higher-order function: it consumes a function and returns a new one with the same behavior plus narration, the same shape as `twice` and `compose`.
+Notice that `traced` is itself a higher-order function.  It consumes a function and returns a new one with the same behavior plus narration, the same shape as `twice` and `compose`.
 
 `compose(f, g)` returns `lambda x: f(g(x))`.  Evaluating `compose(str.lower, str.strip)("  ABC  ")` therefore:
 
@@ -538,17 +538,17 @@ Notice that `traced` is itself a higher-order function: it consumes a function a
 
 > **CTQ 4.2** Unroll `pipeline(f, g, h)(x)` by hand using the left-fold formula from CTQ 2.2 to show it computes `h(g(f(x)))`.  Then unroll `compose(f, g)(x)`.  Which order do you find easier to read, and why might data-pipeline libraries prefer left-to-right?
 
-> **CTQ 4.3** `pipeline` is implemented with `reduce`, but folding over a list of *functions* rather than numbers.  In the trace table, what plays the role of the accumulator, and what is its value after step 2?
+> **CTQ 4.3** `pipeline` is implemented with `reduce`, but it folds over a list of *functions* rather than numbers.  In the trace table, what plays the role of the accumulator, and what is its value after step 2?
 
 ---
 
-If higher-order functions are factories, then currying and partial application are factory *customizations*.  Imagine a general `power(base, exp)` function.  Partial application lets you say "I always want `exp=2`; give me a `square` function."  Currying takes this further: it restructures any multi-argument function so you can supply arguments one at a time, producing a chain of single-argument functions.  This style shows up everywhere in functional languages like Haskell, and understanding it will make the lambda calculus we study later feel natural.
+If higher-order functions are factories, then currying and partial application are ways to customize the factory.  Take a general `power(base, exp)` function.  Partial application lets you say "I always want `exp=2`; give me a `square` function."  Currying goes further.  It restructures any multi-argument function so you supply arguments one at a time, producing a chain of single-argument functions.  Functional languages like Haskell use this style everywhere, and knowing it will make the lambda calculus later in the term feel natural.
 
 ## 4.  Partial Application and Currying
 
-**Partial application**: fix some arguments of a function to produce a simpler one.
+Partial application fixes some arguments of a function to produce a simpler one.
 
-**Currying**: transform a function `f(a, b)` into `f(a)(b)`: a chain of single-argument functions.
+Currying transforms a function `f(a, b)` into `f(a)(b)`: a chain of single-argument functions.
 
 ```python
 from functools import partial
@@ -598,13 +598,13 @@ print(f"process({data}) = {process(data)}")   # sum of elements > 0 after subtra
 
 # Part IV: Recursion Without Loops
 
-In Python you have used `for` loops to walk through lists.  But a `for` loop requires mutable state: a counter variable that changes on every iteration.  Pure functional programming avoids mutable state entirely, so loops are off the table.  The replacement is recursion: a function that solves a big problem by calling itself on a smaller piece of that problem.  Model 5 shows you that `map`, `filter`, and `reduce` (which you already know) can themselves be written as recursive functions, making their structure visible and precise.
+In Python you have used `for` loops to walk through lists.  A `for` loop needs mutable state: a loop variable that changes on every pass.  Pure functional programming avoids mutable state entirely, so loops are off the table.  The replacement is recursion: a function solves a big problem by calling itself on a smaller piece of that problem.  Section 5 shows that `map`, `filter`, and `reduce` can themselves be written as recursive functions, which makes their structure visible and precise.
 
-> **Watch out!**  When students first encounter "no loops allowed," a common instinct is to reach for a `while True` loop with a counter.  That is still a loop!  Pure functional recursion means the function calls itself with a *smaller* argument: there is no loop variable, no `i += 1`, and no mutation of any list.  If you find yourself writing an assignment statement inside a recursive function, pause and reconsider.
+> **Watch out!**  When students first hear "no loops allowed," a common instinct is to reach for a `while True` loop with a counter.  That is still a loop.  Pure functional recursion means the function calls itself with a *smaller* argument: no loop variable, no `i += 1`, and no change to any list.  If you find yourself writing an assignment statement inside a recursive function, pause and reconsider.
 
 ## 5.  Thinking Recursively
 
-In pure functional style, **there are no loops**, only recursion.  Every loop corresponds to a recursive function:
+In pure functional style there are no loops, only recursion.  Every loop corresponds to a recursive function:
 
 ```python
 import sys
@@ -655,11 +655,11 @@ print(f"rsum({nums}) = {rsum(nums)}")
 
 ---
 
-Model 6 pushes recursion in two new directions: *mutual* recursion (two functions that call each other) and *structural* recursion (recursing along the shape of nested data, not a numeric counter).  You will also see a fully functional merge sort, no mutation anywhere.  Before diving in, study the worked example below that shows how to translate an imperative loop into a functional composition step by step.
+Section 6 pushes recursion in two new directions: *mutual* recursion (two functions that call each other) and *structural* recursion (recursing along the shape of nested data instead of a numeric counter).  It also includes a fully functional merge sort with no mutation anywhere.  First, study the worked example below.  It shows how to turn an imperative loop into a functional composition, one step at a time.
 
 **Worked Example: Imperative -> Functional**
 
-Suppose you have this imperative code that sums the squares of all even numbers in a list:
+Suppose you have this imperative code, which sums the squares of all even numbers in a list:
 
 ```python
 # Imperative version. 5 statements, 2 mutation points
@@ -669,14 +669,14 @@ for x in nums:
         result += x ** 2
 ```
 
-Here is how to transform it step by step into a functional composition:
+Here is how to turn it into a functional composition, step by step.
 
-**Step 1.  Identify the three loop concerns separately:**
+Step 1.  Name the three loop concerns separately:
 - *Filter*: keep only even numbers -> `x % 2 == 0`
 - *Transform*: square each kept number -> `x ** 2`
 - *Aggregate*: sum the results -> `+`
 
-**Step 2.  Write each concern as a lambda:**
+Step 2.  Write each concern as a lambda:
 
 ```python
 is_even  = lambda x: x % 2 == 0
@@ -684,14 +684,14 @@ square   = lambda x: x ** 2
 add      = lambda a, b: a + b
 ```
 
-**Step 3.  Assemble with `filter`, `map`, `reduce`:**
+Step 3.  Assemble with `filter`, `map`, and `reduce`:
 
 ```python
 from functools import reduce
 result = reduce(add, map(square, filter(is_even, nums)), 0)
 ```
 
-**Step 4; Inline the lambdas for a one-liner (optional):**
+Step 4.  Inline the lambdas for a one-liner (optional):
 
 ```python
 result = reduce(lambda a, b: a + b,
@@ -699,7 +699,7 @@ result = reduce(lambda a, b: a + b,
                     filter(lambda x: x % 2 == 0, nums)), 0)
 ```
 
-The result is identical to the loop.  The difference: the functional version has **no mutation** (`result` is never reassigned), **no loop variable**, and each concern is a named, testable piece.
+The result is identical to the loop.  The difference: the functional version has no mutation (`result` is never reassigned) and no loop variable, and each concern is a named, testable piece.
 
 ## 6.  Mutual Recursion and Structural Recursion
 
@@ -764,7 +764,7 @@ print(f"mergesort([5,2,8,1,9,3]) = {mergesort([5,2,8,1,9,3])}")
 
 ## Model 5: Recursion in a Single Expression
 
-Everything above was Python written in a functional *style*.  Here is the same recursion with nowhere left to hide: no `def`, no statement, no name except the one the lambda needs to call itself.
+Everything above was Python written in a functional *style*.  Here is the same recursion with nowhere left to hide: no `def`, no statement, and no name except the one the lambda needs to call itself.
 
 ```python
 # Define sumlist using a lambda and recursion.  This is the Scheme
@@ -795,9 +795,9 @@ print(f"  oplist(max, [2, 9, 6])    = {oplist(max, [2, 9, 6])}")
 
 ### Reading the Code
 
-- The conditional expression `a if test else b` is Python's `if` *as an expression*, which is the only kind Scheme has.  That is why the transliteration is symbol for symbol.
-- `sumlist` refers to itself by name inside its own body, which works because the name is bound before the lambda is ever called.  This is also the reason the lambda calculus needs the Y combinator: strip the name away and recursion becomes genuinely hard.
-- `oplist` is `sumlist` with the operator promoted to a parameter, and once you see that, `reduce` stops being a library function you memorize and becomes a shape you recognize.
+- The conditional expression `a if test else b` is Python's `if` *as an expression*, which is the only kind Scheme has.  That is why the transliteration works symbol for symbol.
+- `sumlist` refers to itself by name inside its own body.  This works because the name is bound before the lambda is ever called.  It is also the reason the lambda calculus needs the Y combinator: strip the name away and recursion becomes hard.
+- `oplist` is `sumlist` with the operator promoted to a parameter.  Once you see that, `reduce` stops being a library function you memorize and becomes a shape you recognize.
 
 ### Critical Thinking Questions
 
@@ -854,9 +854,9 @@ print("  global and every one of those guarantees evaporates.")
 
 ### Reading the Code
 
-- `as_completed` hands back results in whatever order they finish, which is *fine* here: each call is independent, so order carries no meaning.  That is a property of purity, not of the executor.
-- The results come back into a dict keyed by input, so the answer is reproducible even though the schedule is not.  Pure function plus deterministic key equals deterministic output.
-- Watch the timings carefully before you conclude anything about speed.  These factorials are small, and Python threads share one interpreter lock; the *safety* is real, the *speedup* here mostly is not.  Question 3 is about that gap.
+- `as_completed` hands back results in whatever order they finish.  That is fine here, because each call is independent, so order carries no meaning.  That is a property of purity, not of the executor.
+- The results come back into a dict keyed by input, so the answer is reproducible even though the schedule is not.  A pure function plus a deterministic key gives a deterministic output.
+- Look at the timings carefully before you conclude anything about speed.  These factorials are small, and Python threads share one interpreter lock.  The *safety* is real; the *speedup* here mostly is not.  Question 3 is about that gap.
 
 ### Critical Thinking Questions
 
@@ -868,7 +868,7 @@ print("  global and every one of those guarantees evaporates.")
 
 ## 7.  Everything Is (operator operands...)
 
-**Scheme has essentially one syntactic form**: the parenthesized prefix application `(f a b c)`.  Arithmetic is not special: `(+ 2 3)` is 5; `(* (+ 2 3) 4)` is 20.  Definitions, conditionals, and functions are *special forms* wearing the same parentheses:
+Scheme has one syntactic form: the parenthesized prefix application `(f a b c)`.  Arithmetic is not special: `(+ 2 3)` is 5, and `(* (+ 2 3) 4)` is 20.  Definitions, conditionals, and functions are *special forms* wearing the same parentheses:
 
 ```scheme
 (define pi 3.14159)
@@ -877,13 +877,13 @@ print("  global and every one of those guarantees evaporates.")
 (lambda (x) (* x x))
 ```
 
-**Notice what vanished.**  No precedence (prefix notation needs none: the tree is explicit in the nesting), no associativity rules, no statement-versus-expression divide (everything is an expression with a value).  The parentheses *are* the tree, written by hand.
+Notice what vanished.  There is no precedence (prefix notation needs none, because the nesting makes the tree explicit), no associativity rules, and no statement-versus-expression divide (everything is an expression with a value).  The parentheses *are* the tree, written by hand.
 
-Bank that.  Starting next week this course spends most of a month on the machinery that recovers exactly that tree from flat infix text: grammars, then derivations and ambiguity, then a precedence ladder, then a recursive descent parser, then the **abstract syntax tree** the parser finally hands to an interpreter.  Every piece of it exists because `2 + 3 * 4` does not say what it means.  When you meet the ladder grammar in September, come back to this page.
+Bank that.  Starting next week this course spends most of a month on the machinery that recovers exactly that tree from flat infix text: grammars, then derivations and ambiguity, then a precedence ladder, then a recursive descent parser, then the abstract syntax tree (AST) that the parser finally hands to an interpreter.  Every piece of it exists because `2 + 3 * 4` does not say what it means.  When you meet the ladder grammar in September, come back to this page.
 
 ---
 
-In Python, a parser has to work hard to turn the flat text `2 + 3 * 4` into a tree that captures precedence.  In Scheme, the programmer simply *writes* the tree.  Model 7 asks you to feel the difference by doing the translation yourself, before you have written a line of the parser it makes unnecessary.
+In Python, a parser has to work hard to turn the flat text `2 + 3 * 4` into a tree that captures precedence.  In Scheme, the programmer *writes* the tree.  Model 7 asks you to feel the difference by doing the translation yourself, before you write a line of the parser it makes unnecessary.
 
 ## Model 7: Trees Without a Parser
 
@@ -898,11 +898,11 @@ In Python, a parser has to work hard to turn the flat text `2 + 3 * 4` into a tr
 
 ## 8.  The Big Idea: Homoiconicity
 
-`'(+ 1 2)` is a list whose first element is the symbol `+`: **the program is a data structure the language itself manipulates**, and `(eval '(+ 1 2))` runs it.  This property, **homoiconicity**, is why Lisp dialects have **macros**: functions that receive *code as lists*, transform it, and hand the result back to the evaluator.  The abstract syntax tree that most languages make you construct out of classes is, in Scheme, just the list you typed.
+`'(+ 1 2)` is a list whose first element is the symbol `+`.  The program is a data structure that the language itself can manipulate, and `(eval '(+ 1 2))` runs it.  This property is called **homoiconicity**.  It is why Lisp dialects have macros: functions that receive *code as lists*, transform it, and hand the result back to the evaluator.  The abstract syntax tree that most languages make you build out of classes is, in Scheme, the list you typed.
 
 ## Model 8: Homoiconicity, Executed
 
-The claim above is easy to nod at and hard to feel.  Here it is as code you can run.  A Scheme program is a list; we represent it as a Python list, evaluate it, and then write a **macro**: an ordinary function that takes a program as data, returns a different program as data, and hands it back to the evaluator.
+The claim above is easy to nod at and hard to feel.  Here it is as code you can run.  A Scheme program is a list, so we represent it as a Python list and evaluate it.  Then we write a macro: an ordinary function that takes a program as data, returns a different program as data, and hands it back to the evaluator.
 
 ```python
 # A Scheme program IS a list. In Python, we write it as a Python list.
@@ -983,12 +983,12 @@ print("  between you and it. That is homoiconicity, and macros are the payoff.")
 
 ### Reading the Code
 
-- `sch_eval` is about twenty lines and needs no parser.  The *Recursive Descent Parsing* session in October exists because most languages do not hand you the tree; Scheme does, which is what the One Syntax Rule buys.
+- `sch_eval` is about twenty lines and needs no parser.  The *Recursive Descent Parsing* session in October exists because most languages do not hand you the tree.  Scheme does, and that is what the One Syntax Rule buys.
 - `quote` is the only form that returns its argument untouched.  Everything else recurses.  That one special case is the door between program and data, in both directions.
-- `unless_macro` is an *ordinary function*.  It takes a list, returns a list, and the evaluator never knows a macro was involved.  Hold that against what adding `unless` will cost you in the interpreter you build this term: a new AST node, a parser change, and an evaluator branch.
+- `unless_macro` is an *ordinary function*.  It takes a list, returns a list, and the evaluator never knows a macro was involved.  Compare that with what adding `unless` will cost you in the interpreter you build this term: a new AST node, a parser change, and an evaluator branch.
 - `count_nodes` works on programs for the same reason it would work on any nested list: there is no difference between the two.
 
-> **Watch out!**  Homoiconicity is not "Lisp has `eval`."  Python has `eval` too, and it takes a *string* that must be parsed.  The Scheme property is that the program is already the data structure the evaluator consumes, so transforming code needs no parsing and no printing back to text. That is why Lisp macros compose and string-based code generation does not.
+> **Watch out!**  Homoiconicity is not "Lisp has `eval`."  Python has `eval` too, and it takes a *string* that must be parsed.  The Scheme property is that the program is already the data structure the evaluator consumes, so transforming code needs no parsing and no printing back to text.  That is why Lisp macros compose and string-based code generation does not.
 
 ### Try It Yourself
 
@@ -1047,7 +1047,7 @@ for name, macro, src in [("when",   when_macro,   ["when", [">", "x", 0], ["*", 
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output as written: both lines report that the macro has not been written yet, because the unexpanded form has `when` or `double` at the head and the evaluator has never heard of either.  Once your macros return real forms, you should see `70` and `20`.
+Expected output as written: both lines report that the macro has not been written yet.  The unexpanded form still has `when` or `double` at its head, and the evaluator has never heard of either.  Once your macros return real forms, you should see `70` and `20`.
 
 ---
 
@@ -1099,13 +1099,13 @@ Python has `eval` too. Homoiconicity is still different because:
 
 ---
 
-**In-class work stops here.**  Everything below is homework and going-deeper material, attempt the exercises before the related assignment.
+**In-class work stops here.**  Everything below is homework and going-deeper material.  Attempt the exercises before the related assignment.
 
 ## Exercises (Homework: ~95 minutes total)
 
-### Exercise 1: Loop Exorcism (15 min)
+### Exercise 1: Replace Loops With map, filter, and reduce (15 min)
 
-Rewrite each using `map`/`filter`/`reduce` with no loops or assignments:
+Rewrite each of the following using `map`, `filter`, and `reduce`, with no loops or assignments:
 - (a) lengths of all words longer than 3 in a sentence
 - (b) product of all odd numbers in a list (use `reduce`)
 - (c) word count of a string: split, map each word to 1, reduce with +
@@ -1122,21 +1122,21 @@ Demo: `pipeline(str.strip, str.lower, lambda s: s.split())` on `"  Hello World  
 
 ### Exercise 3: My Map and Reduce (20 min)
 
-Implement `my_map` and `my_reduce` recursively (no `for`/`while`).  Test against the built-ins on 5 inputs each.  Then implement `my_zip(lst1, lst2)` and `my_flatten(nested)` recursively.
+Implement `my_map` and `my_reduce` recursively (no `for` or `while`).  Test each against the built-in on 5 inputs.  Then implement `my_zip(lst1, lst2)` and `my_flatten(nested)` recursively.
 
 ### Exercise 4: Purity Refactor (20 min)
 
-Take the impure `f2` and `f3` from Model 1, refactor them to be pure, and write tests that pass for the pure version but fail (or behave unexpectedly) for the impure version.
+Take the impure `f2` and `f3` from Model 1 and refactor them to be pure.  Then write tests that pass for the pure version but fail (or behave unexpectedly) for the impure version.
 
 ### Exercise 5: No-Assignment Challenge (25 min)
 
-Compute the average word length of a paragraph using **exactly one expression**, no statements, no intermediate variable names (except the function parameter).  Then discuss: when does point-free style help, and when does it hurt readability?
+Compute the average word length of a paragraph using **exactly one expression**: no statements and no intermediate variable names (except the function parameter).  Then discuss: when does point-free style help, and when does it hurt readability?
 
 ---
 
 # Extension: Pythonic and Declarative
 
-> Past the 75 minutes.  Nothing in class assumes it.  Model 2 showed that a comprehension and a `map`/`filter` pair compute the same thing.  This picks up the other question: what the comprehension *is*, why Python grew four of them, and what the declarative style costs when you actually pay for it.
+> Past the 75 minutes.  Nothing in class assumes it.  Model 2 showed that a comprehension and a `map`/`filter` pair compute the same thing.  This extension picks up the other question: what the comprehension *is*, why Python grew four of them, and what the declarative style costs when you pay for it.
 
 ## Four Comprehensions, One Idea
 
@@ -1198,14 +1198,14 @@ print("   that answered without building a billion squares: it stopped at the fi
 
 ### Reading the Code
 
-- **The four brackets.**  `[...]` builds a list, `{...}` a set, `{k: v ...}` a dict, and `(...)` a generator.  The clause grammar, `for` then optional `if`, never changes.  Learn it once and you have four constructions.
-- **The double evaluation** answers CTQ 2.4 with a measurement: the naive comprehension calls `curve` **11** times for 7 scores, because every element pays for the filter and the survivors pay again for the transformation.  The walrus operator `:=` binds the result inside the `if` so the body can reuse it, and the count drops to **7**.  This is the cost of a notation that has no place to put a temporary variable, and the `:=` operator was added to Python largely to give it one.
-- **Nesting order** trips nearly everyone.  `for a ... for b ...` runs `a` as the *outer* loop, the same order you would write the nested `for` statements, which is the opposite of what the reversed reading of "for b, for a" suggests.
-- **The generator** costs 208 bytes against roughly 800 KB for the list, because it stores a recipe rather than a result.  That is CTQ 2.5's answer, and the `any(...)` line is the sharper version: a generator can answer a question about a billion elements because it stops at the first one that settles the matter.  A list comprehension would have to build all billion first.
+- The four brackets.  `[...]` builds a list, `{...}` a set, `{k: v ...}` a dict, and `(...)` a generator.  The clause grammar, `for` then optional `if`, never changes.  Learn it once and you have four constructions.
+- The double evaluation answers CTQ 2.4 with a measurement.  The naive comprehension calls `curve` 11 times for 7 scores, because every element pays for the filter and the survivors pay again for the transformation.  The walrus operator `:=` binds the result inside the `if` so the body can reuse it, and the count drops to 7.  This is the cost of a notation with no place to put a temporary variable, and Python added `:=` largely to give it one.
+- Nesting order trips nearly everyone.  `for a ... for b ...` runs `a` as the *outer* loop, the same order you would write the nested `for` statements.  That is the opposite of what the reversed reading "for b, for a" suggests.
+- The generator costs 208 bytes against roughly 800 KB for the list, because it stores a recipe rather than a result.  That is CTQ 2.5's answer, and the `any(...)` line is the sharper version: a generator can answer a question about a billion elements because it stops at the first one that settles the matter.  A list comprehension would have to build all billion first.
 
 ## What Declarative Buys, and What It Charges
 
-The three notations from Model 2 are worth putting side by side one more time, because the equivalence is the entire argument for the style:
+Put the three notations from Model 2 side by side one more time, because the equivalence is the entire argument for the style:
 
 | Notation | The same query |
 |---|---|
@@ -1213,24 +1213,24 @@ The three notations from Model 2 are worth putting side by side one more time, b
 | Python | `[f(x) for x in S if p(x)]` |
 | SQL | `SELECT f(x) FROM S WHERE p(x)` |
 
-Each names a source, a filter, and a transformation, and **none of them says in what order to do the work**.  That silence is the point.  It is what lets SQL's optimizer decide to apply your `WHERE` before your `SELECT`, or use an index, or run the scan on eight cores, without asking you.  You gave up control of the *how* and got machinery in return.
+Each names a source, a filter, and a transformation, and none of them says in what order to do the work.  That silence is the point.  It is what lets SQL's optimizer apply your `WHERE` before your `SELECT`, or use an index, or run the scan on eight cores, without asking you.  You gave up control of the *how* and got machinery in return.
 
-Python's comprehension is the small, tame version: the language reserves the right to build the list however it likes, and in practice it does roughly what your loop would have done, slightly faster.  Prolog and SQL are the ambitious versions, where "let the machinery find it" means a query planner or a resolution engine.  Same bargain, wildly different scale.
+Python's comprehension is the small, tame version.  The language reserves the right to build the list however it likes, and in practice it does roughly what your loop would have done, slightly faster.  Prolog and SQL are the ambitious versions, where "let the machinery find it" means a query planner or a resolution engine.  Same bargain, very different scale.
 
-And it is a bargain, not a gift.  What you pay:
+And it is a bargain, not a gift.  Here is what you pay:
 
-- **You cannot step into it.**  There is no line to set a breakpoint on, no place to add a `print`, no `break` when you have seen enough.  Refactoring a comprehension back into a loop is a routine debugging move, and having to do it is the cost showing up.
-- **You cannot easily short-circuit it.**  A list comprehension always runs to the end of the source.  The generator can stop early, which is why `any` and `next` pair with generators and not with list comprehensions.
-- **It stops scaling with depth.**  One `for` and one `if` reads beautifully.  Three `for`s, two `if`s, and a conditional expression in the body is a write-only line, and the loop it replaced was better.  A comprehension is a *sentence*; when it needs a paragraph, write the paragraph.
-- **Fluency is not universal.**  Week 0's language-evaluation criteria called readability relative to the reader, and comprehensions are the sharpest example in the language: the same line is clearer to a fluent Python reader and murkier to a newcomer, and both readings are correct reports about the reader.
+- You cannot step into it.  There is no line to set a breakpoint on, no place to add a `print`, and no `break` when you have seen enough.  Refactoring a comprehension back into a loop is a routine debugging move, and having to do it is the cost showing up.
+- You cannot easily short-circuit it.  A list comprehension always runs to the end of the source.  A generator can stop early, which is why `any` and `next` pair with generators and not with list comprehensions.
+- It stops scaling with depth.  One `for` and one `if` reads well.  Three `for`s, two `if`s, and a conditional expression in the body is a write-only line, and the loop it replaced was better.  A comprehension is a *sentence*; when it needs a paragraph, write the paragraph.
+- Fluency is not universal.  Week 0's language-evaluation criteria called readability relative to the reader, and comprehensions are the sharpest example in the language.  The same line is clearer to a fluent Python reader and murkier to a newcomer, and both readings are correct reports about the reader.
 
-> **Watch out!**  "Pythonic" is a claim about idiom, not about brevity, and the two come apart in both directions.  A comprehension that has grown three clauses is short and thoroughly un-Pythonic; an explicit loop with a good name is longer and, at that point, the idiomatic choice.  When you catch yourself defending a line because it is clever, you have stopped arguing about idiom.
+> **Watch out!**  "Pythonic" is a claim about idiom, not about brevity, and the two come apart in both directions.  A comprehension that has grown three clauses is short and thoroughly un-Pythonic.  An explicit loop with a good name is longer and, at that point, the idiomatic choice.  When you catch yourself defending a line because it is clever, you have stopped arguing about idiom.
 
 ### Critical Thinking Questions
 
 20.  The dict comprehension printed its pairs in the order the scores appeared, while the set printed in an order you did not choose.  Which of those two is a *guarantee* of the language and which is an accident of the implementation?  Look it up before answering, and say how you checked.
 21.  `[c for s in scores if (c := curve(s)) >= 70]` fixes the double evaluation, but a reader now has to notice that the `if` clause has a side effect on the body.  Is that a fair trade?  Give the version you would actually ship, and defend it.
-22.  SQL's optimizer is free to reorder your query because you did not specify an order.  Python's comprehension has essentially no optimizer.  What would Python have to give up in order to earn one?  (Consider: what could `f` do that a SQL expression cannot?)
+22.  SQL's optimizer is free to reorder your query because you did not specify an order.  Python's comprehension has essentially no optimizer.  What would Python have to give up to earn one?  (Consider: what could `f` do that a SQL expression cannot?)
 23.  A comprehension cannot `break`.  A generator plus `next` can stop whenever the consumer likes.  Explain that difference in terms of *who controls the loop*, and connect it to why `reduce` was the awkward one of the big three in Part II.
 24.  Your project language will need some way to build a collection.  Decide now whether it gets a comprehension, and write two sentences for `SEMANTICS.md`: what the syntax is, and whether it is lazy.  If you say no, say what the programmer writes instead.
 
@@ -1275,17 +1275,17 @@ words = ["to", "be", "or", "not", "to", "be", "that", "is", "the", "question"]
 
 ## 9.  Where This Picks Up
 
-You already wrote recursion over `car` and `cdr` in *Functional Programming in Scheme, Part 2*, and the base-case-plus-recursive-case shape you used there is the same one `my_reduce` used above and the same one `evaluate` will use when it walks an AST in October.  This extension starts where that session stopped: what recursion *costs*, how Scheme's scoping forms differ, and how to build code out of lists on purpose.
+You already wrote recursion over `car` and `cdr` in *Functional Programming in Scheme, Part 2*.  The base-case-plus-recursive-case shape you used there is the same one `my_reduce` used above, and the same one `evaluate` will use when it walks an AST in October.  This extension starts where that session stopped: what recursion *costs*, how Scheme's scoping forms differ, and how to build code out of lists on purpose.
 
-Model 9 explores one of the most practically important differences between Scheme and Python: what happens when recursion goes very deep.  Scheme guarantees that a tail-recursive function uses no more stack space than a simple loop, so algorithms that are naturally recursive (like traversing a million-element list) are not just elegant but efficient.  Python offers no such guarantee, which is why Python programmers reach for `for`-loops even when recursion would be cleaner.
+Model 9 covers one of the most practical differences between Scheme and Python: what happens when recursion goes very deep.  Scheme guarantees that a tail-recursive function uses no more stack space than a simple loop.  So an algorithm that is naturally recursive (like traversing a million-element list) is both clear and efficient in Scheme.  Python offers no such guarantee, which is why Python programmers reach for `for` loops even when recursion would be cleaner.
 
-> **Watch out!** `define` in Scheme is not assignment in the imperative sense.  Writing `(define x 5)` does not create a mutable variable you update later; it introduces a name binding in the current environment.  In functional Scheme style, you do not reassign `x`; instead, you pass updated values forward as function arguments (hence the accumulator pattern in tail recursion).  If you find yourself wanting to write `(set! x (+ x 1))` inside a loop, stop and think about how to express the same idea with a recursive accumulator parameter.
+> **Watch out!** `define` in Scheme is not assignment in the imperative sense.  Writing `(define x 5)` does not create a mutable variable you update later; it introduces a name binding in the current environment.  In functional Scheme style, you do not reassign `x`.  Instead, you pass updated values forward as function arguments (hence the accumulator pattern in tail recursion).  If you find yourself wanting to write `(set! x (+ x 1))` inside a loop, stop and think about how to express the same idea with a recursive accumulator parameter.
 
 ## Model 9: Tail Recursion, Scheme vs Python
 
-**Tail recursion** occurs when a recursive call is the *last* operation in a function: no pending work remains after the call returns.  Scheme (and Racket) *guarantee* tail-call optimization (TCO): a tail-recursive function consumes O(1) stack space.  Python does **not** perform TCO; deep tail calls still overflow the call stack.
+A **tail call** is a recursive call that is the *last* operation in a function: no pending work remains after the call returns.  Scheme (and Racket) *guarantee* tail-call optimization (TCO), so a tail-recursive function uses O(1) stack space.  Python does not perform TCO; deep tail calls still overflow the call stack.
 
-The cell below demonstrates both a naive (non-tail) factorial and a tail-recursive accumulator version in Python, counting stack frames to make the difference concrete.
+The cell below shows both a naive (non-tail) factorial and a tail-recursive accumulator version in Python.  It counts stack frames to make the difference concrete.
 
 ```python
 import sys
@@ -1355,15 +1355,15 @@ print("Python tail calls still grow the stack unless you add a trampoline manual
 
 ---
 
-Model 9 zooms in on a subtle but important question: when you write several name bindings together, can each one see the others?  The three forms `let`, `let*`, and `letrec` give three different answers to that question.  Understanding the difference matters both for reading Scheme code correctly and for appreciating why Python's `def` and assignment behave the way they do.
+Model 10 asks a small but important question: when you write several name bindings together, can each one see the others?  The three forms `let`, `let*`, and `letrec` give three different answers.  The difference matters for reading Scheme code correctly, and it explains why Python's `def` and assignment behave the way they do.
 
 ## Model 10: let, let*, and letrec
 
-Scheme's **local binding forms** give names to intermediate values.  They differ in *when* bindings become visible:
+Scheme's local binding forms give names to intermediate values.  They differ in *when* bindings become visible:
 
-- `let`: all right-hand sides are evaluated in the **outer** environment; bindings are parallel and independent.
-- `let*`: bindings are sequential; each RHS sees **all previous** bindings in the same `let*`.
-- `letrec`: all names are in scope for **all** right-hand sides (required for mutually recursive local functions).
+- `let`: all right-hand sides are evaluated in the outer environment; the bindings are parallel and independent.
+- `let*`: the bindings are sequential; each right-hand side sees all previous bindings in the same `let*`.
+- `letrec`: all names are in scope for all right-hand sides (required for mutually recursive local functions).
 
 The Python simulation below models each form's scoping rule explicitly so you can observe the difference.
 
@@ -1430,7 +1430,7 @@ print()
 demo_letrec()
 print()
 
-# Bonus: show that let's parallel evaluation matters
+# Bonus: show that let evaluates its bindings in parallel
 print("--- Parallel swap (let) vs sequential (let*) ---")
 a, b = 3, 7
 # let swap: new_a = old_b, new_b = old_a  (evaluated simultaneously from outer scope)
@@ -1454,11 +1454,11 @@ print(f"let* swap: a={new_a_star}, b={new_b_star}  (WRONG - new_a leaked into ne
 
 ---
 
-Model 10 brings together everything: now that you know how Scheme evaluates expressions and how lists are constructed, you can use Scheme's quasiquoting mechanism to build lists that are *programs*, then hand them to `eval`.  This is homoiconicity made concrete and operational.  The Python simulation in the runnable cell re-implements the same ideas so you can experiment without a Racket installation.
+Model 11 brings the pieces together.  You now know how Scheme evaluates expressions and how lists are constructed, so you can use Scheme's quasiquoting mechanism to build lists that are *programs* and then hand them to `eval`.  This is homoiconicity made concrete and operational.  The Python simulation in the runnable cell re-implements the same ideas so you can experiment without a Racket installation.
 
 ## Model 11: Quasiquoting and List Operations
 
-**Quasiquoting** (`\`` backtick) is a templating mechanism: the entire form is treated as data (like `'`), *except* that subexpressions preceded by `,` (unquote) or `,@` (unquote-splicing) are evaluated.  This is the foundation of Scheme macros and a powerful list-construction tool.
+Quasiquoting (the backtick, `\``) is a templating mechanism.  The entire form is treated as data (like `'`), *except* that subexpressions preceded by `,` (unquote) or `,@` (unquote-splicing) are evaluated.  It is the foundation of Scheme macros and a useful tool for building lists.
 
 ```python
 # We cannot run Racket here, so we simulate quasiquoting semantics in Python
@@ -1573,7 +1573,7 @@ Everything above simulated Scheme semantics in Python so the cells could run in 
 
 The **Functional Programming with Scheme** assignment is where this gets written rather than read.  If you want more than it asks for, the natural next steps are the three below.
 
-1.  *Trees, of course.*  Represent an arithmetic expression in Scheme as nested lists, like `'(* (+ 2 3) 4)`, and write `(evaluate tree)` for `+ - * /` in about fifteen lines.  Keep it: in October you will write the parser whose whole job is to *build* that list from the flat text `(2 + 3) * 4`, and comparing the two line counts is the punchline of the front half of this course.
+1.  *Trees, of course.*  Represent an arithmetic expression in Scheme as nested lists, like `'(* (+ 2 3) 4)`, and write `(evaluate tree)` for `+ - * /` in about fifteen lines.  Keep it.  In October you will write the parser whose whole job is to *build* that list from the flat text `(2 + 3) * 4`, and comparing the two line counts is the punchline of the front half of this course.
 2.  *Quote experiments.*  Using `car`, `cdr`, and `cons`, take apart the list `'(+ 1 2)` and rebuild it as `'(* 1 2)`.  You have just written a program transformer, which is all a macro is.
 3.  *Tail calls for real.*  Write a tail-recursive `sum` with an accumulator and run it on a list of one million elements.  It will finish in Scheme.  Try the same depth in Python and read the traceback.
 
@@ -1594,23 +1594,23 @@ Scheme guarantees that a tail-recursive call uses no additional stack. That mean
 
 Answer these in your course notebook if you work through the metacircular evaluator tutorial.
 
-**Reflection 1.**  The word "metacircular" implies the evaluator is defined in terms of itself.  Our evaluator is written in Python, not Scheme; so in what sense is it still "metacircular"?  What would it take to port our evaluator from Python into the Scheme subset our evaluator understands, and what would that accomplish?
+**Reflection 1.**  The word "metacircular" implies the evaluator is defined in terms of itself.  Our evaluator is written in Python, not Scheme, so in what sense is it still "metacircular"?  What would it take to port our evaluator from Python into the Scheme subset our evaluator understands, and what would that accomplish?
 
-**Reflection 2.**  The course final project asks you to extend a language interpreter.  Identify **three specific features** from this evaluator (the `Env` chain, `Procedure` as a closure, or TCO via trampoline) that map directly to something you will need in your final project.  For each, write one sentence explaining the connection.
+**Reflection 2.**  The course final project asks you to extend a language interpreter.  Identify three specific features from this evaluator (the `Env` chain, `Procedure` as a closure, or TCO via trampoline) that map directly to something you will need in your final project.  For each, write one sentence explaining the connection.
 
-**Reflection 3.**  Our evaluator has no type system: `(+ 1 "hello")` raises a Python `TypeError` that leaks through the abstraction boundary.  Describe at minimum **two changes** you would make to add a static type system to this evaluator.  Consider: where would type annotations appear in the s-expression representation?  Where in `scheme_eval` would you insert a type-checking pass?  What new data structure would represent a type error vs. a value?
+**Reflection 3.**  Our evaluator has no type system: `(+ 1 "hello")` raises a Python `TypeError` that leaks through the abstraction boundary.  Describe at least two changes you would make to add a static type system to this evaluator.  Consider: where would type annotations appear in the s-expression representation?  Where in `scheme_eval` would you insert a type-checking pass?  What new data structure would represent a type error vs. a value?
 
 ---
 
 ### Further reading on metacircular evaluation
 
-- **Runnable example archive**: [SchemeInterpreter.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeInterpreter.zip): a complete reference implementation of this activity's evaluator, worth exploring after you have attempted the activity yourself.
+- **Runnable example archive**: [SchemeInterpreter.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeInterpreter.zip): a complete reference implementation of this activity's evaluator.  Explore it after you have attempted the activity yourself.
 
 - **SICP Chapter 4**: Abelson & Sussman, *Structure and Interpretation of Computer Programs*, 2nd ed.  The original metacircular evaluator.  MIT Press open access: [https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf)
 
-- **"The Art of the Interpreter"**: Guy Steele & Gerald Sussman (1978).  The foundational paper on meta-circular evaluation, environments, and the relationship between interpreters and compilers.  [MIT AI Memo 452.](https://dspace.mit.edu/handle/1721.1/6094)
+- **"The Art of the Interpreter"**: Guy Steele & Gerald Sussman (1978).  The founding paper on meta-circular evaluation, environments, and the relationship between interpreters and compilers.  [MIT AI Memo 452.](https://dspace.mit.edu/handle/1721.1/6094)
 
-- **Norvig's `lis.py`**: Peter Norvig's "How to Write a (Lisp) Interpreter in Python."  Norvig's version is compact and elegant; ours extends it with TCO and a fuller special-form set.  Search for "Norvig lis.py" to find his blog post.
+- **Norvig's `lis.py`**: Peter Norvig's "How to Write a (Lisp) Interpreter in Python."  Norvig's version is short and clear; ours extends it with TCO and a fuller set of special forms.  Search for "Norvig lis.py" to find his blog post.
 
 - **R7RS Scheme specification**: The current small Scheme standard.  Section 4 (Expressions) maps directly to our `scheme_eval` dispatch table.  Available at [https://small.r7rs.org/](https://small.r7rs.org/).
 
@@ -1620,7 +1620,7 @@ Answer these in your course notebook if you work through the metacircular evalua
 
 ## Reflection Prompt
 
-Purity forbids a function from leaving traces on the world: which makes it trustworthy, but also means it *cannot do anything* (no printing, no saving) without breaking the rules.  Real programs must do things.  Where should the impurity live in a well-organized program?  Name a non-programming system (kitchen, lab, organization) organized the same way.
+Purity forbids a function from leaving traces on the world.  That makes it trustworthy, but it also means the function *cannot do anything* (no printing, no saving) without breaking the rules.  Real programs must do things.  Where should the impurity live in a well-organized program?  Name a non-programming system (kitchen, lab, organization) organized the same way.
 
 ---
 

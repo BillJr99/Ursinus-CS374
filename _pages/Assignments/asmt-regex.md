@@ -5,10 +5,10 @@ title: "CS374: Principles of Programming Languages - Regular Expressions"
 
 info:
   coursenum: CS374
-  purpose: "To build a working command of regular expressions by writing tested pattern libraries, a finditer-based mini lexer, and realistic data extraction, and to pick up the vocabulary you need to reason about why a pattern behaves the way it does."
+  purpose: "To build a working command of regular expressions by writing a tested pattern library, a finditer-based mini lexer, and a realistic log parser, and to learn the vocabulary you need to explain why a pattern behaves the way it does."
   tilt:
     task: "Work through four scaffolded parts: a ten-pattern library, a re.finditer mini lexer, a regex text transformer and log parser, and a written analysis of regex limits."
-    criteria: "I grade this on the correctness of your patterns, mini lexer, and log parser and the depth of your greedy/lazy, anchors, and Chomsky-limits analysis, each part worth 25 points.  The rubric below spells out each row."
+    criteria: "I grade this on the correctness of your patterns, mini lexer, and log parser, and on the depth of your greedy/lazy, anchors, and Chomsky-limits analysis.  Each part is worth 25 points, and the rubric below spells out each row."
   points: 100
   goals:
     - To write and test a library of regular expressions for real-world data patterns
@@ -20,25 +20,25 @@ info:
     - weight: 25
       description: "Pattern Library (Goal 1)"
       preemerging: Fewer than five patterns are provided, or most patterns match clearly wrong strings on the provided test cases
-      beginning: Most patterns are provided but several fail on edge cases (e.g., missing anchors allow partial matches, or character classes are too broad or too narrow)
+      beginning: Most patterns are provided, but several fail on edge cases (e.g., missing anchors allow partial matches, or character classes are too broad or too narrow)
       progressing: All ten patterns pass the provided positive and negative test cases, but two or more patterns have minor issues that would fail on hidden test inputs (e.g., permitting leading zeros in integers, or not anchoring a pattern that should be anchored)
-      proficient: All ten patterns pass all provided and hidden test cases; raw strings are used throughout; each pattern is named, accompanied by a one-sentence explanation of each non-trivial construct, and tested with at least three positive and two negative cases via the check() harness
+      proficient: All ten patterns pass all provided and hidden test cases; every pattern is a raw string; each pattern is named, each non-trivial construct has a one-sentence explanation, and each pattern is tested with at least three positive and two negative cases through the check() harness
     - weight: 25
       description: "Mini Lexer with re.finditer (Goal 2)"
       preemerging: The mini lexer is not implemented, or it uses re.match in a loop rather than re.finditer with alternation
-      beginning: The mini lexer uses finditer but the TOKEN_SPEC ordering is wrong (e.g., keywords not before identifiers), producing incorrect token types for some inputs
-      progressing: The mini lexer produces correct token types for most inputs, but one or more token types are misclassified and gaps between matches (unrecognized characters) are not detected
-      proficient: The mini lexer uses a single compiled alternation pattern with named groups; produces correct token type and value for every input; detects and reports gaps (unrecognized characters) with their position; and handles the maximal-munch ordering correctly for all test cases
+      beginning: The mini lexer uses finditer, but the TOKEN_SPEC ordering is wrong (e.g., keywords are not listed before identifiers), so some inputs get incorrect token types
+      progressing: The mini lexer produces correct token types for most inputs, but one or more token types are misclassified, and gaps between matches (unrecognized characters) are not detected
+      proficient: The mini lexer uses a single compiled alternation pattern with named groups; produces the correct token type and value for every input; detects and reports gaps (unrecognized characters) with their position; and handles the maximal-munch ordering correctly for all test cases
     - weight: 25
       description: "Text Transformer and Log Parser (Goals 1, 3)"
       preemerging: Neither the transformer nor the log parser is implemented, or both produce clearly wrong output
-      beginning: One of the two is implemented but produces incorrect output on several provided inputs (e.g., date conversion uses the wrong group references, or the log parser drops some records)
+      beginning: One of the two is implemented but produces incorrect output on several provided inputs (e.g., the date conversion uses the wrong group references, or the log parser drops some records)
       progressing: Both are implemented and produce correct output on the provided inputs, but the log parser does not handle malformed lines, or the transformer does not handle edge cases (e.g., dates at the start or end of a string)
-      proficient: Both the text transformer and the log parser work correctly on all provided and hidden inputs; malformed log lines are detected and reported with their line number; the configuration is externalized in a JSON file; and the errors.txt output is generated correctly
+      proficient: Both the text transformer and the log parser work correctly on all provided and hidden inputs; malformed log lines are detected and reported with their line number; the configuration lives in a JSON file; and the errors.txt output is generated correctly
     - weight: 25
       description: "Pattern Analysis and Limits Discussion (Goals 4, 5)"
-      preemerging: No analysis is provided, or the analysis is a generic restatement of course notes without applying concepts to the student's patterns
-      beginning: The analysis addresses greedy vs. lazy and anchors, but the explanations are superficial and the examples do not clearly illustrate the difference
+      preemerging: No analysis is provided, or the analysis restates the course notes without applying the concepts to the student's own patterns
+      beginning: The analysis addresses greedy vs. lazy and anchors, but the explanations are superficial and the examples do not clearly show the difference
       progressing: The analysis covers greedy vs. lazy, anchors, and groups with working examples, but the Chomsky hierarchy discussion is missing or incorrect
       proficient: The analysis demonstrates greedy vs. lazy with a concrete input where the two produce different results, explains anchors with a pattern that fails without them, explains named groups with groupdict(), and includes a correct paragraph on why balanced parentheses require a context-free grammar, naming the Chomsky level and the pipeline component that handles it
   readings:
@@ -54,7 +54,7 @@ tags:
 
 ---
 
-In this assignment you'll build fluency with regular expressions across four scaffolded parts, ending with a realistic log-extraction task.  Please use raw strings (`r"..."`) throughout.  Each part is tested independently, so don't skip ahead.  The assignment closes with a theoretical limits question, and you need to answer it in your writeup.
+In this assignment you write regular expressions, test them, and use them to build a small lexer, a text transformer, and a log parser.  A regular expression (regex) is a pattern that describes a set of strings, and Python's `re` module matches text against such patterns.  The assignment has four parts worth 25 points each.  Each part is tested on its own, so complete them in order.  Write every pattern as a raw string (`r"..."`) so that backslashes reach the regex engine unchanged.  Part 4 is a written analysis, and it ends with a question about what regular expressions cannot do; answer it in your writeup.
 
 ---
 
@@ -62,7 +62,7 @@ In this assignment you'll build fluency with regular expressions across four sca
 
 ### Environment and Setup
 
-You need Python 3.10+ (`python --version` to confirm) and nothing else: `re` and `json` are in the standard library.  Create the files you will submit up front, so each part has a home:
+You need Python 3.10 or newer; run `python --version` to confirm.  The `re` and `json` modules are part of the standard library, so there is nothing to install.  Create these files now so each part has a home:
 
 ```
 patterns.py      # Part 1
@@ -75,7 +75,10 @@ readme.md        # Part 4 answers
 
 ### Your First 30 Minutes
 
-Copy the `check()` harness from Part 1 into `patterns.py`, then write and test exactly one pattern, P1, `COURSE_CODE`:
+Get one pattern passing before you write any others:
+
+1.  Copy the `check()` harness from Part 1 into `patterns.py`.
+2.  Add pattern P1, `COURSE_CODE`, and its test call:
 
 ```python
 COURSE_CODE = r"[A-Z]{2,4}-?\d{3}"
@@ -85,9 +88,12 @@ check("COURSE_CODE", COURSE_CODE,
       should_not_match=["cs374", "CS3741"])
 ```
 
-Run `python patterns.py` and confirm you see a `PASS` line.  Then break it on purpose: remove the `-?` and rerun to watch `check()` report the failure.  That edit-run-read-failure loop is the whole workflow for Part 1; once it works for one pattern, the remaining nine are repetitions of the same cycle.
+3.  Run `python patterns.py` and confirm that you see a `PASS` line.
+4.  Break the pattern on purpose: remove the `-?` and run again.  Watch `check()` report the failure.
 
-This assignment is handed out alongside the dedicated Regular Expressions class session and the **Regex Workshop lab**, which is due mid-assignment and completes your first patterns and the mini-lexer skeleton for you.  Bring your lab artifacts into Parts 1 and 2 directly: the lab is a head start on this assignment, not separate work.
+That loop (edit, run, read the failure) is the whole workflow for Part 1.  Once it works for one pattern, the other nine repeat the same cycle.
+
+This assignment goes out alongside the Regular Expressions class session and the Regex Workshop lab.  The lab is due mid-assignment, and it completes your first patterns and the mini lexer skeleton for you.  Bring your lab files straight into Parts 1 and 2: the lab is a head start on this assignment, not separate work.
 
 ### Suggested Pacing
 
@@ -105,9 +111,11 @@ See the course schedule for the assigned and due dates.  A suggested sequence:
 
 ## Part 1: Pattern Library (25 points)
 
+Part 1 asks for ten tested patterns.  You test each one with the `check()` harness below, which reports every string that matched when it should not have, and every string that failed to match when it should have.
+
 ### The check() Harness
 
-Before writing any patterns, implement this harness once:
+Add this harness to `patterns.py` once, before you write any patterns:
 
 ```python
 import re
@@ -129,49 +137,49 @@ def check(name: str, pattern: str, should_match: list, should_not_match: list):
         print(f"PASS {name} ({len(should_match)} positive, {len(should_not_match)} negative)")
 ```
 
-Note: `fullmatch` requires the pattern to match the *entire* string.  This is intentional: anchoring the test exposes patterns that are too permissive.
+`fullmatch` succeeds only when the pattern matches the entire string, from the first character to the last.  That is deliberate.  A pattern that matches only the first part of `CS3741` is too permissive, and `fullmatch` exposes it.
 
 ### Required Patterns (10 total)
 
-Write a `re.compile`d pattern for each, named as shown, with **at least three positive and two negative test cases** via `check()`.
+Write a `re.compile`d pattern for each item below.  Use the name shown, and test each pattern with `check()` using at least three positive and two negative cases.  The lists under each pattern give you starting cases.
 
 **P1 `COURSE_CODE`:** Ursinus course codes: two to four capital letters, an optional hyphen, then exactly three digits.
 - Match: `CS374`, `MATH111`, `BIO-101`, `ENGL-201`
 - No match: `cs374`, `CS3741`, `CS-37`, `374`
 
-**P2 `IDENTIFIER`:** A legal programming identifier: starts with a letter or underscore, followed by any combination of letters, digits, and underscores.  Must match the full string.
+**P2 `IDENTIFIER`:** A legal programming identifier.  It starts with a letter or underscore, and any mix of letters, digits, and underscores may follow.  The pattern must match the full string.
 - Match: `foo`, `_bar`, `x1`, `my_var_2`
 - No match: `1foo`, `-x`, `foo bar`, `"x"`
 
-**P3 `DECIMAL`:** A decimal number with an optional sign and optional fractional part.  The integer part is required; a bare `.` or a number like `3.` (trailing dot without digits) is not valid.
+**P3 `DECIMAL`:** A decimal number with an optional sign and an optional fractional part.  The integer part is required, so a bare `.` or a trailing dot such as `3.` is not valid.
 - Match: `3`, `-3`, `+3.14`, `0.5`, `-0.001`
 - No match: `.5`, `3.`, `--3`, `3..14`, `abc`
 
-**P4 `TIME_12H`:** A 12-hour clock time.  Hour is 1-12.  Minutes are optional but, if present, must be two digits.  Meridiem (`AM` or `PM`) is required and separated by a space.
+**P4 `TIME_12H`:** A 12-hour clock time.  The hour is 1-12.  Minutes are optional, but when present they must be two digits.  The meridiem (`AM` or `PM`) is required and follows a single space.
 - Match: `8 AM`, `12:00 PM`, `1:30 AM`, `11:59 PM`
 - No match: `13:00 AM`, `0:00 AM`, `8:5 PM`, `8AM`, `8:00`
 
-**P5 `EMAIL`:** A practical (not RFC-compliant) email address: one or more word characters or dots before `@`, then a domain of word characters and dots with at least one dot.
+**P5 `EMAIL`:** A practical email address (not RFC-compliant): one or more word characters or dots before `@`, then a domain of word characters and dots with at least one dot.
 - Match: `user@example.com`, `bill.j@ursinus.edu`, `x@y.z`
 - No match: `@example.com`, `user@`, `user@com`, `user @example.com`
 
-**P6 `US_PHONE`:** A US phone number in the format `(NXX) NXX-XXXX` where N is 2-9.
+**P6 `US_PHONE`:** A US phone number in the format `(NXX) NXX-XXXX`, where N is a digit from 2 to 9.
 - Match: `(215) 555-1234`, `(800) 123-4567`
 - No match: `215-555-1234`, `(015) 555-1234`, `(215)555-1234`
 
-**P7 `ISO_DATE`:** An ISO 8601 date `YYYY-MM-DD`.  Month 01-12, day 01-31 (exact day-of-month validation is beyond regex; just validate the format and ranges).
+**P7 `ISO_DATE`:** An ISO 8601 date, `YYYY-MM-DD`.  Month is 01-12 and day is 01-31.  A regex cannot check how many days a particular month has, so validate only the format and these ranges.
 - Match: `2026-09-18`, `2000-01-01`, `1999-12-31`
 - No match: `26-09-18`, `2026-9-18`, `2026-13-01`, `2026-00-15`
 
-**P8 `HEX_COLOR`:** A CSS hex color: a `#` followed by exactly 3 or 6 hex digits (case-insensitive).
+**P8 `HEX_COLOR`:** A CSS hex color: a `#` followed by exactly 3 or 6 hexadecimal digits, in either upper or lower case.
 - Match: `#fff`, `#FFF`, `#1a2b3c`, `#ABC`
 - No match: `#gg1122`, `fff`, `#1234`, `#12345g`
 
-**P9 `IPV4_ADDRESS`:** An IPv4 address: four groups of 1-3 digits separated by dots.  (Exact 0-255 range validation is encouraged but not required; validate format and that each octet is 1-3 digits.)
+**P9 `IPV4_ADDRESS`:** An IPv4 address: four groups of 1-3 digits separated by dots.  Validate the format and the 1-3 digit length of each octet.  Checking the 0-255 range is encouraged but not required.
 - Match: `192.168.1.1`, `10.0.0.0`, `255.255.255.255`, `0.0.0.0`
 - No match: `192.168.1`, `192.168.1.1.1`, `abc.def.ghi.jkl`
 
-**P10 `MARKDOWN_LINK`:** A Markdown hyperlink `[text](url)` where text is any non-`]` characters and url is any non-`)` characters.
+**P10 `MARKDOWN_LINK`:** A Markdown hyperlink `[text](url)`, where text is any run of non-`]` characters and url is any run of non-`)` characters.
 - Match: `[Google](https://google.com)`, `[CS374](../index.html)`, `[x](y)`
 - No match: `[Google]`, `(https://google.com)`, `Google(https://google.com)`
 
@@ -179,9 +187,11 @@ Write a `re.compile`d pattern for each, named as shown, with **at least three po
 
 ## Part 2: Mini Lexer Using re.finditer (25 points)
 
+Part 2 builds a lexer, a program that splits source text into tokens, out of a single regex and `re.finditer`.  A token is a labeled piece of source text such as a keyword, a number, or an operator.
+
 ### The finditer Approach
 
-Rather than calling `re.match` in a loop at each position, a production lexer builds one large alternation pattern and uses `re.finditer` to find all non-overlapping matches in a single pass.
+A production lexer does not call `re.match` in a loop at each position.  Instead it joins every token pattern into one large alternation (a list of patterns separated by `|`) and calls `re.finditer`, which returns every non-overlapping match in a single pass.  Each alternative is a named group, `(?P<NAME>pattern)`, so each match reports which token rule fired through `m.lastgroup`.
 
 ```python
 import re
@@ -206,7 +216,11 @@ MASTER = re.compile(
 )
 ```
 
+Order matters in `TOKEN_SPEC`.  At each position the engine tries the alternatives left to right and takes the first one that matches.  So `FLOAT` must come before `INT` (otherwise `3.14` lexes as `3`), and every keyword must come before `IDENT`.  This ordering is how the alternation achieves maximal munch, the rule that a lexer takes the longest token available at each position.  The `(?!\w)` after `if` is a negative lookahead: it succeeds only when the next character is not a word character, so `iffy` falls through to `IDENT`.
+
 ### Step 2a: Implement mini_lex()
+
+Add `mini_lex()` to `mini_lexer.py`.  It walks the matches in order and checks that each match starts where the previous one ended.  Any gap means a character matched no rule, and the function raises `LexError` at that position.  `LexError` is not defined in this snippet; declare it as an `Exception` subclass in your file.
 
 ```python
 def mini_lex(source: str) -> list:
@@ -228,7 +242,7 @@ def mini_lex(source: str) -> list:
 
 ### Step 2b: Extend the Token Spec
 
-Extend TOKEN_SPEC to cover the language below, using at least 15 token types and including every keyword, operator, and literal listed.  Use negative lookahead `(?!\w)` on all keywords to prevent `iffy` from tokenizing as `IF`.
+Extend `TOKEN_SPEC` to cover the language in the table below.  Use at least 15 token types, and include every keyword, operator, and literal listed.  Put the negative lookahead `(?!\w)` on every keyword so that `iffy` does not tokenize as `IF`.
 
 | Category | Tokens |
 |----------|--------|
@@ -239,11 +253,11 @@ Extend TOKEN_SPEC to cover the language below, using at least 15 token types and
 | Punctuation | `(`, `)`, `{`, `}`, `;`, `:`, `,` |
 | Skipped | whitespace, `# comment to end of line` |
 
-This is the same language the Lexer assignment will ask you to tokenize with a reusable component, so the work you do here carries forward directly.  Everything you need is in the table above, and you don't need that assignment sheet to finish this one.
+The Lexer assignment asks you to tokenize this same language with a reusable component, so the work you do here carries forward directly.  The table above has everything you need; you do not need that assignment sheet to finish this one.
 
 ### Step 2c: Verify Ordering and Maximal Munch
 
-Run `mini_lex` on each of these inputs and verify the output matches the expected token types:
+Run `mini_lex` on each input below and confirm that the output matches the expected token types.  If `iffy` comes back as `IF`, or `3.14` comes back as `INT`, fix the order of `TOKEN_SPEC`.
 
 | Input | Expected |
 |-------|----------|
@@ -258,15 +272,17 @@ Run `mini_lex` on each of these inputs and verify the output matches the expecte
 
 ## Part 3: Regex-Based Text Transformer and Log Parser (25 points)
 
+Part 3 uses regexes to change text and to pull structured data out of a log file.  It has three steps: a text transformer, a greedy versus lazy demonstration, and a log parser.
+
 ### Step 3a: Text Transformer
 
-Write a `transform(text: str) -> str` function that applies all three substitutions to the input text:
+In `transformer.py`, write a `transform(text: str) -> str` function that applies these three substitutions, in this order:
 
-1.  **Redact emails:** Replace every email address (use P5 from Part 1, without anchoring) with `[EMAIL]` using `re.sub`.
-2.  **Normalize dates:** Convert `MM/DD/YYYY` format dates to ISO `YYYY-MM-DD` using group references in the replacement string (e.g., `r"\3-\1-\2"` with groups for month, day, year).
-3.  **Redact phone numbers:** Replace US phone numbers (P6 from Part 1) with `[PHONE]`.
+1.  Redact emails: replace every email address with `[EMAIL]` using `re.sub`.  Use P5 from Part 1 without anchoring, because the address sits inside a longer sentence.
+2.  Normalize dates: convert `MM/DD/YYYY` dates to ISO `YYYY-MM-DD`.  Capture month, day, and year as groups, then reorder them with group references in the replacement string (e.g., `r"\3-\1-\2"`).
+3.  Redact phone numbers: replace US phone numbers (P6 from Part 1) with `[PHONE]`.
 
-Apply all three in sequence.  Demonstrate on this input paragraph:
+Demonstrate the function on this input paragraph:
 
 ```
 Contact MONGAN, WILLIAM at billmongan@gmail.com or call (610) 555-0192.
@@ -284,7 +300,7 @@ A second contact: [EMAIL], deadline 2026-12-15.
 
 ### Step 3b: Greedy vs. Lazy Demonstration
 
-Show a single input string and two patterns where `.*` (greedy) and `.*?` (lazy) produce different captures:
+A greedy quantifier (`*`) matches as much text as it can.  A lazy quantifier (`*?`) matches as little as it can.  Show one input string and two patterns where the two produce different captures:
 
 ```python
 import re
@@ -302,17 +318,17 @@ Greedy: '<b>bold</b> and <i>italic</i>'
 Lazy:   '<b>'
 ```
 
-In a comment, explain in one sentence *why* greedy captured more.
+In a comment, explain in one sentence why greedy captured more.
 
 ### Step 3c: Log Parser
 
-Given the provided server log file (lines like `2026-09-18 08:10:22 WARN disk usage 91% on /dev/sda1`), write a `parse_log(log_path: str, config_path: str)` function that:
+In `log_parser.py`, write a `parse_log(log_path: str, config_path: str)` function for the provided server log.  Each line looks like `2026-09-18 08:10:22 WARN disk usage 91% on /dev/sda1`.  The function must:
 
-1.  Uses one `re.finditer` pattern with named groups to extract `date`, `time`, `level`, and `message` from each log line.
-2.  Reports counts by level (how many INFO, WARN, ERROR lines).
-3.  Reports the earliest and latest timestamps (as strings in `YYYY-MM-DD HH:MM:SS` format).
-4.  Extracts every percentage value (`\d+%`) mentioned in WARN lines and reports the maximum.
-5.  Writes all ERROR lines, prefixed with their original line number, to `errors.txt`.
+1.  Use one `re.finditer` pattern with named groups to extract `date`, `time`, `level`, and `message` from each log line.
+2.  Report counts by level (how many INFO, WARN, and ERROR lines).
+3.  Report the earliest and latest timestamps, as strings in `YYYY-MM-DD HH:MM:SS` format.
+4.  Extract every percentage value (`\d+%`) mentioned in WARN lines and report the maximum.
+5.  Write all ERROR lines, each prefixed with its original line number, to `errors.txt`.
 
 The named-group pattern must match this line format exactly:
 
@@ -320,7 +336,7 @@ The named-group pattern must match this line format exactly:
 YYYY-MM-DD HH:MM:SS LEVEL message text here
 ```
 
-**Sample output:**
+Sample output:
 
 ```
 Counts: INFO=42, WARN=8, ERROR=3
@@ -330,7 +346,7 @@ Max WARN percentage: 91%
 ERROR lines written to errors.txt
 ```
 
-Externalize both the input log path and the output `errors.txt` path in a JSON configuration file:
+Store both the input log path and the output `errors.txt` path in a JSON configuration file rather than in the code:
 
 ```json
 {
@@ -343,15 +359,15 @@ Externalize both the input log path and the output `errors.txt` path in a JSON c
 
 ## Part 4: Pattern Analysis (25 points)
 
-Answer each of the following four questions in your writeup.  Each answer must be at least one paragraph and must include a concrete example from your own work in this assignment.
+Answer the four questions below in `readme.md`.  Each answer must be at least one paragraph and must include a concrete example from your own work in this assignment.
 
 ### Q1: Greedy vs. Lazy
 
-Explain the difference between greedy (`*`, `+`) and lazy (`*?`, `+?`) quantifiers.  Use the specific example from Step 3b.  Under what circumstances would you prefer lazy over greedy in production code?
+Explain the difference between greedy (`*`, `+`) and lazy (`*?`, `+?`) quantifiers, using the specific example from Step 3b.  Then state when you would prefer lazy over greedy in production code.
 
 ### Q2: Anchors
 
-Explain the difference between `^`, `$`, `\A`, and `\Z`.  Show a pattern from your Part 1 library where removing the anchors (or switching from `fullmatch` to `search`) would cause a false positive.  State which anchor approach you used in each Part 1 pattern and why.
+An anchor is a pattern element that matches a position rather than a character.  Explain the difference between `^`, `$`, `\A`, and `\Z`.  Show a pattern from your Part 1 library where removing the anchors (or switching from `fullmatch` to `search`) would cause a false positive.  State which anchor approach you used in each Part 1 pattern and why.
 
 ### Q3: Named Groups
 
@@ -378,7 +394,7 @@ Submit a ZIP containing:
 - `test_output.txt`: output of running all four modules
 - `readme.md`: approximately one page including the four analysis answers and the limits paragraph
 
-Ensure reproducibility by listing your Python version.
+List your Python version so that your results can be reproduced.
 
 ---
 

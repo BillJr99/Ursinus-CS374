@@ -14,7 +14,9 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Sprint Studio and Gallery Walk
 
-Building a programming language in a semester takes the same discipline that shipping any complex software takes.  You have to know exactly where you stand, rather than where you feel like you stand.  Sprint studio days replace "mostly working" with numbers, and the gallery walk replaces private uncertainty with structured peer review.  The combination is how teams find their blind spots before Demo Day rather than during it.
+This deck serves two class sessions: Tuesday, December 1 (Sprint Studio: Sprints 1-2 and Gallery Walk) and Thursday, December 3 (Sprint Studio: Sprint 3 and Release Hardening).
+
+Building a programming language in a semester takes the same discipline that shipping any complex software takes.  You have to know exactly where you stand, not where you feel like you stand.  Sprint studio days replace "mostly working" with numbers, and the gallery walk replaces private uncertainty with structured peer review.  Together they help teams find their blind spots before Demo Day instead of during it.
 
 ## Learning Goals
 
@@ -23,7 +25,7 @@ By the end of this activity, you will be able to:
 - Conduct a structured stand-up by reporting concrete metrics (passing tests, completed AST nodes, known failures) rather than qualitative status assessments
 - Calculate sprint velocity from planned versus completed work items and use it to project whether the team will finish on time
 - Apply the gallery walk protocol to give and receive structured peer feedback on a language implementation in progress
-- Triage feedback into actionable backlog items prioritized by risk and impact on the final release
+- Triage feedback into backlog items with owners and dates, prioritized by risk and impact on the final release
 - Evaluate your language implementation against a release checklist and identify the highest-risk unfinished pieces
 
 > **Before You Begin:** This activity assumes you can:
@@ -33,19 +35,32 @@ By the end of this activity, you will be able to:
 >
 > If any of these feel shaky, check in with your team before the stand-up.
 
-Studio days are structured work time for the team language project: a stand-up, focused build time, and, on designated days, the formal **gallery walk** peer review that feeds your final sprint.  This page is the protocol for every studio day; the gallery walk sections apply on the scheduled walk day.  The protocol picks up where the *Language Design Workshop* kickoff left off: your proposal is now a backlog.  Here is the path for today: **stand-up $\rightarrow$ build $\rightarrow$ gallery walk $\rightarrow$ triage $\rightarrow$ release checklist**.
+Studio days are structured work time for the team language project: a stand-up, focused build time, and, on designated days, the formal gallery walk peer review that feeds your final sprint.  This page is the protocol for every studio day; the gallery walk sections apply on the scheduled walk day.  The protocol picks up where the *Language Design Workshop* kickoff left off: your proposal is now a backlog.  The path for today is **stand-up $\rightarrow$ build $\rightarrow$ gallery walk $\rightarrow$ triage $\rightarrow$ release checklist**.
 
 ---
 
 ## Directions and Group Roles
 
-Project roles (rotated by sprint) are in effect: **Coordinator**, **Builder(s)**, **Evaluator**, **Scribe**.  The Scribe maintains today's living document: stand-up notes, all feedback received verbatim, and the triaged backlog the team leaves with.
+Project roles (rotated by sprint) are in effect: Coordinator, Builder(s), Evaluator, and Scribe.  The Scribe maintains today's living document: stand-up notes, all feedback received verbatim, and the triaged backlog the team leaves with.
+
+---
+
+## Tuesday: Sprints 1-2 and Gallery Walk
+
+On Tuesday, work through sections 1 through 4 below: the stand-up, build time, the gallery walk, Model 3 (feedback triage), and the triage session.
 
 ---
 
 ## 1.  Stand-Up (10 minutes)
 
-Each team gets two minutes at the board to answer exactly four questions.  What runs end to end today, meaning which sample programs pass?  What is the riskiest unfinished piece of the sprint?  What does the test suite report this week, as a count of passing tests?  And what do you need from me or from another team?  Please say the number.  "Mostly working" is not a status.
+Each team gets two minutes at the board to answer exactly four questions:
+
+1. What runs end to end today?  Name the sample programs that pass.
+2. What is the riskiest unfinished piece of the sprint?
+3. What does the test suite report this week, as a count of passing tests?
+4. What do you need from me or from another team?
+
+Say the number.  "Mostly working" is not a status.
 
 ---
 
@@ -54,13 +69,13 @@ Each team gets two minutes at the board to answer exactly four questions.  What 
 
 ## 2.  Build Time
 
-Builders build the sprint increment; the Evaluator extends the test suite *ahead of* the features (a failing test is a specification); the Scribe keeps `SEMANTICS.md` and the decision log current as choices happen, not after; the Coordinator defends scope against good ideas that belong in the future-work list.  Mid-studio checkpoint: the Coordinator confirms the sprint goal is still achievable or re-scopes it *now*, aloud.
+Each role has one job during build time.  Builders build the sprint increment.  The Evaluator extends the test suite *ahead of* the features, because a failing test is a specification.  The Scribe keeps `SEMANTICS.md` and the decision log current as choices happen, not after.  The Coordinator defends scope against good ideas that belong in the future-work list.  At the mid-studio checkpoint, the Coordinator confirms aloud that the sprint goal is still achievable, or re-scopes it *now*.
 
 ---
 
 ## 3.  Gallery Walk Protocol (40 minutes, designated days)
 
-Stations: each team's language runs live (REPL up, sample programs ready) beside two artifacts: the grammar one-pager and the current test results table.  Half of each team hosts; half walks; swap at the midpoint.
+Set up stations.  At each station, a team's language runs live (REPL up, sample programs ready) beside two artifacts: the grammar one-pager and the current test results table.  Half of each team hosts and half walks; swap at the midpoint.
 
 Walkers leave one structured card per station, with exactly three fields:
 
@@ -68,17 +83,17 @@ Walkers leave one structured card per station, with exactly three fields:
 - **Question**: one real question the demo raised, ideally about a seam or a semantics decision ("what does your `for` desugar to, and does the loop variable survive?").
 - **Risk**: the one thing most likely to fail on Demo Day, stated kindly and concretely.
 
-Hosts demonstrate honestly: at least one **known failure case** must be shown at every station (a program that breaks the parser, a semantics corner still undecided).  A demo that hides its failures is rehearsing a deception; your `SEMANTICS.md` deserves better.
+Hosts demonstrate honestly.  Every station must show at least one known failure case (a program that breaks the parser, a semantics corner still undecided).  A demo that hides its failures is rehearsing a deception, and your `SEMANTICS.md` deserves better.
 
 ---
 
 ## Model 3: Feedback Triage, Turning Gallery Walk Cards into Backlog
 
-Raw gallery walk feedback is like unprocessed ore: valuable but unusable until refined.  Triage converts cards into decisions: this gets fixed before Demo Day, this gets disclosed honestly, this goes on the future-work list.  The discipline is the middle bucket: admitting known limitations publicly is mature engineering, and nobody in the room will read it as weakness.
+Raw gallery walk feedback is like unprocessed ore: valuable, but unusable until refined.  Triage converts each card into a decision: this gets fixed before Demo Day, this gets disclosed honestly, or this goes on the future-work list.  The middle bucket is the discipline.  Admitting a known limitation in public is mature engineering, and nobody in the room will read it as weakness.
 
 > **Watch out!**  "Disclose" does not mean "hide."  It means you have a rehearsed, candid one-sentence description of the limitation ready for Demo Day.  A question-and-answer session where a known bug surfaces without preparation is much worse than a proactive "our interpreter does not yet handle nested function calls, and here is why that is hard."
 
-The Scribe collects all gallery walk cards and triages them live.  The cell below simulates triage: take each card, classify it into a bucket, and produce an actionable backlog sorted by priority.
+The Scribe collects all gallery walk cards and triages them live.  The cell below simulates that triage: it takes each card, classifies it into a bucket, and produces a backlog sorted by priority that you can assign on the spot.
 
 ```python
 # Gallery walk feedback triage simulator.
@@ -159,9 +174,9 @@ print("  Scribe: fill in the blanks above and commit BACKLOG.md before end of da
 
 ### Reading the Code
 
-- The triage rules are the method, start to finish: every risk and every question becomes a backlog item, and each is sorted into exactly one of FIX, DISCLOSE, or FUTURE.  Nothing is allowed to stay unclassified, because unclassified feedback is feedback that quietly evaporates.
-- DISCLOSE is the bucket that makes this mature rather than defensive.  A named, well-worded limitation costs a sentence at Demo Day; an unnamed one costs your credibility when someone finds it live.
-- Strengths are counted but generate no backlog items.  They are there so the walk is worth attending and so you know which parts of the design not to disturb.
+- The triage rules are the whole method.  Every risk and every question becomes a backlog item, and each lands in exactly one of FIX, DISCLOSE, or FUTURE.  Nothing may stay unclassified, because unclassified feedback is feedback that quietly evaporates.
+- DISCLOSE is the bucket that makes this mature rather than defensive.  A named, well-worded limitation costs a sentence at Demo Day.  An unnamed one costs your credibility when someone finds it live.
+- Strengths are counted but generate no backlog items.  They are there so the walk is worth attending, and so you know which parts of the design not to disturb.
 
 ### Try It Yourself
 
@@ -229,7 +244,13 @@ Expected output: three FIX items, one DISCLOSE, one FUTURE, and an empty UNCLASS
 
 ## 4.  Triage (20 minutes, after the walk)
 
-Cluster the cards and sort every item into exactly one bucket: **Fix before Demo Day** (breaks the core story), **Disclose at Demo Day** (real, acknowledged, out of scope), or **Future work** (report material).  The discipline is the middle bucket: mature engineering names its known defects.  The Scribe converts bucket one into assigned, dated backlog items before anyone leaves.
+Cluster the cards and sort every item into exactly one bucket: Fix before Demo Day (breaks the core story), Disclose at Demo Day (real, acknowledged, out of scope), or Future work (report material).  The middle bucket is the discipline: mature engineering names its known defects.  The Scribe converts bucket one into assigned, dated backlog items before anyone leaves.
+
+---
+
+## Thursday: Sprint 3 and Release Hardening
+
+On Thursday, run the stand-up and build time from sections 1 and 2 again, then work through section 5 below: the Demo Day release checklist.
 
 ---
 
@@ -244,6 +265,8 @@ Before Demo Day, the Evaluator verifies and signs each line:
 5.  One failure case is rehearsed and its disclosure worded.
 6.  Every teammate can run the demo and explain the distinctive feature solo.
 7.  Reproducibility: Python version listed, any dependencies pinned, setup tested by the teammate who did not write it.
+
+The script below turns that checklist into code.  Each check must return True to pass.
 
 ```python
 # Release checklist automator: enforces the 7-item checklist as code.
@@ -372,7 +395,7 @@ The release checklist is written as code that must return True rather than as a 
 
 ## Reflection Prompt
 
-In your notebook: compare the feedback your team received today with the error messages your language gives its users.  Both are diagnostics offered to someone mid-effort.  What makes each actionable or useless, and what will you change in one of them this week?  Also: the stand-up discipline says "say the number."  What is one domain (not software) where you have benefited from someone insisting on numbers over adjectives?
+In your notebook: compare the feedback your team received today with the error messages your language gives its users.  Both are diagnostics offered to someone mid-effort.  What makes each one useful or useless, and what will you change in one of them this week?  Also: the stand-up discipline says "say the number."  What is one domain (not software) where you have benefited from someone insisting on numbers over adjectives?
 
 ---
 
@@ -385,4 +408,4 @@ In your notebook: compare the feedback your team received today with the error m
 
 ---
 
-These studios are the Team Language Project's build engine; the road ends at Demo Day, where your language meets its audience.
+These studios are the Team Language Project's build engine.  The road ends at Demo Day, where your language meets its audience.

@@ -14,14 +14,14 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Type Systems
 
-Every time you write
+A type system decides which operations each value supports, and when the language checks that.  Every function you write makes a promise about its inputs.  Consider
 
 ```python
 def add(x, y):
     return x + y
 ```
 
-you are making an implicit promise: callers will pass values that support `+`.  A **type system** is the machinery that turns an informal promise like that into an enforceable contract, checked either before your program ever runs or the instant a broken promise is exercised.  Catching a broken promise in the checker is like catching a typo before you mail the letter; catching it at runtime is like finding out when the recipient tries to read it.
+This function promises that callers will pass values that support `+`.  Nothing in the code enforces that promise.  A **type system** is the machinery that turns the promise into a contract the language can check.  The check happens either before the program runs or at the instant a broken promise is exercised.  Catching a broken promise in the checker is like catching a typo before you mail the letter.  Catching it at run time is like finding out when the recipient tries to read it.
 
 ## Learning Goals
 
@@ -34,7 +34,7 @@ By the end of this activity, you will be able to:
 - Explain why gradual type systems are deliberately unsound, and what that buys
 - Specify the typing rules for your team's language and justify them against the evaluation criteria
 
-Your interpreter (now equipped with the environments of *Environments and Variable Storage*) knows what to do with `5 / 0`.  But what should it do with
+Your interpreter now has the environments from *Environments and Variable Storage*, so it knows what to do with `5 / 0`.  But what should it do with
 
 ```
 "hello" * true
@@ -53,18 +53,18 @@ Today's path: **the two axes $\rightarrow$ checking before you run $\rightarrow$
 
 ## Directions and Group Roles
 
-Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Every model in this deck runs: predict the output first, in writing, then press the run button and see whether the machine agrees with you.  The disagreements are the interesting part, so keep them.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever your team disagreed or found another approach.
+Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Every model in this deck runs.  Predict the output first, in writing, then press the run button and see whether the machine agrees with you.  The disagreements are the interesting part, so keep them.  The Recorder posts your answers to the Class Activity Questions discussion board.  The Presenter reports out wherever your team disagreed or found another approach.
 
 ---
 
 ## Key Concepts
 
-A plain-English glossary.  Come back to it whenever one of these starts to feel slippery.
+This is a plain-English glossary.  Come back to it whenever one of these terms starts to feel slippery.
 
 | Term | Plain-English meaning | Why it matters |
 |------|-----------------------|----------------|
-| **Type** | A label on a value that says which operations are licensed for it | The whole activity is about who checks these licenses, and when |
-| **Type error** | An operation applied to a value outside its license, like `"hi" * {}` | The failure every type system exists to catch, early or late |
+| **Type** | A label on a value that says which operations are allowed on it | The whole activity is about who checks these labels, and when |
+| **Type error** | An operation applied to a value its type does not allow, like `"hi" * {}` | The failure every type system exists to catch, early or late |
 | **Static typing** | Checking happens *before* the program runs | Catches errors on every path, including paths your tests never exercise |
 | **Dynamic typing** | Checking happens at the instant each operation executes | Maximum flexibility; errors surface only when the bad line actually runs |
 | **Strong typing** | The language refuses to silently mix incompatible types | Broken promises stop the program instead of flowing onward as wrong values |
@@ -80,26 +80,26 @@ A plain-English glossary.  Come back to it whenever one of these starts to feel 
 
 ## 1.  Theory: Two Independent Questions
 
-People say "strongly typed" to mean half a dozen different things.  Untangle it into two questions that have nothing to do with each other.
+"Strongly typed" means half a dozen different things depending on who says it.  Untangle it into two questions that have nothing to do with each other.
 
-**When is checking done?**  **Static** typing checks before execution: Java rejects
+**When is checking done?**  A **type** is a label on a value that says which operations are allowed on it.  **Static** typing checks those labels before the program runs.  Java rejects
 
 ```java
 int x = "hi";
 ```
 
-at compile time, without running anything.  **Dynamic** typing checks during execution, at the moment the operation runs: Python raises `TypeError` only when `"hi" * {}` is actually attempted.  Static catches errors earlier and on *all* paths, including the ones your tests never reach; dynamic permits more flexible code and faster iteration.  This is the binding-time framework from *Names, Binding, and Scope* again, applied to the type.
+at compile time, without running anything.  **Dynamic** typing checks the labels during execution, at the moment each operation runs.  Python raises `TypeError` only when `"hi" * {}` is actually attempted.  Static checking catches errors earlier and on *all* paths, including the ones your tests never reach.  Dynamic checking permits more flexible code and faster iteration.  This is the binding-time framework from *Names, Binding, and Scope* again, applied to the type.
 
-**How strictly is checking enforced?**  **Strong** typing refuses undefined mixtures, or demands an explicit conversion.  **Weak** typing silently **coerces** operands so the operation can proceed.  JavaScript computes
+**How strictly is checking enforced?**  **Strong** typing refuses a mixture the language does not define, or demands an explicit conversion.  **Weak** typing silently **coerces** operands, meaning it converts them without being asked, so the operation can proceed.  JavaScript computes
 
 ```javascript
 "5" - 1     // 4
 "5" + 1     // "51"
 ```
 
-Python, dynamically but *strongly* typed, refuses `"5" - 1` outright.
+Python is dynamically typed but *strongly* typed, so it refuses `"5" - 1` outright.
 
-The two axes are independent, so a language picks a point on each one.
+The two axes are independent.  A language picks a point on each one.
 
 ## Examples: The Quadrant, by Hand
 
@@ -119,13 +119,13 @@ Now work one expression across all four quadrants.  For each language, write dow
 | C | static, weak | `'a' + 1` is `98`; a `char` is just a small integer |
 | JavaScript | dynamic, weak | `"a1"`; the number is coerced to a string |
 
-Notice that the *same* expression fails in two of these and succeeds, surprisingly, in the other two.  That is the whole point of the two axes: they predict behavior that "strongly typed" alone cannot.
+The *same* expression fails in two of these languages and succeeds, surprisingly, in the other two.  That is the point of the two axes: they predict behavior that "strongly typed" alone cannot.
 
-Your CS374 interpreter deliberately sits in the strong/dynamic box: `SEMANTICS.md` says that adding a string to a number raises a positioned `LangTypeError` at evaluation time.  That is a design choice, and stating it precisely is part of the Interpreter assignment.
+Your CS374 interpreter sits in the strong/dynamic box on purpose.  `SEMANTICS.md` says that adding a string to a number raises a positioned `LangTypeError` at evaluation time.  That is a design choice, and stating it precisely is part of the Interpreter assignment.
 
-> **Watch out!**  Static does not imply strong, and dynamic does not imply weak.  C is static but weak; Python is dynamic but strong.  Keep the axes separate, because collapsing them is the single most common confusion in this unit.
+> **Watch out!**  Static does not imply strong, and dynamic does not imply weak.  C is static but weak; Python is dynamic but strong.  Keep the axes separate.  Collapsing them is the most common confusion in this unit.
 
-> **Watch out!**  Python is *not* "untyped."  Every Python value has a definite type: `type(42)` is `<class 'int'>`.  The language simply checks compatibility at runtime rather than before execution.  Calling Python "untyped" confuses the absence of *declared* types with the absence of types altogether.
+> **Watch out!**  Python is *not* "untyped."  Every Python value has a definite type: `type(42)` is `<class 'int'>`.  The language checks compatibility at runtime rather than before execution.  Calling Python "untyped" confuses the absence of *declared* types with the absence of types altogether.
 
 ## Model 1: Discover the Axes by Experiment
 
@@ -148,7 +148,7 @@ for expr, thunk in [
 
 print("\n=== Probe 2: is Python dynamic? ===")
 def risky(x):
-    return x * 2        # licensed for int, float, str, list -- but not dict
+    return x * 2        # licensed for int, float, str, list, but not dict
 
 for value in [5, "ab", [1, 2], {"k": 1}]:
     try:
@@ -185,9 +185,9 @@ print("  CPython ignored the annotations entirely. They are documentation.")
 
 ### Reading the Code
 
-- **Probe 1** tests *strength*.  Each expression is wrapped in a `lambda` so the failure happens inside the loop where we can catch it, rather than when the list is built.  Two of the three raise; `"5" * 3` succeeds because Python licenses string repetition, which is a genuine operation and not a coercion.
-- **Probe 2** tests *dynamism*.  The same `risky` body succeeds for four different argument types and fails for a fifth, and nothing detected that before the call.
-- **Probe 3** separates *values* from *names*.  Rebinding `x` did not mutate the integer `42`; it pointed the name at a different object.
+- **Probe 1** tests *strength*.  Each expression is wrapped in a `lambda` so the failure happens inside the loop, where we can catch it, rather than when the list is built.  Two of the three raise.  `"5" * 3` succeeds because Python defines string repetition; that is a real operation, not a coercion.
+- **Probe 2** tests *dynamism*.  The same `risky` body succeeds for four different argument types and fails for a fifth.  Nothing detected that before the call.
+- **Probe 3** separates *values* from *names*.  Rebinding `x` did not change the integer `42`.  It pointed the name at a different object.
 - **Probe 4** is the argument for static checking, in five lines.  A test suite that only ever calls `categorize(50)` reports full coverage of the line it ran and never touches the division.
 - **Probe 5** is the setup for Part III.  Python's annotation syntax exists, and CPython does nothing with it.
 
@@ -200,7 +200,7 @@ print("  CPython ignored the annotations entirely. They are documentation.")
 
 ### Try It Yourself
 
-Add a sixth probe that demonstrates the *strong* axis failing in the other direction: find a pair of Python types where `+` succeeds but you would argue it *should not*, and print evidence.
+Add a sixth probe that shows the *strong* axis failing in the other direction.  Find a pair of Python types where `+` succeeds but you would argue it *should not*, and print evidence.
 
 ```python
 # Probe 6: find a "+" that Python licenses but that you think it should refuse.
@@ -222,7 +222,7 @@ print("\nWhich of these would a STRONGER language refuse, and what would it cost
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output: at minimum, `True + 1 = 2  (types: bool + int)`.  Python's `bool` is a subclass of `int`, so this is licensed; decide for yourself whether it should be.
+Expected output: at minimum, `True + 1 = 2  (types: bool + int)`.  Python's `bool` is a subclass of `int`, so this is allowed.  Decide for yourself whether it should be.
 
 ---
 
@@ -230,13 +230,13 @@ Expected output: at minimum, `True + 1 = 2  (types: bool + int)`.  Python's `boo
 
 ## 2.  Theory: A Checker Walks the Tree Computing Types
 
-Here is the central idea of the whole unit, and it is smaller than it sounds.
+A **type checker** is a program that walks your AST and computes a type for every node, without running the program.  That is the central idea of this unit, and it is smaller than it sounds.
 
-Your evaluator walks the AST computing **values**.  A type checker walks the *same* AST computing **types**.  It is the same recursive traversal, over the same tree, with the same shape of case analysis; only the thing being computed changes.
+Your evaluator walks the AST computing **values**.  A type checker walks the *same* AST computing **types**.  It is the same recursive traversal, over the same tree, with the same shape of case analysis.  Only the thing being computed changes.
 
 Where `evaluate(BinOp("+", l, r), env)` returns a number, `infer(BinOp("+", l, r), tenv)` returns the *type* `Int`, and refuses if either side is not `Int`.  Where the evaluator carries an environment mapping names to values, the checker carries a **type environment** mapping names to types.
 
-We write the rules as **typing judgments**.  Read
+We write the rules as **typing judgments**.  A judgment is a claim about the type of an expression.  Read
 
 $$\Gamma \vdash e : \tau$$
 
@@ -244,9 +244,9 @@ as "in type environment $\Gamma$, expression $e$ has type $\tau$."  A rule has p
 
 $$\frac{\Gamma \vdash e_1 : \text{Int} \qquad \Gamma \vdash e_2 : \text{Int}}{\Gamma \vdash e_1 + e_2 : \text{Int}}$$
 
-In English: if both operands check as `Int`, then the sum checks as `Int`.  Every rule you will implement is one of these, and the implementation is a direct transcription: check the premises, return the conclusion's type.
+In English: if both operands check as `Int`, then the sum checks as `Int`.  Every rule you will implement is one of these.  The implementation is a direct transcription: check the premises, return the conclusion's type.
 
-Two rules deserve special attention because they are where students' intuitions usually break:
+Two rules deserve special attention, because they are where intuition usually breaks:
 
 $$\frac{\Gamma \vdash c : \text{Bool} \qquad \Gamma \vdash e_1 : \tau \qquad \Gamma \vdash e_2 : \tau}{\Gamma \vdash \texttt{if } c \texttt{ then } e_1 \texttt{ else } e_2 : \tau}$$
 
@@ -254,7 +254,7 @@ Both branches must have the *same* type $\tau$.  They must, because the checker 
 
 $$\frac{\Gamma \vdash e_1 : \tau_1 \qquad \Gamma, x{:}\tau_1 \vdash e_2 : \tau_2}{\Gamma \vdash \texttt{let } x = e_1 \texttt{ in } e_2 : \tau_2}$$
 
-The `let` rule is where the type environment grows: check the bound expression, extend $\Gamma$ with the new name, then check the body under the extended environment.  That is exactly what your interpreter's `Env.extend` does, one level up.
+The `let` rule is where the type environment grows.  Check the bound expression, extend $\Gamma$ with the new name, then check the body under the extended environment.  That is exactly what your interpreter's `Env.extend` does, one layer up.
 
 ## Examples: A Type Derivation, by Hand
 
@@ -283,11 +283,11 @@ Now do it again for a program that *fails*:
 let x = 2 in if x then x + 1 else 0
 ```
 
-At which step does the derivation get stuck, and which premise fails?  Note that nothing was executed to find this out.
+At which step does the derivation get stuck, and which premise fails?  Nothing was executed to find this out.
 
 ## Model 2: A Type Checker You Can Run
 
-This is the machinery from the Examples above, transcribed.  Compare each `if isinstance(...)` branch against the corresponding judgment.
+This is the machinery from the Examples above, transcribed into Python.  Compare each `if isinstance(...)` branch against the corresponding judgment.
 
 ```python
 from dataclasses import dataclass
@@ -396,14 +396,14 @@ for label, prog in cases:
 ### Reading the Code
 
 - `TypeEnv` is your interpreter's `Env` with one word changed: it maps names to *types*.  The `lookup`/`extend` pair is identical in shape.
-- The `BinOp` branch is two judgments in one `if`: arithmetic demands `Int` on both sides and concludes `Int`; comparison demands only that the two sides *agree*, and concludes `Bool` regardless of what they were.
+- The `BinOp` branch is two judgments in one `if`.  Arithmetic demands `Int` on both sides and concludes `Int`.  Comparison demands only that the two sides *agree*, and concludes `Bool` regardless of what they were.
 - The `If` branch enforces both premises of the conditional rule separately, so the error message can say which one failed.
-- The `Let` branch is the only place `tenv` grows, and it grows by returning a *new* environment rather than mutating the old one, exactly as lexical scope requires.
+- The `Let` branch is the only place `tenv` grows.  It grows by returning a *new* environment rather than mutating the old one, exactly as lexical scope requires.
 - Nothing in this file evaluates anything.  There is no `+` applied to actual numbers anywhere in `infer`.
 
-> **Watch out!**  A static checker reasons about types without ever computing a value, so it cannot catch errors that depend on runtime data: dividing by a variable that happens to be zero, or indexing an array at a position the user types in.  "Type safe" is not "bug free."  A well-typed program can still crash and can still be wrong; it just cannot fail in the specific structural ways the type system forbids.
+> **Watch out!**  A static checker reasons about types without ever computing a value.  So it cannot catch errors that depend on runtime data: dividing by a variable that happens to be zero, or indexing an array at a position the user types in.  "Type safe" is not "bug free."  A well-typed program can still crash and can still be wrong.  It just cannot fail in the specific structural ways the type system forbids.
 
-> **Watch out!**  There is a second thing a static checker cannot see, and it is about *where* it looks rather than *when*.  A C or C++ compiler checks one **translation unit**, one source file with its headers pasted in, and then forgets everything.  It never checks a *program*.  Two files can hold flatly contradictory beliefs about the same global variable and every tool in the pipeline will wave them through, because the station that finally sees both files, the linker, matches names and has no types left to compare.  The Extension at the end of this deck compiles, links, and runs exactly that program.
+> **Watch out!**  There is a second thing a static checker cannot see, and it is about *where* it looks rather than *when*.  A C or C++ compiler checks one **translation unit**, one source file with its headers pasted in, and then forgets everything.  It never checks a *program*.  Two files can hold flatly contradictory beliefs about the same global variable, and every tool in the pipeline will wave them through.  The station that finally sees both files, the linker, matches names and has no types left to compare.  The Extension at the end of this deck compiles, links, and runs exactly that program.
 
 ### Critical Thinking Questions
 
@@ -461,7 +461,7 @@ Expected output once your case is in place:
 
 ## Model 3: Inference With No Annotations Anywhere
 
-Nothing in Model 2 required the programmer to *write* a type.  The checker deduced every one of them from the literals and the operators.  That is type inference, and this model makes the deduction visible by printing the type environment as it grows.
+Nothing in Model 2 required the programmer to *write* a type.  The checker deduced every one of them from the literals and the operators.  That is **type inference**: the checker works out each variable's type from how the variable is defined and used, so you never write the type down.  This model makes the deduction visible by printing the type environment as it grows.
 
 ```python
 from dataclasses import dataclass
@@ -535,7 +535,7 @@ print("Every type above was deduced from literals and operators alone.")
 
 ### Reading the Code
 
-`check_sequence` is a deliberately flattened `Let` chain: instead of nesting, it threads one growing dictionary through the sequence so you can watch $\Gamma$ fill up line by line.  When inference fails, it prints $\Gamma$ *at the moment of failure*, which is the information a real compiler's error message is trying to summarize.
+`check_sequence` is a deliberately flattened `Let` chain.  Instead of nesting, it threads one growing dictionary through the sequence, so you can watch $\Gamma$ fill up line by line.  When inference fails, it prints $\Gamma$ *at the moment of failure*.  That is the information a real compiler's error message is trying to summarize.
 
 ### Critical Thinking Questions
 
@@ -545,7 +545,7 @@ print("Every type above was deduced from literals and operators alone.")
 
 ### Try It Yourself
 
-Extend the inference demo with a string type.  Add a `Str` node that infers as `"Str"`, then decide: should `+` on two `Str` values be licensed as concatenation?
+Extend the inference demo with a string type.  Add a `Str` node that infers as `"Str"`.  Then decide: should `+` on two `Str` values be allowed as concatenation?
 
 ```python
 # Start from Model 3's infer(), then:
@@ -555,15 +555,15 @@ Extend the inference demo with a string type.  Add a `Str` node that infers as `
 
 # TODO: your extended infer() here.
 
-# Probe A:  "ab" + "cd"     -- should this be Str, or a type error?
-# Probe B:  "ab" + 1        -- this must be a type error either way.
+# Probe A:  "ab" + "cd"     should this be Str, or a type error?
+# Probe B:  "ab" + 1        this must be a type error either way.
 
 print('Decide and defend: does your language license "+" on two strings?')
 print('If yes, you have overloaded "+". Write the second judgment for it.')
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output: whatever your design says, plus a rejection for Probe B.  Write the second typing judgment for overloaded `+` in your notes; you will need it for `SEMANTICS.md`.
+Expected output: whatever your design says, plus a rejection for Probe B.  Write the second typing judgment for overloaded `+` in your notes.  You will need it for `SEMANTICS.md`.
 
 ---
 
@@ -571,15 +571,15 @@ Expected output: whatever your design says, plus a rejection for Probe B.  Write
 
 ## 3.  Theory: Having It Both Ways, On Purpose
 
-What if you want dynamic flexibility while prototyping and static guarantees where it matters?  **Gradual typing** (Siek and Taha, 2006) lets you annotate *some* of a program statically and leave the rest dynamic, inserting checks at the boundary between the two.
+**Gradual typing** (Siek and Taha, 2006) lets you annotate *some* of a program statically and leave the rest dynamic.  The language inserts checks at the boundary between the two.  You get dynamic flexibility while prototyping and static guarantees where they matter.
 
-**mypy** adds gradual static typing to Python: unannotated code is given the dynamic type `Any` and passes silently, while annotated code is checked.  **TypeScript** does the same for JavaScript with `any`.
+**mypy** adds gradual static typing to Python.  Unannotated code is given the dynamic type `Any` and passes silently, while annotated code is checked.  **TypeScript** does the same for JavaScript with `any`.
 
-The key insight, and the thing worth carrying out of today: **gradual type systems are unsound by design.**  `Any` and `any` are escape hatches that turn checking *off*, so a program that type-checks cleanly can still fail at runtime.  That is a deliberate trade of the airtight guarantee for adoptability: you can add types to a million-line codebase one file at a time.  Contrast that with the checker you wrote in Model 2, which has no escape hatch and so is sound for the fragment it covers.
+Carry one fact out of today: gradual type systems are unsound by design.  A checker is **sound** when every program it approves is free of the errors it checks for.  `Any` and `any` are escape hatches that turn checking *off*, so a program that type-checks cleanly can still fail at runtime.  That is a deliberate trade.  You give up the airtight guarantee and gain adoptability: you can add types to a million-line codebase one file at a time.  Contrast that with the checker you wrote in Model 2, which has no escape hatch and so is sound for the fragment it covers.
 
 ## Examples: The Same Bug, Two Languages
 
-Here is the in-class compare.  The same mistake, written in both languages, with the checker's verdict beside it:
+The same mistake, written in both languages, with the checker's verdict beside it:
 
 ```python
 # Python + mypy
@@ -588,7 +588,7 @@ def add(x: int, y: int) -> int:
 
 add("a", 3)      # mypy: Argument 1 to "add" has incompatible type "str"
 untyped = []     # inferred as Any
-untyped.foo()    # mypy: no error -- Any silences the check
+untyped.foo()    # mypy: no error; Any silences the check
 ```
 
 ```typescript
@@ -597,14 +597,14 @@ function add(x: number, y: number): number { return x + y; }
 
 add("a", 3);          // tsc: error, string is not assignable to number
 const x: any = [];    // 'any' opts out
-x.foo();              // tsc: no error -- 'any' silences the check
+x.foo();              // tsc: no error; 'any' silences the check
 ```
 
-Both checkers catch the first mistake and both are silent on the second.  The silence is not a bug in mypy or in `tsc`; it is the definition of gradual.
+Both checkers catch the first mistake, and both are silent on the second.  The silence is not a bug in mypy or in `tsc`.  It is the definition of gradual.
 
 ## Model 4: Build the Gradual Boundary Yourself
 
-CPython ignores annotations, so this model reads them back with `typing.get_type_hints` and enforces them, and shows exactly where `Any` turns the enforcement off.
+CPython ignores annotations.  This model reads them back with `typing.get_type_hints` and enforces them, and it shows exactly where `Any` turns the enforcement off.
 
 ```python
 from typing import Any, get_type_hints
@@ -674,9 +674,9 @@ print("blows up at runtime. That is gradual typing working as designed.")
 
 ### Reading the Code
 
-- `get_type_hints(fn)` is how CPython exposes annotations to *you* at runtime; the interpreter itself never consults them.
+- `get_type_hints(fn)` is how CPython exposes annotations to *you* at runtime.  The interpreter itself never consults them.
 - The line `if expected is Any: continue` is the entire gradual escape hatch, in one statement.  Everything unsound about mypy and TypeScript follows from that `continue`.
-- `half_typed` shows the boundary directly: one parameter is policed and the other is not, in the same call.
+- `half_typed` shows the boundary directly.  One parameter is policed and the other is not, in the same call.
 - The error from `sloppy("a", 3)` comes from Python's `+`, not from our checker.  Our checker approved the call.
 
 ### Critical Thinking Questions
@@ -711,7 +711,7 @@ Expected output: `add` survives; `sloppy` and `half_typed` are rejected at decor
 
 # Extension: Enforcing Types at the Boundary with pydantic
 
-Model 4 built a toy version of a real tool.  **pydantic** is the production one: it turns ordinary Python annotations into enforced contracts, validating data the instant an object is constructed and raising a precise, located error when a promise is broken.  It is the runtime strong-typing gatekeeper from Part I, packaged for real code, and it is the same discipline you are about to build into your interpreter.
+Model 4 built a toy version of a real tool.  **pydantic** is the production one.  It turns ordinary Python annotations into enforced contracts.  It validates data the instant an object is constructed, and it raises a precise, located error when a promise is broken.  It is the runtime strong-typing gatekeeper from Part I, packaged for real code, and it is the same discipline you are about to build into your interpreter.
 
 ```bash
 pip install pydantic
@@ -719,7 +719,7 @@ pip install pydantic
 
 ## A First pydantic Model
 
-A class that subclasses `BaseModel` declares its fields with ordinary type annotations; constructing an instance validates every field:
+A class that subclasses `BaseModel` declares its fields with ordinary type annotations.  Constructing an instance validates every field:
 
 ```python
 from pydantic import BaseModel, ValidationError
@@ -744,11 +744,11 @@ except ValidationError as e:
     print(e)                    # line: Input should be a valid integer ...
 ```
 
-Both axes from Part I show up here, made concrete.  pydantic is **strong** (it refuses `"seven"` as an `int`) and yet it performs **deliberate, declared coercion** (`"7"` becomes `7`): coercion you opted into by choosing pydantic, not the silent coercion of a weakly typed language.  Turn it off entirely with strict mode (`model_config = ConfigDict(strict=True)`) and `"7"` is rejected too.
+Both axes from Part I show up here, made concrete.  pydantic is **strong**: it refuses `"seven"` as an `int`.  Yet it performs deliberate, declared coercion, turning `"7"` into `7`.  That is coercion you opted into by choosing pydantic, not the silent coercion of a weakly typed language.  Turn it off entirely with strict mode (`model_config = ConfigDict(strict=True)`) and `"7"` is rejected too.
 
 ## Validators: When a Type Encodes an Invariant
 
-A validator lets a field mean more than `int`: it can mean *a line number that must be positive*, or *an operator that must be one the language actually has*:
+A validator lets a field mean more than `int`.  It can mean *a line number that must be positive*, or *an operator that must be one the language actually has*:
 
 ```python
 from pydantic import BaseModel, field_validator, ValidationError
@@ -779,13 +779,13 @@ for bad in (dict(op="%", line=3), dict(op="+", line=0)):
         print(e)
 ```
 
-This is the same check-before-you-compute gatekeeper as Model 2, applied at the *boundary* where untrusted data (a config file, a JSON request, a serialized AST, a parsed token stream) enters your program.
+This is the same check-before-you-compute gatekeeper as Model 2, applied at the *boundary* where untrusted data enters your program: a config file, a JSON request, a serialized AST, a parsed token stream.
 
 > **Watch out!**  Three different things look alike and guarantee different amounts.  Plain type *hints* are never enforced by CPython: `add("a", "b")` runs until `+` fails.  `@dataclass` gives you the same annotations and also does not validate them.  A static checker like `mypy` checks before running and does nothing at runtime.  pydantic enforces the annotation *when the data arrives*.  Know which of the three you actually have.
 
 # Extension: Structural vs. Nominal Typing
 
-Two types can be "the same" for two different reasons.  **Nominal** typing says two types match when they have the same *name* or an explicit inheritance relationship: Java's `class Circle implements Drawable` must say so out loud.  **Structural** typing says they match when they have the same *shape*: if it has a `draw()` method, it is `Drawable`, whether or not anyone declared it.
+Two types can be "the same" for two different reasons.  **Nominal** typing says two types match when they have the same *name* or an explicit inheritance relationship.  Java's `class Circle implements Drawable` must say so out loud.  **Structural** typing says they match when they have the same *shape*.  If it has a `draw()` method, it is `Drawable`, whether or not anyone declared it.
 
 ```java
 // Java: nominal. Circle is Drawable only because it SAYS it is.
@@ -833,8 +833,8 @@ Which discipline should *your* language use?  Nominal typing gives you intent (`
 
 A third question, independent of the first two: do types survive to runtime at all?
 
-- **Java erases generics at compile time.**  `List<String>` and `List<Integer>` are the same class at runtime; the type argument is checked and then thrown away.
-- **C++ monomorphizes.**  `vector<int>` and `vector<string>` become genuinely different generated code, so nothing is erased; the binary is larger and the types are real.
+- **Java erases generics at compile time.**  `List<String>` and `List<Integer>` are the same class at runtime.  The type argument is checked and then thrown away.
+- **C++ monomorphizes.**  `vector<int>` and `vector<string>` become different generated code, so nothing is erased.  The binary is larger and the types are real.
 - **Python keeps annotations as data but never acts on them.**  `get_type_hints` can read them back, as Model 4 did, but the interpreter never consults them.
 
 ```python
@@ -856,17 +856,17 @@ except TypeError as e:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Erasure is why a clean `tsc` run cannot protect you at runtime, which is CTQ 13's answer from a different angle.
+Erasure is why a clean `tsc` run cannot protect you at runtime.  That is CTQ 13's answer from a different angle.
 
 ---
 
 # Extension: When Static Typing Stops at the File Boundary
 
-Everything in Part II assumed the checker can see the program.  For C and C++ that assumption is false, and the gap is wide enough to drive a real bug through.
+Everything in Part II assumed the checker can see the whole program.  For C and C++ that assumption is false, and the gap is wide enough to drive a real bug through.
 
 ## Two Files That Disagree
 
-Here is a complete program.  Read both files and predict what it prints.
+This is a complete program.  Read both files and predict what it prints.
 
 ```c
 /* physics.c */
@@ -900,11 +900,11 @@ It prints:
 gravity as int: 1092416963
 ```
 
-No diagnostic at any stage, not even with `-Wall -Wextra`.  A number that appears nowhere in the source is now in the output.
+No diagnostic appears at any stage, not even with `-Wall -Wextra`.  A number that appears nowhere in the source is now in the output.
 
-**Why each stage stayed quiet.**  `physics.c` is internally consistent: it declares a float and initializes it with a float.  `report.c` is internally consistent too: it declares an int and prints it with `%d`.  Neither compiler invocation ever sees the other file, so neither has anything to object to.  A **translation unit** is the compiler's entire universe.
+Each stage stayed quiet for the same reason.  `physics.c` is internally consistent: it declares a float and initializes it with a float.  `report.c` is internally consistent too: it declares an int and prints it with `%d`.  Neither compiler invocation ever sees the other file, so neither has anything to object to.  A **translation unit** (one source file with its headers pasted in) is the compiler's entire universe.
 
-Then the linker runs, and the linker is the first tool that sees both names together.  Run `nm` on the object files and you can see everything it has to work with:
+Then the linker runs.  The linker is the first tool that sees both names together.  Run `nm` on the object files and you can see everything it has to work with:
 
 ```
 physics.o:   0000000000000000 D gravity
@@ -918,7 +918,7 @@ report.o:                     U gravity
      2: 0000000000000000     4 OBJECT  GLOBAL DEFAULT    2 gravity
 ```
 
-A name.  A size.  A binding.  A section.  **There is no type field.**  Not because this linker is lazy, but because there is nowhere in the format to put one: types are a per-file, compile-time idea, and by link time they have been erased.
+A name.  A size.  A binding.  A section.  There is no type field.  This linker is not lazy; there is nowhere in the format to put one.  Types are a per-file, compile-time idea, and by link time they have been erased.
 
 ## Model: The Same Four Bytes, Read Two Ways
 
@@ -977,7 +977,7 @@ Expected output: the int is `1092416963`, which is exactly what the real C progr
 
 ### Critical Thinking Questions
 
-8.  Trace the *lie* through the pipeline and name, at each of the three stations from *Table-Driven and LR Parsing*, what that station knew and what it had already forgotten.  At which station did the last piece of information that could have caught this disappear?
+8.  Trace the *lie* through the pipeline.  At each of the three stations from *Table-Driven and LR Parsing*, name what that station knew and what it had already forgotten.  At which station did the last piece of information that could have caught this disappear?
 9.  Part I placed C in the **static, weak** quadrant.  Does this bug belong to the *static* axis or the *weak* axis?  Defend your answer, then argue the opposite one; the disagreement is the useful part.
 10.  The `# Extension: Type Erasure` section above showed Java erasing generic type arguments before runtime.  This section shows C erasing *all* types before linking.  State what the two erasures have in common in one sentence, and then state the difference in what each one costs you.
 11.  C's actual answer is a shared header: put `extern float gravity;` in `gravity.h` and `#include` it from both files.  Explain precisely why that works, then explain precisely why it is a *convention* and not a *guarantee*.  What stops `report.c` from simply not including it?
@@ -1003,9 +1003,9 @@ C++ is the instructive middle case.  Compile a file with two overloads of `add` 
 0000000000000000 D gravity      <- int gravity;   ... just 'gravity'
 ```
 
-Function names are **mangled**: `_Z3addii` encodes "add, taking int and int," so two files that disagree about a function's signature ask for different symbols and get an honest undefined-reference error.  That is type checking smuggled into the linker through the one field it does have, the name.  But variables are not mangled: `gravity` is `gravity`.  So C++ closes the door for functions and leaves it open for exactly the case this section is about.
+Function names are **mangled**: `_Z3addii` encodes "add, taking int and int."  So two files that disagree about a function's signature ask for different symbols and get an honest undefined-reference error.  That is type checking smuggled into the linker through the one field it does have, the name.  But variables are not mangled: `gravity` is `gravity`.  So C++ closes the door for functions and leaves it open for exactly the case this section is about.
 
-> **Watch out!**  The lesson here is not "C is bad."  It is that a type system's guarantee has a **boundary**, and you should always know where the boundary is.  In C the boundary is the file.  In Java it is the program.  In Python with mypy it is "the annotated parts."  When someone tells you a language is type safe, the useful follow-up question is: *safe across what?*
+> **Watch out!**  The lesson here is not "C is bad."  It is that a type system's guarantee has a boundary, and you should always know where the boundary is.  In C the boundary is the file.  In Java it is the program.  In Python with mypy it is "the annotated parts."  When someone tells you a language is type safe, the useful follow-up question is: *safe across what?*
 
 ---
 
@@ -1067,9 +1067,9 @@ Which of these would the Model 2 checker catch?
 
 # Exercises
 
-**Exercise 1. Interpreter integration.**  Wire the Model 2 checker into your interpreter as a pass that runs *before* evaluation.  Add booleans and strings as value types (with literals in your lexer and parser if they are absent) and demonstrate three programs: one that checks and runs, one that the checker rejects with a helpful positioned message, and one that the checker accepts but that still fails at runtime.  That third program is your evidence for the "type safe is not bug free" claim.
+**Exercise 1. Interpreter integration.**  Wire the Model 2 checker into your interpreter as a pass that runs *before* evaluation.  Add booleans and strings as value types (with literals in your lexer and parser if they are absent).  Then demonstrate three programs: one that checks and runs, one that the checker rejects with a helpful positioned message, and one that the checker accepts but that still fails at runtime.  That third program is your evidence for the "type safe is not bug free" claim.
 
-**Exercise 2. Coercion lab.**  Implement a `--weak` flag that turns two of your checker's refusals into coercions.  Write one program whose output silently *changes* between modes, and a paragraph on which mode your team ships and why, citing the criteria from *Evaluating Languages*.
+**Exercise 2. Coercion lab.**  Implement a `--weak` flag that turns two of your checker's refusals into coercions.  Write one program whose output silently *changes* between modes.  Then write a paragraph on which mode your team ships and why, citing the criteria from *Evaluating Languages*.
 
 **Exercise 3. Inference on paper.**  For
 
@@ -1102,7 +1102,7 @@ Update your `BinOp` case to check the tag before operating, and show that your e
 
 In your notebook: strong typing refuses to guess what you meant; weak typing guesses.  Describe one tool or person in your life whose refusal to guess you have come to value, and what it cost you to appreciate them.
 
-Then: in Model 3, the checker deduced `c : Bool` from context alone, with no annotation anywhere.  When you first saw that, did it feel like magic?  After writing the rules out as judgments and then as `if` branches, what makes it feel mechanical instead?
+Then: in Model 3, the checker deduced `c : Bool` from context alone, with no annotation anywhere.  When you first saw that, did it feel like a trick?  After writing the rules out as judgments and then as `if` branches, what makes it feel mechanical instead?
 
 ---
 
@@ -1113,7 +1113,7 @@ Then: in Model 3, the checker deduced `c : Bool` from context alone, with no ann
 - Gary Bernhardt.  "Wat" (2012): four minutes of coercion comedy with a serious lesson underneath.
 - Benjamin Pierce.  *Types and Programming Languages*, the standard reference; Chapters 8 through 11 cover exactly the judgments in Part II.
 - Siek and Taha.  "Gradual Typing for Functional Languages" (2006), the paper that named Part III.
-- The [Hindley-Milner type inference tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypeInference) takes Model 3's inference to its conclusion: unification, the occurs check, and Algorithm W.  Read it if you take the type-checking direction on the Interpreter assignment.
+- The [Hindley-Milner type inference tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypeInference) takes Model 3's inference to its conclusion: unification (the procedure that makes two partly unknown types agree), the occurs check, and Algorithm W.  Read it if you take the type-checking direction on the Interpreter assignment.
 
 ---
 
