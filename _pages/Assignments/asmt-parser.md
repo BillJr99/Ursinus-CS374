@@ -655,6 +655,3 @@ Submit a ZIP containing the files below, and list your Python version in the rea
 - When you traced the parser calls on the `while` example in step 2d, which recursive call surprised you, and why?  (Directions A and B: which reduction in the automaton surprised you, and why?)
 - If you took a direction beyond the core: what did the grammar-first discipline reveal that jumping straight to code would have hidden?
 - Direction B only: Toussaint's Euclidean rhythms emerged from a scheduling algorithm and turned out to describe music made by humans across centuries and continents.  What does this suggest about the relationship between formal structure and cultural practice, and about who is credited when an algorithm formalizes existing human knowledge?
-- If collaboration with a buddy was permitted, did you work with a buddy on this assignment?  If so, who?  If not, do you certify that this submission represents your own original work?  Please identify any and all portions of your submission that were not originally written by you.
-- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
-- Approximately how many hours it took you to finish this assignment (I will not judge you for this at all; I am simply using it to gauge if the assignments are too easy or hard)?

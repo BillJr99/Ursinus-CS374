@@ -445,7 +445,7 @@ Those three sentences are the point of this part, and they are the reason the ne
 - [ ] The even-parity grammar generates the empty string, `0`, `11`, and `1001`, and generates neither `1` nor `10`.
 - [ ] You said in one line what would go wrong if `<odd>` also had an `<empty>` alternative.
 - [ ] Every Part 2 reason names a structural property (finite memory, a stack, cross-serial constraints), and the three tokens-versus-syntax sentences are present.
-- [ ] The Reflection Prompts are answered, including the AI disclosure and the hours estimate.
+- [ ] The Reflection Prompts are answered.
 
 ## Grading Breakdown
 
@@ -463,5 +463,3 @@ This lab is worth 15 points, as the course schedule states.  Each part's weight 
 - Which string broke your first draft of a production, and what change fixed it?
 - Step 1.2 asked whether your grammar rejects `(1 2 3)`.  Before you traced it, what did you expect the answer to be, and did tracing it change how you think about what a parser can catch?
 - If you worked in a pair, who did what, and name one thing your partner caught that you would have missed.  If you worked alone, note that instead.
-- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
-- Approximately how many hours it took you to finish this lab (I will not judge you for this at all; I am simply using it to gauge if the labs are too easy or hard)?

@@ -549,5 +549,3 @@ This lab is worth 15 points, as the course schedule states.  Each part's weight 
 - Which negative test case caught a real bug in one of your patterns, and what was the fix?
 - Which of the four `findall` shapes surprised you, and what will you do differently because of it?
 - If you worked in a pair, who did what, and name one thing your partner caught that you would have missed.  If you worked alone, note that instead.
-- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
-- Approximately how many hours it took you to finish this lab (I will not judge you for this at all; I am simply using it to gauge if the labs are too easy or hard)?

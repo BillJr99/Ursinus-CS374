@@ -767,6 +767,3 @@ Every direction includes the required Step 2e Hypothesis invariant tests in `tes
 - Point to the exact line in your `Environment` class that makes your language statically (lexically) scoped rather than dynamically scoped.
 - Typing direction only: your dynamic truthiness rule accepts `while 1 { ... }`, but your type checker demands a `Bool` condition.  Where else did the static discipline reject a program your evaluator would have happily run, and which behavior do you consider correct for your language?
 - The `BreakSignal`/`ContinueSignal` pattern uses exceptions for control flow, a technique the course calls "signal exceptions."  What property of exceptions makes them well suited for this, and what would you use instead if exceptions were not available?
-- If collaboration with a buddy was permitted, did you work with a buddy on this assignment?  If so, who?  If not, do you certify that this submission represents your own original work?  Please identify any and all portions of your submission that were not originally written by you.
-- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
-- Approximately how many hours it took you to finish this assignment (I will not judge you for this at all; I am simply using it to gauge if the assignments are too easy or hard)?

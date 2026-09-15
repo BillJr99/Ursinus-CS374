@@ -41,7 +41,7 @@ info:
       preemerging: No submission, or the submission is missing major components
       beginning: The submission is present but disorganized, transcript and autobiography are hard to tell apart, or one is missing
       progressing: All required components are present in one file, with a minor omission such as an unlabeled transcript section
-      proficient: A single, well-organized PDF (or Markdown) containing a complete labeled transcript for every verification step and all four autobiography prompts, with the collaboration, AI-disclosure, and time questions answered
+      proficient: A single, well-organized PDF (or Markdown) containing a complete labeled transcript for every verification step and all four autobiography prompts, with the collaboration and time questions answered
   readings:
     - rtitle: "Welcome Activity"
       rlink: "https://www.billmongan.com/Ursinus-CS374-Overview"
@@ -667,19 +667,3 @@ Hold your submission against the rubric's `proficient` column:
 - [ ] Any failure is quoted exactly, with a hypothesis and what you tried.
 - [ ] The autobiography answers all four prompts and is about a page.
 - [ ] Collaboration, AI-disclosure, and hours questions answered at the end.
-
----
-
-## What to Submit
-
-Submit a **single PDF** (preferred) or Markdown file containing:
-1.  Part 0: the two language judgments and the paradigm translation, under a `Part 0` heading.
-2.  The verification transcript for all three environment steps.
-3.  The command-line and git checkpoint transcript (Part 1.5: navigation/search, the `ssh -T git@github.com` result, git commit/push, uv environment).
-4.  The language autobiography (all four prompts, approximately one page).
-
-Please also answer the following questions in your submission:
-
-- If collaboration with a buddy was permitted, did you work with a buddy on this assignment?  If so, who?  If not, do you certify that this submission represents your own original work?  Please identify any and all portions of your submission that were not originally written by you.
-- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
-- Approximately how many hours it took you to finish this assignment (I will not judge you for this at all; I am simply using it to gauge if the assignments are too easy or hard).
