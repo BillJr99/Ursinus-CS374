@@ -44,7 +44,7 @@ This tutorial is the reference companion to the *Functional Programming in Schem
   - **A Python Scheme, no package manager needed:** `git clone https://github.com/BillJr99/scheme-interpreter.git`, then `python scheme.py <your scheme file>`
   - **Cygwin (Windows):** install `guile` from the Cygwin installer
   - **Ubuntu (Linux):** `sudo apt install mit-scheme`
-  - **Mac:** `brew install mit-scheme`, if you have [homebrew](https://brew.sh/)
+  - **Mac:** `brew install mit-scheme`, or `brew install guile`, if you have [homebrew](https://brew.sh/)
 
 ---
 

@@ -101,15 +101,31 @@ If your loop refuses to translate cleanly, that is the best possible outcome her
 You need a Scheme prompt. Any of these gives you one, and the first three need no new install at all:
 
 - **The course dev container**: if you built the [course container]({{ site.baseurl }}/Tutorials/DevEnvironment) in the Overview assignment, Scheme is already installed. Run `guile` for a REPL, or `guile your_file.scm` to run a file. `mit-scheme` is in there too, on the CPU architectures Debian builds it for. Report whichever one you use, and its version, in the write-up.
-- **[try.scheme.org](https://try.scheme.org)**: a full Scheme REPL in a browser tab. Nothing to set up, and the fastest way to be typing in thirty seconds.
+- **[try.scheme.org](https://try.scheme.org)**: a full Scheme REPL in a browser tab. Nothing to set up, and the fastest way to be typing in thirty seconds. There is no file to load here: the page evaluates whatever you paste into it, in the order you paste it. So paste a function's `define` and run it *first*, and only then paste the call that uses it. Pasting `(square 5)` before `(define square ...)` gives you an unbound-variable error that looks like a problem with Scheme and is really a problem with the order.
 - **The course's own runner**: the [Scheme warmup exercise]({{ site.baseurl }}/Modules/Scheme/Warmup/Exercise) runs Scheme directly in the page and checks your answer. Do that one first; it takes two minutes and confirms your browser is not the problem.
 - **A Python Scheme, no package manager needed**: `git clone https://github.com/BillJr99/scheme-interpreter.git` gives you a `scheme.py` you run as `python scheme.py <your scheme file>`.
 - **A real local install**, which is what I would like you to end up with:
   * **Cygwin (Windows):** install `guile` from the Cygwin installer
   * **Ubuntu (Linux):** `sudo apt install mit-scheme`
-  * **Mac:** `brew install mit-scheme`, provided you have installed [homebrew](https://brew.sh/)
+  * **Mac:** `brew install mit-scheme`, or `brew install guile`, provided you have installed [homebrew](https://brew.sh/). Either one is a fine Scheme for this assignment; guile is the safer bet on Apple Silicon, where MIT/GNU Scheme is not always available
 
 Whichever you pick, get to the point where you can run a file rather than only type at a prompt. Every exercise below wants a file you can hand in.
+
+### Making your program print something
+
+A REPL echoes the value of every expression you type, so at a prompt `(square 5)` shows you `25` on its own. Running a *file* is different: nothing is echoed, and a file full of correct definitions prints absolutely nothing. That silence is the single most common "my Scheme is broken" report I get, and the fix is one procedure. `display` prints a value, and `newline` ends the line.
+
+```scheme
+(define square
+  (lambda (n)
+    (* n n)))
+
+(square 5)            ; at a REPL this shows 25; in a file it prints nothing at all
+(display (square 5))  ; prints 25
+(newline)             ; moves to the next line, so the next output does not run into this one
+```
+
+Every exercise below wants a file you can hand in, so wrap the results you want to see in `display` and follow each one with `newline`. If an interpreter you are using does echo top-level values, `display` is still correct and still worth writing, because it is what makes the same file behave the same way everywhere.
 
 > **Watch out!** Forgetting the quote before a list literal is the most common beginner error in this language. `(1 2 3)` tells Scheme to call the function named `1` with arguments `2` and `3`, and since `1` is not a function you get `application: not a procedure` or similar. Write `'(1 2 3)` when you mean data. Trigger this error on purpose once and read the message; the write-up asks you about it.
 

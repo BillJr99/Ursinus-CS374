@@ -506,7 +506,7 @@ Verify with `flex --version` and `bison --version` as in Step 4.
 **9.4: Scheme, only if you take the Functional Programming with Scheme assignment.**  Pick one:
 
 - **Debian/Ubuntu (and Windows via WSL2):** `sudo apt install mit-scheme`, or `sudo apt install guile-3.0`
-- **macOS:** `brew install mit-scheme`
+- **macOS:** `brew install mit-scheme`, or `brew install guile`
 - **Windows without WSL2:** install `guile` from the Cygwin installer
 - **Nothing to install:** [try.scheme.org](https://try.scheme.org) is a full Scheme REPL in a browser tab
 
