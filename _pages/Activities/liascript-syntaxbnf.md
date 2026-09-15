@@ -178,7 +178,7 @@ Now the standard infix arithmetic grammar, which describes the same arithmetic i
 
    > *Hint: it buys the ability to write `3 + 4 * 5` and have it mean what a reader of arithmetic expects.  It costs a grammar that encodes a precedence table in its shape.  In four words: parens are the parse tree.*
 
-4b.  Do not let your team conclude that s-expressions are simply better.  State the strongest case for infix: it reads the way people already read arithmetic, and Lisp's uniformity is paid for by everyone counting closing parentheses.  Which of the readability, writability, and reliability criteria does each side win?  Part 3 of the **BNF Workshop** asks you to take a side, so draft it here.
+4b.  Do not let your team conclude that s-expressions are simply better.  State the strongest case for infix: it reads the way people already read arithmetic, and Lisp's uniformity is paid for by everyone counting closing parentheses.  Which of the readability, writability, and reliability criteria does each side win?  Keep these notes.  This is the first syntax decision your team has to defend on its own design scorecard later this term, and the *Grammar and Derivations Workshop* is where you build the precedence machinery that 4a says infix costs.
 
 4c.  Using the four-production Scheme grammar, give a string it cannot generate, and justify it from the rules rather than from intuition.
 
