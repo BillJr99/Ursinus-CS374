@@ -92,9 +92,23 @@ There is nothing to install and nothing to run for this lab.  You need:
 3.  Write your first draft of `<symbol>` on paper, then hand it to your partner (or play both roles).  Find one string the rule accepts that it should not, or rejects that it should not, and fix the rule.  That loop, write a rule and attack it with a string and fix the rule, is the whole workflow of this lab.
 4.  Create `grammars.md` from the skeleton in the submission section below, and copy that first rule into the Part 0 section.
 
-### EBNF Notation Reference
+### The EBNF Shortcuts We Use
 
-A production has a nonterminal on the left, `::=` in the middle, and a sequence of symbols on the right.  A nonterminal is a name in angle brackets that has its own production, such as `<digit>`.  A terminal is a symbol that appears in the string itself, written in quotes, such as `"-"`.  BNF gives you sequence, alternation, and recursion.  EBNF adds three operators on top of those.
+Every grammar in this course is written the same way, and this is the whole notation.  A production has a nonterminal on the left, `::=` in the middle, and a sequence of symbols on the right.  A **nonterminal** is a name in angle brackets that has its own production, such as `<digit>`.  A **terminal** is a symbol that appears in the string itself, written in quotes, such as `"-"`.  BNF gives you sequence, alternation, and recursion; EBNF adds three operators on top of those, and those three are the shortcuts that do all the work in this lab.
+
+| Shortcut | Means | Example |
+|---|---|---|
+| `::=` | "is defined as," separating a nonterminal from its definition | `<sign> ::= "+" \| "-"` |
+| `<name>` | a nonterminal, which must have its own production somewhere | `<digit>` |
+| `"x"` | a terminal, the literal text that appears in the string | `"("` |
+| `\|` | alternation: exactly one of these choices is used | `"+" \| "-"` |
+| `{ X }` | repetition: **zero or more** copies of `X` | `{ <digit> }` |
+| `[ X ]` | optionality: `X` appears once or not at all | `[ <sign> ]` |
+| `( X \| Y )` | grouping: treats the alternatives as one unit inside a larger rule | `( "," \| ";" )` |
+| `<empty>` | the empty string, the BNF way to let a recursive rule stop | `<exprs> ::= <expr> <exprs> \| <empty>` |
+| `(* … *)` | a comment, ignored by the grammar; use it to record a decision | `(* spaces ignored between atoms *)` |
+
+Here is the same notation at work, with each shortcut labeled in a comment:
 
 ```ebnf
 (* Sequence: symbols on the right side must appear in this order. *)
@@ -108,6 +122,8 @@ A production has a nonterminal on the left, `::=` in the middle, and a sequence 
 (* Grouping: ( X | Y ) treats the alternatives as one unit inside a larger rule. *)
 <pair>   ::= <number> ( "," | ";" ) <number>
 ```
+
+Three shortcuts we do **not** use here, so that you recognize them when you meet them.  Many books and tools write "zero or more" as a postfix `X*`, "one or more" as `X+`, and "optional" as `X?`.  Those mean exactly what `{ X }`, `X { X }`, and `[ X ]` mean, and you will see that style later in this course: the grammar handed to you in the Parser assignment is written with `stmt*` and `( COLON type )?` and bare uppercase token names instead of angle brackets.  Neither style is more correct.  **Use the bracket style above for everything you write in this lab**, so that your grammar and the ones you are extending read the same way.
 
 Two habits keep grammars honest.  Every nonterminal that appears on a right side must have its own production; an undefined nonterminal is the most common lost point in Part 1, and it is exactly the flaw Part 0 asks you to find in the grammar you were given.  And "one or more" is `<x> { <x> }`, not `{ <x> }`, which also accepts nothing at all.
 
