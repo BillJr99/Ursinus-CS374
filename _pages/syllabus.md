@@ -56,10 +56,10 @@ info:
       mendtime: "N/A"
       mroom: "N/A"       
   finalexam:
-    - fdate: "TBD"
-      fstarttime: "TBD"
-      fendtime: "TBD"
-      froom: "N/A"
+    - fdate: "Monday, December 14, 2026"
+      fstarttime: "11:15 AM"
+      fendtime: "2:15 PM"
+      froom: "Pfahler 012"
   flexible_submission_policy: "In the absence of <a href=\"#accommodations\">accommodations</a> arranged in advance with the instructor or college, all assignments are due at 11:59 PM Eastern Time on the date(s) stated on the schedule.  With prior permission and a reasonable first draft submission by the deliverable deadline, any student may request a three day extension on any deliverable, as often as needed.  Assignments will be accepted without prior permission following the original deadline, or, if requested, following the three-day extension deadline, with a points deduction of 10% per day if submitted before 11:59 PM Eastern Time on the day submitted.  If a student adds the course late, deliverables due prior to or on the day of that student's registration will be due twice the number of days following the first day of the semester that they registered (for example, a student who registers on the third day of the semester shall receive six days to submit assignments from the first three days, and then the remainder of this policy takes effect for those and for all other deliverables).  Under no circumstances (including accommodations) can late work be accepted after the final class meeting, nor during final exams week, nor after the exam."
   late_penalty_per_period: 10
   late_penalty_period: "day"
