@@ -376,5 +376,3 @@ This lab is worth 15 points, as the course schedule states.  Each part's weight 
 
 - State the peek/decide/consume pattern in your own words, and name which remaining tier of the Parser assignment you expect to repeat it most times.
 - If you worked in a pair, who did what, and name one thing your partner caught that you would have missed.  If you worked alone, note that instead.
-- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
-- Approximately how many hours it took you to finish this lab (I will not judge you for this at all; I am simply using it to gauge if the labs are too easy or hard)?

@@ -236,5 +236,3 @@ This lab is worth 15 points, as the course schedule states.  Each part's weight 
 
 - Which reduction did you and your partner disagree on, and what settled it?
 - If you worked in a pair, who did what.  If you worked alone, note that instead.
-- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
-- Approximately how many hours it took you to finish this lab (I will not judge you for this at all; I am simply using it to gauge if the labs are too easy or hard)?

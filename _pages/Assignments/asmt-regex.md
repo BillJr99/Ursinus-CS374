@@ -579,6 +579,3 @@ In one paragraph, explain why no regular expression can validate balanced nested
 - Which pattern took the most revisions, and what misconception did the failures expose?
 - Where did you choose a simpler pattern over a perfectly precise one, and how did you document the tradeoff?
 - After completing Part 2, what are the limits of a regex-only lexer?  Name one thing this `finditer` loop cannot do that a hand-written scanner with `peek`/`advance` can.  You'll build exactly that in the Lexer assignment.
-- If collaboration with a buddy was permitted, did you work with a buddy on this assignment?  If so, who?  If not, do you certify that this submission represents your own original work?  Please identify any and all portions of your submission that were not originally written by you.
-- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
-- Approximately how many hours it took you to finish this assignment (I will not judge you for this at all; I am simply using it to gauge if the assignments are too easy or hard)?

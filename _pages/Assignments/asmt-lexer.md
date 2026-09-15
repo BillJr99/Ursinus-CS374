@@ -565,6 +565,3 @@ Submit a ZIP containing the files below, and list your Python version (`python -
 - Which direction did you choose, and what did that choice make easier or harder than you expected?  If you took the generator toolchain: what did Flex or PLY do for you that you would otherwise have written by hand, and what did it hide that you had to recover?
 - What about your lexer would you change if your language used significant indentation like Python?
 - The `expect` method was designed for the parser's benefit.  Explain why the parser needs `expect` rather than just calling `advance` and checking the type afterward.
-- If collaboration with a buddy was permitted, did you work with a buddy on this assignment?  If so, who?  If not, do you certify that this submission represents your own original work?  Please identify any and all portions of your submission that were not originally written by you.
-- AI disclosure: list any generative-AI tools you used, for what, and how you verified the results (or state 'none').
-- Approximately how many hours it took you to finish this assignment (I will not judge you for this at all; I am simply using it to gauge if the assignments are too easy or hard)?
