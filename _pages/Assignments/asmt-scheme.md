@@ -115,6 +115,8 @@ Whichever you pick, get to the point where you can run a file rather than only t
 
 A REPL echoes the value of every expression you type, so at a prompt `(square 5)` shows you `25` on its own. Running a *file* is different: nothing is echoed, and a file full of correct definitions prints absolutely nothing. That silence is the single most common "my Scheme is broken" report I get, and the fix is one procedure. `display` prints a value, and `newline` ends the line.
 
+Always follow a `display` with a `(newline)`. It separates your output, and it also matters for a reason that is easy to miss: some interpreters buffer what you print and only flush a line once it is terminated, so a `display` with no `newline` after it can leave your last result sitting in the buffer, unprinted, even though the program ran correctly. If output is missing and you are sure the code is right, a missing `(newline)` is the first thing to check.
+
 ```scheme
 (define square
   (lambda (n)
@@ -122,7 +124,8 @@ A REPL echoes the value of every expression you type, so at a prompt `(square 5)
 
 (square 5)            ; at a REPL this shows 25; in a file it prints nothing at all
 (display (square 5))  ; prints 25
-(newline)             ; moves to the next line, so the next output does not run into this one
+(newline)             ; ends the line, so the next output does not run into this one
+                      ; and so a buffering interpreter actually flushes it to the terminal
 ```
 
 Every exercise below wants a file you can hand in, so wrap the results you want to see in `display` and follow each one with `newline`. If an interpreter you are using does echo top-level values, `display` is still correct and still worth writing, because it is what makes the same file behave the same way everywhere.
