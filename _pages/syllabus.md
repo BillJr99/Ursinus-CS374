@@ -307,6 +307,11 @@ schedule:
   readings:
   - rtitle: "Continues Day 1.  Bring the grammar you drafted; we build on it."
     rlink: false
+- week: "3"
+  date: "1"
+  title: "Derivations, Parse Trees, Ambiguity, and Precedence"
+  link: "Activities/liascript-derivationsambiguity.md"
+  liapage: true
   deliverables:
   - dtitle: "Programming Assignment: Functional Programming with Scheme Due"
     dlink: "Assignments/Scheme"
@@ -316,11 +321,6 @@ schedule:
     dlink: "Assignments/BNFWorkshop"
     points: "15"
     rubricpath: "_pages/Assignments/lab-bnfworkshop.md"
-- week: "3"
-  date: "1"
-  title: "Derivations, Parse Trees, Ambiguity, and Precedence"
-  link: "Activities/liascript-derivationsambiguity.md"
-  liapage: true
   readings:
   - rtitle: "Allison, Ch. 6 §6.2: Derivation Trees and Ambiguous Grammars (Operator Precedence and Associativity)"
 - week: "4"
@@ -329,10 +329,6 @@ schedule:
   link: "Activities/liascript-regex.md"
   liapage: true
   deliverables:
-  - dtitle: "Lab: BNF Workshop Due"
-    dlink: "Assignments/BNFWorkshop"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-bnfworkshop.md"
   - dtitle: "Programming Assignment: Regular Expressions Handed Out"
     dlink: "Assignments/Regex"
     points: "100"
@@ -351,6 +347,11 @@ schedule:
   title: "Finite Automata (Day 1 of 2): DFAs"
   link: "Activities/liascript-automata.md"
   liapage: true
+  deliverables:
+  - dtitle: "Lab: BNF Workshop Due"
+    dlink: "Assignments/BNFWorkshop"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-bnfworkshop.md"
   readings:
   - rtitle: "Allison, Ch. 2 §2.1-2.2: Deterministic and Non-Deterministic Finite Automata"
   - rtitle: "Allison, Ch. 4 §4.2: Decision Algorithms (Is the Language Empty?)"
