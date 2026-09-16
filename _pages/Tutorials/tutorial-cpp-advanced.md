@@ -1494,7 +1494,7 @@ Coroutines are functions that can be suspended and resumed.  C++20 provides the 
   42 specific items covering `auto`, smart pointers, move semantics, lambdas, and concurrency.  Items 1-9 (type deduction), 18-22 (smart pointers), and 23-30 (move semantics) map directly to this tutorial.  Read it after you feel comfortable with the concepts here.
 
 - **"C++ Templates: The Complete Guide", Vandevoorde, Josuttis, Gregor (2nd ed.)**
-  Deep dive into template mechanics: instantiation, argument deduction, SFINAE, variadic templates, and expression templates.  Essential for library authors.
+  Covers template mechanics in depth: instantiation, argument deduction, SFINAE, variadic templates, and expression templates.  Essential for library authors.
 
 - **CppCon talks (YouTube)**: Search for:
   - "Back to Basics: Smart Pointers", Arthur O'Dwyer
@@ -1526,7 +1526,7 @@ Write 2-3 paragraphs addressing the following:
 
 This appendix supports the Team Language Project's **Foreign Function Interface** extension: it shows how languages call into native code (the C ABI, `ctypes`, C-compatible structs and callbacks, name mangling) and how to design an `ffi(...)` primitive for your own language.
 
-> **Imagine the United Nations General Assembly.**  Each delegate speaks their own language and follows their own parliamentary customs.  A simultaneous interpreter sits in a booth, listening to one language and speaking another in real time, handling not just words but idioms, formal registers, and cultural conventions that do not map one-to-one.  A Foreign Function Interface is exactly that interpreter: it sits between two language runtimes, negotiating the differences in data layout, calling conventions, memory ownership, and error handling so that a function written in C can be invoked transparently from Python, Haskell, or your own mini language.  Without this translator, each language would be an island; with it, every language inherits the vast ecosystem of C libraries built over 50 years.
+> **Picture a simultaneous interpreter at the United Nations.**  She listens in one language and speaks in another in real time, handling not just words but idioms, formal registers, and customs that do not map one-to-one.  A Foreign Function Interface does the same job between two language runtimes, negotiating differences in data layout, calling conventions, memory ownership, and error handling so that a function written in C can be called from Python, Haskell, or your own mini language.  That translation is what lets any new language reach fifty years of existing C libraries instead of reimplementing them.
 
 ### Learning Goals
 
@@ -1556,7 +1556,7 @@ By the end of this section, you will be able to:
 
 ### Preface: Why Every Language Needs to Call C
 
-*Intuition:* Every high-level language you have ever used (Python, JavaScript, Ruby, Java) eventually bottoms out in native code.  When Python opens a file, it calls a C function in the operating system.  When it computes a sine, it calls a C math library.  When it sends a network packet, it calls a C socket API. The FFI is the seam between the comfortable, safe, garbage-collected world of your high-level language and the raw, pointer-filled world of the operating system and hardware.  Understanding that seam makes you a better programmer regardless of which side you spend most of your time on.
+*Intuition:* Every high-level language you have ever used (Python, JavaScript, Ruby, Java) eventually bottoms out in native code.  When Python opens a file, it calls a C function in the operating system.  When it computes a sine, it calls a C math library.  When it sends a network packet, it calls a C socket API. The FFI is the seam between the safe, garbage-collected world of your high-level language and the pointer-filled world of the operating system and hardware.  Knowing where that seam is tells you where to look when a crash happens on one side and the bug lives on the other.
 
 No programming language is an island.  The operating system, graphics drivers, cryptography libraries, database engines, and compression algorithms are all written in C (or C++, which uses C's ABI for its C-compatible subset).  To be useful, a language must be able to call into this world.
 
@@ -2295,7 +2295,7 @@ except ImportError as e:
 
 - **Python docs:** `ctypes`: A foreign function library for Python
 - **Python docs:** `cffi`: C Foreign Function Interface for Python (higher-level alternative to ctypes)
-- **Article:** *How Python calls C*: deep dive into CPython's API
+- **Article:** *How Python calls C*: a close look at CPython's C API
 - **Rust book:** Chapter, "Unsafe Rust": `extern "C"` and `unsafe fn`
 - **Haskell wiki:** `Foreign Function Interface`: `Foreign.Ptr`, `Foreign.Marshal`
 - **Paper:** *A Semantic Framework for C (and the Rest)*: Norrish (1998), the formal semantics behind C's ABI behavior

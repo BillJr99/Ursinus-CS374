@@ -30,9 +30,9 @@ By the end of this tutorial, you will have:
 - Contrasted the compiled pipeline with how interpreted languages (Python, JavaScript) execute source code at runtime
 - Applied this knowledge to explain why a bytecode VM sits between a tree-walking interpreter and a native compiler in the execution-strategy spectrum
 
-> **"Every program you run went through a pipeline you've never seen."**
+> **"`gcc hello.c -o hello` runs four separate programs, and you never see three of them."**
 >
-> When you type `gcc hello.c -o hello`, a remarkable chain of tools transforms text into a binary that the operating system can map directly into memory and execute.  This tutorial traces that chain step by step, from C source to ELF binary, and then contrasts it with how interpreted languages (Python, JavaScript) work instead.
+> When you type that command, a preprocessor, a compiler, an assembler, and a linker run in sequence to turn text into a binary that the operating system can map directly into memory and execute.  This tutorial traces that chain step by step, from C source to ELF binary, and then contrasts it with how interpreted languages (Python, JavaScript) work instead.
 
 ---
 
@@ -669,7 +669,7 @@ Write a C program that uses `sizeof` to print the size of `int`, `long`, `double
 ## Further Reading
 
 - **"Computer Systems: A Programmer's Perspective"**: Bryant & O'Hallaron: the canonical source on ELF, linking, and the memory system (Chapters 7-9)
-- **"Linkers and Loaders"**: John Levine (free online): deep dive into the linker
+- **"Linkers and Loaders"**: John Levine (free online): a book-length treatment of the linker
 - **ELF specification**: https://refspecs.linuxfoundation.org/elf/elf.pdf
 - **`man elf`**: the Linux manual page for the ELF format
 - **"Inside the Python Virtual Machine"**: free online: CPython bytecode in detail

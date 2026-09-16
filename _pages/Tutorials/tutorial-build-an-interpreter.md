@@ -812,9 +812,7 @@ In most languages, source code is text and data is something else entirely.  Sch
 
 > **Watch out!**  In our representation, Scheme symbols (like variable names `x`, `y`, operator names `+`) and Scheme strings (like `"hello"`) are both Python `str` values.  The evaluator distinguishes them by context: a string that starts with `"` is a literal; anything else is a symbol to look up.  This is a shortcut that would not work in a production system, but it simplifies the parser significantly.
 
-Scheme's defining design choice: **program text and data share the same representation.**  Every Scheme expression is an *s-expression* (symbolic expression): either an **atom** (number, boolean, string, or symbol) or a **pair** `(head . tail)`, where tail is usually another pair, recursively, giving a list.  The surface syntax `(op arg1 arg2 ...)` is just a printed list.
-
-This is not a curiosity; it is what makes Scheme's macros, `eval`, and `quote` work: a program can construct and execute another program using the same list operations it uses on ordinary data.
+Scheme's defining design choice: **program text and data share the same representation.**  Every Scheme expression is an *s-expression* (symbolic expression): either an **atom** (number, boolean, string, or symbol) or a **pair** `(head . tail)`, where tail is usually another pair, recursively, giving a list.  The surface syntax `(op arg1 arg2 ...)` is just a printed list.  That is what makes Scheme's macros, `eval`, and `quote` work.
 
 #### Mapping Scheme to Python
 
@@ -1853,7 +1851,7 @@ Answer these questions in your course notebook after completing this section.
 
 ## Further Reading on Metacircular Evaluation
 
-- **Runnable example archive**: [SchemeInterpreter.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeInterpreter.zip): a complete reference implementation of this section's evaluator, worth exploring after you have worked through this section yourself.
+- **Runnable example archive**: [SchemeInterpreter.zip](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/replit/SchemeInterpreter.zip): a complete reference implementation of this section's evaluator.  Work through the section first, then read it to check your own design against it.
 
 - **SICP Chapter 4**: Abelson & Sussman, *Structure and Interpretation of Computer Programs*, 2nd ed.  The original metacircular evaluator.  MIT Press open access: [https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf)
 

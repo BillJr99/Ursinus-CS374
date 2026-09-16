@@ -49,7 +49,7 @@ Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Pr
 
 # Part I: The Foundation
 
-Before anyone builds a real structure, someone has to prove the ground will support it.  Lambda calculus is that proof.  In 1936, before electronic computers existed, a mathematician showed that a single idea, the function, is enough to express every computation.  Everything else in this course, including types, parsers, and interpreters, rests on that foundation.  You will not study it properly until the *Lambda Calculus* activities late in the semester, but it is worth a first taste today.
+Before anyone builds a real structure, someone has to prove the ground will support it.  Lambda calculus is that proof.  In 1936, before electronic computers existed, a mathematician showed that a single idea, the function, is enough to express every computation.  Everything else in this course, including types, parsers, and interpreters, rests on that foundation.  You will not study it properly until the *Lambda Calculus* activities late in the semester, but you get a first taste today.
 
 ## Model 1: The Deep Foundation, Lambda Calculus in 10 Lines
 
@@ -738,7 +738,7 @@ If an optimizer replaces the first with the second (constant folding), how much 
 
 - *Structure and Interpretation of Computer Programs* (Abelson, Sussman): free online at https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf; considered by many to be the finest programming languages textbook ever written; Chapters 1 and 3 are directly relevant to the first half of this course.
 
-- *Programming Languages: Application and Interpretation* (Shriram Krishnamurthi): the PLAI textbook used in this course; builds an interpreter incrementally from first principles, exactly as we will.
+- *Programming Languages: Application and Interpretation* (Shriram Krishnamurthi): the PLAI textbook used in this course; builds an interpreter incrementally, one language feature at a time, exactly as we will.
 
 - Gabriel Lebec, "Lambda as JS, or A Flock of Functions": https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript: a direct visual preview of the lambda-calculus unit; Church encodings in JavaScript with beautiful diagrams.
 
@@ -748,4 +748,4 @@ If an optimizer replaces the first with the second (constant folding), how much 
 
 ---
 
-This is *Welcome: Why Study Programming Languages?*, the first day of the course.  The journey begins here, and *Programming Paradigms and Evaluating Languages* is the first stop after it.
+This is *Welcome: Why Study Programming Languages?*, the first day of the course.  Next up is *Programming Paradigms and Evaluating Languages*.

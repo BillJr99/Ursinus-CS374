@@ -107,7 +107,7 @@ Do this part on paper before you write `parse_primary`.  You may do it alone eve
 > 1. Write the pseudocode for the recursive-descent function of one non-terminal in a small expression grammar.  (A non-terminal is a grammar symbol defined by rules, such as `expression` or `term`.)  Trace it by hand on a three-token input and mark every point where it looks ahead.
 > 2. Find a grammar rule that would make naive recursive descent loop forever.  This is left recursion: a rule whose right-hand side begins with the same non-terminal it defines, so the function calls itself before consuming anything.  Rewrite the rule so the function terminates.
 
-> **Bring to class.** The trace, with the point marked where you needed more than one token of lookahead.  A trace that broke down partway is still worth bringing; the peek/decide/consume pattern in Part 1 is the fix for wherever it broke.
+> **Bring to class.** The trace, with the point marked where you needed more than one token of lookahead.  Bring one that broke down partway too; the peek/decide/consume pattern in Part 1 is the fix for wherever it broke.
 
 ---
 

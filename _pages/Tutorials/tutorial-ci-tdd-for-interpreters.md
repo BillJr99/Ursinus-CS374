@@ -1051,9 +1051,7 @@ Two studio tools from the Sprint Studio sessions: measuring what "done" means ac
 
 ## Model 1: Sprint Velocity; Measuring What "Done" Looks Like
 
-Velocity is the sprint's heartbeat reading: a falling trend is your early warning system, and a flat trend three sprints before the deadline is a crisis that has not been named yet.  This model simulates three sprints with concrete numbers so you can see what a healthy trajectory looks like versus a warning trajectory, and practice interpreting the dashboard before your own numbers are in it.
-
-A sprint velocity is a *count*, and not a feeling.  The Evaluator tracks two numbers: **stories completed** (AST nodes with passing tests) and **tests passing**.  The cell below simulates a three-sprint project and visualizes the velocity trend, because a slowing velocity three sprints before Demo Day is an early warning rather than bad luck.
+A sprint velocity is a *count*, and not a feeling.  The Evaluator tracks two numbers: **stories completed** (AST nodes with passing tests) and **tests passing**.  A flat trend three sprints before Demo Day is a crisis nobody has named yet, and the number is how you name it.  The cell below simulates a three-sprint project and plots the velocity trend, so you can read a healthy trajectory against a warning one before your own numbers are in the dashboard.
 
 ```python
 # Sprint health dashboard: velocity, test coverage, and projection.
@@ -1146,9 +1144,7 @@ print("  Rule: test_pct < 80% triggers a test-debt sprint before new features.")
 
 ## Model 2: The Red-Green Discipline - Writing Tests Before Code
 
-A failing test is not a sign of failure: it is a specification.  Before a feature exists, the only accurate representation of "we plan to build this" is a test that currently fails.  This model makes that discipline concrete by treating the set of failing tests as the literal sprint backlog, so the sprint goal is visible and measurable at every moment.
-
-The Evaluator's job is to write **failing tests** before the Builder writes the code they test.  A failing test is a specification: it states precisely what the code must do before the code exists.  The cell below demonstrates the discipline by running a test suite against a deliberately incomplete interpreter, showing which tests fail (red), which pass (green), and what the gap is.
+The Evaluator's job is to write **failing tests** before the Builder writes the code they test.  A failing test is a specification: it states precisely what the code must do before the code exists, which makes the set of failing tests your literal sprint backlog.  The cell below runs a test suite against a deliberately incomplete interpreter, showing which tests fail (red), which pass (green), and what the gap between them is.
 
 ```python
 # Demonstrate red-green testing: tests written first, implementation following.

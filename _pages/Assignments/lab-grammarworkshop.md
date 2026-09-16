@@ -162,7 +162,7 @@ expr ::= expr PLUS expr
 > **Do this.**
 > 1. Rewrite the grammar in an `ebnf` fence so it encodes precedence and associativity.  The worked example's ladder is the shape to imitate: one production per precedence level, each mentioning only itself (at most on one side) and the level below it.  A rewrite that still has `expr` on both ends of a right-hand side, such as `expr ::= expr PLUS expr`, is still ambiguous no matter how many levels you add.
 > 2. Redraw your Step 0.1 string under the new grammar.  Try to draw the second tree again and write one sentence saying which production now forbids it.
-> 3. Mark the rule that got harder to read with an EBNF comment (`//` to the end of the line, as the Parser assignment uses) saying what it used to say and why it changed.  That cost is real, and Part 3 asks you to defend paying it.
+> 3. Mark the rule that got harder to read with an EBNF comment (`//` to the end of the line, as the Parser assignment uses) saying what it used to say and why it changed.  That readability cost is the price of an unambiguous grammar, and Part 3 asks you to defend paying it.
 
 ### Step 0.3: Draw Both Associativities for 2 - 3 - 4
 
@@ -226,7 +226,7 @@ unary          ::= TODO   // prefix MINUS and NOT, then the level below
 primary        ::= TODO   // literals, IDENT, and a parenthesized expr
 ```
 
-> **Checkpoint.**  Hand the grammar to your partner and have them write a five-token program that the grammar derives wrongly or can't derive at all.  Every production that survives a real attempt at breaking it is one you won't have to reopen during the Parser assignment.  The first Reflection Prompt asks which production took the most rounds, so keep a tally.
+> **Checkpoint.**  Hand the grammar to your partner and have them write a five-token program that the grammar derives wrongly or can't derive at all.  Every production that survives a serious attempt at breaking it is one you won't have to reopen during the Parser assignment.  The first Reflection Prompt asks which production took the most rounds, so keep a tally.
 
 ---
 

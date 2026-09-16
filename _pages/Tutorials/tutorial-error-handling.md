@@ -19,7 +19,7 @@ tags:
 ---
 # Tutorial: Error Handling, From Return Codes to Algebraic Effects
 
-Error handling is not just a library concern; it is a fundamental language design decision that shapes every program written in a language.  Should errors interrupt control flow or flow as values?  Should the type system enforce that errors are handled?  The choice between exceptions, error values, and algebraic effect types reflects a philosophy about programmer responsibility, code clarity, and what the language should guarantee versus what it trusts the programmer to do correctly.
+Error handling is a language design decision, and it shapes every program anyone writes in your language.  Should errors interrupt control flow, or flow as values?  Should the type system force the caller to handle them?  The choice among exceptions, error values, and algebraic effect types is a statement about what the language guarantees and what it trusts the programmer to get right.
 
 ## Learning Goals
 
@@ -576,7 +576,7 @@ for label, fn in test_cases:
 
 ---
 
-## Model 6: Comparative Survey
+## Model 6: Four Strategies on One Task
 
 **Intuition:** You have now seen four strategies in detail.  This model puts them side by side on a single, concrete task ("find an element in a list, or fail") so you can feel the ergonomic difference directly.  Each strategy makes a different trade: how much the caller is trusted, how much information a failure carries, and how well errors compose when you chain multiple operations.  As you read, think about which row of the comparison table you would choose for a new language you were designing, and why.
 

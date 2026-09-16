@@ -882,7 +882,7 @@ for ctype, cause, example, fix in conflicts:
 
 ---
 
-# Extension: Multi-Pass Compilation and the Linker's Blind Spot
+# Extension: Multi-Pass Compilation and What the Linker Cannot Check
 
 > Past the 75 minutes.  Nothing in class assumes it.  Read it if the compile/link/load model left you wanting the machinery, and read it before *Binding and Scope* in week 10, where the same `static` keyword shows up wearing a different hat.
 
@@ -1004,7 +1004,7 @@ for line in SOURCE:
 ### Critical Thinking Questions
 
 1.  A one-pass assembler could still handle forward references by emitting a placeholder and keeping a list of holes to fill in at the end.  That is called **backpatching**.  Is that genuinely one pass?  Argue both sides, then say what you think "number of passes" should count.
-2.  Pass 1 has to know how many words each instruction occupies in order to compute addresses.  On a machine with variable-length instructions, how does that complicate pass 1, and what would you have to do about it?
+2.  Pass 1 has to know how many words each instruction occupies so it can compute addresses.  On a machine with variable-length instructions, how does that complicate pass 1, and what would you have to do about it?
 3.  Your CS374 interpreter walks the AST once and evaluates as it goes.  Where would it break if the language allowed a function to be *called* textually before it is *defined*?  What is the smallest change that would fix it?  (Hint: it is a pass.)
 
 ## Model: A Linker You Can Run
@@ -1097,7 +1097,7 @@ This is the single most useful thing `static` does in C, and it is the language'
 
 > **Watch out!**  `static` in C does two unrelated jobs depending on where you write it.  Inside a function it changes **lifetime**: the variable survives between calls, while its scope stays the same tiny block.  At file scope it changes **linkage**: the lifetime was already the whole program, and what changes is *visibility* to the linker.  Same keyword, two different questions.  Week 10's *Binding and Scope* takes apart exactly why lifetime and visibility are separate axes.
 
-## The Bug That Was a Default: Tentative Definitions
+## Tentative Definitions: Why `int counter;` in Two Files Used to Compile
 
 Now the historical accident.  Suppose two files each write, at file scope, with no `static` and no `extern`:
 

@@ -676,7 +676,7 @@ except Exception as e:
 
 ## Part 6: Haskell's Parsec, The Industrial Version
 
-Python's combinator library above mirrors Haskell's **Parsec** (and its successor **Megaparsec**), which is used in real production compilers (Pandoc, GHC extensions).  Parsec's operators are:
+Python's combinator library above mirrors Haskell's **Parsec** (and its successor **Megaparsec**), which is used in production compilers (Pandoc, GHC extensions).  Parsec's operators are:
 
 | Python | Haskell Parsec | Meaning |
 |---|---|---|
@@ -719,7 +719,7 @@ The `do`-notation is the same monadic sequencing you saw in the Monads activity,
 
 ## Part 7: Error Recovery and Committed Choice
 
-A real parser combinator library needs **committed choice** (also called *cut* in Prolog): once a prefix is consumed, stop trying alternatives and report an error rather than silently backtracking.  This prevents confusing error messages.
+A production parser combinator library needs **committed choice** (also called *cut* in Prolog): once a prefix is consumed, stop trying alternatives and report an error rather than silently backtracking.  This prevents confusing error messages.
 
 Parsec achieves this with `try`: `try p <|> q` backtracks on failure of `p`; plain `p <|> q` commits once `p` consumes input.
 
@@ -756,7 +756,7 @@ except Exception as e:
 
 ---
 
-## Summary
+## The Whole Library on One Page
 
 | Concept | Python implementation | Haskell Parsec |
 |---|---|---|
@@ -770,7 +770,7 @@ except Exception as e:
 | Forward ref | `Forward` class | `mfix`, recursive `do` |
 | Error | `raise ParseError` | `unexpected`, `<?>`  |
 
-**Key insight:** a parser combinator library is just the Parser monad, and the Parser monad is just a function.  All the power of recursive-descent parsing, all the composability of functional programming, in ~100 lines of Python.
+**Key insight:** a parser combinator library is just the Parser monad, and the Parser monad is just a function.  That buys you recursive-descent parsing and ordinary function composition in about 100 lines of Python.
 
 ---
 
@@ -989,9 +989,9 @@ for expr in ["2+3*4", "2*3+4", "(2+3)*4", "7-2-1", "-3*2", "1+2+3+4"]:
 
 ## Model 4: Pratt Parsing (Runnable)
 
-Pratt parsing (also called precedence climbing) is an elegant alternative to the tiered-function approach: instead of encoding precedence by the *depth* of a function chain, it encodes it as a *number* (the binding power) and uses a single loop with a numeric comparison to decide whether to keep consuming.  The result is exactly the same AST with far less boilerplate: adding a new operator means adding one entry to the `LBP` table, not writing a new function.  Both parsers run on the same test cases so you can confirm they agree.
+Pratt parsing (also called precedence climbing) is a compact alternative to the tiered-function approach: instead of encoding precedence by the *depth* of a function chain, it encodes it as a *number* (the binding power) and uses a single loop with a numeric comparison to decide whether to keep consuming.  The result is exactly the same AST with far less boilerplate: adding a new operator means adding one entry to the `LBP` table, not writing a new function.  Both parsers run on the same test cases so you can confirm they agree.
 
-> **Watch out!**  Pratt parsing is an elegant alternative that scales gracefully as your language grows, but it is easy to confuse the two binding-power roles.  The **left binding power (lbp)** of an operator is how tightly it pulls in a left operand that has already been parsed; the **right binding power** passed to the recursive `expression()` call controls how tightly the operator claims tokens on its right.  For left-associative operators these differ by exactly 1 (or you pass `bp` rather than `bp - 1`); for right-associative operators (like `**`) the right call must use `bp - 1` so a subsequent operator at the same level is allowed to win; see Exercise 1 for the concrete example.
+> **Watch out!**  Pratt parsing scales gracefully as your language grows, but it is easy to confuse the two binding-power roles.  The **left binding power (lbp)** of an operator is how tightly it pulls in a left operand that has already been parsed; the **right binding power** passed to the recursive `expression()` call controls how tightly the operator claims tokens on its right.  For left-associative operators these differ by exactly 1 (or you pass `bp` rather than `bp - 1`); for right-associative operators (like `**`) the right call must use `bp - 1` so a subsequent operator at the same level is allowed to win; see Exercise 1 for the concrete example.
 
 A Pratt parser (precedence climbing) associates a *binding power* with each operator and decides whether to consume the next operator based on numeric comparison: no mutual recursion, no separate function per tier.  Both parsers should produce the same AST for `2 + 3 * 4 - 1`.
 
