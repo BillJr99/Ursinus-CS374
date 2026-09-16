@@ -91,17 +91,11 @@ Token(type='INT', value='42', line=1, col=1, decoded=None)
 
 > **Time budget.** About three hours: 20 to 30 minutes for Part 0 on paper, about 90 minutes for Part 1, and about an hour for Part 2.
 
-### Your First 15 Minutes
-
-1. Do Part 0 on paper, at least the trace of one function.  Ten minutes is enough for a first pass.
-2. Do Step 1.1: paste the skeleton, fill in only the number case of `parse_primary`, and run the file.
-3. When you see `Num(value=42, line=1)`, swap driver and navigator and start Step 1.2.  Every remaining case is one more branch of the same `if`: edit, run, read the output.
-
 ---
 
 ## Part 0: Before You Start - Recursive Descent Parsing
 
-Do this part on paper before you write `parse_primary`.  You may do it alone even though the rest of this lab is pair work.  Tracing one function on three tokens shows you exactly where lookahead lives: the token the parser inspects without consuming, so that it can decide which rule applies.
+Do this part on paper before you write `parse_primary`.  You may do it alone even though the rest of this lab is pair work.  Tracing one function on three tokens shows you exactly where lookahead lives: the token the parser inspects without consuming, so that it can decide which rule applies.  Ten minutes on that one trace is enough for a first pass; you can come back and deepen it after Part 1.
 
 > **Do this.**
 > 1. Write the pseudocode for the recursive-descent function of one non-terminal in a small expression grammar.  (A non-terminal is a grammar symbol defined by rules, such as `expression` or `term`.)  Trace it by hand on a three-token input and mark every point where it looks ahead.
@@ -198,7 +192,11 @@ Num(value=42, line=1)
 > - `NotImplementedError: parse_primary`: your new `if` did not match.  Print `tok.type` right after `peek()` and compare it with the name you tested.
 > - `ValueError: invalid literal for int()`: your lexer's `value` field holds something other than the raw digits.  Check what your `Token` stores.
 
+Once that line prints, you are past the setup.  If you are working in a pair, swap driver and navigator here, before Step 1.2.
+
 ### Step 1.2: Finish parse_primary
+
+Every remaining case is one more branch of the same `if` you just wrote: edit, run, read the output.
 
 > **Do this.**
 > 1. Add the `STRING`, `TRUE`, `FALSE`, and `IDENT` cases.  For a string, strip the two quote characters (the reference lexer's `tok.decoded` already has them removed and escapes resolved).

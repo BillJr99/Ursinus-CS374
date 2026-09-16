@@ -75,13 +75,6 @@ cs374-typechecker/
   model1_strong.py   # Part 0 worked models (yours to keep; not submitted)
 ```
 
-### Your First 15 Minutes
-
-1. Copy the Model 1 script from Part 0 into `model1_strong.py` and run `python3 model1_strong.py`.  Three operations pass and three are refused with a message naming both types.
-2. That refusal is the whole lab in miniature.  Your checker in Part 1 produces the same kind of message, with two differences: it names a line and column, and it fires before the program runs rather than while it runs.
-3. Create `typechecker.py` from the skeleton in Step 1.1 and run its smoke test.
-4. Once `TypeEnvironment` can define a name in one scope and find it from a child scope, the rest of Part 1 is filling in the `TODO` branches one node type at a time.
-
 This lab lands inside the Interpreter assignment's window; see the course schedule for the assigned and due dates.
 
 > **Time budget.**  About three hours in one working session: fifteen minutes on the paper exercise, forty-five minutes reading and running the four worked models, an hour and a half on the checker, and thirty minutes writing the rules.
@@ -161,6 +154,8 @@ for l, op, r in [(3.0, "+", 4.0), ("ab", "+", "cd"), (3.0, "+", "cd"),
   3.0 < 'cd' -> TypeError: cannot compare number with string
   3.0 / 0.0 -> ZeroDivisionError: division by zero
 ```
+
+Those refusals are the whole lab in miniature.  The checker you write in Part 1 produces the same kind of message, with two differences: it names a line and column, and it fires before the program runs rather than while it runs.
 
 `type_name` turns a Python type into the name the error messages print.  The first `if` in `eval_binop` handles arithmetic: it allows string concatenation, refuses booleans, computes on two floats, and refuses everything else.  The second `if` handles comparisons, which require both sides to have the same type.
 
@@ -520,6 +515,8 @@ if __name__ == "__main__":
 > - `ModuleNotFoundError: No module named 'ast_nodes'` (or `parser`): the AST and parser files are not in the same folder as `typechecker.py`, or their names differ from the `import` lines.
 > - `None` prints instead of `Num`: `lookup` still ends in `pass`.
 > - `KeyError: 'x'`: `lookup` checks this scope but never asks `self.parent`.
+
+Once `TypeEnvironment` can define a name in one scope and find it from a child scope, the rest of Part 1 is filling in the `TODO` branches one node type at a time.
 
 ### Step 1.2: Type the literals
 

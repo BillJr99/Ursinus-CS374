@@ -132,6 +132,13 @@ $$\lambda y.\, y\ w \quad \to_\alpha \quad \lambda v.\, v\ w$$
 
 The bound $$y$$ and every use of it become a fresh name $$v$$; the free $$w$$ is left alone, and the term means the same thing before and after.
 
+Work the reduction above yourself before you start Part 0, so the format is settled on a term you have already seen worked.
+
+> **Do this.**
+> 1. Read the worked reduction above once, start to finish, without writing anything.
+> 2. Cover it and reduce $$(\lambda x.\, \lambda y.\, y\ x)\ a\ (\lambda z.\, z)$$ yourself on paper: one beta-step per line, the redex underlined on every line, and a phrase after each line saying what you substituted for what.
+> 3. Uncover the worked version and compare line by line.  You should match it step for step: three beta-steps, ending at $$a$$.  If you ended somewhere else, the usual cause is reading $$f\ a\ b$$ as $$f\ (a\ b)$$; reread the left-associativity convention above and try again before you move on.
+
 ### Church Booleans and Numerals
 
 A Church encoding represents a value such as a boolean or a number as a lambda term, so the calculus needs no built-in data.  A boolean is a function that chooses one of its two arguments; a numeral $$n$$ is a function that applies its first argument $$n$$ times to its second.
@@ -148,21 +155,12 @@ A Church encoding represents a value such as a boolean or a number as a lambda t
 
 ---
 
-## Your First 15 Minutes
-
-1. Read the worked reduction above once, start to finish, without writing anything.
-2. Cover it and reduce $$(\lambda x.\, \lambda y.\, y\ x)\ a\ (\lambda z.\, z)$$ yourself on paper: one beta-step per line, the redex underlined on every line, and a phrase after each line saying what you substituted for what.
-3. Uncover the worked version and compare line by line.  You should match it step for step: three beta-steps, ending at $$a$$.  If you ended somewhere else, the usual cause is reading $$f\ a\ b$$ as $$f\ (a\ b)$$; reread the left-associativity convention and try again before you move on.
-4. Open `reductions.md` (or your first sheet) at `## Part 0` and start item 1.  It has the same shape as the term you just reduced.
-
----
-
 ## Part 0: Before You Start - Beta Reduction and Church Encodings
 
 Do this part first.  Beta reduction is a rewriting rule, and you learn it by applying it slowly and recording each step.  Two reductions will do: one that reaches a normal form, and one that never will.
 
 > **Do this.**  Under `## Part 0`, one item per heading:
-> 1. Beta-reduce $$(\lambda x.\, \lambda y.\, x)\ a\ b$$ to normal form, showing each step.  Then try $$(\lambda x.\, x\ x)\ (\lambda x.\, x\ x)$$: reduce it far enough to show why it never terminates, and explain what happens.
+> 1. Beta-reduce $$(\lambda x.\, \lambda y.\, x)\ a\ b$$ to normal form, showing each step; it has the same shape as the term in the worked reduction above.  Then try $$(\lambda x.\, x\ x)\ (\lambda x.\, x\ x)$$: reduce it far enough to show why it never terminates, and explain what happens.
 > 2. Using the Church encodings from the reading, verify by reduction that $$\text{SUCC}\ \text{ZERO}$$ behaves like $$\text{ONE}$$.  Write out both definitions in full first, then reduce until the result matches $$\text{ONE}$$ up to the names of bound variables.
 > 3. Under `### Least-confident step`, mark the step you were least confident was legal: circle it on paper, or write `<-- least confident` after it in the file, and add one sentence saying what made you unsure.
 

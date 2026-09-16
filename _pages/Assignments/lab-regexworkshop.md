@@ -87,12 +87,6 @@ Python 3.11.15
 
 > **Time budget.** About 3 hours, roughly 45 minutes per part.  Budget more if the terminal is new to you.
 
-### Your First 15 Minutes
-
-1.  Create `five_verbs.py` in `cs374-regex`, paste the Step 1.1 code into it, and run `python3 five_verbs.py`.  Compare its six lines with the **You should see** box there.
-2.  Replace `19426` in the text with `194260` and run again.  The `[ZIP]` disappears, because `\b\d{5}\b` no longer finds five digits with a boundary on both sides.
-3.  Put `19426` back.  That loop (edit, run, read the output) is the entire method for this lab.
-
 ### Suggested Pacing
 
 See the course schedule for the assigned and due dates.  This lab is due partway through the Regex assignment, whose pacing table expects your harness and mini lexer to arrive from here.
@@ -151,6 +145,10 @@ Order #1042 shipped 2026-09-18 to Collegeville, PA [ZIP]; order #1043 pending.
 'order' at characters 0-5
 'order' at characters 58-63
 ```
+
+> **Now try this.**
+> 1. Replace `19426` in the text with `194260` and run the file again.  The `[ZIP]` disappears, because `\b\d{5}\b` no longer finds five digits with a boundary on both sides.
+> 2. Put `19426` back and confirm the redaction returns.  That loop (edit, run, read the output) is the entire method for this lab.
 
 **Reading the code.**
 

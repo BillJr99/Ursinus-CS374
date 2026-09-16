@@ -116,17 +116,6 @@ Open the folder in your editor and create two empty files at the top level: `sim
 > - Midpoint: NFA simulator with epsilon-closure working; both designed machines encoded and tested.
 > - Due date: construction traces and writeup assembled; ZIP submitted.
 
-### Your First 15 Minutes
-
-Start with a machine, not with the simulator.  The smallest program that runs one machine is ten lines, and once it works, the rest of Part 1 is wrapping it in validation, a machine-file argument, and `--trace`.
-
-> **Do this.**
-> 1. Copy the parity machine JSON from Step 1.1 into `machines/even_ones.json`.
-> 2. In `simulator.py`, write a ten-line core: `json.load` the file, set `state` to `machine["start"]`, and for each symbol of `sys.argv[1]` set `state = machine["delta"][state][symbol]`.
-> 3. Print `accept` if the final state is in `machine["accept"]`, otherwise `reject`.
-> 4. From inside `cs374-automata`, run `python3 simulator.py 0110` and then `python3 simulator.py 100`.  You should see `accept`, then `reject`, matching the traces in Step 1.1.
-> 5. A `FileNotFoundError` means you ran from a different folder; a `JSONDecodeError` means a missing comma or quote, and the message names the line.
-
 ---
 
 ## Part 1: DFA Simulation and Design
@@ -171,12 +160,20 @@ Here is the two-state parity machine for "even number of 1s", first as a state d
 }
 ```
 
-Every arrow in the diagram is one entry in `delta`: the `1` arrow from `even` to `odd` is the `"1": "odd"` inside `"even"`.  The double parentheses are the `accept` list, and the `start -->` arrow is the `start` key.  If you skipped Your First 15 Minutes, save the JSON as `machines/even_ones.json` now.  Then trace `"0110"` and `"100"` through the diagram with your finger before you trust the program to do it:
+Every arrow in the diagram is one entry in `delta`: the `1` arrow from `even` to `odd` is the `"1": "odd"` inside `"even"`.  The double parentheses are the `accept` list, and the `start -->` arrow is the `start` key.  Save the JSON as `machines/even_ones.json`.  Then trace `"0110"` and `"100"` through the diagram with your finger before you trust the program to do it:
 
 ```text
 "0110": even -> even -> odd -> even -> even    accept
 "100":  even -> odd -> odd -> odd              reject
 ```
+
+Now start with this machine rather than with the simulator.  The smallest program that runs it is ten lines, and once that works, the rest of Part 1 is wrapping it in validation, a machine-file argument, and `--trace`.
+
+> **Do this.**
+> 1. In `simulator.py`, write a ten-line core: `json.load` the file, set `state` to `machine["start"]`, and for each symbol of `sys.argv[1]` set `state = machine["delta"][state][symbol]`.
+> 2. Print `accept` if the final state is in `machine["accept"]`, otherwise `reject`.
+> 3. From inside `cs374-automata`, run `python3 simulator.py 0110` and then `python3 simulator.py 100`.  You should see `accept`, then `reject`, matching the traces above.
+> 4. A `FileNotFoundError` means you ran from a different folder; a `JSONDecodeError` means a missing comma or quote, and the message names the line.
 
 ### Step 1.2: Write the Loader
 
