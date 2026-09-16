@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/PropertyBasedTesting
 title: "CS374: Property-Based Testing Your Language with Hypothesis"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - To explain how property-based testing differs from example-based testing
     - To write a recursive generator of ASTs with hypothesis.strategies.recursive
     - To state and check the round-trip law parse(unparse(ast)) == ast over generated inputs

@@ -1,10 +1,12 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/ASTToCode
 title: "CS374: From AST to Code: Visitors and Transpilers"
 
 info:
   coursenum: CS374
+  eyebrow: "Tutorial"
+  numbering: false
 
 tags:
   - ast

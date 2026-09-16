@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/ParserCombinators
 title: "CS374: Parser Combinators, Parsers as First-Class Values"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - "Implemented the core `Parser` type as a function from `(str, int)` to `(value, int) | None` and built atomic parsers for single characters and character classes"
     - "Implemented the four fundamental combinators: `seq` (sequence), `alt` (alternation), `many` (repetition), and `map` (transformation)"
     - "Built a complete expression parser for Mini arithmetic that handles operator precedence without separate grammar notation"

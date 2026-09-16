@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/ErrorHandling
 title: "CS374: Error Handling, From Return Codes to Algebraic Effects"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - "Compare error-handling strategies (return codes, checked/unchecked exceptions, Option/Maybe, Result/Either) and identify the tradeoffs each makes in static safety, composability, and caller burden"
     - "Implement the Option and Result types in Python and use them to propagate errors without exceptions"
     - "Apply monadic chaining (`flatMap`/`bind`) to thread errors through a pipeline without nested conditionals"
@@ -123,7 +125,7 @@ except OSError as e:
 
 **The fundamental problem with return codes:** They can be silently ignored.  The language provides no mechanism to force the caller to check.  In large codebases, forgotten checks cause mysterious bugs far from the actual failure.
 
-> **Check Your Understanding**, think each question through (and jot an answer) before reading on.
+> **Check Your Understanding.**  Think each question through (and jot an answer) before reading on.
 
 **Q1.**  In the example above, `c_style_read(fd2, 1024)` is called with an invalid fd and returns `None` silently.  What real-world bugs does this pattern cause?  Give a concrete example from systems programming.
 
@@ -228,7 +230,7 @@ except RuntimeError as e:
 
 **Python/C++/C#-style unchecked exceptions:** No compile-time enforcement.  Callers may or may not catch.  The risk: a function silently throws an exception that callers don't know about.
 
-> **Check Your Understanding**, think each question through (and jot an answer) before reading on.
+> **Check Your Understanding.**  Think each question through (and jot an answer) before reading on.
 
 **Q4.**  In Python, `except Exception` catches almost every exception.  Why is this considered dangerous?  What would a disciplined exception-handling policy look like?
 
@@ -322,7 +324,7 @@ result = pipeline("bad", 4).unwrap_or(0.0)
 print(f"pipeline('bad', 4).unwrap_or(0.0) = {result}")
 ```
 
-> **Check Your Understanding**, think each question through (and jot an answer) before reading on.
+> **Check Your Understanding.**  Think each question through (and jot an answer) before reading on.
 
 **Q7.**  The Option type forces callers to handle the absence case explicitly (they can't just use the value without checking).  How does this differ from the behavior of `None` in Python, where calling a method on `None` raises `AttributeError` at runtime?
 
@@ -438,7 +440,7 @@ for test in ["16", "-4", "not_a_number"]:
             print(f"  math error in {op}: {m}")
 ```
 
-> **Check Your Understanding**, think each question through (and jot an answer) before reading on.
+> **Check Your Understanding.**  Think each question through (and jot an answer) before reading on.
 
 **Q10.** `Err` carries a *typed* error value.  What advantage does this have over Python's exception hierarchy where you catch by exception class?  Give a scenario where typed errors are significantly cleaner.
 
@@ -566,7 +568,7 @@ for label, fn in test_cases:
         print(f"  {label} => {e}")
 ```
 
-> **Check Your Understanding**, think each question through (and jot an answer) before reading on.
+> **Check Your Understanding.**  Think each question through (and jot an answer) before reading on.
 
 **Q13.**  The `SourceLocation` dataclass carries line and column numbers.  Where in your interpreter pipeline would you attach source locations to AST nodes?  (Hint: the lexer knows the position of each token.)
 
@@ -646,7 +648,7 @@ for target in [30, 99]:
 > **Watch out!  Go-style (value, ok) tuples require constant discipline**
 > The `find_tuple` pattern (returning `(result, ok)` and expecting callers to check the `ok` flag) has the same fundamental flaw as C return codes: nothing prevents a caller from writing `idx, _ = find_tuple(data, 99)` and then using `idx` as if it were valid.  In a large Go codebase the `if err != nil { return ..., err }` check must appear at *every* call site, and a single omission silently propagates a bad value.  The `Result` type wins precisely because the bad value is structurally impossible to use without first unwrapping it.
 
-> **Check Your Understanding**, think each question through (and jot an answer) before reading on.
+> **Check Your Understanding.**  Think each question through (and jot an answer) before reading on.
 
 **Q16.**  Fill in this comparison table for yourself:
 

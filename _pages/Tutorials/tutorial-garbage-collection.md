@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/GarbageCollection
 title: "CS374: Garbage Collection, Memory Management from First Principles"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - "Implemented a simulated heap in Python (a dictionary from address to object) supporting allocation and deallocation"
     - "Built a working reference-counting collector and demonstrated why it leaks cyclic structures"
     - "Built a working mark-and-sweep collector with a gray/black worklist and verified it reclaims cycles"

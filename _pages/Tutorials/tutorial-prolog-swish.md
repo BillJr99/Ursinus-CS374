@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/Prolog
 title: "CS374: Prolog in the Browser with SWISH"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - To write facts, rules, and queries in Prolog and run them with zero installation in SWISH
     - To explain unification and backtracking as the engine behind a Prolog query
     - To solve a curated set of the Ninety-Nine Prolog Problems spanning list recursion, arithmetic, logic, and search

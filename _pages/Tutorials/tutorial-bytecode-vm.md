@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/BytecodeVM
 title: "CS374: Building a Bytecode VM for Mini"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - "Defined a Mini instruction set architecture (`Opcode` enum and `Instruction` dataclass) and explained why a flat instruction list is more cache-friendly than an AST"
     - "Implemented a compiler that walks the Mini AST and emits bytecode instructions with a constant pool and jump backpatching"
     - "Implemented a stack-based VM dispatch loop that executes bytecode using a value stack and a call stack of frames"

@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/SyntaxHighlighter
 title: "CS374: A Syntax Highlighter for Your Language with tree-sitter"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - To write a small tree-sitter grammar for your team language
     - To generate a parser and test it with tree-sitter's playground and CLI
     - To package a minimal VS Code extension that syntax-highlights your language

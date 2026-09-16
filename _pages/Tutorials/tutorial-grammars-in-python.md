@@ -1,10 +1,12 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/GrammarsInPython
 title: "CS374: Grammar Tooling in Python"
 
 info:
   coursenum: CS374
+  eyebrow: "Tutorial"
+  numbering: false
 
 tags:
   - grammars

@@ -304,24 +304,24 @@ Reading straight down the table gives you the production.  Write it out; it is f
 
 > **Do this.**
 > 1. Fill in the skeleton below.  Replace every `TODO` with a real right-hand side in EBNF, using the tables and notes above.  If your production cannot derive the example in the comment beside it, the production is wrong.
-
-```ebnf
-<expr>        ::= <atom> | <quoted> | <special> | <application>
-<special>     ::= <define> | <lambda> | <if>
-
-(* (define square (lambda (n) (* n n)))   -- Scheme assignment, Example 2 *)
-<define>      ::= TODO
-
-(* (lambda (n k) (* n k))                 -- Example 2; zero parameters is legal *)
-<lambda>      ::= TODO
-
-(* (if (= k 0) 1 (* n (pow n (- k 1))))   -- Example 2; the last expression is optional *)
-<if>          ::= TODO
-
-(* (sumlist (list 1 2 3)), (+ 1 2), (map classify '(-3 0 7))  -- everything else *)
-<application> ::= TODO
-```
-
+>
+>    ```ebnf
+>    <expr>        ::= <atom> | <quoted> | <special> | <application>
+>    <special>     ::= <define> | <lambda> | <if>
+>
+>    (* (define square (lambda (n) (* n n)))   -- Scheme assignment, Example 2 *)
+>    <define>      ::= TODO
+>
+>    (* (lambda (n k) (* n k))                 -- Example 2; zero parameters is legal *)
+>    <lambda>      ::= TODO
+>
+>    (* (if (= k 0) 1 (* n (pow n (- k 1))))   -- Example 2; the last expression is optional *)
+>    <if>          ::= TODO
+>
+>    (* (sumlist (list 1 2 3)), (+ 1 2), (map classify '(-3 0 7))  -- everything else *)
+>    <application> ::= TODO
+>    ```
+>
 > 2. Read each production against its example token by token, the way you checked the six strings in Part 0.  Start at the leftmost `(` and walk right, ticking off one symbol of the production per piece of the example, and confirm you run out of both at the same moment.
 > 3. Name one string your tightened grammar now rejects that the four-production grammar accepted, and trace it to the production that blocks it.  `(if)` and `(define 5 x)` are both fair game.
 > 4. Name one cost you just paid.  Count the productions you now have against the four you started with, and say what happens to the grammar the next time the language gains a form such as `cond` or `let`.
