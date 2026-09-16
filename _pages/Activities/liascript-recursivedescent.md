@@ -61,7 +61,7 @@ Recursive descent is a way to write a parser by hand: **one function per nonterm
 > | Nonterminal `A` | Call `parse_A()` |
 > | Sequence `X Y Z` | Call `parse_X()`, then `parse_Y()`, then `parse_Z()` |
 > | Terminal `'t'` | `expect('t')`, verify and consume the token |
-> | Alternation <code>X &#124; Y</code> | `if/elif` on the next token to choose a branch |
+> | Alternation `X | Y` | `if/elif` on the next token to choose a branch |
 > | EBNF optional `[ X ]` | `if` the next token begins `X`, parse it |
 > | EBNF repetition `{ X }` | `while` the next token begins `X`, parse it |
 >
