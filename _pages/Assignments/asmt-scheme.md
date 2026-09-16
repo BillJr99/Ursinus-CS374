@@ -76,7 +76,7 @@ Work it in order. Part 0 is a short warmup in a language you already know, and y
 
 ---
 
-## Part 0: Before You Start - The Functional Rewrite (10 points)
+## Part 0: Before You Start - The Functional Rewrite
 
 Do this one first, in **Python or whatever language you reach for by default**, not in Scheme. It takes about twenty minutes, and its whole purpose is to make you notice your own habits before a new language starts rearranging them.
 
@@ -94,7 +94,7 @@ If your loop refuses to translate cleanly, that is the best possible outcome her
 
 ---
 
-## Part 1: Getting Scheme Running (18 points)
+## Part 1: Getting Scheme Running
 
 ### Pick a route
 
@@ -212,7 +212,7 @@ In `setup.md`: which route you used and its version, the four captured transcrip
 
 ---
 
-## Part 2: List Recursion (32 points)
+## Part 2: List Recursion
 
 Put these in `recursion.scm`, with a test call after each one. Every function here must have a documented answer for the empty list; use `null?` or `pair?` (which returns `#t` for a nonempty list) to guard it, and say in a comment what you decided and why.
 
@@ -240,7 +240,7 @@ Here is the hint. Add a `(let ((X y)) ...)` to the lambda, where `X` is a name a
 
 ---
 
-## Part 3: Functions as Values (18 points)
+## Part 3: Functions as Values
 
 Put these in `higher_order.scm`.
 
@@ -421,7 +421,7 @@ Walk that last line from the inside out. `map` squares each element of `'(2 3 4)
 
 ---
 
-## Part 4: An Expression Evaluator (22 points)
+## Part 4: An Expression Evaluator
 
 Write this one in `evaluate.scm`. It runs to about fifteen lines, and it is the oldest program in this language's history. John McCarthy's 1960 paper defined Lisp by writing an evaluator for Lisp in Lisp, and every interpreter you have ever used descends from that idea. You write the arithmetic-sized version of it in your first week.
 
@@ -654,17 +654,6 @@ In `writeup.md`:
 ## Deliverables
 
 Submit a ZIP containing `part0.md` (both loop versions, their output, and your readability argument), `setup.md` (route, version, four transcripts, one error), `recursion.scm`, `higher_order.scm`, `evaluate.scm`, and a `writeup.md` answering the questions raised in Parts 2, 3, and 4. Include the output of each `.scm` file, either captured in a comment at the bottom of the file or pasted into the write-up. The primer's practice steps are ungraded and do not need to be submitted.
-
-## Grading Breakdown
-
-| Component                       | Points  |
-| -------------------------------- | ------- |
-| Part 0: The Functional Rewrite   | 10      |
-| Part 1: Getting Scheme Running   | 18      |
-| Part 2: List Recursion           | 32      |
-| Part 3: Functions as Values      | 18      |
-| Part 4: An Expression Evaluator  | 22      |
-| **Total**                        | **100** |
 
 ## Reflection Prompts
 

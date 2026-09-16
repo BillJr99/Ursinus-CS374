@@ -8,7 +8,7 @@ info:
   purpose: "To design, build, document, and present a programming language of your own, assembled from the lexer, parser, AST, environment, and evaluator components you built this semester, and to prove that those components snap together and grow."
   tilt:
     task: "In rotating-role team sprints, choose your language's direction, integrate your components into one pipeline, add a distinctive feature (going deeper via the Extensions Menu if you choose), and ship a REPL, file-runner, samples, tests, and SEMANTICS.md, then present the language at Demo Day."
-    criteria: "I assess your work on the Sprint 0 proposal, language design and documentation, implementation correctness and integration, testing, reproducibility, and the Demo Day presentation, weighted 25/20/20/15/10/10.  The proposal (25 points) is due at the Sprint 0 kickoff; the remaining 75 points are earned at Demo Day with the final submission.  See the course schedule for the dates, and the rubric below for the full breakdown."
+    criteria: "I assess your work on the Sprint 0 proposal, language design and documentation, implementation correctness and integration, testing, reproducibility, and the Demo Day presentation.  The proposal is due at the Sprint 0 kickoff; the rest is earned at Demo Day with the final submission.  See the course schedule for the dates, and the rubric below for the full breakdown."
   points: 100
   goals:
     - To design a programming language with a niche, a documented grammar, and exhaustive semantics
@@ -500,22 +500,7 @@ Submit these four deliverables together with the presentation:
 - [ ] Each member's answers to the Reflection Prompts, inside their contribution statement.
 - [ ] Each member's drafted LinkedIn-style post from the ShipIt guide (submitting the draft is required; publishing it is optional).
 
----
-
-## Grading Breakdown
-
-The rubric rewards a finished minimal language over an ambitious unfinished one.  The required feature list at proficient IS the target; extensions distinguish work beyond proficient.
-
-| Rubric dimension | Points | Assessed at |
-|---|---|---|
-| Proposal | 25 | The Sprint 0 kickoff |
-| Language Design and Documentation | 20 | Demo Day |
-| Implementation Correctness and Integration | 20 | Demo Day |
-| Evaluation and Testing | 15 | Demo Day |
-| Documentation and Reproducibility | 10 | Demo Day |
-| Demo Day Presentation | 10 | Demo Day |
-
-See the rubric section in this assignment for the detailed evaluation breakdown.  The Proposal dimension (25 points) is assessed at the Sprint 0 kickoff; the remaining dimensions (75 points) are assessed at Demo Day.  The two 3-point checkpoints (the design-phase check and the Sprint 1 increment checkpoint) are assessed within Class Activities and Participation.
+A note on what the rubric is looking for.  It rewards a finished minimal language over an ambitious unfinished one.  The required feature list at proficient IS the target; extensions distinguish work beyond proficient.
 
 ---
 

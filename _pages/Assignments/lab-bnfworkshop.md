@@ -7,8 +7,8 @@ info:
   coursenum: CS374
   purpose: "To turn the four-production Scheme grammar from the Syntax and BNF/EBNF activity into a real EBNF grammar for the subset of Scheme you have been programming in, then to build a regular grammar from scratch and use the shape of both to place them on the Chomsky hierarchy.  Grammar writing is the skill the Parser stretch of the course leans on hardest, and this is the first practice at it, on a language you already know."
   tilt:
-    task: "With a partner, grow a given four-production grammar into a complete EBNF grammar for a Scheme subset, build a right-linear grammar for even-parity binary strings, and classify five languages by Chomsky level using the shape of the grammars that generate them."
-    criteria: "I grade your work on complete and correct EBNF productions with every nonterminal defined, a correct right-linear grammar for the warm-up language, and correct Chomsky classifications argued from the productions rather than asserted, weighted 10/45/45 across the three parts.  See the rubric below for the full breakdown."
+    task: "With a partner, grow a given four-production grammar into a complete EBNF grammar for a Scheme subset, build a right-linear grammar for even-parity binary strings, and classify six languages by Chomsky level using the shape of the grammars that generate them."
+    criteria: "I grade your work on complete and correct EBNF productions with every nonterminal defined, a correct right-linear grammar for the warm-up language, and correct Chomsky classifications argued from the productions rather than asserted.  See the rubric below for the full breakdown."
   points: 15
   goals:
     - To extend a given grammar into complete EBNF productions for a subset of Scheme, with every nonterminal defined down to terminals
@@ -32,7 +32,7 @@ info:
       preemerging: The warm-up grammar is not attempted and no classifications are given
       beginning: The warm-up grammar is attempted but generates strings with an odd number of ones, or classifications are assigned without reasons
       progressing: The warm-up grammar is correct and the classifications are correct, but the reasons restate the level name rather than pointing at the shape of the productions, or the empty alternative is placed without saying what would go wrong otherwise
-      proficient: The warm-up grammar generates exactly the even-parity strings, with one nonterminal per parity, one terminal consumed per production, the empty alternative on the even nonterminal only, and a line saying what breaks if the odd nonterminal gets one too; every language is classified correctly with a one-sentence reason naming the structural property that forces its level; the regular classifications point at right-linear productions and the s-expression classification reuses the unmatched-parenthesis argument; and the three closing sentences connect the level the atoms need, the level nested s-expressions need, and why a lexer and a parser are separate programs
+      proficient: The warm-up grammar generates exactly the even-parity strings, with one nonterminal per parity, one terminal consumed per production, the empty alternative on the even nonterminal only, and a line saying what breaks if the odd nonterminal gets one too; every language is classified correctly with a one-sentence reason naming the structural property that forces its level; the regular classifications point at right-linear productions, the s-expression classification reuses the unmatched-parenthesis argument, and the a^n b^n and a^n b^n c^n classifications say what memory each one needs and what the stack can no longer supply for the third block; and the three closing sentences connect the level the atoms need, the level nested s-expressions need, and why a lexer and a parser are separate programs
   readings:
     - rtitle: "Syntax and BNF/EBNF Activity"
       rlink: "Activities/liascript-syntaxbnf.md"
@@ -53,7 +53,7 @@ tags:
 
 ---
 
-This **lab** is your first practice at writing grammars.  It is a walkthrough, not a problem set.  You start from four productions you have already seen, and you grow them one step at a time into a real grammar for Scheme.  Then you build a second, smaller grammar from scratch and place five languages on the Chomsky hierarchy.  You may work on paper or in a Markdown file, alone or with a partner.
+This **lab** is your first practice at writing grammars.  It is a walkthrough, not a problem set.  You start from four productions you have already seen, and you grow them one step at a time into a real grammar for Scheme.  Then you build a second, smaller grammar from scratch and place six languages on the Chomsky hierarchy.  You may work on paper or in a Markdown file, alone or with a partner.
 
 Three words you need before you start:
 
@@ -77,17 +77,9 @@ There is nothing to install and nothing to run for this lab.  You need:
   - [Syntax and BNF/EBNF]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-syntaxbnf.md), whose Model 1.5 is the grammar you are extending
   - [Grammars and the Chomsky Hierarchy]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-grammars.md), which Part 2 draws on
   - [Functional Programming in Scheme, Part 2]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-scheme.md), for the Scheme forms the grammar has to cover
-- Your own `recursion.scm` and `evaluate.scm` from the Scheme assignment, or the four guided examples from its Part 1.  Every Scheme form in this lab is one you have already written, and reading your own code is the fastest way to get a production right.
 - Pencil and paper, or any text editor for a Markdown file.  Neither is required, but if you want VS Code set up the way the rest of the course uses it, the [dev environment page]({{ site.baseurl }}/Tutorials/DevEnvironment) walks through it and the [shell primer]({{ site.baseurl }}/Tutorials/ShellForLanguageDev) covers making a folder and opening a file from the terminal.
 
-> **Time budget.**  Expect about two hours, plus the write-up.  Part 0 takes fifteen minutes.  Part 1 takes about an hour, and Step 1.3 takes longer than the rest of Part 1 together.  Part 2 takes forty to fifty minutes, most of it on the warm-up grammar.  The last reflection prompt asks how long it actually took you.
-
-### Your First 15 Minutes
-
-1.  Read the EBNF reference and the grammar you are extending, both below.  Follow the leftmost derivation one line at a time until you can say which production each step used.
-2.  Find the hole.  The derivation's sixth line cites `[<symbol> => +]`, but look at the four productions and try to find the one that says what a `<symbol>` is.  It is not there.  Part 0 is writing it.
-3.  Write your first draft of `<symbol>` on paper, then hand it to your partner (or play both roles).  Find one string the rule accepts that it should not, or rejects that it should not, and fix the rule.  That loop, write a rule and attack it with a string and fix the rule, is the whole workflow of this lab.
-4.  Create `grammars.md` from the skeleton in the submission section below, and copy that first rule into the Part 0 section.
+> **Time budget.**  Expect about two and a half hours, plus the write-up.  Part 0 takes about half an hour, most of it reading the derivation and setting up your file.  Part 1 takes about an hour, and Step 1.3 takes longer than the rest of Part 1 together.  Part 2 takes forty to fifty minutes, most of it on the warm-up grammar.  The last reflection prompt asks how long it actually took you.
 
 ### The EBNF Shortcuts We Use
 
@@ -132,6 +124,12 @@ You will see that style later in this course.  The grammar in the Parser assignm
 
 Two habits keep grammars honest.  Every nonterminal that appears on a right side must have its own production; an undefined nonterminal is the most common lost point in Part 1, and it is exactly the flaw Part 0 asks you to find in the grammar you were given.  And "one or more" is `<x> { <x> }`, not `{ <x> }`, which also accepts nothing at all.
 
+---
+
+## Part 0: Before You Start
+
+Do this part first, before the rest of the lab, and alone if you like.  It is small, and it is the piece the rest of the grammar rests on: until `<number>` and `<symbol>` are real productions, every derivation you write has to cheat exactly where the derivation below does.  So read the grammar and that derivation first, set your file up from the skeleton, and then write the two rules.
+
 ### The Grammar You Are Extending
 
 This is Model 1.5 from the *Syntax and BNF/EBNF* activity, reproduced exactly.  It is written in pure BNF, with recursion doing the work that EBNF repetition will do later:
@@ -149,25 +147,42 @@ A leftmost derivation starts from the start symbol and, at each step, replaces t
 
 ```text
 <expr>
-=> <list>                              [<expr> ::= <list>]
-=> ( <exprs> )                         [<list> ::= "(" <exprs> ")"]
-=> ( <expr> <exprs> )                  [<exprs> ::= <expr> <exprs>]
-=> ( <atom> <exprs> )                  [<expr> ::= <atom>]
-=> ( <symbol> <exprs> )                [<atom> ::= <symbol>]
-=> ( + <exprs> )                       [<symbol> => +]
-=> ( + <expr> <exprs> )                [<exprs> ::= <expr> <exprs>]
-=> ( + <atom> <exprs> )                [<expr> ::= <atom>]
-=> ( + <number> <exprs> )              [<atom> ::= <number>]
-=> ( + 1 <exprs> )                     [<number> => 1]
-=> ( + 1 <expr> <exprs> )              [<exprs> ::= <expr> <exprs>]
-=> ( + 1 <expr> )                      [<exprs> ::= <empty>]
-=> ( + 1 <list> )                      [<expr> ::= <list>]
-=> ( + 1 ( <exprs> ) )                 [<list> ::= "(" <exprs> ")"]
-   ... the same six steps again, one level down ...
-=> ( + 1 ( * 2 3 ) )
+=> <list>                                    [<expr> ::= <list>]
+=> ( <exprs> )                               [<list> ::= "(" <exprs> ")"]
+=> ( <expr> <exprs> )                        [<exprs> ::= <expr> <exprs>]
+=> ( <atom> <exprs> )                        [<expr> ::= <atom>]
+=> ( <symbol> <exprs> )                      [<atom> ::= <symbol>]
+=> ( + <exprs> )                             [<symbol> => +]
+=> ( + <expr> <exprs> )                      [<exprs> ::= <expr> <exprs>]
+=> ( + <atom> <exprs> )                      [<expr> ::= <atom>]
+=> ( + <number> <exprs> )                    [<atom> ::= <number>]
+=> ( + 1 <exprs> )                           [<number> => 1]
+=> ( + 1 <expr> <exprs> )                    [<exprs> ::= <expr> <exprs>]
+=> ( + 1 <list> <exprs> )                    [<expr> ::= <list>]
+=> ( + 1 ( <exprs> ) <exprs> )               [<list> ::= "(" <exprs> ")"]
+=> ( + 1 ( <expr> <exprs> ) <exprs> )        [<exprs> ::= <expr> <exprs>]
+=> ( + 1 ( <atom> <exprs> ) <exprs> )        [<expr> ::= <atom>]
+=> ( + 1 ( <symbol> <exprs> ) <exprs> )      [<atom> ::= <symbol>]
+=> ( + 1 ( * <exprs> ) <exprs> )             [<symbol> => *]
+=> ( + 1 ( * <expr> <exprs> ) <exprs> )      [<exprs> ::= <expr> <exprs>]
+=> ( + 1 ( * <atom> <exprs> ) <exprs> )      [<expr> ::= <atom>]
+=> ( + 1 ( * <number> <exprs> ) <exprs> )    [<atom> ::= <number>]
+=> ( + 1 ( * 2 <exprs> ) <exprs> )           [<number> => 2]
+=> ( + 1 ( * 2 <expr> <exprs> ) <exprs> )    [<exprs> ::= <expr> <exprs>]
+=> ( + 1 ( * 2 <atom> <exprs> ) <exprs> )    [<expr> ::= <atom>]
+=> ( + 1 ( * 2 <number> <exprs> ) <exprs> )  [<atom> ::= <number>]
+=> ( + 1 ( * 2 3 <exprs> ) <exprs> )         [<number> => 3]
+=> ( + 1 ( * 2 3 ) <exprs> )                 [<exprs> ::= <empty>]
+=> ( + 1 ( * 2 3 ) )                         [<exprs> ::= <empty>]
 ```
 
-Read that derivation once more and notice the two lines that cheat.  `[<symbol> => +]` and `[<number> => 1]` are not productions of this grammar, because no production defines `<symbol>` or `<number>`.  That is your Part 0.  Notice also what never happens anywhere in the derivation: no step has to *decide* what binds to what.  The parentheses already said it, and Step 1.4 comes back to why that matters.
+Two things in that derivation are worth a second look.
+
+First, the lines that cheat.  `[<symbol> => +]`, `[<number> => 1]`, `[<symbol> => *]`, `[<number> => 2]`, and `[<number> => 3]` are not productions of this grammar, because no production defines `<symbol>` or `<number>`.  Five of the twenty-seven steps are standing on a rule that does not exist, and writing that rule is your job in this part.
+
+Second, the `<exprs>` that rides along at the right-hand end for most of the derivation.  That is the outer list, still waiting for its closing parenthesis while the inner list is built.  Nothing may touch it until everything to its left is finished, and it is not discharged until the second-to-last line.  Hold on to that image: Part 2 asks what kind of memory a machine needs in order to keep an unbounded number of such obligations straight, and names it.
+
+Notice also what never happens anywhere in the derivation: no step has to *decide* what binds to what.  The parentheses already said it, and Step 1.4 comes back to why that matters.
 
 ### How to Prepare and Submit Your Writeup
 
@@ -199,11 +214,7 @@ Partners: <your name> and <partner name>   (or: worked alone)
 ## Reflection
 ````
 
----
-
-## Part 0: Before You Start - Writing the Number and Symbol Rules (10%)
-
-Do this part first, before the rest of the lab, and alone if you like.  It is small, and it is the piece the rest of the grammar rests on: until `<number>` and `<symbol>` are real productions, every derivation you write has to cheat exactly where the activity's derivation did.
+### Writing the Number and Symbol Rules
 
 `<symbol>` is harder than it looks.  Here is why.
 
@@ -228,7 +239,7 @@ It must still reject anything that should have been a number.
 
 ---
 
-## Part 1: Building the Scheme Grammar (45%)
+## Part 1: Building the Scheme Grammar
 
 Work the five steps in order.  Each one starts from the grammar as it stood at the end of the previous step, so keep one running grammar in your file and show it again whenever it changes.  By Step 1.5 you should have a single EBNF grammar that generates the Scheme you have been writing.
 
@@ -351,21 +362,22 @@ The answer to question 2 is zero, and that is the whole point of this step.  You
 
 ---
 
-## Part 2: Chomsky Classification (45%)
+## Part 2: Grammar Construction and Chomsky Classification
 
-The Chomsky hierarchy ranks languages by how much memory a machine needs to recognize them.  Three levels matter here:
+The Chomsky hierarchy ranks languages by how much memory a machine needs to recognize them.  Each level is the level below it plus one more kind of memory, so each level *contains* the ones beneath it.  Four levels matter here:
 
-- **Regular** languages need only **finite memory**.  The recognizer carries a fixed number of facts as it reads.  You decide how many in advance, and the number never grows with the input.
-- **Context-free** languages need a **stack**.  They match or nest symbols that must be unwound in reverse order, and you do not know in advance how deep the nesting goes.
-- Languages with **cross-serial constraints**, such as equal counts in three separate places, need more than a stack.
+- **Regular** languages need only **finite memory, and that memory is a finite number of states**.  The recognizer is a finite automaton, and the only thing it knows at any moment is which of its states it is in.  You fix how many states there are before you see the input, and the number never grows with it.
+- **Context-free** languages need a **stack, in addition to** that finite state machine.  The recognizer is a pushdown automaton, which is just a finite automaton that has been handed a stack; it still has states, and now it can also push a symbol and pop it later.  That is what lets it match or nest symbols that must be unwound in reverse order, to a depth it does not know in advance.  Because a pushdown automaton is free never to push anything at all, every finite automaton is a pushdown automaton ignoring its stack, and so **every regular language is also context-free**.  The regular languages are a proper subset of the context-free ones, and the same nesting holds at every step up this list.
+- **Context-sensitive** languages need more than a stack.  The recognizer is a **linear bounded automaton**, a Turing machine whose tape is restricted to a region proportional to the length of the input, which is where the name comes from.  The defining difference from a pushdown automaton is what it may reach: a stack shows you only its top and destroys whatever you pop, while a linear bounded automaton can read and rewrite any cell of its working region as often as it likes.  That is what lets it compare counts in three separate places rather than two.
+- Above those sit the **recursively enumerable** languages, which need a Turing machine with an **unbounded** tape.  That is the machine a classical computer implements, and nothing in this course escapes it.  An example of a language that is *not* context-sensitive lives here: the halting language, the set of program-and-input pairs for which the program eventually stops.  Every context-sensitive language can be decided by an algorithm that always terminates, and no algorithm decides halting, so the halting language sits strictly above the context-sensitive level.
 
-Those three descriptions are easy to nod at and hard to use.  So before you classify anything, build one of these grammars yourself.  Then "finite memory" becomes something you can point at on the page.
+Those four descriptions are easy to nod at and hard to use.  So before you classify anything, build one of these grammars yourself.  Then "a finite number of states" becomes something you can point at on the page.
 
 ### Warm-up: Write the Grammar for Even-Parity Binary Strings
 
 The language is every string of `0`s and `1`s containing an even number of `1`s.  `0`, `11`, `1001`, and the empty string all belong to it; `1`, `10`, and `111` do not.  You are going to write a grammar that generates exactly this language, and the route there is four questions.
 
-**Question 1: reading left to right, what is the only thing you must remember?**  Not the string.  Not how many `1`s you have seen.  Only whether the count of `1`s *so far* is even or odd, because that is the only fact that can still change the answer.  Two possibilities, so one bit.  That is what finite memory means, concretely.
+**Question 1: reading left to right, what is the only thing you must remember?**  Not the string.  Not how many `1`s you have seen.  Only whether the count of `1`s *so far* is even or odd, because that is the only fact that can still change the answer.  Two possibilities, so one bit.  That is what a finite number of states means, concretely: this recognizer needs exactly two, and it would still need exactly two if the input were a million characters long.
 
 **Question 2: give each thing you must remember its own nonterminal.**  Two possibilities, two nonterminals.  Call them `<even>` and `<odd>`, and read each one as "the rest of a string that is legal from here, given the parity I have seen so far."
 
@@ -383,13 +395,27 @@ The language is every string of `0`s and `1`s containing an even number of `1`s.
 
 The start symbol is `<even>`, because before you have read anything you have seen zero `1`s, and zero is even.
 
-**Why this settles the classification.**  Look at the shape of every production you just wrote: a terminal, then at most one nonterminal, and that nonterminal is at the far right end.  A grammar in which *every* production has that shape is called **right-linear**, and a language is regular exactly when some right-linear grammar generates it.  So you have not merely asserted that this language is regular; you have exhibited the grammar that proves it.  That is the standard of argument the rest of Part 2 asks for.
+**Why this settles the classification.**  Look at the shape of every production you just wrote: a terminal, then at most one nonterminal, and that nonterminal is at the far right end.  A grammar in which *every* production has that shape has a name.
+
+> **Right-linear grammar.**  A grammar is **right-linear** when every one of its productions has one of exactly three shapes, and no production has any other:
+>
+> | Shape | Example |
+> |---|---|
+> | one or more terminals, followed by a single nonterminal that is the **last symbol** on the right-hand side | `<even> ::= "0" <even>` |
+> | terminals alone, with no nonterminal at all | `<odd> ::= "1"` |
+> | `<empty>` | `<even> ::= <empty>` |
+>
+> The load-bearing rule is the *position*: at most one nonterminal per alternative, always at the far right end, with nothing after it.  `<list> ::= "(" <exprs> ")"` is therefore not right-linear, because `<exprs>` has a `)` after it, and `<define> ::= "(" "define" <symbol> <expr> ")"` is not either, for the same reason and twice over.
+
+A language is regular exactly when some right-linear grammar generates it.  So you have not merely asserted that this language is regular; you have exhibited the grammar that proves it.  That is the standard of argument the rest of Part 2 asks for.
+
+(The mirror image works too.  A **left-linear** grammar, with the single nonterminal always at the far *left* end instead, generates exactly the same class of languages.  What you may not do is mix the two shapes inside one grammar, because a grammar that uses both can describe languages that are not regular at all.  Every grammar you write in this part should be right-linear throughout.)
 
 ### Before You Classify: Check Your Part 0 Productions
 
 Two of the languages below are the productions you wrote in Part 0, so this part goes badly if those productions are not in a shape you can argue about.  Check yours against this before you continue.
 
-What you want is a production built **only** from terminals, alternation (`|`), concatenation, and `{ }` repetition, with no nonterminal ever appearing anywhere except at the end of an alternative.  A production of that kind is regular, and saying so is the whole argument.  What you do *not* want is a production that nests a nonterminal in the middle of a right-hand side, or that refers back to itself around a terminal on both sides, because that is the shape that needs a stack.
+What you want is a production that is right-linear in the sense just defined, or that can be read as one: built from terminals, alternation (`|`), concatenation, and `{ }` repetition, with no nonterminal ever sitting anywhere except at the end of an alternative.  Saying so is the whole argument.  What you do *not* want is a production that nests a nonterminal in the middle of a right-hand side, or that refers back to itself around a terminal on both sides, because that is the shape that needs a stack.
 
 If your Part 0 productions do not have that shape, or you are not sure, you may use these as your reference versions for Part 2.  Say in one line that you did, and which of yours you replaced.  This costs you nothing: Part 0 was graded on the work you did there, and this is only so that Part 2 has something clean to reason about.
 
@@ -402,7 +428,7 @@ If your Part 0 productions do not have that shape, or you are not sure, you may 
 <symbol>  ::= <initial> { <subseq> }
 ```
 
-Notice that every one of those is right-linear in the sense above, and notice that `<list>` from Part 1 is not, because `<expr>` appears with a `)` after it.  That difference is the entire content of the next four classifications.
+Notice that every one of those is right-linear in the sense above, and notice that `<list>` from Part 1 is not, because `<expr>` appears with a `)` after it.  That difference is the hinge for every classification that follows.
 
 ### The Classification
 
@@ -412,14 +438,22 @@ For each language, name the lowest Chomsky level that can describe it, with a on
 2.  The language of your `<symbol>` production.
 3.  The language of your `<number>` production.
 4.  Well-formed s-expressions, as your `<list>` production defines them.
-5.  Strings of the form `a^n b^n c^n` (equal counts of all three).
+5.  Strings of the form `a^n b^n`: some number of `a`s followed by exactly as many `b`s.
+6.  Strings of the form `a^n b^n c^n`: equal counts of all three.
+
+The last two are the ones worth slowing down for, and they are easier in this order than either is alone.
+
+> **A hint for language 5.**  Ask what you must remember at the instant the first `b` arrives.  You have to know how many `a`s came before it, and you do not find out how many that will be until they stop coming.  Now ask whether a finite number of states can hold that.  A machine with *k* states can tell at most *k* situations apart, so among the runs `a`, `aa`, `aaa`, and so on, two different lengths *i* and *j* must leave it in the same state.  From that state it cannot tell the two apart for the rest of the string, so whatever it does with `a^i b^i` it must also do with `a^j b^i`, and it accepts a string with mismatched counts.  Since *n* is unbounded, no fixed number of states is enough, however large you make it.  Name the kind of memory that *can* hold an unbounded count, say where in the machine that memory sits, and you have named the level.
+>
+> **A hint for language 6.**  Now ask what changed.  A stack hands you the count exactly once: you push while reading the `a`s, and matching the `b`s pops it back off.  Work out what is left on the stack the moment the last `b` is matched, and whether the count is still anywhere the machine can reach when the `c`s start arriving.  Whatever kind of memory survives a *second* comparison is the level this language needs.  The list at the top of this part names that level and the machine that provides it; your job is to say which structural property of the language forces the jump.
 
 > **Do this.**
 > 1. Make a table with three columns: Language, Lowest level, Reason.
 > 2. For each language, ask what a recognizer must remember while reading the string, and write that structural property as the reason, in one sentence.  "It is context-free because it is a context-free language" restates the level name; "nested s-expressions need a stack to match each `)` to the `(` that opened it" names the property, and the rubric rewards the second form.
-> 3. For languages 1, 2, and 3, the argument is the one the warm-up gave you: point at the shape of the productions and say that every one of them is right-linear, so a fixed amount of memory suffices.  Name the specific rule you are pointing at.
-> 4. For language 4, reuse your Step 1.5 rejection of `(+ 3 4`.  You already argued that `<list>` introduces exactly one `)` for every `(` and that nothing terminates without it.  Say why counting those matches is something no fixed amount of memory can do, given that the nesting can be arbitrarily deep.
-> 5. Close with one sentence for each of these three questions.  Which level do Scheme's atoms (a number, a symbol, a boolean) need?  Which level do nested s-expressions need?  What does that split tell you about why a compiler has both a lexer and a parser?  The third sentence should connect the first two.
+> 3. For languages 1, 2, and 3, the argument is the one the warm-up gave you: point at the shape of the productions and say that every one of them is right-linear, so a fixed number of states suffices.  Name the specific rule you are pointing at.
+> 4. For language 4, reuse your Step 1.5 rejection of `(+ 3 4`.  You already argued that `<list>` introduces exactly one `)` for every `(` and that nothing terminates without it.  Say why counting those matches is something no fixed number of states can do, given that the nesting can be arbitrarily deep.
+> 5. For languages 5 and 6, work the two hints above.  For each one, name what the recognizer must remember and at which point in the string it must remember it, then name which of the four bullets at the top of this part supplies memory of that kind.  Finish with one sentence saying what `a^n b^n c^n` asks for that `a^n b^n` does not, since that single difference is what separates the two levels.
+> 6. Close with one sentence for each of these three questions.  Which level do Scheme's atoms (a number, a symbol, a boolean) need?  Which level do nested s-expressions need?  What does that split tell you about why a compiler has both a lexer and a parser?  The third sentence should connect the first two.
 
 Those three sentences are the point of this part, and they are the reason the next two assignments are two assignments.  The *Build a Lexer* assignment asks you for a program that recognizes exactly the level you named first, and the *Parser and AST* assignment asks you for a program that recognizes the level you named second.  They are separate programs because they are separate problems, and you just proved it.
 
@@ -429,9 +463,9 @@ Those three sentences are the point of this part, and they are the reason the ne
 
 | File or artifact | What it shows | Rubric row |
 |------------------|---------------|------------|
-| `## Part 0` section | Your `<number>` and `<symbol>` productions down to terminals, the six test strings with the deciding production named for each, and the rule you are least sure about | Part 0 (10%) |
-| `## Part 1` section | The EBNF rewrite, the quote and boolean productions with your answer on `(1 2 3)`, the three special forms filled in with their cost and the `(define x 5)` question answered, the derivation of `(* (+ 2 3) 4)`, and the final grammar with three accepted and two rejected strings | Building the Scheme Grammar (45%) |
-| `## Part 2` section | The even-parity grammar with its empty alternative justified, five classifications with structural reasons, and the three sentences on atoms, s-expressions, and the lexer/parser split | Grammar Construction and Chomsky Classification (45%) |
+| `## Part 0` section | Your `<number>` and `<symbol>` productions down to terminals, the six test strings with the deciding production named for each, and the rule you are least sure about | Part 0 |
+| `## Part 1` section | The EBNF rewrite, the quote and boolean productions with your answer on `(1 2 3)`, the three special forms filled in with their cost and the `(define x 5)` question answered, the derivation of `(* (+ 2 3) 4)`, and the final grammar with three accepted and two rejected strings | Building the Scheme Grammar |
+| `## Part 2` section | The even-parity grammar with its empty alternative justified, six classifications with structural reasons, and the three sentences on atoms, s-expressions, and the lexer/parser split | Grammar Construction and Chomsky Classification |
 | `## Reflection` section | Your answers to the Reflection Prompts below | Not weighted; I read them |
 
 ## Self-Check Before You Submit
@@ -444,19 +478,10 @@ Those three sentences are the point of this part, and they are the reason the ne
 - [ ] Three accepted and two rejected strings are checked against the productions by hand, and each rejection names the production that blocks it.
 - [ ] The even-parity grammar generates the empty string, `0`, `11`, and `1001`, and generates neither `1` nor `10`.
 - [ ] You said in one line what would go wrong if `<odd>` also had an `<empty>` alternative.
-- [ ] Every Part 2 reason names a structural property (finite memory, a stack, cross-serial constraints), and the three tokens-versus-syntax sentences are present.
+- [ ] Every Part 2 reason names a structural property and the memory that supplies it (a finite number of states, a stack on top of those states, or a linear bounded tape), rather than restating the level name.
+- [ ] Your answers for `a^n b^n` and `a^n b^n c^n` say what each recognizer must remember and where, and one sentence names what the third block of letters asks for that the second does not.
+- [ ] The three tokens-versus-syntax sentences are present.
 - [ ] The Reflection Prompts are answered.
-
-## Grading Breakdown
-
-This lab is worth 15 points, as the course schedule states.  Each part's weight below is a percentage of those 15 points, and the rubric rows use the same percentages.
-
-| Component | Weight |
-|-----------|--------|
-| Part 0: Writing the Number and Symbol Rules | 10% |
-| Part 1: Building the Scheme Grammar | 45% |
-| Part 2: Grammar Construction and Chomsky Classification | 45% |
-| **Total** | **100% (15 points)** |
 
 ## Reflection Prompts
 

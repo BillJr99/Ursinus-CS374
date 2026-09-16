@@ -8,7 +8,7 @@ info:
   purpose: "To build the core of the Interpreter assignment's required static type checker with a partner, covering literal, variable, and operator checks over the class AST, all running before any code is evaluated."
   tilt:
     task: "With a partner, implement a checker that walks the class AST with a type environment, verifying annotated declarations, variable uses, and operator applications, and reporting positioned type errors."
-    criteria: "I grade this on a checker that accepts the well-typed programs and rejects each ill-typed program with a positioned two-type error message, plus a set of typing-rule statements written on paper, weighted 70/30 across the two parts.  See the rubric below for the full breakdown."
+    criteria: "I grade this on a checker that accepts the well-typed programs and rejects each ill-typed program with a positioned two-type error message, plus a set of typing-rule statements written on paper.  See the rubric below for the full breakdown."
   points: 15
   goals:
     - To implement a static checking pass over the class AST using a type environment that mirrors the Environment class
@@ -75,13 +75,6 @@ cs374-typechecker/
   model1_strong.py   # Part 0 worked models (yours to keep; not submitted)
 ```
 
-### Your First 15 Minutes
-
-1. Copy the Model 1 script from Part 0 into `model1_strong.py` and run `python3 model1_strong.py`.  Three operations pass and three are refused with a message naming both types.
-2. That refusal is the whole lab in miniature.  Your checker in Part 1 produces the same kind of message, with two differences: it names a line and column, and it fires before the program runs rather than while it runs.
-3. Create `typechecker.py` from the skeleton in Step 1.1 and run its smoke test.
-4. Once `TypeEnvironment` can define a name in one scope and find it from a child scope, the rest of Part 1 is filling in the `TODO` branches one node type at a time.
-
 This lab lands inside the Interpreter assignment's window; see the course schedule for the assigned and due dates.
 
 > **Time budget.**  About three hours in one working session: fifteen minutes on the paper exercise, forty-five minutes reading and running the four worked models, an hour and a half on the checker, and thirty minutes writing the rules.
@@ -90,9 +83,9 @@ This lab lands inside the Interpreter assignment's window; see the course schedu
 
 ## Part 0: Worked Models (read before you code)
 
-Part 0 opens with a short paper exercise, which is the graded piece (10%).  The rest is four worked models from the Type Systems class session: a runtime checker for the interpreter you are building, a trace of it on compound expressions, inference by hand, and a type-error postmortem.  Each model has a script you can run and questions to talk through with your partner.  Read all four before you start Part 1.
+Part 0 opens with a short paper exercise, which is the graded piece.  The rest is four worked models from the Type Systems class session: a runtime checker for the interpreter you are building, a trace of it on compound expressions, inference by hand, and a type-error postmortem.  Each model has a script you can run and questions to talk through with your partner.  Read all four before you start Part 1.
 
-### Type Systems on Paper (10%)
+### Type Systems on Paper
 
 Plan on about fifteen minutes with pencil and paper.  Everyone has an opinion about static typing; an example is what makes the argument worth having.
 
@@ -161,6 +154,8 @@ for l, op, r in [(3.0, "+", 4.0), ("ab", "+", "cd"), (3.0, "+", "cd"),
   3.0 < 'cd' -> TypeError: cannot compare number with string
   3.0 / 0.0 -> ZeroDivisionError: division by zero
 ```
+
+Those refusals are the whole lab in miniature.  The checker you write in Part 1 produces the same kind of message, with two differences: it names a line and column, and it fires before the program runs rather than while it runs.
 
 `type_name` turns a Python type into the name the error messages print.  The first `if` in `eval_binop` handles arithmetic: it allows string concatenation, refuses booleans, computes on two floats, and refuses everything else.  The second `if` handles comparisons, which require both sides to have the same type.
 
@@ -413,7 +408,7 @@ In a weakly typed language, `"19.99" + 5.0` yields `"19.995"` and `"19.995" * 1.
 
 ---
 
-## Part 1: Build the Checker Core (63%)
+## Part 1: Build the Checker Core
 
 Implement `check(program) -> None` in `typechecker.py`.  The function walks the class AST (your Parser assignment's AST nodes, or the reference AST) and reports a type error as soon as it finds one.  A well-typed program produces no output.  The checker carries a type environment as it walks: the same parent-chaining discipline as the `Environment` class from your Environments lab, but each name is bound to a *type* instead of a value.  Entering a block creates a child environment, and leaving the block discards it.
 
@@ -521,6 +516,8 @@ if __name__ == "__main__":
 > - `None` prints instead of `Num`: `lookup` still ends in `pass`.
 > - `KeyError: 'x'`: `lookup` checks this scope but never asks `self.parent`.
 
+Once `TypeEnvironment` can define a name in one scope and find it from a child scope, the rest of Part 1 is filling in the `TODO` branches one node type at a time.
+
 ### Step 1.2: Type the literals
 
 > **Do this.**
@@ -589,7 +586,7 @@ Type error at line 1, col 16: '+' requires Num operands, got Num and Bool
 
 ---
 
-## Part 2: Write the Typing Rules on Paper (27%)
+## Part 2: Write the Typing Rules on Paper
 
 In `RULES.md`, state the typing rule for each construct your checker covers, one rule per construct.  A typing rule has premises (what must already be true about the parts) and a conclusion (what then holds for the whole).  Writing the rules after the code is deliberate: the code tells you what you actually enforced, and the rule tells you whether that was what you meant.  This document becomes the seed of the Interpreter assignment's semantics writeup, and if you later choose the full Hindley-Milner direction (type inference, which works out types with no annotations at all), these rules are exactly what inference generalizes.
 
@@ -640,17 +637,6 @@ Submit a ZIP containing the files below, with both partners named in `RULES.md`.
 - [ ] `RULES.md` has one rule per construct the checker covers, each with its premises stated and its implementing function cited.
 - [ ] `RULES.md` answers the quadrant question and the gradual-typing question.
 - [ ] Both partners are named in `RULES.md`, and any reference component you built on is declared in one line.
-
-## Grading Breakdown
-
-This lab is worth 15 points, as the course schedule states.  Each part's weight below is a percentage of those 15 points, and the rubric rows use the same percentages.
-
-| Component | Weight |
-|-----------|--------|
-| Part 0: Type Systems | 10% |
-| Part 1: The Checker Core | 63% |
-| Part 2: Typing Rules on Paper | 27% |
-| **Total** | **100% (15 points)** |
 
 ## Reflection Prompts
 

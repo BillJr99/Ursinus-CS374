@@ -8,7 +8,7 @@ info:
   purpose: "To turn the class tokenizer into the first permanent component of your language pipeline: a reusable Lexer with a stable peek/advance/expect interface that the Parser and the team project import unchanged."
   tilt:
     task: "Specify an ordered token grammar.  Build a reusable Lexer component with peek/advance/expect, string escapes, and a configurable token specification, either hand-rolled in Python or in the generator-toolchain direction (Flex or PLY).  Then add positioned error reporting and a full test suite."
-    criteria: "I assess your work on a correctly ordered token spec, an idempotent side-effect-free Lexer interface, and precise error reporting with a full test suite, weighted 30/40/30 across the three parts.  The rubric applies the same way to whichever direction you choose.  The full breakdown is in the rubric below."
+    criteria: "I assess your work on a correctly ordered token spec, an idempotent side-effect-free Lexer interface, and precise error reporting with a full test suite.  The rubric applies the same way to whichever direction you choose.  The full breakdown is in the rubric below."
   points: 100
   goals:
     - To specify a complete token grammar for the project language using ordered regular-expression rules
@@ -56,7 +56,7 @@ In this assignment you turn the class tokenizer into a **component**: a module t
 
 ---
 
-## Part 0: Before You Start (Tokens and Scanning, 10 points)
+## Part 0: Before You Start (Tokens and Scanning)
 
 Do this part first, on paper, before you write any lexer code.  A scanner (the program that splits source text into tokens) is easy to write for input that behaves and interesting to write for input that does not.  The awkward cases below are the ones this assignment turns on, so form an opinion about them before you implement anything.  It takes about twenty minutes.
 
@@ -79,7 +79,7 @@ This is one assignment with one deliverable and one rubric.  You build it in one
 | **Hand-rolled Python** (the core direction) | The `Lexer` yourself, in Python, on top of the `re` module, following Parts 1-3 step by step | Python 3.10 or newer and the standard library | You want the step-by-step scaffolding in Parts 1-3 to match your code line by line.  Most students take this direction. |
 | **Generator toolchain** (Flex or PLY) | The same component from a generator specification: a Flex `.l` file (for C) or a PLY `tokens`/`t_*` module (for Python), wrapped behind the same `peek`/`advance`/`expect` contract | Flex with a C compiler and `make`, or the PLY package for Python | You want hands-on time with the tools that produce the scanners inside major compilers, and you are comfortable mapping Parts 1-3 onto a generator yourself. |
 
-The generator direction replaces the *vehicle* of Parts 1 and 2 (the `TOKEN_SPEC` list, the `tokenize` generator, and the hand-written class internals) with a generator specification.  The interface contract, Part 3's error, position, and test requirements, the deliverables, and the 30/40/30 rubric apply the same way in both directions.  See **[The Generator-Toolchain Direction](#the-generator-toolchain-direction-flex-or-ply)** below for the full mapping.
+The generator direction replaces the *vehicle* of Parts 1 and 2 (the `TOKEN_SPEC` list, the `tokenize` generator, and the hand-written class internals) with a generator specification.  The interface contract, Part 3's error, position, and test requirements, the deliverables, and the rubric apply the same way in both directions.  See **[The Generator-Toolchain Direction](#the-generator-toolchain-direction-flex-or-ply)** below for the full mapping.
 
 ---
 
@@ -131,7 +131,7 @@ See the course schedule for the assigned and due dates.  Your starting point is 
 
 ---
 
-## Part 1: Token Specification (27 points)
+## Part 1: Token Specification
 
 > **Why this matters.** A lexer built on regular expressions applies its rules in order and uses *maximal munch*: at each position, it matches the longest string it can.  Order the rules wrong and you get bugs: if `IDENT` appears before `IF`, then `if` lexes as an identifier named `"if"`; if `LT` (`<`) appears before `LE` (`<=`), then `<=` lexes as `LT` followed by `EQ`.  Keywords go before identifiers, and longer operators before their prefixes.
 
@@ -269,7 +269,7 @@ Answer three written questions from the Tokens and Scanning session.  They are g
 
 ---
 
-## Part 2: Lexer Class Implementation (36 points)
+## Part 2: Lexer Class Implementation
 
 > **Why this matters.** The parser will use exactly three methods, and it will assume they behave exactly as the table below says.  This is the interface contract: the promise your component makes to code you have not written yet.  If `peek` quietly consumes a token, the parser's lookahead logic breaks in ways that show up three assignments from now.  At end of input, both `peek` and `advance` return the EOF token repeatedly; they never raise `StopIteration` or return `None`.
 
@@ -393,7 +393,7 @@ Move TOKEN_SPEC to a JSON file with this structure:
 
 ---
 
-## Part 3: Error Handling, Positions, and Test Suite (27 points)
+## Part 3: Error Handling, Positions, and Test Suite
 
 ### Step 3a: Precise Error Positions
 
@@ -544,18 +544,6 @@ Submit a ZIP containing the files below, and list your Python version (`python -
 - [ ] Every `LexError` carries a 1-indexed line, a 1-indexed column, and the offending text; an unterminated string points at its opening quote.
 - [ ] `collect_all` mode reports every error from one pass, and tokens after an error still come out.
 - [ ] `test_output.txt` ends in `OK`, and the readme lists my Python version, the ordering rationale, the two error modes, and the Step 1d answers.
-
----
-
-## Grading Breakdown
-
-| Component | Points |
-|-----------|--------|
-| Part 0: Tokens and Scanning | 10 |
-| Part 1: Token Specification | 27 |
-| Part 2: Lexer Class Implementation | 36 |
-| Part 3: Error Handling and Test Suite | 27 |
-| **Total** | **100** |
 
 ---
 

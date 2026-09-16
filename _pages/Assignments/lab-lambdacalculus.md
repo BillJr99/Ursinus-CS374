@@ -8,7 +8,7 @@ info:
   purpose: "To evaluate lambda calculus expressions by hand with a partner, working beta reduction with capture-avoiding substitution and Church encodings of booleans and numerals, which are the theory floor beneath functional programming."
   tilt:
     task: "With a partner, carry out step-by-step beta reductions including a capture-avoidance case, and verify Church-encoded booleans and numerals by reduction."
-    criteria: "I assess your work on correct, fully-shown reduction sequences and correct Church-encoding verifications, weighted 55/45 across the two parts.  Please read the rubric below for the details."
+    criteria: "I assess your work on correct, fully-shown reduction sequences and correct Church-encoding verifications.  Please read the rubric below for the details."
   points: 15
   goals:
     - To perform beta reduction step by step, identifying redexes and applying capture-avoiding substitution
@@ -132,6 +132,13 @@ $$\lambda y.\, y\ w \quad \to_\alpha \quad \lambda v.\, v\ w$$
 
 The bound $$y$$ and every use of it become a fresh name $$v$$; the free $$w$$ is left alone, and the term means the same thing before and after.
 
+Work the reduction above yourself before you start Part 0, so the format is settled on a term you have already seen worked.
+
+> **Do this.**
+> 1. Read the worked reduction above once, start to finish, without writing anything.
+> 2. Cover it and reduce $$(\lambda x.\, \lambda y.\, y\ x)\ a\ (\lambda z.\, z)$$ yourself on paper: one beta-step per line, the redex underlined on every line, and a phrase after each line saying what you substituted for what.
+> 3. Uncover the worked version and compare line by line.  You should match it step for step: three beta-steps, ending at $$a$$.  If you ended somewhere else, the usual cause is reading $$f\ a\ b$$ as $$f\ (a\ b)$$; reread the left-associativity convention above and try again before you move on.
+
 ### Church Booleans and Numerals
 
 A Church encoding represents a value such as a boolean or a number as a lambda term, so the calculus needs no built-in data.  A boolean is a function that chooses one of its two arguments; a numeral $$n$$ is a function that applies its first argument $$n$$ times to its second.
@@ -148,21 +155,12 @@ A Church encoding represents a value such as a boolean or a number as a lambda t
 
 ---
 
-## Your First 15 Minutes
-
-1. Read the worked reduction above once, start to finish, without writing anything.
-2. Cover it and reduce $$(\lambda x.\, \lambda y.\, y\ x)\ a\ (\lambda z.\, z)$$ yourself on paper: one beta-step per line, the redex underlined on every line, and a phrase after each line saying what you substituted for what.
-3. Uncover the worked version and compare line by line.  You should match it step for step: three beta-steps, ending at $$a$$.  If you ended somewhere else, the usual cause is reading $$f\ a\ b$$ as $$f\ (a\ b)$$; reread the left-associativity convention and try again before you move on.
-4. Open `reductions.md` (or your first sheet) at `## Part 0` and start item 1.  It has the same shape as the term you just reduced.
-
----
-
-## Part 0: Before You Start - Beta Reduction and Church Encodings (10%)
+## Part 0: Before You Start - Beta Reduction and Church Encodings
 
 Do this part first.  Beta reduction is a rewriting rule, and you learn it by applying it slowly and recording each step.  Two reductions will do: one that reaches a normal form, and one that never will.
 
 > **Do this.**  Under `## Part 0`, one item per heading:
-> 1. Beta-reduce $$(\lambda x.\, \lambda y.\, x)\ a\ b$$ to normal form, showing each step.  Then try $$(\lambda x.\, x\ x)\ (\lambda x.\, x\ x)$$: reduce it far enough to show why it never terminates, and explain what happens.
+> 1. Beta-reduce $$(\lambda x.\, \lambda y.\, x)\ a\ b$$ to normal form, showing each step; it has the same shape as the term in the worked reduction above.  Then try $$(\lambda x.\, x\ x)\ (\lambda x.\, x\ x)$$: reduce it far enough to show why it never terminates, and explain what happens.
 > 2. Using the Church encodings from the reading, verify by reduction that $$\text{SUCC}\ \text{ZERO}$$ behaves like $$\text{ONE}$$.  Write out both definitions in full first, then reduce until the result matches $$\text{ONE}$$ up to the names of bound variables.
 > 3. Under `### Least-confident step`, mark the step you were least confident was legal: circle it on paper, or write `<-- least confident` after it in the file, and add one sentence saying what made you unsure.
 
@@ -170,7 +168,7 @@ Do this part first.  Beta reduction is a rewriting rule, and you learn it by app
 
 ---
 
-## Part 1: Beta Reduction (50%)
+## Part 1: Beta Reduction
 
 Reduce each expression below to normal form, one beta-step per line, with the redex you contract underlined or bracketed on every line.  Before each step, compare the argument's free variables with the binder you are about to substitute under; if a name appears in both places, alpha-rename the binder first.  Item 4 is the one place in this lab where the obvious move is wrong, and the rubric row for this part turns on whether you renamed or captured.
 
@@ -183,7 +181,7 @@ Reduce each expression below to normal form, one beta-step per line, with the re
 
 ---
 
-## Part 2: Church Encodings (40%)
+## Part 2: Church Encodings
 
 When an item names an encoding from the table above, write its definition in full as your first line, then reduce; a name is an abbreviation, not a redex.  Two terms are alpha-equivalent when they differ only in the names of bound variables, so a verification succeeds when your complete sequence ends at a term matching the expected one after renaming, not when you claim it would.
 
@@ -216,19 +214,6 @@ When an item names an encoding from the table above, write its definition in ful
 - [ ] Every Part 2 verification starts from the expanded definitions and ends at the expected term, with a renaming line under item 3 if the binder names differ from $$\text{TWO}$$.
 - [ ] Part 2 item 4 names a specific idiom from the Functional Programming sessions and a specific place in your team language or interpreter.
 - [ ] The least-confident step from Part 0 is marked, and, if handwritten, every photo is readable.
-
----
-
-## Grading Breakdown
-
-This lab is worth 15 points, as the course schedule states.  Each part's weight below is a percentage of those 15 points, and the rubric rows use the same percentages.
-
-| Component | Weight |
-|-----------|--------|
-| Part 0: Beta Reduction and Church Encodings | 10% |
-| Part 1: Beta Reduction | 50% |
-| Part 2: Church Encodings | 40% |
-| **Total** | **100% (15 points)** |
 
 ---
 

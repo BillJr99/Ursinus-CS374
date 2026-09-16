@@ -8,7 +8,7 @@ info:
   purpose: "To complete the Parser assignment's grammar work with a partner: write a full EBNF grammar for the class language, derive programs that prove it produces what you expect, and settle precedence decisions you can defend."
   tilt:
     task: "With a partner, write the EBNF grammar the Parser assignment's Part 1 requires, produce leftmost derivations and parse trees for two worked programs, and show how the grammar's shape enforces precedence and associativity."
-    criteria: "I grade this on a complete and correct EBNF grammar, correct derivations with matching parse trees, and a demonstrated precedence and ambiguity analysis, weighted 50/25/25 across the three parts.  The rubric below has the details."
+    criteria: "I grade this on a complete and correct EBNF grammar, correct derivations with matching parse trees, and a demonstrated precedence and ambiguity analysis.  The rubric below has the details."
   points: 15
   goals:
     - To write a complete EBNF grammar for the class language's expressions and statements
@@ -83,15 +83,6 @@ Now create `grammar.md` in that folder with your editor.  Every part of the lab 
 
 > **Time budget.**  About three hours in two sittings.  See the course schedule for the assigned and due dates: this lab lands inside the Parser assignment's window, and its due date is that assignment's first checkpoint.  On assignment, do Part 0 alone (under an hour) and choose a partner.  By the midpoint, have the Part 1 grammar drafted and attacked by your partner at least once.  By the due date, have Parts 2 and 3 written and `grammar.md` previewed and submitted.  Parts 1 through 3 take one session of about two hours with your partner, most of it on Part 1.
 
-### Your First 15 Minutes
-
-Make one derivation of your own on a grammar smaller than the one you'll write, so the mechanics are settled before the real work.
-
-1. Read the worked example below with a pencil, checking at every line that the nonterminal being rewritten is the leftmost one.
-2. Copy its three-line grammar into a scratch section at the bottom of `grammar.md` (delete it before you submit).
-3. Derive `2 * 3 + 4` step by step in the same format, and draw its tree.
-4. Compare with the example.  The `STAR` should sit under its own `term` and the `PLUS` at the top of the tree, even though the multiplication now comes first in the input.  If it came out that way, Parts 2 and 3 are the same move on a bigger grammar.  If it didn't, reread the example's note on `( ... )*` groups, which is where derivations usually go wrong.
-
 ---
 
 ## Worked Example: One Derivation and Its Parse Tree
@@ -135,9 +126,17 @@ Check the leftmost rule at line four: the sentential form was `INT PLUS term`, t
 
 Read the tree from the bottom.  `3 * 4` sits under its own `term` node, one level below the `PLUS`, so the multiplication is grouped before the addition happens.  No rule anywhere says "multiplication first."  The shape of the ladder says it: `PLUS` lives in `expr`, `STAR` lives in `term`, and `expr` is built from `term`s, so a `STAR` can never sit above a `PLUS`.  Part 3 asks you to make this argument for your own grammar and to show what goes wrong without the ladder.
 
+Make one derivation of your own on this grammar, smaller than the one you'll write, so the mechanics are settled before the real work.
+
+> **Do this.**
+> 1. Read the derivation above again with a pencil, checking at every line that the nonterminal being rewritten is the leftmost one.
+> 2. Copy the three-production grammar into a scratch section at the bottom of `grammar.md` (delete it before you submit).
+> 3. Derive `2 * 3 + 4` step by step in the same format, and draw its tree.
+> 4. Compare with the example.  The `STAR` should sit under its own `term` and the `PLUS` at the top of the tree, even though the multiplication now comes first in the input.  If it came out that way, Parts 2 and 3 are the same move on a bigger grammar.  If it didn't, reread the note above on `( ... )*` groups, which is where derivations usually go wrong.
+
 ---
 
-## Part 0: Before You Start - Derivations, Ambiguity, and Precedence (10%)
+## Part 0: Before You Start - Derivations, Ambiguity, and Precedence
 
 Do this part first; you may do it alone even though the rest of the lab is pair work.  A grammar is ambiguous when one string has two different parse trees.  Precedence says which operator binds tighter; associativity says how a chain of the same operator groups.  Ambiguity stops being subtle the moment you have drawn it twice, so draw both trees, then rewrite the grammar until only one drawing survives.  That rewrite is the whole technique.  If it falls apart on you, bring it anyway; where it fell apart is what the discussion is for.
 
@@ -174,7 +173,7 @@ expr ::= expr PLUS expr
 
 ---
 
-## Part 1: The EBNF Grammar (45%)
+## Part 1: The EBNF Grammar
 
 Write the complete EBNF grammar for the class language used across the Lexer, Parser, and Interpreter assignments.  Cover these constructs:
 
@@ -230,7 +229,7 @@ primary        ::= TODO   // literals, IDENT, and a parenthesized expr
 
 ---
 
-## Part 2: Derivations and Parse Trees (23%)
+## Part 2: Derivations and Parse Trees
 
 Produce a leftmost derivation and the matching parse tree for two programs, citing the production applied at every step: program 1 is `let x = 1 + 2 * 3;` and program 2 is `while x < 10 { x = x + 1; }`.  These derivations use your Part 1 grammar, not the worked example's; they are the proof that the grammar produces what you expect.  A derivation that does not follow the submitted grammar earns nothing, so if a step needs a production you don't have, fix the grammar in Part 1 and note that you did.
 
@@ -251,7 +250,7 @@ Produce a leftmost derivation and the matching parse tree for two programs, citi
 
 ---
 
-## Part 3: Precedence and Ambiguity (22%)
+## Part 3: Precedence and Ambiguity
 
 Using your derivation of program 1, explain which productions force `*` to bind tighter than `+`.  Show the wrong second tree that a flat single-level expression grammar would also permit.  Then state how your grammar makes `1 - 2 - 3` associate left, and verify with a three-line derivation sketch.  Here is what ambiguity looks like, so the "wrong second tree" has a model: under this flat grammar, the string `a + b * c` has two parse trees.
 
@@ -317,20 +316,6 @@ Submit `grammar.md` containing all parts, with both partners named at the top.  
 - [ ] Both Part 2 derivations rewrite the leftmost nonterminal at every step, cite a production on every line, end in exactly the program's token sequence, and match their parse trees node for node.
 - [ ] Part 3 names the productions that force precedence, shows the flat grammar's wrong tree, and includes the three-line `1 - 2 - 3` sketch with a stated source of left grouping.
 - [ ] Grammars are in `ebnf` fences, derivations and trees are in `text` fences, and the Markdown preview shows the trees intact.
-
----
-
-## Grading Breakdown
-
-This lab is worth 15 points, as the course schedule states.  Each part's weight below is a percentage of those 15 points, and the rubric rows use the same percentages.
-
-| Component | Weight |
-|-----------|--------|
-| Part 0: Derivations, Ambiguity, and Precedence | 10% |
-| Part 1: EBNF Grammar | 45% |
-| Part 2: Derivations and Parse Trees | 23% |
-| Part 3: Precedence and Ambiguity Analysis | 22% |
-| **Total** | **100% (15 points)** |
 
 ---
 

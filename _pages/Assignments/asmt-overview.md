@@ -90,7 +90,7 @@ This assignment is nine stages.  Each stage ends with one command whose output y
 
 ---
 
-## Part 0: Thinking About Languages You Already Know (10 points)
+## Part 0: Thinking About Languages You Already Know
 
 > **In this part:** Stage 0 of the map.  You will make two judgments about languages you already use, and translate a small snippet from one paradigm into another.  No computer needed.
 

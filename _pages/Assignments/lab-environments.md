@@ -8,7 +8,7 @@ info:
   purpose: "To build the Interpreter assignment's Environment class with a partner, covering nested scopes, define versus assign, and shadowing, and to verify it against the exact behaviors the Interpreter's evaluator depends on."
   tilt:
     task: "With a partner, implement an Environment class with parent chaining, distinguish define from assign, and verify shadowing, scope restoration, and name-error behavior against a provided test script."
-    criteria: "I grade a correct Environment class that passes all provided behavior tests, and a short trace exercise that predicts scope behavior on paper, weighted 70/30 across the two parts.  The full breakdown is in the rubric below."
+    criteria: "I grade a correct Environment class that passes all provided behavior tests, and a short trace exercise that predicts scope behavior on paper.  The full breakdown is in the rubric below."
   points: 15
   goals:
     - To implement an Environment class with parent chaining supporting nested scopes
@@ -80,16 +80,7 @@ Python 3.11.9
 
 ---
 
-## Your First 15 Minutes
-
-1.  Create `environment.py` inside `cs374-environments/` and paste in the skeleton from Step 1.1.
-2.  Run `python3 environment.py` once.  A skeleton that runs and prints nothing has no syntax errors.
-3.  Fill in `define` (one line: store the value in this scope's table) and the first two lines of `lookup` (if the name is in this scope's table, return it).
-4.  Create `try_env.py` from Step 1.2 and run `python3 try_env.py`.  It prints `51` and `2`, then stops at the unfinished `assign`.  That crash is your to-do list.
-
----
-
-## Part 0: Trace Binding and Scope on Paper (10%)
+## Part 0: Trace Binding and Scope on Paper
 
 Do this part on paper before you write the class; you may do it alone even though the rest of the lab is pair work.  Put your answers at the top of `trace.md` (a photo of the paper is fine).  Two terms first.  Under lexical scope, a name refers to the binding in the enclosing text of the program.  Under dynamic scope, a name refers to the most recent binding made by any caller that is still running.
 
@@ -150,7 +141,7 @@ caller();
 
 ---
 
-## Part 1: Build the Environment Class (63%)
+## Part 1: Build the Environment Class
 
 Implement `Environment` in `environment.py`.  It stands alone (no AST or evaluator needed) with this interface:
 
@@ -164,7 +155,7 @@ Implement `Environment` in `environment.py`.  It stands alone (no AST or evaluat
 The skeleton below names every method and includes the two error classes, so the file runs on its own.  `LangError` carries a line and column that default to zero; the evaluator fills those in during the Interpreter assignment.  `lookup` and `assign` share a shape: check this scope, else defer to the parent, else raise.  The one line that separates `define` from `assign` is the point of the lab: `define` writes into this scope's table no matter what any parent holds, and `assign` never writes into this scope unless the name is already here.
 
 > **Do this.**
-> 1. Create `environment.py` in your `cs374-environments/` folder, paste in the skeleton below, and run `python3 environment.py` once.  A clean run prints nothing; a `SyntaxError` or `IndentationError` means the paste went wrong.
+> 1. Create `environment.py` in your `cs374-environments/` folder, paste in the skeleton below, and run `python3 environment.py` once.  A clean run prints nothing, and that is the point: a skeleton that runs and prints nothing has no syntax errors.  A `SyntaxError` or `IndentationError` means the paste went wrong.
 > 2. Replace each `raise NotImplementedError(...)` with the code the `# TODO` comments describe.  In `lookup` and `assign`, let the recursive call on `self._parent` do the walking; you do not need a loop.
 > 3. Give each `LangNameError` a message that includes the variable name, such as `Undefined variable 'y'` for `lookup` and `Cannot assign to undefined variable 'y'` for `assign`.
 > 4. Run `python3 environment.py` again and confirm it still prints nothing.
@@ -217,7 +208,7 @@ class Environment:
 
 This is the Interpreter assignment's shadowing program, translated line by line into calls on your class.  A `let` is a `define`, a bare assignment is an `assign`, entering a block is a new `Environment` whose parent is the current one, and leaving the block means you stop using it.
 
-> **Do this.** Create `try_env.py` in the same folder as `environment.py`, paste in the example below, and run `python3 try_env.py` from that folder.
+> **Do this.** Create `try_env.py` in the same folder as `environment.py`, paste in the example below, and run `python3 try_env.py` from that folder.  Run it as soon as `define` and `lookup` work: it prints `51` and `2`, then stops at the unfinished `assign`, and that crash is your to-do list.
 
 ```python
 from environment import Environment, LangNameError
@@ -276,7 +267,7 @@ The example above prints `51` then `2` even if `lookup` never consults the paren
 
 ---
 
-## Part 2: Predict and Check the Scope Trace (27%)
+## Part 2: Predict and Check the Scope Trace
 
 Write your predictions in `trace.md` before you run anything.  The test script comes with a short program of three nested blocks that mix `define` and `assign`.  Its shape is below, with every step numbered; if the copy in [test_environment.py]({{ site.baseurl }}/files/starters/environments/test_environment.py) differs from this listing, trace the script's copy and renumber the steps to match it.
 
@@ -374,19 +365,6 @@ Submit a ZIP containing the files below, with both partners named in `trace.md`.
 - [ ] `trace.md` shows the environment chain at every step of the trace program, was written before the run, and notes any prediction that missed.
 - [ ] Both theory questions are answered, and question 1 quotes the exact line of the class.
 - [ ] Both partners are named in `trace.md`.
-
----
-
-## Grading Breakdown
-
-This lab is worth 15 points, as the course schedule states.  Each part's weight below is a percentage of those 15 points, and the rubric rows use the same percentages.
-
-| Component | Weight |
-|-----------|--------|
-| Part 0: Binding and Scope | 10% |
-| Part 1: The Environment Class | 63% |
-| Part 2: Scope Trace Exercise | 27% |
-| **Total** | **100% (15 points)** |
 
 ---
 

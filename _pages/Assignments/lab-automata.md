@@ -8,7 +8,7 @@ info:
   purpose: "To build general simulators for deterministic finite automata (DFAs) and nondeterministic finite automata (NFAs) that read machine definitions from data files, so the theory beneath every lexer becomes a program you can run, and to trace the subset construction and Thompson's construction once by hand."
   tilt:
     task: "With a partner, build DFA and NFA simulators that read machines from JSON, design one machine of each kind, and trace the subset construction and Thompson's construction by hand on small examples."
-    criteria: "I grade correct simulators that handle the stated edge cases, two annotated machine designs, and by-hand construction traces, weighted 10/36/36/18 across the four parts.  The rubric below breaks this down in full."
+    criteria: "I grade correct simulators that handle the stated edge cases, two annotated machine designs, and by-hand construction traces.  The rubric below breaks this down in full."
   points: 15
   goals:
     - To implement general DFA and NFA simulators over machine definitions loaded from JSON
@@ -62,7 +62,7 @@ In this lab you build the machines beneath your lexer: general simulators for de
 
 ---
 
-## Part 0: Before You Start - Regular Expressions and Finite Automata (10%)
+## Part 0: Before You Start - Regular Expressions and Finite Automata
 
 Do this part on paper before you write any simulator code.  You may do it alone even though the rest of this lab is pair work.  A regular expression and a finite automaton are two ways to describe the same set of strings, and building both for one language is the fastest way to see that they agree.
 
@@ -116,20 +116,9 @@ Open the folder in your editor and create two empty files at the top level: `sim
 > - Midpoint: NFA simulator with epsilon-closure working; both designed machines encoded and tested.
 > - Due date: construction traces and writeup assembled; ZIP submitted.
 
-### Your First 15 Minutes
-
-Start with a machine, not with the simulator.  The smallest program that runs one machine is ten lines, and once it works, the rest of Part 1 is wrapping it in validation, a machine-file argument, and `--trace`.
-
-> **Do this.**
-> 1. Copy the parity machine JSON from Step 1.1 into `machines/even_ones.json`.
-> 2. In `simulator.py`, write a ten-line core: `json.load` the file, set `state` to `machine["start"]`, and for each symbol of `sys.argv[1]` set `state = machine["delta"][state][symbol]`.
-> 3. Print `accept` if the final state is in `machine["accept"]`, otherwise `reject`.
-> 4. From inside `cs374-automata`, run `python3 simulator.py 0110` and then `python3 simulator.py 100`.  You should see `accept`, then `reject`, matching the traces in Step 1.1.
-> 5. A `FileNotFoundError` means you ran from a different folder; a `JSONDecodeError` means a missing comma or quote, and the message names the line.
-
 ---
 
-## Part 1: DFA Simulation and Design (36%)
+## Part 1: DFA Simulation and Design
 
 ### Step 1.1: Read the Machine Format and Encode the Parity Machine
 
@@ -171,12 +160,20 @@ Here is the two-state parity machine for "even number of 1s", first as a state d
 }
 ```
 
-Every arrow in the diagram is one entry in `delta`: the `1` arrow from `even` to `odd` is the `"1": "odd"` inside `"even"`.  The double parentheses are the `accept` list, and the `start -->` arrow is the `start` key.  If you skipped Your First 15 Minutes, save the JSON as `machines/even_ones.json` now.  Then trace `"0110"` and `"100"` through the diagram with your finger before you trust the program to do it:
+Every arrow in the diagram is one entry in `delta`: the `1` arrow from `even` to `odd` is the `"1": "odd"` inside `"even"`.  The double parentheses are the `accept` list, and the `start -->` arrow is the `start` key.  Save the JSON as `machines/even_ones.json`.  Then trace `"0110"` and `"100"` through the diagram with your finger before you trust the program to do it:
 
 ```text
 "0110": even -> even -> odd -> even -> even    accept
 "100":  even -> odd -> odd -> odd              reject
 ```
+
+Now start with this machine rather than with the simulator.  The smallest program that runs it is ten lines, and once that works, the rest of Part 1 is wrapping it in validation, a machine-file argument, and `--trace`.
+
+> **Do this.**
+> 1. In `simulator.py`, write a ten-line core: `json.load` the file, set `state` to `machine["start"]`, and for each symbol of `sys.argv[1]` set `state = machine["delta"][state][symbol]`.
+> 2. Print `accept` if the final state is in `machine["accept"]`, otherwise `reject`.
+> 3. From inside `cs374-automata`, run `python3 simulator.py 0110` and then `python3 simulator.py 100`.  You should see `accept`, then `reject`, matching the traces above.
+> 4. A `FileNotFoundError` means you ran from a different folder; a `JSONDecodeError` means a missing comma or quote, and the message names the line.
 
 ### Step 1.2: Write the Loader
 
@@ -315,7 +312,7 @@ python3 simulator.py machines/ends_in_ab.json ""
 
 ---
 
-## Part 2: NFA Simulation and Design (36%)
+## Part 2: NFA Simulation and Design
 
 ### Step 2.1: Read the NFA Machine Format
 
@@ -454,7 +451,7 @@ python3 simulator.py machines/contains_aa.json ababab
 
 ---
 
-## Part 3: By-Hand Constructions (18%)
+## Part 3: By-Hand Constructions
 
 These are paper exercises in your writeup, with no code.  You trace each algorithm once on a small example, so you have run by hand what lexer-generator tools automate.
 
@@ -532,20 +529,6 @@ Submit a ZIP containing the files below.  List your Python version in the writeu
 - [ ] Each state of the Ends-in-ab DFA has a one-sentence annotation, and both designed machines have at least four accepted and four rejected test strings recorded.
 - [ ] The Contains-aa NFA has at least one state with two or more targets on the same symbol.
 - [ ] `writeup.md` has the Part 0 work, the subset-construction table with the DFA state count, every Thompson fragment labeled, the lexer paragraph, both names, and your Python version.
-
----
-
-## Grading Breakdown
-
-This lab is worth 15 points, as the course schedule states.  Each part's weight below is a percentage of those 15 points, and the rubric rows use the same percentages.
-
-| Component | Weight |
-|-----------|--------|
-| Part 0: Regular Expressions and Finite Automata | 10% |
-| Part 1: DFA Simulation and Design | 36% |
-| Part 2: NFA Simulation and Design | 36% |
-| Part 3: By-Hand Constructions | 18% |
-| **Total** | **100% (15 points)** |
 
 ---
 

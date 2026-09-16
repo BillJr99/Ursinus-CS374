@@ -8,7 +8,7 @@ info:
   purpose: "To build fluency in the functional paradigm.  Everyone completes a shared core (pure functions, higher-order functions, and recursive structures with fold), and then takes one self-chosen direction deeper.  Your team will weigh this paradigm as a design option for its own language."
   tilt:
     task: "Complete the two core parts (pure functions with higher-order combinators, and recursive structures with a generic fold), then choose ONE direction and carry it to depth: closures and lazy generators, CPS and call/cc, Church encodings, combinatory logic, parallel functional programming, declarative logic programming in Prolog, or a scoped open-source contribution to a functional-language ecosystem."
-    criteria: "I grade the core on honoring the no-loop and no-assignment constraints and on fully generic tree and list operations (25 points each), and I grade your chosen direction on reaching its stated depth (50 points).  The direction-depth rubric row applies equally to every direction.  The rubric below breaks it down in full."
+    criteria: "I grade the core on honoring the no-loop and no-assignment constraints and on fully generic tree and list operations, and I grade your chosen direction on reaching its stated depth.  The direction-depth rubric row applies equally to every direction.  The rubric below breaks it down in full."
   points: 100
   goals:
     - To write pure functions and higher-order functions in Python using map, filter, reduce, and recursion without loops or assignment
@@ -76,7 +76,7 @@ The constraints are the content.  Where a part says no loops and no assignment s
 
 ## Choose Your Direction
 
-This is one assignment with one deliverable and one rubric.  Parts 1 and 2 are the core, worth 25 points each.  Part 3 is your direction, worth 50 points.  Choose exactly one:
+This is one assignment with one deliverable and one rubric.  Parts 1 and 2 are the core.  Part 3 is your direction.  Choose exactly one:
 
 | Direction | What you build | Language or tool | Pick this if |
 |-----------|----------------|------------------|--------------|
@@ -88,7 +88,7 @@ This is one assignment with one deliverable and one rubric.  Parts 1 and 2 are t
 | [F: Declarative Logic Programming in Prolog](#direction-f-declarative-logic-programming-in-prolog) | Relations that hold, solved by unification plus backtracking, including one relation run "backwards" | Prolog in the browser via SWISH; nothing to install | You want the widest possible contrast with the interpreter you just built |
 | [G: Contribute to an Open-Source Language Ecosystem](#direction-g-contribute-to-an-open-source-language-ecosystem) | A scoped, functional-paradigm-relevant pull request with tests and documentation to [mal (Make-a-Lisp)](https://github.com/kanaka/mal), [Strudel](https://github.com/tidalcycles/strudel)/TidalCycles, a [tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammar, or [SWI-Prolog](https://www.swi-prolog.org/) | The upstream project's language and tools, git, and GitHub | You want a public portfolio line, and you can get **instructor scope approval within the first week** of the assignment |
 
-Read the core (Parts 1 and 2, plus Getting Started) and the one direction you chose; nothing in the other six sections counts toward your grade.  Every direction is worth the same 50 points, is graded on the same direction-depth rubric row, and ends in the same deliverable shape: working code, tests, and a writeup section that connects the direction back to the core.  Choose by interest; none of them is the easy one.  Direction E is the Functional stop on the music and live-coding path, and students on that path may use a corpus of timed-event listings as their dataset.  Direction G's targets are a mal step port increment or test-harness improvement, a Strudel pattern or transformation function (the open-source stop on the music path), a tree-sitter grammar, or SWI-Prolog documentation and worked examples (which pairs naturally with Direction F's material).
+Read the core (Parts 1 and 2, plus Getting Started) and the one direction you chose; nothing in the other six sections counts toward your grade.  Every direction is graded on the same direction-depth rubric row and ends in the same deliverable shape: working code, tests, and a writeup section that connects the direction back to the core.  Choose by interest; none of them is the easy one.  Direction E is the Functional stop on the music and live-coding path, and students on that path may use a corpus of timed-event listings as their dataset.  Direction G's targets are a mal step port increment or test-harness improvement, a Strudel pattern or transformation function (the open-source stop on the music path), a tree-sitter grammar, or SWI-Prolog documentation and worked examples (which pairs naturally with Direction F's material).
 
 > **Time budget.** This assignment runs alongside your team project's build sprints.  Budget the direction at roughly **6-8 hours**, finish the core before you start it, and pick a bounded slice you can finish well; each direction's depth checklist marks the line between "complete" and "extension."  The core is the smaller half in hours, but it is where the no-loop and no-assignment habits form, so do not rush it.  If you completed the Lambda Calculus lab, Direction C is a natural continuation: the lab's by-hand reductions and Church encodings are exactly the behavior your reducer must reproduce in code.
 
@@ -126,7 +126,7 @@ See the course schedule for the assigned and due dates.  If a break falls inside
 
 ---
 
-## Part 1 (Core): Pure Functions and Higher-Order Functions (25 points)
+## Part 1 (Core): Pure Functions and Higher-Order Functions
 
 The constraints for this entire part: no `for` loops, no `while` loops, and no assignment statements (no `=`) inside solution function bodies.  You may use `map`, `filter`, `functools.reduce`, `lambda`, recursion, and `return`.  The constraints apply to solution bodies only; your test code in `test_functional.py` may loop freely.  All Part 1 code lives in `higher_order.py`.  Give every function its type signature as a comment and a one-sentence description, because the rubric checks for both; the comment above each function in the skeletons below is its contract.
 
@@ -247,7 +247,7 @@ Answer three written questions in your writeup, `readme.md`.  They draw on the P
 
 ---
 
-## Part 2 (Core): Recursive Data Structures (25 points)
+## Part 2 (Core): Recursive Data Structures
 
 Both structures in this part are recursive: a tree contains smaller trees, and a list contains a smaller list.  A fold is the one operation that visits the whole structure and combines what it finds, and you will define the other operations in terms of it.  All Part 2 code lives in `recursive_structures.py`, and its tests go in `test_functional.py` alongside Part 1's.  The comment above each function in the skeletons is its contract, and the rubric's proficient row asks that every operation take a function argument and work for any operation (not hardcoded to addition).
 
@@ -338,7 +338,7 @@ def list_from_python(lst):
 
 ---
 
-## Part 3: Your Direction (50 points, choose exactly one)
+## Part 3: Your Direction (choose exactly one)
 
 Read only the direction you chose.  Every direction below has the same shape: what you build and need, numbered steps, and a depth checklist.  The checklist is the line between "the components work" (progressing) and "the direction reached its stated depth" (proficient), so treat it as the specification.
 
@@ -890,17 +890,6 @@ Produce `test_output.txt` from your project folder with `python3 test_functional
 - [ ] Every Part 2 operation is tested on at least four inputs, including the empty list and a single-node tree.
 - [ ] Every item on your direction's depth checklist is met, and `readme.md` states what Parts 1 and 2's pure-function and fold disciplines contributed to the direction work.
 - [ ] `test_output.txt` shows every test passing, and `readme.md` lists your Python version (and, for Direction E, CPU model and core count).
-
----
-
-## Grading Breakdown
-
-| Component | Points |
-|-----------|--------|
-| Part 1 (Core): Pure Functions and Higher-Order Functions | 25 |
-| Part 2 (Core): Recursive Data Structures | 25 |
-| Part 3: Direction Depth (your chosen direction) | 50 |
-| **Total** | **100** |
 
 ---
 
