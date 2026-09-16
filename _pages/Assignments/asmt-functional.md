@@ -240,9 +240,9 @@ Answer three written questions in your writeup, `readme.md`.  They draw on the P
 
 1.  **Referential transparency, demonstrated.**  Define referential transparency in one sentence.  Then take `total_length` above and show that replacing any call with its result preserves the program.  Next, exhibit one small *impure* Python function of your own (one that uses mutation or I/O) where that replacement changes behavior, and name exactly which property broke.
 2.  **Paradigm placement.**  Classify each of these as imperative, functional, or declarative, and state which *question* each paradigm makes the programmer answer ("how, step by step?", "what combination of transformations?", "what result?"):
-   - `total = 0` / `for n in nums: total += n`
-   - `reduce(lambda a, b: a + b, nums, 0)`
-   - `SELECT SUM(n) FROM nums;`
+    - `total = 0` / `for n in nums: total += n`
+    - `reduce(lambda a, b: a + b, nums, 0)`
+    - `SELECT SUM(n) FROM nums;`
 3.  **Purity's price.**  Name one thing your Part 1 constraints (no loops, no assignment) made harder, and one thing they made automatic (testing, reasoning, or parallelism).  Tie each to a property of pure functions rather than to taste.
 
 ---
@@ -346,7 +346,7 @@ Read only the direction you chose.  Every direction below has the same shape: wh
 
 Two files, `closures.py` and `generators.py`.  In the first you write function factories (functions that return functions) and see exactly what a returned function carries with it.  In the second you write sequences that never end and pipelines that compute only what is asked for.  You need `closures.py` and `generators.py` in your `cs374-functional` folder, tests in `test_functional.py`, and the standard library only (`typing.Callable` for signatures and `time.perf_counter()` for the strict-vs-lazy comparison in A.2).  The Closures class material falls early in this assignment's window (see the course schedule); read ahead in that activity if you want to start sooner.
 
-#### A.1: Closures and Function Factories
+### A.1: Closures and Function Factories
 
 A closure is a function that captures variables from the scope where it was created.  When a factory function creates and returns an inner function, the inner function keeps access to the factory's local variables even after the factory has returned.  Every call to a factory must produce an independent function.
 
@@ -403,7 +403,7 @@ assert fib(30) == 832040
 
 > **You should see.** All assertions pass, and `fib(30)` returns in well under a second.  If it takes several seconds, `memoize` is not caching (a common cause is building the cache inside the wrapper, so every call starts with an empty dictionary).
 
-#### A.2: Lazy Sequences with Generators
+### A.2: Lazy Sequences with Generators
 
 Strict (eager) evaluation computes every element of a sequence immediately.  Lazy evaluation computes an element only when someone asks for it.  Laziness matters for infinite sequences, which cannot fit in memory, and for pipelines that stop early and so skip the remaining work.
 
@@ -454,7 +454,7 @@ One file, `continuations.py`, holding a small direct-style interpreter, its cont
 
 In a direct-style interpreter, every recursive call returns a value that waits on the Python call stack.  In continuation-passing style (CPS), no call ever returns: every call receives one extra argument, the continuation `k`, a function that represents "what to do next with the result," and passes its value to `k` instead of returning it.  Because calling `k` is the last thing each call does, every call is a tail call, and a trampoline (a loop that runs one step at a time) can execute it in constant stack space.  Once continuations are values, capturing the current one gives you `call/cc` ("call with current continuation"), from which you can rebuild break, exceptions, and generators.  That is why `call/cc` is called *the mother of all control structures*.  You need `continuations.py` in your `cs374-functional` folder, tests in `test_functional.py`, the standard library only (B.2 runs into Python's recursion limit on purpose, and the trampoline, not a larger `sys.setrecursionlimit`, is the point of that step), and your Interpreter assignment open beside you: the direct-style miniature reuses its structure (dataclass AST nodes, an `Env` chain, a `Closure` value).
 
-#### B.1: The CPS transform
+### B.1: The CPS transform
 
 > **Do this.**
 > 1. Write the direct-style `interp(expr, env)` first: a miniature of your Interpreter assignment with dataclass AST nodes `Num`, `Bool`, `Var`, `BinOp`, `If`, `Let`, `Lam`, `App`, an `Env` chain, and a `Closure` value.  It is under sixty lines.
@@ -477,7 +477,7 @@ def interp_k(expr, env, k):
 
 **Verify equivalence:** for every test expression, `interp_k(e, env, lambda v: v)` must equal `interp(e, env)`.  Cover at least `Num`, `BinOp` (nested), `If` (both branches), `Let`, and `App`.  Reading any `interp_k` case top to bottom, the last thing it does must be a call to `k` (or to another `_k` function that will).
 
-#### B.2: Trampolining
+### B.2: Trampolining
 
 Python does not optimize tail calls, so deep recursion still overflows the stack.  Wrap every tail call in a zero-argument `Thunk` and drive execution with a loop:
 
@@ -496,7 +496,7 @@ def trampoline(result):
 > 2. Build a chain of 2,000 nested `Let` bindings (comfortably past Python's default recursion limit) and verify that it evaluates to the right answer.
 > 3. Run the same AST through the un-trampolined `interp_k` once to watch the `RecursionError` you just eliminated, and keep that comparison for your writeup.
 
-#### B.3: call/cc
+### B.3: call/cc
 
 Add a `Callcc(fun)` AST node.  In the CPS interpreter, the current continuation is *exactly* the `k` in hand.  Wrap it in a `Continuation` object that, when called, raises a `ContinuationEscape` carrying the value; the top-level `run` driver catches the escape and resumes.  Demonstrate each of the following as a hand-built AST run through `run`:
 
@@ -504,7 +504,7 @@ Add a `Callcc(fun)` AST node.  In the CPS interpreter, the current continuation 
 2. Invoking the continuation escapes immediately: `Callcc(Lam("k", App(Var("k"), Num(7))))` -> `7`.
 3. After an escape, pending computation is discarded: bind `call/cc(λk. k(5))` in a `Let` whose body multiplies by 1000, and document which value your implementation produces and why.
 
-#### B.4: One control structure from scratch
+### B.4: One control structure from scratch
 
 Using the two-continuation pattern (a normal-return `k` and an escape `k`), implement **either** `for_until` **or** `with_handler`.  `for_until` is break as a continuation: iterate a body that may call `break_fn(v)` to exit with `v`.  `with_handler` is exceptions as continuations: `raise_fn` is simply "call the handler's continuation," and it must propagate correctly through nested handlers.  Test the one you build, including the nested case.
 
@@ -524,7 +524,7 @@ One file, `lambda_calc.py`: an AST for the untyped lambda calculus, capture-avoi
 
 The untyped lambda calculus has three constructs (variables, abstraction, application), and it can compute anything computable.  Its most striking consequence is that data can be represented as pure behavior: a Church boolean *is* the act of choosing between two things, and a Church numeral *is* the act of repeating a function some number of times.  Your Part 1 combinators and Part 2 folds were this same idea in Python dress.  You need `lambda_calc.py` in your `cs374-functional` folder, tests in `test_functional.py`, the standard library only, and the Lambda Calculus Part 2 activity (in the readings) plus, if you did it, your Lambda Calculus lab: its by-hand reductions are the behavior your reducer must reproduce.
 
-#### C.1: The calculus in code
+### C.1: The calculus in code
 
 Substitution replaces a free variable with a term, and it is capture-avoiding when it never lets a free variable of the replacement become accidentally bound under a binder.  Follow the standard three-case definition exactly, including the fresh-variable renaming case when substituting under a binder whose variable appears free in the replacement.
 
@@ -573,7 +573,7 @@ def normalize(term, max_steps=1000, trace=False):
 
 > **You should see.** For the first trap, a result of the shape $$\lambda y'.\, y$$ (a renamed binder with the free $$y$$ intact), never $$\lambda y.\, y$$.  If you get the identity function, the binder was not renamed and the free variable was captured.
 
-#### C.2: The encodings
+### C.2: The encodings
 
 Encode each of the following as terms in your AST, and verify them mechanically through your reducer:
 
@@ -583,7 +583,7 @@ Encode each of the following as terms in your AST, and verify them mechanically 
 
 Present the verification as a test table that maps each law to a passing reduction.
 
-#### C.3: Strategy and divergence
+### C.3: Strategy and divergence
 
 Implement applicative-order reduction (arguments first) behind the same interface, and demonstrate the term where the two strategies behave differently: $$(\lambda x.\, \lambda y.\, y)\ \Omega$$, where $$\Omega = (\lambda x.\, x\ x)(\lambda x.\, x\ x)$$.  Normal order discards $$\Omega$$ unevaluated and terminates.  Applicative order runs forever, and your step limit fires.  Write one sentence on what each strategy does and why, and one more connecting this to why a lazy language can pass an infinite structure to a function that ignores it.
 
@@ -619,13 +619,13 @@ $$
 
 You need `birds.py`, `bracket.py`, and `config.json` in your `cs374-functional` folder, tests in `test_functional.py`, the standard library only (`json` reads the configuration), and paper for D.1.
 
-#### D.1: Hand reductions
+### D.1: Hand reductions
 
 The hand reductions come first, and they are the answers your reducer must reproduce.  Reduce each term to normal form, one rule per line, naming the rule that fires at each step:
 
 **(a)** $$\mathbf{K}\ \mathbf{I}\ a\ b$$: identify which standard function this is.  **(b)** $$\mathbf{S}\ \mathbf{K}\ \mathbf{K}\ 42$$: what well-known combinator is $$\mathbf{S}\ \mathbf{K}\ \mathbf{K}$$? **(c)** $$\mathbf{B}\ f\ (\mathbf{B}\ g\ h)\ x$$ and $$\mathbf{B}\ (\mathbf{B}\ f\ g)\ h\ x$$: confirm both produce $$f\ (g\ (h\ x))$$, which is associativity of composition.  **(d)** $$\mathbf{C}\ (\mathbf{B}\ f\ g)\ a\ b$$: what two-argument function is $$\mathbf{C}\ (\mathbf{B}\ f\ g)$$? **(e)** $$\mathbf{S}\ (\mathbf{K}\ \mathbf{S})\ \mathbf{K}\ f\ g\ x$$: reduce fully and identify the result as one of the named birds.
 
-#### D.2: The combinator reducer
+### D.2: The combinator reducer
 
 > **Do this.**
 > 1. Create `birds.py` from the skeleton below.  Application is left-associative, so `S K K` is `App(App(Prim("S"), Prim("K")), Prim("K"))`.
@@ -656,7 +656,7 @@ def reduce_term(term, config):
 
 > **You should see.** $$\mathbf{I}\ 42$$ reduces to `42` in one step and $$\mathbf{S}\ \mathbf{K}\ \mathbf{K}\ x$$ to `x` in two; $$\mathbf{M}\ \mathbf{M}$$ prints 1000 identical steps under `trace` and then a diagnostic such as a step-limit message naming the term, and the program keeps running.
 
-#### D.3: Point-free programming
+### D.3: Point-free programming
 
 Point-free style defines a function without naming its arguments: no `lambda`, no `def`, and no named parameters in the definition itself.  Using the birds as Python callables, implement each of the following in point-free style, state its combinator expression beside the Python, and demonstrate it on at least three inputs:
 
@@ -666,7 +666,7 @@ Point-free style defines a function without naming its arguments: no `lambda`, n
 4. `on(f, g)`: `on(f, g)(a)(b) = f(g(a))(g(b))`.  (The Psi bird.)
 5. `const_function(x)`: ignore the argument, always return `x`.  (The pure Kestrel.)
 
-#### D.4: Bracket abstraction
+### D.4: Bracket abstraction
 
 Bracket abstraction translates a lambda term into an SKI expression via three rules:
 
@@ -701,7 +701,7 @@ The Google MapReduce paper (Dean and Ghemawat, 2004) opens with one observation:
 - **Dataset:** the Project Gutenberg plain-text *Moby Dick* (approximately 21,000 lines), split into lines; each line is one "document."  Save it in the project folder and read it from there.
 - A machine with more than one core, and its CPU model and core count written down before you start; every number you report depends on them.
 
-#### E.1: The sequential baseline
+### E.1: The sequential baseline
 
 `word_frequencies(line) -> dict[str, int]` is your map function; argue in writing that it is pure (no global reads, no shared mutation, and the same output for the same input every time).  `merge_counts(a, b) -> dict` is your reduce function; argue that it is pure *and associative*, and say why associativity matters for parallelism.  `top_n(counts, n)` returns the most frequent words.  Implement the three from the skeleton, test each on two or three short hand-made lines in `test_functional.py`, then run `python3 pipeline.py` on the full corpus and record total words, unique words, the top 20, and the runtime.  Put the code that starts a `Pool` under `if __name__ == "__main__":`; on macOS and Windows, worker processes re-import your module, and without that guard each worker starts its own pool and the program never finishes.  The map function must be defined at module level so that Python can pickle it (serialize it to send to another process).
 
@@ -727,17 +727,17 @@ if __name__ == "__main__":
          # version; assert the two results are equal before you time anything
 ```
 
-#### E.2: The parallel map
+### E.2: The parallel map
 
 Replace `map(word_frequencies, lines)` with `multiprocessing.Pool.map` and assert that the parallel result equals the sequential result.  Then measure wall-clock time (`timeit`, five runs per configuration, report the mean) across worker counts 1, 2, 4, and the maximum available, and across chunk sizes (default, 10, 100, 1000) at maximum workers.  Tabulate time, speedup, and efficiency ($$= \text{speedup} / \text{workers}$$) for every configuration.  At what worker count does efficiency drop below 0.8, and why?  What effect does chunk size have, and why?
 
 > **You should see.** The equality assertion passes on the first try if `word_frequencies` is pure; if it fails, look for a global or a mutable default argument.  With one worker the parallel version is usually slower than the sequential baseline (process start-up and pickling are pure overhead there), and speedup grows, then flattens, as workers increase.
 
-#### E.3: Tree-reduce
+### E.3: Tree-reduce
 
 The sequential `reduce(merge_counts, results, {})` performs $$O(n)$$ merges one after another.  Implement `tree_reduce(merge_fn, results)`: pair up adjacent elements, merge the pairs in parallel via `Pool.map`, and repeat until one element remains (carry an odd element forward).  Verify that it matches the sequential reduce, then measure and compare both on the full corpus.  In your writeup, draw the dependency graph of a tree-reduce over 8 elements: how many rounds are there, what is the maximum speedup regardless of core count, and how does the synchronization between rounds relate to the serial fraction below?
 
-#### E.4: Amdahl's Law analysis
+### E.4: Amdahl's Law analysis
 
 If a fraction $$f$$ of the computation is serial, the maximum speedup with $$n$$ processors is
 
@@ -767,7 +767,7 @@ Every other direction is a story about *evaluation*: you write an expression, an
 - Before you start, read the opening chapters of [The Power of Prolog](https://www.metalevel.at/prolog) (Markus Triska's free, modern text) for facts, rules, queries, lists, and how backtracking works.
 - `logic.pl` and `logic_session.md` in your `cs374-functional` folder.  Write clauses in the SWISH editor, and copy them into `logic.pl` as you go so the file always matches what you ran.
 
-#### F.1: Relational thinking, facts, rules, and queries
+### F.1: Relational thinking, facts, rules, and queries
 
 Warm up with a family knowledge base: `parent/2` facts, then `grandparent/2`, `sibling/2`, and `ancestor/2` rules.  In `logic_session.md`, show at least one query with a single answer, one query that yields *multiple* answers on backtracking, and one recursive rule (`ancestor/2`) with a query that requires several backtracking steps.  Explain in one or two sentences what "the engine searches for a proof" means here versus "the evaluator computes a value" in your interpreter.
 
@@ -788,7 +788,7 @@ grandparent(X, Z) :- parent(X, Y), parent(Y, Z).
 
 > **You should see.** `Who = ann` for the first query.  For a query with several answers, SWISH shows one binding at a time and waits for `;`.  If a query answers `false` when you expected a binding, the usual cause is a spelling mismatch between a fact and a rule, or a variable that starts with a lowercase letter (Prolog reads that as an atom, not a variable).
 
-#### F.2: A curated set of the Ninety-Nine Prolog Problems
+### F.2: A curated set of the Ninety-Nine Prolog Problems
 
 Solve the following six problems from the classic [Ninety-Nine Prolog Problems](https://www.metalevel.at/prolog/99) list.  I chose them to span list recursion, structural recursion, arithmetic, logic, and constraint search:
 
@@ -801,11 +801,11 @@ Solve the following six problems from the classic [Ninety-Nine Prolog Problems](
 
 For each problem, include the clause(s) in `logic.pl` and, in `logic_session.md`, the query you ran with its answer(s).  Where a problem admits multiple solutions (P90), show that Prolog enumerates them on backtracking and count how many exist.
 
-#### F.3: Run it backwards (the bidirectional relation)
+### F.3: Run it backwards (the bidirectional relation)
 
 Pick one relation you wrote (or `append/3`) and demonstrate it in at least two modes: for example, `append([1,2],[3],Xs)` (concatenate) *and* `append(Xs, Ys, [1,2,3])` (enumerate every split).  Explain in your writeup why a Python function *cannot* be run backwards like this, and what property of Prolog (unification over logic variables, not evaluation of expressions) makes it possible.  This is the single most important idea in the direction.
 
-#### F.4: Unification and backtracking vs. your interpreter's environments
+### F.4: Unification and backtracking vs. your interpreter's environments
 
 Close with a short written comparison; it is required, and it ties the direction back to the pipeline.  Your interpreter's `Environment` maps names to *values* by assignment, in one direction only, and evaluation never "undoes" a binding.  Prolog's unification binds logic variables to *terms* in both directions, and backtracking un-binds them when a branch fails.  In one paragraph, contrast (a) binding-by-assignment vs. binding-by-unification, and (b) your evaluator's single forward pass vs. Prolog's search-with-backtracking.  If you took the type-checking direction of the Interpreter, connect this explicitly to the unification in your type inferencer; it is the *same* algorithm doing a different job.
 
@@ -838,19 +838,19 @@ This direction takes the paradigm into a codebase that predates you and will out
 
 Something else you care about is negotiable; bring it to the scope-approval conversation.  Two things are not negotiable: the work must have functional-paradigm substance (a typo fix or formatting change does not qualify), and it must be small enough to finish.  One well-scoped, well-tested contribution beats an ambitious abandoned one.
 
-#### G.1: Issue selection and scope approval (first 3 days)
+### G.1: Issue selection and scope approval (first 3 days)
 
 Find your target: a triaged open issue, a gap in the documentation, a missing test, or a small feature request with maintainer interest.  In `contribution.md`, record the issue or gap (with links), why it is *functional-paradigm* work (which core ideas from Parts 1 and 2 it exercises), and your one-sentence minimum viable scope.  Bring this to me for approval within 3 days of hand-out; the approval exists to protect you from scope that cannot land in the assignment window, and it is a five-minute conversation if those three things are written down.
 
-#### G.2: Specification first
+### G.2: Specification first
 
 Before you write the fix, write the specification the way this course always does: a failing test that demonstrates the issue.  For documentation work, the specification is the worked example that does not yet exist and the checklist it must satisfy.  Commit it, or record it in its original form in `contribution.md`.  If the project's own test suite has conventions, follow them; reading a mature project's test conventions is part of the learning here.
 
-#### G.3: The contribution
+### G.3: The contribution
 
 Do the work on a fork, and follow the upstream project's `CONTRIBUTING` guidelines to the letter (branch naming, commit style, changelog entries, whatever they ask).  Your pull request must include tests and documentation for what it changes.  Keep the diff as small as the fix allows; maintainers review diffs, and a disciplined diff is a professional courtesy they notice.
 
-#### G.4: The exchange
+### G.4: The exchange
 
 Submit the pull request and engage with what comes back: respond to review comments, make requested changes, and record the exchange in `contribution.md`.  A merge is ideal but not required.  Maintainer response times are outside your control, and the graded work is yours, not theirs.  If no maintainer responds within a week of submission, document the attempt and perform a written self-review against the project's own contributing standards: what would a maintainer flag, and why?
 

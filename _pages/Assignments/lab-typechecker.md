@@ -261,6 +261,7 @@ An interpreter with dynamic (runtime) checking evaluates `(3.0 + 4.0) < ("a" + 1
 4.  The trace shows the checks firing in steps 1, 2, 3, the same order as evaluation.  State the general rule: in a dynamically typed interpreter, when does the check for an operator fire, relative to the evaluation of that operator's operands?
 5.  In the failing trace, step 1 finished before the TypeError at step 2.  Suppose step 1 had been `print("charging card...")` instead of an addition.  What does this tell you about *where in a program's lifetime* you would prefer type errors to fire, and which typing discipline delivers that?
 6.  Redo the failing trace as a *static* checker would perform it, before execution: rewrite the table with types only, no values.  Which columns disappear, and which check still fails?
+{: start="4"}
 
 ### Model 3: Type Inference by Hand
 
@@ -337,6 +338,7 @@ Follow the environment through the good program.  It starts empty; `let a = 2` b
 7.  The inference trace shows `let a: int`, `let b: int`, `let c: bool`.  These are determined entirely from the *values* (literals), with no type annotations written.  Is this static or dynamic typing?  Explain.
 8.  When inference encounters `a + "hello"`, it reports the error at the `add` expression.  But the *root cause* is that `a` was given an int value.  How far is the reported error from the root cause, and what does this say about inference error message quality?
 9.  What would need to change to support `let a = 2; let b = a + 3.0;`?  (Hint: numeric type widening, `int + float -> float`.)  Modify the `infer` function to allow this.
+{: start="7"}
 
 ### Model 4: A Type-Error Postmortem
 
@@ -407,6 +409,7 @@ In a weakly typed language, `"19.99" + 5.0` yields `"19.995"` and `"19.995" * 1.
 11.  Step 2 coerced number -> string, but step 3 coerced string -> number.  Write the coercion rule a language designer would have to publish to justify both choices at once.  Does the result sound principled or accidental?
 12.  The weak-mode run produces no error at any point; the bug would surface only as customer complaints.  Name two other places in the software pipeline (besides the language's type system) where this bug could have been caught, and what each catch would cost compared to a step-2 TypeError.
 13.  For your project language: which, if any, of these coercions will you allow?  Record the decision in `SEMANTICS.md`, citing this postmortem as evidence for or against.
+{: start="10"}
 
 ---
 
@@ -569,9 +572,9 @@ Verify your checker against the provided programs in the course starter repo.  S
 > 1. Copy all twelve provided programs into `programs/`.
 > 2. Run the driver over every one of them and save the output.  The `for` loop runs the checker once per file, `echo` labels each run with its file name, and `tee` prints the output and writes it to `runlog.txt` at the same time.  If the provided programs use a different file extension, change `*.ml` to match.
 >
-> ```bash
-> for f in programs/*.ml; do echo "== $f"; python3 typechecker.py "$f"; done | tee runlog.txt
-> ```
+>    ```bash
+>    for f in programs/*.ml; do echo "== $f"; python3 typechecker.py "$f"; done | tee runlog.txt
+>    ```
 >
 > 3. Read `runlog.txt` once, top to bottom, and confirm each well-typed program shows only its label and each ill-typed program shows its label and one `Type error` line.
 
