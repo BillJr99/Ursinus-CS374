@@ -16,7 +16,7 @@ info:
     - To classify languages by Chomsky hierarchy level and justify each classification from the shape of the grammar that generates it
   rubric:
     - weight: 10
-      description: "Part 0: Before You Start - The Atoms the Grammar Never Defined"
+      description: "Part 0: Before You Start - Writing the Number and Symbol Rules"
       preemerging: Neither a number production nor a symbol production is written
       beginning: One of the two is written, or both are described in prose rather than as EBNF productions
       progressing: Both are written in EBNF, but one admits a string it should reject or rejects one it should accept, or the six test strings are not checked against the productions
@@ -61,7 +61,7 @@ Three words you need before you start:
 - **BNF**, or Backus-Naur Form, is a notation for writing those rules.
 - **EBNF**, or Extended BNF, adds operators for repetition, optional parts, and grouping.  The same rules then take fewer lines.
 
-The language here is not a toy.  It is the Scheme you have been writing for three weeks.  The *Syntax and BNF/EBNF* activity claimed that four productions describe every legal Scheme program ever written.  That is very nearly true, and Part 0 asks you to find the hole in it.  The four productions also say nothing yet about `define`, `lambda`, `if`, or the quote mark that the [Scheme assignment]({{ site.baseurl }}/Assignments/Scheme) warned you about.  Closing those gaps is the whole lab.
+The language here is the Scheme you have been writing for three weeks.  The *Syntax and BNF/EBNF* activity claimed that four productions describe every legal Scheme program ever written.  That is very nearly true, and Part 0 asks you to find the hole in it.  The four productions also say nothing yet about `define`, `lambda`, `if`, or the quote mark that the [Scheme assignment]({{ site.baseurl }}/Assignments/Scheme) warned you about.  Closing those gaps is the whole lab.
 
 **Pair policy.**  You may do this lab in pairs.  One partner proposes a production (a single grammar rule), and the other tries to break it with a string the rule handles wrongly.  Submit one document between you, with each of you naming the other, and you both earn the same grade.  Working alone is fine too.  See the course schedule for the assigned and due dates.
 
@@ -177,7 +177,7 @@ You submit one file, `grammars.md`, started from the skeleton below.  If you wor
 # CS374 Lab: BNF Workshop
 Partners: <your name> and <partner name>   (or: worked alone)
 
-## Part 0: The Atoms the Grammar Never Defined
+## Part 0: The Number and Symbol Rules
 ### The number production
 ```
 <grammar here>
@@ -189,7 +189,7 @@ Partners: <your name> and <partner name>   (or: worked alone)
 ### Step 1.1: The EBNF rewrite
 ### Step 1.2: Booleans and the quote
 ### Step 1.3: The special forms
-### Step 1.4: Arithmetic, and the ladder that is not there
+### Step 1.4: Arithmetic, without a precedence ladder
 ### Step 1.5: Verification
 ## Part 2: Grammar Construction and Chomsky Classification
 ### Warm-up: the even-parity grammar
@@ -201,7 +201,7 @@ Partners: <your name> and <partner name>   (or: worked alone)
 
 ---
 
-## Part 0: Before You Start - The Atoms the Grammar Never Defined (10%)
+## Part 0: Before You Start - Writing the Number and Symbol Rules (10%)
 
 Do this part first, before the rest of the lab, and alone if you like.  It is small, and it is the piece the rest of the grammar rests on: until `<number>` and `<symbol>` are real productions, every derivation you write has to cheat exactly where the activity's derivation did.
 
@@ -258,7 +258,7 @@ This is why the course builds a lexer, a parser, and an interpreter as three sep
 
 ### Step 1.3: The Special Forms
 
-Here is the step where you make a real language design decision.  Look at the grammar as it now stands and check it against code you wrote last week:
+This is the step where you make a language design decision.  Look at the grammar as it now stands and check it against code you wrote last week:
 
 ```scheme
 (define square
@@ -327,9 +327,9 @@ Reading straight down the table gives you the production.  Write it out; it is f
 > 4. Name one cost you just paid.  Count the productions you now have against the four you started with, and say what happens to the grammar the next time the language gains a form such as `cond` or `let`.
 > 5. Answer the awkward question.  `(define x 5)` matches `<define>`, and it also matches `<application>`, since `define` is a `<symbol>` and `x` and `5` are expressions.  Your grammar as written is ambiguous about which one it is.  Say how you would resolve it, in one or two sentences.  You do not have to rewrite the grammar to fix it; you have to notice it and say what you would do.
 
-> **Watch out.**  Do not write productions for `+`, `-`, `*`, and `/`.  Look at `<application>` again: a list whose first element is an expression already covers `(+ 1 2)`, `(* n n)`, and `(- k 1)`, because the operator is just a symbol in the first position.  Step 1.4 is about why that is remarkable.
+> **Watch out.**  Do not write productions for `+`, `-`, `*`, and `/`.  Look at `<application>` again: a list whose first element is an expression already covers `(+ 1 2)`, `(* n n)`, and `(- k 1)`, because the operator is just a symbol in the first position.  Step 1.4 is about why that works.
 
-### Step 1.4: Arithmetic, and the Ladder That Is Not There
+### Step 1.4: Arithmetic, Without a Precedence Ladder
 
 The Scheme assignment's Part 4 opened with `(* (+ 2 3) 4)` and the observation that Scheme's source code is already the tree your parser will have to build in October.  Now derive it and watch that happen.
 
@@ -338,7 +338,7 @@ The Scheme assignment's Part 4 opened with `(* (+ 2 3) 4)` and the observation t
 > 2. Count.  How many productions in your grammar mention `+`, `-`, `*`, or `/` by name?
 > 3. Name in one sentence what you would have to add to *your* grammar to write `2 + 3 * 4` and have it mean 14.  The *Syntax and BNF/EBNF* activity's Derivation 2 shows the shape of the answer, with its `<expr>`, `<term>`, and `<factor>` ladder.
 
-The answer to question 2 is zero, and it is worth saying out loud.  Your grammar handles every arithmetic operator in the language without mentioning a single one, because prefix notation puts the operator where the grammar already expects an expression, and the parentheses have already said what groups with what.  In four words: the parens are the parse tree.
+The answer to question 2 is zero, and that is the whole point of this step.  Your grammar handles every arithmetic operator in the language without mentioning a single one, because prefix notation puts the operator where the grammar already expects an expression, and the parentheses have already said what groups with what.  Put it another way: the parens are the parse tree.
 
 > **Not today's business.**  Precedence, associativity, and the ambiguity that makes them necessary are what today's session is about, and the *Grammar and Derivations Workshop* is where you build that ladder for real, in the grammar your own parser will implement.  Here you are only noticing that Scheme does not need one.
 
@@ -385,7 +385,7 @@ The start symbol is `<even>`, because before you have read anything you have see
 
 **Why this settles the classification.**  Look at the shape of every production you just wrote: a terminal, then at most one nonterminal, and that nonterminal is at the far right end.  A grammar in which *every* production has that shape is called **right-linear**, and a language is regular exactly when some right-linear grammar generates it.  So you have not merely asserted that this language is regular; you have exhibited the grammar that proves it.  That is the standard of argument the rest of Part 2 asks for.
 
-### Before You Classify: A Look Back at Part 0
+### Before You Classify: Check Your Part 0 Productions
 
 Two of the languages below are the productions you wrote in Part 0, so this part goes badly if those productions are not in a shape you can argue about.  Check yours against this before you continue.
 
@@ -453,7 +453,7 @@ This lab is worth 15 points, as the course schedule states.  Each part's weight 
 
 | Component | Weight |
 |-----------|--------|
-| Part 0: The Atoms the Grammar Never Defined | 10% |
+| Part 0: Writing the Number and Symbol Rules | 10% |
 | Part 1: Building the Scheme Grammar | 45% |
 | Part 2: Grammar Construction and Chomsky Classification | 45% |
 | **Total** | **100% (15 points)** |
