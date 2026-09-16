@@ -68,7 +68,7 @@ tags:
   - paradigms
 ---
 
-This assignment is the written half of our work in the functional paradigm. Everything in it was worked at the board or in the activity decks, so nothing here should be a surprise; what is new is that you write it yourself, with a real interpreter telling you when you are wrong.
+You have seen most of these ideas at the board and in the activity decks. Now you write the code yourself and run it in a real Scheme interpreter.
 
 Work it in order. Part 0 is a short warmup in a language you already know, and you should do it before you start Part 1. Part 1 gets Scheme running and walks four examples with you. Parts 2 and 3 are exercises built directly on those examples. Before Part 4, there is a short primer on four forms the evaluator needs that we have not yet used as heavily in class: `let`, association lists, `assq`, and a second look at `map` and `apply`. Part 4 is the expression evaluator itself, and it is the part I most want to read.
 
