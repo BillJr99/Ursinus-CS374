@@ -8,7 +8,7 @@ info:
   purpose: "To build the first two tiers of a recursive descent parser with a partner, using the peek/decide/consume pattern that every remaining parsing function repeats, so the Parser assignment's midpoint finds you already climbing."
   tilt:
     task: "With a partner, implement parse_primary and parse_unary over the Lexer interface, with tree-shape tests and one positioned parse error."
-    criteria: "I grade correct primary and unary parsing with passing tree-shape tests, and a positioned error on invalid input, weighted 70/30 across the two parts.  The rubric below spells out each row."
+    criteria: "I grade correct primary and unary parsing with passing tree-shape tests, and a positioned error on invalid input.  The rubric below spells out each row."
   points: 15
   goals:
     - To implement the primary and unary tiers of a recursive descent parser over the Lexer's peek/advance/expect interface
@@ -99,7 +99,7 @@ Token(type='INT', value='42', line=1, col=1, decoded=None)
 
 ---
 
-## Part 0: Before You Start - Recursive Descent Parsing (10%)
+## Part 0: Before You Start - Recursive Descent Parsing
 
 Do this part on paper before you write `parse_primary`.  You may do it alone even though the rest of this lab is pair work.  Tracing one function on three tokens shows you exactly where lookahead lives: the token the parser inspects without consuming, so that it can decide which rule applies.
 
@@ -111,7 +111,7 @@ Do this part on paper before you write `parse_primary`.  You may do it alone eve
 
 ---
 
-## Part 1: The First Two Tiers (63%)
+## Part 1: The First Two Tiers
 
 In `parser_skeleton.py` you define the AST (abstract syntax tree) node dataclasses `Num`, `Str`, `Bool`, `Var`, `Unary`, plus a `Grouping` node or a pass-through for parentheses, matching the node names your grammar work uses.  Then you implement two functions.  `parse_primary` handles number, string, and boolean literals; identifiers; and `( expression )`; for this lab a parenthesized expression may recurse into `parse_unary`, and the full expression ladder arrives in the Parser assignment.  `parse_unary` handles `-` and `not`; both are right-associative and nest (`--x`, `not not ok`), and at the bottom it delegates to `parse_primary`.
 
@@ -235,7 +235,7 @@ Unary(op='-', operand=Unary(op='-', operand=Num(value=42, line=1)))
 
 ---
 
-## Part 2: Tests and Errors (27%)
+## Part 2: Tests and Errors
 
 In `test_skeleton.py`, you write tree-shape tests.  A tree-shape test asserts on node types and fields, for example `isinstance(node, Unary)`, `node.op == "-"`, and `node.operand.value == 42`.  Never compare printed strings: a `repr` changes whenever you add a field, but the shape of the tree is what the interpreter will walk.  Cover every primary form and at least two nested unary cases.  Then make failure informative: an input that cannot start an expression (for example, `;`) must raise a `ParseError` that states what was expected, what was found, and the line and column of the offending token.
 
@@ -356,19 +356,6 @@ Submit a ZIP containing the items below.
 - [ ] Every test asserts on node types and fields; no test compares `str(node)` or `repr(node)` to a string.
 - [ ] Parsing `;` raises a `ParseError` whose message includes what was expected, what was found, and line 1, col 1.
 - [ ] The captured test output shows every test passing, and the readme names both partners and says which lexer you built on.
-
----
-
-## Grading Breakdown
-
-This lab is worth 15 points, as the course schedule states.  Each part's weight below is a percentage of those 15 points, and the rubric rows use the same percentages.
-
-| Component | Weight |
-|-----------|--------|
-| Part 0: Recursive Descent Parsing | 10% |
-| Part 1: The First Two Tiers | 63% |
-| Part 2: Tests and Errors | 27% |
-| **Total** | **100% (15 points)** |
 
 ---
 

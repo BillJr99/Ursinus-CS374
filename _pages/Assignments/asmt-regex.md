@@ -8,7 +8,7 @@ info:
   purpose: "To build a working command of regular expressions by writing a tested pattern library, a finditer-based mini lexer, and a realistic log parser, and to learn the vocabulary you need to explain why a pattern behaves the way it does."
   tilt:
     task: "Work through four scaffolded parts: a ten-pattern library, a re.finditer mini lexer, a regex text transformer and log parser, and a written analysis of regex limits."
-    criteria: "I grade this on the correctness of your patterns, mini lexer, and log parser, and on the depth of your greedy/lazy, anchors, and Chomsky-limits analysis.  Each part is worth 25 points, and the rubric below spells out each row."
+    criteria: "I grade this on the correctness of your patterns, mini lexer, and log parser, and on the depth of your greedy/lazy, anchors, and Chomsky-limits analysis.  The rubric below spells out each row."
   points: 100
   goals:
     - To write and test a library of regular expressions for real-world data patterns
@@ -54,7 +54,7 @@ tags:
 
 ---
 
-In this assignment you write regular expressions, test them, and use them to build a small lexer, a text transformer, and a log parser.  A regular expression (regex) is a pattern that describes a set of strings, and Python's `re` module matches text against such patterns.  You leave with a tested library of ten patterns, a working `re.finditer` lexer that you grow again in the Lexer assignment, and the vocabulary to explain why a pattern behaves the way it does.  The assignment has four parts worth 25 points each.  I test each part on its own, so complete them in order.  Write every pattern as a raw string (`r"..."`) so that backslashes reach the regex engine unchanged.  Part 4 is a written analysis, and it ends with a question about what regular expressions cannot do; answer it in your writeup.
+In this assignment you write regular expressions, test them, and use them to build a small lexer, a text transformer, and a log parser.  A regular expression (regex) is a pattern that describes a set of strings, and Python's `re` module matches text against such patterns.  You leave with a tested library of ten patterns, a working `re.finditer` lexer that you grow again in the Lexer assignment, and the vocabulary to explain why a pattern behaves the way it does.  I test each part on its own, so complete them in order.  Write every pattern as a raw string (`r"..."`) so that backslashes reach the regex engine unchanged.  Part 4 is a written analysis, and it ends with a question about what regular expressions cannot do; answer it in your writeup.
 
 ---
 
@@ -84,7 +84,7 @@ You should see one line such as `Python 3.12.3`; any version 3.10 or newer is fi
 > touch patterns.py mini_lexer.py transformer.py log_parser.py config.json readme.md
 > ```
 
-> **Time budget.** The four parts carry 25 points each and are sized alike.  Parts 1 and 2 go faster once the Regex Workshop lab (two to three hours) is in.  Spread the rest across the assignment window using the pacing table below, and get the first pattern passing today.
+> **Time budget.** The four parts are sized alike.  Parts 1 and 2 go faster once the Regex Workshop lab (two to three hours) is in.  Spread the rest across the assignment window using the pacing table below, and get the first pattern passing today.
 
 ### Your First 30 Minutes
 
@@ -120,7 +120,7 @@ See the course schedule for the assigned and due dates.  A suggested sequence:
 
 ---
 
-## Part 1: Pattern Library (25 points)
+## Part 1: Pattern Library
 
 ### Step 1a: Add the check() Harness
 
@@ -222,7 +222,7 @@ PASS MARKDOWN_LINK (3 positive, 3 negative)
 
 ---
 
-## Part 2: Mini Lexer Using re.finditer (25 points)
+## Part 2: Mini Lexer Using re.finditer
 
 Part 2 builds a lexer, a program that splits source text into tokens, out of a single regex and `re.finditer`.  A token is a labeled piece of source text such as a keyword, a number, or an operator.  A production lexer does not call `re.match` in a loop at each position.  It joins every token pattern into one large alternation (a list of patterns separated by `|`) and calls `re.finditer`, which returns every non-overlapping match in a single pass.  Each alternative is a named group, `(?P<NAME>pattern)`, so each match reports which token rule fired through `m.lastgroup`.
 
@@ -367,7 +367,7 @@ Run `mini_lex` on each input below and confirm that the output matches the expec
 
 ---
 
-## Part 3: Regex-Based Text Transformer and Log Parser (25 points)
+## Part 3: Regex-Based Text Transformer and Log Parser
 
 ### Step 3a: Text Transformer
 
@@ -499,7 +499,7 @@ ERROR lines written to errors.txt
 
 ---
 
-## Part 4: Pattern Analysis (25 points)
+## Part 4: Pattern Analysis
 
 Answer the four questions below in `readme.md` under headings `Q1` through `Q4`.  Each answer must be at least one paragraph and must quote a pattern, an input, or an output from your own files; restating the course notes without your own example earns the lowest rubric row.  End the file with the Python version you used (`python3 --version`), so that I can reproduce your results.
 
@@ -559,18 +559,6 @@ In one paragraph, explain why no regular expression can validate balanced nested
 - [ ] `python3 log_parser.py` reads its paths from `config.json`, reports malformed lines with their line numbers, and writes `errors.txt`.
 - [ ] `readme.md` answers Q1 through Q4 with examples from your own files, names the Chomsky level and the pipeline component in Q4, and lists your Python version.
 - [ ] `test_output.txt` is freshly generated from the files you are submitting.
-
----
-
-## Grading Breakdown
-
-| Component | Points |
-|-----------|--------|
-| Part 1: Pattern Library | 25 |
-| Part 2: Mini Lexer with re.finditer | 25 |
-| Part 3: Text Transformer and Log Parser | 25 |
-| Part 4: Pattern Analysis | 25 |
-| **Total** | **100** |
 
 ---
 

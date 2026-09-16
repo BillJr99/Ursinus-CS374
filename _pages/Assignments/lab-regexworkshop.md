@@ -8,7 +8,7 @@ info:
   purpose: "To move from regular expressions as theory to regular expressions as a working tool: Python's re library in five verbs, the backtracking the engine does when a quantifier has a choice, a repeatable test harness, and the one-pattern scanner that the Regex and Lexer assignments both grow from."
   tilt:
     task: "Work the four walkthroughs below by running and varying every cell, then build the check() harness with three tested patterns and the re.finditer mini lexer with an ordered TOKEN_SPEC and gap detection."
-    criteria: "I grade this on your worked answers to the two walkthrough sections, a running harness with three fully tested patterns, and a mini lexer that tokenizes the worked example correctly and reports gaps, weighted 25/20/30/25 across the four parts.  The rubric below breaks it down in full."
+    criteria: "I grade this on your worked answers to the two walkthrough sections, a running harness with three fully tested patterns, and a mini lexer that tokenizes the worked example correctly and reports gaps.  The rubric below breaks it down in full."
   points: 15
   goals:
     - To use Python's re API deliberately, knowing what search, match, findall, sub, and finditer each return and why the shape of findall depends on your groups
@@ -105,7 +105,7 @@ See the course schedule for the assigned and due dates.  This lab is due partway
 
 ---
 
-## Part 1: Python's `re` in Five Verbs (25%)
+## Part 1: Python's `re` in Five Verbs
 
 Python's `re` library adds engineering conveniences to the theory.  Anchors pin a match to a position: `^` is the start of the string and `$` is the end.  Character classes stand for one character from a set: `\d` is a digit, `\w` is a word character, and `\s` is whitespace.  Groups `(...)` capture the text they match so you can read it back later.  Five functions carry almost all the work: `re.search` (first match anywhere), `re.match` (match at the start), `re.findall` (all matches), `re.sub` (substitute), and `re.finditer` (iterate matches with positions).  Raw strings (`r"..."`) keep Python's own backslash handling out of your way.  Use them always.
 
@@ -210,7 +210,7 @@ Complete the `TODO` in `findall_shapes.py` and include the file.
 
 ---
 
-## Part 2: Watching the Engine Backtrack (20%)
+## Part 2: Watching the Engine Backtrack
 
 Matching is not a single left-to-right sweep.  Whenever the pattern offers a choice (how many repetitions a star takes, which branch of an alternation to try), the engine makes the greedy choice first and remembers the decision point.  If the rest of the pattern later fails, the engine backtracks: it returns to the most recent decision, takes the next alternative, and pushes forward again.
 
@@ -313,7 +313,7 @@ Create `part2.md` and answer these in it:
 
 ---
 
-## Part 3: Harness and Pattern Starters (30%)
+## Part 3: Harness and Pattern Starters
 
 A test harness is a small function that runs your pattern against strings you already know the answer for and reports every disagreement.  The `check()` harness below is the one from the Regex assignment's Part 1, copied verbatim, so that assignment starts from a running state.  It uses `fullmatch`, which succeeds only when the pattern matches the entire string.  That is deliberate: a pattern that matches only the front of `42abc` is too permissive, and `fullmatch` exposes it without `^` and `$` written by hand.
 
@@ -401,7 +401,7 @@ Use raw strings throughout.  Write one sentence per pattern explaining each non-
 
 ---
 
-## Part 4: One Pattern, Every Token (25%)
+## Part 4: One Pattern, Every Token
 
 A lexer does not run one pattern at a time over the source.  It joins every token pattern into a single master alternation, gives each alternative a named group, and lets `finditer` sweep the input once.  After each match, `m.lastgroup` names the alternative that fired, which is the token type, and `m.start()` says where it was, which is what an error message needs.
 
@@ -529,20 +529,6 @@ Submit a ZIP of your `cs374-regex` folder containing the files below.
 - [ ] `python3 mini_lexer.py` tokenizes `let x = 42` with the right types and values, reports the `=` gap with position 6, and lexes `lets` as one `IDENT`.
 - [ ] `mini_lexer.py` builds one compiled alternation with named groups and uses `re.finditer`, not `re.match` in a loop.
 - [ ] `readme.md` names both partners (or says you worked alone) and lists your Python version.
-
----
-
-## Grading Breakdown
-
-This lab is worth 15 points, as the course schedule states.  Each part's weight below is a percentage of those 15 points, and the rubric rows use the same percentages.
-
-| Component | Weight |
-|-----------|--------|
-| Part 1: The Five Verbs | 25% |
-| Part 2: Watching the Engine Backtrack | 20% |
-| Part 3: Harness and Pattern Starters | 30% |
-| Part 4: One Pattern, Every Token | 25% |
-| **Total** | **100% (15 points)** |
 
 ---
 

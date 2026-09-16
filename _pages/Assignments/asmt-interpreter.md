@@ -8,7 +8,7 @@ info:
   purpose: "To complete your language pipeline with a tree-walking evaluator that has nested scopes, strong dynamic typing, a small static type checker, a REPL, and a precise semantics document.  This is the capstone component your team project extends."
   tilt:
     task: "Define AST node dataclasses with visitor dispatch, build a tree-walking evaluator with environments and short-circuit logic, add a REPL and file runner, implement a small static type checker over annotated declarations, and complete Part 5 in your choice of direction: Error Messages and SEMANTICS.md, or full Hindley-Milner Type Inference, or the Intcode VM."
-    criteria: "I grade this on a correct evaluator with well-behaved scopes and short-circuit logic, a recoverable REPL and file runner, a working small static type checker that runs as its own stage before evaluation, and a complete Part 5 in your chosen direction (Error Messages and SEMANTICS.md, or full Hindley-Milner Type Inference, or the Intcode VM), weighted 25/30/15/15/15 across the five parts.  The Part 5 rubric applies equivalently to every direction.  See the rubric below for the full breakdown."
+    criteria: "I grade this on a correct evaluator with well-behaved scopes and short-circuit logic, a recoverable REPL and file runner, a working small static type checker that runs as its own stage before evaluation, and a complete Part 5 in your chosen direction (Error Messages and SEMANTICS.md, or full Hindley-Milner Type Inference, or the Intcode VM).  The Part 5 rubric applies equivalently to every direction.  See the rubric below for the full breakdown."
   points: 100
   goals:
     - To define a complete set of AST node dataclasses covering every language construct
@@ -143,7 +143,7 @@ See the course schedule for the assigned and due dates.  Two pair labs land insi
 
 ---
 
-## Part 1: AST Node Dataclasses (25 points)
+## Part 1: AST Node Dataclasses
 
 ### Step 1a: Define the Node Types
 
@@ -255,7 +255,7 @@ class Interpreter:
 
 ---
 
-## Part 2: Tree-Walking Evaluator (30 points)
+## Part 2: Tree-Walking Evaluator
 
 ### Step 2a: Evaluate Expressions
 
@@ -392,7 +392,7 @@ def test_determinism(tree):
 
 ---
 
-## Part 3: REPL and File Runner (15 points)
+## Part 3: REPL and File Runner
 
 ### Step 3a: Build the File Runner
 
@@ -465,7 +465,7 @@ Lexical error at line 1, col 1: unexpected character '@'
 
 ---
 
-## Part 4: The Small Static Type Checker (15 points)
+## Part 4: The Small Static Type Checker
 
 Your evaluator enforces types *dynamically*: a type error surfaces only when the offending expression is actually evaluated.  Part 4 adds a small **static type checker** that catches a useful class of those errors before evaluation begins, as its own pipeline stage: lex -> parse -> check -> evaluate.  This is deliberately not full type inference.  Annotations are required at declarations, so there is no unification; the checker verifies only what is *declared*.  Where a type is unknown (an unannotated construct you choose not to cover), document the gap in your readme rather than guessing.  The Type Checker Starter lab builds the core with a partner before this part is due, and the Hindley-Milner direction in Part 5 grows this checker into whole-program inference, so Part 4 is a foundation, not a throwaway.
 
@@ -522,7 +522,7 @@ Report every rejection as `Type error at line L, col C: ...`, naming both confli
 
 ---
 
-## Part 5: Making the Semantics Precise (15 points), Choose Your Direction
+## Part 5: Making the Semantics Precise, Choose Your Direction
 
 Parts 1-4 give your language a working evaluator and a static checking stage.  Part 5 makes its semantics *precise*, in your choice of **direction**.  You complete one Part 5 and submit one deliverable, and the same 15-point rubric row applies equivalently to each.
 
@@ -532,7 +532,7 @@ Parts 1-4 give your language a working evaluator and a static checking stage.  P
 | **Full type inference (Hindley-Milner)** | Part 4's annotation checker grown into whole-program *inference* that deduces types with no annotations at all, the way Haskell, OCaml, and Rust do.  See the [typing direction](#part-5-direction-full-type-inference-hindley-milner) | You enjoyed Part 4 and want the unification machinery behind modern type systems |
 | **The Intcode VM** | A *virtual machine* that executes a flat list of numeric opcodes, the model behind CPython's bytecode, the JVM, and WebAssembly, implemented as the [Advent of Code 2019 Intcode](https://adventofcode.com/2019/day/2) machine and specified opcode by opcode.  See the [Intcode direction](#part-5-direction-a-contrasting-execution-model-the-intcode-vm) | You want to have built both dominant execution models and to say precisely how they differ |
 
-In every direction, Step 5a's error hierarchy is required (lexical, syntax, and name errors still need staged reporting; in the Intcode direction, malformed programs and illegal opcodes are staged errors), and the control-flow theory questions from Step 2b go in your readme.  The two alternative directions replace Steps 5b and 5c (SEMANTICS.md and the differential programs) with their own sections below: the typing direction with the inference engine, and the Intcode direction with the VM, where the self-checking AoC inputs are your oracle and a required differential test pins your VM's arithmetic against your tree-walker's.  The total remains 100 points.  Whichever direction you choose, the goal is the same: for every construct in your language (or VM), there is exactly one written answer to "what does this mean, and what happens when it is misused?", and your implementation agrees with it.
+In every direction, Step 5a's error hierarchy is required (lexical, syntax, and name errors still need staged reporting; in the Intcode direction, malformed programs and illegal opcodes are staged errors), and the control-flow theory questions from Step 2b go in your readme.  The two alternative directions replace Steps 5b and 5c (SEMANTICS.md and the differential programs) with their own sections below: the typing direction with the inference engine, and the Intcode direction with the VM, where the self-checking AoC inputs are your oracle and a required differential test pins your VM's arithmetic against your tree-walker's.  Whichever direction you choose, the goal is the same: for every construct in your language (or VM), there is exactly one written answer to "what does this mean, and what happens when it is misused?", and your implementation agrees with it.
 
 ### Step 5a: Define the Error Class Hierarchy
 
@@ -745,19 +745,6 @@ Every direction includes the required Step 2e Hypothesis invariant tests in `tes
 - [ ] The file runner prints a stage label (`Lexical`, `Syntax`, `Type`, `Runtime`) in every error message, and the Type stage fires before any code runs.
 - [ ] The Part 5 deliverable for your direction is complete (`SEMANTICS.md` and the differential programs, or `types.py` + `typecheck.py` + `TYPES.md`, or `intcode.py` + `INTCODE.md` with the AoC checkpoints and the differential test), and the control-flow theory questions are answered in the readme.
 - [ ] The readme lists your Python version and any reference component you used.
-
----
-
-## Grading Breakdown
-
-| Component | Points |
-|-----------|--------|
-| Part 1: AST Node Dataclasses | 25 |
-| Part 2: Tree-Walking Evaluator | 30 |
-| Part 3: REPL and File Runner | 15 |
-| Part 4: The Small Static Type Checker | 15 |
-| Part 5 (chosen direction): Error Messages and SEMANTICS.md, or full Hindley-Milner Type Inference, or the Intcode VM | 15 |
-| **Total** | **100** |
 
 ---
 

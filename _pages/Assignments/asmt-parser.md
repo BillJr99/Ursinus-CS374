@@ -8,7 +8,7 @@ info:
   purpose: "To build the second permanent component of your pipeline (a recursive descent parser that turns your Lexer's tokens into an AST) while learning formal grammars, precedence, and associativity."
   tilt:
     task: "Write a formal EBNF grammar; implement a working parser in your chosen direction (recursive descent atop your Lexer as the core direction, a Bison/PLY generator grammar with actions, or a Mini-Notation music parser); and build an AST with tooling, verification, and positioned error reporting."
-    criteria: "I grade this on a grammar that matches the parser exactly, correct precedence and structure at every tier, and programmatic verification of the AST tooling with positioned errors, weighted 30/40/30 across the three parts.  The rubric applies equivalently to whichever direction you choose.  Please read the rubric below for the details."
+    criteria: "I grade this on a grammar that matches the parser exactly, correct precedence and structure at every tier, and programmatic verification of the AST tooling with positioned errors.  The rubric applies equivalently to whichever direction you choose.  Please read the rubric below for the details."
   points: 100
   goals:
     - To write a formal EBNF grammar for the project language covering expressions, statements, and programs
@@ -71,7 +71,7 @@ In this assignment you build the parser, the second permanent component of your 
 
 ---
 
-## Part 0: Before You Start - Abstract Syntax Trees (10 points)
+## Part 0: Before You Start - Abstract Syntax Trees
 
 Do this part before you write any parser code; you need pencil and paper and about twenty minutes.  A parse tree records every grammar rule the parser applied, including the parentheses and every intermediate non-terminal.  An AST keeps only the structure the rest of the language needs, and choosing what to keep is a design decision: you are choosing what the rest of your implementation never has to think about again.
 
@@ -151,7 +151,7 @@ See the course schedule for the assigned and due dates.  If a break falls inside
 
 ---
 
-## Part 1: EBNF Grammar (27 points)
+## Part 1: EBNF Grammar
 
 Write the complete EBNF grammar for your language before you write a line of parser code.  A grammar is a set of rules that says which token sequences form a valid program; a non-terminal is a named rule in the grammar, and a terminal is a token from your Lexer, written in `ALL_CAPS` or as a quoted string.  Notation: `*` = zero or more, `+` = one or more, `?` = zero or one, `|` = alternation, `( )` = grouping.  You will include the grammar verbatim in your readme, where it is the contract between the grammar document and the implementation.  It must define at least the following non-terminals, in precedence order from loosest to tightest:
 
@@ -213,7 +213,7 @@ These questions exercise the Table-Driven and LR Parsing session's material on t
 
 ---
 
-## Part 2: Recursive Descent Parser (36 points)
+## Part 2: Recursive Descent Parser
 
 ### Step 2a: Define the AST Nodes and Start the Parser
 
@@ -419,7 +419,7 @@ Program(stmts=[
 
 ---
 
-## Part 3: AST Tooling and Error Reporting (27 points)
+## Part 3: AST Tooling and Error Reporting
 
 ### Step 3a: Write the Pretty-Printer
 
@@ -633,18 +633,6 @@ Submit a ZIP containing the files below, and list your Python version in the rea
 - [ ] The Hypothesis test runs, and the readme reports one shrunk counterexample (or a reasoned all-clear with the generator shown).
 - [ ] Every `ParseError` names the expected token, the found token, and the line and column; the ten broken programs are recorded.
 - [ ] `lexer.py` is imported unchanged, or the readme declares the reference lexer, and the Python version is listed.
-
----
-
-## Grading Breakdown
-
-| Component | Points |
-|-----------|--------|
-| Part 0: Abstract Syntax Trees | 10 |
-| Part 1: EBNF Grammar | 27 |
-| Part 2: Recursive Descent Parser | 36 |
-| Part 3: AST Tooling and Error Reporting | 27 |
-| **Total** | **100** |
 
 ---
 

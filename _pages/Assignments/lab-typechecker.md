@@ -8,7 +8,7 @@ info:
   purpose: "To build the core of the Interpreter assignment's required static type checker with a partner, covering literal, variable, and operator checks over the class AST, all running before any code is evaluated."
   tilt:
     task: "With a partner, implement a checker that walks the class AST with a type environment, verifying annotated declarations, variable uses, and operator applications, and reporting positioned type errors."
-    criteria: "I grade this on a checker that accepts the well-typed programs and rejects each ill-typed program with a positioned two-type error message, plus a set of typing-rule statements written on paper, weighted 70/30 across the two parts.  See the rubric below for the full breakdown."
+    criteria: "I grade this on a checker that accepts the well-typed programs and rejects each ill-typed program with a positioned two-type error message, plus a set of typing-rule statements written on paper.  See the rubric below for the full breakdown."
   points: 15
   goals:
     - To implement a static checking pass over the class AST using a type environment that mirrors the Environment class
@@ -90,9 +90,9 @@ This lab lands inside the Interpreter assignment's window; see the course schedu
 
 ## Part 0: Worked Models (read before you code)
 
-Part 0 opens with a short paper exercise, which is the graded piece (10%).  The rest is four worked models from the Type Systems class session: a runtime checker for the interpreter you are building, a trace of it on compound expressions, inference by hand, and a type-error postmortem.  Each model has a script you can run and questions to talk through with your partner.  Read all four before you start Part 1.
+Part 0 opens with a short paper exercise, which is the graded piece.  The rest is four worked models from the Type Systems class session: a runtime checker for the interpreter you are building, a trace of it on compound expressions, inference by hand, and a type-error postmortem.  Each model has a script you can run and questions to talk through with your partner.  Read all four before you start Part 1.
 
-### Type Systems on Paper (10%)
+### Type Systems on Paper
 
 Plan on about fifteen minutes with pencil and paper.  Everyone has an opinion about static typing; an example is what makes the argument worth having.
 
@@ -413,7 +413,7 @@ In a weakly typed language, `"19.99" + 5.0` yields `"19.995"` and `"19.995" * 1.
 
 ---
 
-## Part 1: Build the Checker Core (63%)
+## Part 1: Build the Checker Core
 
 Implement `check(program) -> None` in `typechecker.py`.  The function walks the class AST (your Parser assignment's AST nodes, or the reference AST) and reports a type error as soon as it finds one.  A well-typed program produces no output.  The checker carries a type environment as it walks: the same parent-chaining discipline as the `Environment` class from your Environments lab, but each name is bound to a *type* instead of a value.  Entering a block creates a child environment, and leaving the block discards it.
 
@@ -589,7 +589,7 @@ Type error at line 1, col 16: '+' requires Num operands, got Num and Bool
 
 ---
 
-## Part 2: Write the Typing Rules on Paper (27%)
+## Part 2: Write the Typing Rules on Paper
 
 In `RULES.md`, state the typing rule for each construct your checker covers, one rule per construct.  A typing rule has premises (what must already be true about the parts) and a conclusion (what then holds for the whole).  Writing the rules after the code is deliberate: the code tells you what you actually enforced, and the rule tells you whether that was what you meant.  This document becomes the seed of the Interpreter assignment's semantics writeup, and if you later choose the full Hindley-Milner direction (type inference, which works out types with no annotations at all), these rules are exactly what inference generalizes.
 
@@ -640,17 +640,6 @@ Submit a ZIP containing the files below, with both partners named in `RULES.md`.
 - [ ] `RULES.md` has one rule per construct the checker covers, each with its premises stated and its implementing function cited.
 - [ ] `RULES.md` answers the quadrant question and the gradual-typing question.
 - [ ] Both partners are named in `RULES.md`, and any reference component you built on is declared in one line.
-
-## Grading Breakdown
-
-This lab is worth 15 points, as the course schedule states.  Each part's weight below is a percentage of those 15 points, and the rubric rows use the same percentages.
-
-| Component | Weight |
-|-----------|--------|
-| Part 0: Type Systems | 10% |
-| Part 1: The Checker Core | 63% |
-| Part 2: Typing Rules on Paper | 27% |
-| **Total** | **100% (15 points)** |
 
 ## Reflection Prompts
 

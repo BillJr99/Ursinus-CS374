@@ -8,7 +8,7 @@ info:
   purpose: "To evaluate lambda calculus expressions by hand with a partner, working beta reduction with capture-avoiding substitution and Church encodings of booleans and numerals, which are the theory floor beneath functional programming."
   tilt:
     task: "With a partner, carry out step-by-step beta reductions including a capture-avoidance case, and verify Church-encoded booleans and numerals by reduction."
-    criteria: "I assess your work on correct, fully-shown reduction sequences and correct Church-encoding verifications, weighted 55/45 across the two parts.  Please read the rubric below for the details."
+    criteria: "I assess your work on correct, fully-shown reduction sequences and correct Church-encoding verifications.  Please read the rubric below for the details."
   points: 15
   goals:
     - To perform beta reduction step by step, identifying redexes and applying capture-avoiding substitution
@@ -157,7 +157,7 @@ A Church encoding represents a value such as a boolean or a number as a lambda t
 
 ---
 
-## Part 0: Before You Start - Beta Reduction and Church Encodings (10%)
+## Part 0: Before You Start - Beta Reduction and Church Encodings
 
 Do this part first.  Beta reduction is a rewriting rule, and you learn it by applying it slowly and recording each step.  Two reductions will do: one that reaches a normal form, and one that never will.
 
@@ -170,7 +170,7 @@ Do this part first.  Beta reduction is a rewriting rule, and you learn it by app
 
 ---
 
-## Part 1: Beta Reduction (50%)
+## Part 1: Beta Reduction
 
 Reduce each expression below to normal form, one beta-step per line, with the redex you contract underlined or bracketed on every line.  Before each step, compare the argument's free variables with the binder you are about to substitute under; if a name appears in both places, alpha-rename the binder first.  Item 4 is the one place in this lab where the obvious move is wrong, and the rubric row for this part turns on whether you renamed or captured.
 
@@ -183,7 +183,7 @@ Reduce each expression below to normal form, one beta-step per line, with the re
 
 ---
 
-## Part 2: Church Encodings (40%)
+## Part 2: Church Encodings
 
 When an item names an encoding from the table above, write its definition in full as your first line, then reduce; a name is an abbreviation, not a redex.  Two terms are alpha-equivalent when they differ only in the names of bound variables, so a verification succeeds when your complete sequence ends at a term matching the expected one after renaming, not when you claim it would.
 
@@ -216,19 +216,6 @@ When an item names an encoding from the table above, write its definition in ful
 - [ ] Every Part 2 verification starts from the expanded definitions and ends at the expected term, with a renaming line under item 3 if the binder names differ from $$\text{TWO}$$.
 - [ ] Part 2 item 4 names a specific idiom from the Functional Programming sessions and a specific place in your team language or interpreter.
 - [ ] The least-confident step from Part 0 is marked, and, if handwritten, every photo is readable.
-
----
-
-## Grading Breakdown
-
-This lab is worth 15 points, as the course schedule states.  Each part's weight below is a percentage of those 15 points, and the rubric rows use the same percentages.
-
-| Component | Weight |
-|-----------|--------|
-| Part 0: Beta Reduction and Church Encodings | 10% |
-| Part 1: Beta Reduction | 50% |
-| Part 2: Church Encodings | 40% |
-| **Total** | **100% (15 points)** |
 
 ---
 

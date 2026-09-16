@@ -52,7 +52,7 @@ A plain-English glossary.  Come back to it whenever one of these terms starts to
 |------|-----------------------|----------------|
 | **Regular expression** | A compact pattern that describes a whole *set* of strings at once | It is the specification language for every token type in your lexer |
 | **Concatenation** | Gluing patterns side by side: "this, then that" | The invisible default operator; most of any pattern is concatenation |
-| **Alternation (`\|`)** | "Either this or that" | Lets one pattern cover several spellings, like `if\|else\|while` |
+| **Alternation (<code>&#124;</code>)** | "Either this or that" | Lets one pattern cover several spellings, like <code>if&#124;else&#124;while</code> |
 | **Kleene star (`*`)** | "Zero or more repeats of the thing just before me" | The only source of infinity in a regex; identifiers of any length need it |
 | **Quantifier (`*`, `+`, `?`, `{n,m}`)** | A suffix that says how many times the thing just before it may repeat | `*` is the primitive; the rest are shorthand for it |
 | **Character class (`[0-9]`, `\d`)** | "Any one character from this menu" | Abbreviates a long alternation and keeps the pattern readable |
@@ -93,8 +93,8 @@ Read each pattern the way the engine does: left to right, applying precedence.  
 |---------|--------------------------|--------------------------|
 | `ab*c` | `a` · (`b`)\* · `c` | ? |
 | `(ab)*c` | (`a` · `b`)\* · `c` | ? |
-| `a(b\|c)d` | `a` · (`b` \| `c`) · `d` | ? |
-| `ab\|cd` | (`a` · `b`) \| (`c` · `d`) | ? |
+| <code>a(b&#124;c)d</code> | `a` · (`b` &#124; `c`) · `d` | ? |
+| <code>ab&#124;cd</code> | (`a` · `b`) &#124; (`c` · `d`) | ? |
 | `[0-9]+\.[0-9]+` | one-or-more digits · literal `.` · one-or-more digits | ? |
 
 The fourth row catches people.  Alternation binds *loosest*, so `ab|cd` means "either `ab` or `cd`."  It does not mean "`a`, then `b` or `c`, then `d`."  For each row, write two members of the set and one non-member now.
@@ -184,11 +184,11 @@ Practical regex syntax is large, and almost none of it adds power.  Each conveni
 | Shorthand | Expansion in primitives | Reads as |
 |-----------|-------------------------|----------|
 | `r+` | `r r*` | one or more |
-| `r?` | `(r \| ε)` | optional |
-| `[abc]` | `(a \| b \| c)` | one from the menu |
-| `[a-c]` | `(a \| b \| c)` | one from the range |
+| `r?` | <code>(r &#124; ε)</code> | optional |
+| `[abc]` | <code>(a &#124; b &#124; c)</code> | one from the menu |
+| `[a-c]` | <code>(a &#124; b &#124; c)</code> | one from the range |
 | `r{2}` | `r r` | exactly two |
-| `r{1,3}` | `(r \| rr \| rrr)` | between one and three |
+| `r{1,3}` | <code>(r &#124; rr &#124; rrr)</code> | between one and three |
 
 This matters for two reasons.  First, the class of languages you can describe never grows, no matter how much syntax a regex dialect adds.  It stays regular.  Second, when a pattern misbehaves, expanding the sugar in your head is often the fastest way to see why.
 
@@ -200,7 +200,7 @@ Most languages define an identifier as a letter or underscore, followed by any n
 
 | Stage | Pattern | Reasoning |
 |-------|---------|-----------|
-| 1. First character, spelled out | `(a\|b\|...\|z\|A\|...\|Z\|_)` | alternation over the whole menu |
+| 1. First character, spelled out | <code>(a&#124;b&#124;...&#124;z&#124;A&#124;...&#124;Z&#124;_)</code> | alternation over the whole menu |
 | 2. Same thing, as a class | `[a-zA-Z_]` | sugar for stage 1 |
 | 3. Later characters, one of them | `[a-zA-Z0-9_]` | digits are now allowed |
 | 4. Any number of later characters | `[a-zA-Z0-9_]*` | Kleene star |
@@ -344,7 +344,7 @@ You will use regular expressions in two places this semester.  Inside Python, yo
 | `-c` | print only the count of matching lines | "how many `TODO`s are left?" |
 | `-o` | print only the matched part, not the whole line | harvesting every token name from a file |
 | `-l` | print only the filenames that matched | "which files mention `Environment`?" |
-| `-E` | use extended regex syntax | any pattern with `+`, `?`, `\|`, or `()` |
+| `-E` | use extended regex syntax | any pattern with `+`, `?`, <code>&#124;</code>, or `()` |
 
 ```bash
 grep -rn "def parse_" src/                   # every parse function, with line numbers
@@ -376,7 +376,7 @@ Plain `grep` uses POSIX Basic Regular Expressions (BRE).  In BRE, `+`, `?`, `|`,
 |---|---|---|---|
 | one or more | `a\+` | `a+` | `a+` |
 | optional | `a\?` | `a?` | `a?` |
-| alternation | `cat\|dog` | `cat\|dog` | `cat\|dog` |
+| alternation | <code>cat&#92;&#124;dog</code> | <code>cat&#124;dog</code> | <code>cat&#124;dog</code> |
 | grouping | `\(ab\)*` | `(ab)*` | `(ab)*` |
 | exactly 3 | `a\{3\}` | `a{3}` | `a{3}` |
 
