@@ -73,7 +73,7 @@ tags:
 
 ---
 
-This assignment completes your pipeline with a tree-walking evaluator: a program that walks the abstract syntax tree (AST) your parser built and runs each node.  Your language gets real scopes, real types, a REPL (a read-eval-print loop, the interactive prompt), a static type checker, and a semantics document.  This is the component your team project extends, and the semantics document matters as much as the code does.  Build in the order below, since each part depends on the one before it.
+This assignment completes your pipeline with a tree-walking evaluator: a program that walks the abstract syntax tree (AST) your parser built and runs each node.  Your language gets nested scopes, type rules, a REPL (a read-eval-print loop, the interactive prompt), a static type checker, and a semantics document.  This is the component your team project extends, and the semantics document matters as much as the code does.  Build in the order below, since each part depends on the one before it.
 
 ---
 
@@ -359,7 +359,7 @@ Give `Interpreter` a global environment (`self.globals = Environment()` in `__in
 
 ### Step 2d: Implement Break and Continue
 
-Implement `break` and `continue` with signal exception classes: the `Break` and `Continue` branches raise them, and the `While` branch wraps its body evaluation in `try`/`except` for both.  If a signal escapes a `While` body and reaches the top level, the error handler (Step 3a) reports it as a `LangRuntimeError("break outside loop")` or similar.  Add a test with a `while` loop that counts to 10 and breaks at 5, and confirm it prints `1` through `5` only.  A `BreakSignal` traceback means the `While` branch is not catching it; an infinite loop means `continue` skipped the counter update, which is a semantics decision worth a line in SEMANTICS.md.
+Implement `break` and `continue` with signal exception classes: the `Break` and `Continue` branches raise them, and the `While` branch wraps its body evaluation in `try`/`except` for both.  If a signal escapes a `While` body and reaches the top level, the error handler (Step 3a) reports it as a `LangRuntimeError("break outside loop")` or similar.  Add a test with a `while` loop that counts to 10 and breaks at 5, and confirm it prints `1` through `5` only.  A `BreakSignal` traceback means the `While` branch is not catching it; an infinite loop means `continue` skipped the counter update, which is a semantics decision, so give it a line in SEMANTICS.md.
 
 ```python
 class BreakSignal(Exception): pass

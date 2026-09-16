@@ -659,11 +659,7 @@ print("Interpreter result:", interp.visit(ast))   # 7
 
 #### 2.  The Python Transpiler
 
-A transpiler is just a visitor that accumulates strings instead of values.  Every `visit_*` method returns a fragment of source code, and the fragments compose exactly the way the original AST composes.  This is why well-structured ASTs produce clean, readable transpiled output; the structure of the AST maps directly to the structure of the emitted code.
-
-A transpiler is a visitor that **returns strings** instead of values.
-
-A transpiler is a visitor that **returns strings** instead of values.  Each `visit_*` method returns a Python expression string.  The result of visiting the root is a complete Python expression (or program).
+A transpiler is a visitor that **returns strings** instead of values.  Every `visit_*` method returns a fragment of source code, here a Python expression string, and the fragments compose exactly the way the original AST composes.  The result of visiting the root is a complete Python expression (or program).  This is why a well-structured AST produces readable transpiled output: the structure of the tree maps directly onto the structure of the emitted code.
 
 ```python
 class Num:

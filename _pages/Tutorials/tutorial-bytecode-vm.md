@@ -1144,7 +1144,7 @@ except Exception as e:
 
 In a tree-walking interpreter, closures are easy: a `Closure` object holds a reference to the environment at the time of creation, and lookups walk the environment chain.  In a bytecode VM, variables live on the stack inside call frames; when a function returns, its frame is gone.  A closure that was created inside that function would be left with a dangling reference.
 
-The **upvalue** pattern (invented for Lua 5.x by Roberto Ierusalimschy) solves this elegantly.
+The **upvalue** pattern (invented for Lua 5.x by Roberto Ierusalimschy) solves this with one level of indirection.
 
 ### The Upvalue Pattern
 
@@ -1339,7 +1339,7 @@ In Lua's VM, `CLOSURE` is a single instruction that creates a closure object and
 
 ### The Disassembler
 
-A disassembler pretty-prints the bytecode of a `Chunk` with line numbers and formatted operands.  It is invaluable for debugging the compiler.
+A disassembler pretty-prints the bytecode of a `Chunk` with line numbers and formatted operands.  It is the first thing you reach for when the compiler emits something you did not expect.
 
 ```python
 try:
@@ -1684,7 +1684,7 @@ except Exception as e:
 
 ### Performance Comparison: Tree-Walker vs Bytecode VM
 
-One of the key selling points of a bytecode VM is speed.  Let us measure the difference on Fibonacci, which exercises recursive calls heavily.
+Speed is the reason to build a bytecode VM at all.  Let us measure the difference on Fibonacci, which exercises recursive calls heavily.
 
 ```python
 try:
@@ -1949,7 +1949,7 @@ Before submitting your bytecode VM implementation, verify all of the following:
 
 ---
 
-## Summary
+## What You Built, Phase by Phase
 
 You have now built every layer of a bytecode VM:
 

@@ -19,7 +19,7 @@ tags:
 ---
 # Tutorial: Coroutines and Generators, Pausable Computation
 
-> **Opening hook:** Imagine a vending machine.  A regular function is like a vending machine that dumps every item it will ever produce onto the floor the moment you press the button, all at once, whether you want them yet or not.  A **generator** is a vending machine that produces exactly one item each time you press the button, remembers where it left off, and waits patiently until you press again.  The machine's internal state (which slot it was at, how many remain) is frozen between presses.  That frozen state is the essence of a coroutine.
+> **Start with a vending machine.**  A regular function is like a machine that dumps every item it will ever produce onto the floor the moment you press the button, all at once, whether you want them yet or not.  A **generator** is a vending machine that produces exactly one item each time you press the button, remembers where it left off, and waits patiently until you press again.  The machine's internal state (which slot it was at, how many remain) is frozen between presses.  That frozen state is the essence of a coroutine.
 
 ## Learning Goals
 

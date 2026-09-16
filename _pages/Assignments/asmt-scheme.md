@@ -665,6 +665,6 @@ Submit a ZIP containing `part0.md` (both loop versions, their output, and your r
 ## Reflection Prompts
 
 - Which was harder: getting Scheme installed, or getting your first recursion to terminate? What does your answer suggest about where the real cost of a new language sits?
-- Name one thing that was genuinely easier here than it would have been in Python, and one thing that was genuinely harder.
+- Name one thing that was easier here than it would have been in Python, and one thing that was harder.
 - Your `evaluate` walks a syntax tree in about fifteen lines. Later in this course you will write a parser whose only job is to *build* that tree from flat text. Before you write it: how much code do you think that will take, and what exactly is the parser doing that Scheme did for you here? I will ask you to look back at your answer.
 - Of `let`, `assq`, `map`, and `apply`, which one took the longest to feel natural, and what finally made it click?

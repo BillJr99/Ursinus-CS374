@@ -27,7 +27,7 @@ tags:
   - final-project
 ---
 
-## Introduction
+## Getting Your Language onto Someone Else's Machine
 
 By the end of CS374 you have built a real programming language, with a lexer, a parser, an evaluator or compiler, and probably a REPL.  Right now that implementation lives in a folder on your laptop.  This tutorial shows you how to share it with the world so that anyone (without cloning your repository or installing your dependencies by hand) can run programs written in your language.
 
@@ -43,7 +43,7 @@ Pick the section that matches your project.  The three parts are completely inde
 
 ## Semantic Versioning Quick Reference
 
-Before diving into the tooling, agree on version numbers.  All three ecosystems (PyPI, npm, Docker) use the same **semantic versioning** convention: `MAJOR.MINOR.PATCH`.
+Before you touch any of the tooling, agree on version numbers.  All three ecosystems (PyPI, npm, Docker) use the same **semantic versioning** convention: `MAJOR.MINOR.PATCH`.
 
 | Change | Version bump | Example |
 |---|---|---|

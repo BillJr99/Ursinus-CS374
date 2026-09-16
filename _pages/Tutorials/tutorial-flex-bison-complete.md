@@ -583,7 +583,7 @@ $$
 \texttt{expr} \rightarrow \texttt{expr} \cdot \texttt{'*'}\ \texttt{expr}
 $$
 
-which reads "we have parsed the left operand and will accept this production if `'*'` and another `expr` come next."  The parser generator closes sets of items into **states**, connects them with transitions on grammar symbols, and emits two tables: an **action** table (shift, reduce, accept, or error, indexed by state and lookahead token) and a **goto** table (next state after a reduction).  At run time the parser is breathtakingly simple, which is the point: a loop, a stack, and table lookups, running in $O(n)$ time and using stack space proportional to the deepest nesting in the input.
+which reads "we have parsed the left operand and will accept this production if `'*'` and another `expr` come next."  The parser generator closes sets of items into **states**, connects them with transitions on grammar symbols, and emits two tables: an **action** table (shift, reduce, accept, or error, indexed by state and lookahead token) and a **goto** table (next state after a reduction).  At run time the parser itself is tiny, which is the point: a loop, a stack, and table lookups, running in $O(n)$ time and using stack space proportional to the deepest nesting in the input.
 
 ### Pseudocode
 

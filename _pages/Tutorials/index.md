@@ -35,7 +35,7 @@ These tutorials are where you go for depth on your own schedule.  They are worke
 - [Demo Day Guide: External Guests and Technical Interview Practice]({{ site.baseurl }}/Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice): presenting to guests, and the final-sprint-studio mock-interview rehearsal
 - [Build a Bytecode VM](BytecodeVM): a compilation-target extension for ambitious teams
 - [From AST to Code: Visitors and Transpilers](ASTToCode): expression-oriented design, the Visitor pattern, and transpiling your AST to Python, JavaScript, and Haskell (with source maps)
-- [Coroutines and Generators: Pausable Computation](CoroutinesAndGenerators): `yield`, `send`, and `async`/`await` from first principles, ending with generator objects in your interpreter
+- [Coroutines and Generators: Pausable Computation](CoroutinesAndGenerators): `yield`, `send`, and `async`/`await` built up from the idea of a frozen stack frame, ending with generator objects in your interpreter
 - [Error Handling: From Return Codes to Algebraic Effects](ErrorHandling): design your language's error story: return codes, exceptions, Option/Maybe, and Result/Either
 - [Garbage Collection: Implementing Memory Management](GarbageCollection): a runtime extension for the project
 - [Compiling and Linking: From Source to Executable](CompilingAndLinking): what happens below your interpreter

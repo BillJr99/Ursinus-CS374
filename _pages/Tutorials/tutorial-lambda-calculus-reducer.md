@@ -29,16 +29,7 @@ By the end of this tutorial, you will have:
 - Implemented both normal-order and applicative-order beta reduction strategies and observed on a concrete term where they differ
 - Built a step-tracer and REPL that interactively reduces lambda calculus terms, suitable for use in the Lambda Calculus assignment
 
-This tutorial builds a complete, correct lambda calculus reducer in Python, the same one you need for the Lambda Calculus assignment.  We go slowly through every design decision and every subtle point, so that when you write your own from scratch, you understand *why* each piece works, not just *what* it does.
-
-By the end you will have:
-- An AST with `Var`, `Lam`, `App` nodes
-- A `free_vars` function
-- A correct `substitute` function (capture-avoiding)
-- A normal-order reducer
-- An applicative-order reducer
-- A step tracer
-- A REPL for the lambda calculus
+This tutorial builds a complete, correct lambda calculus reducer in Python, the same one you need for the Lambda Calculus assignment.  It goes slowly through every design decision and every subtle point, so that when you write your own from scratch you understand *why* each piece works, not just *what* it does.  The finished pieces are an AST of `Var`, `Lam`, and `App` nodes, `free_vars`, a capture-avoiding `substitute`, a normal-order reducer, an applicative-order reducer, a step tracer, and a REPL.
 
 ---
 
@@ -997,7 +988,7 @@ print("Ready to meet the flock.")
 
 ### 1.  Notation and Reduction Rules
 
-Before diving into the rules, orient yourself: in the lambda calculus you had *variables*, *abstractions* ($$\lambda x.\ e$$), and *application*.  Combinatory logic throws out variables and abstractions entirely.  What remains?  Application only, and a small fixed menu of named functions (the "birds") whose behavior is completely captured by simple rewrite rules.  Each rule says: "when this bird receives enough arguments, rewrite the whole expression."  There is no substitution, no renaming, no environment to thread around.  Reduction is pure term rewriting, like rearranging LEGO bricks according to a picture.
+Before you read the rules, orient yourself: in the lambda calculus you had *variables*, *abstractions* ($$\lambda x.\ e$$), and *application*.  Combinatory logic throws out variables and abstractions entirely.  What remains?  Application only, and a small fixed menu of named functions (the "birds") whose behavior is completely captured by simple rewrite rules.  Each rule says: "when this bird receives enough arguments, rewrite the whole expression."  There is no substitution, no renaming, no environment to thread around.  Reduction is pure term rewriting, like rearranging LEGO bricks according to a picture.
 
 **Combinatory terms** are built from:
 
@@ -1248,9 +1239,7 @@ print(W(eq)(5))    # True -- a number always equals itself
 
 ### 9.  Everything from S, K, I
 
-You have now met seven birds.  Here is the remarkable fact: you do not need seven.  You need *two*.  S and K alone (two LEGO bricks) can simulate every other bird, every lambda term, every computable function.  This is Schönfinkel's 1924 theorem, the combinatory-logic counterpart of the Church-Turing thesis.  The bracket abstraction algorithm in Section 1 is the constructive proof: it tells you mechanically how to turn any lambda term into an SKI expression.  The derivations below make this concrete.
-
-The true power of combinatory logic is that S and K suffice for *any* lambda term.  The bracket abstraction algorithm (Section 1) converts any lambda term to an equivalent SKI expression.  Let us derive B, C, and W from SKI to see this concretely.
+You have now met seven birds.  You do not need seven.  You need *two*.  S and K alone (two LEGO bricks) can simulate every other bird, every lambda term, every computable function.  This is Schönfinkel's 1924 theorem, the combinatory-logic counterpart of the Church-Turing thesis.  The bracket abstraction algorithm in Section 1 is the constructive proof: it tells you mechanically how to turn any lambda term into an SKI expression.  Let us derive B, C, and W from SKI to see that concretely.
 
 **Deriving B (Compose) from SKI:**
 
@@ -1336,9 +1325,7 @@ print([fib(n) for n in range(10)])   # [0,1,1,2,3,5,8,13,21,34]
 
 ### 11.  Gabriel Lebec's Birds in JavaScript, and in Python
 
-The birds stop being an abstract curiosity the moment you recognize them in code you already write.  Every time you call `map(lambda x: x + 1, lst)` you are using I. Every time you write `key=lambda _: 0` you are using K. Every time you write `sorted(lst, key=lambda x: -x)` you are using a partial application of C. Gabriel Lebec's talk makes this explicit for JavaScript; this section makes it explicit for Python.  The punchline: **combinators are not exotic theory; they are the names for the patterns you reach for every day without knowing it**.
-
-Gabriel Lebec's 2016 talk "*A Flock of Functions*" demonstrates that every standard higher-order function in JavaScript is a bird in disguise.  Notice that **you already use combinators every day**; you just call them `const`, `id`, `flip`, `compose`, and `curry`.  Here is the full correspondence, in Python:
+The birds stop being an abstract curiosity the moment you recognize them in code you already write.  Every time you call `map(lambda x: x + 1, lst)` you are using I. Every time you write `key=lambda _: 0` you are using K. Every time you write `sorted(lst, key=lambda x: -x)` you are using a partial application of C. Gabriel Lebec's 2016 talk "*A Flock of Functions*" makes this explicit for JavaScript: every standard higher-order function there is a bird in disguise.  **The birds are the names for patterns you already reach for every day**; you just call them `const`, `id`, `flip`, `compose`, and `curry`.  Here is the full correspondence, in Python:
 
 ```python
 # === The Flock - Python Edition ===
@@ -1387,7 +1374,7 @@ print(to_int(succ(twice)))  # 3
 
 Point-free programming is what happens when you take the combinator philosophy all the way to the surface of your code.  Instead of writing `lambda x: f(g(x))` (which names $$x$$ even though $$x$$ appears in only one place) you write `B(f)(g)`, which says "compose f and g" without ever mentioning what they are applied to.  This is not just an aesthetic preference: in Haskell it is the dominant style, because it emphasizes what transformations are being composed rather than what data they act on.  The LEGO metaphor completes here: point-free code is a blueprint describing how bricks connect, not a sequence of operations on a specific piece.
 
-**Point-free** (or "tacit") programming uses only combinators and function composition: no named variables, no lambdas.  It is the ultimate expression of the combinatory-logic philosophy, and it is the standard style in Haskell.  Here is the connection:
+**Point-free** (or "tacit") programming uses only combinators and function composition: no named variables, no lambdas.  It is where combinatory logic ends up when you write it as ordinary code, and it is the standard style in Haskell.  Here is the connection:
 
 ```python
 from functools import reduce

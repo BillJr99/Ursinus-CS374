@@ -506,6 +506,6 @@ If you choose the GC extension for your final project:
 
 - Wilson, Paul R. "Uniprocessor Garbage Collection Techniques" (1992).  The definitive survey of all algorithms, readable and thorough.
 - Cheney, C.J. "A Nonrecursive List Compacting Algorithm" (1970, CACM).  The original two-page paper; one of the most elegant algorithms ever published.
-- Jones, Richard et al. *The Garbage Collection Handbook* (CRC Press, 2011).  The modern comprehensive reference.
+- Jones, Richard et al. *The Garbage Collection Handbook* (CRC Press, 2011).  The standard modern reference.
 - Python's GC documentation: https://docs.python.org/3/library/gc.html: explains CPython's reference counting + generational cycle collector.
 - Go GC guide: https://go.dev/doc/gc-guide: explains the tri-color mark-and-sweep used in Go's runtime.

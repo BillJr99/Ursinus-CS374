@@ -45,7 +45,7 @@ By the end of this activity, you will be able to:
 
 Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Please think each model and question through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever you disagreed or found another approach.  After class, please respond to the reflective prompt on your own in your notebook.
 
-> **How today runs.**  Three parts in seventy-five minutes means the clock is real.  Part I (paradigms) takes about fifteen minutes, Part II and Part III (the criteria and the tradeoffs) take about thirty together, and Part V (your first Scheme) takes the last twenty and is the one I will not cut, because the next two sessions depend on you having typed something.  If we run short, **Model 1's Try It Yourself block and all of Model 2 are read-at-home**: they are worth your time, but the criteria in Part II carry the point without them, and **Part 0 of the Overview assignment** walks the same ground.
+> **How today runs.**  Three parts in seventy-five minutes means the clock is real.  Part I (paradigms) takes about fifteen minutes, Part II and Part III (the criteria and the tradeoffs) take about thirty together, and Part V (your first Scheme) takes the last twenty and is the one I will not cut, because the next two sessions depend on you having typed something.  If we run short, **Model 1's Try It Yourself block and all of Model 2 are read-at-home**: do them on your own time, because the criteria in Part II carry the point without them, and **Part 0 of the Overview assignment** walks the same ground.
 
 ---
 
@@ -133,7 +133,7 @@ print("  a pipeline of functions, or nothing at all.")
 
 ## 1.  Four Lenses
 
-Before diving into definitions, consider why we need multiple lenses at all.  When you argue that "Python is better than Java," you are almost certainly weighting one criterion heavily and ignoring others.  The four lenses below give you a shared vocabulary so that design debates become precise: instead of "I like Python better," you can say "Python trades static-typing reliability for writability speed, which is the right call for this domain."
+Before the definitions, ask why we need multiple lenses at all.  When you argue that "Python is better than Java," you are almost certainly weighting one criterion heavily and ignoring others.  The four lenses below give you a shared vocabulary so that design debates become precise: instead of "I like Python better," you can say "Python trades static-typing reliability for writability speed, which is the right call for this domain."
 
 **Readability** is the ease with which programs can be read and understood, and it dominates total cost because code is read far more often than written.  It is driven by *simplicity* (few constructs, few ways to do one thing), *orthogonality* (a small set of features combinable without special cases), and *syntax design* (meaningful keywords, consistent forms).
 

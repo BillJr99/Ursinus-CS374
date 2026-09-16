@@ -66,7 +66,7 @@ One pointer before you begin.  Several assignments this semester offer **directi
 
 ---
 
-## Start Here: A Map of the Whole Assignment
+## Start Here: What This Assignment Covers
 
 This assignment is nine stages.  Each stage ends with one command whose output you paste into your submission, so you can always tell whether a stage is done.  Work down the table in order, and use the last column to find the steps.
 
@@ -622,7 +622,7 @@ Pose one question about how programming languages work that you hope this course
 
 ---
 
-## When Something Goes Wrong: Troubleshooting
+## Troubleshooting
 
 Work down this table before you post in the course channel.  The Stage column matches the map at the top of the page.  If none of it helps, post the exact command you ran and its full output.
 

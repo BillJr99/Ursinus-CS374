@@ -642,7 +642,7 @@ class Program(Node):
 
 ### 4.3 Pretty-Printer
 
-A `pretty_print` function lets you inspect any AST node in a readable, indented form.  This is invaluable for debugging your parser.
+A `pretty_print` function lets you inspect any AST node in a readable, indented form.  When the parser builds the wrong tree, this is how you see it.
 
 ```python
 # ast_nodes.py (continued)
@@ -1709,7 +1709,7 @@ run_source('print reduce(fun(a, b) -> a + b, 0, range(1, 11));', interp)
 
 **Try It Exercise 9.1:** Write a Mini program that uses `cons`, `head`, and `tail` to implement a recursive `my_sum` function, without using `reduce` or any Python built-ins.
 
-**Try It Exercise 9.2:** Add a `type_of(x)` built-in that returns a string: `"number"`, `"string"`, `"bool"`, `"nil"`, `"list"`, or `"function"`.  This is invaluable for debugging Mini programs.
+**Try It Exercise 9.2:** Add a `type_of(x)` built-in that returns a string: `"number"`, `"string"`, `"bool"`, `"nil"`, `"list"`, or `"function"`.  Mini programmers will use it the same way you use Python's `type()` when a value is not what you expected.
 
 ---
 
