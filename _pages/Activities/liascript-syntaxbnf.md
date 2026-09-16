@@ -208,7 +208,7 @@ Each shortcut stands for a BNF pattern you could always have written by hand, an
 |---|---|---|
 | `{ x }` | zero or more repetitions of `x` | a recursive rule with an empty alternative |
 | `[ x ]` | optional, zero or one | two alternatives, one with `x` and one without |
-| <code>( x &#124; y )</code> | grouping with alternation | an extra nonterminal holding the alternatives |
+| `( x | y )` | grouping with alternation | an extra nonterminal holding the alternatives |
 
 Count what just happened to the signed-integer grammar: four rules became three, and the recursive `<digits>` rule disappeared entirely into `{ digit }`.  Here is a second pair, the one you will see most often in language manuals:
 
