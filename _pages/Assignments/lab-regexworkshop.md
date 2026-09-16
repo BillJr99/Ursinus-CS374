@@ -309,6 +309,7 @@ Create `part2.md` and answer these in it:
 7.  Count the attempts for `"aaab"`, `"ab"`, and `"aaa"` from your output.  Which input forced the most work, and what property of that input caused it?
 8.  `a*ab` describes exactly the same set of strings as `a+b`.  Verify this with `re.fullmatch` on all four test inputs rather than taking my word for it.  Then explain why the second pattern never needs to backtrack on these inputs.
 9.  A pattern like `(a+)+b` against a long string of `a`s with no `b` can take exponential time.  Using the decision-point idea from the trace, explain in two or three sentences where all those decisions come from.
+{: start="6"}
 
 ---
 
@@ -498,6 +499,7 @@ GAP: unrecognized '=' at position 6
 ### Step 4.3: What to write up
 
 10.  In `part2.md` or a comment at the bottom of `mini_lexer.py`: you now have two ways to find many things in one string, `findall` and `finditer`.  Say in one sentence why a lexer cannot be built on the first one.
+{: start="10"}
 
 ---
 

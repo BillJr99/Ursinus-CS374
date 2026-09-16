@@ -432,6 +432,7 @@ for label in ("Leftmost", "Rightmost"):
 8.  Both derivations start from `E` and end at the same terminal string.  What is that string?  (Read the last printed line of each derivation.)
 9.  Count the number of steps in the leftmost versus rightmost derivation.  Are they the same?  Explain why the number of steps must always be equal for a given derivation of a given string.
 10.  The tracer always picks the first production for each nonterminal.  Modify the grammar so `F -> ["num"]` is listed *before* `F -> ["(", "E", ")"]` (swap the two entries).  Predict how the derivation changes; will it be shorter, longer, or the same length?
+{: start="8"}
 
 ---
 
@@ -519,6 +520,7 @@ else:
 11.  The detector finds two trees for `a + b + c`.  Write out both trees using nested parentheses notation (e.g., `((a+b)+c)` and `(a+(b+c))`).  Which tree does the *left-recursive* grammar `E -> E + T | T` force?  Which does the *right-recursive* form force?
 12.  For *addition*, both trees give the same numeric value.  Name a binary operator where `(a OP b) OP c ≠ a OP (b OP c)`, and verify with concrete numbers.  This is why ambiguity matters even when the two trees share a root operator.
 13.  The grammar `E -> E + E | id` is ambiguous; `E -> E + T | T` with `T -> id` is not.  Describe in one sentence the structural property of the unambiguous grammar that forces exactly one parse tree.
+{: start="11"}
 
 ---
 
@@ -599,6 +601,7 @@ print(f"Right-assoc 5-(2-1) = {evaluate(right_assoc)}")  # 4  (wrong for subtrac
 14.  In `ambig_tree_B`, the `*` node is the root and `+` is its left child.  Under the *layered* grammar `E -> E + T | T`, explain precisely why this tree is *not derivable*; which rule is violated?
 15.  The unambiguous grammar encodes left-associativity through *left recursion* (`E -> E + T`).  If you changed this rule to `E -> T + E`, what would change about associativity?  Verify with `5 - 2 - 1`.
 16.  Look at `left_assoc` versus `right_assoc` for `5 - 2 - 1`.  The values are 2 and 4.  Now consider a purely additive expression `5 + 2 + 1`.  Would left vs. right associativity produce different values?  What does this tell you about when associativity "matters"?
+{: start="14"}
 
 ---
 
@@ -688,6 +691,7 @@ for tokens, expected, label in test_cases:
 11. `match_alt` returns `(False, pos)` (the *original* position) on failure, not the furthest position reached.  Why does restoring the original position matter when there are multiple alternatives?
 12.  The grammar currently uses token strings like `"NUM"`, `"+"`, `"*"`.  Sketch how you would extend this representation to carry actual lexemes (e.g., distinguish integer literal `3` from float `3.14`) without rewriting the entire matching engine.
 13.  The checker only returns True/False.  What would a *parse tree* version return instead, and what would one node of that tree look like as a Python value?
+{: start="10"}
 
 ---
 

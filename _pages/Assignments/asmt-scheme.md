@@ -236,6 +236,7 @@ Look closely at that second branch: `(largest (cdr L))` appears **twice**, once 
 Here is the hint. Add a `(let ((X y)) ...)` to the lambda, where `X` is a name and `y` is an expression. Which expression should you bind to `X` so that Scheme computes it only once? The primer before Part 4 introduces `let`. Skim it now if this hint does not land.
 
 5. **The empty-list question**: `sumlist` from Part 1 errors on `'()`. Fix it so it returns 0, and then argue in two or three sentences whether that was a bug in `sumlist` or a deliberate choice about what summing nothing should mean. There is a defensible answer either way; I am grading the argument.
+{: start="5"}
 
 ---
 
@@ -244,6 +245,7 @@ Here is the hint. Add a `(let ((X y)) ...)` to the lambda, where `X` is a name a
 Put these in `higher_order.scm`.
 
 6. **`y` and a projectile**: write the linear equation as a function of three parameters, then use it and `square` together.
+{: start="6"}
 
 ```scheme
 (define y
@@ -256,6 +258,7 @@ Put these in `higher_order.scm`.
 Now do the same for projectile motion. With `v0` the initial velocity, `t` the time, and `a` the acceleration, the distance is `v0*t + 0.5*a*t^2`. Write it twice: once with `(* t t)` written out, and once with your `square` from Part 1 substituted in. Confirm the two agree, then say in one sentence what substituting `square` bought you, given that it did not change the answer. Finally, use `map` to compute the distance at `t` values `'(1 2 3 4 5)`; you will need a one-argument lambda that closes over `v0` and `a`.
 
 7. **`plusminus`**: given two numbers, return a two-element list of their sum and their difference, using an anonymous `lambda` applied immediately:
+{: start="7"}
 
 ```scheme
 (define plusminus
@@ -271,6 +274,7 @@ Run it, then draw (on paper, and describe in your write-up) how `a` and `b` bind
 8. **`oplist`**: write a function that accepts a list *and an operator* as parameters. Apply that operator to the whole list recursively: if the operator is `+`, return the sum; if it is `*`, return the product. Demonstrate it on at least three operators, one of which is a function you define yourself. Then compare your result against `(apply * (list 2 4 6))` and say when the two would disagree.
 
 9. **`make-counter`**: write a function that returns a counter function. Each call to the returned function gives the next number, and two counters made separately must count independently.
+{: start="8"}
 
 ```scheme
 (define (make-counter)
