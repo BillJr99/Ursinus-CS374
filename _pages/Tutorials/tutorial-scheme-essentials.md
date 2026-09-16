@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/SchemeEssentials
 title: "CS374: Scheme Essentials for the Programming Languages Course"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - "Installed a Scheme, or opened one in a browser, and run a file rather than only typing at a prompt"
     - "Read and wrote s-expressions fluently, including the quote that separates data from a function call"
     - "Defined functions with `define` and `lambda`, and explained why `define` binds a name rather than assigning to a variable"

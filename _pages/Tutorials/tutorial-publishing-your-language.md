@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/PublishingYourLanguage
 title: "CS374: Publishing Your Language: pip, npm, and Docker"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - To package a Python interpreter for installation via pip
     - To publish an npm package that exposes your transpiler's output
     - To build and push a Docker image of your language runtime to ghcr.io

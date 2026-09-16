@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/ProjectLanguageGuide
 title: "CS374: Building the Mini Language: A Complete Guide"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - "Designed example programs in the Mini language before writing a single line of interpreter code, establishing syntax and semantics by example"
     - "Built a complete lexer, recursive-descent parser, and AST for the Mini language"
     - "Implemented a tree-walking evaluator with lexical scoping, first-class functions, closures, and recursive definitions"

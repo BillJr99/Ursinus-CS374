@@ -1,11 +1,13 @@
 ---
-layout: default-standard
+layout: textbook
 permalink: /Tutorials/DevEnvironment
 title: "CS374: The Course Development Environment"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - To build and enter the course Docker container, a single environment that runs every CS374 assignment
     - To bind-mount a GitHub-backed workspace so that all work is versioned and pushable from inside the container
     - To configure git identity and credentials (personal access token or SSH) for use inside a container, and to clear git's dubious-ownership error on a bind-mounted repository

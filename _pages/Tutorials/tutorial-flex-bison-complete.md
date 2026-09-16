@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/FlexAndBison
 title: "CS374: Flex and Bison from Zero to a Working Language"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - "Written a working Flex lexer file (`.l`) that tokenizes arithmetic expressions including integers, floats, identifiers, and operators"
     - "Written a working Bison grammar file (`.y`) that parses expressions with correct operator precedence and associativity"
     - "Built and run a complete calculator language that evaluates arithmetic expressions and stores variables"

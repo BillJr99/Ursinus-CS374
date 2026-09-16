@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/LambdaCalculusReducer
 title: "CS374: Implementing a Lambda Calculus Reducer"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - "Implemented the `Var`, `Lam`, and `App` AST nodes for the lambda calculus and a pretty-printer that produces readable output"
     - "Implemented `free_vars` correctly and tested it on abstractions, applications, and variables bound vs. free in the same term"
     - "Implemented capture-avoiding substitution and verified it does not accidentally rename variables in the substituted term"

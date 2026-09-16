@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/BuildAnInterpreter
 title: "CS374: Build a Complete Interpreter in Python, Step by Step"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - "Built a hand-written lexer that converts Mini source code into a typed token stream with line and column positions"
     - "Built a recursive-descent parser that converts the token stream into a typed AST with one class per node type"
     - "Implemented a tree-walking evaluator with a lexical environment chain that correctly handles nested `let` bindings"

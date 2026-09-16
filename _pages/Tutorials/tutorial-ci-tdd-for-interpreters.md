@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/CITDDForInterpreters
 title: "CS374: CI/CD and TDD for Language Projects"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - To write a pytest test suite that tests your language interpreter end-to-end
     - "To apply test-driven development: write a failing test, then implement the feature to pass it"
     - To set up a GitHub Actions workflow that runs your test suite on every push

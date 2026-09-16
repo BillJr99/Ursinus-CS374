@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/TypeInference
 title: "CS374: Implementing Hindley-Milner Type Inference"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - "Implemented Robinson's unification algorithm with the occurs check and verified it on composed type expressions"
     - "Implemented `apply` and `compose` for type substitutions and confirmed substitution composition is associative"
     - "Implemented Algorithm W that walks the Mini AST and returns a principal type for every expression node"

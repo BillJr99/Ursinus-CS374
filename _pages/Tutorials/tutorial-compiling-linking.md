@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/CompilingAndLinking
 title: "CS374: From Source to Executable: Compiling, Linking, and the ELF Format"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - "Traced a C source file through all four pipeline stages (preprocessor, compiler, assembler, linker) using `gcc -save-temps` and inspected each intermediate artifact"
     - "Read an ELF binary's section headers with `readelf` and identified the `.text`, `.data`, `.rodata`, and `.bss` sections"
     - "Explained the difference between static and dynamic linking and predicted which symbols will be unresolved at compile time vs. resolved at load time"

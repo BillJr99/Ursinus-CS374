@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/PLYLexerAndParser
 title: "CS374: Lexing and Parsing with PLY (Python Lex-Yacc)"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - "Write PLY lexer rules using regular-expression strings and docstring-regex functions, and explain how PLY selects among competing rules"
     - "Write PLY parser rules as LALR(1) grammar productions with semantic actions that construct an AST"
     - "Declare operator precedence and associativity in PLY to resolve shift-reduce conflicts without rewriting the grammar"

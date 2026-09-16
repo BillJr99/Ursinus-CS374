@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/TypingDisciplines
 title: "CS374: Typing Disciplines: Strong vs. Weak, Static vs. Dynamic, and Gradual Typing"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - To distinguish the static/dynamic axis (when types are checked) from the strong/weak axis (how strictly types are enforced)
     - To place real languages in the strong/weak by static/dynamic quadrant with concrete examples
     - To explain gradual typing and why mypy and TypeScript are unsound by design

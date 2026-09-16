@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/CoroutinesAndGenerators
 title: "CS374: Coroutines and Generators, Pausable Computation"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - "Define coroutines and generators and explain how `yield` captures a continuation to pause and resume computation"
     - "Trace the execution of a generator function step-by-step, predicting what value each `next()` call produces"
     - "Implement lazy infinite sequences using generator functions and compare their memory use to eager list-based equivalents"
@@ -138,7 +140,7 @@ except StopIteration:
 
 > **Watch out!**  Calling a generator function does **not** execute any of its body. `gen = squares_lazy()` returns a generator object instantly; the line `i = 0` has not run yet.  The body only starts executing on the *first* `next(gen)` call.  This surprises many beginners who expect `gen = squares_lazy()` to behave like a normal function call.
 
-> **Check Your Understanding**, think each question through (and jot an answer) before reading on.
+> **Check Your Understanding.**  Think each question through (and jot an answer) before reading on.
 
 **Q1.**  An infinite list `first_n_squares_eager(1_000_000)` allocates a list of 1 million integers in RAM before returning.  A generator `squares_lazy()` uses ~200 bytes regardless of how many values you pull.  What architectural difference explains this?
 
@@ -217,7 +219,7 @@ for v in gen_b():
     print(f"  {v}")
 ```
 
-> **Check Your Understanding**, think each question through (and jot an answer) before reading on.
+> **Check Your Understanding.**  Think each question through (and jot an answer) before reading on.
 
 **Q4.** `value = yield avg` is a single expression that both sends `avg` out AND receives the next `send()` value in.  Draw the communication diagram between the driver code and the coroutine.  What is the invariant about when `value` gets its value?
 
@@ -308,7 +310,7 @@ def make_generator_cps():
 print("  Generator-as-CPS result:", make_generator_cps())
 ```
 
-> **Check Your Understanding**, think each question through (and jot an answer) before reading on.
+> **Check Your Understanding.**  Think each question through (and jot an answer) before reading on.
 
 **Q7.**  The state machine version of `gen()` tracks which `yield` the function has reached using an integer state variable.  Where does Python store this state in a real generator?  (Hint: look at what a generator object contains.)
 
@@ -384,7 +386,7 @@ def old_event_loop(coro):
 old_event_loop(old_style_coroutine)
 ```
 
-> **Check Your Understanding**, think each question through (and jot an answer) before reading on.
+> **Check Your Understanding.**  Think each question through (and jot an answer) before reading on.
 
 > **Watch out!** `async`/`await` is **not** parallelism.  Both tasks in `main_concurrent` run on a single OS thread. `asyncio.gather` interleaves them only because each `await asyncio.sleep(...)` voluntarily yields the thread back to the event loop.  If one coroutine does CPU-heavy work without any `await`, it **blocks the entire event loop** and no other coroutine can run.  For true CPU parallelism you need `multiprocessing` or a thread pool.
 
@@ -522,7 +524,7 @@ print("  Each 'yield eval_expr(...)' in _run captures the frame's state.")
 print("  next() on the GeneratorObj resumes exactly where _run paused.")
 ```
 
-> **Check Your Understanding**, think each question through (and jot an answer) before reading on.
+> **Check Your Understanding.**  Think each question through (and jot an answer) before reading on.
 
 **Q13.**  The `GeneratorObj._run` method is itself a Python generator (it uses `yield`).  This means we are using Python's generator mechanism to implement our interpreter's generator mechanism.  What is the technical term for this implementation strategy?  What is the risk?
 

@@ -1,11 +1,13 @@
 ---
-layout: default-standard
+layout: textbook
 permalink: /Tutorials/ShellForLanguageDev
 title: "CS374: Shell Skills for Language Development"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - To use the terminal to run, test, and debug your language interpreter
     - To pipe interpreter output and compare it against expected output
     - To write a shell test harness that runs all test programs and reports PASS/FAIL

@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/AdvancedCpp
 title: "CS374: Advanced C++: Modern Memory, Templates, and the STL"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - "Identified and fixed the three classic memory bugs (double-free, use-after-free, memory leak) using `valgrind` or AddressSanitizer"
     - "Replaced raw-pointer ownership patterns with `std::unique_ptr` and `std::shared_ptr` and explained when each is appropriate"
     - "Written at least one function and one class template, including a template specialization"

@@ -1,11 +1,13 @@
 ---
-layout: notes
+layout: textbook
 permalink: /Tutorials/HaskellEssentials
 title: "CS374: Haskell Essentials for the Programming Languages Course"
 
 info:
   coursenum: CS374
-  goals:
+  eyebrow: "Tutorial"
+  numbering: false
+  objectives:
     - "Written and run basic Haskell expressions in GHCi, using `:t` to inspect types and `:l` to load files"
     - "Defined pure functions using pattern matching, guards, and list comprehensions"
     - "Implemented common higher-order functions (`map`, `filter`, `foldr`) and understood their types in the Hindley-Milner type system"
