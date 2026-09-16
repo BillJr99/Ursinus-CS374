@@ -95,14 +95,14 @@ Every grammar in this course is written the same way, and this is the whole nota
 
 | Shortcut | Means | Example |
 |---|---|---|
-| `::=` | "is defined as," separating a nonterminal from its definition | `<sign> ::= "+" \| "-"` |
+| `::=` | "is defined as," separating a nonterminal from its definition | <code>&lt;sign&gt; ::= "+" &#124; "-"</code> |
 | `<name>` | a nonterminal, which must have its own production somewhere | `<digit>` |
 | `"x"` | a terminal, the literal text that appears in the string | `"("` |
-| `\|` | alternation: exactly one of these choices is used | `"+" \| "-"` |
+| <code>&#124;</code> | alternation: exactly one of these choices is used | <code>"+" &#124; "-"</code> |
 | `{ X }` | repetition: **zero or more** copies of `X` | `{ <digit> }` |
 | `[ X ]` | optionality: `X` appears once or not at all | `[ <sign> ]` |
-| `( X \| Y )` | grouping: treats the alternatives as one unit inside a larger rule | `( "," \| ";" )` |
-| `<empty>` | the empty string, the BNF way to let a recursive rule stop | `<exprs> ::= <expr> <exprs> \| <empty>` |
+| <code>( X &#124; Y )</code> | grouping: treats the alternatives as one unit inside a larger rule | <code>( "," &#124; ";" )</code> |
+| `<empty>` | the empty string, the BNF way to let a recursive rule stop | <code>&lt;exprs&gt; ::= &lt;expr&gt; &lt;exprs&gt; &#124; &lt;empty&gt;</code> |
 | `(* … *)` | a comment, ignored by the grammar; use it to record a decision | `(* spaces ignored between atoms *)` |
 
 Here is the same notation at work, with each shortcut labeled in a comment:

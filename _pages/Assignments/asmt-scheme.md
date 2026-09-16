@@ -7,7 +7,7 @@ info:
   purpose: "To get a Scheme environment running on your own machine and then write, from scratch, the list recursion, functional composition, and closures that the functional paradigm is actually made of, ending with an evaluator for arithmetic expressions written as nested lists."
   tilt:
     task: "Rewrite one of your own loops in a functional style, install Scheme (or open a browser REPL), work the four guided examples, then write the exercises and an evaluator for nested-list arithmetic expressions, submitting real transcripts of each running."
-    criteria: "I grade this on a defended functional rewrite of a loop you wrote, a working environment with evidence, correct recursive list functions with their empty-list cases handled, correct use of functions as values including a closure, and a working expression evaluator that handles an unknown operator and is explained, weighted 10/18/32/18/22 across the five parts. The rubric below breaks it down in full."
+    criteria: "I grade this on a defended functional rewrite of a loop you wrote, a working environment with evidence, correct recursive list functions with their empty-list cases handled, correct use of functions as values including a closure, and a working expression evaluator that handles an unknown operator and is explained, weighted according to the rubric below."
   points: 100
   goals:
     - To rewrite a loop you already know how to write into map, filter, and reduce, and to say honestly which version reads better and why
