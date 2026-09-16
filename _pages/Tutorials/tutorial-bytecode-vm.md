@@ -2543,11 +2543,11 @@ Constant stack space instead of O(n) stack frames: enables deep or infinite recu
 
 ### Exercises
 
-##### Exercise 1: Fix Comparison Folding (15 min)
+#### Exercise 1: Fix Comparison Folding (15 min)
 
 Extend `fold_and_propagate` from Model 2 to handle comparison operators (`>`, `<`, `>=`, `<=`, `==`, `!=`) and boolean operators (`and`, `or`, `not`).  Test: `if (2 > 1) then 42 else 0` should fold to `42`.
 
-##### Exercise 2: Strength Reduction (20 min)
+#### Exercise 2: Strength Reduction (20 min)
 
 **Strength reduction** replaces expensive operations with cheaper ones:
 - `x * 2` -> `x + x` (addition is faster than multiplication on some CPUs)
@@ -2556,7 +2556,7 @@ Extend `fold_and_propagate` from Model 2 to handle comparison operators (`>`, `<
 
 Implement `strength_reduce(node)` as a tree transformation.  Test on `y * 8` and `z / 4`.
 
-##### Exercise 3: Dead Code Elimination (20 min)
+#### Exercise 3: Dead Code Elimination (20 min)
 
 Write `eliminate_dead_code(node, live_vars: set)` that removes let-bindings whose names are never used in the body:
 
@@ -2567,7 +2567,7 @@ let x = expensive_computation() in 42
 
 But be careful: only eliminate if the binding expression is pure!
 
-##### Exercise 4: Optimization Pipeline (25 min)
+#### Exercise 4: Optimization Pipeline (25 min)
 
 Combine multiple passes into a pipeline:
 
@@ -2581,7 +2581,7 @@ def optimize(node):
 ```
 Test the pipeline on a program that contains all four optimization opportunities.  Show before and after.
 
-##### Exercise 5: Mini TCO (30 min, harder)
+#### Exercise 5: Mini TCO (30 min, harder)
 
 Add tail call optimization to your Mini interpreter:
 1.  Write `is_tail_position(node, current_fn_name)` that returns True if a node is a tail call

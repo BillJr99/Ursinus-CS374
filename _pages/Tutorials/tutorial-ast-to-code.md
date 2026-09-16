@@ -522,7 +522,7 @@ In Python, `if` is a statement; in Haskell, `if` is an expression.  What practic
 
 Your tree-walking interpreter already does the hard work, it understands the meaning of every AST node.  A compiler does the same traversal but instead of computing a value, it writes down instructions for someone else to execute later.  The difference is not intelligence but timing: an interpreter acts now, a compiler acts once so that execution can happen many times fast.  This tutorial builds transpiler backends on top of the same AST your interpreter already handles, making that timing difference concrete.
 
-#### Learning Goals
+### Learning Goals
 
 By the end of this tutorial, you will be able to:
 
