@@ -35,7 +35,7 @@ Please work through this at a terminal rather than in a chair.  Each step below 
 
 **What you need before you start.**  For Step 0, a terminal and nothing else.  For Steps 1 through 6, a working interpreter you can run (even one that only prints a token stream is enough to follow along) and a terminal in the [course development environment]({{ site.baseurl }}/Tutorials/DevEnvironment).
 
-### If you are here from the Overview assignment
+## If you are here from the Overview assignment
 
 Part 1.5 of the [Overview assignment]({{ site.baseurl }}/Assignments/Overview) needs only **Step 0** of this page: how to open a terminal, move between folders, save a file, and search it with `grep`.  Step 0 needs no interpreter, and its *Try it* box is the Overview's Part 1.5, Step 1.  Come back for Steps 1 through 6 when the first programming assignment gives you an interpreter to test.
 
