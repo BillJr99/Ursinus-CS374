@@ -273,10 +273,6 @@ def parse(tokens):
     assert pos == len(tokens), f"trailing input at {pos}"
     return tree
 
-def frontier(node):
-    """The sentential form this subtree currently stands for."""
-    return [node[0]] if isinstance(node, tuple) else [node]
-
 def derivation(tree, leftmost=True):
     """Expand one nonterminal per step, choosing the production the tree used."""
     form = [tree]                                  # a list of nodes and terminals
@@ -546,7 +542,9 @@ The "dangling else" ambiguity occurs because:
 
 1.  *Derivation tree practice.*  For the unambiguous ladder grammar (expr -> term { ("+"|"-") term }, term -> factor { ("*"|"/") factor }, factor -> NUMBER | "(" expr ")"), draw the unique derivation tree for `3 - 1 - 1`.  Show both the tree and the bottom-up evaluation order.
 
-2.  *Leftmost vs. rightmost derivation.*  Using the grammar `S -> S + S | id`, give both the leftmost and the rightmost derivation for `id + id + id`.  Show that this grammar has more than two parse trees for this string.
+2a. *Derivation order is not structure.*  Using the grammar `S -> S + S | id`, fix the parse tree that groups `id + id + id` as `(id + id) + id`.  Give both the leftmost and the rightmost derivation of that one tree.  Confirm that they differ step by step, that they take the same number of steps, and that they end at the same string.  Model 6's tracer does exactly this for a different grammar if you want to check your reasoning.
+
+2b. *Ambiguity is structure.*  Now exhibit the two distinct parse trees for `id + id + id` under the same grammar, and give the distinct leftmost derivation belonging to each.  Two leftmost derivations, not two orders, is what makes a grammar ambiguous; 2a produced two derivations of one tree and proved nothing about ambiguity.
 
 3.  *Eliminate ambiguity.*  The following grammar for `if/else` is ambiguous:
    ```

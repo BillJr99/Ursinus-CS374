@@ -89,22 +89,22 @@ Using the grammar above, derive the string `-42`.
 
 ### Worked Example: deriving `-42`
 
-Do CTQ 1 as a team first.  Write one rule application per line and name the rule you used on the right.  That habit lets someone else check your derivation.  The example below writes `<number>` for the nonterminal that the grammar above calls `<digits>`; read them as the same rule.
+Do CTQ 1 as a team first.  Write one rule application per line and name the rule you used on the right.  That habit lets someone else check your derivation.
 
 ```
 <signed>
-=> <sign> <number>          (used <signed> -> <sign> <number>)
-=> - <number>               (used <sign> -> -)
-=> - <digit> <number>       (used <number> -> <digit> <number>)
-=> - 4 <number>             (used <digit> -> 4)
-=> - 4 <digit>              (used <number> -> <digit>)
+=> <sign> <digits>          (used <signed> -> <sign> <digits>)
+=> - <digits>               (used <sign> -> -)
+=> - <digit> <digits>       (used <digits> -> <digit> <digits>)
+=> - 4 <digits>             (used <digit> -> 4)
+=> - 4 <digit>              (used <digits> -> <digit>)
 => - 4 2                    (used <digit> -> 2)
 = -42
 ```
 
-Six steps.  For CTQ 2, count them by role: one step for `<signed>` and one for the sign.  Then a $d$-digit number needs $d$ applications of a `<number>` rule and $d$ applications of `<digit>`.  The total is $2 + 2d$ steps.  For `-42` that gives $2 + 4 = 6$, which matches.  For `-12345` it predicts $2 + 10 = 12$.
+Six steps.  For CTQ 2, count them by role: one step for `<signed>` and one for the sign.  Then a $d$-digit number needs $d$ applications of a `<digits>` rule and $d$ applications of `<digit>`.  The total is $2 + 2d$ steps.  For `-42` that gives $2 + 4 = 6$, which matches.  For `-12345` it predicts $2 + 10 = 12$.
 
-For CTQ 3: `4-2` cannot be derived.  The only rule that produces a `-` is `<sign> -> -`, and `<sign>` appears exactly once, at the very front of `<signed> -> <sign> <number>`.  No production puts a `-` *between* digits, so no sequence of rule applications can reach `4-2`.  This grammar describes signed numerals, not subtraction.  The string `4-2` belongs to a different language.
+For CTQ 3: `4-2` cannot be derived.  The only rule that produces a `-` is `<sign> -> -`, and `<sign>` appears exactly once, at the very front of `<signed> -> <sign> <digits>`.  No production puts a `-` *between* digits, so no sequence of rule applications can reach `4-2`.  This grammar describes signed numerals, not subtraction.  The string `4-2` belongs to a different language.
 4.  Modify the grammar so that a signed number may also be written with no digits after the sign... wait, should it?  Decide as a team whether `-` alone should be a signed integer.  Notice that you are now doing *language design*.
 
 ---
@@ -130,23 +130,38 @@ Leftmost, one rule per line, exactly as in Model 1:
 
 ```
 <expr>
-=> <list>                              [<expr> ::= <list>]
-=> ( <exprs> )                         [<list> ::= ( <exprs> )]
-=> ( <expr> <exprs> )                  [<exprs> ::= <expr> <exprs>]
-=> ( <atom> <exprs> )                  [<expr> ::= <atom>]
-=> ( <symbol> <exprs> )                [<atom> ::= <symbol>]
-=> ( + <exprs> )                       [<symbol> => +]
-=> ( + <expr> <exprs> )                [<exprs> ::= <expr> <exprs>]
-=> ( + <atom> <exprs> )                [<expr> ::= <atom>]
-=> ( + <number> <exprs> )              [<atom> ::= <number>]
-=> ( + 1 <exprs> )                     [<number> => 1]
-=> ( + 1 <expr> <exprs> )              [<exprs> ::= <expr> <exprs>]
-=> ( + 1 <expr> )                      [<exprs> ::= <empty>]
-=> ( + 1 <list> )                      [<expr> ::= <list>]
-=> ( + 1 ( <exprs> ) )                 [<list> ::= ( <exprs> )]
-   ... the same six steps again, one level down ...
-=> ( + 1 ( * 2 3 ) )
+=> <list>                                    [<expr> ::= <list>]
+=> ( <exprs> )                               [<list> ::= ( <exprs> )]
+=> ( <expr> <exprs> )                        [<exprs> ::= <expr> <exprs>]
+=> ( <atom> <exprs> )                        [<expr> ::= <atom>]
+=> ( <symbol> <exprs> )                      [<atom> ::= <symbol>]
+=> ( + <exprs> )                             [<symbol> => +]
+=> ( + <expr> <exprs> )                      [<exprs> ::= <expr> <exprs>]
+=> ( + <atom> <exprs> )                      [<expr> ::= <atom>]
+=> ( + <number> <exprs> )                    [<atom> ::= <number>]
+=> ( + 1 <exprs> )                           [<number> => 1]
+=> ( + 1 <expr> <exprs> )                    [<exprs> ::= <expr> <exprs>]
+=> ( + 1 <list> <exprs> )                    [<expr> ::= <list>]
+=> ( + 1 ( <exprs> ) <exprs> )               [<list> ::= ( <exprs> )]
+=> ( + 1 ( <expr> <exprs> ) <exprs> )        [<exprs> ::= <expr> <exprs>]
+=> ( + 1 ( <atom> <exprs> ) <exprs> )        [<expr> ::= <atom>]
+=> ( + 1 ( <symbol> <exprs> ) <exprs> )      [<atom> ::= <symbol>]
+=> ( + 1 ( * <exprs> ) <exprs> )             [<symbol> => *]
+=> ( + 1 ( * <expr> <exprs> ) <exprs> )      [<exprs> ::= <expr> <exprs>]
+=> ( + 1 ( * <atom> <exprs> ) <exprs> )      [<expr> ::= <atom>]
+=> ( + 1 ( * <number> <exprs> ) <exprs> )    [<atom> ::= <number>]
+=> ( + 1 ( * 2 <exprs> ) <exprs> )           [<number> => 2]
+=> ( + 1 ( * 2 <expr> <exprs> ) <exprs> )    [<exprs> ::= <expr> <exprs>]
+=> ( + 1 ( * 2 <atom> <exprs> ) <exprs> )    [<expr> ::= <atom>]
+=> ( + 1 ( * 2 <number> <exprs> ) <exprs> )  [<atom> ::= <number>]
+=> ( + 1 ( * 2 3 <exprs> ) <exprs> )         [<number> => 3]
+=> ( + 1 ( * 2 3 ) <exprs> )                 [<exprs> ::= <empty>]
+=> ( + 1 ( * 2 3 ) )                         [<exprs> ::= <empty>]
 ```
+
+Twenty-seven steps, and the count is not an accident.  Let the program have $a$ atoms and $L$ lists, so it has $n = a + L$ nodes.  Each atom costs three steps, `<expr>` to `<atom>`, `<atom>` to `<number>` or `<symbol>`, then the token itself.  Each list costs two, `<expr>` to `<list>` and `<list>` to its parenthesized `<exprs>`, plus one more for the `<empty>` that closes it.  Each list *element* costs one application of `<exprs> ::= <expr> <exprs>`, and there are $n - 1$ of them, because every node except the root is an element of some list.  Adding those up gives $3a + 2L + L + (n - 1) = 4n - 1$.  For `(+ 1 (* 2 3))` we have $n = 7$, so $4(7) - 1 = 27$.  Check it against the smallest case: `()` has $n = 1$ and takes three steps.
+
+> **Watch out:** leftmost means the leftmost *nonterminal*, not the leftmost unfinished list.  Look at step 12.  The sentential form is `( + 1 <expr> <exprs> )`, and it is tempting to discharge that trailing `<exprs>` because the outer list feels finished.  It is not finished, and `<expr>` sits to its left, so `<expr>` is what gets rewritten.  That trailing `<exprs>` is the outer list still waiting for its closing parenthesis while the inner list is built, and nothing may touch it until everything to its left is done, which is why both `<exprs> ::= <empty>` steps land at the very end.  The BNF Workshop's rubric penalizes derivations that skip steps or take them out of order.
 
 **Notice, out loud:** the nesting in the derivation is the nesting in the program.  No step anywhere had to *decide* what binds to what.
 
@@ -165,12 +180,17 @@ Now the standard infix arithmetic grammar, which describes the same arithmetic i
 => <expr> + <term>                     [<expr> ::= <expr> + <term>]
 => <term> + <term>                     [<expr> ::= <term>]
 => <factor> + <term>                   [<term> ::= <factor>]
-=> 3 + <term>                          [<factor> ::= <number> => 3]
+=> <number> + <term>                   [<factor> ::= <number>]
+=> 3 + <term>                          [<number> => 3]
 => 3 + <term> * <factor>               [<term> ::= <term> * <factor>]
 => 3 + <factor> * <factor>             [<term> ::= <factor>]
-=> 3 + 4 * <factor>                    [<factor> ::= <number> => 4]
-=> 3 + 4 * 5                           [<factor> ::= <number> => 5]
+=> 3 + <number> * <factor>             [<factor> ::= <number>]
+=> 3 + 4 * <factor>                    [<number> => 4]
+=> 3 + 4 * <number>                    [<factor> ::= <number>]
+=> 3 + 4 * 5                           [<number> => 5]
 ```
+
+Eleven steps, not eight.  The lexical step is written on its own line here, so that `<factor> ::= <number>` and the choice of *which* number are never folded together.  Hold to that in your own derivations: one rule application per line is what lets a partner check your work, and it is what the BNF Workshop asks for.
 
 ### Critical Thinking Questions
 
