@@ -84,10 +84,12 @@ def derivable(target, grammar, start="E", max_steps=20):
                 idx = next(i for i, s in enumerate(form) if s in nonterminals)
                 for rhs in grammar[form[idx]]:
                     candidate = form[:idx] + tuple(rhs) + form[idx+1:]
-                    # prune: terminal prefix must match target prefix
-                    term_prefix = "".join(
-                        s for s in candidate if s not in nonterminals)
-                    if not target.startswith(term_prefix[:len(term_prefix)]):
+                    # prune on the SETTLED prefix: under a leftmost derivation the
+                    # terminals before the first remaining nonterminal can never
+                    # change again, so they must already agree with the target.
+                    k = next((i for i, s in enumerate(candidate)
+                              if s in nonterminals), len(candidate))
+                    if not target.startswith("".join(candidate[:k])):
                         continue
                     if candidate not in visited and len(candidate) <= len(target) * 2:
                         visited.add(candidate)
@@ -103,6 +105,8 @@ tests = ["2+3", "2*3", "1+2*3", "2++3", "2+", "+2", "9*8*7"]
 for s in tests:
     print(f"  {s!r:12} in L(G)? {derivable(s, GRAMMAR)}")
 ```
+
+The prune is worth a second look, because it is a fact about leftmost derivation and not merely an optimization.  Once the leftmost nonterminal sits at position `k`, every terminal before it is final: no later step can reach to its left, so that settled prefix is committed and must already match the target or the branch is dead.  The terminals *after* position `k` carry no such guarantee, because nonterminals still standing to their left will expand and push more symbols in front of them.  Pruning on all of a form's terminals rather than on the settled prefix therefore throws away valid derivations, and with a left-recursive rule like `E -> E + T`, whose first expansion is `E + T`, it throws away every one of them.
 
 ### Critical Thinking Questions
 
@@ -359,16 +363,6 @@ A leftmost derivation always expands the leftmost nonterminal at each step; a ri
 
 ```python
 # Model 4: Leftmost and rightmost derivation tracer for simple CFGs
-
-GRAMMAR = {
-    "E": [["E", "+", "T"], ["T"]],
-    "T": [["T", "*", "F"], ["F"]],
-    "F": [["(", "E", ")"], ["num"]],
-}
-TERMINALS = {"+", "*", "(", ")", "num"}
-
-def is_terminal(sym):
-    return sym in TERMINALS
 
 # A derivation has to derive a SPECIFIC string. Blindly taking each rule's
 # first alternative runs straight into E -> E + T, which is left-recursive:

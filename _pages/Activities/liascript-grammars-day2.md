@@ -203,6 +203,8 @@ Right-recursive derives:
      => T + T + T         (E' -> epsilon)
 ```
 
+That chain is not a leftmost derivation, and it is not trying to be: `T` is held as a placeholder so the shape of the repetition stays visible.  Expand the leftmost nonterminal at every step, as you did in Model 2, and the same rules give you the same strings by a longer route.
+
 Same strings, same left-to-right order.  But the right-recursive version never calls itself as its very first action.  `parse_E()` consumes a `T` before it recurses, so the recursion terminates.
 
 > **Watch out!**  Left recursion and right recursion are not interchangeable once you care about *meaning*.  Left-recursive rules produce left-associative trees, which is correct for `+`, `-`, `*`, and `/`.  Right-recursive rules produce right-associative trees, which is correct for `^` and for assignment in many languages.  If you remove left recursion for the parser's sake but do not restore the associativity when you build the tree, you have a silent semantic bug: your interpreter will compute `7 - 2 - 1` as `6` instead of `4`.
