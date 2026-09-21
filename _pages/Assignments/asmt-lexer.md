@@ -120,7 +120,7 @@ Make one folder for the assignment (`mkdir cs374-lexer`, then `cd cs374-lexer`) 
 
 ### Suggested Pacing
 
-See the course schedule for the assigned and due dates.  Your starting point is the mini lexer you built in the **Regex Workshop lab** and grew in the Regex assignment.  The Finite Automata Simulators lab runs alongside the start of this window; it is short by design, so plan its two to three hours into your week.
+See the course schedule for the assigned and due dates.  Your starting point is the mini lexer you built in the **Regular Expressions** assignment, Part 3.
 
 | Checkpoint | You should have |
 |------------|----------------|
