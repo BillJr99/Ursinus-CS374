@@ -475,10 +475,10 @@ Write a paragraph about another finite description of an infinite set that you r
 # Further Reading
 
 - Allison, Chapter 3 §3.1-3.2, on regular expressions and their equivalence to finite automata.
-- Allison, Chapter 4, on the pumping lemma (the standard tool for proving that a language is *not* regular, by showing that every long enough string in it has a piece you can repeat).  It is required for the Regex assignment's Part 4 theory questions, and we work one example in class on Day 2.
+- Allison, Chapter 4, on the pumping lemma (the standard tool for proving that a language is *not* regular, by showing that every long enough string in it has a piece you can repeat).  It is required for the Regular Expressions assignment's Part 5 theory questions, and we work one example in class.
 - The Python [`re` HOWTO](https://docs.python.org/3/howto/regex.html), which Day 2 works through in five verbs.
 - [The Shell for Language Development](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ShellForLanguageDev), whose grep appendix goes further than Part III: named capture groups and a full log-triage walkthrough that turns unstructured log lines into structured records.
 
 ---
 
-> **Where the practice went.**  Everything that used to be a second day of this activity (Python's `re` in five verbs, watching the engine backtrack, and the one-pattern scanner) is now the first half of the [Lab: Regex Workshop](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/RegexWorkshop), handed out today.  It is written as a walkthrough: run every cell, then vary it.
+> **Where the practice went.**  Everything that used to be a second day of this activity (Python's `re` in five verbs, watching the engine backtrack, and the one-pattern scanner) opens the [Regular Expressions assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Regex), which goes out at the next meeting.  Parts 1 through 3 are written as a walkthrough: run every cell, then vary it.

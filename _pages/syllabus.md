@@ -328,18 +328,9 @@ schedule:
   title: "Regular Expressions"
   link: "Activities/liascript-regex.md"
   liapage: true
-  deliverables:
-  - dtitle: "Programming Assignment: Regular Expressions Handed Out"
-    dlink: "Assignments/Regex"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-regex.md"
-  - dtitle: "Lab: Regex Workshop Handed Out"
-    dlink: "Assignments/RegexWorkshop"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-regexworkshop.md"
   readings:
   - rtitle: "Allison, Ch. 3 §3.1-3.2: Regular Expressions and Their Equivalence to Finite Automata"
-  - rtitle: "Allison, Ch. 4: The Pumping Lemma, proving a language is not regular (required for the Regex assignment's Part 4 theory questions; we work one example in class today)"
+  - rtitle: "Allison, Ch. 4: The Pumping Lemma, proving a language is not regular (required for the Regular Expressions assignment's Part 5 theory questions; we work one example in class today)"
   - rtitle: "The Shell for Language Development, the grep section, which puts today's patterns to work on your own source tree"
     rlink: "Tutorials/ShellForLanguageDev"
 - week: "4"
@@ -352,6 +343,10 @@ schedule:
     dlink: "Assignments/BNFWorkshop"
     points: "15"
     rubricpath: "_pages/Assignments/lab-bnfworkshop.md"
+  - dtitle: "Programming Assignment: Regular Expressions Handed Out"
+    dlink: "Assignments/Regex"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-regex.md"
   readings:
   - rtitle: "Allison, Ch. 2 §2.1-2.2: Deterministic and Non-Deterministic Finite Automata"
   - rtitle: "Allison, Ch. 4 §4.2: Decision Algorithms (Is the Language Empty?)"
@@ -365,10 +360,6 @@ schedule:
     dlink: "Assignments/Automata"
     points: "15"
     rubricpath: "_pages/Assignments/lab-automata.md"
-  - dtitle: "Lab: Regex Workshop Due"
-    dlink: "Assignments/RegexWorkshop"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-regexworkshop.md"
   readings:
   - rtitle: "Continues Day 1.  Bring your hand-traced DFA from last session."
     rlink: false
@@ -389,11 +380,6 @@ schedule:
   title: "Abstract Syntax Trees"
   link: "Activities/liascript-ast.md"
   liapage: true
-  deliverables:
-  - dtitle: "Programming Assignment: Regular Expressions Due"
-    dlink: "Assignments/Regex"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-regex.md"
   readings:
   - rtitle: "Allison, Ch. 6 §6.2: Expression Trees, Operator Precedence, and Associativity"
 - week: "7"
@@ -406,6 +392,10 @@ schedule:
     dlink: "Assignments/GrammarWorkshop"
     points: "15"
     rubricpath: "_pages/Assignments/lab-grammarworkshop.md"
+  - dtitle: "Programming Assignment: Regular Expressions Due"
+    dlink: "Assignments/Regex"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-regex.md"
   readings:
   - rtitle: "Parser Combinators (Parsers as First-Class Values)"
     rlink: "Tutorials/ParserCombinators"
@@ -672,7 +662,7 @@ I write every assignment in this course to be transparent about three things, so
 
 When you open an assignment, please read the Purpose first.  It tells you what the assignment is really for, and that is the fastest way to make good decisions when the task gets ambiguous.  Every assignment also closes by asking you to reflect on what you did, what fought you, how long it took, and what grade you would give yourself against the criteria.  I count that reflection as part of the work.
 
-A note on grade categories: the **Overview** (100 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the five programming assignments (Regular Expressions, Lexer, Parser, Interpreter, and Functional Programming) make up the **Programming Assignments** category.  The **Labs** category comprises eight short labs (BNF Workshop, Regex Workshop, Finite Automata Simulators, Grammar and Derivations Workshop, Parser Skeleton, Environments and Scope, Type Checker Starter, and Lambda Calculus), each scoped to roughly two to three hours.  Labs may be completed **in pairs** (both partners submit, naming each other; both earn the same grade); the programming assignments remain individual work.  Each lab falls mid-assignment and completes a piece of the assignment it scaffolds, so lab work gives you a head start rather than adding to your load.  **There is no midterm or final exam**: Demo Day on the last class meeting (Tuesday, December 8) is the course's terminal event, and no work is accepted after it.  Seven teams present for nine minutes each within our class meeting; external guests visiting both this Demo Day and CS357's (same day) are welcome to stay for both.
+A note on grade categories: the **Overview** (100 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the five programming assignments (Regular Expressions, Lexer, Parser, Interpreter, and Functional Programming) make up the **Programming Assignments** category.  The **Labs** category comprises seven short labs (BNF Workshop, Finite Automata Simulators, Grammar and Derivations Workshop, Parser Skeleton, Environments and Scope, Type Checker Starter, and Lambda Calculus), each scoped to roughly two to three hours.  Labs may be completed **in pairs** (both partners submit, naming each other; both earn the same grade); the programming assignments remain individual work.  Each lab falls mid-assignment and completes a piece of the assignment it scaffolds, so lab work gives you a head start rather than adding to your load.  **There is no midterm or final exam**: Demo Day on the last class meeting (Tuesday, December 8) is the course's terminal event, and no work is accepted after it.  Seven teams present for nine minutes each within our class meeting; external guests visiting both this Demo Day and CS357's (same day) are welcome to stay for both.
 
 ## Generative AI Policy
 

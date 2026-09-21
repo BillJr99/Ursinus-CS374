@@ -74,7 +74,7 @@ Tokenize by hand: `count2 = count2 + 12 >= limit`
 
 ## 2.  A Complete Tokenizer
 
-You met the master-alternation trick in Part 4 of the *Regex Workshop* lab.  There it showed that named groups let one pattern carry many alternatives.  Here it becomes a real lexer: a token specification stored as data, one master pattern built from that data, and a generator that yields typed tokens with positions, plus an error path.  Positions and errors are what separate a regex demo from a lexer.  The parser needs both when it has to tell a student where their program went wrong.
+You met the master-alternation trick in Part 3 of the *Regular Expressions* assignment.  There it showed that named groups let one pattern carry many alternatives.  Here it becomes a real lexer: a token specification stored as data, one master pattern built from that data, and a generator that yields typed tokens with positions, plus an error path.  Positions and errors are what separate a regex demo from a lexer.  The parser needs both when it has to tell a student where their program went wrong.
 
 This code is the seed of your Lexer assignment and of your project.
 
