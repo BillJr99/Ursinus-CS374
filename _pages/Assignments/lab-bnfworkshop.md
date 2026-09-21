@@ -417,6 +417,19 @@ Two of the languages below are the productions you wrote in Part 0, so this part
 
 What you want is a production that is right-linear in the sense just defined, or that can be read as one: built from terminals, alternation (`|`), concatenation, and `{ }` repetition, with no nonterminal ever sitting anywhere except at the end of an alternative.  Saying so is the whole argument.  What you do *not* want is a production that nests a nonterminal in the middle of a right-hand side, or that refers back to itself around a terminal on both sides, because that is the shape that needs a stack.
 
+> **One kind of nonterminal costs you nothing, and Part 0 told you to write three of them.**  `<digit>` names a set of ten terminals and nothing more.  Substitute its definition back into `<number>` and it becomes a plain alternation of `"0"` through `"9"`.  A rule like `<number> ::= <digit> <number>` expands into ten rules of the form `<number> ::= "0" <number>`.  Every one of those is a terminal followed by a single nonterminal at the end.
+>
+> A nonterminal like this is a **character-class nonterminal**.  It has two properties:
+>
+> - every alternative is a single terminal, or another character-class nonterminal; and
+> - it never refers back to itself, directly or through another name.
+>
+> `<digit>` and `<initial>` qualify because each alternative is one terminal.  `<subseq> ::= <initial> | <digit>` qualifies under the second half of that first property.  Its alternatives are themselves character classes, so expanding twice leaves only terminals.
+>
+> A character-class nonterminal may sit anywhere in a right-hand side without costing you right-linearity, because expanding it removes it.  When you make the argument, say that you are expanding these three, then point at the shape.
+>
+> This is not a loophole.  It is the difference between a name for a set of characters and a name for a structure.  `<expr>` inside `<list>` is a structure.  It can contain another `<list>`, so no amount of substitution ever removes it.  That is why `<list>` needs a stack.
+
 If your Part 0 productions do not have that shape, or you are not sure, you may use these as your reference versions for Part 2.  Say in one line that you did, and which of yours you replaced.  This costs you nothing: Part 0 was graded on the work you did there, and this is only so that Part 2 has something clean to reason about.
 
 ```ebnf
@@ -428,7 +441,7 @@ If your Part 0 productions do not have that shape, or you are not sure, you may 
 <symbol>  ::= <initial> { <subseq> }
 ```
 
-Notice that every one of those is right-linear in the sense above, and notice that `<list>` from Part 1 is not, because `<expr>` appears with a `)` after it.  That difference is the hinge for every classification that follows.
+Every one of those is right-linear once you expand `<digit>`, `<initial>`, and `<subseq>`.  `<list>` from Part 1 is not, and no amount of expansion makes it so.  `<expr>` appears there with a `)` after it, and `<expr>` can produce another `<list>`.  That difference is the hinge for every classification that follows.
 
 ### The Classification
 
