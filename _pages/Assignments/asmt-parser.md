@@ -18,30 +18,30 @@ info:
     - To verify the round-trip law with property-based testing (Hypothesis), using a recursive AST generator and an automatically shrunk counterexample
     - To report syntax errors with positions, expected tokens, and found tokens
   rubric:
-    - weight: 10
-      description: "Part 0: Before You Start - Abstract Syntax Trees"
-      preemerging: No AST is drawn and no node types are designed
-      beginning: A tree is drawn but it is a parse tree rather than an AST, or no node types are designed
-      progressing: The AST for 3 + 4 * 5 is correct and node types are sketched, but the write-up does not say what the AST discarded, or the node types omit one of the two required constructs
-      proficient: The AST (not the parse tree) for 3 + 4 * 5 is drawn with precedence correct, and one sentence names what it threw away that the parse tree kept; node types for if/else and for function calls are designed concretely; and the one field you added out of uncertainty is marked as such
-    - weight: 27
+    - weight: 13
+      description: "Part 0: Before You Start - Abstract Syntax Trees and Recursive Descent"
+      preemerging: No AST is drawn, no node types are designed, and no parsing function is traced
+      beginning: A tree is drawn but it is a parse tree rather than an AST, or no node types are designed; and the recursive descent trace is not attempted
+      progressing: The AST for 3 + 4 * 5 is correct and node types are sketched, but the write-up does not say what the AST discarded, or the node types omit one of the two required constructs; the parsing function is traced on a three-token input but the lookahead points are not marked, or the left-recursive rule is identified without being rewritten
+      proficient: The AST (not the parse tree) for 3 + 4 * 5 is drawn with precedence correct, and one sentence names what it threw away that the parse tree kept; node types for if/else and for function calls are designed concretely, with the one field you added out of uncertainty marked as such; and pseudocode for one non-terminal's recursive-descent function is traced by hand on a three-token input with every lookahead marked, with a rule that would make naive recursive descent loop forever identified as left recursion and rewritten so it terminates
+    - weight: 25
       description: "EBNF Grammar and Parsing Theory (Goal 1: write a formal EBNF grammar covering expressions, statements, and programs, and reason about how a bottom-up parser would treat it)"
       preemerging: No grammar is provided, or the grammar is so incomplete that fewer than half the language constructs are covered
       beginning: A grammar is provided but contains ambiguities, missing precedence levels, or structural errors that would make the parser behave incorrectly; the theory questions are unanswered or answered without reference to parser actions
       progressing: The grammar covers all constructs and is mostly unambiguous, but the precedence ladder is incomplete (e.g., comparison operators at the wrong level) or associativity is not explicit; most theory questions are answered but one trace or conflict explanation has a mechanical error
       proficient: The grammar is complete, unambiguous, and matches the implemented parser exactly; every precedence level is a separate non-terminal, associativity is enforced by structure, and the dangling-else resolution is stated explicitly; the parsing theory questions are answered correctly, with the shift-reduce and reduce-reduce conflicts explained in terms of stack actions, a correct hand-executed shift-reduce trace, and the left-recursion contrast stated, showing command of formal language specification in both the top-down and bottom-up views
-    - weight: 36
+    - weight: 37
       description: "Recursive Descent Parser (Goals 2-3: implement a recursive descent parser with the full precedence ladder and correct associativity)"
-      preemerging: The parser fails to run or fails most provided programs because of major structural errors
+      preemerging: The parser fails to run or fails most provided programs because of major structural errors, or a parsing function reaches into the token stream directly instead of going through the Lexer interface
       beginning: The parser runs but fails on several test programs, e.g., it cannot parse nested constructs, or associativity is wrong at one or more tiers
-      progressing: The parser passes the provided test programs but fails on edge cases, e.g., it right-associates `and`/`or` instead of left-associating as the grammar specifies, or it crashes on certain valid inputs
-      proficient: A correct parser passes all provided and hidden test programs with correct precedence and associativity at every tier; parenthesized subexpressions, nested blocks, and if-else chains parse correctly; and the parser is built by importing the Lexer unchanged, showing that Goals 2 and 3 are met end-to-end
-    - weight: 27
+      progressing: The parser passes the provided test programs but fails on edge cases, e.g., it right-associates `and`/`or` instead of left-associating as the grammar specifies, it crashes on certain valid inputs, or unary nesting fails on `not not ok` or on a parenthesized operand such as `-(x)`
+      proficient: A correct parser passes all provided and hidden test programs with correct precedence and associativity at every tier; parenthesized subexpressions, nested blocks, if-else chains, and nested unary forms such as `--x`, `not not ok`, and `-(x)` all parse correctly; every parsing function consumes tokens only through the Lexer's peek, advance, and expect, and states the peek/decide/consume pattern in a one-sentence docstring; and the parser is built by importing the Lexer unchanged, showing that Goals 2 and 3 are met end-to-end
+    - weight: 25
       description: "AST Design, Tooling, and Error Reporting (Goals 4-5: produce a dataclass AST with pretty-printer/unparser, and report errors with positions)"
-      preemerging: No AST node classes exist, or the tree structure does not reflect the program's meaning
+      preemerging: No AST node classes exist, the tree structure does not reflect the program's meaning, or the tests compare printed strings instead of asserting on node types and fields
       beginning: Node classes exist but the pretty-printer or unparser is missing, or error messages lack positions
       progressing: Node classes, pretty-printer, and unparser work for most constructs; errors include positions; but the round-trip property is verified only on fixed examples, not with a property-based generator
-      proficient: Node dataclasses (or tagged-union nodes) cover every construct with documented fields; the pretty-printer renders nested structure clearly; the unparser inserts parentheses only where the tree shape requires them; the round-trip property parse(unparse(parse(s))) is verified across the full test suite **and** with a Hypothesis recursive-AST generator, with one shrunk counterexample reported (or a reasoned all-clear with the generator shown); every error states what was expected, what was found, and the line and column, showing that the AST is a complete, self-documenting artifact. (In the Mini-Notation direction, the timed-event evaluator and the Strudel validation table stand in for the unparser and fixed-example round-trip, with the generator applied to the pattern AST, and are assessed equivalently.)
+      proficient: Node dataclasses (or tagged-union nodes) cover every construct with documented fields; the pretty-printer renders nested structure clearly; the unparser inserts parentheses only where the tree shape requires them; the round-trip property parse(unparse(parse(s))) is verified across the full test suite **and** with a Hypothesis recursive-AST generator, with one shrunk counterexample reported (or a reasoned all-clear with the generator shown); tree-shape tests assert on node types and fields rather than on a repr, covering every primary form and at least two nested unary cases; and every error is a `ParseError` carrying what was expected, what was found, and the line and column as attributes, showing that the AST is a complete, self-documenting artifact. (In the Mini-Notation direction, the timed-event evaluator and the Strudel validation table stand in for the unparser and fixed-example round-trip, with the generator applied to the pattern AST, and are assessed equivalently.)
   readings:
     - rtitle: "Recursive Descent Activity"
       rlink: "Activities/liascript-recursivedescent.md"
@@ -71,9 +71,9 @@ In this assignment you build the parser, the second permanent component of your 
 
 ---
 
-## Part 0: Before You Start - Abstract Syntax Trees
+## Part 0: Before You Start - Abstract Syntax Trees and Recursive Descent
 
-Do this part before you write any parser code; you need pencil and paper and about twenty minutes.  A parse tree records every grammar rule the parser applied, including the parentheses and every intermediate non-terminal.  An AST keeps only the structure the rest of the language needs, and choosing what to keep is a design decision: you are choosing what the rest of your implementation never has to think about again.
+Do this part before you write any parser code; you need pencil and paper and about forty minutes.  It has two halves: the first decides what your tree keeps, and the second rehearses the shape of every function that will build it.  A parse tree records every grammar rule the parser applied, including the parentheses and every intermediate non-terminal.  An AST keeps only the structure the rest of the language needs, and choosing what to keep is a design decision: you are choosing what the rest of your implementation never has to think about again.
 
 > **Do this.**
 > 1. Draw the AST, not the parse tree, for `3 + 4 * 5`.  Get the precedence right: the multiplication sits below the addition.
@@ -81,7 +81,14 @@ Do this part before you write any parser code; you need pencil and paper and abo
 > 3. Design the node types you would use to represent `if`/`else` and function calls in your team's language, as Python dataclasses or as a `match`/`case` shape.
 > 4. Mark the one field you added because you were not sure you could do without it.
 
-> **Bring to class.** Your drawing, your one sentence, and your node types with the uncertain field marked.  Part 3 builds tooling over these nodes, so a field you cannot justify now is one you will still be maintaining at the end of the term.
+A recursive descent parser is one function per non-terminal, and each of those functions runs the same three-beat pattern: look at the next token without consuming it, decide which production applies, then consume the tokens that production calls for.  Tracing that pattern once by hand now is worth an hour of debugging later, because every tier in Part 2 repeats it.
+
+> **Do this.**
+> 5. Pick one non-terminal from the grammar in Part 1 and write the pseudocode for its recursive-descent function, four or five lines is plenty.
+> 6. Trace that pseudocode by hand on a three-token input, marking every point where the function looks ahead at the next token to make a decision.
+> 7. Find a rule that would make naive recursive descent loop forever (a production whose right-hand side starts with the non-terminal it defines), name it as left recursion, and rewrite it so it terminates.
+
+> **Bring to class.** Your drawing, your one sentence, your node types with the uncertain field marked, your traced pseudocode with the lookahead points marked, and the left-recursive rule with its rewrite.  Part 3 builds tooling over these nodes, so a field you cannot justify now is one you will still be maintaining at the end of the term.
 
 ---
 
@@ -107,6 +114,7 @@ You need Python 3.10 or newer (run `python3 --version` to confirm), your complet
 cs374-parser/
   lexer.py         # from the Lexer assignment, unchanged
   token_spec.json  # from the Lexer assignment
+  tokens.py        # only if your lexer has one; the reference lexer does
   parser.py        # the recursive descent parser
   ast_nodes.py     # node dataclasses, pretty-printer, unparser
   test_parser.py   # the test suite
@@ -123,9 +131,11 @@ python3 -c "from lexer import Lexer; print(Lexer('let x = 1;').peek())"
 Token(type='LET', value='let', line=1, col=1, decoded=None)
 ```
 
-**Reference lexer.**  That line is the reference lexer's output; your own `Token` may print with different field names, but its type must be `LET`.  (If Python reports `ModuleNotFoundError: No module named 'lexer'`, you are not running from the folder that holds `lexer.py`.)  The [reference lexer]({{ site.baseurl }}/files/reference/reference-lexer.zip) is released the day this assignment goes out, and you may unzip it into `cs374-parser/` in place of your own `lexer.py`.  If you do, declare it in one line in your readme ("This submission uses the reference lexer"); it carries no penalty, and your Lexer assignment grade stands on its own.
+**Reference lexer.**  That line is the reference lexer's output; your own `Token` may print with different field names, but its type must be `LET`.  (If Python reports `ModuleNotFoundError: No module named 'lexer'`, you are not running from the folder that holds `lexer.py`.)  The [reference lexer]({{ site.baseurl }}/files/reference/reference-lexer.zip) is released the day this assignment goes out, and you may unzip it into `cs374-parser/` in place of your own `lexer.py`.  Copy `tokens.py` across with it; the reference `lexer.py` imports that module, and leaving it behind is the usual cause of a `ModuleNotFoundError` on an otherwise correct setup.  If you use it, declare it in one line in your readme ("This submission uses the reference lexer"); it carries no penalty, and your Lexer assignment grade stands on its own.
 
-> **Time budget.** Part 0 takes about twenty minutes with pencil and paper.  The rest is the most substantial assignment of the semester and has one of the longest windows, and two pair labs inside that window complete pieces of it for you.  Direction B budgets roughly 25-35 hours end to end; the core direction is smaller but still fills the window, so start Part 1 the week the assignment goes out.
+> **Watch out: the `not` keyword.**  Part 2 asks you to build `parse_not()`, which means your lexer has to emit a distinct `NOT` token.  The Lexer assignment's minimum token table does not include one, so if you are using your own lexer, check for it now and add a `NOT` rule ahead of `IDENT` if it is missing.  Without it, `not ok` lexes as two identifiers and `parse_not()` never fires, which shows up much later as a mystifying parse error.  The reference lexer already has `NOT`.
+
+> **Time budget.** Part 0 takes about forty minutes with pencil and paper.  The rest is the most substantial assignment of the semester and has one of the longest windows.  You arrive holding the grammar you wrote in the Grammar and Derivations Workshop, which is most of Part 1 already done, so Part 1 here is refinement and justification rather than a blank page.  Direction B budgets roughly 25-35 hours end to end; the core direction is smaller but still fills the window, so start Part 1 the week the assignment goes out.
 
 ### Your First 30 Minutes
 
@@ -133,21 +143,22 @@ Token(type='LET', value='let', line=1, col=1, decoded=None)
 2. Copy the `Num` and `Var` dataclasses from Step 2a into `ast_nodes.py`.
 3. Copy the `ParseError` class and the `parse_primary()` skeleton from Step 2a into `parser.py`, and fill in the `INT` and `IDENT` cases.
 4. Create a scratch file `try_primary.py` in `cs374-parser/` containing `from lexer import Lexer`, `from parser import parse_primary`, and `print(parse_primary(Lexer("42")))`, then run `python3 try_primary.py`.  You should see `Num(value=42, line=1)`.
-5. Change `"42"` to `"x"` and you should see a `Var`; change it to `";"` and you should see a `ParseError` traceback.  That is the pattern every other tier repeats: look at `lexer.peek()`, decide, consume with `lexer.advance()` or `lexer.expect()`, and return a node.
+5. Change `"42"` to `"x"` and you should see a `Var`; change it to `";"` and you should see a `ParseError` reading `expected an expression, found SEMICOLON` at line 1, col 1.  If the column is wrong, you consumed the bad token before raising; raise on the peeked token instead.  That is the pattern every other tier repeats: look at `lexer.peek()`, decide, consume with `lexer.advance()` or `lexer.expect()`, and return a node.
 
 ### Suggested Pacing
 
-See the course schedule for the assigned and due dates.  If a break falls inside the window, front-load Part 1 so the grammar is drafted while the parsing sessions are fresh.  Two pair labs land inside this window and complete pieces of it for you: the **Grammar and Derivations Workshop lab** completes Part 1's grammar work, and the Parser Skeleton lab builds the first two ladder tiers (`parse_primary`, `parse_unary`).  Bring both in directly, then build tier by tier and keep the tests green as you go:
+See the course schedule for the assigned and due dates.  You do not start Part 1 from nothing: the grammar you wrote in the Grammar and Derivations Workshop earlier in the term is the grammar this parser implements, so bring `grammar.md` in on day one and spend your Part 1 time reconciling it against the required construct list rather than drafting from scratch.  Then build tier by tier and keep the tests green as you go, since a tier with a passing tree-shape test is a tier you never have to revisit:
 
 | Checkpoint | You should have |
 |------------|----------------|
-| On assignment | Grammar drafting begun (Part 1, with the Grammar and Derivations Workshop lab) |
-| Grammar lab due | Part 1's grammar complete via the lab; theory questions (Step 1c) drafted |
-| Skeleton lab due | `parse_primary` and `parse_unary` working via the lab; expression ladder underway |
-| Checkpoint | Expression ladder complete through `parse_expr` with passing tree-shape tests (Step 2b) |
+| On assignment | `grammar.md` brought in and reconciled against Part 1's required constructs; theory questions (Step 1c) begun |
+| End of week 1 | `parse_primary` and `parse_unary` working, with tree-shape tests and a positioned `ParseError` on a stray token (Step 2a) |
+| Midpoint | Expression ladder complete through `parse_expr` with passing tree-shape tests (Step 2b) |
 | Checkpoint | Statements, blocks, and the worked `while` example parsing (Steps 2c-2d) |
 | Checkpoint | Pretty-printer and unparser working (Steps 3a-3b) |
 | Due date | Round-trip verification and error reports complete; readme and ZIP submitted |
+
+The first two rows are the ones students most often let slip.  The expression ladder is the spine of this assignment, and every tier above `parse_unary` assumes those two functions are solid, so get them tested before you build on them.
 
 ---
 
@@ -285,21 +296,31 @@ from ast_nodes import (Num, Var, BinOp, UnaryOp, Let, Assign, Print,
                        Block, If, While, Program)
 
 class ParseError(Exception):
-    def __init__(self, message: str, line: int = 0, col: int = 0):
-        super().__init__(f"ParseError at line {line}, col {col}: {message}")
+    """Raised on a syntax error, carrying everything a good message needs.
+
+    Keeping expected, found, line and col as attributes (rather than baking them
+    into one string) is what lets a test assert on the position instead of
+    pattern-matching English.
+    """
+    def __init__(self, expected: str, found: str, line: int = 0, col: int = 0):
+        super().__init__(f"ParseError at line {line}, col {col}: expected {expected}, found {found}")
+        self.expected = expected
+        self.found = found
         self.line = line
         self.col = col
 
 def parse_primary(lexer: Lexer):
+    """Peek at the next token, decide which literal form it starts, consume it, return a node."""
     tok = lexer.peek()
     if tok.type == "INT":
         lexer.advance()
         return Num(value=int(tok.value), line=tok.line)
     # TODO: FLOAT, STRING, TRUE, FALSE, IDENT, and LPAREN (consume it, call parse_expr, expect RPAREN)
-    raise ParseError(f"expected an expression, found {tok.type}", tok.line, tok.col)
+    raise ParseError("an expression", tok.type, tok.line, tok.col)   # note: raise on the PEEKED token
 
 def parse_unary(lexer: Lexer):
-    # TODO: if the next token is MINUS (or BANG), consume it, recurse, and wrap the result in UnaryOp
+    """Peek for a prefix operator; consume it and recurse, else fall through to a primary."""
+    # TODO: if the next token is MINUS (or NOT), consume it, recurse, and wrap the result in UnaryOp
     return parse_primary(lexer)
 
 def parse_muldiv(lexer: Lexer):
@@ -317,19 +338,28 @@ def parse(source: str) -> Program:
     return parse_program(Lexer(source))
 ```
 
+> **Two rules that hold for every function in this part.**
+>
+> 1. **Go through the Lexer's interface.**  A parsing function reads the token stream only through `peek`, `advance`, and `expect`.  If one function reaches into the token list directly, every tier above it breaks the next time the lexer changes, and that break surfaces far from its cause.
+> 2. **Say the pattern once per function.**  Give each parsing function a one-sentence docstring naming what it peeks at, what it decides, and what it consumes.  Nine tiers that all look alike are readable only if each one says what makes it different.
+>
+> One design decision is yours to make and record: when `parse_primary` sees `(`, it can either return a dedicated `Grouping` node that remembers the parentheses, or parse the inner expression and pass it straight through, letting the tree shape carry the grouping.  Passing through is the usual choice and is what the unparser in Step 3b assumes, but either is defensible.  Note which you chose in your readme, and note what your unparser then has to do to put the parentheses back.
+
 ### Step 2b: Build the Expression Ladder (test after every tier)
 
 Implement each function below in order.  Each tier parses the tier below it and then handles its own operators, and most tiers use the *left-fold* pattern of `parse_muldiv`: parse one operand, then loop while the next token is one of this tier's operators, consuming the operator, parsing one more operand, and replacing the left side with `BinOp(op, left, right)`.  The loop is what makes the operator left-associative.
 
 - `parse_primary()`: returns a `Num`, `Var`, `Str`, `BoolLit`, or the result of a parenthesized `parse_expr()`.  Raise `ParseError` on any other token.
-- `parse_unary()`: if the next token is `MINUS`, consume it and recursively call `parse_unary()`, wrapping the result in `UnaryOp("-", ...)`.  Verify that `--x` builds `UnaryOp("-", UnaryOp("-", Var("x")))`.
+- `parse_unary()`: if the next token is `MINUS`, consume it and recursively call `parse_unary()`, wrapping the result in `UnaryOp("-", ...)`.  Verify that `--x` builds `UnaryOp("-", UnaryOp("-", Var("x")))`, and that `-(x)` parses with a parenthesized expression as the operand.  Recursing into `parse_unary()` rather than `parse_primary()` is what makes the nesting work; if only one level of `UnaryOp` ever appears, that is the call you got wrong.
 - `parse_muldiv()`: left-fold `unary` expressions over `STAR` and `SLASH`.  Verify `8 / 4 / 2` builds `BinOp("/", BinOp("/", Num(8), Num(4)), Num(2))`.
 - `parse_addsub()`: the same left-fold over `PLUS` and `MINUS`, above `muldiv`.  Verify `2 + 3 * 4` builds `BinOp("+", Num(2), BinOp("*", Num(3), Num(4)))`.
 - `parse_comparison()`: parse one `addsub`; if the next token is a comparison operator, consume it and one more `addsub` to form a `BinOp`.  Comparisons are non-associative (no chaining), so `a < b < c` is a syntax error.
-- `parse_not()`: handle unary `NOT`, then call `parse_comparison()`.
+- `parse_not()`: handle unary `NOT`, then call `parse_comparison()`.  Verify that `not not ok` nests two `UnaryOp` nodes.  If it raises a `RecursionError`, you recursed without consuming the operator first.
 - `parse_and()`: left-fold `not` expressions over `AND`.
 - `parse_or()`: left-fold `and` expressions over `OR`.  Verify `a or b and c` builds `BinOp("or", Var("a"), BinOp("and", Var("b"), Var("c")))`.
 - `parse_expr()`: delegates to `parse_or()`.
+
+Every test in this assignment is a **tree-shape test**: it asserts on node types and fields, never on printed output.  Comparing `str(node)` or `repr(node)` to a string feels quicker, but a repr changes the moment you add a field, so those tests break on edits that were entirely correct.  The shape of the tree is what the interpreter will walk next term, so the shape is what you assert on.
 
 > **Do this.**
 > 1. Open `test_parser.py` and paste in the harness below.
@@ -351,15 +381,33 @@ def expr(source: str):
 def test_muldiv_left_associates():
     assert expr("8 / 4 / 2") == BinOp("/", BinOp("/", Num(8), Num(4)), Num(2))
 
-# TODO: at least three tests per tier: addsub, unary, comparison (including
-#       that "a < b < c" raises ParseError), not, and, or
+def test_double_negation_nests():
+    assert expr("--x") == UnaryOp("-", UnaryOp("-", Var("x")))
+
+def test_bad_start_raises_positioned_error():
+    try:
+        expr(";")
+    except ParseError as err:
+        assert err.line == 1 and err.col == 1, f"wrong position: {err.line}, {err.col}"
+        assert err.found == "SEMICOLON", f"wrong found token: {err.found}"
+    else:
+        assert False, "a stray semicolon should not parse as an expression"
+
+# TODO: at least three tests per tier: addsub, unary (including "not not ok"
+#       and "-(x)"), comparison (including that "a < b < c" raises ParseError),
+#       not, and, or
 
 if __name__ == "__main__":
     tests = [f for name, f in dict(globals()).items() if name.startswith("test_")]
+    failed = 0
     for t in tests:
-        t()
-        print("PASS", t.__name__)
-    print(f"{len(tests)} passed")
+        try:
+            t()
+            print("PASS", t.__name__)
+        except Exception as err:                 # keep going, so one break does not hide the rest
+            failed += 1
+            print("FAIL", t.__name__, "--", err)
+    print(f"{len(tests) - failed} passed, {failed} failed")
 ```
 
 > **You should see.** One `PASS` line per test and a final count, for example `PASS test_muldiv_left_associates` and `1 passed`.  A failing assertion stops the run with an `AssertionError` traceback that names the test.  The same file also runs under `python3 -m pytest test_parser.py` once you install pytest in Step 3e.
@@ -472,7 +520,7 @@ This checks that `unparse` produces valid code and that the code means the same 
 
 ### Step 3d: Report Errors with Positions
 
-Every `ParseError` must state what token type was expected, what token type was found, and the line and column of the offending token, for example `ParseError at line 3, col 12: expected SEMICOLON, found RBRACE`.
+Every `ParseError` must state what token type was expected, what token type was found, and the line and column of the offending token, for example `ParseError at line 3, col 12: expected SEMICOLON, found RBRACE`.  Those four facts stay available as the `expected`, `found`, `line` and `col` attributes of the exception, as in the Step 2a skeleton, so that a test can assert on the position without pattern-matching the English.
 
 > **Watch out.** If your Lexer's `expect()` raises the lexer's own error type, catch it in a small helper in `parser.py` and re-raise it as a `ParseError` with the same line and column, so that every error the parser reports has one shape.
 
@@ -613,11 +661,11 @@ Submit a ZIP containing the files below, and list your Python version in the rea
 
 | File or artifact | What it shows | Rubric row |
 |------------------|---------------|------------|
-| Part 0 drawing and node types (in `readme.md` or a scanned page) | The AST for `3 + 4 * 5`, what it discarded, and the `if`/`else` and call nodes with the uncertain field marked | Part 0: Abstract Syntax Trees |
+| Part 0 drawing, node types, and traced pseudocode (in `readme.md` or a scanned page) | The AST for `3 + 4 * 5`, what it discarded, the `if`/`else` and call nodes with the uncertain field marked, one non-terminal's recursive-descent pseudocode traced on three tokens with the lookahead points marked, and the left-recursive rule with its rewrite | Part 0: Abstract Syntax Trees and Recursive Descent |
 | `readme.md` (about one page) | The complete EBNF grammar with one sentence per non-terminal, the dangling-else policy, the four theory answers, the round-trip verification strategy, the error-message before-and-after, and the one shrunk Hypothesis counterexample you fixed (or a reasoned all-clear with the generator shown) | EBNF Grammar and Parsing Theory; AST Design, Tooling, and Error Reporting |
-| `parser.py` | The parser module, importing `lexer.py` unchanged (note any lexer bug fixes in the readme) | Recursive Descent Parser |
+| `parser.py` | The parser module, importing `lexer.py` unchanged (note any lexer bug fixes in the readme), with every parsing function going through `peek`/`advance`/`expect` and carrying its one-sentence pattern docstring | Recursive Descent Parser |
 | `ast_nodes.py` | All node dataclasses, the pretty-printer, and the unparser | AST Design, Tooling, and Error Reporting |
-| `test_parser.py` | The test suite: tree-shape tests, fixed-example round-trip verification, the Hypothesis property-based round-trip test with its AST generator, and error tests | Recursive Descent Parser; AST Design, Tooling, and Error Reporting |
+| `test_parser.py` | The test suite: tree-shape tests asserting on node types and fields (never on a repr), fixed-example round-trip verification, the Hypothesis property-based round-trip test with its AST generator, and error tests | Recursive Descent Parser; AST Design, Tooling, and Error Reporting |
 | `test_output.txt` | The test run output, with all tests passing, including the Hypothesis test | Recursive Descent Parser; AST Design, Tooling, and Error Reporting |
 
 ---
@@ -625,13 +673,18 @@ Submit a ZIP containing the files below, and list your Python version in the rea
 ## Self-Check Before You Submit
 
 - [ ] Part 0 shows the AST (not the parse tree) for `3 + 4 * 5`, names what it threw away, and marks the uncertain field.
+- [ ] Part 0 also traces one non-terminal's pseudocode on a three-token input with every lookahead marked, and rewrites a left-recursive rule so it terminates.
 - [ ] The grammar in the readme matches the parser exactly: every precedence level is its own non-terminal, and the dangling-else resolution is stated.
 - [ ] All four theory questions are answered, with the shift-reduce trace as a stack-input-action table.
 - [ ] `2 + 3 * 4`, `8 / 4 / 2`, `--x`, and `a or b and c` build the trees listed in Step 2b, and `a < b < c` raises `ParseError`.
+- [ ] `not not ok` nests two `UnaryOp` nodes and `-(x)` takes a parenthesized operand.
+- [ ] Every test asserts on node types and fields; no test compares `str(node)` or `repr(node)` to a string.
+- [ ] No parsing function touches the token stream except through `peek`, `advance`, and `expect`, and each has a one-sentence docstring stating what it peeks at, decides, and consumes.
+- [ ] The readme says whether `(` produces a `Grouping` node or passes through, and what the unparser does about it.
 - [ ] The worked `while` program parses to the tree in Step 2d, and the trace is in the writeup.
 - [ ] `unparse` inserts parentheses only where the tree shape requires them, and the round-trip check runs over every program in the suite.
 - [ ] The Hypothesis test runs, and the readme reports one shrunk counterexample (or a reasoned all-clear with the generator shown).
-- [ ] Every `ParseError` names the expected token, the found token, and the line and column; the ten broken programs are recorded.
+- [ ] Every `ParseError` names the expected token, the found token, and the line and column, and exposes all four as attributes; parsing `;` alone reports line 1, col 1; the ten broken programs are recorded.
 - [ ] `lexer.py` is imported unchanged, or the readme declares the reference lexer, and the Python version is listed.
 
 ---
@@ -639,6 +692,7 @@ Submit a ZIP containing the files below, and list your Python version in the rea
 ## Reflection Prompts
 
 - Which tier's left-recursion-to-loop rewrite did you have to think hardest about, and what finally made it click?  (Direction A: which precedence declaration did the same job, and how did you confirm it in the automaton?  Direction B: which construct's grammar placement did you have to think hardest about?)
+- State the peek/decide/consume pattern in your own words, and name which tier of the parser repeats it the most times.
 - Your unparser had to decide where parentheses are necessary.  State the rule you implemented in one sentence.  (Direction B: your evaluator had to decide how cycle information reaches constructs that need it; state your design in one sentence.)
 - When you traced the parser calls on the `while` example in step 2d, which recursive call surprised you, and why?  (Directions A and B: which reduction in the automaton surprised you, and why?)
 - If you took a direction beyond the core: what did the grammar-first discipline reveal that jumping straight to code would have hidden?

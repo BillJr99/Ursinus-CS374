@@ -65,7 +65,7 @@ The language here is the Scheme you have been writing for three weeks.  The *Syn
 
 **Pair policy.**  You may do this lab in pairs.  One partner proposes a production (a single grammar rule), and the other tries to break it with a string the rule handles wrongly.  Submit one document between you, with each of you naming the other, and you both earn the same grade.  Working alone is fine too.  See the course schedule for the assigned and due dates.
 
-**What this lab leaves alone, on purpose.**  Derivation trees, ambiguity, precedence, and associativity are today's class session.  You will use all four in the *Grammar and Derivations Workshop* later in the term.  You do not need any of them here.  Scheme is a good first grammar precisely because it has no ambiguity to resolve and no precedence to encode.  Your only job in this lab is to write productions that separate the strings in the language from the strings outside it.
+**What this lab leaves alone, on purpose.**  Derivation trees, ambiguity, precedence, and associativity are today's class session.  You will use all four in the *Grammar and Derivations Workshop*, the lab that follows this one.  You do not need any of them here.  Scheme is a good first grammar precisely because it has no ambiguity to resolve and no precedence to encode.  Your only job in this lab is to write productions that separate the strings in the language from the strings outside it.
 
 ---
 
@@ -351,7 +351,7 @@ The Scheme assignment's Part 4 opened with `(* (+ 2 3) 4)` and the observation t
 
 The answer to question 2 is zero, and that is the whole point of this step.  Your grammar handles every arithmetic operator in the language without mentioning a single one, because prefix notation puts the operator where the grammar already expects an expression, and the parentheses have already said what groups with what.  Put it another way: the parens are the parse tree.
 
-> **Not today's business.**  Precedence, associativity, and the ambiguity that makes them necessary are what today's session is about, and the *Grammar and Derivations Workshop* is where you build that ladder for real, in the grammar your own parser will implement.  Here you are only noticing that Scheme does not need one.
+> **Not today's business.**  Precedence, associativity, and the ambiguity that makes them necessary are what today's session is about, and the *Grammar and Derivations Workshop*, the lab that follows this one, is where you build that ladder for real, in the grammar your own parser will implement.  Here you are only noticing that Scheme does not need one.
 
 ### Step 1.5: Verify Your Grammar by Hand
 
