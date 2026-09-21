@@ -518,7 +518,9 @@ Lexical error at line 1, col 1: unexpected character '@'
 
 ## Part 4: The Small Static Type Checker
 
-Your evaluator enforces types *dynamically*: a type error surfaces only when the offending expression is actually evaluated.  Part 4 adds a small **static type checker** that catches a useful class of those errors before evaluation begins, as its own pipeline stage: lex -> parse -> check -> evaluate.  This is deliberately not full type inference.  Annotations are required at declarations, so there is no unification; the checker verifies only what is *declared*.  Where a type is unknown (an unannotated construct you choose not to cover), document the gap in your readme rather than guessing.  The Type Checker Starter lab builds the core with a partner before this part is due, and the Hindley-Milner direction in Part 5 grows this checker into whole-program inference, so Part 4 is a foundation, not a throwaway.
+Your evaluator enforces types *dynamically*: a type error surfaces only when the offending expression is actually evaluated.  Part 4 adds a small **static type checker** that catches a useful class of those errors before evaluation begins, as its own pipeline stage: lex -> parse -> check -> evaluate.  This is deliberately not full type inference.  Annotations are required at declarations, so there is no unification; the checker verifies only what is *declared*.
+
+> **The checker is stricter than the evaluator, on purpose.**  Your evaluator has a truthiness rule, so `while 1 { ... }` and `"" or "fallback"` both mean something at run time.  A checker that requires `Bool` conditions and `Bool` operands rejects those programs before they run, even though they would have worked.  That gap is not a bug in either stage: a static checker that never accepts a program that would fail must also reject some programs that would have succeeded, and where to draw that line is a language design decision rather than a correctness question.  Decide where you draw it, implement it consistently, and say so in `SEMANTICS.md`; the Type Checker Starter lab's last reflection prompt asks you to defend exactly this choice.  Where a type is unknown (an unannotated construct you choose not to cover), document the gap in your readme rather than guessing.  The Type Checker Starter lab builds the core with a partner before this part is due, and the Hindley-Milner direction in Part 5 grows this checker into whole-program inference, so Part 4 is a foundation, not a throwaway.
 
 ### Step 4a: Carry Type Annotations on Declarations
 
@@ -535,7 +537,8 @@ python3 -c "from parser import parse; print(parse('let x: Num = 42;'))"
 The checker walks the AST once, maintaining a type environment that mirrors your `Environment` class (a table from names to declared types, with a parent link for nested blocks), and verifies three things:
 
 - Literals and variables.  Every literal has its constant type; every variable use looks up the declared type; a `define` whose initializer's type disagrees with its annotation is an error.
-- Operators.  Arithmetic operators require `Num` operands; comparison operators yield `Bool`; `and`/`or` require `Bool`; mixed-type operands are rejected naming *both* types.
+- Operators.  Arithmetic operators require `Num` operands; comparison operators yield `Bool`; mixed-type operands are rejected naming *both* types.
+- Operators whose static rule is yours to set.  `and`/`or` and the conditions of `if` and `while` are where the strictness decision above becomes concrete.  Requiring `Bool` is the simpler rule and the one the lab's skeleton assumes.  Allowing any type, and letting truthiness decide at run time, keeps every program your evaluator can run.  Either is defensible; pick one, apply it to all four places, and record it.
 - Call sites.  Every function call checks arity and each argument's type against the parameter annotations, and the call expression takes the declared return type; a function whose body cannot produce its declared return type is an error.
 
 Create `typechecker.py`, starting from your Type Checker Starter lab code, and shape it around this skeleton.  Then write one ill-typed program per bullet above (three files) and one well-typed program, and add each to `test_interpreter.py`.
@@ -609,7 +612,7 @@ class LangRuntimeError(LangError): pass
 
 Write `SEMANTICS.md` with one `##` section per topic below, in this order.  Each section must include a statement of the rule in one or two sentences, a code example in your language, and the expected output (or error message).
 
-1.  **Truthiness**: what values are falsy?  What are truthy?  Show a `while` loop that relies on numeric truthiness.
+1.  **Truthiness**: what values are falsy?  What are truthy?  Show a `while` loop that relies on numeric truthiness, and state what your Part 4 checker does with that same program.  If your checker requires `Bool` conditions, the program is rejected before it runs, and the honest answer is that your language's static and dynamic halves disagree by design: say so, show the staged `Type error`, and name the programs that disagreement costs you.  If your checker allows any type there, show the loop running and say what you gave up to allow it.
 2.  **Division by zero**: what error is raised?  What stage identifies it?  Show the exact error message format.
 3.  **Scoping and shadowing**: where does `let` define?  Where does bare assignment update?  Show the shadowing program and its output.
 4.  **Loop-variable persistence**: does the loop variable remain in scope after the loop body?  Show a program whose output depends on this decision.

@@ -5,9 +5,11 @@
 # a condition, and what 'and'/'or' hand back when they short-circuit.
 #
 # Record the real output.  If your Type stage rejects this program before it
-# runs, that rejection IS your answer for this section: your static checker is
-# stricter than your evaluator, which is a defensible design, and SEMANTICS.md
-# should say so explicitly rather than leave the disagreement unmentioned.
+# runs, that rejection IS your answer for this section: you chose the stricter
+# static rule, and SEMANTICS.md section 1 asks you to show the staged Type
+# error and name what that strictness costs you.  If your checker allows any
+# type in a condition, the loop runs and you document that instead.  Part 4
+# spells out the choice; neither answer is the wrong one.
 
 let n = 3;
 while n {
