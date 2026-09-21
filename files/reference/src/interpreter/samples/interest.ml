@@ -1,4 +1,4 @@
-# interest.lang -- arithmetic precedence, floats, comparisons, strings.
+# interest.ml -- arithmetic precedence, floats, comparisons, strings.
 # Yearly compounding at 5% until the balance doubles.
 let principal = 100.0;
 let balance = principal;

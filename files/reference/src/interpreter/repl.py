@@ -1,7 +1,8 @@
 """repl.py -- file runner and REPL for the CS374 reference interpreter.
 
 Usage:
-    python3 repl.py program.lang    # run a file, staged error messages
+    python3 mylang.py program.ml    # run a file, staged error messages
+    python3 repl.py program.ml     # the same thing; mylang.py just re-exports this
     python3 repl.py                 # interactive REPL
 
 Staged error format (Part 3 of the Interpreter assignment):

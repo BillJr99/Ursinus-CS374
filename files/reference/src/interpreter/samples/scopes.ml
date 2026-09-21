@@ -1,4 +1,4 @@
-# scopes.lang -- shadowing, assignment through scopes, short-circuit logic.
+# scopes.ml -- shadowing, assignment through scopes, short-circuit logic.
 let x = 2;
 let log = "outer=";
 {
