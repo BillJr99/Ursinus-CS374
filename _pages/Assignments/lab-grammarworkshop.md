@@ -5,9 +5,9 @@ title: "CS374: Principles of Programming Languages - Lab: Grammar and Derivation
 
 info:
   coursenum: CS374
-  purpose: "To complete the Parser assignment's grammar work with a partner: write a full EBNF grammar for the class language, derive programs that prove it produces what you expect, and settle precedence decisions you can defend."
+  purpose: "To close out the grammars and derivations unit with a partner: write a full EBNF grammar for the class language, derive programs that prove it produces what you expect, and settle precedence decisions you can defend."
   tilt:
-    task: "With a partner, write the EBNF grammar the Parser assignment's Part 1 requires, produce leftmost derivations and parse trees for two worked programs, and show how the grammar's shape enforces precedence and associativity."
+    task: "With a partner, write a complete EBNF grammar for the class language, produce leftmost derivations and parse trees for two worked programs, and show how the grammar's shape enforces precedence and associativity."
     criteria: "I grade this on a complete and correct EBNF grammar, correct derivations with matching parse trees, and a demonstrated precedence and ambiguity analysis.  The rubric below has the details."
   points: 15
   goals:
@@ -55,9 +55,9 @@ tags:
 
 ---
 
-This **lab** is the Parser assignment's Part 1, done early and with a partner.  You write the EBNF grammar that your recursive-descent parser will transcribe function by function, then prove the grammar does what you think it does by deriving two real programs from it and drawing their parse trees.  Every parsing function you write in the Parser assignment is one production from this document, so getting the grammar right on paper first pays off more than anything else you do there.  You leave with one file, `grammar.md`, that goes straight into the [Parser assignment]({{ site.baseurl }}/Assignments/Parser).
+This **lab** closes out the grammars and derivations unit, while the material from the last three sessions is still fresh.  You write the EBNF grammar for the class language, then prove the grammar does what you think it does by deriving two real programs from it and drawing their parse trees.  Keep the one file you produce here, `grammar.md`: later in the term, the [Parser assignment]({{ site.baseurl }}/Assignments/Parser) has you transcribe this grammar function by function, and every parsing function you write there is one production from this document.  Getting the grammar right on paper now pays off more than anything else you will do then.
 
-**Pair policy.**  You may do this lab in pairs.  Grammar design benefits from argument: one partner proposes a production (a single grammar rule), and the other tries to break it with a program the rule derives wrongly.  Turn in the same document, each of you naming the other, and you will both get the same grade.  Working alone is allowed.  The Parser assignment remains individual work: you may both build on this shared grammar, but your parsers are your own.
+**Pair policy.**  You may do this lab in pairs.  Grammar design benefits from argument: one partner proposes a production (a single grammar rule), and the other tries to break it with a program the rule derives wrongly.  Turn in the same document, each of you naming the other, and you will both get the same grade.  Working alone is allowed.  The Parser assignment, when it arrives later in the term, remains individual work: you may both build on this shared grammar, but your parsers are your own.
 
 ---
 
@@ -79,9 +79,7 @@ python3 --version
 
 Now create `grammar.md` in that folder with your editor.  Every part of the lab goes into this one file.  Start it with a title line, a `Partners:` line naming both of you (or saying you worked alone), and four headings, `## Part 0` through `## Part 3`, named as the parts of this page are, so I can find each piece when I grade it.
 
-> **Watch out.**  Two formatting rules that save you points.  Put every grammar in a fence labeled `ebnf` and every derivation and parse tree in a fence labeled `text` (three backticks, the label, your content, three backticks).  A tree drawn outside a fence collapses into a single line when Markdown renders it, and a collapsed tree is not a tree I can grade.  Open the file in your editor's Markdown preview before you submit and confirm the trees still look like trees.
-
-> **Time budget.**  About three hours in two sittings.  See the course schedule for the assigned and due dates: this lab lands inside the Parser assignment's window, and its due date is that assignment's first checkpoint.  On assignment, do Part 0 alone (under an hour) and choose a partner.  By the midpoint, have the Part 1 grammar drafted and attacked by your partner at least once.  By the due date, have Parts 2 and 3 written and `grammar.md` previewed and submitted.  Parts 1 through 3 take one session of about two hours with your partner, most of it on Part 1.
+> **Time budget.**  About three hours in two sittings.  See the course schedule for the assigned and due dates.  On assignment, do Part 0 alone (under an hour) and choose a partner.  By the midpoint, have the Part 1 grammar drafted and attacked by your partner at least once.  By the due date, have Parts 2 and 3 written and `grammar.md` previewed and submitted.  Parts 1 through 3 take one session of about two hours with your partner, most of it on Part 1.
 
 ---
 
@@ -297,7 +295,7 @@ Same string, same grammar, two trees, two meanings.  Nothing in the flat grammar
 
 ## Deliverables
 
-Submit `grammar.md` containing all parts, with both partners named at the top.  Bring it to the Parser assignment: its Part 1 asks you to include (and refine, if the coding surfaces issues) exactly this grammar.
+Submit `grammar.md` containing all parts, with both partners named at the top.  Keep it: when the Parser assignment arrives later in the term, its Part 1 asks you to include this grammar and refine it if the coding surfaces issues.
 
 | File or artifact | What it shows | Rubric row |
 |------------------|---------------|------------|

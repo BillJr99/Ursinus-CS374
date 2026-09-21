@@ -4,6 +4,8 @@ updatecalendar.sh
 geckodriver.log
 do-jekyll.sh
 text2qti.sh
+__pycache__/
+*.pyc
 _site/**
 .sass-cache/**
 Gemfile.lock

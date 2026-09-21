@@ -563,17 +563,17 @@ Operators are where most ill-typed programs fail, and where a message that names
 
 ### Step 1.5: Run the twelve provided programs and keep the log
 
-Verify your checker against the provided programs in the course starter repo.  Six well-typed programs must pass silently.  Six ill-typed programs must each produce a positioned error; these include the classic `let x: Num = 1 + true;` (the error must appear *before* anything runs) and a shadowing case where an inner `let x: Str` legitimately changes the type of `x` for the inner scope only.
+Verify your checker against the [twelve provided programs]({{ site.baseurl }}/files/starters/typechecker/programs/), which live in `files/starters/typechecker/programs/` in the course site repository.  Six well-typed programs must pass silently.  Six ill-typed programs must each produce a positioned error; these include the classic `let x: Num = 1 + true;` (the error must appear *before* anything runs) and a shadowing case where an inner `let x: Str` legitimately changes the type of `x` for the inner scope only.
 
 > **Do this.**
-> 1. Copy all twelve provided programs into `programs/`.
+> 1. Copy all twelve provided programs into `programs/`.  They are named `01-` through `12-`, and the six whose names contain `bad-` are the ill-typed ones.
 > 2. Run the driver over every one of them and save the output.  The `for` loop runs the checker once per file, `echo` labels each run with its file name, and `tee` prints the output and writes it to `runlog.txt` at the same time.  If the provided programs use a different file extension, change `*.ml` to match.
 >
 >    ```bash
 >    for f in programs/*.ml; do echo "== $f"; python3 typechecker.py "$f"; done | tee runlog.txt
 >    ```
 >
-> 3. Read `runlog.txt` once, top to bottom, and confirm each well-typed program shows only its label and each ill-typed program shows its label and one `Type error` line.
+> 3. Read `runlog.txt` once, top to bottom, and confirm each well-typed program shows only its label and each ill-typed program shows its label and one `Type error` line.  Each of the six ill-typed programs breaks a *different* rule, so six identical messages means a branch is catching something it should not.
 
 > **You should see.**  Twelve labels.  Six are followed directly by the next label (silent acceptance).  Six are followed by exactly one `Type error at line L, col C: ...` line naming two types.
 

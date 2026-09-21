@@ -19,31 +19,37 @@ info:
     - To implement a small static type checker over annotated declarations (literal, variable, operator, and call-site checks) that runs as its own pipeline stage between parsing and evaluation
     - To make the language's semantics precise, by documenting the dynamic rules exhaustively in SEMANTICS.md, by extending the required checker to full Hindley-Milner type inference, or by implementing and precisely specifying a contrasting opcode-based execution model (the Intcode VM), in your choice of direction
   rubric:
-    - weight: 25
+    - weight: 10
+      description: "Part 0: Before You Start - Evaluation and Invariants"
+      preemerging: No trace is attempted and no invariants are stated
+      beginning: The program is traced but the environment is not shown at each step, or no invariant is stated
+      progressing: The trace shows the environment at every step, but the truthiness decision is left open, or only one invariant is stated, or an invariant is stated so vaguely that no program could test it
+      proficient: The five-line program is traced by hand with the environment's contents and the value produced shown at every step; the truthiness policy is decided and written down in one sentence with the case that forced the decision; and two invariants are stated precisely enough to be tested, each naming the property and the class of programs it should hold over
+    - weight: 22
       description: "AST Node Dataclasses (Goal 1: define a complete set of AST node dataclasses covering every language construct)"
       preemerging: Fewer than half the required node types are defined, or the dataclass structure does not match the parser's output
       beginning: All required node types exist but several are missing fields, have incorrect types, or lack documented field meanings
       progressing: All required node types are defined with correct fields and a useful __repr__, but source-position information is missing from most nodes
       proficient: All required node types are defined as dataclasses with every field documented and source-position (line/col) stored where it aids error reporting, meeting Goal 1 with a complete, parser-consistent node hierarchy and a visitor dispatch table or isinstance chain ready for the evaluator
-    - weight: 30
+    - weight: 28
       description: "Tree-Walking Evaluator (Goals 2-3: implement a tree-walking evaluator with strong dynamic typing and an Environment class for nested scopes)"
       preemerging: The evaluator fails to run or fails most provided programs because of major structural errors such as missing cases or infinite loops
       beginning: The evaluator runs but fails on several programs, e.g., nested scopes leak, type errors are not raised, or short-circuit logic always evaluates both branches
       progressing: The evaluator passes the provided programs but fails on hidden edge cases, e.g., a scope is not discarded after a block, or division by zero crashes Python instead of raising a language error
       proficient: A correct evaluator passes all provided and hidden programs; nested scopes behave per documented semantics, type errors name both operand types, short-circuit logic is verified by a non-evaluation test, and all runtime errors are raised at the language level with stage and position; the required Hypothesis invariant tests (Step 2e; determinism, scope restoration, short-circuit non-evaluation, and at least one more) pass over the generated program space, with one shrunk counterexample reported or a reasoned all-clear; and the control-flow theory questions are answered in the readme with the bomb test used as evidence, showing that Goals 2 and 3 are met
-    - weight: 15
+    - weight: 13
       description: "REPL and File Runner (Goal 4: build a REPL and file-runner with stage-identified error messages)"
       preemerging: Neither the REPL nor the file runner exists, or both crash on the first error
       beginning: One of the two exists but dies on any error, or the REPL does not maintain state between inputs
       progressing: Both exist and survive most errors, but one error class (e.g., type errors) still crashes the REPL, or the file runner does not identify the stage in its error messages
       proficient: Both the REPL and file runner work; the REPL maintains a persistent environment across inputs and recovers from all error classes, the file runner identifies stage and position in every error message, and a transcript demonstrates each error class and recovery, meeting Goal 4 end-to-end
-    - weight: 15
+    - weight: 13
       description: "The Small Static Type Checker (Goal 5: implement a static type checker over annotated declarations that runs as its own pipeline stage between parsing and evaluation)"
       preemerging: "No checker exists, or it never rejects an ill-typed program"
       beginning: "The checker rejects some ill-typed programs but misses operator mismatches or call-site errors, or it runs interleaved with evaluation rather than as its own stage"
       progressing: "The checker catches literal, variable, operator, and call-site errors as a separate stage, but error messages lack positions or do not name both conflicting types, or one construct (e.g., function return types) is unchecked"
       proficient: "The checker runs as its own stage between parsing and evaluation and rejects every ill-typed test program before any code runs; every type error is reported as \"Type error at line L, col C\" naming both conflicting types; annotated declarations, operator uses, call-site arity and argument types, and return types are all checked; and the file runner's staged output shows the Type stage firing before the Run stage"
-    - weight: 15
+    - weight: 14
       description: "Part 5, in the chosen direction: Staged Errors with SEMANTICS.md, full Hindley-Milner Type Inference, or the Intcode VM with a precise operational semantics (Goal 6: make the language's semantics precise, by documenting the dynamic rules exhaustively, extending the required checker to whole-program inference, or specifying and implementing a contrasting opcode-based execution model)"
       preemerging: "Dynamic-errors direction: errors are unhandled Python exceptions with no stage identification. Typing direction: no checker exists, or unification fails on basic cases. Intcode direction: the VM fails the Day 2 sample, or opcodes are not documented as transition rules"
       beginning: "Dynamic-errors direction: errors are caught but the stage (lexical vs. syntax vs. runtime) is not identified, or the position is absent. Typing direction: unification handles trivial cases but the checker fails on function application or let, or type errors carry no position. Intcode direction: the VM runs the Day 2 sample but parameter modes are wrong or INTCODE.md is incomplete"
@@ -90,7 +96,7 @@ You need:
 
 > **Do this.**
 > 1. Create a project folder named `cs374-interpreter` and copy `lexer.py`, `parser.py`, `ast_nodes.py`, and `token_spec.json` into it (or unzip the reference parser there).
-> 2. Create the deliverable files up front so each part has a home: `interpreter.py` (evaluator, Environment, error hierarchy), `mylang.py` (file runner and REPL, Part 3), `typechecker.py` (Part 4), `SEMANTICS.md` (Part 5), and `test_interpreter.py`.
+> 2. Create the deliverable files up front so each part has a home: `interpreter.py` (evaluator, Environment, error hierarchy), `mylang.py` (file runner and REPL, Part 3), `typechecker.py` (Part 4), `SEMANTICS.md` (Part 5), and `test_interpreter.py`.  Rather than transcribing them, copy the [starter kit]({{ site.baseurl }}/files/starters/interpreter/) from `files/starters/interpreter/`: it holds those four Python files with every skeleton from this page already in place, and every `TODO` still yours to fill.  The seeded tests fail until you implement the branches they exercise, which is how you know they are running.
 > 3. From inside the folder, confirm your Python version, install Hypothesis, and confirm the pipeline is connected:
 >
 > ```bash
@@ -106,7 +112,30 @@ You need:
 > - `ImportError: cannot import name 'parse'`: your parser's entry point has a different name.  Use that name here and in `mylang.py`.
 > - A `LexError` or `ParseError` on this one-line program: fix that stage first, or swap in the reference component.
 
-> **Time budget.** This is the longest assignment in the pipeline, and the course window matches it.  Plan steady work across every checkpoint in the pacing table rather than a final-week push.  Two pair labs of about two to three hours each land inside the window and finish pieces of Step 2c and Part 4 for you.
+> **Time budget.** Part 0 takes about thirty minutes with pencil and paper.  The rest has five parts that each depend on the one before, so it rewards steady work against the pacing table below and punishes a final-week push harder than anything else this term.  Two pair labs of about two to three hours each land inside the window and finish pieces of Step 2c and Part 4 for you, so those two pieces are largely done before you need them.  Start Part 1 the day the assignment goes out.
+
+---
+
+## Part 0: Before You Start - Evaluation and Invariants
+
+Do this part before you write any evaluator code; you need pencil and paper and about thirty minutes.  An evaluator is a function from a tree and an environment to a value, and almost every bug in Part 2 is a disagreement between what you thought the environment held at some moment and what it actually held.  Tracing one program by hand now is how you find out which of those two you trust.
+
+```text
+let x = 2;
+let y = x + 3;
+{
+    let x = 10;
+    print x * y;
+}
+print x;
+```
+
+> **Do this.**
+> 1. Trace this program one statement at a time.  At every step, write what the environment contains (including which scope each name lives in) and what value the step produced.  The last two `print` statements are the interesting ones; if you get `50` and then `2`, your model of block scope is already right.
+> 2. Decide your truthiness policy and write it in one sentence: which values, other than `true` and `false`, may appear as the condition of an `if` or `while`, and what happens to the ones that may not.  Name the case that forced your decision.  Step 2b makes you implement whatever you decide here, so decide it deliberately rather than by accident.
+> 3. State two **invariants**: properties that should hold for every program in your language, not just this one.  "Evaluating the same program twice in a fresh environment produces the same output" is one, and it is the one Step 2e has you test first.  Write each precisely enough that you could check it mechanically, and name the class of programs it ranges over.
+
+> **Bring to class.** Your trace with the environment shown at every step, your one-sentence truthiness policy with its forcing case, and your two invariants.  Step 2e turns those invariants into Hypothesis properties over generated programs, so an invariant you state sharply now is a test you barely have to write later.
 
 ---
 
@@ -129,17 +158,19 @@ python3 -c "from parser import parse; from interpreter import Interpreter; Inter
 
 ### Suggested Pacing
 
-See the course schedule for the assigned and due dates.  Two pair labs land inside the window: the **Environments and Scope lab** (due mid-assignment) builds the `Environment` machinery of Step 2c, and the **Type Checker Starter lab** (due later in the window) builds the core of Part 4's checker.  Part 2 is the steepest section; climb it in the small steps below.
+See the course schedule for the assigned and due dates.  Two pair labs land inside the window and do real work for you: the **Environments and Scope lab** builds the `Environment` machinery of Step 2c, and the **Type Checker Starter lab** builds the core of Part 4's checker.  Neither is a detour; each one hands you a file this assignment then imports.  Part 2 is the steepest section, so climb it in the small steps below rather than in one sitting.
 
 | Checkpoint | You should have |
 |------------|----------------|
-| On assignment | Part 1 complete: all node dataclasses and the dispatch skeleton (Steps 1a-1b) |
-| Checkpoint 1 | Expression evaluation and short-circuit logic with the bomb test passing (Steps 2a-2b) |
-| Environments lab due | `Environment` and statement evaluation (grown from the lab); shadowing program prints `51` then `2` (Step 2c) |
-| Checkpoint 2 | Break/continue signals and the file runner with staged errors (Step 2d, Step 3a) |
+| On assignment | Part 0 done on paper, and Part 1 complete: all node dataclasses and the dispatch skeleton (Steps 1a-1b) |
+| End of week 1 | Expression evaluation and short-circuit logic with the bomb test passing (Steps 2a-2b) |
+| Environments lab due | `Environment` and statement evaluation, grown from the lab; the shadowing program prints `51` then `2` (Step 2c) |
+| Midpoint | Break/continue signals, the file runner with staged errors, and the Step 2e invariants running (Step 2d, Step 3a, Step 2e) |
 | Type Checker lab due | REPL with persistent environment and recovery; the checker core in place from the lab (Step 3b, Part 4) |
-| Checkpoint 3 | Checker complete across all constructs; error hierarchy in place (Part 4, Step 5a) |
-| Due date | `SEMANTICS.md`, differential programs, REPL transcript; ZIP submitted (Steps 5b-5c) |
+| Final week | Checker complete across all constructs, including call sites and return types; error hierarchy in place (Part 4, Step 5a) |
+| Due date | Part 5 deliverable, differential programs, REPL transcript; ZIP submitted (Steps 5b-5c) |
+
+Two rows are worth planning around.  The Environments lab is due early in this window, so Step 2c should be a matter of importing what you already built and wiring it in; if that lab is still open when you reach Step 2c, do the lab first.  The Type Checker lab lands late, and Part 4 asks you to extend its checker to call sites and return types, so read Part 4 before that lab is due and you will know what you are building toward.
 
 ---
 
@@ -375,15 +406,35 @@ In the Parser assignment you used [Hypothesis](https://hypothesis.readthedocs.io
 3.  Short-circuit non-evaluation.  Give `and`/`or` a right operand with an observable side effect (for example, a call to a tool that appends to a list, or a subexpression that divides by zero).  Assert that when the left operand determines the result (`false and X`, `true or X`), the right operand's side effect never fires.  Hypothesis will hunt for the operand shape that sneaks past your short-circuit.
 4.  Arithmetic agreement (metamorphic).  For generated integer-only expressions using `+ - *`, your evaluator's result equals Python's evaluation of the same expression.  This is a cheap oracle that catches precedence and associativity bugs that slipped through the parser into evaluation.
 
+The first invariant is written out in full below, because the shape of one of these is most of the difficulty; the other two are yours.  Note the two things it does that a hand-written test does not: it builds a *fresh* `Interpreter` for each run, so state cannot leak between them, and it captures stdout so that printed output counts as part of the result.
+
 ```python
+import io
+from contextlib import redirect_stdout
 from hypothesis import given
 from hypothesis import strategies as st
-# TODO: import or paste your recursive AST generator, e.g. exprs()
+
+from parser import parse
+from interpreter import Interpreter
+
+# TODO: import or paste your recursive AST generator from the Parser assignment, e.g. exprs()
+
+def run(tree):
+    """Evaluate a tree in a fresh interpreter, returning (value, printed output)."""
+    buf = io.StringIO()
+    with redirect_stdout(buf):
+        value = Interpreter().eval_node(tree)
+    return value, buf.getvalue()
+
 @given(tree=exprs())
 def test_determinism(tree):
-    # TODO: evaluate tree twice, each with a fresh Interpreter(); assert identical results and output
-    ...
+    first = run(tree)
+    second = run(tree)
+    assert first == second, f"same tree gave {first!r} then {second!r}"
+
 # TODO: test_scope_restoration, and test_short_circuit_non_evaluation or test_arithmetic_agreement
+#       Model them on test_determinism: generate a tree, run it in a fresh interpreter,
+#       and assert the property over the (value, output) pair rather than over internals.
 ```
 
 > **You should see.** After `python3 -m pytest test_interpreter.py`, each property test listed as passed, or a `Falsifying example` block showing the smallest program that breaks the invariant (Hypothesis shrinks a failure to the minimal offending program).  In your `readme.md`, report one invariant that caught a real bug, or a reasoned all-clear with the three properties and the generator shown.
@@ -524,13 +575,15 @@ Report every rejection as `Type error at line L, col C: ...`, naming both confli
 
 ## Part 5: Making the Semantics Precise, Choose Your Direction
 
-Parts 1-4 give your language a working evaluator and a static checking stage.  Part 5 makes its semantics *precise*, in your choice of **direction**.  You complete one Part 5 and submit one deliverable, and the same 15-point rubric row applies equivalently to each.
+Parts 1-4 give your language a working evaluator and a static checking stage.  Part 5 makes its semantics *precise*, in your choice of **direction**.  You complete one Part 5 and submit one deliverable, and the same rubric row applies equivalently to each.
 
 | Direction | What you build | Pick this if |
 |-----------|----------------|--------------|
 | **Staged errors and SEMANTICS.md** (the core direction) | The language-level error hierarchy and a document stating every dynamic rule with an example, as Steps 5a-5c below scaffold it | You want the most direct path to a complete semantics reference for your team project |
 | **Full type inference (Hindley-Milner)** | Part 4's annotation checker grown into whole-program *inference* that deduces types with no annotations at all, the way Haskell, OCaml, and Rust do.  See the [typing direction](#part-5-direction-full-type-inference-hindley-milner) | You enjoyed Part 4 and want the unification machinery behind modern type systems |
 | **The Intcode VM** | A *virtual machine* that executes a flat list of numeric opcodes, the model behind CPython's bytecode, the JVM, and WebAssembly, implemented as the [Advent of Code 2019 Intcode](https://adventofcode.com/2019/day/2) machine and specified opcode by opcode.  See the [Intcode direction](#part-5-direction-a-contrasting-execution-model-the-intcode-vm) | You want to have built both dominant execution models and to say precisely how they differ |
+
+> **On choosing.**  The three directions are graded equivalently, but they are not equal in size.  The core direction is the smallest of the three and the most directly reusable, because `SEMANTICS.md` is the document your team project will be reading all term.  The typing and Intcode directions are each roughly half again as much work, and both are worth it if the subject is what you want to spend that time on.  If this window is tight for you, take the core direction without hesitation; it is a first-class choice, not a fallback.
 
 In every direction, Step 5a's error hierarchy is required (lexical, syntax, and name errors still need staged reporting; in the Intcode direction, malformed programs and illegal opcodes are staged errors), and the control-flow theory questions from Step 2b go in your readme.  The two alternative directions replace Steps 5b and 5c (SEMANTICS.md and the differential programs) with their own sections below: the typing direction with the inference engine, and the Intcode direction with the VM, where the self-checking AoC inputs are your oracle and a required differential test pins your VM's arithmetic against your tree-walker's.  Whichever direction you choose, the goal is the same: for every construct in your language (or VM), there is exactly one written answer to "what does this mean, and what happens when it is misused?", and your implementation agrees with it.
 
@@ -568,7 +621,7 @@ Run every example with `python3 mylang.py` and paste the real output; do not typ
 
 ### Step 5c: Run the Differential Programs
 
-Five programs are provided whose outputs depend on your semantics decisions.  Run each with `python3 mylang.py <program>` and record its output.  Confirm that each output matches your SEMANTICS.md documentation; if it does not, fix either the code or the documentation, since they must agree.  Add the five programs and their recorded outputs to `test_interpreter.py`, each traceable to a specific rule in SEMANTICS.md.
+[Five programs are provided]({{ site.baseurl }}/files/starters/interpreter/differential/), in `files/starters/interpreter/differential/`, whose outputs depend on your semantics decisions.  Each one names the `SEMANTICS.md` section it probes in a header comment, and between them they touch all seven.  Run each with `python3 mylang.py <program>` and record its output.  Confirm that each output matches your SEMANTICS.md documentation; if it does not, fix either the code or the documentation, since they must agree.  Add the five programs and their recorded outputs to `test_interpreter.py`, each traceable to a specific rule in SEMANTICS.md.
 
 ---
 
