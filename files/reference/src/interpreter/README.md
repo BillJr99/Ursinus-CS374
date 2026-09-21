@@ -18,16 +18,17 @@ of the reference lexer and parser (`tokens.py`, `lexer.py`, `ast_nodes.py`,
 | File | Purpose |
 |------|---------|
 | `interp.py` | `Interpreter` (isinstance dispatch), `Environment`, truthiness, short-circuit `LogicOp`, `BreakSignal`/`ContinueSignal`, the `LangError` hierarchy |
-| `repl.py` | file runner (`python3 repl.py program.lang`) and REPL (`python3 repl.py`) with staged error messages |
+| `mylang.py` | the entry point the Interpreter assignment asks you to build; re-exports `repl.py` |
+| `repl.py` | file runner (`python3 mylang.py program.ml`) and REPL (`python3 mylang.py`) with staged error messages |
 | `test_interp.py` | 35 tests: run `python3 -m pytest test_interp.py` or `python3 test_interp.py` |
-| `samples/*.lang` | three end-to-end sample programs |
+| `samples/*.ml` | three end-to-end sample programs |
 | the rest | reference lexer + parser, imported unchanged |
 
 ## Quick start
 
 ```
-python3 repl.py samples/countdown.lang     # run a file
-python3 repl.py                            # REPL: persistent env, >> prompt
+python3 mylang.py samples/countdown.ml     # run a file
+python3 mylang.py                          # REPL: persistent env, >> prompt
 python3 -m pytest test_interp.py           # test suite
 ```
 

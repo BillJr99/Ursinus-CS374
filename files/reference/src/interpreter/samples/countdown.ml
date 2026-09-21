@@ -1,4 +1,4 @@
-# countdown.lang -- while loop, if/else-if chain, break and continue.
+# countdown.ml -- while loop, if/else-if chain, break and continue.
 let x = 10;
 while x > 0 {
     x = x - 1;
