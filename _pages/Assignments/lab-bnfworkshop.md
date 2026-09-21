@@ -417,6 +417,10 @@ Two of the languages below are the productions you wrote in Part 0, so this part
 
 What you want is a production that is right-linear in the sense just defined, or that can be read as one: built from terminals, alternation (`|`), concatenation, and `{ }` repetition, with no nonterminal ever sitting anywhere except at the end of an alternative.  Saying so is the whole argument.  What you do *not* want is a production that nests a nonterminal in the middle of a right-hand side, or that refers back to itself around a terminal on both sides, because that is the shape that needs a stack.
 
+> **One nonterminal that does not count against you, and it is the one Part 0 told you to write.**  `<digit>` is a name for a set of ten terminals, nothing more.  Substituting its definition back into `<number>` replaces it with a plain alternation of `"0"` through `"9"`, and a rule like `<number> ::= <digit> <number>` expands into ten rules of the form `<number> ::= "0" <number>`, every one of them a terminal followed by a single nonterminal at the end.  The same holds for `<initial>` and `<subseq>`.  So a **character-class nonterminal**, one whose every alternative is a single terminal and which never refers to itself, may appear anywhere in a right-hand side without costing you right-linearity, because expanding it removes it.  When you make the argument, say that you are expanding these three and then point at the shape.
+>
+> This is not a loophole; it is the difference between a name for a set of characters and a name for a structure.  `<expr>` inside `<list>` is a structure: it can contain another `<list>`, so no amount of substitution ever removes it, and that is exactly why `<list>` needs a stack.
+
 If your Part 0 productions do not have that shape, or you are not sure, you may use these as your reference versions for Part 2.  Say in one line that you did, and which of yours you replaced.  This costs you nothing: Part 0 was graded on the work you did there, and this is only so that Part 2 has something clean to reason about.
 
 ```ebnf
@@ -428,7 +432,7 @@ If your Part 0 productions do not have that shape, or you are not sure, you may 
 <symbol>  ::= <initial> { <subseq> }
 ```
 
-Notice that every one of those is right-linear in the sense above, and notice that `<list>` from Part 1 is not, because `<expr>` appears with a `)` after it.  That difference is the hinge for every classification that follows.
+Notice that every one of those is right-linear once `<digit>`, `<initial>`, and `<subseq>` are expanded, and notice that `<list>` from Part 1 is not, and never becomes so under any amount of expansion, because `<expr>` appears with a `)` after it and `<expr>` can produce another `<list>`.  That difference is the hinge for every classification that follows.
 
 ### The Classification
 
