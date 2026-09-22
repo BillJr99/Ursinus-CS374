@@ -512,7 +512,28 @@ The second line is the payoff. You now hold the procedure itself, so you can cal
 
 This is the same `map` from Part 1's Example 4 and from the primer, except that the function you pass it is `evaluate` itself, the procedure you are in the middle of writing.
 
+Read that line as three separate facts. `(cdr expr)` drops the operator and leaves the operands, so on `'(* (+ 2 3) 4)` it gives `((+ 2 3) 4)`. `map` calls its first argument once per element of that list. And the list that comes back is the same length as the list that went in, one result per operand:
+
+```scheme
+(cdr '(* (+ 2 3) 4))             ; ((+ 2 3) 4)      two operands
+(evaluate '(+ 2 3))              ; 5                the first, on its own
+(evaluate 4)                     ; 4                the second, on its own
+(map evaluate '((+ 2 3) 4))      ; (5 4)            both, in one call
+```
+
+The last line is the first three lines combined. `map` did nothing clever: it made the same two calls you just made by hand and collected the answers into a list, in order.
+
+Each operand is handled by whichever branch of `evaluate` fits it, which is why a mixed list works. `(+ 2 3)` is a list, so it takes the recursive branch and comes back as `5`. `4` is a number, so it takes the base case and comes back unchanged. Nesting does not change the shape of this step, it only means the recursive branch runs again before the answer comes back:
+
+```scheme
+(map evaluate (cdr '(+ 1 (* 2 (- 5 3)))))   ; (1 4)
+```
+
+Here the second operand is `(* 2 (- 5 3))`, whose own operand list is evaluated by this same line one level down, giving `(2 2)` before `*` is applied to it. Every level of nesting is one more trip through Steps 1 to 3.
+
 Compare this against the primer's practice step, where `(map square '(2 (+ 1 2) 4))` failed. `square` did not know what to do with a list. `evaluate` does know, because handling a list is its recursive case. That is why mapping `evaluate` over a mix of numbers and sub-expressions works where mapping `square` did not.
+
+The one thing to hold on to: after Step 2 you have a **list of numbers**, and nothing in it is still an expression. That is exactly the shape Step 3 needs.
 
 **Step 3: apply.** You now hold two things: a procedure, from Step 1, and a list of numbers, from Step 2. Those are exactly what `apply` takes.
 
@@ -521,6 +542,31 @@ Compare this against the primer's practice step, where `(map square '(2 (+ 1 2) 
 ```
 
 This is the same `apply` from the primer's `(apply * '(2 3 4))` practice step, with the procedure coming from `lookup-op` instead of being written literally.
+
+`apply` exists because of a mismatch between what you have and what `+` wants. You have one list, `(5 4)`. `+` wants its numbers as separate arguments. `apply` is the translation between the two, so these two lines mean the same thing:
+
+```scheme
+(apply + '(5 4))                 ; 9
+(+ 5 4)                          ; 9, the same call, written by hand
+```
+
+Calling the procedure on the list directly is the error this avoids, and it is worth producing once so you recognize it later:
+
+```scheme
+((lookup-op '+) '(5 4))          ; error: + expects a number, given (5 4)
+```
+
+The translation does not care how long the list is, which is what makes the evaluator work for expressions of any width without extra code:
+
+```scheme
+(apply + '(5 4))                 ; 9       same as (+ 5 4)
+(apply + '(1 2 3 4))             ; 10      same as (+ 1 2 3 4)
+(apply * (map evaluate (cdr '(* (+ 2 3) 4))))   ; 20, both steps together
+```
+
+That last line is the whole recursive branch in miniature, with the procedure written literally instead of looked up. Read it inside out: `(cdr ...)` gives the operands, `map evaluate` turns them into `(5 4)`, and `apply` spreads that list into `(* 5 4)`. Replace the literal `*` with `(lookup-op (car expr))` and you have written the branch.
+
+The two steps divide the work cleanly, and it helps to say which does which: `map` walks a list and hands you a list back, one element at a time; `apply` takes a list apart and hands the pieces to one procedure, all at once. Step 2 is the first, Step 3 is the second, and using them in the other order will not typecheck against what you hold.
 
 ### Assembling the three steps
 
