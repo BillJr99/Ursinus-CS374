@@ -62,6 +62,8 @@ info:
     - rtitle: "Abstract Syntax Trees Activity"
       rlink: "Activities/liascript-ast.md"
       liapage: true
+    - rtitle: "Building an LR Parser from the Grammar Up (Tutorial, the companion to Part 4)"
+      rlink: "../Tutorials/LRConstruction"
     - rtitle: "Property-Based Testing Your Language with Hypothesis (Tutorial)"
       rlink: "../Tutorials/PropertyBasedTesting"
     - rtitle: "Hypothesis Documentation"
@@ -585,6 +587,8 @@ def test_round_trip(tree):
 You have now written a top-down parser by hand.  In this part you build the bottom-up machine that a generator would have built for you.  Direction A's `bison -v` output then stops being a black box.  Everyone does this part, whichever direction you took for Part 2.
 
 You build it for **one fixed grammar, not your own**.  That is deliberate.  The ladder grammar below is the one the [Table-Driven and LR Parsing]({{ site.baseurl }}/Activities/liascript-parsertable) session builds by hand.  That activity prints the correct closure, the twelve item sets, the FOLLOW sets, and the complete ACTION/GOTO table.  Those printed tables are your answer key: your code must reproduce them exactly.  You will know you are right without asking me.
+
+If you want the mechanism explained before you build it, the [Building an LR Parser from the Grammar Up]({{ site.baseurl }}/Tutorials/LRConstruction) tutorial walks through every step below on a smaller grammar, with runnable code and worked conflicts.  It is a companion, not a shortcut: its grammar has neither precedence nor parentheses, so the work here is still yours.
 
 Work in a new file, `lr.py`, and number the productions exactly as below.  The numbering is load-bearing, because a reduce action is recorded as a production number and the activity's table uses these.
 

@@ -422,6 +422,8 @@ schedule:
   link: "Activities/liascript-parsertable.md"
   liapage: true
   readings:
+  - rtitle: "Building an LR Parser from the Grammar Up, the companion to Part 4 of the Parser assignment, which walks the same construction on a smaller grammar with runnable code"
+    rlink: "Tutorials/LRConstruction"
   - rtitle: "Allison, Ch. 5: Pushdown Automata, Adding a Stack to Finite Automata"
   - rtitle: "Allison, Ch. 6 §6.3: Equivalence of PDAs and Context-Free Grammars"
 - week: "9"
@@ -455,6 +457,8 @@ schedule:
   readings:
   - rtitle: "This session is Day 2 of tree-walking interpretation: statements change state, where expressions returned values."
     rlink: false
+  - rtitle: "For the Parser assignment (Part 4): Building an LR Parser from the Grammar Up, the worked construction behind the SLR(1) tables and driver you implement"
+    rlink: "Tutorials/LRConstruction"
   - rtitle: "For the Tree-Walking Interpreter (Step 2e): Property-Based Testing with Hypothesis, covering the round-trip property, now over evaluation"
     rlink: "Tutorials/PropertyBasedTesting"
   - rtitle: "CI and TDD for Interpreters"
