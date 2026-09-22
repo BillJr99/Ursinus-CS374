@@ -16,3 +16,4 @@ setformprocessorasmtid.sh
 
 # Session logs stay local; they are not repository content
 logs/
+/*.sh
