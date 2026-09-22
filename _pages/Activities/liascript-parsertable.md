@@ -352,25 +352,27 @@ A parser generator reports a shift-reduce conflict on the team's grammar at the 
 
 > **Watch out!**  A conflict in the parsing table (whether LL(1) or LR) means the grammar is not in the class the table was built for.  For LL(1) tables specifically, any cell with more than one entry means the grammar is not LL(1) and the table-driven parser is undefined for that grammar.  The right response is always to diagnose *why* the conflict arose (ambiguity? left recursion? missing factoring?) rather than picking an entry arbitrarily.
 
-## What the parser classes ultimately buy
+## What More Lookahead Buys, and What It Does Not
 
-A conflict tells you a grammar sits outside a class.  It is worth knowing what the classes are worth, because the answer is not symmetric between LL and LR.
+A conflict tells you that your grammar sits outside a class.  Before you reach for a larger class, learn what the classes are actually worth, because lookahead does not pay off the same way for LL and for LR.
 
-**More lookahead helps LL, and does not help LR.**  The LL($k$) *languages* form a strict infinite hierarchy: for every $k$ there is a language with an LL($k+1$) grammar and no LL($k$) one.  An LL parser must commit to a production before it has generated that production's body, so every extra token of lookahead genuinely extends how far it can see before committing.  LR is the opposite.  Knuth proved in 1965 that a language has an LR(1) grammar exactly when it is a **deterministic context-free language**, meaning one recognized by a deterministic pushdown automaton, and so every LR($k$) language is already LR(1).  Extra lookahead may save you from rewriting a particular grammar; it never enlarges the set of languages you can parse.
+**More lookahead extends LL.  It does not extend LR.**  The LL($k$) *languages* form a strict infinite hierarchy: for every $k$, some language has an LL($k+1$) grammar and no LL($k$) grammar.  An LL parser must commit to a production before it has generated that production's body, so each extra token of lookahead genuinely extends how far it sees before committing.  LR behaves differently.  Knuth proved in 1965 that a language has an LR(1) grammar exactly when a deterministic pushdown automaton recognizes it, which makes the LR(1) languages precisely the **deterministic context-free languages**.  Every LR($k$) language is therefore already LR(1).  Extra lookahead may spare you the work of rewriting a particular grammar, but it never enlarges the set of languages you can parse.
 
-The reason is the commitment point.  LL decides at the *top* of a production, having seen $k$ tokens of what that production will eventually produce.  LR decides at the *bottom*, having seen the entire right-hand side plus $k$ tokens.  Deciding later is deciding with more information, which is also why left recursion is fatal to recursive descent and preferred by an LR table.
+The commitment point explains the difference.  LL decides at the *top* of a production, having seen $k$ tokens of what that production will eventually produce.  LR decides at the *bottom*, having seen the entire right-hand side plus $k$ tokens.  Deciding later means deciding with more information.  That is also why left recursion is fatal to recursive descent while an LR table handles it comfortably, and even prefers it, since left recursion keeps the parse stack shallow.
 
-**The containments, for your design notes.**
+**The containments, for your design notes.**  Read the two blocks below separately.  The first compares *grammars*, and the second compares *languages*.
 
 ``` text
-LL(1)  <  LALR(1)  <  LR(1)  <  unambiguous CFGs  <  all CFGs      (grammars)
+grammars:    LL(1)                  <  LR(1)  <  unambiguous CFGs  <  all CFGs
+             SLR(1)  <  LALR(1)     <  LR(1)
 
-regular  <  deterministic CFL (= LR(1))  <  context-free            (languages)
+languages:   regular  <  deterministic CFL  <  context-free
+                          ( = the LR(1) languages = the LALR(1) languages )
 ```
 
-Every containment above is strict.  Even-length palindromes $\{w w^R\}$ separate the deterministic context-free languages from the rest, because a deterministic machine cannot know where the middle of the string is.
+Every containment shown is strict.  The grammar block needs two rows rather than one chain, because LL(1) is not a rung on the SLR-to-LALR-to-LR ladder.  Every left-recursive grammar shows why: an LALR(1) table accepts left recursion and an LL(1) parser never does.  The language block is a single chain, and even-length palindromes $\{w w^R\}$ separate the deterministic context-free languages from the rest, because a deterministic machine cannot know where the middle of the string is.
 
-> **Watch out!**  A few context-free languages are *inherently ambiguous*, meaning no unambiguous grammar exists for them at all; the standard example is $\{a^n b^n c^m d^m\} \cup \{a^n b^m c^m d^n\}$.  Those languages are never LR($k$) for any $k$.  This is the single case where "ambiguity is a property of the grammar, not of the language" fails, and it is rare enough that it never arises in expression syntax.  If your project grammar is ambiguous, the grammar is the problem, not the language.
+> **Watch out!**  Some context-free languages are *inherently ambiguous*, which means that no unambiguous grammar exists for them at all.  The standard example is $\{a^n b^n c^m d^m\} \cup \{a^n b^m c^m d^n\}$.  Its two halves overlap on the strings $a^n b^n c^n d^n$, and they pair those strings up in conflicting ways.  No such language is LR($k$) for any $k$, because every LR($k$) grammar is unambiguous.  These languages are the one place where our usual slogan, "ambiguity is a property of the grammar and not of the language," breaks down.  They never arise in expression syntax.  Take the practical lesson: when your project grammar is ambiguous, fix the grammar.  The language is not the problem.
 
 ---
 
