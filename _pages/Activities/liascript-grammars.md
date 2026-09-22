@@ -72,6 +72,12 @@ Here is what each row means, starting from the most restricted type.
 - Type 1, context-sensitive: a production may rewrite a nonterminal only when particular symbols surround it, and the surrounding symbols stay in place.  A linear-bounded automaton, which is a Turing machine whose tape is limited to the length of the input, recognizes these languages.
 - Type 0, unrestricted: any string of symbols may rewrite to any other string.  A Turing machine recognizes these languages.  The languages at this level are called recursively enumerable: a machine can list every member, but it may never halt on a string that is not a member.
 
+> **Two equivalent ways to state Type 1, and why the second one exists.**  The table above gives the *context-sensitive form*, $\alpha A \beta \rightarrow \alpha \gamma \beta$ with $\gamma \neq \varepsilon$.  You will also meet the *monotonic* (or noncontracting) form, which requires only that no production shrink its string: $\alpha \rightarrow \beta$ with $|\alpha| \le |\beta|$.  The two generate exactly the same class of languages, and the second is the easier test, because comparing two lengths is easier than matching a context pattern.  The one technical exception is $S \rightarrow \varepsilon$, permitted so that a language may contain the empty string, provided $S$ appears on no right-hand side.
+>
+> The length condition is the entire reason Type 1 differs from Type 0.  If a production could shrink, a derivation could write a million symbols of scratch work and then erase them, and nothing would bound the search for a derivation of a given string.  Because nothing shrinks, every sentential form on the way to a string of length $n$ has length at most $n$, and there are only finitely many strings that short, so membership is **decidable**: search the finite space and you always halt.  Drop the condition and a grammar can simulate an arbitrary Turing machine, using erasure as scratch paper, and membership becomes undecidable.  That is why Type 0 languages are called recursively enumerable rather than decidable.  In one sentence: noncontracting means no scratch paper, because every symbol you write must survive into the answer.
+
+> **Watch out!**  "One nonterminal on the right" is not by itself the Type 3 criterion.  The *position* is load-bearing, and it must be the same position in every production of the grammar.  A grammar that is right-linear throughout is regular, and a grammar that is left-linear throughout ($A \rightarrow Ba$, with the nonterminal always at the far left) is regular too, but a grammar that mixes the two shapes can generate languages that are not regular at all.  For example, $S \rightarrow aA$ together with $A \rightarrow Sb \mid b$ has one right-linear production and one left-linear one, and it generates $\{a^n b^n \mid n \ge 1\}$.  The BNF Workshop lab states this rule in its Part 2; the grammar just given is the counterexample behind it.
+
 Each type strictly contains the type with the higher number: every regular language is also context-free, and every context-free language is also context-sensitive.  The engineering meaning is direct.  The weaker the grammar class, the faster and simpler the recognizer.  Implementers always reach for the weakest class that suffices.
 
 ## Examples: Three Telltale Languages, Derived by Hand
@@ -300,6 +306,8 @@ Trace both machines on `aabb` before you run anything.  For the finite-state att
 
 Nothing bounds the right column except the input itself.  The middle column needs a *distinct state* for every count.  For arbitrary $n$, that means infinitely many states, and a finite automaton has finitely many by definition.  That is the whole proof, stated informally.
 
+**The same argument, made rigorous.**  Suppose some DFA $M$ with $k$ states accepts $\{a^n b^n\}$.  Consider the $k+1$ strings $\varepsilon, a, aa, \ldots, a^k$.  Each drives $M$ into some state, and $M$ has only $k$ states, so by the pigeonhole principle two of them, $a^i$ and $a^j$ with $i \neq j$, leave $M$ in the same state.  From that point $M$ cannot tell them apart, because its future behavior depends only on its current state and the input still to come.  But $a^i b^i$ must be accepted and $a^j b^i$ must be rejected, and $M$ does the same thing to both.  Contradiction, so no such $M$ exists.  Hopcroft, Motwani, and Ullman package this reasoning as the pumping lemma; the pigeonhole version above is the same idea without the machinery.
+
 ## Model 2: The Same Language, Two Machines
 
 This model shows a fixed-state recognizer failing on exactly the input where counting matters, and a stack machine succeeding on the same input.
@@ -480,6 +488,10 @@ In Model 1, the BFS is guaranteed to terminate because:
 **Exercise 4.**  For your team's project language, list three constructs and classify each as regular, context-free, or neither.  For the "neither" one, say which pass of your implementation will enforce it.
 
 **Exercise 5.**  Instrument Model 1's `derive` to count how many sentential forms it explores before it finds `aaaabbbb`.  Then try `aaaaabbbbb`.  Plot or tabulate the growth and explain, in one sentence, why nobody parses this way.
+
+**Exercise 6.**  Write a right-linear grammar for the language of strings over $\{a, b\}$ that end in `bbbb`.  Start from the grammar for strings ending in a single `b`, namely $S \rightarrow aS \mid bS \mid b$, and change exactly one production.  Then answer two questions.  First, how many states does the recognizing DFA need, and what does each state mean?  Second, $\{a^n b^n\}$ needs unbounded memory and this language does not, even though `bbbb` is four symbols and $n$ might be one.  State the difference in one sentence.
+
+> **The sentence to reach in Exercise 6.**  A language is regular when the amount that must be remembered is fixed **by the grammar**, and it leaves the regular class when the amount that must be remembered is fixed **by the input**.  Ending in $b^k$ needs $k+1$ states for any fixed $k$, which is finite however large $k$ is.  $\{a^n b^n\}$ needs a distinct state per value of $n$, and $n$ is not fixed until the input arrives.
 
 ---
 

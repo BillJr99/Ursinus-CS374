@@ -352,6 +352,26 @@ A parser generator reports a shift-reduce conflict on the team's grammar at the 
 
 > **Watch out!**  A conflict in the parsing table (whether LL(1) or LR) means the grammar is not in the class the table was built for.  For LL(1) tables specifically, any cell with more than one entry means the grammar is not LL(1) and the table-driven parser is undefined for that grammar.  The right response is always to diagnose *why* the conflict arose (ambiguity? left recursion? missing factoring?) rather than picking an entry arbitrarily.
 
+## What the parser classes ultimately buy
+
+A conflict tells you a grammar sits outside a class.  It is worth knowing what the classes are worth, because the answer is not symmetric between LL and LR.
+
+**More lookahead helps LL, and does not help LR.**  The LL($k$) *languages* form a strict infinite hierarchy: for every $k$ there is a language with an LL($k+1$) grammar and no LL($k$) one.  An LL parser must commit to a production before it has generated that production's body, so every extra token of lookahead genuinely extends how far it can see before committing.  LR is the opposite.  Knuth proved in 1965 that a language has an LR(1) grammar exactly when it is a **deterministic context-free language**, meaning one recognized by a deterministic pushdown automaton, and so every LR($k$) language is already LR(1).  Extra lookahead may save you from rewriting a particular grammar; it never enlarges the set of languages you can parse.
+
+The reason is the commitment point.  LL decides at the *top* of a production, having seen $k$ tokens of what that production will eventually produce.  LR decides at the *bottom*, having seen the entire right-hand side plus $k$ tokens.  Deciding later is deciding with more information, which is also why left recursion is fatal to recursive descent and preferred by an LR table.
+
+**The containments, for your design notes.**
+
+``` text
+LL(1)  <  LALR(1)  <  LR(1)  <  unambiguous CFGs  <  all CFGs      (grammars)
+
+regular  <  deterministic CFL (= LR(1))  <  context-free            (languages)
+```
+
+Every containment above is strict.  Even-length palindromes $\{w w^R\}$ separate the deterministic context-free languages from the rest, because a deterministic machine cannot know where the middle of the string is.
+
+> **Watch out!**  A few context-free languages are *inherently ambiguous*, meaning no unambiguous grammar exists for them at all; the standard example is $\{a^n b^n c^m d^m\} \cup \{a^n b^m c^m d^n\}$.  Those languages are never LR($k$) for any $k$.  This is the single case where "ambiguity is a property of the grammar, not of the language" fails, and it is rare enough that it never arises in expression syntax.  If your project grammar is ambiguous, the grammar is the problem, not the language.
+
 ---
 
 ## Model 2: Technology Selection
