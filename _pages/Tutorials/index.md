@@ -22,6 +22,7 @@ These tutorials are where you go for depth on your own schedule.  They are worke
 - [Scheme Essentials](SchemeEssentials): companion to the Functional Programming with Scheme assignment, covering the one syntax rule, list recursion, higher-order functions, and closures
 - [Haskell Essentials](HaskellEssentials): companion to the Functional Programming unit
 - [Build a Lambda Calculus Reducer](LambdaCalculusReducer): companion to the Lambda Calculus unit
+- [Building an LR Parser from the Grammar Up](LRConstruction), *anchors required work*, companion to Part 4 of the Parser assignment: closure, GOTO, the canonical collection, FOLLOW, SLR(1) tables, the driver, and conflict diagnosis, worked on a smaller grammar than the assignment's
 - [Flex and Bison, Complete](FlexAndBison): companion to the generator-toolchain directions of the Lexer and Parser assignments
 
 ## Companions to the Team Language Project
