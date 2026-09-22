@@ -120,7 +120,7 @@ Make one folder for the assignment (`mkdir cs374-lexer`, then `cd cs374-lexer`) 
 
 ### Suggested Pacing
 
-See the course schedule for the assigned and due dates.  This is the shortest window of any programming assignment in the course, and it is short by design: your starting point is the mini lexer you built in the **Regular Expressions** assignment, Part 3, which you submit the week before this one opens.  Bring that file with you and Part 1 is an extension rather than a blank page.  Because the window is one week, treat the first weekend as the working half of it.
+See the course schedule for the assigned and due dates.  This is the shortest window of any programming assignment here, and it is short by design.  Your starting point is the mini lexer from Part 3 of the **Regular Expressions** assignment.  You submit that lexer the week before this one opens.  Bring the file with you and Part 1 becomes an extension rather than a blank page.  The window runs one week, so treat the first weekend as its working half.
 
 | Checkpoint | You should have |
 |------------|----------------|

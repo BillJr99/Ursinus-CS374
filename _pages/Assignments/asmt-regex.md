@@ -117,7 +117,7 @@ That loop (edit, run, read the failure) is the whole workflow for this assignmen
 
 ### Suggested Pacing
 
-See the course schedule for the assigned and due dates.  Fall break sits inside this window, so the calendar days it spans are more generous than the working days it offers.  Plan to finish Parts 1 through 3 before the break, which leaves only the Part 4 and Part 5 work to travel with you.  A suggested sequence:
+See the course schedule for the assigned and due dates.  Fall break sits inside this window, so it spans more calendar days than working days.  Finish Parts 1 through 3 before the break, and only the Part 4 and Part 5 work travels with you.  A suggested sequence:
 
 | Checkpoint | You should have |
 |------------|----------------|

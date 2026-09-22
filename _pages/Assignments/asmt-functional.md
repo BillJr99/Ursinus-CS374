@@ -113,7 +113,7 @@ Read the core (Parts 1 and 2, plus Getting Started) and the one direction you ch
 
 ### Suggested Pacing
 
-See the course schedule for the assigned and due dates.  Thanksgiving break opens the day after this assignment is handed out, so Parts 1 and 2 travel with you rather than being finished before you leave.  Plan for that: choose your direction and start the property-tested core on day one, because that core is the part of this assignment that works well in short sittings away from campus.  Direction G's scope approval is due within three days of hand-out, which means sending it before you go.  Your team project's sprints run in parallel:
+See the course schedule for the assigned and due dates.  Thanksgiving break opens the day after this assignment goes out.  Parts 1 and 2 therefore travel with you rather than finishing before you leave.  Two moves make that manageable.  Choose your direction on day one, and start the property-tested core early, because it works well in short sittings away from campus.  Direction G's scope approval falls due within three days of hand-out, so send it before you go.  Your team project's sprints run in parallel:
 
 | Checkpoint | You should have |
 |------------|----------------|
