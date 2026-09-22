@@ -526,7 +526,8 @@ Answer individually in your contribution statement:
 ### Background Reading and References
 
 - [Music Languages and Live Coding Activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-languagedesign.md)
-- [Flex and Yacc Activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsertable.md)
+- [Table-Driven and LR Parsing Activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsertable.md)
+- [Flex and Bison from Zero to a Working Language (Tutorial)]({{ site.baseurl }}/Tutorials/FlexAndBison)
 
 This section is a guide, not a graded assignment.  It describes the music and live-coding path through the course: the same required assignments everyone completes, taken through the music directions built into them.  There is no separate set of deliverables and nothing to sign up for.  Each direction is a choice you make *inside* its assignment, when that assignment is handed out, one at a time.
 
@@ -543,8 +544,8 @@ In the spirit of Universal Design for Learning, the music path is a deliberate c
 The music path follows the course's own arc: the same required assignments, in the same order, with the music direction chosen where one is offered:
 
 1. **[Music Languages and Live Coding]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-languagedesign.md)** (activity): meet TidalCycles and Strudel as *language designs*: embedded versus external DSLs, a formal model of patterns, and the timed-event semantics the rest of the path builds on.
-2. **[Flex and Yacc]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsertable.md)** (activity): build a working flex/yacc pipeline for a subset of the mini-notation in class.  Relatedly, the [Lexer assignment]({{ site.baseurl }}/Assignments/Lexer)'s generator-toolchain direction is a natural on-ramp: choosing Flex or PLY there puts the tools of the mini-notation pipeline in your hands early.  It pairs well with what follows, but it is not required for it.
-3. **[The Parser and AST]({{ site.baseurl }}/Assignments/Parser) -> the Mini-Notation direction**: grow the in-class mini-notation subset toward the real language: alternation, Euclidean rhythms, and polymeter, parsed into an AST, evaluated to timed events, and validated against the Strudel reference implementation (or against printed event lists alone).
+2. **[Table-Driven and LR Parsing]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsertable.md)** (activity): meet the bottom-up, table-driven side of parsing, which is what a generator emits and what the mini-notation starter is built on.  The flex/yacc pipeline itself lives in two places you can work through on your own.  The [Flex and Bison tutorial]({{ site.baseurl }}/Tutorials/FlexAndBison) builds one end to end, and the mini-notation starter under `files/examples/mininote/` in this repository is the subset Direction B grows.  Relatedly, the [Lexer assignment]({{ site.baseurl }}/Assignments/Lexer)'s generator-toolchain direction is a natural on-ramp: choosing Flex or PLY there puts those tools in your hands early.  It pairs well with what follows, but it is not required for it.
+3. **[The Parser and AST]({{ site.baseurl }}/Assignments/Parser) -> the Mini-Notation direction**: grow the mini-notation starter in this repository toward the real language: alternation, Euclidean rhythms, and polymeter, parsed into an AST, evaluated to timed events, and validated against the Strudel reference implementation (or against printed event lists alone).
 4. **[Functional Programming]({{ site.baseurl }}/Assignments/Functional) -> the Parallel Functional direction**: purity buys parallelism.  You complete the same core parts as everyone (pure functions, higher-order combinators, recursive structures with fold), then a complete MapReduce pipeline measured and analyzed against Amdahl's Law: the same pure-map/associative-reduce discipline that pattern engines like Strudel run on.
 5. **[Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) -> the Music and Live-Coding direction** (capstone): design, specify, build, and demonstrate a small live-coding language with your team.  The closing demonstration may be a live edit-and-rerun session over printed event output; rendered sound is optional here as everywhere on the path.
 
@@ -558,7 +559,7 @@ Assignments without a music direction listed here (Warmup, Regex, the Automata l
 | [Functional Programming]({{ site.baseurl }}/Assignments/Functional) | Direction E: Parallel Functional Programming |
 | [Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) | The Music and Live-Coding direction (text-events-only route available) |
 
-The two activities (Music Languages and Live Coding; Flex and Yacc) are preparation, not deliverables.  They play the same role the optional readings do elsewhere in the schedule.
+The two activities above (Music Languages and Live Coding; Table-Driven and LR Parsing) and the Flex and Bison tutorial are preparation rather than deliverables.  They play the same role the optional readings do elsewhere in the schedule.
 
 ### When to Decide
 
