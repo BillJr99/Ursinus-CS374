@@ -160,19 +160,18 @@ python3 -c "from parser import parse; from interpreter import Interpreter; Inter
 
 ### Suggested Pacing
 
-See the course schedule for the assigned and due dates.  Two pair labs land inside the window and do real work for you: the **Environments and Scope lab** builds the `Environment` machinery of Step 2c, and the **Type Checker Starter lab** builds the core of Part 4's checker.  Neither is a detour; each one hands you a file this assignment then imports.  Part 2 is the steepest section, so climb it in the small steps below rather than in one sitting.
+See the course schedule for the assigned and due dates.  Two pair labs do real work for you here, and you should know where each one sits.  The **Environments and Scope lab** builds the `Environment` machinery of Step 2c, and it closes before this assignment is handed out, so you arrive already holding that file.  The **Type Checker Starter lab** builds the core of Part 4's checker, and it is due partway through this window.  Neither is a detour; each one hands you a file this assignment then imports.  Part 2 is the steepest section, so climb it in the small steps below rather than in one sitting.
 
 | Checkpoint | You should have |
 |------------|----------------|
 | On assignment | Part 0 done on paper, and Part 1 complete: all node dataclasses and the dispatch skeleton (Steps 1a-1b) |
-| End of week 1 | Expression evaluation and short-circuit logic with the bomb test passing (Steps 2a-2b) |
-| Environments lab due | `Environment` and statement evaluation, grown from the lab; the shadowing program prints `51` then `2` (Step 2c) |
+| First weekend | Expression evaluation and short-circuit logic with the bomb test passing (Steps 2a-2b) |
+| Type Checker lab due | `Environment` and statement evaluation, imported from your earlier lab and wired in; the shadowing program prints `51` then `2` (Step 2c) |
 | Midpoint | Break/continue signals, the file runner with staged errors, and the Step 2e invariants running (Step 2d, Step 3a, Step 2e) |
-| Type Checker lab due | REPL with persistent environment and recovery; the checker core in place from the lab (Step 3b, Part 4) |
-| Final week | Checker complete across all constructs, including call sites and return types; error hierarchy in place (Part 4, Step 5a) |
-| Due date | Part 5 deliverable, differential programs, REPL transcript; ZIP submitted (Steps 5b-5c) |
+| Second weekend | REPL with persistent environment and recovery; the checker core in place from the lab (Step 3b, Part 4) |
+| Due date | Checker complete across all constructs, including call sites and return types; error hierarchy in place; Part 5 deliverable, differential programs, REPL transcript; ZIP submitted (Part 4, Steps 5a-5c) |
 
-Two rows are worth planning around.  The Environments lab is due early in this window, so Step 2c should be a matter of importing what you already built and wiring it in; if that lab is still open when you reach Step 2c, do the lab first.  The Type Checker lab lands late, and Part 4 asks you to extend its checker to call sites and return types, so read Part 4 before that lab is due and you will know what you are building toward.
+This window is shorter than the Parser's, so two things are worth planning around.  The Environments and Scope lab is already submitted when this assignment opens, which means Step 2c is a matter of importing what you built there and wiring it in rather than writing it.  The Type Checker lab is due in the middle of this window, and Part 4 asks you to extend its checker to call sites and return types, so read Part 4 before that lab is due and you will know what you are building toward.
 
 ---
 

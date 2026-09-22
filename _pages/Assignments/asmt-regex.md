@@ -117,14 +117,14 @@ That loop (edit, run, read the failure) is the whole workflow for this assignmen
 
 ### Suggested Pacing
 
-See the course schedule for the assigned and due dates.  A suggested sequence:
+See the course schedule for the assigned and due dates.  Fall break sits inside this window, so the calendar days it spans are more generous than the working days it offers.  Plan to finish Parts 1 through 3 before the break, which leaves only the Part 4 and Part 5 work to travel with you.  A suggested sequence:
 
 | Checkpoint | You should have |
 |------------|----------------|
 | On assignment | Part 1 complete: the five verbs and the backtracking traces written up |
 | Checkpoint 1 | Part 2 complete: the `check()` harness and all ten patterns with test cases |
-| Checkpoint 2 | Part 3 complete: the mini lexer passing the ordering table and reporting gaps |
-| Checkpoint 3 | Part 4 complete: transformer and log parser producing the sample output |
+| Before fall break | Part 3 complete: the mini lexer passing the ordering table and reporting gaps |
+| After fall break | Part 4 complete: transformer and log parser producing the sample output |
 | Due date | Part 5 analysis written; deliverables assembled and submitted |
 
 ---
