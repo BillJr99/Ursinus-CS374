@@ -339,10 +339,6 @@ schedule:
   link: "Activities/liascript-automata.md"
   liapage: true
   deliverables:
-  - dtitle: "Lab: BNF Workshop Due"
-    dlink: "Assignments/BNFWorkshop"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-bnfworkshop.md"
   - dtitle: "Lab: Grammar and Derivations Workshop Handed Out"
     dlink: "Assignments/GrammarWorkshop"
     points: "15"
@@ -356,6 +352,10 @@ schedule:
   link: "Activities/liascript-automata-day2.md"
   liapage: true
   deliverables:
+  - dtitle: "Lab: BNF Workshop Due"
+    dlink: "Assignments/BNFWorkshop"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-bnfworkshop.md"
   - dtitle: "Programming Assignment: Regular Expressions Handed Out"
     dlink: "Assignments/Regex"
     points: "100"
