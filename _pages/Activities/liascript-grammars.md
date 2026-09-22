@@ -72,6 +72,12 @@ Here is what each row means, starting from the most restricted type.
 - Type 1, context-sensitive: a production may rewrite a nonterminal only when particular symbols surround it, and the surrounding symbols stay in place.  A linear-bounded automaton, which is a Turing machine whose tape is limited to the length of the input, recognizes these languages.
 - Type 0, unrestricted: any string of symbols may rewrite to any other string.  A Turing machine recognizes these languages.  The languages at this level are called recursively enumerable: a machine can list every member, but it may never halt on a string that is not a member.
 
+> **Type 1 has two equivalent definitions, and the second one is easier to check.**  The table gives the *context-sensitive form*, $\alpha A \beta \rightarrow \alpha \gamma \beta$ with $\gamma \neq \varepsilon$.  You will also meet the *monotonic* (or noncontracting) form: $\alpha \rightarrow \beta$ with $|\alpha| \le |\beta|$.  It asks only that no production shrink its string.  Both forms generate exactly the same class of languages.  Reach for the second one when you are testing a grammar by hand, because comparing two lengths is easier than matching a context pattern.  One technical exception applies.  We permit $S \rightarrow \varepsilon$, so that a language may contain the empty string, provided $S$ appears on no right-hand side.
+>
+> **That length condition is the whole difference between Type 1 and Type 0.**  Because nothing shrinks, every sentential form on the way to a string of length $n$ has length at most $n$.  Only finitely many strings are that short.  A recognizer can therefore search that finite space and always halt, which makes membership **decidable**.  Drop the condition and productions may erase what they wrote.  A grammar can then use erasure as scratch paper, simulate an arbitrary Turing machine, and push membership past decidability.  That is why we call the Type 0 languages recursively enumerable rather than decidable.  Remember the distinction this way: noncontracting means no scratch paper, because every symbol you write must survive into the answer.
+
+> **Watch out!**  Counting nonterminals is not the Type 3 test.  "One nonterminal on the right" does not make a grammar regular by itself, because the nonterminal's *position* matters just as much, and every production in the grammar must place it on the same side.  Keep the nonterminal always at the far right ($A \rightarrow aB$) and the grammar is right-linear, so it is regular.  Keep it always at the far left ($A \rightarrow Ba$) and the grammar is left-linear, so it is regular too.  Mix the two shapes in one grammar and you can leave the regular languages behind entirely.  Here is the counterexample.  The production $S \rightarrow aA$ is right-linear and $A \rightarrow Sb \mid b$ is left-linear, and together they generate $\{a^n b^n \mid n \ge 1\}$, which Part II shows is not regular.  The BNF Workshop lab states this rule in its Part 2, and this grammar is why the rule exists.
+
 Each type strictly contains the type with the higher number: every regular language is also context-free, and every context-free language is also context-sensitive.  The engineering meaning is direct.  The weaker the grammar class, the faster and simpler the recognizer.  Implementers always reach for the weakest class that suffices.
 
 ## Examples: Three Telltale Languages, Derived by Hand
@@ -300,6 +306,8 @@ Trace both machines on `aabb` before you run anything.  For the finite-state att
 
 Nothing bounds the right column except the input itself.  The middle column needs a *distinct state* for every count.  For arbitrary $n$, that means infinitely many states, and a finite automaton has finitely many by definition.  That is the whole proof, stated informally.
 
+**The same argument, made rigorous.**  The pigeonhole principle turns the table above into a proof.  Suppose some DFA $M$ with $k$ states accepts $\{a^n b^n \mid n \ge 1\}$.  Feed $M$ the $k+1$ strings $a, aa, \ldots, a^{k+1}$.  Each one drives $M$ into some state, and $M$ has only $k$ states to offer.  Two of these strings, $a^i$ and $a^j$ with $i \neq j$, therefore leave $M$ in the same state.  From that point $M$ cannot tell them apart, because its future behavior depends only on its current state and the input still to come.  Now append $b^i$ to each.  $M$ must accept $a^i b^i$ and reject $a^j b^i$, yet it treats both identically.  That contradiction rules out every such $M$, for every $k$.  The pumping lemma packages this reasoning into a reusable tool, and the Further Reading points you to it; the pigeonhole version above is the same idea without the machinery.
+
 ## Model 2: The Same Language, Two Machines
 
 This model shows a fixed-state recognizer failing on exactly the input where counting matters, and a stack machine succeeding on the same input.
@@ -480,6 +488,14 @@ In Model 1, the BFS is guaranteed to terminate because:
 **Exercise 4.**  For your team's project language, list three constructs and classify each as regular, context-free, or neither.  For the "neither" one, say which pass of your implementation will enforce it.
 
 **Exercise 5.**  Instrument Model 1's `derive` to count how many sentential forms it explores before it finds `aaaabbbb`.  Then try `aaaaabbbbb`.  Plot or tabulate the growth and explain, in one sentence, why nobody parses this way.
+
+**Exercise 6.**  Write a right-linear grammar for the strings over $\{a, b\}$ that end in `bbbb`.  Start from the grammar for strings ending in a single `b`, namely $S \rightarrow aS \mid bS \mid b$, and change exactly one production.  Then answer three questions.
+
+1.  Your one-production change leaves a right-hand side with four terminals on it, which the strict Type 3 shape from the table ($A \rightarrow aB$ or $A \rightarrow a$) does not allow.  Rewrite the grammar in that strict shape.  How many nonterminals does it need, and what does each one remember?
+2.  How many states does the recognizing DFA need, and how do those states line up with your nonterminals?
+3.  $\{a^n b^n\}$ needs unbounded memory and this language does not, even though `bbbb` is four symbols and $n$ might be one.  State the difference in one sentence.
+
+> **The sentence to reach in Exercise 6.**  A language is regular when the grammar fixes how much the recognizer must remember, and it leaves the regular class when the **input** fixes that amount instead.  Ending in $b^k$ needs $k+1$ states.  That count stays finite however large $k$ grows, because the grammar names $k$.  $\{a^n b^n\}$ needs a distinct state for every value of $n$, and nothing names $n$ until the input arrives.
 
 ---
 
