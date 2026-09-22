@@ -120,13 +120,13 @@ Make one folder for the assignment (`mkdir cs374-lexer`, then `cd cs374-lexer`) 
 
 ### Suggested Pacing
 
-See the course schedule for the assigned and due dates.  Your starting point is the mini lexer you built in the **Regular Expressions** assignment, Part 3.
+See the course schedule for the assigned and due dates.  Your starting point is the mini lexer you built in the **Regular Expressions** assignment, Part 3, which you submit the day this assignment opens.  Bring that file with you and Part 1 becomes an extension rather than a blank page.  The Finite Automata Simulators lab falls inside this window and builds the state-machine reasoning Part 1 asks for.
 
 | Checkpoint | You should have |
 |------------|----------------|
 | On assignment | `Token` dataclass and a six-rule `tokenize` generator working (grown from your mini lexer) |
 | Checkpoint 1 | Parts 1-2a: full `TOKEN_SPEC` passing all maximal-munch cases, and the core `Lexer` class with `peek`/`advance`/`expect` working |
-| Checkpoint 2 | Parts 2b-2c: string escapes and JSON configuration (both dialects) |
+| Automata lab due | Parts 2b-2c: string escapes and JSON configuration (both dialects) |
 | Due date | Part 3 error modes with precise positions and the full test suite complete; readme written; ZIP assembled and submitted |
 
 ---

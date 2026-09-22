@@ -328,14 +328,9 @@ schedule:
   title: "Regular Expressions"
   link: "Activities/liascript-regex.md"
   liapage: true
-  deliverables:
-  - dtitle: "Lab: Grammar and Derivations Workshop Handed Out"
-    dlink: "Assignments/GrammarWorkshop"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-grammarworkshop.md"
   readings:
   - rtitle: "Allison, Ch. 3 §3.1-3.2: Regular Expressions and Their Equivalence to Finite Automata"
-  - rtitle: "Allison, Ch. 4: The Pumping Lemma, proving a language is not regular (required for the Regular Expressions assignment's Part 5 theory questions; we work one example in class today)"
+  - rtitle: "Allison, Ch. 4: The Pumping Lemma, proving a language is not regular (we work one example in class today; you will need it for Part 5 of the Regular Expressions assignment, handed out next week)"
   - rtitle: "The Shell for Language Development, the grep section, which puts today's patterns to work on your own source tree"
     rlink: "Tutorials/ShellForLanguageDev"
 - week: "4"
@@ -348,10 +343,10 @@ schedule:
     dlink: "Assignments/BNFWorkshop"
     points: "15"
     rubricpath: "_pages/Assignments/lab-bnfworkshop.md"
-  - dtitle: "Programming Assignment: Regular Expressions Handed Out"
-    dlink: "Assignments/Regex"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-regex.md"
+  - dtitle: "Lab: Grammar and Derivations Workshop Handed Out"
+    dlink: "Assignments/GrammarWorkshop"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-grammarworkshop.md"
   readings:
   - rtitle: "Allison, Ch. 2 §2.1-2.2: Deterministic and Non-Deterministic Finite Automata"
   - rtitle: "Allison, Ch. 4 §4.2: Decision Algorithms (Is the Language Empty?)"
@@ -360,6 +355,11 @@ schedule:
   title: "Finite Automata, Day 2: Nondeterminism and Equivalence"
   link: "Activities/liascript-automata-day2.md"
   liapage: true
+  deliverables:
+  - dtitle: "Programming Assignment: Regular Expressions Handed Out"
+    dlink: "Assignments/Regex"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-regex.md"
   readings:
   - rtitle: "Continues Day 1.  Bring your hand-traced DFA from last session."
     rlink: false
@@ -376,18 +376,10 @@ schedule:
   link: "Activities/liascript-ast.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Regular Expressions Due"
-    dlink: "Assignments/Regex"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-regex.md"
   - dtitle: "Lab: Grammar and Derivations Workshop Due"
     dlink: "Assignments/GrammarWorkshop"
     points: "15"
     rubricpath: "_pages/Assignments/lab-grammarworkshop.md"
-  - dtitle: "Programming Assignment: Build a Lexer Handed Out"
-    dlink: "Assignments/Lexer"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-lexer.md"
   - dtitle: "Lab: Finite Automata Simulators Handed Out"
     dlink: "Assignments/Automata"
     points: "15"
@@ -399,6 +391,15 @@ schedule:
   title: "Recursive Descent Parsing: From Grammar to Code"
   link: "Activities/liascript-recursivedescent.md"
   liapage: true
+  deliverables:
+  - dtitle: "Programming Assignment: Regular Expressions Due"
+    dlink: "Assignments/Regex"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-regex.md"
+  - dtitle: "Programming Assignment: Build a Lexer Handed Out"
+    dlink: "Assignments/Lexer"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-lexer.md"
   readings:
   - rtitle: "Parser Combinators (Parsers as First-Class Values)"
     rlink: "Tutorials/ParserCombinators"
@@ -412,14 +413,6 @@ schedule:
     dlink: "Assignments/Automata"
     points: "15"
     rubricpath: "_pages/Assignments/lab-automata.md"
-  - dtitle: "Programming Assignment: Build a Lexer Due"
-    dlink: "Assignments/Lexer"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-lexer.md"
-  - dtitle: "Programming Assignment: Parser and AST Handed Out"
-    dlink: "Assignments/Parser"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-parser.md"
   readings:
   - rtitle: "For the Parser assignment (Step 3e): Property-Based Testing with Hypothesis, covering the round-trip property and how to shrink a failing case"
     rlink: "Tutorials/PropertyBasedTesting"
@@ -450,6 +443,15 @@ schedule:
   title: "Control Flow and Statement Semantics (Interpretation, Day 2)"
   link: "Activities/liascript-controlflowsemantics.md"
   liapage: true
+  deliverables:
+  - dtitle: "Programming Assignment: Build a Lexer Due"
+    dlink: "Assignments/Lexer"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-lexer.md"
+  - dtitle: "Programming Assignment: Parser and AST Handed Out"
+    dlink: "Assignments/Parser"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-parser.md"
   readings:
   - rtitle: "This session is Day 2 of tree-walking interpretation: statements change state, where expressions returned values."
     rlink: false
@@ -463,14 +465,6 @@ schedule:
   link: "Activities/liascript-bindingscope.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Parser and AST Due"
-    dlink: "Assignments/Parser"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-parser.md"
-  - dtitle: "Programming Assignment: Tree-Walking Interpreter Handed Out"
-    dlink: "Assignments/Interpreter"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-interpreter.md"
   - dtitle: "Lab: Environments and Scope Handed Out"
     dlink: "Assignments/EnvironmentsLab"
     points: "15"
@@ -524,6 +518,14 @@ schedule:
     dlink: "Projects/TeamLanguage"
     points: "25"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
+  - dtitle: "Programming Assignment: Parser and AST Due"
+    dlink: "Assignments/Parser"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-parser.md"
+  - dtitle: "Programming Assignment: Tree-Walking Interpreter Handed Out"
+    dlink: "Assignments/Interpreter"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-interpreter.md"
   readings:
   - rtitle: "Build a Bytecode VM"
     rlink: "Tutorials/BytecodeVM"
@@ -552,15 +554,6 @@ schedule:
   title: "Lambda Calculus II: Church Encodings and Combinators"
   link: "Activities/liascript-lambdacalculus2.md"
   liapage: true
-  deliverables:
-  - dtitle: "Programming Assignment: Tree-Walking Interpreter Due"
-    dlink: "Assignments/Interpreter"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-interpreter.md"
-  - dtitle: "Programming Assignment: Functional Programming Handed Out"
-    dlink: "Assignments/Functional"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-functional.md"
   readings:
   - rtitle: "Church encodings: numerals, booleans, and the arithmetic you reduce by hand in the Lambda Calculus lab (today's activity, Models 2-3)"
   - rtitle: "A Flock of Functions: Combinators, Lambda Calculus, & Church Encodings in JS - Part II (Gabriel Lebec)"
@@ -577,6 +570,14 @@ schedule:
     dlink: "Projects/TeamLanguage"
     points: "3"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
+  - dtitle: "Programming Assignment: Tree-Walking Interpreter Due"
+    dlink: "Assignments/Interpreter"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-interpreter.md"
+  - dtitle: "Programming Assignment: Functional Programming Handed Out"
+    dlink: "Assignments/Functional"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-functional.md"
   readings:
   - rtitle: "Prolog and the declarative paradigm, background for the Functional assignment's Logic Programming direction (Direction F), alongside The Power of Prolog"
     rlink: "Tutorials/Prolog"
@@ -652,7 +653,7 @@ I write every assignment in this course to be transparent about three things, so
 
 When you open an assignment, please read the Purpose first.  It tells you what the assignment is really for, and that is the fastest way to make good decisions when the task gets ambiguous.  Every assignment also closes by asking you to reflect on what you did, what fought you, how long it took, and what grade you would give yourself against the criteria.  I count that reflection as part of the work.
 
-A note on grade categories: the **Overview** (100 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the five programming assignments (Regular Expressions, Lexer, Parser, Interpreter, and Functional Programming) make up the **Programming Assignments** category.  The **Labs** category comprises six short labs (BNF Workshop, Grammar and Derivations Workshop, Finite Automata Simulators, Environments and Scope, Type Checker Starter, and Lambda Calculus), each scoped to roughly two to three hours.  Labs may be completed **in pairs** (both partners submit, naming each other; both earn the same grade); the programming assignments remain individual work.  Most labs fall mid-assignment and complete a piece of the assignment they scaffold, so lab work gives you a head start rather than adding to your load.  The Grammar and Derivations Workshop is the exception: it closes out the grammars and derivations unit while that material is fresh, and the grammar you write there is the one your parser implements later in the term.  **There is no midterm or final exam**: Demo Day on the last class meeting (Tuesday, December 8) is the course's terminal event, and no work is accepted after it.  Seven teams present for nine minutes each within our class meeting; external guests visiting both this Demo Day and CS357's (same day) are welcome to stay for both.
+A note on grade categories: the **Overview** (100 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the five programming assignments (Regular Expressions, Lexer, Parser, Interpreter, and Functional Programming) make up the **Programming Assignments** category.  The **Labs** category comprises six short labs (BNF Workshop, Grammar and Derivations Workshop, Finite Automata Simulators, Environments and Scope, Type Checker Starter, and Lambda Calculus), each scoped to roughly two to three hours.  Labs may be completed **in pairs** (both partners submit, naming each other; both earn the same grade); the programming assignments remain individual work.  Every lab feeds the assignment it scaffolds rather than adding to your load.  Most fall mid-assignment and complete a piece of it in place: the Finite Automata Simulators lab for the Lexer, and the Type Checker Starter lab for the Interpreter's type checker.  The Environments and Scope lab is the one that closes just before its assignment goes out, so you reach the Interpreter already holding the `Environment` file it imports.  The Grammar and Derivations Workshop stands apart from both patterns: it closes out the grammars and derivations unit while that material is fresh, and the grammar you write there is the one your parser implements later in the term.  **There is no midterm or final exam**: Demo Day on the last class meeting (Tuesday, December 8) is the course's terminal event, and no work is accepted after it.  Seven teams present for nine minutes each within our class meeting; external guests visiting both this Demo Day and CS357's (same day) are welcome to stay for both.
 
 ## Generative AI Policy
 
