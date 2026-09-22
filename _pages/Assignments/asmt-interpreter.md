@@ -114,7 +114,7 @@ Your file runner is `mylang.py` and your programs end in `.ml`; the reference pi
 > - `ImportError: cannot import name 'parse'`: your parser's entry point has a different name.  Use that name here and in `mylang.py`.
 > - A `LexError` or `ParseError` on this one-line program: fix that stage first, or swap in the reference component.
 
-> **Time budget.** Part 0 takes about thirty minutes with pencil and paper.  The rest has five parts that each depend on the one before, so it rewards steady work against the pacing table below and punishes a final-week push harder than anything else this term.  Two pair labs of about two to three hours each land inside the window and finish pieces of Step 2c and Part 4 for you, so those two pieces are largely done before you need them.  Start Part 1 the day the assignment goes out.
+> **Time budget.** Part 0 takes about thirty minutes with pencil and paper.  The rest has five parts that each depend on the one before, so it rewards steady work and punishes a final-week push harder than anything else this term.  This window runs twelve days and holds two class meetings, which makes it the tightest run of any programming assignment this term.  Two pair labs of about two to three hours each carry pieces of it for you.  The Environments and Scope lab closes before this assignment opens, so Step 2c is largely written already.  The Type Checker Starter lab falls on day five and finishes the core of Part 4.  Start Part 1 the day the assignment goes out, and read What You Already Have below before you write anything.
 
 ---
 
@@ -142,6 +142,16 @@ print x;
 ---
 
 ## Getting Started
+
+### What You Already Have
+
+Three pieces of this assignment exist before you start, and the schedule put them there deliberately.  Find them first, because the window is too short to rebuild any of them.
+
+- **`Environment`, for Step 2c.**  The Environments and Scope lab closes two class meetings before this assignment opens.  Copy that `Environment` class into your project on day one and wire it into the statement branches.  If the lab is still open when you reach Step 2c, finish the lab first.
+- **The checker core, for Part 4.**  The Type Checker Starter lab is due on day five, inside this window.  Read Part 4 before that lab so you know what you are extending, then grow the lab's checker to cover call sites and return types.
+- **The parser and its generator, for Parts 1 and 2e.**  Your Parser assignment supplies `parse` and your existing `ast_nodes.py`, so Step 1a reconciles nodes rather than inventing them.  That assignment's recursive expression generator is what Step 2e feeds to Hypothesis here.
+
+That leaves Parts 1, 2, 3, and 5 as the work genuinely in front of you.  Budget your twelve days against those four.
 
 ### Your First 30 Minutes
 
@@ -172,6 +182,20 @@ See the course schedule for the assigned and due dates.  Two pair labs do real w
 | Due date | Checker complete across all constructs, including call sites and return types; error hierarchy in place; Part 5 deliverable, differential programs, REPL transcript; ZIP submitted (Part 4, Steps 5a-5c) |
 
 This window is shorter than the Parser's, so two rows are worth planning around.  You submit the Environments and Scope lab before this assignment opens.  Step 2c therefore becomes a matter of importing what you built there and wiring it in, rather than writing it from scratch.  The Type Checker lab falls in the middle of the window, and Part 4 extends its checker to call sites and return types.  Read Part 4 before that lab is due and you will know what you are building toward.
+
+### If the Window Gets Tight
+
+Protect the dependency chain first.  Parts 1 and 2 carry everything above them: Part 3 runs the evaluator, Part 4 checks the same AST, and Part 5 documents what Part 2 actually does.  No later part can be written around a missing Part 2.
+
+When time runs short, work in this order:
+
+1. **Part 1, and Steps 2a through 2c.**  A tree walker that evaluates expressions and statements against an environment is this assignment's spine.  Get that working before you polish anything else.
+2. **Step 3a, the file runner.**  It is short, and it is how anyone runs your interpreter at all.
+3. **Steps 2d and 2e.**  Break and continue first, then the Hypothesis invariants.
+4. **Part 4, the type checker.**  The lab already handed you its core, so this is extension rather than construction.
+5. **Part 5.**  `SEMANTICS.md` and the error hierarchy repay an hour of honest writing more than a rushed feature does.
+
+Please tell me early rather than late if twelve days is not working for you.  The course's three-day extension policy asks only for a reasonable first draft by the deadline, and it exists for exactly this.
 
 ---
 

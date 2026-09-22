@@ -5,10 +5,10 @@ title: "CS374: Principles of Programming Languages - The Parser and AST"
 
 info:
   coursenum: CS374
-  purpose: "To build the second permanent component of your pipeline (a recursive descent parser that turns your Lexer's tokens into an AST) while learning formal grammars, precedence, and associativity."
+  purpose: "To build the second permanent component of your pipeline (a recursive descent parser that turns your Lexer's tokens into an AST) while learning formal grammars, precedence, and associativity, and to implement the bottom-up LR algorithm for a fixed grammar so that a generator's parse tables stop being a black box."
   tilt:
-    task: "Write a formal EBNF grammar; implement a working parser in your chosen direction (recursive descent atop your Lexer as the core direction, a Bison/PLY generator grammar with actions, or a Mini-Notation music parser); and build an AST with tooling, verification, and positioned error reporting."
-    criteria: "I grade this on a grammar that matches the parser exactly, correct precedence and structure at every tier, and programmatic verification of the AST tooling with positioned errors.  The rubric applies equivalently to whichever direction you choose.  Please read the rubric below for the details."
+    task: "Write a formal EBNF grammar; implement a working parser in your chosen direction (recursive descent atop your Lexer as the core direction, a Bison/PLY generator grammar with actions, or a Mini-Notation music parser); build an AST with tooling, verification, and positioned error reporting; and implement SLR(1) table construction and a shift-reduce driver for the ladder grammar, including conflict reporting."
+    criteria: "I grade this on a grammar that matches the parser exactly, correct precedence and structure at every tier, programmatic verification of the AST tooling with positioned errors, and LR tables your own code generates that reproduce the hand-built ones from class.  The rubric applies equivalently to whichever direction you choose.  Please read the rubric below for the details."
   points: 100
   goals:
     - To write a formal EBNF grammar for the project language covering expressions, statements, and programs
@@ -17,32 +17,42 @@ info:
     - To produce an abstract syntax tree of node dataclasses with a pretty-printer and an unparser
     - To verify the round-trip law with property-based testing (Hypothesis), using a recursive AST generator and an automatically shrunk counterexample
     - To report syntax errors with positions, expected tokens, and found tokens
+    - To implement the LR algorithm itself for a fixed grammar: closure, GOTO, the canonical collection of item sets, FOLLOW, SLR(1) ACTION and GOTO tables, a shift-reduce driver, and conflict detection
   rubric:
-    - weight: 13
+    - weight: 12
       description: "Part 0: Before You Start - Abstract Syntax Trees and Recursive Descent"
       preemerging: No AST is drawn, no node types are designed, and no parsing function is traced
       beginning: A tree is drawn but it is a parse tree rather than an AST, or no node types are designed; and the recursive descent trace is not attempted
       progressing: The AST for 3 + 4 * 5 is correct and node types are sketched, but the write-up does not say what the AST discarded, or the node types omit one of the two required constructs; the parsing function is traced on a three-token input but the lookahead points are not marked, or the left-recursive rule is identified without being rewritten
       proficient: The AST (not the parse tree) for 3 + 4 * 5 is drawn with precedence correct, and one sentence names what it threw away that the parse tree kept; node types for if/else and for function calls are designed concretely, with the one field you added out of uncertainty marked as such; and pseudocode for one non-terminal's recursive-descent function is traced by hand on a three-token input with every lookahead marked, with a rule that would make naive recursive descent loop forever identified as left recursion and rewritten so it terminates
-    - weight: 25
+    - weight: 18
       description: "EBNF Grammar and Parsing Theory (Goal 1: write a formal EBNF grammar covering expressions, statements, and programs, and reason about how a bottom-up parser would treat it)"
       preemerging: No grammar is provided, or the grammar is so incomplete that fewer than half the language constructs are covered
       beginning: A grammar is provided but contains ambiguities, missing precedence levels, or structural errors that would make the parser behave incorrectly; the theory questions are unanswered or answered without reference to parser actions
       progressing: The grammar covers all constructs and is mostly unambiguous, but the precedence ladder is incomplete (e.g., comparison operators at the wrong level) or associativity is not explicit; most theory questions are answered but one trace or conflict explanation has a mechanical error
       proficient: The grammar is complete, unambiguous, and matches the implemented parser exactly; every precedence level is a separate non-terminal, associativity is enforced by structure, and the dangling-else resolution is stated explicitly; the parsing theory questions are answered correctly, with the shift-reduce and reduce-reduce conflicts explained in terms of stack actions, a correct hand-executed shift-reduce trace, and the left-recursion contrast stated, showing command of formal language specification in both the top-down and bottom-up views
-    - weight: 37
+    - weight: 32
       description: "Recursive Descent Parser (Goals 2-3: implement a recursive descent parser with the full precedence ladder and correct associativity)"
       preemerging: The parser fails to run or fails most provided programs because of major structural errors, or a parsing function reaches into the token stream directly instead of going through the Lexer interface
       beginning: The parser runs but fails on several test programs, e.g., it cannot parse nested constructs, or associativity is wrong at one or more tiers
       progressing: The parser passes the provided test programs but fails on edge cases, e.g., it right-associates `and`/`or` instead of left-associating as the grammar specifies, it crashes on certain valid inputs, or unary nesting fails on `not not ok` or on a parenthesized operand such as `-(x)`
       proficient: A correct parser passes all provided and hidden test programs with correct precedence and associativity at every tier; parenthesized subexpressions, nested blocks, if-else chains, and nested unary forms such as `--x`, `not not ok`, and `-(x)` all parse correctly; every parsing function consumes tokens only through the Lexer's peek, advance, and expect, and states the peek/decide/consume pattern in a one-sentence docstring; and the parser is built by importing the Lexer unchanged, showing that Goals 2 and 3 are met end-to-end
-    - weight: 25
+    - weight: 20
       description: "AST Design, Tooling, and Error Reporting (Goals 4-5: produce a dataclass AST with pretty-printer/unparser, and report errors with positions)"
       preemerging: No AST node classes exist, the tree structure does not reflect the program's meaning, or the tests compare printed strings instead of asserting on node types and fields
       beginning: Node classes exist but the pretty-printer or unparser is missing, or error messages lack positions
       progressing: Node classes, pretty-printer, and unparser work for most constructs; errors include positions; but the round-trip property is verified only on fixed examples, not with a property-based generator
       proficient: Node dataclasses (or tagged-union nodes) cover every construct with documented fields; the pretty-printer renders nested structure clearly; the unparser inserts parentheses only where the tree shape requires them; the round-trip property parse(unparse(parse(s))) is verified across the full test suite **and** with a Hypothesis recursive-AST generator, with one shrunk counterexample reported (or a reasoned all-clear with the generator shown); tree-shape tests assert on node types and fields rather than on a repr, covering every primary form and at least two nested unary cases; and every error is a `ParseError` carrying what was expected, what was found, and the line and column as attributes, showing that the AST is a complete, self-documenting artifact. (In the Mini-Notation direction, the timed-event evaluator and the Strudel validation table stand in for the unparser and fixed-example round-trip, with the generator applied to the pattern AST, and are assessed equivalently.)
+    - weight: 18
+      description: "LR Table Construction and Shift-Reduce Driver (Goal 7: implement closure, GOTO, the canonical collection, FOLLOW, SLR(1) tables, a driver, and conflict detection for the ladder grammar)"
+      preemerging: "No `lr.py` is submitted, or nothing in it runs; closure is not implemented"
+      beginning: "`closure` returns a single pass rather than a fixed point (four items for the start state instead of seven), or `goto` is implemented but the canonical collection is never built; no table is produced"
+      progressing: "The canonical collection is built and mostly matches the activity's twelve item sets, but the ACTION/GOTO table diverges from the printed one in at least one cell, or reduce actions are emitted on every terminal rather than only on FOLLOW tokens, or the driver runs without producing the stack-input-action trace, or conflicts are silently overwritten rather than recorded"
+      proficient: "`closure` reaches its fixed point and reproduces the seven-item start state; `goto` closes correctly and `goto(I0, T)` yields exactly the two-item state that carries the precedence decision; the canonical collection finds twelve states matching the activity's item sets, with any renumbering documented rather than hand-corrected; FOLLOW is computed programmatically and matches the printed sets; the generated ACTION and GOTO tables agree with the activity's table cell for cell, including row 2's shift on `*` and reduce on `+`; the driver parses `num + num * num` and emits a stack-input-action trace in which `T -> T * F` reduces before `E -> E + T`; and both deliberate ambiguities are detected rather than overwritten, with the conflict type, the state, and the two disagreeing items named, and with one sentence distinguishing the conflict a precedence declaration resolves from the one needing grammar surgery"
   readings:
+    - rtitle: "Table-Driven and LR Parsing Activity (its printed closure, item sets, FOLLOW sets, and ACTION/GOTO table are the answer key for Part 4)"
+      rlink: "Activities/liascript-parsertable.md"
+      liapage: true
     - rtitle: "Recursive Descent Activity"
       rlink: "Activities/liascript-recursivedescent.md"
       liapage: true
@@ -135,7 +145,7 @@ Token(type='LET', value='let', line=1, col=1, decoded=None)
 
 > **Watch out: the `not` keyword.**  Part 2 asks you to build `parse_not()`, which means your lexer has to emit a distinct `NOT` token.  The Lexer assignment's minimum token table does not include one, so if you are using your own lexer, check for it now and add a `NOT` rule ahead of `IDENT` if it is missing.  Without it, `not ok` lexes as two identifiers and `parse_not()` never fires, which shows up much later as a mystifying parse error.  The reference lexer already has `NOT`.
 
-> **Time budget.** Part 0 takes about forty minutes with pencil and paper.  The rest is the most substantial assignment of the semester and has one of the longest windows.  You arrive holding the grammar you wrote in the Grammar and Derivations Workshop, which is most of Part 1 already done, so Part 1 here is refinement and justification rather than a blank page.  Direction B budgets roughly 25-35 hours end to end; the core direction is smaller but still fills the window, so start Part 1 the week the assignment goes out.
+> **Time budget.** Part 0 takes about forty minutes with pencil and paper.  The rest is the most substantial assignment of the semester and has one of the longest windows.  You arrive holding the grammar you wrote in the Grammar and Derivations Workshop, which is most of Part 1 already done, so Part 1 here is refinement and justification rather than a blank page.  Direction B budgets roughly 25-35 hours end to end; the core direction is smaller but still fills the window, so start Part 1 the week the assignment goes out.  Part 4 adds about four to six hours on top of whichever direction you took, and it is the one part you can work on in parallel, because it depends on the class activity rather than on your own parser.
 
 ### Your First 30 Minutes
 
@@ -152,13 +162,15 @@ See the course schedule for the assigned and due dates.  You do not start Part 1
 | Checkpoint | You should have |
 |------------|----------------|
 | On assignment | `grammar.md` brought in and reconciled against Part 1's required constructs; theory questions (Step 1c) begun |
-| End of week 1 | `parse_primary` and `parse_unary` working, with tree-shape tests and a positioned `ParseError` on a stray token (Step 2a) |
-| Midpoint | Expression ladder complete through `parse_expr` with passing tree-shape tests (Step 2b) |
-| Checkpoint | Statements, blocks, and the worked `while` example parsing (Steps 2c-2d) |
-| Checkpoint | Pretty-printer and unparser working (Steps 3a-3b) |
-| Due date | Round-trip verification and error reports complete; readme and ZIP submitted |
+| End of week 1 | `parse_primary` and `parse_unary` working, with tree-shape tests and a positioned `ParseError` on a stray token (Step 2a); `closure` and `goto` passing their checkpoints (Steps 4a-4b) |
+| Midpoint | Expression ladder complete through `parse_expr` with passing tree-shape tests (Step 2b); the twelve item sets built and FOLLOW computed (Steps 4c-4d) |
+| Checkpoint | Statements, blocks, and the worked `while` example parsing (Steps 2c-2d); ACTION and GOTO matching the activity's table (Step 4e) |
+| Checkpoint | Pretty-printer and unparser working (Steps 3a-3b); the driver tracing `num + num * num` (Step 4f) |
+| Due date | Round-trip verification and error reports complete; both conflicts reported (Step 4g); readme and ZIP submitted |
 
 The first two rows are the ones students most often let slip.  The expression ladder is the spine of this assignment, and every tier above `parse_unary` assumes those two functions are solid, so get them tested before you build on them.
+
+Part 4 is sequenced alongside rather than after, and for a reason.  Its steps are short and each one has a printed answer to check against, so they make good work for the evening after a class meeting.  Saving all of Part 4 for the final weekend is the single most reliable way to run out of time on this assignment.
 
 ---
 
@@ -568,6 +580,227 @@ def test_round_trip(tree):
 
 ---
 
+## Part 4: Build the LR Machinery
+
+You have now written a top-down parser by hand.  In this part you build the bottom-up machine that a generator would have built for you.  Direction A's `bison -v` output then stops being a black box.  Everyone does this part, whichever direction you took for Part 2.
+
+You build it for **one fixed grammar, not your own**.  That is deliberate.  The ladder grammar below is the one the [Table-Driven and LR Parsing]({{ site.baseurl }}/Activities/liascript-parsertable) session builds by hand.  That activity prints the correct closure, the twelve item sets, the FOLLOW sets, and the complete ACTION/GOTO table.  Those printed tables are your answer key: your code must reproduce them exactly.  You will know you are right without asking me.
+
+Work in a new file, `lr.py`, and number the productions exactly as below.  The numbering is load-bearing, because a reduce action is recorded as a production number and the activity's table uses these.
+
+```python
+# lr.py -- the grammar is fixed. Production 0 is the augmented start production.
+PRODUCTIONS = [
+    ("E'", ["E"]),           # 0
+    ("E",  ["E", "+", "T"]), # 1
+    ("E",  ["T"]),           # 2
+    ("T",  ["T", "*", "F"]), # 3
+    ("T",  ["F"]),           # 4
+    ("F",  ["num"]),         # 5
+    ("F",  ["(", "E", ")"]), # 6
+]
+
+NONTERMINALS = {"E'", "E", "T", "F"}
+TERMINALS = {"num", "+", "*", "(", ")", "$"}
+```
+
+An **item** is a production with a dot somewhere in its right-hand side.  Represent it as the pair `(production_index, dot_position)`, and a state as a `frozenset` of items.  That lets states go into a `dict` and be compared for equality.
+
+> **Do this.** Write a helper that renders an item the way the activity does, so that every checkpoint below is something you can read rather than squint at.
+
+```python
+def show_item(item):
+    """Render (prod, dot) as 'E -> E . + T', matching the activity's notation."""
+    lhs, rhs = PRODUCTIONS[item[0]]
+    body = rhs[:item[1]] + ["."] + rhs[item[1]:]
+    return "%s -> %s" % (lhs, " ".join(body))
+```
+
+### Step 4a: Implement `closure`
+
+The rule is one sentence: if the dot sits immediately before a non-terminal, add every production for that non-terminal with the dot at the front, and repeat until nothing new appears.  That last clause is why this is a fixed-point loop rather than a single pass.
+
+```python
+def closure(items):
+    """Close a set of items under the dot-before-a-nonterminal rule.
+
+    Fixed point: keep adding until one full pass adds nothing, because an item
+    added on this pass can itself put the dot before another non-terminal.
+    """
+    result = set(items)
+    changed = True
+    while changed:
+        changed = False
+        for prod_index, dot in list(result):
+            lhs, rhs = PRODUCTIONS[prod_index]
+            if dot >= len(rhs):
+                continue                      # completed item, nothing after the dot
+            symbol = rhs[dot]
+            if symbol not in NONTERMINALS:
+                continue                      # dot before a terminal, closure adds nothing
+            # TODO: for every production whose left-hand side is `symbol`,
+            #       add (that production's index, 0). Set changed = True when
+            #       you actually add something new.
+    return frozenset(result)
+```
+
+> **Do this.** Close the single item `E' -> . E` and print the result.
+
+```python
+if __name__ == "__main__":
+    i0 = closure({(0, 0)})
+    for item in sorted(i0, key=show_item):
+        print(show_item(item))
+```
+
+> **You should see.** Seven items, exactly the seven in the activity's Step 1 table: `E' -> . E`, `E -> . E + T`, `E -> . T`, `T -> . T * F`, `T -> . F`, `F -> . num`, and `F -> . ( E )`.  That set is state `I0`.
+
+> **If it fails.**
+> - Four items instead of seven: your loop is a single pass.  `E -> . T` puts the dot before `T`, which only then pulls in the two `T` productions, which only then pull in the two `F` productions.  Keep looping until a full pass adds nothing.
+> - An infinite loop: you are setting `changed = True` on every iteration instead of only when the set actually grew.  Compare sizes, or check membership before adding.
+
+### Step 4b: Implement `goto`
+
+`goto(state, X)` advances the dot past `X` in every item that has the dot before `X`, then takes the closure of the result.
+
+```python
+def goto(state, symbol):
+    """Advance the dot past `symbol` in every item that has the dot before it."""
+    moved = set()
+    for prod_index, dot in state:
+        lhs, rhs = PRODUCTIONS[prod_index]
+        if dot < len(rhs) and rhs[dot] == symbol:
+            moved.add((prod_index, dot + 1))
+    return closure(moved) if moved else frozenset()
+```
+
+> **Do this.** Compute `goto(I0, "T")` and print it.
+
+> **You should see.** Two items: `E -> T .` and `T -> T . * F`.  This is the activity's `I2`, and it is the whole precedence story in one state.  It holds a completed item, which says reduce, and an item expecting more input, which says shift the `*`.  The lookahead token decides which fires.
+
+> **If it fails.** Three or more items means you took the closure of items whose dot now sits before a terminal.  Closure adds nothing in that case, so the extra items came from a bug in Step 4a.
+
+### Step 4c: Build the canonical collection
+
+Now enumerate every reachable state.  Start from `I0`, and for every state and every grammar symbol, compute `goto`; each new set becomes a new state.  Keep going until no new states appear.  Number states in discovery order so that your numbering matches the activity's.
+
+```python
+def build_states():
+    """Return (states, transitions): the canonical collection and the goto edges.
+
+    states[i] is a frozenset of items. transitions[(i, symbol)] = j.
+    Discovery order fixes the numbering, so walk symbols in a stable order.
+    """
+    start = closure({(0, 0)})
+    states = [start]
+    index = {start: 0}
+    transitions = {}
+    symbols = ["num", "+", "*", "(", ")", "E", "T", "F"]
+    worklist = [0]
+    while worklist:
+        i = worklist.pop(0)
+        for symbol in symbols:
+            target = goto(states[i], symbol)
+            if not target:
+                continue
+            # TODO: if `target` is new, append it to states, record its index,
+            #       and add that index to the worklist. Then record
+            #       transitions[(i, symbol)] = index[target].
+    return states, transitions
+```
+
+> **Do this.** Print how many states you found, then print the item sets for states 0 through 4 and 6 through 9.
+
+> **You should see.** Twelve states.  States 0, 1, 2, 3, 4, 6, 7, 8, and 9 must match the activity's item-set table item for item.  Your state 5 and up may be numbered differently from the activity if you walk symbols in a different order; if so, say which of your states corresponds to each of the activity's in your readme rather than renumbering by hand.
+
+> **If it fails.**
+> - Fewer than twelve states: you are probably comparing states with `==` on a `set` rather than keying a `dict` by `frozenset`, so equal states are being treated as distinct or as duplicates.
+> - More than twelve: your `goto` is not taking the closure, so states that should be identical differ by their closure items.
+> - The loop never ends: you are appending a state to the worklist even when it already existed.
+
+### Step 4d: Compute FOLLOW
+
+An SLR parser reduces by a completed item on exactly the tokens that can legally follow its left-hand side.  So you need FOLLOW before you can fill in a single reduce cell.
+
+Compute FIRST first, then FOLLOW, both as fixed-point loops.  Seed `FOLLOW(E')` with `$`.
+
+> **Do this.** Print `FOLLOW(E)`, `FOLLOW(T)`, and `FOLLOW(F)`.
+
+> **You should see.** `FOLLOW(E) = { + ) $ }` and `FOLLOW(T) = FOLLOW(F) = { * + ) $ }`, which is what the activity prints.
+
+> **If it fails.** A missing `)` in all three sets means you never processed production 6, `F -> ( E )`, whose right-hand side is what puts `)` after `E`.  A missing `*` in `FOLLOW(T)` means you did not handle `T -> T . * F`, where `T` is followed directly by a terminal.
+
+### Step 4e: Fill in ACTION and GOTO
+
+Read the table straight off the states, using three rules and one refusal.
+
+1. A dot before a **terminal** `a` in state `i`, with `transitions[(i, a)] = j`, gives `ACTION[i][a] = ("s", j)`.
+2. A **completed** item for production `p` in state `i`, where `p` is not production 0, gives `ACTION[i][a] = ("r", p)` for every `a` in `FOLLOW(lhs of p)`.
+3. The completed item `E' -> E .` in state `i` gives `ACTION[i]["$"] = ("acc",)`.
+4. If a cell already holds a different action, that is a **conflict**.  Record it; do not overwrite it.
+
+That fourth rule is the point of this step.  A generator that silently picks one action is hiding the grammar's ambiguity from you, and Step 4g makes you look at what it would have hidden.
+
+```python
+def build_tables(states, transitions, follow):
+    """Return (action, goto_table, conflicts).
+
+    action[i][terminal] = ("s", j) | ("r", p) | ("acc",)
+    goto_table[i][nonterminal] = j
+    conflicts is a list of (state, token, existing_action, proposed_action).
+    """
+    action, goto_table, conflicts = {}, {}, []
+    # TODO: implement rules 1 through 4 above. When rule 4 fires, append to
+    #       conflicts and leave the existing entry in place.
+    return action, goto_table, conflicts
+```
+
+> **Do this.** Build the tables and print `conflicts`, then print your ACTION and GOTO rows for states 0, 1, 2, 3, 4, 6, 7, 8, and 9.
+
+> **You should see.** An empty conflict list, and rows that match the activity's ACTION/GOTO table cell for cell.  Row 2 is the one to read twice: `s7` on `*`, `r2` on `+` and on `$`.  That single row is where `*` binds tighter than `+`, and nothing decided it at parse time.  It fell out of the item set.
+
+> **If it fails.** Reduce actions appearing on every terminal rather than only on FOLLOW tokens means you skipped Step 4d and are reducing unconditionally.  That produces a table that parses valid input correctly and accepts nonsense too.
+
+### Step 4f: Write the driver
+
+The driver is the same loop the activity gave you, but now it runs on the table **you** generated.
+
+Keep a stack of state numbers alongside a stack of symbols, and read one token of lookahead.  Then loop on the table entry for the current state and token:
+
+- **Shift** pushes the token and the target state onto the two stacks.
+- **Reduce** pops the right-hand side's length from both stacks, then pushes the left-hand side with its GOTO target.
+- **Accept** ends the loop.
+- Anything else is a syntax error.  Name the state and the token in the message.
+
+> **Do this.** Parse `num + num * num` and print the stack-input-action table as you go, one row per step.
+
+> **You should see.** A trace whose shape matches the activity's worked `2 + 3` table, extended.  Confirm two things in it: `num` is reduced through `F -> num` and `T -> F` before the `+` is shifted, and the reduction `T -> T * F` fires **before** `E -> E + T`, which is precedence happening in front of you.
+
+> **If it fails.**
+> - An immediate error in state 0: your lookahead is the raw character `'n'` rather than the token `num`.  This driver consumes token names, not text.
+> - A reduce that pops the wrong number of symbols: use `len(rhs)` of the production being reduced, not the dot position.
+> - An `IndexError` on the state stack after a reduce: you popped before reading the exposed state.  Pop first, then look at the new top, then apply GOTO.
+
+### Step 4g: Make it report a conflict
+
+Now break the grammar on purpose and watch your own code diagnose it.
+
+> **Do this.**
+> 1. Add the production `("E", ["E", "*", "T"])` to `PRODUCTIONS`, rebuild the states and tables, and print the conflict list.
+> 2. In your readme, name the conflict type, the state it arises in, and the two items in that state that disagree.
+> 3. Remove that production and instead make the grammar ambiguous a second way: add `("T", ["num"])` alongside `F -> num`.  Rebuild and report that conflict too.
+> 4. Say in one sentence which of the two conflicts a precedence declaration could resolve, and which one needs the grammar rewritten.
+
+> **You should see.** A shift-reduce conflict from the first edit and a reduce-reduce conflict from the second.  These are the same two conflict types you explained on paper in Step 1c; now your own table generator finds them.
+
+> **Compare.** If you took Direction A, run `bison -v` on the equivalent grammar and open the `.output` file.  Your conflict and the state Bison names should be the same conflict in the same item set.  Say so in your readme, with the state number from each.
+
+### What Part 4 does not ask for
+
+You are building an SLR(1) parser, which is the simplest member of the LR family that is useful.  You are not asked for LALR(1) lookahead merging, LR(1) item sets carrying lookahead, or error recovery in the driver.  If you want to go further, LALR(1) is the interesting next step, and it is what Bison actually builds.  Say so in your readme and I will read it with interest.  The rubric does not require it.
+
+---
+
 ## Direction A: Generator Toolchain (Bison or PLY)
 
 ### What You Build
@@ -667,6 +900,9 @@ Submit a ZIP containing the files below, and list your Python version in the rea
 | `ast_nodes.py` | All node dataclasses, the pretty-printer, and the unparser | AST Design, Tooling, and Error Reporting |
 | `test_parser.py` | The test suite: tree-shape tests asserting on node types and fields (never on a repr), fixed-example round-trip verification, the Hypothesis property-based round-trip test with its AST generator, and error tests | Recursive Descent Parser; AST Design, Tooling, and Error Reporting |
 | `test_output.txt` | The test run output, with all tests passing, including the Hypothesis test | Recursive Descent Parser; AST Design, Tooling, and Error Reporting |
+| `lr.py` | The LR machinery for the ladder grammar: `closure`, `goto`, the canonical collection, FIRST and FOLLOW, the SLR(1) table builder with conflict recording, and the shift-reduce driver | LR Table Construction and Shift-Reduce Driver |
+| `lr_output.txt` | One run of `lr.py` showing the seven-item start state, the twelve item sets, the FOLLOW sets, the ACTION and GOTO tables, and the stack-input-action trace for `num + num * num` | LR Table Construction and Shift-Reduce Driver |
+| The Part 4 section of `readme.md` | Any state renumbering against the activity's table, the two deliberate conflicts with their type, state, and the two disagreeing items, and the one sentence on which conflict a precedence declaration resolves | LR Table Construction and Shift-Reduce Driver |
 
 ---
 
@@ -686,6 +922,12 @@ Submit a ZIP containing the files below, and list your Python version in the rea
 - [ ] The Hypothesis test runs, and the readme reports one shrunk counterexample (or a reasoned all-clear with the generator shown).
 - [ ] Every `ParseError` names the expected token, the found token, and the line and column, and exposes all four as attributes; parsing `;` alone reports line 1, col 1; the ten broken programs are recorded.
 - [ ] `lexer.py` is imported unchanged, or the readme declares the reference lexer, and the Python version is listed.
+- [ ] `closure({(0, 0)})` returns exactly the seven items in the activity's Step 1 table, and `goto(I0, "T")` returns exactly two.
+- [ ] The canonical collection has twelve states, and any renumbering against the activity's table is documented in the readme rather than corrected by hand.
+- [ ] `FOLLOW(E)` is `{ + ) $ }` and `FOLLOW(T)` and `FOLLOW(F)` are both `{ * + ) $ }`, computed by the code rather than typed in.
+- [ ] The generated ACTION and GOTO tables agree with the activity's table cell for cell, and row 2 shifts on `*` while reducing on `+` and `$`.
+- [ ] The driver parses `num + num * num` and its trace shows `T -> T * F` reducing before `E -> E + T`.
+- [ ] Both deliberate ambiguities from Step 4g are reported rather than overwritten, with the conflict type, the state, and the two disagreeing items named.
 
 ---
 
@@ -696,4 +938,6 @@ Submit a ZIP containing the files below, and list your Python version in the rea
 - Your unparser had to decide where parentheses are necessary.  State the rule you implemented in one sentence.  (Direction B: your evaluator had to decide how cycle information reaches constructs that need it; state your design in one sentence.)
 - When you traced the parser calls on the `while` example in step 2d, which recursive call surprised you, and why?  (Directions A and B: which reduction in the automaton surprised you, and why?)
 - If you took a direction beyond the core: what did the grammar-first discipline reveal that jumping straight to code would have hidden?
+- In Part 2 precedence lives in the shape of your function calls, and in Part 4 it lives in one cell of a generated table.  Which representation would you rather debug at two in the morning, and why?
+- You implemented the algorithm a generator implements.  Name one thing you now understand about `bison -v` output, or about a parser generator's error messages, that you did not understand before Part 4.
 - Direction B only: Toussaint's Euclidean rhythms emerged from a scheduling algorithm and turned out to describe music made by humans across centuries and continents.  What does this suggest about the relationship between formal structure and cultural practice, and about who is credited when an algorithm formalizes existing human knowledge?
