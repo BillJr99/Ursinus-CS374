@@ -834,7 +834,7 @@ Each production's semantic action builds exactly one AST node and nothing more; 
 
 ### What You Build
 
-In this direction you parse a production language: the **mini-notation** shared by TidalCycles and Strudel.  In it, `bd sn` is a two-step drum pattern, `bd*2` doubles, `<sn cp>` alternates per cycle, and `bd(3,8)` distributes three onsets among eight steps.  You grow the in-class flex/yacc subset (in the course repository under `files/examples/mininote/`) toward the real language, which means extending the lexer, the grammar, the AST, and the evaluator together: a new construct is never just a parser change.  The default toolchain is C with flex and bison, as in class; PLY is welcome, and its `parser.out` stands in for bison's `.output` automaton wherever cited below.  This direction never requires audio.  The semantics maps patterns to printable timed events `(value, begin, end)` over the cycle $$[0,1)$$, which you read, diff, and test as plain text.  Do not transcribe Strudel's own parser: derive the grammar and semantics yourself, then use Strudel strictly as an *oracle* (a trusted reference answer) to test against.
+In this direction you parse a production language: the **mini-notation** shared by TidalCycles and Strudel.  In it, `bd sn` is a two-step drum pattern, `bd*2` doubles, `<sn cp>` alternates per cycle, and `bd(3,8)` distributes three onsets among eight steps.  You grow the flex/yacc starter in the course repository under `files/examples/mininote/` toward the real language, which means extending the lexer, the grammar, the AST, and the evaluator together: a new construct is never just a parser change.  The default toolchain is C with flex and bison, matching the starter; PLY is welcome, and its `parser.out` stands in for bison's `.output` automaton wherever cited below.  This direction never requires audio.  The semantics maps patterns to printable timed events `(value, begin, end)` over the cycle $$[0,1)$$, which you read, diff, and test as plain text.  Do not transcribe Strudel's own parser: derive the grammar and semantics yourself, then use Strudel strictly as an *oracle* (a trusted reference answer) to test against.
 
 ### Requirements
 
@@ -846,7 +846,7 @@ Write the complete EBNF grammar for your extended mini-notation (sequences, rest
 
 ### Step B.2: Complete the Scaffolded Cases
 
-The in-class evaluator leaves `SLOW` and `DEGRADE` unimplemented.  `slow n` stretches its child across $$n$$ cycles, which forces a design change: the evaluator signature carries no cycle number, so extend it (or derive the cycle from the span) and document your choice.  Gate `DEGRADE` on `rand() < RAND_MAX / 2` with `srand(42)` called exactly once, so grading is reproducible.
+The starter's evaluator leaves `SLOW` and `DEGRADE` unimplemented.  `slow n` stretches its child across $$n$$ cycles, which forces a design change: the evaluator signature carries no cycle number, so extend it (or derive the cycle from the span) and document your choice.  Gate `DEGRADE` on `rand() < RAND_MAX / 2` with `srand(42)` called exactly once, so grading is reproducible.
 
 > **Paste into your submission.** A transcript of `bd/2 sn` on cycles 0 and 1, with a sentence explaining why they differ, and three identical consecutive runs of `hh*8?`.
 

@@ -908,6 +908,7 @@ PLY uses the same LALR(1) algorithm as Bison, but expressed entirely in Python u
 - PLY Documentation: https://www.dabeaz.com/ply/ply.html
 - Flex Manual: https://westes.github.io/flex/manual/
 - Bison Manual: https://www.gnu.org/software/bison/manual/
-- This course's companion activity: Scanners and Parsers with Flex and Yacc (see `liascript-parsertable.md`)
+- This course's companion activity: [Table-Driven and LR Parsing]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsertable.md), where you implement the LALR family's tables and driver yourself
+- This course's flex/bison companion: [Flex and Bison from Zero to a Working Language]({{ site.baseurl }}/Tutorials/FlexAndBison), whose appendix reads a real `bison -v` automaton
 - Compilers: Principles, Techniques, and Tools (Dragon Book), Chapter 4: Syntax Analysis
 - Modern Compiler Implementation in ML/Java/C (Appel), Chapter 3: Parsing
