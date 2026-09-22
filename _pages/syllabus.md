@@ -396,6 +396,10 @@ schedule:
     dlink: "Assignments/Regex"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-regex.md"
+  - dtitle: "Programming Assignment: Build a Lexer Handed Out"
+    dlink: "Assignments/Lexer"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-lexer.md"
   readings:
   - rtitle: "Parser Combinators (Parsers as First-Class Values)"
     rlink: "Tutorials/ParserCombinators"
@@ -417,11 +421,6 @@ schedule:
   title: "Table-Driven and LR Parsing"
   link: "Activities/liascript-parsertable.md"
   liapage: true
-  deliverables:
-  - dtitle: "Programming Assignment: Build a Lexer Handed Out"
-    dlink: "Assignments/Lexer"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-lexer.md"
   readings:
   - rtitle: "Allison, Ch. 5: Pushdown Automata, Adding a Stack to Finite Automata"
   - rtitle: "Allison, Ch. 6 §6.3: Equivalence of PDAs and Context-Free Grammars"
@@ -654,7 +653,7 @@ I write every assignment in this course to be transparent about three things, so
 
 When you open an assignment, please read the Purpose first.  It tells you what the assignment is really for, and that is the fastest way to make good decisions when the task gets ambiguous.  Every assignment also closes by asking you to reflect on what you did, what fought you, how long it took, and what grade you would give yourself against the criteria.  I count that reflection as part of the work.
 
-A note on grade categories: the **Overview** (100 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the five programming assignments (Regular Expressions, Lexer, Parser, Interpreter, and Functional Programming) make up the **Programming Assignments** category.  The **Labs** category comprises six short labs (BNF Workshop, Grammar and Derivations Workshop, Finite Automata Simulators, Environments and Scope, Type Checker Starter, and Lambda Calculus), each scoped to roughly two to three hours.  Labs may be completed **in pairs** (both partners submit, naming each other; both earn the same grade); the programming assignments remain individual work.  Every lab feeds the assignment it scaffolds rather than adding to your load, and it does so in one of two ways.  Some labs close shortly before their assignment goes out, so you arrive already holding a file that assignment imports.  The Finite Automata Simulators lab does this for the Lexer, and the Environments and Scope lab does it for the Interpreter.  Other labs fall mid-assignment and complete a piece of it in place, as the Type Checker Starter lab does for the Interpreter's type checker.  The Grammar and Derivations Workshop stands apart from both: it closes out the grammars and derivations unit while that material is fresh, and the grammar you write there is the one your parser implements later in the term.  **There is no midterm or final exam**: Demo Day on the last class meeting (Tuesday, December 8) is the course's terminal event, and no work is accepted after it.  Seven teams present for nine minutes each within our class meeting; external guests visiting both this Demo Day and CS357's (same day) are welcome to stay for both.
+A note on grade categories: the **Overview** (100 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the five programming assignments (Regular Expressions, Lexer, Parser, Interpreter, and Functional Programming) make up the **Programming Assignments** category.  The **Labs** category comprises six short labs (BNF Workshop, Grammar and Derivations Workshop, Finite Automata Simulators, Environments and Scope, Type Checker Starter, and Lambda Calculus), each scoped to roughly two to three hours.  Labs may be completed **in pairs** (both partners submit, naming each other; both earn the same grade); the programming assignments remain individual work.  Every lab feeds the assignment it scaffolds rather than adding to your load.  Most fall mid-assignment and complete a piece of it in place: the Finite Automata Simulators lab for the Lexer, and the Type Checker Starter lab for the Interpreter's type checker.  The Environments and Scope lab is the one that closes just before its assignment goes out, so you reach the Interpreter already holding the `Environment` file it imports.  The Grammar and Derivations Workshop stands apart from both patterns: it closes out the grammars and derivations unit while that material is fresh, and the grammar you write there is the one your parser implements later in the term.  **There is no midterm or final exam**: Demo Day on the last class meeting (Tuesday, December 8) is the course's terminal event, and no work is accepted after it.  Seven teams present for nine minutes each within our class meeting; external guests visiting both this Demo Day and CS357's (same day) are welcome to stay for both.
 
 ## Generative AI Policy
 
