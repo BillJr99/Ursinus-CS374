@@ -47,6 +47,12 @@ info:
     - rtitle: "Grammars and the Chomsky Hierarchy Activity"
       rlink: "Activities/liascript-grammars.md"
       liapage: true
+    - rtitle: "FSM Simulator (step a DFA, NFA, or epsilon-NFA one symbol at a time; it writes epsilon as $)"
+      rlink: "https://ivanzuzak.info/noam/webapps/fsm_simulator/"
+    - rtitle: "FSM2Regex (convert a regular expression to an automaton and back)"
+      rlink: "https://ivanzuzak.info/noam/webapps/fsm2regex/"
+    - rtitle: "Automata Studio (NFA to DFA by subset construction with the full subset table, and DFA minimization)"
+      rlink: "https://reyescarlata0.github.io/automata-studio/"
 
 tags:
   - automata
@@ -318,6 +324,8 @@ python3 simulator.py machines/ends_in_ab.json ""
 
 For an NFA, `delta` maps `"state,symbol"` string keys to lists of states.  The special symbol `"eps"` marks an epsilon (ε) transition, a move the machine may take without reading any input.  A state may have zero or more targets for any symbol.  The other keys work as they do for a DFA; do not list `eps` in `alphabet`, because it is a transition label, not an input symbol.
 
+> **Watch it run.**  The [FSM Simulator](https://ivanzuzak.info/noam/webapps/fsm_simulator/) steps a DFA, NFA, or ε-NFA one input symbol at a time and highlights the set of active states, which is exactly what your `run_nfa` computes.  Two differences from our format: it writes ε as `$` where our JSON writes `eps`, and it lists transitions as `q0:a>q0,q1` rather than as JSON keys.
+
 Here is a fragment of an NFA, as a diagram and then as JSON.  The fragment does not say which states accept, so none are double-circled.
 
 ```text
@@ -477,6 +485,8 @@ The algorithm:
 | ... | | | |
 
 > **Checkpoint.** Your simulator can confirm your table.  Run `python3 simulator.py machines/contains_aa.json <string> --trace` for a few strings: every set the trace prints should be one of your powerset states, and the arrows between them should match your `on a` and `on b` columns.
+
+> **A second check, after your table is finished.**  [Automata Studio](https://reyescarlata0.github.io/automata-studio/) runs the subset construction on an NFA you enter and prints the full subset table, so you can compare it row by row with yours.  Build your table by hand first; the rubric grades the trace you wrote, not the one a tool printed.
 
 ### Step 3.2: Trace Thompson's Construction
 

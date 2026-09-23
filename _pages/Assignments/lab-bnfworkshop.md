@@ -43,6 +43,8 @@ info:
     - rtitle: "Functional Programming in Scheme, Part 2 Activity"
       rlink: "Activities/liascript-scheme.md"
       liapage: true
+    - rtitle: "BNF/EBNF Tester (the course's own grammar tester: check a string against your grammar and see its parse tree and leftmost derivation)"
+      rlink: "../Tools/BNFTester"
 
 tags:
   - grammars
@@ -123,6 +125,8 @@ Here is the same notation at work, with each shortcut labeled in a comment:
 You will see that style later in this course.  The grammar in the Parser assignment uses `stmt*` and `( COLON type )?`, with bare uppercase token names instead of angle brackets.  Neither style is more correct.  **Use the bracket style for everything you write in this lab.**  Your grammar will then read the same way as the ones you are extending.
 
 Two habits keep grammars honest.  Every nonterminal that appears on a right side must have its own production; an undefined nonterminal is the most common lost point in Part 1, and it is exactly the flaw Part 0 asks you to find in the grammar you were given.  And "one or more" is `<x> { <x> }`, not `{ <x> }`, which also accepts nothing at all.
+
+> **Check your grammar with the tester.**  The course [BNF/EBNF Tester]({{ site.baseurl }}/Tools/BNFTester) reads exactly this notation.  Choose *Course notation*, and leave *Allow EBNF* off for pure-BNF work such as Model 1.5 and the right-linear grammar in Part 2, so that a stray `{ }` is caught rather than quietly accepted; tick it for the Part 1 rewrite.  It flags undefined nonterminals as you type, shows the parse tree and leftmost derivation for a string it accepts, and points at the spot where it gets stuck on one it rejects.  It checks your work; it does not replace the by-hand derivations and arguments the lab asks you to write.
 
 ---
 
@@ -359,6 +363,8 @@ The answer to question 2 is zero, and that is the whole point of this step.  You
 > 1. Write out your final grammar, complete, in one code block.  Read every right-hand side and confirm that every name in it has its own production.  This is the single most common way to lose points on this part.
 > 2. Choose three strings your grammar accepts, and note the path through the productions in a few words for each.  Make at least one of them hit a boundary: the empty list `()`, a `lambda` with no parameters, or an application nested three deep.
 > 3. Choose two strings it rejects, and for each one name the production that blocks it.  Use `(+ 3 4` as one of them, and argue it from the rules rather than from intuition: `<list>` is the only production that introduces a `)`, and it introduces exactly one for every `(`, so no sequence of rule applications terminates without the closing parenthesis.  For the second, use something your Step 1.3 grammar rejects that the four-production grammar would have accepted.
+
+> **Then confirm with the tester.**  Paste your finished grammar into the [BNF/EBNF Tester]({{ site.baseurl }}/Tools/BNFTester) with *Allow EBNF* ticked and run your five strings.  If it disagrees with your hand analysis on any of them, find the production responsible before you submit: that disagreement is exactly the kind of flaw this step exists to catch.
 
 ---
 

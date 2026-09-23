@@ -53,6 +53,10 @@ info:
       liapage: true
     - rtitle: "Python re Documentation"
       rlink: "https://docs.python.org/3/library/re.html"
+    - rtitle: "regex101 (interactive regex tester; set the Flavor to Python, and switch to PCRE only to use its step-by-step debugger)"
+      rlink: "https://regex101.com/"
+    - rtitle: "pythex (tests patterns with Python's own re module, in your browser)"
+      rlink: "https://pythex.org/"
 
 tags:
   - regex
@@ -451,6 +455,7 @@ PASS MARKDOWN_LINK (3 positive, 3 negative)
 > - `Should NOT match but DID`: the pattern is too permissive.  A character class is too broad, a quantifier allows too many repeats, or an optional piece lets a wrong string through.
 > - `SHOULD match but did NOT`: the pattern is too strict.  The usual causes are a literal that needs escaping (`.`, `+`, `(`, `)`, `[`) or a piece that should be optional but has no `?`.
 > - `re.error` before any `PASS` or `FAIL` line: the pattern itself does not compile.  Look for an unbalanced bracket or parenthesis; the message reports the position.
+> - Still stuck on *why*?  Paste the pattern and a failing string into [pythex](https://pythex.org/), which runs Python's own `re` in your browser, or into [regex101](https://regex101.com/) with the Flavor set to Python, whose explanation pane names what every piece of the pattern matches.  The harness stays the test of record; these tools only help you see the mismatch.
 
 > **Watch out.**
 > - P6 lists only two positive cases.  The rubric requires at least three, so add your own to every pattern that falls short.

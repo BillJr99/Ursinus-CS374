@@ -512,6 +512,7 @@ Where else have you run into a problem that became easy the moment you could kee
 - Allison, Chapter 9 §9.3, on the Chomsky hierarchy.
 - Allison, Chapter 6 §6.1, on context-free grammars and derivations.
 - Hopcroft, Motwani, and Ullman.  *Introduction to Automata Theory, Languages, and Computation*: the standard treatment, with the pumping lemma proofs that make Part II's informal argument rigorous.
+- [BNF/EBNF Tester](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tools/BNFTester): the course's own grammar tester.  Test a grammar you have written against strings that should and should not be in its language; it also flags nonterminals that are undefined, unreachable, or can never finish.
 
 ---
 

@@ -46,6 +46,8 @@ info:
     - rtitle: "Parsing Expressions Activity"
       rlink: "Activities/liascript-parsingexpressions.md"
       liapage: true
+    - rtitle: "BNF/EBNF Tester (the course's own grammar tester: check a string against your grammar and see its parse tree and leftmost derivation)"
+      rlink: "../Tools/BNFTester"
 
 tags:
   - grammars
@@ -160,6 +162,8 @@ expr ::= expr PLUS expr
 > 1. Rewrite the grammar in an `ebnf` fence so it encodes precedence and associativity.  The worked example's ladder is the shape to imitate: one production per precedence level, each mentioning only itself (at most on one side) and the level below it.  A rewrite that still has `expr` on both ends of a right-hand side, such as `expr ::= expr PLUS expr`, is still ambiguous no matter how many levels you add.
 > 2. Redraw your Step 0.1 string under the new grammar.  Try to draw the second tree again and write one sentence saying which production now forbids it.
 > 3. Mark the rule that got harder to read with an EBNF comment (`//` to the end of the line, as the Parser assignment uses) saying what it used to say and why it changed.  That readability cost is the price of an unambiguous grammar, and Part 3 asks you to defend paying it.
+
+> **Check it with the tester, after you have drawn the trees by hand.**  The [BNF/EBNF Tester]({{ site.baseurl }}/Tools/BNFTester) reads this lab's notation when you choose *Token notation*: bare rule names, UPPERCASE tokens, and a token stream such as `INT MINUS INT STAR INT` as the input.  Leave *Allow EBNF* off for the flat grammar and it will report the ambiguity and show two trees; tick it for your rewrite and the same string should come back with exactly one.  Its leftmost derivations also give you something to compare your Part 2 derivations against.
 
 ### Step 0.3: Draw Both Associativities for 2 - 3 - 4
 

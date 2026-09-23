@@ -41,6 +41,11 @@ jobs:
       - name: Audit pages
         run: python3 .github/scripts/audit_pages.py
 
+      # The BNF/EBNF Tester's engine is plain JavaScript with no dependencies,
+      # so the runner's preinstalled Node runs its tests directly.
+      - name: Test the BNF/EBNF Tester engine
+        run: node .github/scripts/test_bnf_engine.js
+
       - name: Check the schedule still parses
         run: |
           python3 - <<'PY'

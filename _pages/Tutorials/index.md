@@ -8,6 +8,12 @@ title: "CS374: Tutorials Shelf"
 
 These tutorials are where you go for depth on your own schedule.  They are worked paths, toolchain guides, and companions to the assignments and the Team Language Project.  Most are invitations rather than requirements; a few (marked *anchors required work*) are the reference behind a required assignment step or reading, and the assignment itself always contains the full instructions.
 
+## Interactive Tools
+
+- [BNF/EBNF Tester](../Tools/BNFTester): test a grammar against strings and see the parse tree and leftmost derivation, in the BNF Workshop's angle-bracket notation or the Grammar Workshop's token notation, with EBNF off until you turn it on
+- [regex101](https://regex101.com/) (set the Flavor to Python) and [pythex](https://pythex.org/): try regular expressions interactively for the Regular Expressions and Lexer assignments
+- [FSM Simulator](https://ivanzuzak.info/noam/webapps/fsm_simulator/), [FSM2Regex](https://ivanzuzak.info/noam/webapps/fsm2regex/), and [Automata Studio](https://reyescarlata0.github.io/automata-studio/): step DFAs, NFAs, and ε-NFAs, convert between regular expressions and automata, and check a subset construction for the Finite Automata lab
+
 ## Companions to the Assignments
 
 - [Parser Combinators: Parsers as First-Class Values](ParserCombinators): companion to Recursive Descent Parsing

@@ -68,6 +68,8 @@ info:
       rlink: "../Tutorials/PropertyBasedTesting"
     - rtitle: "Hypothesis Documentation"
       rlink: "https://hypothesis.readthedocs.io/"
+    - rtitle: "BNF/EBNF Tester (the course's own grammar tester: check a string against your grammar and see its parse tree and leftmost derivation)"
+      rlink: "../Tools/BNFTester"
 
 tags:
   - parser
@@ -183,7 +185,7 @@ Write the complete EBNF grammar for your language before you write a line of par
 ```ebnf
 program     ::= stmt* EOF
 stmt        ::= let_stmt | assign_stmt | print_stmt
-              | if_stmt | while_stmt | block
+              | if_stmt | while_stmt | fun_stmt | block
 
 let_stmt    ::= LET IDENT ( COLON type )? EQ expr SEMICOLON
 assign_stmt ::= IDENT EQ expr SEMICOLON
@@ -210,6 +212,8 @@ primary     ::= INT | FLOAT | STRING | TRUE | FALSE | IDENT
 ```
 
 > **Why this matters.** The `( COLON type )?` on `let_stmt`, the `fun_stmt` production, and the `call` production exist because the Interpreter assignment's type checker (Part 4) needs syntax for annotations, function definitions, and call sites.  You will not evaluate function calls until then, but a parser that produces `FunDef` and `Call` AST nodes today is a parser you do not have to reopen later.  If you are short on time, implement these productions last, and say so in your readme first.
+
+> **Test the grammar before you code it.**  Paste your grammar into the course [BNF/EBNF Tester]({{ site.baseurl }}/Tools/BNFTester) with *Token notation* and *Allow EBNF* chosen, and try token streams such as `LET IDENT EQ INT PLUS INT STAR INT SEMICOLON`.  It reports undefined and unreachable rules as you type, and the parse tree it draws for an accepted stream is the shape your recursive-descent functions should produce.
 
 ### Step 1a: Document the Grammar
 
@@ -441,6 +445,7 @@ Each statement begins with a token that tells you which rule to use.  `parse_stm
 - `parse_block()`: `LBRACE`, then zero or more statements dispatched through `parse_stmt()`, then `RBRACE`.  Returns `Block`.
 - `parse_if_stmt()`: `IF`, expression (the condition), block.  Then, if the next token is `ELSE`, consume it; if the token after `ELSE` is `IF`, recursively call `parse_if_stmt()` for the `else-if` branch, otherwise call `parse_block()`.  Returns `If`.
 - `parse_while_stmt()`: `WHILE`, expression, block.  Returns `While`.
+- `parse_fun_stmt()`: `FUN`, `IDENT`, `LPAREN`, an optional comma-separated list of `IDENT COLON type` parameters, `RPAREN`, an optional `ARROW` and return type, then a block.  Returns `FunDef`.  This is one of the productions Part 1 lets you implement last; until you do, have `parse_stmt()` raise a `ParseError` on `FUN` that says so.
 - `parse_program()`: parse statements until `EOF`.  Returns `Program`.
 
 > **Do this.**
