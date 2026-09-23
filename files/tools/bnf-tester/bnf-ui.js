@@ -57,6 +57,53 @@
         '<b> ::= "(" <b> ")" <b> | <empty>\n'
     },
     {
+      id: 'leftlinear',
+      label: 'Left-linear: the same "ends in ab" language, built from the right',
+      notation: 'course', ebnf: false, start: 's', input: 'babab',
+      grammar:
+        '(* Every production puts its nonterminal first: a left-linear grammar.\n' +
+        '   Left-linear and right-linear grammars describe exactly the regular languages. *)\n' +
+        '<s>   ::= <a> "b"\n' +
+        '<a>   ::= <any> "a"\n' +
+        '<any> ::= <any> "a" | <any> "b" | <empty>\n'
+    },
+    {
+      id: 'palindrome',
+      label: 'Context-free, not regular: palindromes over a, b',
+      notation: 'course', ebnf: false, start: 'p', input: 'abbba',
+      grammar:
+        '(* To check the second half, a recognizer must remember the whole first half. *)\n' +
+        '<p> ::= "a" <p> "a" | "b" <p> "b" | "a" | "b" | <empty>\n'
+    },
+    {
+      id: 'equal',
+      label: 'Context-free, not regular: equally many a\'s and b\'s (ambiguous)',
+      notation: 'course', ebnf: false, start: 's', input: 'abab',
+      grammar:
+        '(* The running difference between the counts is unbounded. The grammar is\n' +
+        '   ambiguous (try abab), which says nothing about the language\'s level. *)\n' +
+        '<s> ::= "a" <s> "b" <s> | "b" <s> "a" <s> | <empty>\n'
+    },
+    {
+      id: 'depth2',
+      label: 'Regular: balanced parentheses nested at most 2 deep',
+      notation: 'course', ebnf: false, start: 'd0', input: '(())()',
+      grammar:
+        '(* A depth bound makes the memory finite: one nonterminal per depth. *)\n' +
+        '<d0> ::= "(" <d1> | <empty>\n' +
+        '<d1> ::= "(" <d2> | ")" <d0>\n' +
+        '<d2> ::= ")" <d1>\n'
+    },
+    {
+      id: 'trap',
+      label: 'Regular, though the grammar is not linear: one or more a\'s',
+      notation: 'course', ebnf: false, start: 's', input: 'aaa',
+      grammar:
+        '(* Not right- or left-linear, and ambiguous, yet the language a+ is regular:\n' +
+        '   <s> ::= "a" <s> | "a" generates the same strings. *)\n' +
+        '<s> ::= <s> <s> | "a"\n'
+    },
+    {
       id: 'ladder',
       label: 'Grammar Workshop: the precedence ladder (token notation)',
       notation: 'token', ebnf: true, start: 'expr', input: 'INT(2) PLUS INT(3) STAR INT(4)',
