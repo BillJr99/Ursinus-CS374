@@ -308,6 +308,82 @@ Nothing bounds the right column except the input itself.  The middle column need
 
 **The same argument, made rigorous.**  The pigeonhole principle turns the table above into a proof.  Suppose some DFA $M$ with $k$ states accepts $\{a^n b^n \mid n \ge 1\}$.  Feed $M$ the $k+1$ strings $a, aa, \ldots, a^{k+1}$.  Each one drives $M$ into some state, and $M$ has only $k$ states to offer.  Two of these strings, $a^i$ and $a^j$ with $i \neq j$, therefore leave $M$ in the same state.  From that point $M$ cannot tell them apart, because its future behavior depends only on its current state and the input still to come.  Now append $b^i$ to each.  $M$ must accept $a^i b^i$ and reject $a^j b^i$, yet it treats both identically.  That contradiction rules out every such $M$, for every $k$.  The pumping lemma packages this reasoning into a reusable tool, and the Further Reading points you to it; the pigeonhole version above is the same idea without the machinery.
 
+## Examples: Regular or Context-Free?  Six Grammars, Read Both Ways
+
+Two questions come up every time we draw this boundary.  Can every regular language be written as a right-linear (or left-linear) grammar?  And can a grammar of some other shape still describe a regular language?  The answer to both is yes, and the six examples below show why.  Every grammar here is in the BNF Workshop's notation, and each **Try it** link opens it in the course [BNF/EBNF Tester](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tools/BNFTester) with a sample string loaded, so you can test strings of your own.
+
+The rule to carry out of this page is an asymmetry.  **A right-linear or left-linear grammar proves that a language is regular.**  A grammar of any other shape proves only that the language is context-free.  It says nothing about whether a simpler grammar exists.  To show that a language is *not* regular, you must make the memory argument from the table above: name what a recognizer would have to remember, and show that no fixed number of states can hold it.
+
+**1.  Some `a`s, then some `b`s, in any counts: $a^n b^m$.**  Regular.  The grammar is right-linear, and the recognizer only needs to know whether it has started reading `b`s.  Compare it with $a^n b^n$ above.  The two definitions differ by one requirement, that $m = n$, and that requirement is exactly what calls for a stack.  [Try it](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tools/BNFTester#g=%3Cs%3E%20%3A%3A%3D%20%22a%22%20%3Cs%3E%20%7C%20%3Ct%3E%0A%3Ct%3E%20%3A%3A%3D%20%22b%22%20%3Ct%3E%20%7C%20%3Cempty%3E&n=course&e=0&w=0&s=s&i=aaabb)
+
+```ebnf
+<s> ::= "a" <s> | <t>
+<t> ::= "b" <t> | <empty>
+```
+
+**2.  Strings over `a` and `b` that end in `ab`, written both ways.**  Regular, and here is the same language as a right-linear grammar and as a left-linear one.  The right-linear grammar reads left to right and guesses where the final `ab` begins.  The left-linear grammar builds the string from its right end, peeling off `b`, then `a`, then anything at all.  Every regular language has a grammar of each kind, so either shape is a valid proof.  Mixing the two shapes in one grammar is what Part I's counterexample warned against.  [Try the right-linear one](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tools/BNFTester#g=%3Cs%3E%20%3A%3A%3D%20%22a%22%20%3Cs%3E%20%7C%20%22b%22%20%3Cs%3E%20%7C%20%22a%22%20%3Ct%3E%0A%3Ct%3E%20%3A%3A%3D%20%22b%22&n=course&e=0&w=0&s=s&i=babab), and [try the left-linear one](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tools/BNFTester#g=%3Cs%3E%20%20%20%3A%3A%3D%20%3Ca%3E%20%22b%22%0A%3Ca%3E%20%20%20%3A%3A%3D%20%3Cany%3E%20%22a%22%0A%3Cany%3E%20%3A%3A%3D%20%3Cany%3E%20%22a%22%20%7C%20%3Cany%3E%20%22b%22%20%7C%20%3Cempty%3E&n=course&e=0&w=0&s=s&i=babab).
+
+```ebnf
+(* right-linear: the nonterminal is always last *)
+<s> ::= "a" <s> | "b" <s> | "a" <t>
+<t> ::= "b"
+
+(* left-linear: the nonterminal is always first *)
+<s>   ::= <a> "b"
+<a>   ::= <any> "a"
+<any> ::= <any> "a" | <any> "b" | <empty>
+```
+
+**3.  Palindromes over `a` and `b`.**  Context-free, not regular.  The grammar puts a nonterminal in the middle, between two matching terminals.  That shape is not the proof, though; the memory argument is.  To check the second half, a recognizer must remember the entire first half, and with $k$ states it cannot tell apart more than $k$ of the $2^n$ possible first halves.  [Try it](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tools/BNFTester#g=%3Cp%3E%20%3A%3A%3D%20%22a%22%20%3Cp%3E%20%22a%22%20%7C%20%22b%22%20%3Cp%3E%20%22b%22%20%7C%20%22a%22%20%7C%20%22b%22%20%7C%20%3Cempty%3E&n=course&e=0&w=0&s=p&i=abbba)
+
+```ebnf
+<p> ::= "a" <p> "a" | "b" <p> "b" | "a" | "b" | <empty>
+```
+
+**4.  Equally many `a`s and `b`s, in any order.**  Context-free, not regular.  A recognizer must track the running difference between the two counts, and that difference is unbounded, exactly as $n$ was in $a^n b^n$.  This grammar is also ambiguous, and the tester will show you two trees for `abab`.  Ambiguity is a property of the grammar, not of the language, so it has no bearing on the classification.  [Try it](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tools/BNFTester#g=%3Cs%3E%20%3A%3A%3D%20%22a%22%20%3Cs%3E%20%22b%22%20%3Cs%3E%20%7C%20%22b%22%20%3Cs%3E%20%22a%22%20%3Cs%3E%20%7C%20%3Cempty%3E&n=course&e=0&w=0&s=s&i=abba)
+
+```ebnf
+<s> ::= "a" <s> "b" <s> | "b" <s> "a" <s> | <empty>
+```
+
+**5.  Balanced parentheses nested at most two deep.**  Regular, even though unbounded balanced parentheses are the textbook context-free language.  A bound on the depth turns counting into a finite set of situations: depth 0, 1, or 2.  Each of the three nonterminals below is one of those states, and the grammar is right-linear.  Programming languages meet this boundary for real.  C's `/* */` comments do not nest, so a lexer can skip them with one regular expression.  Rust's and Haskell's block comments do nest to any depth, so their lexers keep a counter, which a pure finite automaton cannot do.  [Try it](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tools/BNFTester#g=%3Cd0%3E%20%3A%3A%3D%20%22%28%22%20%3Cd1%3E%20%7C%20%3Cempty%3E%0A%3Cd1%3E%20%3A%3A%3D%20%22%28%22%20%3Cd2%3E%20%7C%20%22%29%22%20%3Cd0%3E%0A%3Cd2%3E%20%3A%3A%3D%20%22%29%22%20%3Cd1%3E&n=course&e=0&w=0&s=d0&i=%28%28%29%29%28%29)
+
+```ebnf
+<d0> ::= "(" <d1> | <empty>
+<d1> ::= "(" <d2> | ")" <d0>
+<d2> ::= ")" <d1>
+```
+
+**6.  The trap: one or more `a`s, written badly.**  Regular.  The language is $a^n$ for $n \ge 1$, the language of CTQ 1.1, but this grammar is neither right-linear nor left-linear: its right-hand side holds two nonterminals side by side, and it is ambiguous too.  None of that makes the language any harder.  `<s> ::= "a" <s> | "a"` generates exactly the same strings, and it is right-linear.  A grammar that is not linear proves nothing about whether the language is regular.  [Try it](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tools/BNFTester#g=%3Cs%3E%20%3A%3A%3D%20%3Cs%3E%20%3Cs%3E%20%7C%20%22a%22&n=course&e=0&w=0&s=s&i=aaa)
+
+```ebnf
+<s> ::= <s> <s> | "a"
+```
+
+Your grammar for a language is neither right-linear nor left-linear.  What can you conclude?
+
+[( )] The language is not regular
+[(X)] The language is context-free, and deciding whether it is regular still takes either a linear grammar for it or an argument that a recognizer needs unbounded memory
+[( )] The language is context-sensitive
+[( )] The grammar must be ambiguous
+***********************************************************************
+
+Example 6 is the counterexample to the first choice: a non-linear grammar for a regular language.  Any grammar whose left sides are single nonterminals shows the language is context-free.  Regularity needs a linear grammar (which proves it) or the memory argument (which disproves it).
+
+***********************************************************************
+
+Which of these languages is regular?
+
+[( )] Palindromes over `a` and `b`
+[( )] Strings with equally many `a`s and `b`s
+[(X)] Balanced parentheses nested at most five deep
+[( )] $a^n b^n$ for $n \ge 1$
+***********************************************************************
+
+A depth bound of five gives six situations (depth 0 through 5), so six right-linear nonterminals suffice, extending Example 5.  Each of the others needs an unbounded quantity: a whole first half, a running difference, or a count.
+
+***********************************************************************
+
 ## Model 2: The Same Language, Two Machines
 
 This model shows a fixed-state recognizer failing on exactly the input where counting matters, and a stack machine succeeding on the same input.

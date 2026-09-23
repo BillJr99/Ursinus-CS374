@@ -144,6 +144,37 @@ errorMatches('Model 1.5 as given reports the two undefined nonterminals', MODEL1
   check('ends-in-ab has one parse for aab', r.accepted && !r.ambiguous);
 }
 
+// --- Regular vs. context-free examples (Grammars deck, Part II) ---------
+// Each grammar is checked against a direct definition of its language on
+// every string over its alphabet up to length 8.
+{
+  const cases = [
+    ['a^n b^m', `<s> ::= "a" <s> | <t>\n<t> ::= "b" <t> | <empty>`, 'ab', w => /^a*b*$/.test(w)],
+    ['ends in ab, right-linear', `<s> ::= "a" <s> | "b" <s> | "a" <t>\n<t> ::= "b"`, 'ab', w => /ab$/.test(w)],
+    ['ends in ab, left-linear', `<s> ::= <a> "b"\n<a> ::= <any> "a"\n<any> ::= <any> "a" | <any> "b" | <empty>`, 'ab', w => /ab$/.test(w)],
+    ['palindromes', `<p> ::= "a" <p> "a" | "b" <p> "b" | "a" | "b" | <empty>`, 'ab', w => w === [...w].reverse().join('')],
+    ['equal counts', `<s> ::= "a" <s> "b" <s> | "b" <s> "a" <s> | <empty>`, 'ab', w => [...w].filter(c => c === 'a').length * 2 === w.length],
+    ['depth <= 2', `<d0> ::= "(" <d1> | <empty>\n<d1> ::= "(" <d2> | ")" <d0>\n<d2> ::= ")" <d1>`, '()',
+      w => { let d = 0; for (const c of w) { d += c === '(' ? 1 : -1; if (d < 0 || d > 2) return false; } return d === 0; }],
+    ['a+ via <s> <s>', `<s> ::= <s> <s> | "a"`, 'ab', w => /^a+$/.test(w)],
+  ];
+  cases.forEach(([label, g, alpha, inLang]) => {
+    const c = compileOk(label, g, { notation: 'course' });
+    if (!c.ok) return;
+    let wrong = [];
+    for (let len = 0; len <= 8; len++) {
+      for (let m = 0; m < (1 << len); m++) {
+        let w = '';
+        for (let i = 0; i < len; i++) w += alpha[(m >> i) & 1];
+        if (E.test(c, w, { skipWs: false }).accepted !== inLang(w)) wrong.push(w);
+      }
+    }
+    check(label + ' generates exactly its language up to length 8', wrong.length === 0, 'wrong on: ' + wrong.slice(0, 5).join(', '));
+  });
+  const eq = E.compile(`<s> ::= "a" <s> "b" <s> | "b" <s> "a" <s> | <empty>`, { notation: 'course' });
+  check('equal-counts grammar is reported ambiguous on abab', E.test(eq, 'abab').ambiguous);
+}
+
 // --- Empty string and <empty> -------------------------------------------
 {
   const c = compileOk('balanced parens', `<b> ::= "(" <b> ")" <b> | <empty>`, { notation: 'course' });
