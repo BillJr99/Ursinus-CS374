@@ -845,6 +845,7 @@ In your notebook: BNF was introduced in 1959 to define ALGOL, and it remains in 
 - Douglas Thain.  *Introduction to Compilers and Language Design*, Chapter 3.
 - The Python Language Reference, section 10 (online): the full grammar of Python, in a BNF dialect.  You can now read it.
 - Backus et al. "Report on the Algorithmic Language ALGOL 60" (1960), where the notation first appeared.
+- [BNF/EBNF Tester](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tools/BNFTester): the course's own grammar tester.  Type a grammar in this activity's notation, test strings against it, and see the parse tree and leftmost derivation.  EBNF is off until you tick *Allow EBNF*, so you can practice pure BNF without slipping.
 
 ---
 

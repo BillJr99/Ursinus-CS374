@@ -475,6 +475,7 @@ In your notebook: the hierarchy says that more expressive power costs more recog
 - Michael Sipser.  *Introduction to the Theory of Computation*, Chapters 1 and 2, for the proofs we only sketched.
 - [The JSON Grammar](https://www.json.org/json-en.html): a real, readable CFG you can finish in under 15 minutes.
 - [The Python Reference Grammar](https://docs.python.org/3/reference/grammar.html): a PEG variant; compare it to what you wrote in Model 2.
+- [BNF/EBNF Tester](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tools/BNFTester): the course's own grammar tester.  Check the grammars you write here against strings you expect to be accepted and rejected, in either the angle-bracket notation or the token notation with UPPERCASE token names.
 
 ---
 

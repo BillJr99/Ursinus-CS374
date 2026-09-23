@@ -45,6 +45,10 @@ info:
     - rtitle: "Tokens and Scanning Activity"
       rlink: "Activities/liascript-tokensscanning.md"
       liapage: true
+    - rtitle: "regex101 (interactive regex tester; set the Flavor to Python, and switch to PCRE only to use its step-by-step debugger)"
+      rlink: "https://regex101.com/"
+    - rtitle: "pythex (tests patterns with Python's own re module, in your browser)"
+      rlink: "https://pythex.org/"
 
 tags:
   - lexer

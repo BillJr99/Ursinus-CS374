@@ -571,6 +571,7 @@ In your notebook: precedence conventions are pure social agreement, and mathemat
 - Douglas Thain.  *Introduction to Compilers and Language Design*, Chapter 4.
 - Robert Nystrom.  *Crafting Interpreters*, "Representing Code" and "Parsing Expressions" (online), the same layering with clear diagrams.
 - Aho, Lam, Sethi, Ullman.  *Compilers: Principles, Techniques, and Tools*, section 4.3, for the formal treatment.
+- [BNF/EBNF Tester](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tools/BNFTester): the course's own grammar tester.  Enter a grammar and a string, and it prints the leftmost derivation and parse tree.  When a string has two parse trees it says so and shows both, which makes it a quick way to confirm an ambiguity you have found by hand.
 
 ---
 

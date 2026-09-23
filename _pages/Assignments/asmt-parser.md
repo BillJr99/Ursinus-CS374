@@ -68,6 +68,8 @@ info:
       rlink: "../Tutorials/PropertyBasedTesting"
     - rtitle: "Hypothesis Documentation"
       rlink: "https://hypothesis.readthedocs.io/"
+    - rtitle: "BNF/EBNF Tester (the course's own grammar tester: check a string against your grammar and see its parse tree and leftmost derivation)"
+      rlink: "../Tools/BNFTester"
 
 tags:
   - parser
@@ -210,6 +212,8 @@ primary     ::= INT | FLOAT | STRING | TRUE | FALSE | IDENT
 ```
 
 > **Why this matters.** The `( COLON type )?` on `let_stmt`, the `fun_stmt` production, and the `call` production exist because the Interpreter assignment's type checker (Part 4) needs syntax for annotations, function definitions, and call sites.  You will not evaluate function calls until then, but a parser that produces `FunDef` and `Call` AST nodes today is a parser you do not have to reopen later.  If you are short on time, implement these productions last, and say so in your readme first.
+
+> **Test the grammar before you code it.**  Paste your grammar into the course [BNF/EBNF Tester]({{ site.baseurl }}/Tools/BNFTester) with *Token notation* and *Allow EBNF* chosen, and try token streams such as `LET IDENT EQ INT PLUS INT STAR INT SEMICOLON`.  It reports undefined and unreachable rules as you type, and the parse tree it draws for an accepted stream is the shape your recursive-descent functions should produce.
 
 ### Step 1a: Document the Grammar
 

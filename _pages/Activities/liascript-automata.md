@@ -481,6 +481,9 @@ Worked answers to the *mechanical* questions.  The design questions (2, 3, 4, 6)
 - Allison, Chapter 2 §2.1-2.2, on deterministic and non-deterministic finite automata.
 - Allison, Chapter 2 §2.4, on machines with output and lexical analysis.
 - Hopcroft, Motwani, and Ullman, *Introduction to Automata Theory*: the Myhill-Nerode theorem makes the "what must I remember" method into a precise statement about the minimum number of states.
+- [FSM Simulator](https://ivanzuzak.info/noam/webapps/fsm_simulator/): enter or draw a DFA, NFA, or ε-NFA and step it one input symbol at a time, watching the set of active states.  It writes ε as `$`.
+- [FSM2Regex](https://ivanzuzak.info/noam/webapps/fsm2regex/): converts a regular expression to an automaton and an automaton back to a regular expression.
+- [Automata Studio](https://reyescarlata0.github.io/automata-studio/): runs the subset construction on an NFA and prints the full subset table, then minimizes the resulting DFA round by round.  Use it to check a table you have already built by hand.
 
 ---
 
