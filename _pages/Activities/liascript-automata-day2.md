@@ -173,6 +173,95 @@ Expected output: `aba` and `bbabab` accepted; `abba`, `aab` and the empty string
 
 The subset construction is the idea that connects NFAs to DFAs.  Each DFA state is a *frozenset* of NFA states: "the set of places the NFA could be after reading this much input."  The algorithm is a reachability search over those sets, and it builds the DFA transition table as it goes.  Once you read the code, you will see that Model 3's simulation was already doing this on every input string, without naming the sets.
 
+We run it by hand first, on the NFA that Thompson's construction builds for `(a|b)*abb`, and then read the same steps as code.
+
+### Worked Example: Subset Construction by Hand, with ε-closure
+
+This is the classic example from the *Dragon Book* (Aho, Lam, Sethi, and Ullman).  Thompson's construction turns `(a|b)*abb` into the 11-state NFA below: states 0 through 7 are the `(a|b)*` loop, and 7 → 8 → 9 → 10 spells out `abb`.  State 10 is the only accepting state, and every blank cell is "no move."
+
+| NFA state | on `a` | on `b` | on ε |
+|---|---|---|---|
+| → 0 | | | 1, 7 |
+| 1 | | | 2, 4 |
+| 2 | 3 | | |
+| 3 | | | 6 |
+| 4 | | 5 | |
+| 5 | | | 6 |
+| 6 | | | 1, 7 |
+| 7 | 8 | | |
+| 8 | | 9 | |
+| 9 | | 10 | |
+| **10** (accepting) | | | |
+
+Two operations do all of the work:
+
+- **ε-closure(S)**: every state reachable from the set `S` by following ε-moves alone, including the states of `S` themselves.  Compute it as a small graph search, and stop following a state once it is already in the set; that check is what keeps the 6 → 1 back edge from looping forever.
+- **move(S, x)**: the set of states reachable from `S` by exactly one `x` transition.
+
+A DFA state is `ε-closure(move(S, x))`, one per unprocessed set and symbol.  Forgetting the closure, either at the start or after a move, is the most common mistake in this construction.
+
+**Step 0: the start state.**  From 0, the ε-moves reach 1 and 7, and from 1 they reach 2 and 4.  None of those has further ε-moves, so
+
+`A = ε-closure({0}) = {0, 1, 2, 4, 7}`
+
+**Step 1: process A.**
+
+- on `a`: `move(A, a) = {3, 8}`, because 2 goes to 3 and 7 goes to 8.  Closing it: 3 → 6 → 1, 7, and 1 → 2, 4, which gives `{1, 2, 3, 4, 6, 7, 8}`.  That set is new: call it **B**.
+- on `b`: `move(A, b) = {5}`.  Closing it: 5 → 6 → 1, 7 → 2, 4, which gives `{1, 2, 4, 5, 6, 7}`.  Also new: **C**.
+
+**Step 2: process B.**
+
+- on `a`: `move(B, a) = {3, 8}` again, whose closure is B itself.  Nothing new.
+- on `b`: `move(B, b) = {5, 9}`, because 4 goes to 5 and 8 goes to 9.  The closure is `{1, 2, 4, 5, 6, 7, 9}`: new, **D**.
+
+**Step 3: process C.**  On `a`, `move(C, a) = {3, 8}`, which closes to B.  On `b`, `move(C, b) = {5}`, which closes to C.  Nothing new.
+
+**Step 4: process D.**  On `a` it goes to B, as before.  On `b`, `move(D, b) = {5, 10}`, which closes to `{1, 2, 4, 5, 6, 7, 10}`: new, **E**.  E contains 10, the NFA's accepting state, so **E is accepting**.
+
+**Step 5: process E.**  On `a` it goes to B, and on `b`, `move(E, b) = {5}` closes to C.  Nothing new, and no unprocessed sets remain, so the construction is finished.
+
+| DFA state | NFA states | on `a` | on `b` | accepting? |
+|---|---|---|---|---|
+| → A | {0, 1, 2, 4, 7} | B | C | no |
+| B | {1, 2, 3, 4, 6, 7, 8} | B | D | no |
+| C | {1, 2, 4, 5, 6, 7} | B | C | no |
+| D | {1, 2, 4, 5, 6, 7, 9} | B | E | no |
+| E | {1, 2, 4, 5, 6, 7, 10} | B | C | **yes** |
+
+Eleven NFA states could have produced up to 2^11 = 2048 subsets.  The construction reached only five.  Read what each one remembers: B is "just read `a`," D is "just read `ab`," E is "just read `abb`," and A and C both mean "no part of `abb` in progress."  A and C behave identically on every input, so DFA minimization would merge them into a single state, leaving four.
+
+Trace `babb` to check the table: A →b C →a B →b D →b E, which ends in an accepting state.  Trace `abab`: A →a B →b D →a B →b D, which does not.
+
+`move(B, b) = {5, 9}`.  Which DFA state is `ε-closure({5, 9})`?
+
+[( )] `{5, 9}`, because there is nothing left to add
+[( )] `{1, 2, 4, 5, 6, 7, 9, 10}`
+[(X)] `{1, 2, 4, 5, 6, 7, 9}`, the state D
+[( )] `{6, 9}`
+***********************************************************************
+
+From 5, the ε-moves go to 6 and then to 1 and 7, and from 1 to 2 and 4.  State 9 has no ε-moves, and 9 → 10 needs a `b`, so 10 is not in the closure.  That is D.  Leaving the set at `{5, 9}` is the "forgot the closure" mistake.
+
+***********************************************************************
+
+Which DFA states are accepting?
+
+[( )] Only the start state A
+[( )] Every state that contains state 7
+[(X)] Exactly the states whose set contains 10, which is only E
+[( )] D and E, because both are near the end of `abb`
+***********************************************************************
+
+A DFA state accepts exactly when its set contains an accepting NFA state, and only E contains 10.
+
+***********************************************************************
+
+> **Check it yourself.**  Enter the NFA above into [Automata Studio](https://reyescarlata0.github.io/automata-studio/), which prints the full subset table and then minimizes the DFA, and watch A and C merge.  The [FSM Simulator](https://ivanzuzak.info/noam/webapps/fsm_simulator/) steps the same NFA one symbol at a time (it writes ε as `$`), and each set of active states it highlights is one row of the table above.  The Automata lab's Step 3.1 asks for this same kind of trace on your own Contains-aa NFA.
+
+### The Construction as Code
+
+The code below automates Steps 0 through 5 for an NFA without ε-moves, which is why it never calls a closure.  For an ε-NFA, the change is exactly the two places the walkthrough used: close the start set, and close every `move` result before looking it up.
+
 ```python
 # Full subset construction: convert an NFA to an equivalent DFA.
 # DFA states = frozensets of NFA states.
@@ -607,7 +696,9 @@ In your notebook: a DFA's whole intelligence is choosing what little to remember
 - Douglas Thain.  *Introduction to Compilers and Language Design*, Chapter 3.
 - Michael Sipser.  *Introduction to the Theory of Computation*, Chapter 1.
 - Russ Cox.  "Regular Expression Matching Can Be Simple And Fast" (online): Thompson's construction in production.
-- [Automata Tutor](https://automata.cs.ru.nl/): interactive DFA/NFA design and verification tool.
+- [FSM Simulator](https://ivanzuzak.info/noam/webapps/fsm_simulator/): enter or draw a DFA, NFA, or ε-NFA and step it one input symbol at a time, watching the set of active states.  It writes ε as `$`.
+- [FSM2Regex](https://ivanzuzak.info/noam/webapps/fsm2regex/): converts a regular expression to an automaton and an automaton back to a regular expression.
+- [Automata Studio](https://reyescarlata0.github.io/automata-studio/): runs the subset construction on an NFA and prints the full subset table, then minimizes the resulting DFA round by round.  Use it to check a table you have already built by hand.
 
 ---
 
