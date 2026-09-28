@@ -466,7 +466,7 @@ These three models adapt Python programs from *Foundations of Computing* by Chuc
 
 ## Model 5: Ends-With-b, A Concrete DFA Runner
 
-The "ends-with-b" DFA has exactly two states: *not-ending-in-b* (start) and *just-saw-b* (accepting).  Its transition table is small enough to check by hand before you run it, so it is a good machine for practicing DFA tracing.  The runner below is the same function as Model 2, applied to a new machine description.  The runner never changes; only the data does.
+The "ends-with-b" DFA has exactly two states: *not-ending-in-b* (start) and *just-saw-b* (accepting).  Its transition table is small enough to check by hand before you run it, so it is a good machine for practicing DFA tracing.  The runner below is the same `run_dfa` as Day 1's Model 3, applied to a new machine description.  The runner never changes; only the data does.
 
 > *Adapted from [`end_with_b.py`](https://github.com/chuckallison/foundations-of-computing/blob/main/code/end_with_b.py) in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
