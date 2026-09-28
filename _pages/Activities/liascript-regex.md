@@ -288,7 +288,7 @@ print("same language. Sugar adds readability, never power.")
 ### Reading the Code
 
 - The `integer` row is the honest one.  `[0-9]+` and the fully spelled-out ten-way alternation agree on *every* input, because the primitive version has the full digit menu.
-- The `identifier` and `float` rows shrink the alphabet on purpose so the lines stay readable.  Where they disagree, look at *which* input caused it.  It will always be a character outside the abbreviated menu, never a structural difference.
+- The `identifier` and `float` rows shrink the alphabet on purpose so the lines stay readable.  Every input shown stays inside those abbreviated menus, so the two columns agree.  An input with a character outside a menu, such as `d` or `5`, would make them disagree, and the cause would be the smaller alphabet, never a structural difference.
 - `-?[0-9]+` versus `(-|)...` shows `?` expanding to an alternation with the empty string.  `(-|)` is legal: the right branch of the alternation is $\varepsilon$.
 - Nothing here needs `re.search`.  `fullmatch` asks the set-membership question, and that question is what "these two patterns denote the same language" means.
 
