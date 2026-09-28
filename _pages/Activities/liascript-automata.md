@@ -99,7 +99,88 @@ Now design two machines of your own.  Draw them; do not write code yet.
 3.  Draw a DFA that accepts strings containing the substring `aa`.  Compare it with question 2: "ends in" versus "contains" changes which states are accepting.  Explain how.
 4.  Try to draw a DFA for $a^n b^n$.  Where does finite memory fail you, and which earlier module predicted this?
 
-## Model 2: DFA Simulation, a Dictionary and a Loop
+## Model 2: A DFA as a Loop with if Statements
+
+Before any data structure, here is the most literal way to write a DFA.  Every `if`/`elif` line below is one arrow on the state diagram, and the only memory that survives from one character to the next is the variable `state`.  The final `else` is the implicit dead state: when no arrow matches, the machine gives up and rejects.
+
+```python
+"""dfa_if.py: a DFA written as a loop with if statements.
+The machine's only memory is the variable `state`; each if/elif line is one row of delta."""
+import traceback
+
+def even_ones(s):
+    """Accept binary strings with an even number of 1s.  States: 'even' (start, accept), 'odd'."""
+    state = "even"                                   # q0
+    for ch in s:                                     # read the input once, left to right
+        if state == "even" and ch == "0":
+            state = "even"                           # delta(even, 0) = even  (self-loop: ignore 0s)
+        elif state == "even" and ch == "1":
+            state = "odd"                            # delta(even, 1) = odd
+        elif state == "odd" and ch == "0":
+            state = "odd"                            # delta(odd, 0)  = odd
+        elif state == "odd" and ch == "1":
+            state = "even"                           # delta(odd, 1)  = even
+        else:
+            return False                             # no move defined: the implicit dead state
+    return state == "even"                           # F = {even}
+
+def ends_in_ab(s):
+    """Accept strings over {a, b} that end in ab.  States: q0 (start), q_a, q_ab (accept)."""
+    state = "q0"
+    for ch in s:
+        if state == "q0":
+            if ch == "a":   state = "q_a"
+            elif ch == "b": state = "q0"
+            else:           return False
+        elif state == "q_a":
+            if ch == "a":   state = "q_a"            # still just one a pending
+            elif ch == "b": state = "q_ab"
+            else:           return False
+        elif state == "q_ab":
+            if ch == "a":   state = "q_a"            # NOT q0: this a may start the next ab
+            elif ch == "b": state = "q0"
+            else:           return False
+    return state == "q_ab"
+
+def trace_even_ones(s):
+    """Same machine, printing every move, so the output matches the board trace."""
+    state = "even"
+    print(f"  start: {state}")
+    for ch in s:
+        if state == "even" and ch == "0":   state = "even"
+        elif state == "even" and ch == "1": state = "odd"
+        elif state == "odd" and ch == "0":  state = "odd"
+        elif state == "odd" and ch == "1":  state = "even"
+        else:
+            print(f"  '{ch}': DEAD (no transition)")
+            return False
+        print(f"  '{ch}' -> {state}")
+    print(f"  final: {state} -> {'ACCEPT' if state == 'even' else 'REJECT'}")
+    return state == "even"
+
+if __name__ == "__main__":
+    try:
+        print("=== Even-ones DFA, as if statements ===")
+        for s in ["", "1", "11", "1011", "0000", "10101", "abc"]:
+            print(f"  {s!r:9} -> {even_ones(s)}")
+        print("\n=== Trace of '1011' ===")
+        trace_even_ones("1011")
+        print("\n=== Ends-in-ab DFA, as if statements ===")
+        for s in ["ab", "aab", "abab", "ba", "a", "b", "aabb", ""]:
+            print(f"  {s!r:7} -> {ends_in_ab(s)}")
+    except Exception as e:
+        print(f"[dfa_if:main] {e}")
+        traceback.print_exc()
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+This works, and it is a faithful DFA, but it does not scale.  A machine with 50 states and 30 symbols would need 1,500 `if` lines, one per arrow, and every one of them is a place to make a typo.  That is why the next model puts $\delta$ in a table and writes the loop once.
+
+### Critical Thinking Questions
+
+5.  In `ends_in_ab`, what breaks on the input `abab` if the line in the `q_ab` block that handles `'a'` sends the machine to `q0` instead of `q_a`?
+
+## Model 3: DFA Simulation, a Dictionary and a Loop
 
 The five-tuple maps almost directly onto Python data.  States become string keys.  The transition function becomes a `dict` of `dict`s.  The simulation is one loop that does one dictionary lookup per character.
 
@@ -162,9 +243,9 @@ for s in ["ab", "aab", "abab", "ba", "a", "b", "aabb", ""]:
 
 ### Critical Thinking Questions
 
-5.  `EVEN_ONES` accepts the empty string.  Point to the line of code *and* the part of the formal definition that together make that happen.  Then decide whether accepting it is correct for "even number of 1s."
-6.  Encode your ends-in-`ab` DFA from CTQ 2 in the same dictionary format and test five strings.  What was mechanical, and what required thought?  That split is the point: the design is the thinking, and the runner is ten lines that never change.
-7.  `ENDS_IN_AB_DFA` has three states.  If the target were "ends in `abc`", how many states would you need, and what would each remember?
+6.  `EVEN_ONES` accepts the empty string.  Point to the line of code *and* the part of the formal definition that together make that happen.  Then decide whether accepting it is correct for "even number of 1s."
+7.  Encode your ends-in-`ab` DFA from CTQ 2 in the same dictionary format and test five strings.  What was mechanical, and what required thought?  That split is the point: the design is the thinking, and the runner is ten lines that never change.
+8.  `ENDS_IN_AB_DFA` has three states.  If the target were "ends in `abc`", how many states would you need, and what would each remember?
 
 ### Try It Yourself
 
@@ -251,7 +332,7 @@ Instead of drawing arrows and hoping, build the machine by tabulating the answer
 
 The fourth and seventh rows reuse existing states.  That reuse is the finiteness: infinitely many input prefixes collapse into three buckets, because within a bucket the future behaves the same way.
 
-## Model 3: How State Count Grows, and Where It Explodes
+## Model 4: How State Count Grows, and Where It Explodes
 
 This model builds "ends in `p`" machines automatically for patterns of increasing length, so you can watch the state count follow the pattern length.  It then tries the same trick on $a^n b^n$ and fails on purpose.
 
@@ -340,7 +421,7 @@ print("  is why a^n b^n needs the stack you met in the Grammars activity.")
 ### Reading the Code
 
 - `build_ends_with` is the Examples table, automated.  Its state is the integer `i`, meaning "I have just completed the first `i` characters of the pattern."
-- The `while k > 0 and cand[-k:] != pattern[:k]` loop is the interesting line.  After reading `ch`, it finds the longest suffix of what you have that is still a live prefix of the pattern.  That is the `q_ab --a--> q_a` arrow from Model 2, done in general.  It is also the heart of the Knuth-Morris-Pratt string search algorithm.
+- The `while k > 0 and cand[-k:] != pattern[:k]` loop is the interesting line.  After reading `ch`, it finds the longest suffix of what you have that is still a live prefix of the pattern.  That is the `q_ab --a--> q_a` arrow from Model 3, done in general.  It is also the heart of the Knuth-Morris-Pratt string search algorithm.
 - `build_anbn_up_to` is doomed on purpose.  Its state is a `(phase, count)` pair, and `max_n` caps the count because a DFA must have a finite state set.  Every choice of `max_n` gives a machine that is wrong on some legal string.
 - The `<-- WRONG` marks are the point of the model.  They are not bugs in the code; they are the theorem.
 
@@ -348,14 +429,14 @@ print("  is why a^n b^n needs the stack you met in the Grammars activity.")
 
 ### Critical Thinking Questions
 
-8.  In `build_ends_with`, trace by hand which state the `"abcab"` machine is in after reading `"abca"`, and then after one more `b`.  Why does the machine *not* go back to state 0 when the input stops matching?
-9.  Run the pattern `"aaa"` through `build_ends_with` and predict the transition on `a` from the accepting state.  Is it a self-loop?  Explain in terms of "what must I remember."
-10.  The model runs `max_n` at 3, 5, and 20, and each machine loses to its own witness.  Add `max_n = 500` to the list.  Which strings are handled now, and which witness still defeats it?  Write the formula for the witness in terms of `max_n`, then use it to explain why no finite choice ever works.
-11.  Connect back: *Grammars and the Chomsky Hierarchy* showed a stack machine handling $a^n b^n$ easily.  State in one sentence what a stack has that a state set does not.
+9.  In `build_ends_with`, trace by hand which state the `"abcab"` machine is in after reading `"abca"`, and then after one more `b`.  Why does the machine *not* go back to state 0 when the input stops matching?
+10.  Run the pattern `"aaa"` through `build_ends_with` and predict the transition on `a` from the accepting state.  Is it a self-loop?  Explain in terms of "what must I remember."
+11.  The model runs `max_n` at 3, 5, and 20, and each machine loses to its own witness.  Add `max_n = 500` to the list.  Which strings are handled now, and which witness still defeats it?  Write the formula for the witness in terms of `max_n`, then use it to explain why no finite choice ever works.
+12.  Connect back: *Grammars and the Chomsky Hierarchy* showed a stack machine handling $a^n b^n$ easily.  State in one sentence what a stack has that a state set does not.
 
 ### Try It Yourself
 
-Use `build_ends_with` to answer CTQ 7 by experiment, then break it.
+Use `build_ends_with` to answer CTQ 8 by experiment, then break it.
 
 ```python
 def build_ends_with(pattern, alphabet):
@@ -460,19 +541,19 @@ In your notebook, write a paragraph about a time you found the right thing to re
 
 # Answer Key
 
-Worked answers to the *mechanical* questions.  The design questions (2, 3, 4, 6) are left open on purpose; bring your machines to class.
+Worked answers to the *mechanical* questions.  The design questions (2, 3, 4, 7) are left open on purpose; bring your machines to class.
 
 **CTQ 1.**  The trace is the table in the Examples section: `even`, `odd`, `odd`, `even`, `odd`.  Final state `odd` is not accepting, so `1011` is rejected.
 
-**CTQ 5.**  In code, the `for` loop body never runs for `""`, so `state` is still `machine["start"]`, which is `"even"`, and `"even" in machine["accept"]` is `True`.  In the definition, $\varepsilon$ is accepted exactly when $q_0 \in F$.  It is correct: zero is an even number.
+**CTQ 6.**  In code, the `for` loop body never runs for `""`, so `state` is still `machine["start"]`, which is `"even"`, and `"even" in machine["accept"]` is `True`.  In the definition, $\varepsilon$ is accepted exactly when $q_0 \in F$.  It is correct: zero is an even number.
 
-**CTQ 7.**  Four states, remembering: nothing, just saw `a`, just saw `ab`, just saw `abc`.
+**CTQ 8.**  Four states, remembering: nothing, just saw `a`, just saw `ab`, just saw `abc`.
 
-**CTQ 8.**  After `"abca"` the `"abcab"` machine is in state 4 (it has completed `abca`).  After one more `b` it is in state 5, which is accepting.  It does not reset to 0 mid-input because a partial match is still live information.
+**CTQ 9.**  After `"abca"` the `"abcab"` machine is in state 4 (it has completed `abca`).  After one more `b` it is in state 5, which is accepting.  It does not reset to 0 mid-input because a partial match is still live information.
 
-**CTQ 9.**  Yes, a self-loop.  For pattern `"aaa"`, state 3 on input `a` stays at 3: the last three characters are still `aaa`, so the machine has still "just completed" the pattern.
+**CTQ 10.**  Yes, a self-loop.  For pattern `"aaa"`, state 3 on input `a` stays at 3: the last three characters are still `aaa`, so the machine has still "just completed" the pattern.
 
-**CTQ 10.**  With `max_n = 500`, every short test is handled, but the witness `"a"*501 + "b"*501` is not.  The witness is always `"a"*(max_n+1) + "b"*(max_n+1)`, so for any finite `max_n` you can name a legal string the machine rejects.  That is the whole argument.
+**CTQ 11.**  With `max_n = 500`, every short test is handled, but the witness `"a"*501 + "b"*501` is not.  The witness is always `"a"*(max_n+1) + "b"*(max_n+1)`, so for any finite `max_n` you can name a legal string the machine rejects.  That is the whole argument.
 
 ---
 

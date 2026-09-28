@@ -125,6 +125,17 @@ for pattern, tests in patterns:
 ### Reading the Code
 
 - `re.fullmatch` requires the pattern to consume the entire string.  That is the right choice for a *theory* demonstration.  A regular expression denotes a set of strings, and `fullmatch` asks exactly "is this string in that set?"  `re.search`, which Day 2 uses, asks a different question: "does the set have a member somewhere inside this string?"
+
+```python
+import re
+line = "x = 3.14;"
+print("fullmatch:", re.fullmatch(r"[0-9]+\.[0-9]+", line))
+print("search:   ", re.search(r"[0-9]+\.[0-9]+", line).group())
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+`fullmatch` asks whether the whole line is a float, and `search` asks whether a float appears somewhere inside it.
+
 - `r"[0-9]+\.[0-9]+"` uses a raw string, so `\.` reaches the regex engine as an escaped dot instead of being interpreted by Python first.  Drop the `r` and Python warns you.  Get in the habit now.
 - `.` matches *any* character, so an unescaped `[0-9]+.[0-9]+` would also match `3x14`.  The escape is not decoration.
 
@@ -192,7 +203,15 @@ Practical regex syntax is large, and almost none of it adds power.  Each conveni
 
 This matters for two reasons.  First, the class of languages you can describe never grows, no matter how much syntax a regex dialect adds.  It stays regular.  Second, when a pattern misbehaves, expanding the sugar in your head is often the fastest way to see why.
 
-There is one exception, and you should know it now so it does not surprise you later.  A backreference (`(a+)\1`, meaning "the same text again") leaves the regular languages behind.  Most modern "regex" engines are therefore not, strictly, regular expression engines.  Day 2 returns to this when it looks at what the engine actually does.
+There is one exception, and you should know it now so it does not surprise you later.  A backreference means "the same text again."  The pattern `(a+)b\1` matches some a's, a b, then the same a's again, which is the language $a^n b a^n$, and no regular expression built from the three primitives can describe it.  That leaves the regular languages behind.  Most modern "regex" engines are therefore not, strictly, regular expression engines.  Day 2 returns to this when it looks at what the engine actually does.
+
+```python
+import re
+back = r"(a+)b\1"                       # some a's, a b, then the SAME a's again
+for s in ["aba", "aabaa", "aaabaaa", "aabaaa", "abaa"]:
+    print(f"  {s!r:10} {bool(re.fullmatch(back, s))}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ## Examples: Building an Identifier Pattern by Hand
 
@@ -260,9 +279,9 @@ for name, sugar, primitive in TOKENS:
         print(f"    {s!r:8} sugar={str(a):5} primitive={str(b):5}{flag}")
     print(f"  -> {'identical on every input' if not disagreements else str(disagreements) + ' disagreements'}")
 
-print("\nWhere the two columns disagree, the primitive version has a SMALLER")
-print("alphabet (only a,b,c and 0,1,2), not different power. Widen the menus")
-print("and the disagreements vanish. Sugar adds no power, only readability.")
+print("\nThe primitive versions use smaller menus (a,b,c and 0,1,2) only to keep")
+print("the lines readable. On every input shown, the two patterns describe the")
+print("same language. Sugar adds readability, never power.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
@@ -275,12 +294,19 @@ print("and the disagreements vanish. Sugar adds no power, only readability.")
 
 > **Watch out.**  `[0-9]+` and `\d+` are *almost* the same thing.  In Python, `\d` matches Unicode decimal digits, which include characters like the Devanagari digit `४`.  For a lexer, that is usually not what you want, and `[0-9]` says exactly what you mean.  Be deliberate.
 
+```python
+import re
+for s in ["42", "\u096a\u0968"]:          # the second string is Devanagari four, two
+    print(repr(s), "\\d+:", bool(re.fullmatch(r"\d+", s)), " [0-9]+:", bool(re.fullmatch(r"[0-9]+", s)))
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
 ### Critical Thinking Questions
 
 5.  `re.fullmatch(r"[0-9]+", "007")` matches.  Is that correct for an *integer literal* in your project language?  If you want to forbid leading zeros, write the pattern.  What did it cost in complexity?
 6.  The float pattern rejects `1.` and `.2`.  Some languages accept both.  Amend the pattern to accept them and say what new ambiguity you have introduced with the lexer's other rules.
 7.  Expand `[a-c]{2,3}` by hand into the three primitives.  How many alternatives does it become?  Now expand `[a-z]{2,3}` in your head and say why nobody writes patterns this way.
-8.  Backreferences let you write `(a+)\1` for "some a's, then the same a's again."  Which language from *Grammars and the Chomsky Hierarchy* does that resemble, and what does its existence tell you about the word "regex" as used by working programmers?
+8.  Backreferences let you write `(a+)b\1` for "some a's, a b, then the same a's again," the language $a^n b a^n$.  Which language from *Grammars and the Chomsky Hierarchy* has the same shape, and what does its existence tell you about the word "regex" as used by working programmers?
 
 ### Try It Yourself
 
@@ -321,6 +347,18 @@ for name, pattern in SPEC.items():
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 Expected output once all four are written: every line reads `ok`.  `INT` is the hard one, because "no leading zeros unless the number is 0" is an alternation, not a repetition.
+
+One overlap in any token spec like this one is worth seeing now: a keyword is also a perfectly good identifier.
+
+```python
+import re
+ident, kw = r"[A-Za-z_][A-Za-z0-9_]*", r"if|else|while"
+for s in ["if", "iffy", "while", "x"]:
+    print(f"  {s!r:8} ident={bool(re.fullmatch(ident, s))!s:5} keyword={bool(re.fullmatch(kw, s))}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+`if` and `while` belong to both sets, and deciding which token they become is the question the *Tokens and Scanning* activity answers.
 
 To remember from Part II: `+`, `?`, character classes, and `{n,m}` are shorthand for the three primitives, so they add readability and no power.  Backreferences are the one common feature that does add power, and they take you outside the regular languages.
 
