@@ -712,12 +712,7 @@ Work the models above with your team before reading these.  Each one answers a C
 
 Here is the NFA for "ends in `ab`" (CTQ 2's machine, built the easy way, with nondeterminism).  State `q0` loops on everything and guesses when to start matching:
 
-```
-        a,b
-       +---+
-       |   v
-   --> (q0) --a--> (q1) --b--> ((q2))
-```
+![NFA for strings over a and b that end in ab. Three states: q0, q1, and q2. The start state is q0, and the only accepting state is q2. Transitions: q0 on a or b loops back to q0, q0 on a also goes to q1, q1 on b goes to q2. q2 has no outgoing transitions.](../../files/dotty/nfa_ends_in_ab.svg)
 
 `q0` on `a` has two choices: stay in `q0` or move to `q1`.  That is the nondeterminism.  Subset construction removes it by making each DFA state a *set* of NFA states, "all the places the NFA could be right now."
 
@@ -729,6 +724,10 @@ Start from `{q0}` and repeatedly compute where each symbol leads:
 | `B = {q0, q1}` | `{q0, q1}` = B | `{q0, q2}` = **C** | no |
 | `C = {q0, q2}` | `{q0, q1}` = B | `{q0}` = A | **yes** (contains `q2`) |
 
+Here is the DFA the table describes:
+
+![DFA built by subset construction from the ends-in-ab NFA. Three states: A, the set containing q0; B, the set containing q0 and q1; and C, the set containing q0 and q2. The start state is A, and the only accepting state is C. Transitions: A on a goes to B, A on b stays in A, B on a stays in B, B on b goes to C, C on a goes to B, C on b goes to A.](../../files/dotty/subset_dfa_ends_in_ab.svg)
+
 No new sets appear, so the construction is done: **three DFA states**, from three NFA states.  Read the meaning off the sets: `A` = "have not just seen an `a`", `B` = "just saw an `a`, so a `b` would finish", `C` = "just finished an `ab`".  That is exactly the "what does each state remember?" answer CTQ 2 asks for, and you did not have to guess it.  The algorithm produced it.
 
 > Subset construction can blow up: $n$ NFA states admit up to $2^n$ subsets.  Here we got 3 instead of 8 because most subsets were unreachable, which is the usual outcome in practice.
@@ -739,37 +738,21 @@ Thompson's construction builds an NFA from a regex one operator at a time.  Ever
 
 **1.  Literals.** `a`, `b`, `c` are each a two-state fragment:
 
-```
-   (1) --a--> ((2))        (3) --b--> ((4))        (5) --c--> ((6))
-```
+![Three separate Thompson literal fragments. Fragment for a: start state 1, accepting state 2, 1 on a goes to 2. Fragment for b: start state 3, accepting state 4, 3 on b goes to 4. Fragment for c: start state 5, accepting state 6, 5 on c goes to 6.](../../files/dotty/thompson_literals.svg)
 
 **2.  Alternation `b|c`.**  Add a new start and a new accept, with `ε` branches into each side and `ε` exits out:
 
-```
-              ε      b      ε
-        +--> (3) --------> (4) --+
-   (7) -+                        |--> ((8))
-        `--> (5) --------> (6) --+
-              ε      c      ε
-```
+![Thompson NFA for the alternation b or c. States 3, 4, 5, 6, 7, and 8. The start state is 7, and the only accepting state is 8. Transitions: 7 on epsilon goes to 3, 7 on epsilon goes to 5, 3 on b goes to 4, 5 on c goes to 6, 4 on epsilon goes to 8, 6 on epsilon goes to 8.](../../files/dotty/thompson_alternation.svg)
 
 **3.  Star `(b|c)*`.**  Wrap it: `ε` to skip entirely, and `ε` from the old accept back to the old start to repeat:
 
-```
-                    +------- ε -------+
-                    |                 |
-   (9) --ε--> (7) --+-[ b|c ]-> (8) --+--ε--> ((10))
-    |                                            ^
-    `---------------- ε -------------------------+
-```
+![Thompson NFA for the star of b or c. States 3 through 10. The start state is 9, and the only accepting state is 10. States 7, 3, 4, 5, 6, and 8 form the alternation gadget for b or c, drawn inside a dashed box: 7 on epsilon goes to 3, 7 on epsilon goes to 5, 3 on b goes to 4, 5 on c goes to 6, 4 on epsilon goes to 8, 6 on epsilon goes to 8. Star transitions: 9 on epsilon goes to 7, 8 on epsilon goes back to 7, 8 on epsilon goes to 10, 9 on epsilon goes straight to 10.](../../files/dotty/thompson_star.svg)
 
 The outer `ε` from `9` straight to `10` is what makes zero repetitions legal.  The back edge from `8` to `7` is what makes many legal.
 
 **4.  Concatenation `a` then `(b|c)*`.**  Join with an `ε` from `a`'s accept to the star's start:
 
-```
-   (1) --a--> (2) --ε--> (9) --[ (b|c)* ]--> ((10))
-```
+![Complete ten-state Thompson NFA for a followed by the star of b or c. States 1 through 10. The start state is 1, and the only accepting state is 10. Transitions: 1 on a goes to 2, 2 on epsilon goes to 9, 9 on epsilon goes to 7, 9 on epsilon goes to 10, 7 on epsilon goes to 3, 7 on epsilon goes to 5, 3 on b goes to 4, 5 on c goes to 6, 4 on epsilon goes to 8, 6 on epsilon goes to 8, 8 on epsilon goes back to 7, 8 on epsilon goes to 10.](../../files/dotty/thompson_concat.svg)
 
 Ten states, and every one of them is forced, no creativity anywhere.  That mechanical quality is the point: it is why a program can do this, which is exactly what `lab-automata.md` asks you to implement.  Count the `ε` transitions and notice how many are pure bookkeeping.  A real implementation usually removes them afterward with an ε-closure pass.
 

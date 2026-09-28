@@ -1,0 +1,17 @@
+digraph ends_in_aa {
+  rankdir=LR;
+  bgcolor="transparent";
+  node [shape=circle, fontname="Helvetica", fontsize=14];
+  edge [fontname="Courier", fontsize=13];
+  __start [shape=point, style=invis, width=0];
+  p0;
+  p_a;
+  p_aa [shape=doublecircle];
+  __start -> p0;
+  p0   -> p_a  [label="a"];
+  p0   -> p0   [label="b"];
+  p_a  -> p_aa [label="a"];
+  p_a  -> p0   [label="b"];
+  p_aa -> p_aa [label="a"];
+  p_aa -> p0   [label="b"];
+}

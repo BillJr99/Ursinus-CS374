@@ -59,14 +59,7 @@ The machine's entire memory is which state it is in.  Finitely many states means
 
 Here is a DFA that accepts binary strings with an even number of 1s:
 
-```
-            0                0
-          +---+            +---+
-          v   |            v   |
-   --> ((even)) --1-->  (odd)
-          ^                 |
-          `-------1---------+
-```
+![DFA for binary strings with an even number of 1s. Two states: even and odd. The start state is even, and even is also the only accepting state. Transitions: even on 0 goes to even, even on 1 goes to odd, odd on 0 goes to odd, odd on 1 goes to even.](../../files/dotty/even_ones.svg)
 
 Two states are enough because the machine only needs to remember one bit: the parity of the 1s so far.
 
@@ -251,6 +244,10 @@ for s in ["ab", "aab", "abab", "ba", "a", "b", "aabb", ""]:
 
 Build the "contains `aa`" machine from CTQ 3 and see how it differs from "ends in `aa`".
 
+Here is the part of the machine the code gives you; the dashed arrows are yours to fill in.
+
+![Partial DFA for strings over a and b that contain aa. Three states: q0, q_a, and q_seen. The start state is q0, and the only accepting state is q_seen. Given transitions: q0 on a goes to q_a, q0 on b stays in q0. The transitions from q_a on a and on b, and from q_seen on a and on b, are drawn as dashed arrows to a question mark because you fill them in.](../../files/dotty/contains_aa_partial.svg)
+
 ```python
 def run_dfa(machine, s):
     state = machine["start"]
@@ -294,6 +291,10 @@ print("difference between 'contains' and 'ends in'. Name it in one sentence.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
+For contrast, here is the finished ends-in-`aa` machine from the code:
+
+![DFA for strings over a and b that end in aa. Three states: p0, p_a, and p_aa. The start state is p0, and the only accepting state is p_aa. Transitions: p0 on a goes to p_a, p0 on b stays in p0, p_a on a goes to p_aa, p_a on b goes to p0, p_aa on a stays in p_aa, p_aa on b goes to p0.](../../files/dotty/ends_in_aa.svg)
+
 Expected output once you fill in the table: the two machines agree on `aa` and `baa` and disagree on `aab` and `baab`, which contain `aa` but do not end in it.
 
 ---
@@ -331,6 +332,10 @@ Instead of drawing arrows and hoping, build the machine by tabulating the answer
 | `"aa"` | still just an `a` pending, the older one is irrelevant | `q_a` |
 
 The fourth and seventh rows reuse existing states.  That reuse is the finiteness: infinitely many input prefixes collapse into three buckets, because within a bucket the future behaves the same way.
+
+Here is the machine the table builds:
+
+![DFA for strings over a and b that end in ab. Three states: q0, q_a, and q_ab. The start state is q0, and the only accepting state is q_ab. Transitions: q0 on a goes to q_a, q0 on b stays in q0, q_a on a stays in q_a, q_a on b goes to q_ab, q_ab on a goes to q_a, q_ab on b goes to q0.](../../files/dotty/ends_in_ab.svg)
 
 ## Model 4: How State Count Grows, and Where It Explodes
 
