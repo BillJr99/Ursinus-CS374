@@ -321,7 +321,7 @@ Reading straight down the table gives you the production.  Write it out; it is f
 > 1. Fill in the skeleton below.  Replace every `TODO` with a real right-hand side in EBNF, using the tables and notes above.  If your production cannot derive the example in the comment beside it, the production is wrong.
 >
 >    ```ebnf
->    <expr>        ::= <atom> | <quoted> | <special> | <application>
+>    <expr>        ::= <atom> | <quoted> | <special> | <application> | <list>
 >    <special>     ::= <define> | <lambda> | <if>
 >
 >    (* (define square (lambda (n) (* n n)))   -- Scheme assignment, Example 2 *)
