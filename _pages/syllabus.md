@@ -380,10 +380,6 @@ schedule:
     dlink: "Assignments/GrammarWorkshop"
     points: "15"
     rubricpath: "_pages/Assignments/lab-grammarworkshop.md"
-  - dtitle: "Lab: Finite Automata Simulators Handed Out"
-    dlink: "Assignments/Automata"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-automata.md"
   readings:
   - rtitle: "Allison, Ch. 6 §6.2: Expression Trees, Operator Precedence, and Associativity"
 - week: "7"
@@ -396,10 +392,10 @@ schedule:
     dlink: "Assignments/Regex"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-regex.md"
-  - dtitle: "Programming Assignment: Build a Lexer Handed Out"
-    dlink: "Assignments/Lexer"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-lexer.md"
+  - dtitle: "Lab: Finite Automata Simulators Handed Out"
+    dlink: "Assignments/Automata"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-automata.md"
   readings:
   - rtitle: "Parser Combinators (Parsers as First-Class Values)"
     rlink: "Tutorials/ParserCombinators"
@@ -409,10 +405,10 @@ schedule:
   link: "Activities/liascript-parsingexpressions.md"
   liapage: true
   deliverables:
-  - dtitle: "Lab: Finite Automata Simulators Due"
-    dlink: "Assignments/Automata"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-automata.md"
+  - dtitle: "Programming Assignment: Build a Lexer Handed Out"
+    dlink: "Assignments/Lexer"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-lexer.md"
   readings:
   - rtitle: "For the Parser assignment (Step 3e): Property-Based Testing with Hypothesis, covering the round-trip property and how to shrink a failing case"
     rlink: "Tutorials/PropertyBasedTesting"
@@ -436,6 +432,10 @@ schedule:
     dlink: "Projects/TeamLanguage"
     points: "100"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
+  - dtitle: "Lab: Finite Automata Simulators Due"
+    dlink: "Assignments/Automata"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-automata.md"
   readings:
   - rtitle: "Allison, Ch. 6 §6.1-6.2: Context-Free Grammars, Derivation Trees, and Expression Trees"
   - rtitle: "PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer and Parser assignments)"
@@ -446,10 +446,6 @@ schedule:
   link: "Activities/liascript-controlflowsemantics.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Build a Lexer Due"
-    dlink: "Assignments/Lexer"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-lexer.md"
   - dtitle: "Programming Assignment: Parser and AST Handed Out"
     dlink: "Assignments/Parser"
     points: "100"
@@ -473,6 +469,10 @@ schedule:
     dlink: "Assignments/EnvironmentsLab"
     points: "15"
     rubricpath: "_pages/Assignments/lab-environments.md"
+  - dtitle: "Programming Assignment: Build a Lexer Due"
+    dlink: "Assignments/Lexer"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-lexer.md"
   readings:
   - rtitle: "Krishnamurthi, PLAI (3rd ed.): the Stacker and SMoL Tutor, which we step through in class, and the chapters on functions, scope, and environments"
     rlink: "https://www.plai.org/"
