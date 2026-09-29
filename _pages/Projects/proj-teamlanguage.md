@@ -353,9 +353,8 @@ The reference interpreter is released with this phase at [{{ site.baseurl }}/fil
 > 2. Merge in the order your merge plan states.  If you start from the reference interpreter, unzip it, run its own tests from inside the `interpreter/` folder it creates, and only then move the pieces into `src/`.
 > 3. Get the REPL and the file-runner working on the class language, from the top of the repository, with the commands below.
 > 4. Write the first failing test for the distinctive feature.  A failing test is your specification; it tells the next sprint what to build.
-> 5. If a break falls inside the sprint window, front-load the integration so a working pipeline travels with you.
-> 6. Re-read the charter as a team and ask "does it still describe this team?"  File one revision if not.
-> 7. Each member sends me the confidential peer pulse (below).
+> 5. Re-read the charter as a team and ask "does it still describe this team?"  File one revision if not.
+> 6. Each member sends me the confidential peer pulse (below).
 
 One repository layout that works:
 

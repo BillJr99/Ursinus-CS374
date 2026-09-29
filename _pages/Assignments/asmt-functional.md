@@ -113,13 +113,13 @@ Read the core (Parts 1 and 2, plus Getting Started) and the one direction you ch
 
 ### Suggested Pacing
 
-See the course schedule for the assigned and due dates.  Thanksgiving break opens the day after this assignment goes out.  Parts 1 and 2 therefore travel with you rather than finishing before you leave.  Two moves make that manageable.  Choose your direction on day one, and start the property-tested core early, because it works well in short sittings away from campus.  Direction G's scope approval falls due within three days of hand-out, so send it before you go.  Your team project's sprints run in parallel:
+See the course schedule for the assigned and due dates.  Choose your direction on day one, and start the property-tested core early, because it works well in short sittings.  Direction G's scope approval falls due within three days of hand-out, so send it early.  Your team project's sprints run in parallel:
 
 | Checkpoint | You should have |
 |------------|----------------|
 | On assignment | Part 1 underway: combinators, `compose`, and property-tested `my_map`/`my_reduce`; direction chosen, and Direction G scope approval sent |
-| Over the break | Part 1 complete, and Part 2 underway: tree and linked-list operations with edge-case tests |
-| Return from break | Part 2 complete; direction components working for the provided cases |
+| Checkpoint 1 | Part 1 complete, and Part 2 underway: tree and linked-list operations with edge-case tests |
+| Checkpoint 2 | Part 2 complete; direction components working for the provided cases |
 | Due date | Direction depth checklist complete; writeup and ZIP submitted |
 
 ---
