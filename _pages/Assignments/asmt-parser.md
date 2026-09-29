@@ -174,7 +174,7 @@ See the course schedule for the assigned and due dates.  You do not start Part 1
 
 The first two rows are the ones students most often let slip.  The expression ladder is the spine of this assignment, and every tier above `parse_unary` assumes those two functions are solid, so get them tested before you build on them.
 
-Part 4 is sequenced alongside rather than after, and for a reason.  Its steps are short and each one has a printed answer to check against, so they make good work for the evening after a class meeting.  Saving all of Part 4 for the final weekend is the single most reliable way to run out of time on this assignment.
+Part 4 is sequenced alongside rather than after, and for a reason.  Its steps are short and each one has a printed answer to check against, so they make good work for the evening after a class meeting.  Saving all of Part 4 for the last few days is the single most reliable way to run out of time on this assignment.
 
 ---
 

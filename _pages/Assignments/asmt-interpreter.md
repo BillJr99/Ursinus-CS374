@@ -175,10 +175,10 @@ See the course schedule for the assigned and due dates.  Two pair labs do real w
 | Checkpoint | You should have |
 |------------|----------------|
 | On assignment | Part 0 done on paper, and Part 1 complete: all node dataclasses and the dispatch skeleton (Steps 1a-1b) |
-| First weekend | Expression evaluation and short-circuit logic with the bomb test passing (Steps 2a-2b) |
+| Checkpoint 1 | Expression evaluation and short-circuit logic with the bomb test passing (Steps 2a-2b) |
 | Type Checker lab due | `Environment` and statement evaluation, imported from your earlier lab and wired in; the shadowing program prints `51` then `2` (Step 2c) |
 | Midpoint | Break/continue signals, the file runner with staged errors, and the Step 2e invariants running (Step 2d, Step 3a, Step 2e) |
-| Second weekend | REPL with persistent environment and recovery; the checker core in place from the lab (Step 3b, Part 4) |
+| Checkpoint 2 | REPL with persistent environment and recovery; the checker core in place from the lab (Step 3b, Part 4) |
 | Due date | Checker complete across all constructs, including call sites and return types; error hierarchy in place; Part 5 deliverable, differential programs, REPL transcript; ZIP submitted (Part 4, Steps 5a-5c) |
 
 This window is shorter than the Parser's, so two rows are worth planning around.  You submit the Environments and Scope lab before this assignment opens.  Step 2c therefore becomes a matter of importing what you built there and wiring it in, rather than writing it from scratch.  The Type Checker lab falls in the middle of the window, and Part 4 extends its checker to call sites and return types.  Read Part 4 before that lab is due and you will know what you are building toward.

@@ -269,7 +269,7 @@ Two things you have typed repeatedly are not in the grammar yet.  The booleans `
 
 Here is why.  Whether the first element happens to be a procedure is not a fact about the *shape* of the text.  It is a fact about the value `1` has when the expression runs.  No set of productions can see that.
 
-This is why the course builds a lexer, a parser, and an interpreter as three separate programs.  Each one decides a different class of question.  When you hit an error in October, which of the three reported it will tell you what kind of mistake you made.
+This is why the course builds a lexer, a parser, and an interpreter as three separate programs.  Each one decides a different class of question.  When you hit an error later in the course, which of the three reported it will tell you what kind of mistake you made.
 
 ### Step 1.3: The Special Forms
 
@@ -346,7 +346,7 @@ Reading straight down the table gives you the production.  Write it out; it is f
 
 ### Step 1.4: Arithmetic, Without a Precedence Ladder
 
-The Scheme assignment's Part 4 opened with `(* (+ 2 3) 4)` and the observation that Scheme's source code is already the tree your parser will have to build in October.  Now derive it and watch that happen.
+The Scheme assignment's Part 4 opened with `(* (+ 2 3) 4)` and the observation that Scheme's source code is already the tree your parser will have to build later in the course.  Now derive it and watch that happen.
 
 > **Do this.**
 > 1. Write a leftmost derivation of `(* (+ 2 3) 4)` against your own grammar, in the format of the worked derivation above: one step per line, always expanding the leftmost nonterminal, with the production cited at the right of each line.  You may stop expanding `<number>` and `<symbol>` once you reach them, citing them as in the worked example, since you defined them in Part 0.
