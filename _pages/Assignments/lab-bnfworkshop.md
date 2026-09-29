@@ -317,6 +317,8 @@ Reading straight down the table gives you the production.  Write it out; it is f
 
 **Form 3: `if`.**  The example is `(if (= k 0) 1 (* n (pow n (- k 1))))`.  Three expressions follow the keyword: the test, the value when the test is true, and the value when it is false.  Scheme lets you leave off the last one, so exactly two are required and the third is optional.  Use `[ ]` for the optional piece.
 
+**Everything else: `<application>`.**  An `<application>` is a function call: any parenthesized list whose first element is not a reserved word such as `define`, `lambda`, or `if`.  Those three are handled by the special-form productions above, so `<application>` covers `(+ 1 2)`, `(sumlist (list 1 2 3))`, and every other call.
+
 > **Do this.**
 > 1. Fill in the skeleton below.  Replace every `TODO` with a real right-hand side in EBNF, using the tables and notes above.  If your production cannot derive the example in the comment beside it, the production is wrong.
 >
@@ -340,7 +342,7 @@ Reading straight down the table gives you the production.  Write it out; it is f
 > 2. Read each production against its example token by token, the way you checked the six strings in Part 0.  Start at the leftmost `(` and walk right, ticking off one symbol of the production per piece of the example, and confirm you run out of both at the same moment.
 > 3. Name one string your tightened grammar now rejects that the four-production grammar accepted, and trace it to the production that blocks it.  `(if)` and `(define 5 x)` are both fair game.
 > 4. Name one cost you just paid.  Count the productions you now have against the four you started with, and say what happens to the grammar the next time the language gains a form such as `cond` or `let`.
-> 5. Answer the awkward question.  `(define x 5)` matches `<define>`, and it also matches `<application>`, since `define` is a `<symbol>` and `x` and `5` are expressions.  Your grammar as written is ambiguous about which one it is.  Say how you would resolve it, in one or two sentences.  You do not have to rewrite the grammar to fix it; you have to notice it and say what you would do.
+> 5. `(define x 5)` matches `<define>`, and it also matches `<application>`, since `define` is a `<symbol>` and `x` and `5` are expressions.  Your grammar as written is ambiguous about which one it is.  Say how you would resolve it, in one or two sentences.  You do not have to rewrite the grammar to fix it; you have to notice it and say what you would do.
 
 > **Watch out.**  Do not write productions for `+`, `-`, `*`, and `/`.  Look at `<application>` again: a list whose first element is an expression already covers `(+ 1 2)`, `(* n n)`, and `(- k 1)`, because the operator is just a symbol in the first position.  Step 1.4 is about why that works.
 
@@ -354,8 +356,6 @@ The Scheme assignment's Part 4 opened with `(* (+ 2 3) 4)` and the observation t
 > 3. Name in one sentence what you would have to add to *your* grammar to write `2 + 3 * 4` and have it mean 14.  The *Syntax and BNF/EBNF* activity's Derivation 2 shows the shape of the answer, with its `<expr>`, `<term>`, and `<factor>` ladder.
 
 The answer to question 2 is zero, and that is the whole point of this step.  Your grammar handles every arithmetic operator in the language without mentioning a single one, because prefix notation puts the operator where the grammar already expects an expression, and the parentheses have already said what groups with what.  Put it another way: the parens are the parse tree.
-
-> **Not today's business.**  Precedence, associativity, and the ambiguity that makes them necessary are what today's session is about, and the *Grammar and Derivations Workshop*, the lab that follows this one, is where you build that ladder for real, in the grammar your own parser will implement.  Here you are only noticing that Scheme does not need one.
 
 ### Step 1.5: Verify Your Grammar by Hand
 
