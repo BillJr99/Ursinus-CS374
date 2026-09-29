@@ -92,7 +92,7 @@ The generator direction replaces the *vehicle* of Parts 1 and 2 (the `TOKEN_SPEC
 You need:
 
 - Python 3.10 or newer, with only the standard library (`re`, `json`, and `dataclasses`).  There is nothing to install.  Record the version in your readme.
-- Your class tokenizer, or the `finditer` mini lexer you built in the Regex assignment.  This assignment grows one of those into a component, so start from whichever you trust more.
+- Your class tokenizer.  This assignment grows it into a component, and the patterns you tested in the Regex assignment's `patterns.py` are a good source for its rules.
 - A terminal and an editor.  If either is new to you, work through the [dev environment page]({{ site.baseurl }}/Tutorials/DevEnvironment) and the [shell primer]({{ site.baseurl }}/Tutorials/ShellForLanguageDev) first.
 
 Confirm your Python version from the terminal.  On some machines the command is `python` rather than `python3`; use whichever one reports 3.10 or newer.
@@ -124,11 +124,11 @@ Make one folder for the assignment (`mkdir cs374-lexer`, then `cd cs374-lexer`) 
 
 ### Suggested Pacing
 
-See the course schedule for the assigned and due dates.  Your starting point is the mini lexer you built in the **Regular Expressions** assignment, Part 3, which you submit the day this assignment opens.  Bring that file with you and Part 1 becomes an extension rather than a blank page.  The Finite Automata Simulators lab falls inside this window and builds the state-machine reasoning Part 1 asks for.
+See the course schedule for the assigned and due dates.  Your starting point is the class tokenizer, together with the tested patterns from the **Regular Expressions** assignment.  Bring both with you and Part 1 becomes an extension rather than a blank page.  The Finite Automata Simulators lab falls inside this window and builds the state-machine reasoning Part 1 asks for.
 
 | Checkpoint | You should have |
 |------------|----------------|
-| On assignment | `Token` dataclass and a six-rule `tokenize` generator working (grown from your mini lexer) |
+| On assignment | `Token` dataclass and a six-rule `tokenize` generator working (grown from the class tokenizer) |
 | Checkpoint 1 | Parts 1-2a: full `TOKEN_SPEC` passing all maximal-munch cases, and the core `Lexer` class with `peek`/`advance`/`expect` working |
 | Automata lab due | Parts 2b-2c: string escapes and JSON configuration (both dialects) |
 | Due date | Part 3 error modes with precise positions and the full test suite complete; readme written; ZIP assembled and submitted |
