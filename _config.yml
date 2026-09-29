@@ -1,0 +1,40 @@
+plugins:
+  - jekyll-relative-links
+#  - jekyll-target-blank
+
+relative_links:
+  enabled: true
+  collections: true
+
+theme: jekyll-theme-slate
+
+title: "CS374"
+description: "Principles of Programming Languages"
+
+url                      : https://BillJr99.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
+baseurl                  : "/Ursinus-CS374-Fall2026" # the subpath of your site, e.g. "/blog"
+
+
+
+# Reading Files
+include:
+  - .htaccess
+  - _pages
+  - files
+
+# Where raw course pages are fetched from, and the viewer that renders decks.
+#
+# Front matter can reach these through the `liapage: true` flag, which the
+# syllabus and assignment layouts expand:
+#
+#   link: "Activities/liascript-example.md"
+#   liapage: true
+#
+# Page bodies use them directly:
+#
+#   {{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-example.md
+#
+# These two lines and baseurl above are the only places a semester may appear.
+raw_pages_url            : "https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/"
+lia_viewer_url           : "https://www.billmongan.com/LiaScript/?"
+

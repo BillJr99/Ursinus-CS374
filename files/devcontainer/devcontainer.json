@@ -1,0 +1,35 @@
+{
+    // CS374 Course Development Container -- VS Code Dev Containers config
+    //
+    // Put this file (with the Dockerfile and docker-compose.yml) in a
+    // `.devcontainer/` folder at the root of your cloned GitHub work repo,
+    // then use VS Code's "Dev Containers: Reopen in Container" command.
+    // VS Code builds the course image and reopens your repo inside it.
+    "name": "CS374 Course Dev Container",
+
+    // Build the course image from the Dockerfile in this folder.
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "."
+    },
+
+    // Mount your cloned repo (the folder you opened in VS Code) at
+    // /workspace inside the container -- the same bind-mount idea as the
+    // docker-compose.yml route. The container sees only this folder.
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+    "workspaceFolder": "/workspace",
+
+    // Work as the non-root `student` user defined in the Dockerfile.
+    "remoteUser": "student",
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                // Python language support, debugging, and test discovery
+                "ms-python.python",
+                // GitLens: see your commit history and blame inline
+                "eamodio.gitlens"
+            ]
+        }
+    }
+}

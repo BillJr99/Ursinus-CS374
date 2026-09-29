@@ -1,0 +1,112 @@
+/* CS374 BNF/EBNF Tester.  Scoped to .bnf-app so the Slate theme is untouched. */
+.bnf-app {
+  --bnf-border: #b8c2cc;
+  --bnf-bg: #f7f9fb;
+  --bnf-ok: #1e7b34;
+  --bnf-ok-bg: #e7f5ea;
+  --bnf-bad: #b3261e;
+  --bnf-bad-bg: #fdecea;
+  --bnf-warn: #8a5a00;
+  --bnf-warn-bg: #fff4dc;
+  --bnf-note-bg: #eaf1fb;
+  --bnf-accent: #2e5c8a;
+  font-size: 15px;
+}
+.bnf-app * { box-sizing: border-box; }
+.bnf-app [hidden] { display: none !important; }
+.bnf-panel {
+  border: 1px solid var(--bnf-border);
+  border-radius: 6px;
+  background: var(--bnf-bg);
+  padding: 12px 14px;
+  margin: 0 0 14px 0;
+}
+.bnf-controls { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; }
+.bnf-controls label { font-weight: bold; margin-right: 4px; }
+.bnf-control { display: flex; align-items: center; gap: 6px; }
+.bnf-app select, .bnf-app input[type=text] {
+  font: inherit;
+  padding: 4px 6px;
+  border: 1px solid var(--bnf-border);
+  border-radius: 4px;
+  background: #fff;
+  max-width: 100%;
+}
+.bnf-app textarea, .bnf-app input.bnf-mono {
+  width: 100%;
+  font-family: Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 14px;
+  border: 1px solid var(--bnf-border);
+  border-radius: 4px;
+  padding: 8px;
+  background: #fff;
+}
+.bnf-app textarea { min-height: 220px; resize: vertical; tab-size: 4; }
+.bnf-field-label { display: block; font-weight: bold; margin: 0 0 4px 0; }
+.bnf-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+.bnf-btn {
+  font: inherit;
+  cursor: pointer;
+  border: 1px solid var(--bnf-accent);
+  background: var(--bnf-accent);
+  color: #fff;
+  border-radius: 4px;
+  padding: 6px 12px;
+}
+.bnf-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.bnf-btn-secondary { background: #fff; color: var(--bnf-accent); }
+.bnf-btn-small { padding: 2px 8px; margin-left: 6px; background: #fff; color: var(--bnf-accent); }
+.bnf-btn-on { background: var(--bnf-accent); color: #fff; }
+.bnf-badge {
+  display: inline-block;
+  font-weight: bold;
+  font-size: 13px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid;
+}
+.bnf-badge-bnf { color: var(--bnf-accent); background: #fff; }
+.bnf-badge-ebnf { color: var(--bnf-warn); background: var(--bnf-warn-bg); }
+.bnf-small { font-size: 13px; color: #555; }
+.bnf-msg { border: 1px solid var(--bnf-border); border-left-width: 5px; border-radius: 4px; padding: 6px 10px; margin: 6px 0; }
+.bnf-msg-ok { border-color: var(--bnf-ok); background: var(--bnf-ok-bg); }
+.bnf-msg-error { border-color: var(--bnf-bad); background: var(--bnf-bad-bg); }
+.bnf-msg-warn { border-color: var(--bnf-warn); background: var(--bnf-warn-bg); }
+.bnf-msg-note { border-color: var(--bnf-accent); background: var(--bnf-note-bg); }
+.bnf-hint { margin-top: 4px; font-size: 14px; }
+.bnf-verdict { font-size: 17px; padding: 8px 12px; border-radius: 4px; border: 1px solid; margin-bottom: 8px; }
+.bnf-verdict-yes { color: var(--bnf-ok); background: var(--bnf-ok-bg); }
+.bnf-verdict-no { color: var(--bnf-bad); background: var(--bnf-bad-bg); }
+.bnf-muted { color: #555; }
+.bnf-pre {
+  font-family: Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 13px;
+  background: #fff;
+  border: 1px solid var(--bnf-border);
+  padding: 8px;
+  overflow-x: auto;
+  white-space: pre;
+}
+.bnf-mark mark { background: #ffd24d; outline: 1px solid var(--bnf-bad); }
+.bnf-tree {
+  border: 1px solid var(--bnf-border);
+  background: #fff;
+  padding: 6px 8px;
+  overflow-x: auto;
+  font-family: Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 13px;
+}
+.bnf-tree ul { list-style: none; margin: 0; padding-left: 18px; border-left: 1px dotted var(--bnf-border); }
+.bnf-tree > ul { padding-left: 0; border-left: 0; }
+.bnf-tree li { margin: 1px 0; white-space: nowrap; }
+.bnf-tree summary { cursor: pointer; }
+.bnf-nt { color: var(--bnf-accent); font-weight: bold; }
+.bnf-rule { color: #777; }
+.bnf-leaf { color: #7a2e00; }
+.bnf-empty { color: #777; font-style: italic; }
+.bnf-scroll { overflow-x: auto; }
+.bnf-table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.bnf-table th, .bnf-table td { border: 1px solid var(--bnf-border); padding: 3px 8px; text-align: left; vertical-align: top; }
+.bnf-table th { background: #e9eef3; color: #1d2733; font-weight: bold; }
+.bnf-code { font-family: Consolas, "Liberation Mono", Menlo, monospace; white-space: pre; }
+.bnf-app h3 { margin: 14px 0 6px 0; }

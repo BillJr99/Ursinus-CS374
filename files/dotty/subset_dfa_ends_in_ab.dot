@@ -1,0 +1,17 @@
+digraph subset_dfa_ends_in_ab {
+  rankdir=LR;
+  bgcolor="transparent";
+  node [shape=circle, fontname="Helvetica", fontsize=14];
+  edge [fontname="Courier", fontsize=13];
+  __start [shape=point, style=invis, width=0];
+  A [label="A\n{q0}"];
+  B [label="B\n{q0,q1}"];
+  C [label="C\n{q0,q2}", shape=doublecircle];
+  __start -> A;
+  A -> B [label="a"];
+  A -> A [label="b"];
+  B -> B [label="a"];
+  B -> C [label="b"];
+  C -> B [label="a"];
+  C -> A [label="b"];
+}

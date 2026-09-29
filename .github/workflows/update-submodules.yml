@@ -1,0 +1,140 @@
+name: Reset and Sync Submodules
+
+on:
+  push:
+    branches:
+      - gh-pages
+  workflow_dispatch:
+
+concurrency:
+  group: submodule-reset-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reset-and-sync:
+    runs-on: ubuntu-latest
+
+    if: >
+      github.actor != 'github-actions[bot]' &&
+      !contains(github.event.head_commit.message, '[skip ci]')
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout parent repository (no submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+          fetch-depth: 0
+
+      - name: Configure Git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Hard reset to the branch this run is for
+        run: |
+          # Use the ref that triggered the run, not the repository's default
+          # branch. Where the default is main -- CS170, CS274, CS352, CS375,
+          # CS474, CS475, WebMobile -- resetting to it sent this job onto a
+          # branch that has no submodules at all: it updated nothing, committed
+          # nothing, and still reported success, so the gh-pages pointers sat at
+          # a stale _layouts and code for months.
+          BRANCH="${GITHUB_REF_NAME:-gh-pages}"
+          echo "Working on branch: ${BRANCH}"
+          git fetch origin
+          git checkout -B "${BRANCH}" "origin/${BRANCH}"
+          git reset --hard "origin/${BRANCH}"
+
+      - name: Purge entire .git/modules cache unconditionally
+        run: |
+          echo "Removing .git/modules to eliminate all cached submodule state."
+          rm -rf .git/modules
+
+      - name: Remove all untracked files and directories
+        run: git clean -ffdx
+
+      - name: Deinitialize all submodules forcibly
+        run: |
+          git submodule deinit --all --force || true
+
+      - name: Remove orphaned gitlink entries from the index
+        run: |
+          echo "Scanning index for orphaned gitlink entries (mode 160000)..."
+          git ls-files --stage \
+            | awk '$1 == "160000" {print $4}' \
+            | while IFS= read -r GITLINK_PATH; do
+                DECLARED=$(git config --file .gitmodules \
+                             --get-regexp 'submodule\..*\.path' 2>/dev/null \
+                           | awk -v p="${GITLINK_PATH}" '$2 == p {print "yes"}')
+                if [ "${DECLARED}" != "yes" ]; then
+                  echo "Removing orphaned gitlink from index: ${GITLINK_PATH}"
+                  git rm --cached -f -- "${GITLINK_PATH}" || true
+                else
+                  echo "Gitlink declared in .gitmodules, retaining: ${GITLINK_PATH}"
+                fi
+              done
+
+      - name: Initialize submodules individually, proceeding on any failure
+        run: |
+          git config --file .gitmodules --get-regexp 'submodule\..*\.path' \
+            | awk '{print $2}' \
+            | while IFS= read -r SUBPATH; do
+                echo "---"
+                echo "Initializing submodule: ${SUBPATH}"
+                git submodule update --init --force -- "${SUBPATH}" \
+                  && echo "INFO: ${SUBPATH} initialized successfully." \
+                  || echo "WARNING: ${SUBPATH} failed to initialize. Continuing."
+              done
+
+      - name: Selectively recurse into first-party submodules
+        run: |
+          OWNED_SUBMODULES=(
+            "_layouts"
+            "_pages/Exercises"
+            "assets"
+            "code"
+          )
+          for SUBPATH in "${OWNED_SUBMODULES[@]}"; do
+            if [ -d "${SUBPATH}" ]; then
+              echo "Recursing into owned submodule: ${SUBPATH}"
+              git submodule update \
+                --init \
+                --remote \
+                --force \
+                --recursive \
+                -- "${SUBPATH}" \
+                && echo "INFO: ${SUBPATH} recursed successfully." \
+                || echo "WARNING: ${SUBPATH} failed during recursive update. Continuing."
+            else
+              echo "WARNING: Expected owned submodule path not found: ${SUBPATH}"
+            fi
+          done
+
+      - name: Report resolved submodule SHAs for audit
+        run: git submodule status --recursive || true
+
+      - name: Build file_pattern from all registered submodule paths
+        id: submodule_paths
+        run: |
+          PATHS=$(git config --file .gitmodules \
+                    --get-regexp 'submodule\..*\.path' \
+                  | awk '{print $2}' \
+                  | while IFS= read -r SUBPATH; do
+                      if [ -e "${SUBPATH}" ]; then
+                        echo "${SUBPATH}"
+                      else
+                        echo "WARNING: ${SUBPATH} does not exist on disk (submodule failed to initialize); excluding from commit pattern." >&2
+                      fi
+                    done \
+                  | tr '\n' ' ' \
+                  | sed 's/ $//')
+          echo "Submodule paths detected: ${PATHS}"
+          echo "paths=.gitmodules ${PATHS}" >> "${GITHUB_OUTPUT}"
+
+      - name: Commit updated submodule pointers if changed
+        uses: stefanzweifel/git-auto-commit-action@v5.0.1
+        with:
+          file_pattern: ${{ steps.submodule_paths.outputs.paths }}
+          commit_message: "chore: hard reset submodule pointers to remote HEAD [skip ci]"

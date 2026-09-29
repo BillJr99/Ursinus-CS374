@@ -1,0 +1,62 @@
+2026-09-01 00:01:14 INFO server started on port 8080
+2026-09-01 00:01:15 DEBUG loaded 14 route handlers
+2026-09-01 00:05:02 INFO cron job log-rotate started
+2026-09-01 00:05:03 INFO cron job log-rotate finished in 0.8s
+2026-09-01 02:00:00 INFO backup job nightly started
+2026-09-01 02:14:37 INFO backup job nightly finished: 3.2 GB written to /mnt/backup
+2026-09-01 08:12:44 INFO auth login succeeded for user mongan from 10.0.4.17
+2026-09-01 08:13:01 DEBUG session 7f3a2c issued for user mongan
+2026-09-01 WARN disk usage 82% on /dev/sda1
+2026-09-01 09:30:12 WARN disk usage 82% on /dev/sda1
+2026-09-01 11:47:09 INFO http GET /api/courses 200 (12 ms)
+2026-09-01 11:47:10 INFO http GET /api/courses/CS374 200 (8 ms)
+2026-09-01 14:03:55 WARN auth login failed for user guest from 192.168.1.44 (attempt 1)
+2026-09-01 14:04:02 WARN auth login failed for user guest from 192.168.1.44 (attempt 2)
+2026-09-01 14:04:10 ERROR auth account guest locked after 3 failed attempts
+2026-09-01 23:59:58 DEBUG heartbeat ok
+2026-09-02 00:05:02 INFO cron job log-rotate started
+2026-09-02 00:05:03 INFO cron job log-rotate finished in 0.7s
+2026-09-02 02:00:00 INFO backup job nightly started
+2026-09-02 02:09:41 ERROR backup job nightly failed: destination /mnt/backup unreachable
+2026-09-02 02:09:42 WARN backup will retry at 03:00:00
+2026-09-02 03:00:00 INFO backup job nightly started (retry 1)
+2026-09-02 03:15:20 INFO backup job nightly finished: 3.2 GB written to /mnt/backup
+2026-09-02 09:22:18 info http GET /api/schedule 200 (5 ms)
+2026-09-02 09:22:19 INFO http GET /api/schedule 200 (5 ms)
+2026-09-02 10:41:33 INFO http POST /api/submissions 201 (31 ms)
+2026-09-02 10:41:34 DEBUG submission 4412 queued for grading
+2026-09-02 13:15:00 WARN disk usage 85% on /dev/sda1
+2026-09-02 13:15:01 WARN memory usage 77% on app-01
+2026-09-02 16:58:47 INFO auth logout for user mongan
+2026-09-03 00:05:02 INFO cron job log-rotate started
+2026-09-03 00:05:04 INFO cron job log-rotate finished in 1.1s
+2026-09-03 02:00:00 INFO backup job nightly started
+2026-09-03 02:13:58 INFO backup job nightly finished: 3.3 GB written to /mnt/backup
+2026-09-03 07:45:12 INFO auth login succeeded for user jsmith from 10.0.4.22
+2026-09-03 08:02:39 INFO http GET /api/courses 200 (11 ms)
+2026-09-03 08:02:40 INFO http GET /api/assignments/regex 200 (9 ms)
+2026-09- 08:30:00 ERROR http GET /api/assignments/missing 404 (2 ms)
+2026-09-03 08:30:01 ERROR http GET /api/assignments/missing 404 (2 ms)
+2026-09-03 09:10:27 WARN disk usage 88% on /dev/sda1
+2026-09-03 09:10:28 DEBUG disk check scheduled again in 3600s
+2026-09-03 12:00:00 INFO cron job grade-sync started
+2026-09-03 12:00:19 INFO cron job grade-sync finished: 41 records updated
+2026-09-03 15:22:05 WARN http POST /api/submissions 503 (5002 ms) upstream timeout
+2026-09-03 15:22:06 ERROR http upstream grader unreachable after 3 retries
+2026-09-03 15:25:11 INFO http upstream grader reachable again
+2026-09-03 18:40:52 INFO auth logout for user jsmith
+2026-09-04 00:05:02 INFO cron job log-rotate started
+2026-09-04 00:05:03 INFO cron job log-rotate finished in 0.9s
+2026-09-04 02:00:00 INFO backup job nightly started
+2026-09-04 02:16:02 INFO backup job nightly finished: 3.3 GB written to /mnt/backup
+    
+2026-09-04 08:10:22 WARN disk usage 91% on /dev/sda1
+2026-09-04 08:10:23 WARN memory usage 79% on app-01
+2026-09-04 08:11:00 DEBUG disk cleanup candidate: /var/log/old (410 MB)
+2026-09-04 08:15:44 INFO cron job disk-cleanup started
+2026-09-04 08:15:49 INFO cron job disk-cleanup finished: freed 410 MB
+2026-09-04 08:16:00 INFO disk usage now 74% on /dev/sda1
+2026-09-04 10:05:31 INFO auth login succeeded for user mongan from 10.0.4.17
+2026-09-04 10:06:12 INFO http GET /api/courses/CS374/roster 200 (14 ms)
+2026-09-04 17:30:09 INFO auth logout for user mongan
+2026-09-04 23:59:59 DEBUG heartbeat ok

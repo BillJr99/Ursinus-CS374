@@ -1,0 +1,20 @@
+digraph thompson_literals {
+  rankdir=LR;
+  bgcolor="transparent";
+  node [shape=circle, fontname="Helvetica", fontsize=14];
+  edge [fontname="Courier", fontsize=13];
+  __s1 [shape=point, style=invis, width=0];
+  __s3 [shape=point, style=invis, width=0];
+  __s5 [shape=point, style=invis, width=0];
+  2 [shape=doublecircle];
+  4 [shape=doublecircle];
+  6 [shape=doublecircle];
+  __s1 -> 1;
+  __s3 -> 3;
+  __s5 -> 5;
+  1 -> 2 [label="a"];
+  3 -> 4 [label="b"];
+  5 -> 6 [label="c"];
+  2 -> __s3 [style=invis];
+  4 -> __s5 [style=invis];
+}
