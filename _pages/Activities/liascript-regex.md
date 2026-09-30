@@ -513,7 +513,7 @@ Write a paragraph about another finite description of an infinite set that you r
 # Further Reading
 
 - Allison, Chapter 3 §3.1-3.2, on regular expressions and their equivalence to finite automata.
-- Allison, Chapter 4, on the pumping lemma (the standard tool for proving that a language is *not* regular, by showing that every long enough string in it has a piece you can repeat).  We work one example in class; the Regular Expressions assignment does not ask for it.
+- Allison, Chapter 4, on the pumping lemma (the standard tool for proving that a language is *not* regular, by showing that every long enough string in it has a piece you can repeat).  We work one example in class; it is background for the regular-versus-context-free boundary.
 - The Python [`re` HOWTO](https://docs.python.org/3/howto/regex.html), which Day 2 works through in five verbs.
 - [The Shell for Language Development](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ShellForLanguageDev), whose grep appendix goes further than Part III: named capture groups and a full log-triage walkthrough that turns unstructured log lines into structured records.
 - [regex101](https://regex101.com/): an interactive tester that explains every piece of a pattern and highlights each match.  Set the Flavor to Python so it behaves like `re`; its step-by-step debugger, which shows the engine backtracking, runs only in the PCRE flavor.
