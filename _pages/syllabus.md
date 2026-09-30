@@ -330,7 +330,7 @@ schedule:
   liapage: true
   readings:
   - rtitle: "Allison, Ch. 3 §3.1-3.2: Regular Expressions and Their Equivalence to Finite Automata"
-  - rtitle: "Allison, Ch. 4: The Pumping Lemma, proving a language is not regular (we work one example in class today; you will need it for Part 5 of the Regular Expressions assignment, handed out next week)"
+  - rtitle: "Allison, Ch. 4: The Pumping Lemma, proving a language is not regular (we work one example in class; it is background for the regular-versus-context-free boundary, and the Regular Expressions assignment does not ask for it)"
   - rtitle: "The Shell for Language Development, the grep section, which puts today's patterns to work on your own source tree"
     rlink: "Tutorials/ShellForLanguageDev"
 - week: "4"
