@@ -480,16 +480,17 @@ bad = 'let x = "oops;'
 try:
     tokens = list(tokenize(bad))
     print("Tokens produced:", tokens)
-    print("Note: MISMATCH absorbed the quote - no STRING token formed.")
 except SyntaxError as e:
     print(f"SyntaxError: {e}")
+    print("No STRING pattern matched, so the quote fell through to MISMATCH:")
+    print("the error names a stray character, not an unterminated string.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ### Critical Thinking Questions
 
 12.  The STRING pattern is `"(?:[^"\\]|\\.)*"`.  The two alternatives inside the group are `[^"\\]` (any char except quote or backslash) and `\\.` (backslash followed by any char).  Explain in your own words why both alternatives are needed: what string would fail if only the first alternative existed?
-13.  Run the unterminated-string test.  The lexer does not raise a clean error; it silently produces MISMATCH tokens.  Propose a pattern change or post-processing step that would detect an unterminated string and report it with line and column.
+13.  Run the unterminated-string test.  The lexer does raise, but at the stray quote and with a generic message, because the quote fell through to `MISMATCH`.  Propose a pattern change or post-processing step that would detect an unterminated string and report it as one, with line and column.
 14. `unescape()` processes `\"`, `\\`, `\n`, and `\t`.  List two other escape sequences that a production language would need, and describe any ordering constraint that matters when applying multiple replacements.
 
 ---
@@ -658,13 +659,13 @@ Input: `count2 = count2 + 12 >= limit`
 
 Two rows carry the whole lesson:
 
-- Position 21 is maximal munch doing real work.  Both `GT` and `GE` match at that position.  Take the *longest*, not the first one listed, and `>=` stays whole.  This is CTQ 3.  Had the lexer emitted `GT` then `EQ`, the parser would see `a > = b`, which matches no production.  The error would surface as a confusing *parse* error several stages away from the real bug.  Fix errors where the information still exists.
+- Position 21 is maximal munch doing real work.  Both `GT` and `GE` match at that position.  Take the *longest*, and `>=` stays whole.  (The Part II lexer gets the same result a different way: Python's alternation takes the first pattern that matches, so `TOKEN_SPEC` lists `GE` before `GT`.)  This is CTQ 3.  Had the lexer emitted `GT` then `EQ`, the parser would see `a > = b`, which matches no production.  The error would surface as a confusing *parse* error several stages away from the real bug.  Fix errors where the information still exists.
 - Position 0 is CTQ 2.  The identifier pattern is `[A-Za-z_][A-Za-z0-9_]*`.  Its second half admits digits, so the match runs to the end of `count2`: six characters, not four.  The scanner never "notices" the `2` and stops, because stopping early would not be the longest match.  The same mechanism is why `iffy` is one `IDENT` and not `IF` followed by `IDENT("fy")`: `IDENT` matches four characters where `IF` matches only two.
 
 Notice what the table does *not* contain: any decision about meaning.  The scanner never asks whether `count2` was declared, or whether adding an `INT` to an `IDENT` type-checks.  It only asks "how far does a pattern reach from here?"  That is why a regular expression is enough to do this job, and why the next stage needs a grammar instead.
 
 
-> **Watch out!**  The maximal munch rule always takes the *longest* possible match at the current position, not the first pattern that matches.  So `>=` is always one token, never two, and `iffy` is always one identifier, never the keyword `if` followed by `fy`.  If your hand tokenization ever splits a run of identifier-legal characters mid-stream, you have violated maximal munch.
+> **Watch out!**  The maximal munch rule always takes the *longest* possible match at the current position.  So `>=` is always one token, never two, and `iffy` is always one identifier, never the keyword `if` followed by `fy`.  When you trace by hand, compare lengths.  When you write the regex lexer, Python's alternation takes the *first* pattern that matches, so you get maximal munch by listing longer patterns first (`GE` before `GT`) and anchoring keywords with `\b`.  If your hand tokenization ever splits a run of identifier-legal characters mid-stream, you have violated maximal munch.
 
 ---
 
