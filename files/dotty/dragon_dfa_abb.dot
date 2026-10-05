@@ -1,0 +1,20 @@
+digraph dragon_dfa_abb {
+  rankdir=LR; bgcolor="transparent"; nodesep=0.5; ranksep=0.9;
+  fontname="Helvetica"; fontsize=12; labelloc=b;
+  node [shape=circle, fixedsize=true, width=0.62, fontname="Helvetica-Bold", fontsize=14, style=filled];
+  edge [fontname="Helvetica", fontsize=13, color="#333333", fontcolor="#555555", arrowsize=0.8];
+  __start [shape=point, style=invis, width=0];
+  node [fillcolor="#EEECFB", color="#5A4FC0", fontcolor="#3B3480"];
+  E [shape=doublecircle];
+  __start -> A;
+  A -> B [label="a"];
+  A -> C [label="b"];
+  B -> B [label="a"];
+  B -> D [label="b"];
+  C -> B [label="a"];
+  C -> C [label="b"];
+  D -> B [label="a"];
+  D -> E [label="b"];
+  E -> B [label="a"];
+  E -> C [label="b"];
+}

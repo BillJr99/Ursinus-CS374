@@ -1,0 +1,18 @@
+digraph thompson_rule_star {
+  rankdir=LR; bgcolor="transparent"; nodesep=0.5; ranksep=0.9;
+  fontname="Helvetica"; fontsize=12; labelloc=b;
+  node [shape=circle, fixedsize=true, width=0.62, fontname="Helvetica-Bold", fontsize=14, style=filled];
+  edge [fontname="Helvetica", fontsize=13, color="#333333", fontcolor="#555555", arrowsize=0.8];
+  __start [shape=point, style=invis, width=0];
+  node [fillcolor="#EEECFB", color="#5A4FC0", fontcolor="#3B3480"];
+  node [shape=box, fixedsize=false, width=0.9, height=0.5, style="rounded,filled", fillcolor="#F4F4F4", color="#888888", fontcolor="#333333"];
+  A [label="[ A ]"];
+  node [shape=circle, fixedsize=true, width=0.62, style=filled, fillcolor="#EEECFB", color="#5A4FC0", fontcolor="#3B3480"];
+  label="dashed edge = ε-move";
+  f [shape=doublecircle];
+  __start -> s;
+  s -> A [label="ε  enter", style=dashed];
+  A -> f [label="ε  stop", style=dashed];
+  A -> A [label="ε  repeat", style=dashed];
+  s -> f [label="ε  zero times", style=dashed];
+}
