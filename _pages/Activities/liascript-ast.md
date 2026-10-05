@@ -341,6 +341,29 @@ print("Now add the arm and rerun. Every node should appear.")
 
 Expected output before your edit: one `Unknown:` line swallowing three nodes.  After your edit: the full tree, six nodes deep.  Remember this the next time an evaluator "works" but quietly ignores a construct.
 
+#### One Fix
+
+Try the TODO first, then compare.  The arm prints the function name, then recurses on every argument, one level deeper:
+
+```python
+        case Call(fn=f, args=a):
+            print(f"{pad}Call({f})")
+            for x in a:
+                pretty(x, indent + 1)
+```
+
+With the arm in place, the tree prints in full:
+
+```text
+BinOp(+)
+  Num(1)
+  Call(max)
+    Num(2)
+    BinOp(*)
+      Num(3)
+      Var(x)
+```
+
 To remember: a dataclass per node type gives every field a name, and a tree walk is one `case` per node type plus a recursive call per child.  Every new node type needs a new `case` in every walk, or the walk will skip it without complaint.
 
 ---
