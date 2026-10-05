@@ -604,7 +604,7 @@ print("  one bottom-up pass already reaches a fixed point here.")
 
 ### Critical Thinking Questions
 
-> **CTQ 3.3** In the first example, folding removed a third of the nodes and the variable `x` prevented more.  What property of a subtree makes it foldable, stated in one sentence?
+> **CTQ 3.3** In the first example, folding removed four of the nine nodes and the variable `x` prevented more.  What property of a subtree makes it foldable, stated in one sentence?
 
 > **CTQ 3.4** `fold` recurses into children before testing the parent.  Rewrite that order in your head, testing the parent first, and give a tree where the naive order misses a fold that the bottom-up order catches.
 
