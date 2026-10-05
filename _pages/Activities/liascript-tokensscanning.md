@@ -74,9 +74,41 @@ Tokenize by hand: `count2 = count2 + 12 >= limit`
 
 ## 2.  A Complete Tokenizer
 
-You met the master-alternation trick in Part 3 of the *Regular Expressions* assignment.  There it showed that named groups let one pattern carry many alternatives.  Here it becomes a real lexer: a token specification stored as data, one master pattern built from that data, and a generator that yields typed tokens with positions, plus an error path.  Positions and errors are what separate a regex demo from a lexer.  The parser needs both when it has to tell a student where their program went wrong.
+The master-alternation trick rests on named groups, which the next cell shows on one line: a name on each alternative lets one pattern carry many alternatives and still report which one matched.  Here it becomes a real lexer: a token specification stored as data, one master pattern built from that data, and a generator that yields typed tokens with positions, plus an error path.  Positions and errors are what separate a regex demo from a lexer.  The parser needs both when it has to tell a student where their program went wrong.
 
 This code is the seed of your Lexer assignment and of your project.
+
+---
+
+## Named Groups in One Line
+
+A plain group `(...)` captures text you can read back by number.  A named group, `(?P<name>...)`, captures the same text and lets you read it back by name.  Every name used below has a job: `group("key")` reads one capture, `groupdict()` returns every capture as a dictionary, and `lastgroup` names the last group that matched.
+
+```python
+import re
+import traceback
+
+# Two named groups: key and value, around an equals sign.
+SETTING = re.compile(r"(?P<key>[A-Za-z_]\w*)\s*=\s*(?P<value>\S+)")
+
+try:
+    m = SETTING.fullmatch("port = 8080")
+    print(m.group("key"), "|", m.group("value"), "|", m.lastgroup)
+    print(m.groupdict())
+except Exception as e:
+    print(f"[tokens:named_groups] {e}")
+    traceback.print_exc()
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+You should see:
+
+```text
+port | 8080 | value
+{'key': 'port', 'value': '8080'}
+```
+
+Here both groups match, so `lastgroup` is simply the last one, `value`.  The lexer below puts each token type in its own named group and joins them with `|`.  At any position only one alternative matches, so `lastgroup` names the token type that fired.
 
 ---
 
