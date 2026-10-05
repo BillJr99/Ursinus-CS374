@@ -175,6 +175,40 @@ The subset construction is the idea that connects NFAs to DFAs.  Each DFA state 
 
 We run it by hand first, on the NFA that Thompson's construction builds for `(a|b)*abb`, and then read the same steps as code.
 
+### A Small Example First: "Ends in `ab`"
+
+Before the eleven-state example, run the construction on a machine small enough to hold in your head.  This NFA accepts strings over `{a, b}` that end in `ab`.  It starts in `q0`, accepts in `q2`, and its only nondeterministic moment is `q0` on `a`, where it can stay put or bet that this `a` begins the ending:
+
+![NFA for strings that end in ab. States q0, q1, and q2; q0 is the start state and q2 is the only accepting state. q0 loops to itself on a or b, q0 goes to q1 on a, and q1 goes to q2 on b.](../../files/dotty/example_nfa_ends_in_ab.svg)
+
+| NFA state | on `a` | on `b` |
+|---|---|---|
+| → q0 | {q0, q1} | {q0} |
+| q1 | ∅ | {q2} |
+| **q2** (accepting) | ∅ | ∅ |
+
+There are no ε-moves here, so the rule is short.  A DFA state is a set of NFA states.  Begin with `{q0}`.  For each set you have not processed yet and each symbol, the next set is the union of every arrow leaving that set on that symbol.  A set accepts when it contains `q2`.
+
+```text
+{q0}      on a:  q0 -> {q0, q1}                 gives {q0, q1}   new
+          on b:  q0 -> {q0}                     gives {q0}
+{q0, q1}  on a:  q0 -> {q0, q1},  q1 -> none    gives {q0, q1}
+          on b:  q0 -> {q0},      q1 -> {q2}    gives {q0, q2}   new
+{q0, q2}  on a:  q0 -> {q0, q1},  q2 -> none    gives {q0, q1}
+          on b:  q0 -> {q0},      q2 -> none    gives {q0}
+no unprocessed sets remain, so the construction stops
+```
+
+| DFA state | on `a` | on `b` | what it remembers |
+|---|---|---|---|
+| → A = {q0} | B | A | the last symbol was not an `a` |
+| B = {q0, q1} | B | C | the last symbol was an `a` |
+| **C = {q0, q2}** (accepting) | B | A | the input just ended in `ab` |
+
+![DFA from the subset construction. States A, B, and C, where A is the set q0, B is the set q0 and q1, and C is the set q0 and q2. A is the start state and C is the only accepting state. A loops on b and goes to B on a; B loops on a and goes to C on b; C goes to B on a and back to A on b.](../../files/dotty/example_dfa_ends_in_ab.svg)
+
+Trace `aab`: A on `a` goes to B, B on `a` stays in B, and B on `b` goes to C, which accepts.  Three NFA states became three DFA states, so this language costs nothing to determinize.
+
 ### Worked Example: Subset Construction by Hand, with ε-closure
 
 This is the classic example from the *Dragon Book* (Aho, Lam, Sethi, and Ullman).  Thompson's construction turns `(a|b)*abb` into the 11-state NFA below: states 0 through 7 are the `(a|b)*` loop, and 7 → 8 → 9 → 10 spells out `abb`.  State 10 is the only accepting state, and every blank cell is "no move."
@@ -291,7 +325,43 @@ The construction keeps every state and the start state, and it rebuilds the tran
 - **New transitions.**  For each state $q$ and symbol $x$, $\delta'(q, x) = \varepsilon\text{-closure}(\text{move}(\varepsilon\text{-closure}(\{q\}), x))$.  In words: slide along ε-edges from $q$ as far as they go, take one real `x` step, then slide along ε-edges again.
 - **New accepting states.**  A state $q$ accepts in the new NFA when $\varepsilon\text{-closure}(\{q\})$ contains an accepting state of the original, because the original could reach acceptance from $q$ without reading anything more.
 
-**Worked rows, on the same NFA.**  Three rows show every case:
+**A small example first: `ab?`.**  This ε-NFA accepts an `a`, optionally followed by a `b`.  It starts in `q0` and accepts in `q2`, and the dashed ε-edge is what makes the `b` optional:
+
+![Epsilon-NFA for ab-optional. States q0, q1, and q2; q0 is the start state and q2 is the only accepting state. q0 goes to q1 on a, q1 goes to q2 on b, and q1 also goes to q2 on an epsilon move, drawn dashed.](../../files/dotty/example_epsnfa_ab_optional.svg)
+
+| state | on `a` | on `b` | on ε |
+|---|---|---|---|
+| → q0 | {q1} | | |
+| q1 | | {q2} | {q2} |
+| **q2** (accepting) | | | |
+
+*Step 1, the closure of each state.*  Each state, plus everything it reaches by ε-moves alone: `ε-closure(q0) = {q0}`, `ε-closure(q1) = {q1, q2}`, `ε-closure(q2) = {q2}`.
+
+*Step 2, the new arrows,* from $\delta'(q, x) = \varepsilon\text{-closure}(\text{move}(\varepsilon\text{-closure}(\{q\}), x))$:
+
+```text
+δ'(q0, a) = ε-closure(move({q0}, a))       = ε-closure({q1}) = {q1, q2}
+δ'(q0, b) = ε-closure(move({q0}, b))       = ε-closure(∅)    = ∅
+δ'(q1, a) = ε-closure(move({q1, q2}, a))   = ∅
+δ'(q1, b) = ε-closure(move({q1, q2}, b))   = ε-closure({q2}) = {q2}
+δ'(q2, a) = δ'(q2, b) = ∅
+```
+
+*Step 3, the new accepting states.*  A state accepts if its closure holds an old accepting state.  The closure of `q1` contains `q2`, so `q1` now accepts, and `q2` still does.  This is the step that is easiest to forget, and forgetting it has a visible cost: the string `a` ends in `q1`, so without it `a` would be rejected.
+
+| state | on `a` | on `b` |
+|---|---|---|
+| → q0 | {q1, q2} | ∅ |
+| **q1** (accepting) | ∅ | {q2} |
+| **q2** (accepting) | ∅ | ∅ |
+
+![The NFA after epsilon-removal. States q0, q1, and q2 with no epsilon moves; q0 is the start state, and q1 and q2 are both accepting, with q1 highlighted as newly accepting. q0 goes to q1 on a and also to q2 on a, and q1 goes to q2 on b.](../../files/dotty/example_nfa_ab_optional.svg)
+
+Check it: `a` takes `q0` to `{q1, q2}`, which accepts; `ab` goes on to `{q2}`, which accepts; `b` has nowhere to go from `q0`, so it is rejected.  That is exactly `ab?`.  Notice that the result is still nondeterministic, since `q0` on `a` reaches two states, so the last step is the subset construction from the "ends in `ab`" example.  The other route skips ε-removal entirely and closes as it goes, as the worked example above does: a DFA state is `ε-closure(move(S, x))`, and the start set is closed too.
+
+The same three steps scale to the eleven-state NFA.
+
+**Worked rows, on the eleven-state NFA.**  Three rows show every case:
 
 - State 0.  `ε-closure({0}) = {0, 1, 2, 4, 7}`.  On `a`, the move from that set is `{3, 8}`, which closes to `{1, 2, 3, 4, 6, 7, 8}`.  On `b`, the move is `{5}`, which closes to `{1, 2, 4, 5, 6, 7}`.  Those are exactly B and C from the worked example, as they should be.
 - State 2.  `ε-closure({2}) = {2}`.  On `a`, the move is `{3}`, which closes to `{1, 2, 3, 4, 6, 7}`.  On `b`, there is no move at all, so the new transition is the empty set.

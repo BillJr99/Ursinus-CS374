@@ -1,0 +1,17 @@
+digraph example_dfa_ends_in_ab {
+  rankdir=LR;
+  bgcolor="transparent";
+  label="A = {q0}    B = {q0, q1}    C = {q0, q2}";
+  labelloc=b; fontname="Helvetica"; fontsize=12;
+  node [shape=circle, fontname="Helvetica", fontsize=14, style=filled, fillcolor="#E6F4EC", color="#5FAE84", fontcolor="#1F5C3D"];
+  edge [fontname="Courier", fontsize=13, color="#666666"];
+  __start [shape=point, style=invis, width=0];
+  C [shape=doublecircle];
+  __start -> A;
+  A -> A [label="b"];
+  A -> B [label="a"];
+  B -> B [label="a"];
+  B -> C [label="b"];
+  C -> B [label="a"];
+  C -> A [label="b"];
+}
