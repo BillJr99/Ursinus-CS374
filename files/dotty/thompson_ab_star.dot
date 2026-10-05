@@ -1,0 +1,18 @@
+digraph thompson_ab_star {
+  rankdir=LR; bgcolor="transparent"; nodesep=0.5; ranksep=0.9;
+  fontname="Helvetica"; fontsize=12; labelloc=b;
+  node [shape=circle, fixedsize=true, width=0.62, fontname="Helvetica-Bold", fontsize=14, style=filled];
+  edge [fontname="Helvetica", fontsize=13, color="#333333", fontcolor="#555555", arrowsize=0.8];
+  __start [shape=point, style=invis, width=0];
+  node [fillcolor="#EEECFB", color="#5A4FC0", fontcolor="#3B3480"];
+  label="dashed edge = ε-move";
+  6 [shape=doublecircle];
+  __start -> 5;
+  5 -> 1 [label="ε  enter", style=dashed];
+  1 -> 2 [label="a"];
+  2 -> 3 [label="ε", style=dashed];
+  3 -> 4 [label="b"];
+  4 -> 6 [label="ε  stop", style=dashed];
+  4 -> 1 [label="ε  repeat", style=dashed, constraint=false];
+  5 -> 6 [label="ε  zero times", style=dashed];
+}

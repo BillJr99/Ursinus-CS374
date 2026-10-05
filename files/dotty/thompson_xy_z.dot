@@ -1,0 +1,19 @@
+digraph thompson_xy_z {
+  rankdir=LR; bgcolor="transparent"; nodesep=0.5; ranksep=0.9;
+  fontname="Helvetica"; fontsize=12; labelloc=b;
+  node [shape=circle, fixedsize=true, width=0.62, fontname="Helvetica-Bold", fontsize=14, style=filled];
+  edge [fontname="Helvetica", fontsize=13, color="#333333", fontcolor="#555555", arrowsize=0.8];
+  __start [shape=point, style=invis, width=0];
+  node [fillcolor="#EEECFB", color="#5A4FC0", fontcolor="#3B3480"];
+  label="dashed edge = ε-move";
+  8 [shape=doublecircle];
+  __start -> 5;
+  5 -> 1 [label="ε", style=dashed];
+  5 -> 3 [label="ε", style=dashed];
+  1 -> 2 [label="x"];
+  3 -> 4 [label="y"];
+  2 -> 6 [label="ε", style=dashed];
+  4 -> 6 [label="ε", style=dashed];
+  6 -> 7 [label="ε", style=dashed];
+  7 -> 8 [label="z"];
+}

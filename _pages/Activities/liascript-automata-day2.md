@@ -327,17 +327,7 @@ This is the classic example from the *Dragon Book* (Aho, Lam, Sethi, and Ullman)
 
 The same machine drawn out.  The upper branch reads `a` (2 → 3), the lower branch reads `b` (4 → 5), the ε-edge 6 → 1 repeats the loop, and the ε-edge 0 → 7 skips it entirely, which is how `(a|b)*` allows zero repetitions:
 
-```text
-                      ε      +--- a ---+      ε
-                  +------> 2 |         | 3 ------+
-                  |          +---------+         v
-   --> 0 --ε--> 1                                6 --ε--> 7 --a--> 8 --b--> 9 --b--> ((10))
-       |        ^ |   ε      +--- b ---+      ε  |        ^
-       |        | +------> 4 |         | 5 ------+        |
-       |        |            +---------+         |        |
-       |        +------------------ε-------------+        |   (6 -> 1: repeat)
-       +---------------------------ε----------------------+   (0 -> 7: zero repetitions)
-```
+![Thompson NFA for (a|b)*abb with states 0 through 10; 0 is the start state and 10 is the only accepting state. Epsilon moves, drawn dashed: 0 to 1, 0 to 7, 1 to 2, 1 to 4, 3 to 6, 5 to 6, 6 back to 1, and 6 to 7. Symbol moves: 2 to 3 on a, 4 to 5 on b, 7 to 8 on a, 8 to 9 on b, and 9 to 10 on b.](../../files/dotty/dragon_nfa_abb.svg)
 
 Two operations do all of the work:
 
@@ -374,15 +364,9 @@ A DFA state is `ε-closure(move(S, x))`, one per unprocessed set and symbol.  Fo
 | D | {1, 2, 4, 5, 6, 7, 9} | B | E | no |
 | E | {1, 2, 4, 5, 6, 7, 10} | B | C | **yes** |
 
-The same DFA as arrows (`*` marks the accepting state):
+The same DFA as a diagram (the double circle marks the accepting state):
 
-```text
-   A --a--> B      A --b--> C
-   B --a--> B      B --b--> D
-   C --a--> B      C --b--> C
-   D --a--> B      D --b--> E*
-   E*--a--> B      E*--b--> C
-```
+![DFA from the subset construction for (a|b)*abb. States A through E; A is the start state and E is the only accepting state. Every state goes to B on a. On b: A goes to C, B goes to D, C stays in C, D goes to E, and E goes to C.](../../files/dotty/dragon_dfa_abb.svg)
 
 Eleven NFA states could have produced up to 2^11 = 2048 subsets.  The construction reached only five.  Read what each one remembers: B is "just read `a`," D is "just read `ab`," E is "just read `abb`," and A and C both mean "no part of `abb` in progress."  A and C behave identically on every input, so DFA minimization would merge them into a single state, leaving four.
 
@@ -870,11 +854,7 @@ Therefore $R'_{ij} = R_{ij} \mid R_{ik}(R_{kk})^*R_{kj}$.
 
 Suppose the DFA contains $q_0 \xrightarrow{a} q_0$ and $q_0 \xrightarrow{b} q_1$, where $q_1$ is accepting.  This recognizes strings of zero or more `a`s followed by a `b`.  Add a new start and final state:
 
-```text
-   s --ε--> q0 --b--> q1 --ε--> f
-            ^ |
-            +-+ a
-```
+![GNFA for zero or more a's followed by b. A new start state s has a dashed epsilon arrow to q0; q0 loops to itself on a and goes to q1 on b; q1 has a dashed epsilon arrow to the new accepting state f.](../../files/dotty/gnfa_a_star_b.svg)
 
 Eliminate $q_0$.  The only arrow in is from $s$ and the only arrow out is to $q_1$, so we need one pair, $(s, q_1)$:
 
@@ -892,14 +872,7 @@ $$
 
 This DFA over $\{a, b\}$ accepts strings with an even number of `a`s.  State $E$ (even) is both the start and the only accepting state; $O$ is odd.  Each state loops on `b`, and `a` flips between them.
 
-```text
-          b                 b
-         +-+               +-+
-         | v               | v
-  s --ε--> E  ----a---->   O
-           |  <---a-----
-           +--ε--> f
-```
+![GNFA for an even number of a's. A new start state s has a dashed epsilon arrow to E; E and O each loop to themselves on b; E goes to O on a and O goes back to E on a; E has a dashed epsilon arrow to the new accepting state f.](../../files/dotty/gnfa_even_as.svg)
 
 Here the start state has a self-loop and is also accepting, which is exactly why Step 1 adds a fresh $s$ and $f$.
 

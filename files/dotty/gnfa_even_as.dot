@@ -1,0 +1,18 @@
+digraph gnfa_even_as {
+  rankdir=LR; bgcolor="transparent"; nodesep=0.5; ranksep=0.9;
+  fontname="Helvetica"; fontsize=12; labelloc=b;
+  node [shape=circle, fixedsize=true, width=0.62, fontname="Helvetica-Bold", fontsize=14, style=filled];
+  edge [fontname="Helvetica", fontsize=13, color="#333333", fontcolor="#555555", arrowsize=0.8];
+  __start [shape=point, style=invis, width=0];
+  node [fillcolor="#EEECFB", color="#5A4FC0", fontcolor="#3B3480"];
+  label="dashed edge = ε";
+  s [fillcolor="#FFF4E0", color="#C07A1F", fontcolor="#7A4A0E"];
+  f [shape=doublecircle, fillcolor="#FFF4E0", color="#C07A1F", fontcolor="#7A4A0E"];
+  __start -> s;
+  s -> E [label="ε", style=dashed];
+  E -> E [label="b"];
+  E -> O [label="a"];
+  O -> E [label="a"];
+  O -> O [label="b"];
+  E -> f [label="ε", style=dashed];
+}

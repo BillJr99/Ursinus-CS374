@@ -107,13 +107,7 @@ Remember it as *move, then ε-close*.  If no state in $$S$$ has an arrow on $$a$
 
 *Worked example 1, with no ε-moves: "ends in `ab`".*  This NFA over `{a, b}` starts in `q0` and accepts in `q2`.  It has one choice to make: on `a`, `q0` can stay where it is or guess that this `a` begins the final `ab`.
 
-```text
-            a, b
-           +----+
-           |    |
-           |    v        a                b
-  start -->( q0 )--------------->( q1 )--------------->(( q2 ))
-```
+![NFA for strings that end in ab. States q0, q1, and q2; q0 is the start state and q2 is the only accepting state. q0 loops to itself on a or b, q0 goes to q1 on a, and q1 goes to q2 on b.]({{ site.baseurl }}/files/dotty/example_nfa_ends_in_ab.svg)
 
 | state | on `a` | on `b` |
 |---|---|---|
@@ -123,32 +117,27 @@ Remember it as *move, then ε-close*.  If no state in $$S$$ has an arrow on $$a$
 
 Run it on `aab`.  The machine has no ε-arrows, so each closure leaves the set unchanged.
 
-```text
-start             active = {q0}
-read a   union:   q0 -> {q0, q1}                          active = {q0, q1}
-read a   union:   q0 -> {q0, q1}   ∪  q1 -> ∅             active = {q0, q1}
-read b   union:   q0 -> {q0}       ∪  q1 -> {q2}          active = {q0, q2}
-end      {q0, q2} contains the accepting state q2         accept
-```
+| Step | Union of the moves | Active set |
+|---|---|---|
+| start | (nothing read yet) | {q0} |
+| read `a` | q0 → {q0, q1} | {q0, q1} |
+| read `a` | q0 → {q0, q1} ∪ q1 → ∅ | {q0, q1} |
+| read `b` | q0 → {q0} ∪ q1 → {q2} | {q0, q2} |
+| end | {q0, q2} contains the accepting state q2 | accept |
 
 Look closely at the last step.  The active set `{q0, q1}` moves on `b` to $$\delta(q0, b) \cup \delta(q1, b) = \{q0\} \cup \{q2\} = \{q0, q2\}$$.  Each state in the set contributes its own targets, and the union collects them.
 
 *Worked example 2, with an ε-move: `ab?`.*  This NFA accepts an `a`, optionally followed by a `b`.  It starts in `q0` and accepts in `q2`.  The ε-arrow from `q1` to `q2` makes the `b` optional.
 
-```text
-                     a                b
-  start -->( q0 )--------->( q1 )--------->(( q2 ))
-                              |               ^
-                              +------eps------+
-```
+![Epsilon-NFA for a followed by an optional b. States q0, q1, and q2; q0 is the start state and q2 is the only accepting state. q0 goes to q1 on a, q1 goes to q2 on b, and q1 also goes to q2 on an epsilon move, drawn dashed.]({{ site.baseurl }}/files/dotty/example_epsnfa_ab_optional.svg)
 
 Run it on `a`:
 
-```text
-start          E({q0}) = {q0}                                  active = {q0}
-read a   move: q0 -> {q1}         close: E({q1}) = {q1, q2}    active = {q1, q2}
-end      {q1, q2} contains q2                                  accept
-```
+| Step | Move | Close | Active set |
+|---|---|---|---|
+| start | (nothing read yet) | E({q0}) = {q0} | {q0} |
+| read `a` | q0 → {q1} | E({q1}) = {q1, q2} | {q1, q2} |
+| end | | {q1, q2} contains q2 | accept |
 
 Skip the closure after the move and the active set is `{q1}`, so `a` is wrongly rejected.  A missing closure, at the start or after a move, is the most common bug in this lab.
 
@@ -171,15 +160,16 @@ A result can be the empty set ∅.  That is a real DFA state, called a *dead sta
 
 *Worked example 1: "ends in `ab`," from above.*
 
-```text
-{q0}      on a: q0 -> {q0, q1}                         = {q0, q1}   new
-          on b: q0 -> {q0}                             = {q0}
-{q0, q1}  on a: q0 -> {q0, q1}  ∪  q1 -> ∅             = {q0, q1}
-          on b: q0 -> {q0}      ∪  q1 -> {q2}          = {q0, q2}   new
-{q0, q2}  on a: q0 -> {q0, q1}  ∪  q2 -> ∅             = {q0, q1}
-          on b: q0 -> {q0}      ∪  q2 -> ∅             = {q0}
-nothing left to process: stop
-```
+| Set being processed | Symbol | Union of the moves | Result | New? |
+|---|---|---|---|---|
+| {q0} | `a` | q0 → {q0, q1} | {q0, q1} | new |
+| {q0} | `b` | q0 → {q0} | {q0} | |
+| {q0, q1} | `a` | q0 → {q0, q1} ∪ q1 → ∅ | {q0, q1} | |
+| {q0, q1} | `b` | q0 → {q0} ∪ q1 → {q2} | {q0, q2} | new |
+| {q0, q2} | `a` | q0 → {q0, q1} ∪ q2 → ∅ | {q0, q1} | |
+| {q0, q2} | `b` | q0 → {q0} ∪ q2 → ∅ | {q0} | |
+
+Nothing is left to process, so the construction stops.  Collecting the results gives the DFA:
 
 | Powerset state | on `a` | on `b` | Accepting? |
 |---|---|---|---|
@@ -191,15 +181,18 @@ Three NFA states allow up to $$2^3 = 8$$ subsets, but only three are reachable. 
 
 *Worked example 2: `ab?`, from above, with closures and a dead state.*
 
-```text
-start: E({q0}) = {q0}
-{q0}       on a: move {q1},  close -> {q1, q2}     new
-           on b: move ∅,     close -> ∅            new (dead state)
-{q1, q2}   on a: move ∅                          -> ∅
-           on b: move {q2},  close -> {q2}         new
-{q2}       on a: ∅          on b: ∅
-∅          on a: ∅          on b: ∅
-```
+The start state is E({q0}) = {q0}.
+
+| Set being processed | Symbol | Move | Close | New? |
+|---|---|---|---|---|
+| {q0} | `a` | {q1} | {q1, q2} | new |
+| {q0} | `b` | ∅ | ∅ | new (dead state) |
+| {q1, q2} | `a` | ∅ | ∅ | |
+| {q1, q2} | `b` | {q2} | {q2} | new |
+| {q2} | `a` | ∅ | ∅ | |
+| {q2} | `b` | ∅ | ∅ | |
+| ∅ | `a` | ∅ | ∅ | |
+| ∅ | `b` | ∅ | ∅ | |
 
 | Powerset state | on `a` | on `b` | Accepting? |
 |---|---|---|---|
@@ -222,32 +215,19 @@ In the pictures below, `[ A ]` stands for a fragment you have already built for 
 
 *Rule 1: a single symbol `x`.*  Create two states and one arrow.  The fragment accepts only the one-symbol string `x`.
 
-```text
-  (s) --x--> ((f))
-```
+![Thompson rule for a single symbol x: a start state s with one arrow labeled x to an accepting state f.]({{ site.baseurl }}/files/dotty/thompson_rule_symbol.svg)
 
 *Rule 2: concatenation `AB`.*  Join A's accept to B's start with one ε-arrow.  The new fragment starts where A starts and accepts where B accepts, and it needs no new states.  Once A has matched its part of the input, the machine slides into B for free, and B matches the rest.
 
-```text
-  [ A ] --eps--> [ B ]
-```
+![Thompson rule for concatenation: fragment A, drawn as a box, joined to fragment B by one dashed epsilon arrow from A's accept to B's start.]({{ site.baseurl }}/files/dotty/thompson_rule_concat.svg)
 
 *Rule 3: union `A|B`.*  Add a new start `s` with ε-arrows into both fragments.  Add a new accept `f` with ε-arrows out of both.  At `s` the machine would have to guess which branch the input follows.  The active set follows both, and the branch that matches reaches `f`.
 
-```text
-          +--eps--> [ A ] --eps--+
-  (s) ----+                      +----> ((f))
-          +--eps--> [ B ] --eps--+
-```
+![Thompson rule for union: a new start state s with dashed epsilon arrows into fragment A and fragment B, and dashed epsilon arrows from both fragments into a new accepting state f.]({{ site.baseurl }}/files/dotty/thompson_rule_union.svg)
 
 *Rule 4: star `A*`.*  Add a new start `s`, a new accept `f`, and four ε-arrows.
 
-```text
-  (s) --eps--> [ A ] --eps--> ((f))
-   |            ^   |            ^
-   |            +eps+            |
-   +-------------eps-------------+
-```
+![Thompson rule for star: a new start state s and a new accepting state f around fragment A. Dashed epsilon arrows go from s into A (enter), from A to f (stop), from A back to its own start (repeat), and from s straight to f (zero times).]({{ site.baseurl }}/files/dotty/thompson_rule_star.svg)
 
 Each of the four arrows has one job:
 
@@ -264,39 +244,40 @@ Leave out the `s`-to-`f` arrow and `A*` becomes "one or more" (`A+`).  Leave out
 
 *Worked example 1: `(x|y)z`, a union and then a concatenation.*
 
-```text
-1. x:        1 --x--> 2                                                     (Rule 1)
-   y:        3 --y--> 4                                                     (Rule 1)
-2. x|y:      5 --eps--> 1,  5 --eps--> 3,  2 --eps--> 6,  4 --eps--> 6      (Rule 3) start 5, accept 6
-3. z:        7 --z--> 8                                                     (Rule 1)
-4. (x|y)z:   6 --eps--> 7                                                   (Rule 2) start 5, accept 8
-```
+| Step | Sub-expression | Rule | New states and arrows | Start, accept |
+|---|---|---|---|---|
+| 1 | `x` | 1 | 1 −x→ 2 | 1, 2 |
+| 1 | `y` | 1 | 3 −y→ 4 | 3, 4 |
+| 2 | `x\|y` | 3 | 5 −ε→ 1, 5 −ε→ 3, 2 −ε→ 6, 4 −ε→ 6 | 5, 6 |
+| 3 | `z` | 1 | 7 −z→ 8 | 7, 8 |
+| 4 | `(x\|y)z` | 2 | 6 −ε→ 7 | 5, 8 |
+
+![The finished Thompson NFA for (x|y)z. Start state 5 has dashed epsilon arrows to 1 and 3; 1 goes to 2 on x and 3 goes to 4 on y; 2 and 4 have dashed epsilon arrows to 6; 6 has a dashed epsilon arrow to 7; 7 goes to the accepting state 8 on z.]({{ site.baseurl }}/files/dotty/thompson_xy_z.svg)
 
 The finished NFA has eight states.  It starts at 5 and accepts only at 8.  States 2, 4, and 6 accepted in their own fragments, but they no longer do.  Check it on `yz` with the active-set method: $$E(\{5\}) = \{5, 1, 3\}$$; on `y`, move to $$\{4\}$$ and close to $$\{4, 6, 7\}$$; on `z`, move to $$\{8\}$$, which accepts.  Now try `xy`.  After `x` the active set is $$\{2, 6, 7\}$$.  None of those states has a `y` arrow, so the set becomes empty and the NFA rejects `xy`.
 
 *Worked example 2: `(ab)*`, a concatenation and then a star.*
 
-```text
-1. a:        1 --a--> 2                                                     (Rule 1)
-   b:        3 --b--> 4                                                     (Rule 1)
-2. ab:       2 --eps--> 3                                                   (Rule 2) start 1, accept 4
-3. (ab)*:    5 --eps--> 1    enter                                          (Rule 4)
-             4 --eps--> 6    stop
-             4 --eps--> 1    repeat
-             5 --eps--> 6    zero times                                     start 5, accept 6
-```
+| Step | Sub-expression | Rule | New states and arrows | Start, accept |
+|---|---|---|---|---|
+| 1 | `a` | 1 | 1 −a→ 2 | 1, 2 |
+| 1 | `b` | 1 | 3 −b→ 4 | 3, 4 |
+| 2 | `ab` | 2 | 2 −ε→ 3 | 1, 4 |
+| 3 | `(ab)*` | 4 | 5 −ε→ 1 (enter), 4 −ε→ 6 (stop), 4 −ε→ 1 (repeat), 5 −ε→ 6 (zero times) | 5, 6 |
+
+![The finished Thompson NFA for (ab)*. Start state 5 has dashed epsilon arrows to 1 (enter) and to the accepting state 6 (zero times); 1 goes to 2 on a, 2 has a dashed epsilon arrow to 3, 3 goes to 4 on b, and 4 has dashed epsilon arrows to 6 (stop) and back to 1 (repeat).]({{ site.baseurl }}/files/dotty/thompson_ab_star.svg)
 
 Trace three strings:
 
-```text
-""      start: E({5}) = {5, 1, 6}                     contains 6: accept (zero repetitions)
-abab    start: {1, 5, 6}
-        a: move {2},  close {2, 3}
-        b: move {4},  close {4, 1, 6}                 (the repeat arrow puts 1 back in play)
-        a: move {2},  close {2, 3}
-        b: move {4},  close {4, 1, 6}                 contains 6: accept
-aba     ... after the second a: {2, 3}                no 6: reject
-```
+| String | Step | Move | Close | Active set |
+|---|---|---|---|---|
+| `""` | start | | E({5}) | {1, 5, 6}: contains 6, accept (zero repetitions) |
+| `abab` | start | | E({5}) | {1, 5, 6} |
+| | read `a` | {2} | E({2}) | {2, 3} |
+| | read `b` | {4} | E({4}) | {1, 4, 6} (the repeat arrow puts 1 back in play) |
+| | read `a` | {2} | E({2}) | {2, 3} |
+| | read `b` | {4} | E({4}) | {1, 4, 6}: contains 6, accept |
+| `aba` | after the second `a` | | | {2, 3}: no 6, reject |
 
 A person would draw `(ab)*` with two states, so hand-drawn NFAs are often smaller than Thompson's.  The advantage of Thompson's construction is that a program can follow it mechanically.  The subset construction can tidy the result afterward.
 
@@ -310,13 +291,7 @@ Do this part on paper before you write any code.  You may do it alone, even if y
 
 *Example.*  An identifier is a letter followed by any number of letters or digits.  Let `L` stand for any letter and `D` for any digit.  The regex is `L(L|D)*`, and this two-state NFA accepts the same language:
 
-```text
-                          L, D
-                         +----+
-                         |    |
-               L         |    v
-  start --> ( q0 ) -----> (( q1 ))
-```
+![NFA for identifiers. States q0 and q1; q0 is the start state and q1 is the only accepting state. q0 goes to q1 on a letter L, and q1 loops to itself on a letter L or a digit D.]({{ site.baseurl }}/files/dotty/lab_identifier_nfa.svg)
 
 On `x1`, the machine moves from `q0` to `q1` on `x` and loops on `1`, so it accepts.  On `1x`, `q0` has no arrow for a digit, so it rejects.  The regex agrees, because `1x` does not start with a letter.  Choose a different token class for your own work.
 
@@ -332,13 +307,7 @@ The subset construction makes one DFA state for each set of NFA states the machi
 
 Use this NFA over `{a, b}`.  It accepts strings whose second-to-last symbol is `a`.  It starts in `q0`, accepts in `q2`, and has no ε-moves.  On each `a`, `q0` may guess that this is the second-to-last symbol:
 
-```text
-            a, b
-           +----+
-           |    |
-           |    v        a              a, b
-  start -->( q0 )--------------->( q1 )--------------->(( q2 ))
-```
+![NFA for strings whose second-to-last symbol is a. States q0, q1, and q2; q0 is the start state and q2 is the only accepting state. q0 loops to itself on a or b, q0 goes to q1 on a, and q1 goes to q2 on a or b.]({{ site.baseurl }}/files/dotty/lab_second_to_last_nfa.svg)
 
 | state | on `a` | on `b` |
 |---|---|---|
@@ -404,18 +373,9 @@ Every machine is a JSON (JavaScript Object Notation) file with these keys:
 
 For a DFA, `delta` is a nested object.  `delta[state][symbol]` gives the next state, and the object must contain every (state, symbol) pair over the alphabet.
 
-Here is the two-state parity machine for "even number of 1s," first as a diagram and then as the JSON you type.  In the diagram, `start -->` marks the start state, double parentheses mark an accepting state, and each arrow carries the symbol that triggers it.
+Here is the two-state parity machine for "even number of 1s," first as a diagram and then as the JSON you type.  In the diagram, the arrow from nowhere marks the start state, a double circle marks an accepting state, and each arrow carries the symbol that triggers it.
 
-```text
-             0                        0
-           +----+                   +----+
-           |    |                   |    |
-           |    v         1         |    v
-  start -->((even))--------------->( odd )
-              ^                       |
-              |           1           |
-              +-----------------------+
-```
+![DFA for an even number of 1s. States even and odd; even is the start state and the only accepting state. Each state loops to itself on 0, even goes to odd on 1, and odd goes back to even on 1.]({{ site.baseurl }}/files/dotty/even_ones.svg)
 
 ```json
 {
@@ -430,12 +390,12 @@ Here is the two-state parity machine for "even number of 1s," first as a diagram
 }
 ```
 
-Each arrow in the diagram is one entry in `delta`.  The `1` arrow from `even` to `odd`, for example, is the `"1": "odd"` inside `"even"`.  The double parentheses are the `accept` list, and the `start -->` arrow is the `start` key.  Save the JSON as `machines/even_ones.json`.  Then trace `"0110"` and `"100"` through the diagram by hand before you trust the program:
+Each arrow in the diagram is one entry in `delta`.  The `1` arrow from `even` to `odd`, for example, is the `"1": "odd"` inside `"even"`.  The double circle is the `accept` list, and the arrow from nowhere is the `start` key.  Save the JSON as `machines/even_ones.json`.  Then trace `"0110"` and `"100"` through the diagram by hand before you trust the program:
 
-```text
-"0110": even -> even -> odd -> even -> even    accept
-"100":  even -> odd -> odd -> odd              reject
-```
+| String | States visited | Result |
+|---|---|---|
+| `0110` | even → even → odd → even → even | accept |
+| `100` | even → odd → odd → odd | reject |
 
 Start with this machine, not with the full simulator.  The smallest program that runs it is ten lines.  Once that works, the rest of Part 1 wraps it in validation, a machine-file argument, and `--trace`.
 
@@ -592,16 +552,7 @@ For an NFA, `delta` maps `"state,symbol"` string keys to lists of states.  The s
 
 Here is part of an NFA as a diagram and then as JSON.  The fragment does not say which states accept, so no state has a double circle.
 
-```text
-            a
-          +----+
-          |    |
-          |    v        a               b
-  ... -->( q0 )--------------->( q1 )--------------->( q2 )
-            |                                          ^
-            |                  eps                     |
-            +------------------------------------------+
-```
+![Fragment of an NFA with states q0, q1, and q2; accepting states are not shown. q0 loops to itself on a, q0 goes to q1 on a, q1 goes to q2 on b, and q0 goes to q2 on an epsilon move, drawn dashed.]({{ site.baseurl }}/files/dotty/lab_nfa_fragment.svg)
 
 ```json
 "delta": {
@@ -666,12 +617,12 @@ A DFA is in one state at a time; an NFA is in a set of states.  `run_nfa` tracks
 
 Step 2 is the "move, then ε-close" rule from the Background section.  Students most often get the union wrong.  On each symbol, every active state contributes the targets of its own `"state,symbol"` key, and you must collect all of them.  In code, the union is a loop that grows one set:
 
-```text
-active = {q0, q1},  symbol = b
-  q0: delta.get("q0,b", []) -> ["q0"]          moved = {q0}
-  q1: delta.get("q1,b", []) -> ["q2"]          moved = {q0, q2}
-active = eps_closure(machine, moved)
-```
+| Active state | Lookup | `moved` so far |
+|---|---|---|
+| q0 | `delta.get("q0,b", [])` gives `["q0"]` | {q0} |
+| q1 | `delta.get("q1,b", [])` gives `["q2"]` | {q0, q2} |
+
+Then `active = eps_closure(machine, moved)`.
 
 Python's set union does this: `moved |= set(targets)`, or `moved.update(targets)`.  A state with no key adds nothing.  If no state adds anything, `moved` is empty, and it stays empty for the rest of the input.
 
@@ -754,12 +705,11 @@ The algorithm, from the Background section:
 
 *What each cell means.*  The cell in row $$S$$, column `a`, answers one question: if the NFA could be in any state of $$S$$, where could it be after reading one `a`?  Fill it in with three moves, and show them in your writeup the way the Background examples do:
 
-```text
-row {q0, q1}, column a:
-  list:    q0 -> {q0, q1}     q1 -> ∅           (look up each state on a)
-  union:   {q0, q1} ∪ ∅  =  {q0, q1}            (collect every target)
-  close:   E({q0, q1})  =  {q0, q1}             (no eps moves in this NFA)
-```
+| Move | Work for row {q0, q1}, column `a` | Purpose |
+|---|---|---|
+| list | q0 → {q0, q1}; q1 → ∅ | look up each state on `a` |
+| union | {q0, q1} ∪ ∅ = {q0, q1} | collect every target |
+| close | E({q0, q1}) = {q0, q1} | follow ε-moves (this NFA has none) |
 
 Then check whether the result already has a row.  Compare sets by their contents, not by the order you wrote them: `{q1, q0}` and `{q0, q1}` are the same row.  Once you have written a row's set, give it a short name (A, B, C, ...).  If a cell comes out as ∅, add a dead-state row for ∅, as in the `ab?` example.  For Contains aa, watch what happens after the machine has seen `aa`.  The sets that contain your accepting state may keep growing for a few rows before they settle.
 
