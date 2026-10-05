@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Finite Automata, Day 2: Nondeterminism and Equivalence
 
-Day 1 built deterministic machines and traced them by hand.  Today the machine is allowed to guess.  We then show that guessing adds no power: the subset construction turns any nondeterministic machine into a deterministic one.  This theorem is the reason your lexer can use regular expressions and still run in linear time.
+Day 1 built deterministic machines and traced them by hand.  Today the machine is allowed to guess.  We then show that guessing adds no power: the subset construction turns any nondeterministic machine into a deterministic one.  Finally we close the loop, turning a deterministic machine back into a regular expression, so that the whole chain ε-NFA → NFA → DFA → regex preserves the language at every step.  This theorem is the reason your lexer can use regular expressions and still run in linear time.
 
 > This is the second of two sessions on this topic.  If you have not done Day 1, start there: [Finite Automata](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-automata.md).
 
@@ -31,6 +31,8 @@ NFAs are no more powerful than DFAs.  The subset construction converts any NFA i
 $$
 \text{regex} \equiv \text{NFA} \equiv \text{DFA}
 $$
+
+Models 4 and 4b make each arrow of that equivalence concrete, as a chain of conversions: $\varepsilon\text{-NFA} \rightarrow \text{NFA} \rightarrow \text{DFA} \rightarrow \text{regex}$.
 
 The price of determinism is a worst-case exponential number of states ($2^{|Q|}$ subsets).  This is a classic trade among time, space, and simplicity.
 
@@ -169,15 +171,82 @@ Expected output: `aba` and `bbabab` accepted; `abba`, `aab` and the empty string
 
 ---
 
+## The Conversion Chain: ε-NFA → NFA → DFA → Regular Expression
+
+Model 4 and Model 4b walk through a chain of conversions.  It fits together like this:
+
+$$
+\varepsilon\text{-NFA} \rightarrow \text{NFA} \rightarrow \text{DFA} \rightarrow \text{Regular Expression}
+$$
+
+**Each step preserves the language recognized by the automaton.**  Nothing is gained or lost along the way; only the *form* changes.  Thompson's construction closes the loop in the other direction (regex → ε-NFA), so all four notations describe exactly the same class of languages.
+
+The useful question to carry through every conversion is *what structure does this step remove?*  Each one removes a different kind:
+
+| Conversion | What it removes | How it accounts for what was removed |
+|---|---|---|
+| ε-NFA → NFA | **free transitions** (moves that read no input) | follow them before and after every real symbol: $E(q) \rightarrow a \rightarrow E(\cdot)$ |
+| NFA → DFA | **multiple possible current states** | the DFA stores all possible NFA states at once, as one set such as $\{q_1, q_3, q_7\}$ |
+| DFA → regex | **explicit automaton states** | paths through the machine are written algebraically, using union, concatenation, and star |
+
+For each conversion below, we follow the same four beats: the **rationale** (why we want that structure gone), the **algorithm** (the steps and the one formula that drives them), the **intuition** (the sentence to remember when the formula is not in front of you), and **examples** (always more than one).  You can do ε-NFA → DFA in a single pass, too: the "directly" route below combines the first two steps.
+
+---
+
 ## Model 4: Subset Construction, NFA -> DFA
 
 The subset construction is the idea that connects NFAs to DFAs.  Each DFA state is a *frozenset* of NFA states: "the set of places the NFA could be after reading this much input."  The algorithm is a reachability search over those sets, and it builds the DFA transition table as it goes.  Once you read the code, you will see that Model 3's simulation was already doing this on every input string, without naming the sets.
 
 We run it by hand first, on the NFA that Thompson's construction builds for `(a|b)*abb`, and then read the same steps as code.
 
+### NFA → DFA: Rationale, Algorithm, and Intuition
+
+**Rationale.**  An NFA may have several arrows for one symbol, so after reading some input it could be in *several* states at once.  A DFA is only allowed one current state.  We need a way to keep every possibility alive while still taking exactly one step per symbol.
+
+Suppose the NFA is
+
+$$
+N = (Q, \Sigma, \delta, q_0, F)
+$$
+
+where $\delta(q, a)$ may return **multiple possible states**.  The main idea is:
+
+> **A DFA state represents a set of possible NFA states.**
+
+For example, if the NFA could currently be in $q_1$, $q_2$, or $q_4$, the corresponding DFA state is the single state $\{q_1, q_2, q_4\}$.
+
+**Algorithm (subset construction).**
+
+1. Create the DFA start state $\{q_0\}$.
+2. For every DFA state $S \subseteq Q$ and every symbol $a \in \Sigma$, compute
+
+   $$
+   \boxed{\delta_D(S, a) = \bigcup_{q \in S} \delta_N(q, a)}
+   $$
+
+3. Every new set of states discovered becomes a new DFA state.
+4. Repeat until no new state sets are discovered.
+5. A DFA state is accepting if it contains at least one accepting NFA state: $S \cap F \neq \emptyset$.
+
+**Intuition.**  *Take the union of every place the NFA could go.*  The DFA does not guess; it remembers every guess at once.
+
+**Example 1: a warm-up with one symbol.**  Suppose $\delta(q_0, a) = \{q_0, q_1\}$ and $\delta(q_1, a) = \{q_2\}$, with $q_2$ accepting.  Start with $A = \{q_0\}$.  On input `a`, $\delta_D(A, a) = \{q_0, q_1\}$; call this state $B$.  Now process `a` from $B$:
+
+$$
+\begin{aligned}
+\delta_D(B, a) &= \delta(q_0, a) \cup \delta(q_1, a) \\
+               &= \{q_0, q_1\} \cup \{q_2\} \\
+               &= \{q_0, q_1, q_2\}.
+\end{aligned}
+$$
+
+Call this state $C$, then continue the same process.  From $C$ on `a`: $q_0$ gives $\{q_0, q_1\}$, $q_1$ gives $\{q_2\}$, and $q_2$ has no `a` arrow, so the union is $\{q_0, q_1, q_2\} = C$ again.  No new sets appear, so we stop: three DFA states, and only $C$ accepts, because only $C$ contains $q_2$.  Read off what each remembers: $A$ has read nothing, $B$ has read one `a`, and $C$ has read at least two.
+
+> **Key idea.**  A DFA state is a set of possible NFA states.  An NFA with $n$ states can theoretically produce as many as $2^n$ DFA states, because the DFA states are subsets of the NFA states.  Usually far fewer are reachable.
+
 ### A Small Example First: "Ends in `ab`"
 
-Before the eleven-state example, run the construction on a machine small enough to hold in your head.  This NFA accepts strings over `{a, b}` that end in `ab`.  It starts in `q0`, accepts in `q2`, and its only nondeterministic moment is `q0` on `a`, where it can stay put or bet that this `a` begins the ending:
+This is **Example 2** for NFA → DFA.  Before the eleven-state example, run the construction on a machine small enough to hold in your head.  This NFA accepts strings over `{a, b}` that end in `ab`.  It starts in `q0`, accepts in `q2`, and its only nondeterministic moment is `q0` on `a`, where it can stay put or bet that this `a` begins the ending:
 
 ![NFA for strings that end in ab. States q0, q1, and q2; q0 is the start state and q2 is the only accepting state. q0 loops to itself on a or b, q0 goes to q1 on a, and q1 goes to q2 on b.](../../files/dotty/example_nfa_ends_in_ab.svg)
 
@@ -208,6 +277,35 @@ no unprocessed sets remain, so the construction stops
 ![DFA from the subset construction. States A, B, and C, where A is the set q0, B is the set q0 and q1, and C is the set q0 and q2. A is the start state and C is the only accepting state. A loops on b and goes to B on a; B loops on a and goes to C on b; C goes to B on a and back to A on b.](../../files/dotty/example_dfa_ends_in_ab.svg)
 
 Trace `aab`: A on `a` goes to B, B on `a` stays in B, and B on `b` goes to C, which accepts.  Three NFA states became three DFA states, so this language costs nothing to determinize.
+
+### ε-NFA → DFA Directly: Rationale, Algorithm, and Intuition
+
+**Rationale.**  An ε-transition lets the automaton change states **without consuming an input symbol**.  The subset construction above only knows how to follow arrows labeled with real symbols, so it would miss every state the NFA can slide into for free.  You do **not** need to build an intermediate ε-free NFA first: you can combine ε-closure with the subset construction.
+
+The central concept is the **epsilon closure**.  Define
+
+$$
+E(q) = \varepsilon\text{-closure}(q),
+$$
+
+which means *all states reachable from $q$ using zero or more ε-transitions*.  Because zero transitions are allowed, $q \in E(q)$ always.  For example, if $q_0 \xrightarrow{\varepsilon} q_1$ and $q_1 \xrightarrow{\varepsilon} q_2$, then $E(q_0) = \{q_0, q_1, q_2\}$.  For a set, $E(S)$ is the union of $E(q)$ over every $q \in S$.
+
+**Algorithm.**
+
+- *Start state.*  Instead of starting with $\{q_0\}$, start with $E(q_0)$.  If $E(q_0) = \{q_0, q_1, q_2\}$, the DFA begins in $\{q_0, q_1, q_2\}$ rather than simply $\{q_0\}$.
+- *Transition rule.*  For a DFA state $S$ and symbol $a$:
+
+  $$
+  \boxed{\delta_D(S, a) = E\left(\bigcup_{q \in S} \delta(q, a)\right)}
+  $$
+
+The procedure is: (1) start with an epsilon-closed set, (2) consume one input symbol, (3) take the epsilon closure again.  Accepting states are the same as before: any set containing an accepting NFA state.
+
+**Intuition.**  *Move, then epsilon-close.*  Every DFA state is a set that has already absorbed every free move, so the next real symbol starts from everywhere the machine could possibly be.
+
+**Example 1: a small one.**  Take $q_0 \xrightarrow{\varepsilon} q_1$, $q_1 \xrightarrow{a} q_2$, $q_2 \xrightarrow{\varepsilon} q_3$, with $q_3$ accepting.  The start state is $E(q_0) = \{q_0, q_1\}$, not $\{q_0\}$.  On `a`, the move from that set is $\{q_2\}$, and closing it gives $\{q_2, q_3\}$, which accepts because it contains $q_3$.  From $\{q_2, q_3\}$ there are no `a` moves at all, so the next state is $\emptyset$, a dead state.  The DFA accepts exactly the string `a`.  Had we started from $\{q_0\}$ without closing, the `a` arrow out of $q_1$ would have been invisible, and the DFA would accept nothing.
+
+**Example 2** is the classic one, worked in full next.
 
 ### Worked Example: Subset Construction by Hand, with ε-closure
 
@@ -320,12 +418,52 @@ A DFA state accepts exactly when its set contains an accepting NFA state, and on
 
 The worked example folds the ε-moves into the subset construction: every time it builds a DFA state, it closes the set.  There is a second route that does the same work in two separate steps.  First remove the ε-moves, producing an ordinary NFA with the same states and the same language.  Then run the plain subset construction, the one in the code below that never calls a closure.  Separating the steps is useful when a tool or an algorithm only accepts NFAs without ε-moves, and it makes the role of ε-closure easier to see.
 
+**Rationale.**  Some tools and proofs only accept NFAs without ε-moves.  Removing them is also the clearest way to see exactly what an ε-transition contributes: every real step the machine can take, once the free moves before and after it are counted.
+
+**Algorithm.**  When processing a normal input symbol $a$, think:
+
+$$
+\boxed{\text{epsilon before} \rightarrow a \rightarrow \text{epsilon after}}
+$$
+
+Formally,
+
+$$
+\delta'(q, a) = E\left(\delta(E(q), a)\right),
+$$
+
+and expanded,
+
+$$
+\delta'(q, a) = \bigcup_{p \in E(q)} \; \bigcup_{r \in \delta(p, a)} E(r).
+$$
+
+**Intuition.**  Conceptually, if
+
+$$
+q \xrightarrow{\varepsilon^*} p \xrightarrow{a} r \xrightarrow{\varepsilon^*} s,
+$$
+
+then the ε-free NFA should include the single arrow $q \xrightarrow{a} s$.  We are drawing shortcuts: every path that reads exactly one real symbol, however many free moves surround it, becomes one direct arrow.
+
+**Updating accepting states.**  This step is important.  If an accepting state can be reached from $q$ using only ε-transitions, then $q$ must also become accepting:
+
+$$
+q \in F' \iff E(q) \cap F \neq \emptyset.
+$$
+
+For example, if $q_0 \xrightarrow{\varepsilon} q_f$ and $q_f$ is accepting, then $q_0$ must also be accepting in the ε-free NFA; otherwise the empty string, which the original accepts by sliding to $q_f$, would be lost.
+
+**Example 1: shortcut arrows.**  Suppose $q_0 \xrightarrow{\varepsilon} q_1$, $q_1 \xrightarrow{a} q_2$, and $q_2 \xrightarrow{\varepsilon} q_3$, with $q_3$ accepting.  First, $E(q_0) = \{q_0, q_1\}$.  From those states, consuming `a` reaches $\{q_2\}$.  Then $E(q_2) = \{q_2, q_3\}$.  Therefore the ε-free NFA receives the transitions $q_0 \xrightarrow{a} q_2$ and $q_0 \xrightarrow{a} q_3$.  The same reasoning from $q_1$ gives $q_1 \xrightarrow{a} q_2$ and $q_1 \xrightarrow{a} q_3$.  For accepting states: $E(q_2) = \{q_2, q_3\}$ contains $q_3$, so $q_2$ becomes accepting too.
+
+The full procedure, step by step, follows.
+
 The construction keeps every state and the start state, and it rebuilds the transitions and the accepting set:
 
 - **New transitions.**  For each state $q$ and symbol $x$, $\delta'(q, x) = \varepsilon\text{-closure}(\text{move}(\varepsilon\text{-closure}(\{q\}), x))$.  In words: slide along ε-edges from $q$ as far as they go, take one real `x` step, then slide along ε-edges again.
 - **New accepting states.**  A state $q$ accepts in the new NFA when $\varepsilon\text{-closure}(\{q\})$ contains an accepting state of the original, because the original could reach acceptance from $q$ without reading anything more.
 
-**A small example first: `ab?`.**  This ε-NFA accepts an `a`, optionally followed by a `b`.  It starts in `q0` and accepts in `q2`, and the dashed ε-edge is what makes the `b` optional:
+**Example 2: `ab?`.**  This ε-NFA accepts an `a`, optionally followed by a `b`.  It starts in `q0` and accepts in `q2`, and the dashed ε-edge is what makes the `b` optional:
 
 ![Epsilon-NFA for ab-optional. States q0, q1, and q2; q0 is the start state and q2 is the only accepting state. q0 goes to q1 on a, q1 goes to q2 on b, and q1 also goes to q2 on an epsilon move, drawn dashed.](../../files/dotty/example_epsnfa_ab_optional.svg)
 
@@ -361,7 +499,7 @@ Check it: `a` takes `q0` to `{q1, q2}`, which accepts; `ab` goes on to `{q2}`, w
 
 The same three steps scale to the eleven-state NFA.
 
-**Worked rows, on the eleven-state NFA.**  Three rows show every case:
+**Example 3: worked rows, on the eleven-state NFA.**  Three rows show every case:
 
 - State 0.  `ε-closure({0}) = {0, 1, 2, 4, 7}`.  On `a`, the move from that set is `{3, 8}`, which closes to `{1, 2, 3, 4, 6, 7, 8}`.  On `b`, the move is `{5}`, which closes to `{1, 2, 4, 5, 6, 7}`.  Those are exactly B and C from the worked example, as they should be.
 - State 2.  `ε-closure({2}) = {2}`.  On `a`, the move is `{3}`, which closes to `{1, 2, 3, 4, 6, 7}`.  On `b`, there is no move at all, so the new transition is the empty set.
@@ -678,7 +816,372 @@ Expected output: the DFA column doubles on each row while the NFA column grows b
 
 ---
 
+## Model 4b: Closing the Loop, DFA → Regular Expression
+
+Model 4 turned nondeterministic machines into deterministic ones.  The last link in the chain turns a machine back into notation.  Together with Thompson's construction, it proves that regular expressions and finite automata describe *exactly* the same languages: every regex has a machine, and every machine has a regex.
+
+**Rationale.**  A DFA describes a language by its states and arrows; a regex describes it algebraically.  To get from one to the other, we remove **explicit automaton states** and keep only what they meant.  A systematic way to do this is **state elimination**: replace paths through states with regular-expression labels until only the start and accepting states remain.
+
+### Step 1: Convert the DFA into a GNFA
+
+A **Generalized NFA (GNFA)** allows transitions to be labeled with regular expressions instead of individual symbols, for example $q_0 \xrightarrow{a|b} q_1$.  Two parallel arrows between the same pair of states merge into one arrow labeled with their union: arrows on `a` and on `b` from $q_0$ to $q_1$ become one arrow labeled `a|b`.
+
+Then add:
+
+- a new start state $s$, connected to the original start state by $s \xrightarrow{\varepsilon} q_0$;
+- a new accepting state $f$, with $q_i \xrightarrow{\varepsilon} f$ for every original accepting state $q_i$.
+
+Now there is exactly one start state and exactly one accepting state, and neither has any arrows coming back into it (into $s$) or going out of it (out of $f$).  That is why we add them even when the DFA already looks tidy: if the original start state has a self-loop, eliminating everything else must not erase it.
+
+### Step 2: Eliminate States
+
+Suppose we want to eliminate state $k$.  Imagine
+
+$$
+i \xrightarrow{R_{ik}} k, \qquad k \xrightarrow{R_{kj}} j,
+$$
+
+and $k$ has a loop $k \xrightarrow{R_{kk}} k$.  There may also already be a direct transition $i \xrightarrow{R_{ij}} j$.  After eliminating $k$, replace the transition from $i$ to $j$ with
+
+$$
+\boxed{R'_{ij} = R_{ij} \mid R_{ik}\,(R_{kk})^*\,R_{kj}}
+$$
+
+This is the most important formula for DFA → regex conversion.  Apply it to **every** pair $(i, j)$ with an arrow into $k$ and an arrow out of $k$, including the case $i = j$, which creates or updates a self-loop on $i$.  A missing arrow is the empty language: if $R_{ik}$ or $R_{kj}$ is missing, there is no path through $k$, and if $R_{kk}$ is missing, $(R_{kk})^*$ is just $\varepsilon$.
+
+**Why this works.**  There are two ways to get from $i$ to $j$.
+
+- *Option 1: go directly.*  That is $R_{ij}$.
+- *Option 2: travel through $k$.*  First enter $k$, which is $R_{ik}$.  Loop at $k$ zero or more times, which is $(R_{kk})^*$.  Then leave $k$, which is $R_{kj}$.  Together: $R_{ik}(R_{kk})^*R_{kj}$.
+
+Therefore $R'_{ij} = R_{ij} \mid R_{ik}(R_{kk})^*R_{kj}$.
+
+**Intuition.**  *Either go directly from $i$ to $j$, or go through the state being eliminated.*  Every time a state disappears, the arrows around it absorb everything it used to do.
+
+### The Algorithm, Start to Finish
+
+1. Add a new start state and a new accepting state, joined to the machine with ε-arrows.
+2. Label transitions with regexes, and combine parallel edges using `|`.
+3. Eliminate intermediate states one at a time with the formula above.
+4. Continue until only the new start and final states remain.
+5. The label on the single arrow from $s$ to $f$ is the final regular expression.
+
+### Example 1: Zero or More `a`s, Then `b`
+
+Suppose the DFA contains $q_0 \xrightarrow{a} q_0$ and $q_0 \xrightarrow{b} q_1$, where $q_1$ is accepting.  This recognizes strings of zero or more `a`s followed by a `b`.  Add a new start and final state:
+
+```text
+   s --ε--> q0 --b--> q1 --ε--> f
+            ^ |
+            +-+ a
+```
+
+Eliminate $q_0$.  The only arrow in is from $s$ and the only arrow out is to $q_1$, so we need one pair, $(s, q_1)$:
+
+$$
+R_{s q_0} = \varepsilon, \qquad R_{q_0 q_0} = a, \qquad R_{q_0 q_1} = b.
+$$
+
+There is no direct $s \to q_1$ arrow, so the new label from $s$ to $q_1$ is $\varepsilon\,(a)^*\,b$.  Since concatenating with $\varepsilon$ changes nothing, $\varepsilon a^* b = a^* b$.  Then eliminating $q_1$ (in from $s$ with $a^*b$, no loop, out to $f$ with $\varepsilon$) produces
+
+$$
+\boxed{a^* b}.
+$$
+
+### Example 2: An Even Number of `a`s
+
+This DFA over $\{a, b\}$ accepts strings with an even number of `a`s.  State $E$ (even) is both the start and the only accepting state; $O$ is odd.  Each state loops on `b`, and `a` flips between them.
+
+```text
+          b                 b
+         +-+               +-+
+         | v               | v
+  s --ε--> E  ----a---->   O
+           |  <---a-----
+           +--ε--> f
+```
+
+Here the start state has a self-loop and is also accepting, which is exactly why Step 1 adds a fresh $s$ and $f$.
+
+*Eliminate $O$.*  Arrows into $O$: from $E$ on `a`.  Arrows out of $O$: to $E$ on `a`.  The loop is $R_{OO} = b$.  The only pair is $(E, E)$, a self-loop:
+
+$$
+R'_{EE} = R_{EE} \mid R_{EO}(R_{OO})^* R_{OE} = b \mid a\,b^*\,a.
+$$
+
+Read it: from even, either read a `b` and stay even, or read an `a`, any number of `b`s, and another `a`, which also returns to even.
+
+*Eliminate $E$.*  In from $s$ on $\varepsilon$, loop $b \mid ab^*a$, out to $f$ on $\varepsilon$:
+
+$$
+R'_{sf} = \varepsilon\,(b \mid ab^*a)^*\,\varepsilon = \boxed{(b \mid ab^*a)^*}.
+$$
+
+### Example 3: The "Ends in `ab`" DFA, and Why Order Matters
+
+Now take the three-state DFA that Model 4's subset construction produced: $A$ (start), $B$, and $C$ (accepting), with $A \xrightarrow{a} B$, $A \xrightarrow{b} A$, $B \xrightarrow{a} B$, $B \xrightarrow{b} C$, $C \xrightarrow{a} B$, $C \xrightarrow{b} A$.  Add $s \xrightarrow{\varepsilon} A$ and $C \xrightarrow{\varepsilon} f$, then eliminate in the order $A$, $B$, $C$.
+
+*Eliminate $A$* (loop `b`; in from $s$ on ε and from $C$ on `b`; out to $B$ on `a`):
+
+- $(s, B)$: no direct arrow, so $R'_{sB} = \varepsilon\, b^*\, a = b^*a$.
+- $(C, B)$: the direct arrow is `a`, so $R'_{CB} = a \mid b\,b^*\,a$.
+
+*Eliminate $B$* (loop `a`; in from $s$ on $b^*a$ and from $C$ on $a \mid bb^*a$; out to $C$ on `b`):
+
+- $(s, C)$: $R'_{sC} = b^*a\; a^*\; b$.
+- $(C, C)$: a new self-loop, $R'_{CC} = (a \mid bb^*a)\, a^*\, b$.
+
+*Eliminate $C$* (loop $(a \mid bb^*a)a^*b$; in from $s$; out to $f$ on ε):
+
+$$
+R'_{sf} = \boxed{b^*aa^*b\,\big((a \mid bb^*a)a^*b\big)^*}
+$$
+
+That is correct but nothing like the $(a|b)^*ab$ you would write by hand.  Both describe "ends in `ab`": the first part reaches the first `ab`, and each trip around the star leaves $C$ and comes back to it by reading some more input that again ends in `ab`.  Eliminating in a different order gives a different-looking, equally correct expression.  **The language is fixed; the shape of the regex depends on the elimination order.**  Two regexes are equivalent when they denote the same language, and proving it can take real work, which is one reason we test against the machine below rather than trusting our eyes.
+
+What is the label from $i$ to $j$ after eliminating $k$, if $R_{ij} = c$, $R_{ik} = a$, $R_{kk} = b$, and $R_{kj} = a$?
+
+[( )] `c|ab|a`
+[( )] `(c|a)b*a`
+[(X)] `c|ab*a`
+[( )] `cab*a`
+***********************************************************************
+
+Apply $R'_{ij} = R_{ij} \mid R_{ik}(R_{kk})^*R_{kj}$: the direct route `c`, or enter `a`, loop `b*`, leave `a`.  The answer `(c|a)b*a` wrongly lets the direct route pick up the loop.
+
+***********************************************************************
+
+Why does Step 1 add a brand-new start state $s$ even when the DFA already has exactly one start state?
+
+[( )] Regular expressions cannot begin with a state's own symbol
+[(X)] So the start state has no incoming arrows; otherwise a loop on the original start state (like `b` in Example 2) could be lost when that state is eliminated
+[( )] Because DFAs may have several start states
+[( )] It is optional decoration and never changes the answer
+***********************************************************************
+
+With a fresh $s$ that nothing points back into, the original start state is eliminated like any other, and its self-loop is folded into the arrows around it by $(R_{kk})^*$.  The same reasoning gives the single fresh accepting state $f$.
+
+***********************************************************************
+
+> **Check it yourself.**  [FSM2Regex](https://ivanzuzak.info/noam/webapps/fsm2regex/) converts an automaton to a regular expression and back.  Enter Example 2 or Example 3, compare its regex with yours, and notice that it may look different and still be equivalent.
+
+### The Construction as Code
+
+The cell runs state elimination on all three examples, prints each new arrow as it is created, and then checks the final regex against the DFA on every string over `{a, b}` up to length 8 with Python's `re.fullmatch`.
+
+```python
+import re
+import traceback
+from itertools import product
+
+# DFA -> regular expression by state elimination on a GNFA.
+# Edge labels are regex strings; None means "no edge" (the empty language).
+EPS = ""   # the empty string, epsilon
+
+def union(r, s):
+    """R | S, treating None as the empty language."""
+    if r is None: return s
+    if s is None: return r
+    if r == s: return r
+    return f"{r}|{s}"
+
+def top_level_union(r):
+    """True when r has a | that is not inside parentheses, like a|bb*a."""
+    depth = 0
+    for ch in r:
+        depth += (ch == "(") - (ch == ")")
+        if ch == "|" and depth == 0:
+            return True
+    return False
+
+def group(r):
+    """Parenthesize r unless it is already a single symbol or epsilon."""
+    return r if len(r) <= 1 else f"({r})"
+
+def concat(*parts):
+    """R S T ..., where None anywhere kills the path and epsilon disappears."""
+    if any(p is None for p in parts):
+        return None
+    out = ""
+    for p in parts:
+        out += group(p) if top_level_union(p) else p
+    return out
+
+def star(r):
+    """(R)*; a missing self-loop contributes epsilon, since (empty)* = epsilon."""
+    return EPS if r is None or r == EPS else group(r) + "*"
+
+def dfa_to_regex(states, delta, start, accept, order):
+    # Step 1: build the GNFA. New start s, new final f, parallel edges merged with |.
+    R = {}
+    def edge(i, j): return R.get((i, j))
+    for (q, x), r in delta.items():
+        R[(q, r)] = union(edge(q, r), x)
+    R[("s", start)] = EPS
+    for q in accept:
+        R[(q, "f")] = union(edge(q, "f"), EPS)
+
+    # Step 2: eliminate states one at a time with R'_ij = R_ij | R_ik (R_kk)* R_kj.
+    alive = set(states) | {"s", "f"}
+    for k in order:
+        alive.discard(k)
+        loop = star(edge(k, k))
+        for i in alive:
+            for j in alive:
+                through = concat(edge(i, k), loop, edge(k, j))
+                if through is not None:
+                    R[(i, j)] = union(edge(i, j), through)
+                    print(f"  eliminate {k}: {i}->{j} becomes {R[(i, j)] or 'ε'}")
+        R = {(i, j): r for (i, j), r in R.items() if i in alive and j in alive}
+    return edge("s", "f")
+
+def run_dfa(delta, start, accept, s):
+    q = start
+    for ch in s:
+        q = delta.get((q, ch))
+        if q is None:
+            return False
+    return q in accept
+
+EXAMPLES = {
+    "a*b": dict(states=["q0", "q1"],
+                delta={("q0", "a"): "q0", ("q0", "b"): "q1"},
+                start="q0", accept={"q1"}, order=["q0", "q1"]),
+    "even number of a's": dict(states=["E", "O"],
+                delta={("E", "a"): "O", ("E", "b"): "E",
+                       ("O", "a"): "E", ("O", "b"): "O"},
+                start="E", accept={"E"}, order=["O", "E"]),
+    "ends in ab": dict(states=["A", "B", "C"],
+                delta={("A", "a"): "B", ("A", "b"): "A",
+                       ("B", "a"): "B", ("B", "b"): "C",
+                       ("C", "a"): "B", ("C", "b"): "A"},
+                start="A", accept={"C"}, order=["A", "B", "C"]),
+}
+
+try:
+    tests = ["".join(p) for n in range(9) for p in product("ab", repeat=n)]
+    for name, m in EXAMPLES.items():
+        print(f"=== {name} (eliminate in order {m['order']}) ===")
+        regex = dfa_to_regex(m["states"], m["delta"], m["start"], m["accept"], m["order"])
+        agree = all(bool(re.fullmatch(regex, s)) == run_dfa(m["delta"], m["start"], m["accept"], s)
+                    for s in tests)
+        print(f"  regex: {regex}")
+        print(f"  agrees with the DFA on all {len(tests)} strings up to length 8: {agree}\n")
+except Exception as e:
+    print(f"[automata:state_elimination] {e}")
+    traceback.print_exc()
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+You should see each elimination step, matching the hand derivations above:
+
+```text
+=== a*b (eliminate in order ['q0', 'q1']) ===
+  eliminate q0: s->q1 becomes a*b
+  eliminate q1: s->f becomes a*b
+  regex: a*b
+  agrees with the DFA on all 511 strings up to length 8: True
+
+=== even number of a's (eliminate in order ['O', 'E']) ===
+  eliminate O: E->E becomes b|ab*a
+  eliminate E: s->f becomes (b|ab*a)*
+  regex: (b|ab*a)*
+  agrees with the DFA on all 511 strings up to length 8: True
+
+=== ends in ab (eliminate in order ['A', 'B', 'C']) ===
+  eliminate A: s->B becomes b*a
+  eliminate A: C->B becomes a|bb*a
+  eliminate B: s->C becomes b*aa*b
+  eliminate B: C->C becomes (a|bb*a)a*b
+  eliminate C: s->f becomes b*aa*b((a|bb*a)a*b)*
+  regex: b*aa*b((a|bb*a)a*b)*
+  agrees with the DFA on all 511 strings up to length 8: True
+```
+
+### Reading the Code
+
+- `R` maps a pair of states to a regex string, and a missing key is the empty language.  That is the GNFA: one label per ordered pair, with parallel arrows merged by `union` as the table is built.
+- The inner loop is the boxed formula, `union(edge(i, j), concat(edge(i, k), star(edge(k, k)), edge(k, j)))`, applied to every surviving pair, including $i = j$.
+- `star(None)` returns ε because a state with no self-loop can be visited "zero or more times around a loop" only zero times; `concat` returns `None` when any piece is missing, because there is then no path through $k$.
+- Change `order` in any example and rerun.  The regex changes shape, and the agreement check stays `True`.
+
+### Critical Thinking Questions
+
+14.  In Example 3, rerun the cell with the order `["C", "B", "A"]`.  Is the regex shorter or longer?  Does the agreement check still pass?  What does that tell you about whether "the" regex for a DFA is unique?
+15.  When eliminating $k$, why is the loop contribution $(R_{kk})^*$ and not $(R_{kk})^+$?  Give a string from Example 2 that would be lost with $+$.
+16.  Each conversion in the chain removes one kind of structure.  For DFA → regex, what is removed, and where does that information go?
+
+---
+
 # Part III: Synthesis and Practice
+
+## The Conversion Chain at a Glance
+
+The three transformations remove different kinds of structure.
+
+- **ε-NFA → NFA** removes *free transitions*.  We account for them using $E(q) \rightarrow a \rightarrow E(\cdot)$.
+- **NFA → DFA** removes *multiple possible current states*.  The DFA stores all possible NFA states simultaneously, as one set such as $\{q_1, q_3, q_7\}$.
+- **DFA → regular expression** removes *explicit automaton states*.  Paths through the automaton are represented algebraically using union (`|`), concatenation, and star (`*`).
+
+### Three Formulas Worth Memorizing
+
+**ε-NFA → NFA**
+
+$$
+\boxed{\delta'(q, a) = E\big(\delta(E(q), a)\big)}
+$$
+
+Meaning: epsilon-close, consume the symbol, epsilon-close again.
+
+**NFA → DFA**
+
+$$
+\boxed{\delta_D(S, a) = \bigcup_{q \in S} \delta_N(q, a)}
+$$
+
+Meaning: take the union of every place the NFA could go.  (For an ε-NFA, start from $E(q_0)$ and wrap the union in $E(\cdot)$: move, then epsilon-close.)
+
+**DFA → regular expression**
+
+$$
+\boxed{R'_{ij} = R_{ij} \mid R_{ik}(R_{kk})^*R_{kj}}
+$$
+
+Meaning: either go directly from $i$ to $j$, or go through the state being eliminated.
+
+### Quick Exam Checklist
+
+Use these as a procedure when working a conversion by hand.
+
+**ε-NFA → NFA**
+
+1. Compute the epsilon closure for every state.
+2. For every state and symbol: follow epsilon transitions, consume the symbol, then follow epsilon transitions again.
+3. Add the resulting transitions.
+4. Update accepting states: $q$ accepts if $E(q)$ contains an accepting state.
+5. Remove all ε-transitions.
+
+**NFA → DFA**
+
+1. Start with $\{q_0\}$, or $E(q_0)$ for an ε-NFA.
+2. For every state-set and input symbol, compute all possible destinations (and close them, for an ε-NFA).
+3. Combine those destinations into a set.
+4. Make every new set a DFA state.
+5. Continue until no new sets appear.
+6. A set is accepting if it contains an accepting NFA state.
+
+**DFA → regex**
+
+1. Add a new start state.
+2. Add a new accepting state.
+3. Label transitions with regexes.
+4. Combine parallel edges using `|`.
+5. Eliminate intermediate states one at a time.
+6. When eliminating $k$, use $R'_{ij} = R_{ij} \mid R_{ik}(R_{kk})^*R_{kj}$ for every pair $(i, j)$ through $k$.
+7. Continue until only the new start and final states remain.
+8. The label between them is the final regular expression.
+
+---
 
 # Check Your Understanding
 
@@ -718,6 +1221,24 @@ NFAs and DFAs recognize exactly the same class of languages. What differs is:
 
 ---
 
+In ε-NFA → NFA conversion, state $q$ has $q \xrightarrow{\varepsilon} q_f$, and $q_f$ is accepting.  In the ε-free NFA, $q$:
+
+[( )] Stays non-accepting, because accepting status never changes
+[(X)] Becomes accepting, because $E(q) \cap F \neq \emptyset$
+[( )] Is deleted along with the ε-transition
+[( )] Accepts only if it also has an arrow on a real symbol into $q_f$
+
+---
+
+State elimination on a DFA always produces:
+
+[(X)] A regex for the same language, whose written form depends on the order of elimination
+[( )] The shortest possible regex for the language
+[( )] The same regex no matter which order the states are eliminated in
+[( )] A regex only when the DFA has no cycles
+
+---
+
 ## 4.  Exercises
 
 1.  *Design portfolio.*  Draw DFAs for three languages: strings over $\{0,1\}$ that are divisible by 3 when read as binary (three states; label them with remainders); strings not containing `bb`; and strings whose length is even.  Encode one in the dictionary format and test it.
@@ -725,6 +1246,7 @@ NFAs and DFAs recognize exactly the same class of languages. What differs is:
 3.  *Three notations, one language.*  For "identifiers" (a letter, then letters or digits), produce all three artifacts: the regex, an NFA sketch, and a DFA in dictionary form with passing tests.  Keep this trio; it is the worked example at the center of your lexer.
 4.  *Equivalence argument.*  In a paragraph, explain to a skeptical friend why adding nondeterminism (which looks like a superpower) adds no recognizing power, while adding a stack (the pushdown automaton) does.
 5.  *Thompson's construction.*  Implement a mini Thompson's construction that builds an NFA from a regex with only `|`, `*`, and concatenation.  Test it on `(a|b)*abb` (the classic example) and verify that the NFA accepts the same strings as Python's `re.match(r"(a|b)*abb", s)`.
+6.  *DFA to regex, two ways.*  The DFA over $\{a, b\}$ with states $P$ (start, accepting) and $Q$, where $P \xrightarrow{a} Q$, $P \xrightarrow{b} P$, $Q \xrightarrow{a} Q$, $Q \xrightarrow{b} P$, accepts the empty string and every string ending in `b`.  Convert it to a regex by state elimination, first eliminating $Q$ then $P$, and again eliminating $P$ then $Q$.  Show each new arrow.  Check both answers against the Model 4b code cell, then explain in a sentence why they look different.
 
 ---
 
@@ -1002,6 +1524,28 @@ Here is the DFA the table describes:
 No new sets appear, so the construction is done: **three DFA states**, from three NFA states.  Read the meaning off the sets: `A` = "have not just seen an `a`", `B` = "just saw an `a`, so a `b` would finish", `C` = "just finished an `ab`".  That is exactly the "what does each state remember?" answer CTQ 2 asks for, and you did not have to guess it.  The algorithm produced it.
 
 > Subset construction can blow up: $n$ NFA states admit up to $2^n$ subsets.  Here we got 3 instead of 8 because most subsets were unreachable, which is the usual outcome in practice.
+
+### Worked Example: DFA → regex by state elimination, two orders
+
+This is Exercise 6.  Add $s \xrightarrow{\varepsilon} P$ and $P \xrightarrow{\varepsilon} f$.  The arrows are $P \xrightarrow{b} P$, $P \xrightarrow{a} Q$, $Q \xrightarrow{a} Q$, $Q \xrightarrow{b} P$.
+
+**Order 1: eliminate $Q$, then $P$.**
+
+- Eliminate $Q$ (loop `a`; in from $P$ on `a`; out to $P$ on `b`).  The only pair is $(P, P)$: $R'_{PP} = b \mid a\,a^*\,b$.
+- Eliminate $P$ (loop $b \mid aa^*b$; in from $s$ on ε; out to $f$ on ε): $R'_{sf} = (b \mid aa^*b)^*$.
+
+**Order 2: eliminate $P$, then $Q$.**
+
+- Eliminate $P$ (loop `b`; in from $s$ on ε and from $Q$ on `b`; out to $Q$ on `a` and to $f$ on ε).  Four pairs:
+  - $(s, Q)$: $b^*a$.
+  - $(s, f)$: $b^*$.
+  - $(Q, Q)$: the direct loop `a`, plus $b\,b^*\,a$, so $a \mid bb^*a$.
+  - $(Q, f)$: $b\,b^*$.
+- Eliminate $Q$ (loop $a \mid bb^*a$; in from $s$ on $b^*a$; out to $f$ on $bb^*$).  The direct $s \to f$ arrow is $b^*$, so
+
+  $R'_{sf} = b^* \mid b^*a\,(a \mid bb^*a)^*\,bb^*$.
+
+Both denote "empty, or ends in `b`."  Order 1 is shorter because $Q$ had a single arrow in and a single arrow out, so eliminating it first created only one new arrow; eliminating a state with many neighbors first makes many arrows and a longer regex.  A useful habit: eliminate the state with the fewest (in-arrows × out-arrows) first.
 
 ### Worked Example: Thompson's construction on `a(b|c)*`
 
