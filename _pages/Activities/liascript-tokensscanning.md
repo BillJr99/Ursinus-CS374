@@ -521,19 +521,19 @@ These exercises build your confidence in the maximal munch rule and token orderi
 
 > *Exercises adapted from topics covered in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
-The lexer applies patterns in order, using maximal munch.  For the input `x>=5`, if `IDENT` is listed before `GE` (`>=`) in TOKEN_SPEC, the result is:
+The lexer tries the patterns in TOKEN_SPEC order at each position.  For the input `x>=5`, if `IDENT` is listed before `GE` (`>=`) in TOKEN_SPEC, the result is:
 
-[( )] `IDENT("x"), GE, INT(5)`: the lexer is smart enough to lookahead and reorder
-[(X)] `IDENT("x"), GT, EQ, INT(5)`: `>=` is never recognized because `IDENT` greedily consumed `x`
+[(X)] `IDENT("x"), GE, INT(5)`: `IDENT` cannot match `>` at all, so its place relative to `GE` does not matter here
+[( )] `IDENT("x"), GT, EQ, INT(5)`: `>=` is never recognized because `IDENT` greedily consumed `x`
 [( )] Undefined behavior; the order doesn't matter
 [( )] A `LexError` because ambiguous input
 
-Maximal munch means the lexer matches the longest possible token.  For input `<=`, if both `LT` (`<`) and `LE` (`<=`) are valid patterns:
+Python's `re` alternation takes the first alternative that matches at a position, not the longest.  For input `<=`, if `LT` (`<`) is listed before `LE` (`<=`) in TOKEN_SPEC:
 
-[( )] The lexer tries `LT` first and succeeds immediately
-[(X)] The lexer finds both `LT` and `LE` as possibilities and chooses `LE` (the longer match)
+[(X)] The lexer emits `LT` for `<`: the order in TOKEN_SPEC decides, which is why two-character operators go first
+[( )] The lexer finds both `LT` and `LE` as possibilities and chooses `LE` (the longer match)
 [( )] The lexer raises an ambiguity error
-[( )] It depends on which is listed first in TOKEN_SPEC
+[( )] The lexer emits `LE`, because maximal munch is automatic
 
 1.  **Tokenize by hand (maximal munch rules).**
    - Input: `x>=5+2`
