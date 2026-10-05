@@ -92,7 +92,7 @@ Take a concrete expression grammar and trace how each production becomes a funct
 ```
 expr   -> term  ( ('+' | '-') term  )*
 term   -> factor ( ('*' | '/') factor )*
-factor -> NUMBER | '(' expr ')'
+factor -> INT | '(' expr ')'
 ```
 
 **Step 1.  Each nonterminal becomes a function skeleton:**
@@ -132,11 +132,11 @@ def parse_term():
     return node
 ```
 
-**Step 4.  For `factor -> NUMBER | '(' expr ')'`, the alternation uses lookahead:**
+**Step 4.  For `factor -> INT | '(' expr ')'`, the alternation uses lookahead:**
 
 ```python
 def parse_factor():
-    if peek() is a NUMBER:
+    if peek() is an INT:
         return ('num', advance())
     elif peek() == '(':
         advance()          # consume '('
@@ -158,7 +158,7 @@ Grammar:
 ```
 expr   -> term { ('+' | '-') term }
 term   -> factor { ('*' | '/') factor }
-factor -> NUMBER | '(' expr ')'
+factor -> INT | '(' expr ')'
 ```
 
 Indentation shows the call stack.  `pos` is the index of the next unconsumed token; tokens are `1 + 2 * 3`.
@@ -167,7 +167,7 @@ Indentation shows the call stack.  `pos` is the index of the next unconsumed tok
 call parse_expr()                      pos=0
   call parse_term()                    pos=0
     call parse_factor()                pos=0
-      peek()=NUMBER(1) -> consume      pos=1
+      peek()=INT(1) -> consume         pos=1
       return ('num', 1)
     peek()='+' -> not * or /, loop does NOT run
     return ('num', 1)                  <- term returns the bare 1
@@ -175,12 +175,12 @@ call parse_expr()                      pos=0
   consume '+'                          pos=2
   call parse_term()                    pos=2
     call parse_factor()                pos=2
-      peek()=NUMBER(2) -> consume      pos=3
+      peek()=INT(2) -> consume         pos=3
       return ('num', 2)
     peek()='*' -> loop RUNS
     consume '*'                        pos=4
     call parse_factor()                pos=4
-      peek()=NUMBER(3) -> consume      pos=5
+      peek()=INT(3) -> consume         pos=5
       return ('num', 3)
     peek()=EOF -> loop ends
     return ('*', ('num',2), ('num',3)) <- the product is built HERE
@@ -224,7 +224,7 @@ letstmt   -> "let" IDENT "=" expr ";"
 
 > **CTQ 1.1** Using the translation table, write pseudocode for `parse_stmt`, `parse_printstmt`, and `parse_letstmt`.  Which single token decides the alternation in `parse_stmt`?
 
-> **CTQ 1.2** What should `expect(SEMI)` do when the next token is not a semicolon?  Write the error message you would want at 2 AM, including what it should contain (expected what, found what, where).
+> **CTQ 1.2** What should `expect(SEMICOLON)` do when the next token is not a semicolon?  Write the error message you would want at 2 AM, including what it should contain (expected what, found what, where).
 
 > **CTQ 1.3** Add `whilestmt -> "while" "(" expr ")" block` to the grammar and to your pseudocode.  Did the alternation in `parse_stmt` remain decidable by one token?  What property of the three statement keywords makes it so?
 
@@ -247,10 +247,11 @@ import re
 
 TOKEN_RE = re.compile(
     r'(?P<KEYWORD>print|let)\b|'
-    r'(?P<NUMBER>\d+(?:\.\d*)?)|'
+    r'(?P<FLOAT>\d+\.\d*)|'
+    r'(?P<INT>\d+)|'
     r'(?P<IDENT>[A-Za-z_]\w*)|'
-    r'(?P<SEMI>;)|'
-    r'(?P<ASSIGN>=)|'
+    r'(?P<SEMICOLON>;)|'
+    r'(?P<EQ>=)|'
     r'(?P<WS>\s+)'
 )
 
@@ -296,24 +297,24 @@ class Parser:
     def parse_printstmt(self):
         self.expect("KEYWORD")              # print
         value = self.parse_expr()
-        self.expect("SEMI")
+        self.expect("SEMICOLON")
         return ("print", value)
 
     # letstmt -> "let" IDENT "=" expr ";"
     def parse_letstmt(self):
         self.expect("KEYWORD")              # let
         name = self.expect("IDENT").lexeme
-        self.expect("ASSIGN")
+        self.expect("EQ")
         value = self.parse_expr()
-        self.expect("SEMI")
+        self.expect("SEMICOLON")
         return ("let", name, value)
 
-    # expr -> NUMBER | IDENT     (a stub; the full ladder arrives next module)
+    # expr -> INT | FLOAT | IDENT     (a stub; the full ladder arrives next module)
     def parse_expr(self):
         tok = self.peek()
-        if tok and tok.type in ("NUMBER", "IDENT"):
+        if tok and tok.type in ("INT", "FLOAT", "IDENT"):
             self.advance()
-            return ("num", float(tok.lexeme)) if tok.type == "NUMBER" else ("var", tok.lexeme)
+            return ("num", float(tok.lexeme)) if tok.type in ("INT", "FLOAT") else ("var", tok.lexeme)
         raise SyntaxError(f"expected an expression, found {tok.lexeme!r}" if tok
                           else "expected an expression, found end of input")
 
@@ -725,7 +726,7 @@ The cell tokenizes its own input, so you can run it right away.  It parses a sho
 #   block    -> "{" stmt* "}"
 #   expr     -> term  { ("+" | "-")  term  }
 #   term     -> factor { ("*" | "/") factor }
-#   factor   -> NUMBER | IDENT | "(" expr ")"
+#   factor   -> INT | FLOAT | IDENT | "(" expr ")"
 
 import re
 
@@ -733,13 +734,13 @@ import re
 
 TOKEN_RE = re.compile(
     r'(?P<FLOAT>\d+\.\d*|\.\d+)|'
-    r'(?P<NUMBER>\d+)|'
+    r'(?P<INT>\d+)|'
     r'(?P<KEYWORD>if|while|print)\b|'
     r'(?P<IDENT>[A-Za-z_]\w*)|'
     r'(?P<LBRACE>\{)|(?P<RBRACE>\})|'
     r'(?P<LPAREN>\()|(?P<RPAREN>\))|'
-    r'(?P<SEMI>;)|'
-    r'(?P<ASSIGN>=)|'
+    r'(?P<SEMICOLON>;)|'
+    r'(?P<EQ>=)|'
     r'(?P<ADDOP>[+\-])|'
     r'(?P<MULOP>[*/])|'
     r'(?P<WS>\s+)'
@@ -826,14 +827,14 @@ class Parser:
     def parse_print(self):
         self.expect("KEYWORD", "print")
         val = self.parse_expr()
-        self.expect("SEMI")
+        self.expect("SEMICOLON")
         return ("print", val)
 
     def parse_assign(self):
         name = self.expect("IDENT").lexeme
-        self.expect("ASSIGN")
+        self.expect("EQ")
         val = self.parse_expr()
-        self.expect("SEMI")
+        self.expect("SEMICOLON")
         return ("assign", name, val)
 
     def parse_block(self):
@@ -860,9 +861,9 @@ class Parser:
             node = (op, node, self.parse_factor())
         return node
 
-    # factor -> NUMBER | IDENT | "(" expr ")"
+    # factor -> INT | FLOAT | IDENT | "(" expr ")"
     def parse_factor(self):
-        if self.match("NUMBER") or self.match("FLOAT"):
+        if self.match("INT") or self.match("FLOAT"):
             tok = self.advance()
             return ("num", float(tok.lexeme))
         if self.match("IDENT"):
@@ -920,7 +921,7 @@ pprint.pprint(ast)
 # Grammar:
 #   expr   -> term   { ('+' | '-') term   }
 #   term   -> factor { ('*' | '/') factor }
-#   factor -> NUMBER | '(' expr ')'
+#   factor -> INT | FLOAT | '(' expr ')'
 #
 # Example runs:
 #   calc("2 + 3")        -> 5.0
@@ -935,7 +936,8 @@ import re
 # We use a list of regex patterns and try each one at the current position.
 
 CALC_RE = re.compile(
-    r'(?P<NUMBER>\d+(?:\.\d*)?)|'   # integer or decimal
+    r'(?P<FLOAT>\d+\.\d*)|'        # decimal: must come before INT
+    r'(?P<INT>\d+)|'                 # integer
     r'(?P<PLUS>\+)|'
     r'(?P<MINUS>-)|'
     r'(?P<STAR>\*)|'
@@ -1015,10 +1017,10 @@ class CalcParser:
             node = ("binop", op, node, right)
         return node
 
-    # factor -> NUMBER | '(' expr ')'
+    # factor -> INT | FLOAT | '(' expr ')'
     def parse_factor(self):
         tok = self.peek()
-        if tok.type == "NUMBER":
+        if tok.type in ("INT", "FLOAT"):
             self.advance()
             return ("num", float(tok.value))
         if tok.type == "LPAREN":

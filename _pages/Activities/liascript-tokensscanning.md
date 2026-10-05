@@ -31,7 +31,7 @@ Today you build a working lexer, the first stage of your project pipeline.  It t
 > **Before You Begin:** This activity assumes you can:
 > - Write Python classes with `__init__` and methods
 > - Use Python's `re` module for regular expressions at a basic level
-> - Understand what a token is (a named unit of source text like NUMBER or IDENTIFIER)
+> - Understand what a token is (a named unit of source text like INT or IDENT)
 > If any of these feel shaky, review them first.
 
 ---
@@ -46,7 +46,7 @@ Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Pr
 
 ## 1.  The Lexer's Contract
 
-A token has three parts: a type, a lexeme, and a position.  The type names the kind of thing the lexer found, such as `NUMBER` or `IDENT`.  The lexeme is the exact text it matched.  The position says where that text sits in the source file.  Put together, `(NUMBER, "42", line 3)` is one token.  Each token type is described by a regular expression, which is why a lexer has exactly the power of a finite automaton and no more.
+A token has three parts: a type, a lexeme, and a position.  The type names the kind of thing the lexer found, such as `INT` or `IDENT`.  The lexeme is the exact text it matched.  The position says where that text sits in the source file.  Put together, `(INT, "42", line 3)` is one token.  Each token type is described by a regular expression, which is why a lexer has exactly the power of a finite automaton and no more.
 
 The lexer's contract with the parser (the stage that comes next) has two halves.  The lexer delivers a stream of tokens.  It also absorbs everything the parser should never see: whitespace, comments, and the raggedness of raw characters.
 
@@ -74,9 +74,41 @@ Tokenize by hand: `count2 = count2 + 12 >= limit`
 
 ## 2.  A Complete Tokenizer
 
-You met the master-alternation trick in Part 3 of the *Regular Expressions* assignment.  There it showed that named groups let one pattern carry many alternatives.  Here it becomes a real lexer: a token specification stored as data, one master pattern built from that data, and a generator that yields typed tokens with positions, plus an error path.  Positions and errors are what separate a regex demo from a lexer.  The parser needs both when it has to tell a student where their program went wrong.
+The master-alternation trick rests on named groups, which the next cell shows on one line: a name on each alternative lets one pattern carry many alternatives and still report which one matched.  Here it becomes a real lexer: a token specification stored as data, one master pattern built from that data, and a generator that yields typed tokens with positions, plus an error path.  Positions and errors are what separate a regex demo from a lexer.  The parser needs both when it has to tell a student where their program went wrong.
 
 This code is the seed of your Lexer assignment and of your project.
+
+---
+
+## Named Groups in One Line
+
+A plain group `(...)` captures text you can read back by number.  A named group, `(?P<name>...)`, captures the same text and lets you read it back by name.  Every name used below has a job: `group("key")` reads one capture, `groupdict()` returns every capture as a dictionary, and `lastgroup` names the last group that matched.
+
+```python
+import re
+import traceback
+
+# Two named groups: key and value, around an equals sign.
+SETTING = re.compile(r"(?P<key>[A-Za-z_]\w*)\s*=\s*(?P<value>\S+)")
+
+try:
+    m = SETTING.fullmatch("port = 8080")
+    print(m.group("key"), "|", m.group("value"), "|", m.lastgroup)
+    print(m.groupdict())
+except Exception as e:
+    print(f"[tokens:named_groups] {e}")
+    traceback.print_exc()
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+You should see:
+
+```text
+port | 8080 | value
+{'key': 'port', 'value': '8080'}
+```
+
+Here both groups match, so `lastgroup` is simply the last one, `value`.  The lexer below puts each token type in its own named group and joins them with `|`.  At any position only one alternative matches, so `lastgroup` names the token type that fired.
 
 ---
 
@@ -94,16 +126,17 @@ Token = namedtuple("Token", ["type", "lexeme", "line", "col"])
 
 # Order encodes priority: keywords before IDENT, two-char operators before one-char.
 TOKEN_SPEC = [
-    ("NUMBER",   r"\d+(\.\d+)?"),
+    ("FLOAT",    r"\d+\.\d+"),
+    ("INT",      r"\d+"),
     ("KEYWORD",  r"\b(if|else|while|let|print)\b"),
     ("IDENT",    r"[A-Za-z_][A-Za-z0-9_]*"),
-    ("GE",       r">="), ("LE", r"<="), ("EQ", r"=="), ("NE", r"!="),
-    ("ASSIGN",   r"="),
+    ("GE",       r">="), ("LE", r"<="), ("EQEQ", r"=="), ("NE", r"!="),
+    ("EQ",       r"="),
     ("GT",       r">"), ("LT", r"<"),
     ("PLUS",     r"\+"), ("MINUS", r"-"), ("STAR", r"\*"), ("SLASH", r"/"),
     ("LPAREN",   r"\("), ("RPAREN", r"\)"),
     ("LBRACE",   r"\{"), ("RBRACE", r"\}"),
-    ("SEMI",     r";"),
+    ("SEMICOLON", r";"),
     ("NEWLINE",  r"\n"),
     ("SKIP",     r"[ \t]+"),
     ("COMMENT",  r"#[^\n]*"),
@@ -147,7 +180,9 @@ for tok in tokenize(code):
 
 - `TOKEN_SPEC` is an ordered list, and that order is the priority rule from Part I in
   executable form.  `KEYWORD` comes before `IDENT`, so `if` is a keyword.  `GE`, `LE`,
-  `EQ`, and `NE` come before `ASSIGN`, `GT`, and `LT`, so `>=` is one token rather than two.
+  `EQEQ`, and `NE` come before `EQ`, `GT`, and `LT`, so `>=` is one token rather than two.
+  `FLOAT` comes before `INT` for the same reason: listed after it, `3.14` would lex as `INT 3`
+  and leave `.14` behind.
 - `MASTER` joins every pattern into one alternation with named groups.  Python's
   alternation is first-match, not longest-match.  The engine does not measure lengths
   for you, so you get maximal munch here by ordering the patterns.  Put `LT` before
@@ -163,11 +198,15 @@ for tok in tokenize(code):
 - `MISMATCH` is last and matches `.`, so the scanner always makes progress and always
   has something specific to complain about.
 
-> **Watch out!**  `NUMBER` uses `\d+(\.\d+)?`, which contains an *unnamed* capture
-> group.  It happens to work here because `m.lastgroup` reports the last *named*
-> group.  Nesting an extra capture inside a named alternative is still a habit that
-> will bite you later.  Write `(?:\.\d+)?` instead, and keep every helper group
-> non-capturing.
+> **Watch out!**  If a token pattern needs a helper group, such as an optional
+> fraction `\d+(\.\d+)?`, the plain `(...)` is an *unnamed* capture.  It happens to
+> work with `m.lastgroup`, which reports the last *named* group, but nesting an extra
+> capture inside a named alternative is a habit that will bite you later.  Write
+> `(?:\.\d+)?` instead, and keep every helper group non-capturing.
+
+- The token names match the Lexer assignment: `EQ` is `=`, `EQEQ` is `==`, `SEMICOLON`
+  is `;`, and numbers are `INT` or `FLOAT`.  This deck folds every keyword into one
+  `KEYWORD` type for brevity; the Lexer assignment gives each keyword its own type.
 
 ### Try It Yourself
 
@@ -182,16 +221,17 @@ from collections import namedtuple
 Token = namedtuple("Token", ["type", "lexeme", "line", "col"])
 
 TOKEN_SPEC = [
-    ("NUMBER",   r"\d+(?:\.\d+)?"),
+    ("FLOAT",    r"\d+\.\d+"),
+    ("INT",      r"\d+"),
     ("KEYWORD",  r"\b(?:if|else|while|let|print)\b"),
     ("IDENT",    r"[A-Za-z_][A-Za-z0-9_]*"),
     # TODO 1: a STRING token, a double quote to the next double quote.
     #         Where must it go in this list, and why does it matter?
-    ("GE", r">="), ("LE", r"<="), ("EQ", r"=="), ("NE", r"!="),
-    ("ASSIGN", r"="), ("GT", r">"), ("LT", r"<"),
+    ("GE", r">="), ("LE", r"<="), ("EQEQ", r"=="), ("NE", r"!="),
+    ("EQ", r"="), ("GT", r">"), ("LT", r"<"),
     ("PLUS", r"\+"), ("MINUS", r"-"), ("STAR", r"\*"), ("SLASH", r"/"),
     ("LPAREN", r"\("), ("RPAREN", r"\)"),
-    ("SEMI", r";"), ("NEWLINE", r"\n"), ("SKIP", r"[ \t]+"),
+    ("SEMICOLON", r";"), ("NEWLINE", r"\n"), ("SKIP", r"[ \t]+"),
     ("COMMENT", r"#[^\n]*"),
     ("MISMATCH", r"."),
 ]
@@ -222,7 +262,7 @@ for src, note in CASES:
     print(f"\n{src!r}   ({note})")
     for t in tokenize(src):
         flag = "   <-- ERROR" if t.type == "ERROR" else ""
-        print(f"    line {t.line} col {t.col:2}  {t.type:8} {t.lexeme!r}{flag}")
+        print(f"    line {t.line} col {t.col:2}  {t.type:9} {t.lexeme!r}{flag}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
@@ -260,16 +300,17 @@ from collections import namedtuple
 Token = namedtuple("Token", ["type", "lexeme", "line", "col"])
 
 TOKEN_SPEC = [
-    ("NUMBER",   r"\d+(\.\d+)?"),
+    ("FLOAT",    r"\d+\.\d+"),
+    ("INT",      r"\d+"),
     ("KEYWORD",  r"\b(if|else|while|let|print)\b"),
     ("IDENT",    r"[A-Za-z_][A-Za-z0-9_]*"),
-    ("GE",       r">="), ("LE", r"<="), ("EQ", r"=="), ("NE", r"!="),
-    ("ASSIGN",   r"="),
+    ("GE",       r">="), ("LE", r"<="), ("EQEQ", r"=="), ("NE", r"!="),
+    ("EQ",       r"="),
     ("GT",       r">"), ("LT", r"<"),
     ("PLUS",     r"\+"), ("MINUS", r"-"), ("STAR", r"\*"), ("SLASH", r"/"),
     ("LPAREN",   r"\("), ("RPAREN", r"\)"),
     ("LBRACE",   r"\{"), ("RBRACE", r"\}"),
-    ("SEMI",     r";"),
+    ("SEMICOLON", r";"),
     ("NEWLINE",  r"\n"),
     ("SKIP",     r"[ \t]+"),
     ("COMMENT",  r"#[^\n]*"),
@@ -344,15 +385,15 @@ lx = Lexer(source)
 while not lx.at_end():
     tok = lx.peek()
     consumed = lx.advance()
-    print(f"peeked {tok.type:8} -> consumed {consumed.lexeme!r}")
+    print(f"peeked {tok.type:9} -> consumed {consumed.lexeme!r}")
 
 print()
 print("=== Style 3: expect a specific sequence ===")
 lx = Lexer(source)
 kw   = lx.expect("KEYWORD")
 name = lx.expect("IDENT")
-eq   = lx.expect("ASSIGN")
-val  = lx.expect("NUMBER")
+eq   = lx.expect("EQ")
+val  = lx.expect("INT")
 print(f"let-binding: {kw.lexeme} {name.lexeme} {eq.lexeme} {val.lexeme}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
@@ -377,17 +418,18 @@ Token = namedtuple("Token", ["type", "lexeme", "line", "col"])
 
 # STRING pattern: opening quote, then zero or more of (escape-seq | safe-char), closing quote.
 TOKEN_SPEC = [
-    ("NUMBER",   r"\d+(\.\d+)?"),
+    ("FLOAT",    r"\d+\.\d+"),
+    ("INT",      r"\d+"),
     ("STRING",   r'"(?:[^"\\]|\\.)*"'),      # <-- new: handles escape sequences
     ("KEYWORD",  r"\b(if|else|while|let|print)\b"),
     ("IDENT",    r"[A-Za-z_][A-Za-z0-9_]*"),
-    ("GE",       r">="), ("LE", r"<="), ("EQ", r"=="), ("NE", r"!="),
-    ("ASSIGN",   r"="),
+    ("GE",       r">="), ("LE", r"<="), ("EQEQ", r"=="), ("NE", r"!="),
+    ("EQ",       r"="),
     ("GT",       r">"), ("LT", r"<"),
     ("PLUS",     r"\+"), ("MINUS", r"-"), ("STAR", r"\*"), ("SLASH", r"/"),
     ("LPAREN",   r"\("), ("RPAREN", r"\)"),
     ("LBRACE",   r"\{"), ("RBRACE", r"\}"),
-    ("SEMI",     r";"),
+    ("SEMICOLON", r";"),
     ("NEWLINE",  r"\n"),
     ("SKIP",     r"[ \t]+"),
     ("COMMENT",  r"#[^\n]*"),
@@ -458,9 +500,9 @@ except SyntaxError as e:
 
 Your assignment turns this lexer into a component that your December language will import unchanged.  It adds string literals with escapes, token specifications loaded from JSON, a `peek`/`advance` interface for the parser, and a test suite.  The interface matters as much as the code.  The parser you write next month will call `peek()` to look at the next token without consuming it and `advance()` to consume it, and nothing else.
 
-The parser asks the lexer for the next token and receives `Token(NUMBER, "12", 4, 7)`.  The information the parser will use for its *grammar* decisions is:
+The parser asks the lexer for the next token and receives `Token(INT, "12", 4, 7)`.  The information the parser will use for its *grammar* decisions is:
 
-[(X)] The type NUMBER; the lexeme and position ride along for evaluation and error messages
+[(X)] The type INT; the lexeme and position ride along for evaluation and error messages
 [( )] The lexeme "12" alone
 [( )] The line number, to enforce indentation
 [( )] All fields equally, at every decision
@@ -478,12 +520,12 @@ A lexer's job, stated precisely, is to:
 
 ---
 
-Given the input `12foo`, a lexer with patterns for NUMBER and IDENT will most likely produce:
+Given the input `12foo`, a lexer with patterns for INT and IDENT will most likely produce:
 
-[(X)] NUMBER `12` followed by IDENT `foo`, because each match starts fresh at the current position
+[(X)] INT `12` followed by IDENT `foo`, because each match starts fresh at the current position
 [( )] A single IDENT `12foo`
 [( )] A lexical error, since the two patterns overlap
-[( )] A single NUMBER `12`, discarding the rest
+[( )] A single INT `12`, discarding the rest
 
 ---
 
@@ -521,19 +563,19 @@ These exercises build your confidence in the maximal munch rule and token orderi
 
 > *Exercises adapted from topics covered in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
-The lexer applies patterns in order, using maximal munch.  For the input `x>=5`, if `IDENT` is listed before `GE` (`>=`) in TOKEN_SPEC, the result is:
+The lexer tries the patterns in TOKEN_SPEC order at each position.  For the input `x>=5`, if `IDENT` is listed before `GE` (`>=`) in TOKEN_SPEC, the result is:
 
-[( )] `IDENT("x"), GE, INT(5)`: the lexer is smart enough to lookahead and reorder
-[(X)] `IDENT("x"), GT, EQ, INT(5)`: `>=` is never recognized because `IDENT` greedily consumed `x`
+[(X)] `IDENT("x"), GE, INT(5)`: `IDENT` cannot match `>` at all, so its place relative to `GE` does not matter here
+[( )] `IDENT("x"), GT, EQ, INT(5)`: `>=` is never recognized because `IDENT` greedily consumed `x`
 [( )] Undefined behavior; the order doesn't matter
 [( )] A `LexError` because ambiguous input
 
-Maximal munch means the lexer matches the longest possible token.  For input `<=`, if both `LT` (`<`) and `LE` (`<=`) are valid patterns:
+Python's `re` alternation takes the first alternative that matches at a position, not the longest.  For input `<=`, if `LT` (`<`) is listed before `LE` (`<=`) in TOKEN_SPEC:
 
-[( )] The lexer tries `LT` first and succeeds immediately
-[(X)] The lexer finds both `LT` and `LE` as possibilities and chooses `LE` (the longer match)
+[(X)] The lexer emits `LT` for `<`: the order in TOKEN_SPEC decides, which is why two-character operators go first
+[( )] The lexer finds both `LT` and `LE` as possibilities and chooses `LE` (the longer match)
 [( )] The lexer raises an ambiguity error
-[( )] It depends on which is listed first in TOKEN_SPEC
+[( )] The lexer emits `LE`, because maximal munch is automatic
 
 1.  **Tokenize by hand (maximal munch rules).**
    - Input: `x>=5+2`
