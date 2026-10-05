@@ -242,6 +242,57 @@ pretty(tree2)
 
 > **Watch out!**  The `case _:` arm in `pretty` is a safety net, but in a real interpreter it is a bug waiting to happen.  If you add a new node type (say, `FunDef`) but forget to add a matching `case FunDef(...):` arm, Python silently falls through to `Unknown: ...` instead of raising an error.  Every time you add a new AST node, immediately add a handler for it in every tree-walking function: `pretty`, `count_nodes`, `collect_vars`, `constant_fold`, and especially the evaluator.
 
+### Check Your Answer: From `pretty` to `evaluate`
+
+Answer CTQ 1.5 and CTQ 1.6 before you run this.  The cell below is `pretty` with two or three lines changed, cut down to the two node types the trees need.
+
+```python
+import traceback
+from dataclasses import dataclass
+from typing import Any
+
+@dataclass
+class Num:   value: float
+@dataclass
+class BinOp: op: str; left: Any; right: Any
+
+OPS = {"+": lambda a, b: a + b, "-": lambda a, b: a - b,
+       "*": lambda a, b: a * b, "/": lambda a, b: a / b}
+
+def evaluate(node):
+    """pretty() with the print lines turned into returns: a post-order walk."""
+    match node:
+        case Num(value=v):
+            return v                                   # was: print(f"{pad}Num({v})")
+        case BinOp(op=o, left=l, right=r):
+            return OPS[o](evaluate(l), evaluate(r))    # was: print, then recurse for effect
+        case _:
+            raise TypeError(f"evaluate: unknown node {node!r}")   # was: silent Unknown
+
+tree1 = BinOp("*", BinOp("+", Num(2), Num(3)), Num(4))
+tree2 = BinOp("+", Num(2), BinOp("*", Num(3), Num(4)))
+try:
+    print("(2+3)*4 =", evaluate(tree1))
+    print("2+3*4   =", evaluate(tree2))
+except Exception as e:
+    print(f"[ast:evaluate] {e}")
+    traceback.print_exc()
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+You should see:
+
+```text
+(2+3)*4 = 20
+2+3*4   = 14
+```
+
+### Reading the Code
+
+- Each `print` became a `return`.  `pretty` walks the tree for its side effect; `evaluate` walks it for a value, and the value of a parent is built from the values of its children.
+- The `BinOp` arm cannot apply the operator until both recursive calls have returned numbers.  The work happens after the children, which is a post-order walk, while `pretty` prints the parent first, which is pre-order.  Same walk, different moment for the work.
+- The last arm raises instead of printing `Unknown`.  During development that is the safer choice: a node type with no handler stops the program instead of vanishing from the result.
+
 ### Try It Yourself
 
 Add a node type and watch the silent-fallthrough bug happen to you, on purpose.
