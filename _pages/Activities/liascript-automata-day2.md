@@ -193,6 +193,20 @@ This is the classic example from the *Dragon Book* (Aho, Lam, Sethi, and Ullman)
 | 9 | | 10 | |
 | **10** (accepting) | | | |
 
+The same machine drawn out.  The upper branch reads `a` (2 → 3), the lower branch reads `b` (4 → 5), the ε-edge 6 → 1 repeats the loop, and the ε-edge 0 → 7 skips it entirely, which is how `(a|b)*` allows zero repetitions:
+
+```text
+                      ε      +--- a ---+      ε
+                  +------> 2 |         | 3 ------+
+                  |          +---------+         v
+   --> 0 --ε--> 1                                6 --ε--> 7 --a--> 8 --b--> 9 --b--> ((10))
+       |        ^ |   ε      +--- b ---+      ε  |        ^
+       |        | +------> 4 |         | 5 ------+        |
+       |        |            +---------+         |        |
+       |        +------------------ε-------------+        |   (6 -> 1: repeat)
+       +---------------------------ε----------------------+   (0 -> 7: zero repetitions)
+```
+
 Two operations do all of the work:
 
 - **ε-closure(S)**: every state reachable from the set `S` by following ε-moves alone, including the states of `S` themselves.  Compute it as a small graph search, and stop following a state once it is already in the set; that check is what keeps the 6 → 1 back edge from looping forever.
@@ -228,6 +242,16 @@ A DFA state is `ε-closure(move(S, x))`, one per unprocessed set and symbol.  Fo
 | D | {1, 2, 4, 5, 6, 7, 9} | B | E | no |
 | E | {1, 2, 4, 5, 6, 7, 10} | B | C | **yes** |
 
+The same DFA as arrows (`*` marks the accepting state):
+
+```text
+   A --a--> B      A --b--> C
+   B --a--> B      B --b--> D
+   C --a--> B      C --b--> C
+   D --a--> B      D --b--> E*
+   E*--a--> B      E*--b--> C
+```
+
 Eleven NFA states could have produced up to 2^11 = 2048 subsets.  The construction reached only five.  Read what each one remembers: B is "just read `a`," D is "just read `ab`," E is "just read `abb`," and A and C both mean "no part of `abb` in progress."  A and C behave identically on every input, so DFA minimization would merge them into a single state, leaving four.
 
 Trace `babb` to check the table: A →b C →a B →b D →b E, which ends in an accepting state.  Trace `abab`: A →a B →b D →a B →b D, which does not.
@@ -258,9 +282,123 @@ A DFA state accepts exactly when its set contains an accepting NFA state, and on
 
 > **Check it yourself.**  Enter the NFA above into [Automata Studio](https://reyescarlata0.github.io/automata-studio/), which prints the full subset table and then minimizes the DFA, and watch A and C merge.  The [FSM Simulator](https://ivanzuzak.info/noam/webapps/fsm_simulator/) steps the same NFA one symbol at a time (it writes ε as `$`), and each set of active states it highlights is one row of the table above.  The Automata lab's Step 3.1 asks for this same kind of trace on your own Contains-aa NFA.
 
+### Removing ε-Moves First: From an ε-NFA to an Ordinary NFA
+
+The worked example folds the ε-moves into the subset construction: every time it builds a DFA state, it closes the set.  There is a second route that does the same work in two separate steps.  First remove the ε-moves, producing an ordinary NFA with the same states and the same language.  Then run the plain subset construction, the one in the code below that never calls a closure.  Separating the steps is useful when a tool or an algorithm only accepts NFAs without ε-moves, and it makes the role of ε-closure easier to see.
+
+The construction keeps every state and the start state, and it rebuilds the transitions and the accepting set:
+
+- **New transitions.**  For each state $q$ and symbol $x$, $\delta'(q, x) = \varepsilon\text{-closure}(\text{move}(\varepsilon\text{-closure}(\{q\}), x))$.  In words: slide along ε-edges from $q$ as far as they go, take one real `x` step, then slide along ε-edges again.
+- **New accepting states.**  A state $q$ accepts in the new NFA when $\varepsilon\text{-closure}(\{q\})$ contains an accepting state of the original, because the original could reach acceptance from $q$ without reading anything more.
+
+**Worked rows, on the same NFA.**  Three rows show every case:
+
+- State 0.  `ε-closure({0}) = {0, 1, 2, 4, 7}`.  On `a`, the move from that set is `{3, 8}`, which closes to `{1, 2, 3, 4, 6, 7, 8}`.  On `b`, the move is `{5}`, which closes to `{1, 2, 4, 5, 6, 7}`.  Those are exactly B and C from the worked example, as they should be.
+- State 2.  `ε-closure({2}) = {2}`.  On `a`, the move is `{3}`, which closes to `{1, 2, 3, 4, 6, 7}`.  On `b`, there is no move at all, so the new transition is the empty set.
+- State 7.  `ε-closure({7}) = {7}`.  On `a`, the move is `{8}`, and 8 has no ε-moves, so the result is `{8}`.  On `b`, nothing.
+
+Only state 10 accepts, because no other state's closure reaches 10.  In particular, state 0 does not accept, so the empty string is still rejected, as `(a|b)*abb` requires.
+
+## Code Cell: ε-Removal
+
+The cell computes every row, then checks that the new NFA agrees with the original on every string over `{a, b}` up to length 6.
+
+```python
+import traceback
+
+# Thompson NFA for (a|b)*abb, states 0-10, from the worked example above.
+STATES = range(11)
+EPS  = {0: {1, 7}, 1: {2, 4}, 3: {6}, 5: {6}, 6: {1, 7}}
+MOVE = {(2, "a"): {3}, (4, "b"): {5}, (7, "a"): {8}, (8, "b"): {9}, (9, "b"): {10}}
+START, ACCEPT = 0, {10}
+
+def closure(S):
+    """Every state reachable from S by epsilon moves alone, including S itself."""
+    stack, out = list(S), set(S)
+    while stack:
+        q = stack.pop()
+        for r in EPS.get(q, ()):
+            if r not in out:
+                out.add(r)
+                stack.append(r)
+    return out
+
+def move(S, x):
+    """Every state reachable from S by exactly one x."""
+    return {r for q in S for r in MOVE.get((q, x), ())}
+
+try:
+    # Remove the epsilon moves: one new row per state, no epsilon column.
+    #   delta'(q, x) = closure(move(closure({q}), x))
+    #   q accepts in the new NFA when closure({q}) contains an accepting state.
+    new_delta, new_accept = {}, set()
+    for q in STATES:
+        cq = closure({q})
+        for x in "ab":
+            new_delta[(q, x)] = closure(move(cq, x))
+        if cq & ACCEPT:
+            new_accept.add(q)
+        print(f"{q:>2}  closure={sorted(cq)!s:<20} a: {sorted(new_delta[(q, 'a')])!s:<24} b: {sorted(new_delta[(q, 'b')])}")
+    print("accepting:", sorted(new_accept))
+
+    # Check: the epsilon-free NFA accepts exactly the strings the original does.
+    def run_eps_nfa(s):
+        cur = closure({START})
+        for ch in s:
+            cur = closure(move(cur, ch))
+        return bool(cur & ACCEPT)
+
+    def run_new_nfa(s):
+        cur = {START}
+        for ch in s:
+            cur = {r for q in cur for r in new_delta[(q, ch)]}
+        return bool(cur & new_accept)
+
+    from itertools import product
+    tests = ["".join(p) for n in range(7) for p in product("ab", repeat=n)]
+    agree = all(run_eps_nfa(s) == run_new_nfa(s) for s in tests)
+    print(f"same answer on all {len(tests)} strings up to length 6: {agree}")
+except Exception as e:
+    print(f"[automata:eps_removal] {e}")
+    traceback.print_exc()
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+You should see one row per state and the agreement check:
+
+```text
+ 0  closure=[0, 1, 2, 4, 7]      a: [1, 2, 3, 4, 6, 7, 8]    b: [1, 2, 4, 5, 6, 7]
+ 1  closure=[1, 2, 4]            a: [1, 2, 3, 4, 6, 7]       b: [1, 2, 4, 5, 6, 7]
+ 2  closure=[2]                  a: [1, 2, 3, 4, 6, 7]       b: []
+ 3  closure=[1, 2, 3, 4, 6, 7]   a: [1, 2, 3, 4, 6, 7, 8]    b: [1, 2, 4, 5, 6, 7]
+ 4  closure=[4]                  a: []                       b: [1, 2, 4, 5, 6, 7]
+ 5  closure=[1, 2, 4, 5, 6, 7]   a: [1, 2, 3, 4, 6, 7, 8]    b: [1, 2, 4, 5, 6, 7]
+ 6  closure=[1, 2, 4, 6, 7]      a: [1, 2, 3, 4, 6, 7, 8]    b: [1, 2, 4, 5, 6, 7]
+ 7  closure=[7]                  a: [8]                      b: []
+ 8  closure=[8]                  a: []                       b: [9]
+ 9  closure=[9]                  a: []                       b: [10]
+10  closure=[10]                 a: []                       b: []
+accepting: [10]
+same answer on all 127 strings up to length 6: True
+```
+
+Now run the plain subset construction on this ε-free NFA, starting from `{0}`.  It reaches five DFA states, and four of them are exactly B, C, D, and E from the worked example.  Only the start state looks different: it is `{0}` instead of `{0, 1, 2, 4, 7}`, because the closure that the worked example applied to the start set is already built into state 0's outgoing transitions.  Both routes do the same closures; they only do them at different times.
+
+`ε-closure({5}) = {1, 2, 4, 5, 6, 7}`.  In the ε-free NFA, which states accept?
+
+[( )] 5, 6, and 7, because they reach 7 without reading input
+[(X)] Only 10, because no other state's ε-closure contains 10
+[( )] 9 and 10, because 9 is one `b` away from 10
+[( )] Every state, because the loop can always be skipped
+***********************************************************************
+
+A state accepts in the new NFA only if it can reach the original accepting state *without reading input*.  State 9 needs a `b` to reach 10, so it does not qualify, and nothing else has an ε-path to 10.
+
+***********************************************************************
+
 ### The Construction as Code
 
-The code below automates Steps 0 through 5 for an NFA without ε-moves, which is why it never calls a closure.  For an ε-NFA, the change is exactly the two places the walkthrough used: close the start set, and close every `move` result before looking it up.
+The code below automates Steps 0 through 5 for an NFA without ε-moves, which is why it never calls a closure; the NFA that ε-removal produces is exactly that kind of input.  For an ε-NFA, the change is exactly the two places the walkthrough used: close the start set, and close every `move` result before looking it up.
 
 ```python
 # Full subset construction: convert an NFA to an equivalent DFA.
