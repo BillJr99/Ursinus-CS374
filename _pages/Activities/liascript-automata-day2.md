@@ -908,9 +908,10 @@ print(f"\nAll tests passed: {all_pass}")
 print("\n=== Carry-state trace: 13 + 9 ===")
 a_bits = [1,0,1,1]; b_bits = [1,0,0,1]; carry = 0
 for i,(ba,bb) in enumerate(zip(a_bits, b_bits)):
-    total = ba + bb + carry
+    carry_in = carry
+    total = ba + bb + carry_in
     out   = total % 2; carry = total // 2
-    print(f"  col {i}: ({ba}+{bb}+carry_in={carry-(total//2-carry)}) -> sum_bit={out}, carry_out={carry}")
+    print(f"  col {i}: ({ba}+{bb}+carry_in={carry_in}) -> sum_bit={out}, carry_out={carry}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
