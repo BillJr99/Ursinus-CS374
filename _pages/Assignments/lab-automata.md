@@ -68,25 +68,285 @@ In this lab you build the machines beneath your lexer: general simulators for de
 
 ---
 
+## Background: The Ideas This Lab Uses
+
+This page is meant to be read top to bottom as a walkthrough; everything you need to finish the lab is defined here, with a worked example for each idea.  The activities in the readings cover the same ground in more depth if you want a second explanation.
+
+### Finite automata in one paragraph
+
+A finite automaton has a finite set of **states**, an **alphabet** of input symbols, one **start state**, a set of **accepting states**, and a **transition function** $$\delta$$ that says where to go on each symbol.  To run it, begin in the start state, read the input one symbol at a time, and follow one arrow per symbol.  When the input runs out, **accept** if you are in an accepting state and **reject** otherwise.  The empty string `""` reads no symbols, so it is accepted exactly when the start state is accepting.
+
+### DFA versus NFA
+
+A **DFA** (deterministic finite automaton) has exactly one arrow out of every state on every symbol, so there is never a choice: the machine is always in one state.
+
+An **NFA** (nondeterministic finite automaton) relaxes both rules.  A state may have *several* arrows on the same symbol, or *none*, and it may have **ε-transitions** (epsilon transitions), arrows the machine may follow without reading any input.  An NFA accepts a string if *any* way of making the choices ends in an accepting state.
+
+You never have to guess which choice is right.  Instead, follow every choice at once and keep track of the **set of states the NFA could be in right now**.  That set is called the **active set**, and tracking it is the whole idea behind both `run_nfa` (Part 2) and the subset construction (Part 3).
+
+### ε-closure: the free moves
+
+Because ε-transitions cost no input, whenever the NFA could be in state $$q$$ it could also be in every state reachable from $$q$$ by ε-moves alone.  The **ε-closure** of a set $$S$$, written $$E(S)$$, is $$S$$ itself plus every state reachable from some state in $$S$$ by following zero or more ε-transitions.  Zero is allowed, so every state is in its own closure.
+
+*Example.*  With $$q_0 \xrightarrow{\varepsilon} q_1$$ and $$q_1 \xrightarrow{\varepsilon} q_2$$ (and no other ε-arrows), $$E(\{q_0\}) = \{q_0, q_1, q_2\}$$, $$E(\{q_1\}) = \{q_1, q_2\}$$, and $$E(\{q_2\}) = \{q_2\}$$.  Closure follows arrows forward only: $$q_0$$ is not in $$E(\{q_1\})$$.
+
+### One step of an NFA: the union, then the closure
+
+This is the rule both `run_nfa` and the subset construction apply over and over.  Suppose the active set is $$S$$ and the next symbol is $$a$$.  The next active set is
+
+$$
+\text{next}(S, a) \;=\; E\Big(\bigcup_{q \in S} \delta(q, a)\Big).
+$$
+
+Read it in two parts:
+
+1. **Move (the union).**  For *every* state $$q$$ in $$S$$, look up where $$q$$ goes on $$a$$; that is a set, possibly empty.  Take the **union** of all of those sets.  The result is every state reachable on that one `a` transition from anywhere the NFA might currently be.
+2. **Close.**  Take the ε-closure of that union, because after reading `a` the machine may also slide along free moves.
+
+The phrase to remember is **move, then ε-close**.  If no state in $$S$$ has an arrow on $$a$$, the union is empty, its closure is empty, and the NFA is stuck: every string with this prefix is rejected.  The start of a run is closed too: the initial active set is $$E(\{\text{start}\})$$, not just $$\{\text{start}\}$$.
+
+**Worked example 1, no ε-moves: "ends in `ab`".**  This NFA over `{a, b}` has start state `q0`, accepting state `q2`, and the transitions below.  Its one nondeterministic moment is `q0` on `a`, where it can stay put or guess that this `a` begins the final `ab`.
+
+```text
+            a, b
+           +----+
+           |    |
+           |    v        a                b
+  start -->( q0 )--------------->( q1 )--------------->(( q2 ))
+```
+
+| state | on `a` | on `b` |
+|---|---|---|
+| q0 | {q0, q1} | {q0} |
+| q1 | ∅ | {q2} |
+| q2 | ∅ | ∅ |
+
+Run it on `aab`.  There are no ε-arrows, so every closure changes nothing.
+
+```text
+start             active = {q0}
+read a   union:   q0 -> {q0, q1}                          active = {q0, q1}
+read a   union:   q0 -> {q0, q1}   ∪  q1 -> ∅             active = {q0, q1}
+read b   union:   q0 -> {q0}       ∪  q1 -> {q2}          active = {q0, q2}
+end      {q0, q2} contains the accepting state q2         accept
+```
+
+The last line is the key one: the active set `{q0, q1}` moves on `b` to $$\delta(q0, b) \cup \delta(q1, b) = \{q0\} \cup \{q2\} = \{q0, q2\}$$.  Each state in the set contributes its own targets, and the union collects them all.
+
+**Worked example 2, with an ε-move: `ab?`.**  This NFA accepts `a` optionally followed by `b`.  Start `q0`, accepting `q2`, and the ε-arrow from `q1` to `q2` is what makes the `b` optional.
+
+```text
+                     a                b
+  start -->( q0 )--------->( q1 )--------->(( q2 ))
+                              |               ^
+                              +------eps------+
+```
+
+Run it on `a`:
+
+```text
+start          E({q0}) = {q0}                                  active = {q0}
+read a   move: q0 -> {q1}         close: E({q1}) = {q1, q2}    active = {q1, q2}
+end      {q1, q2} contains q2                                  accept
+```
+
+Without the closure after the move, the active set would be `{q1}` and `a` would be wrongly rejected.  Forgetting a closure, at the start or after a move, is the most common mistake in this lab.
+
+### The subset construction: the same step, done ahead of time
+
+`run_nfa` computes active sets one input string at a time.  The **subset construction** (also called the powerset construction) computes *all of them in advance* and turns them into a DFA.  Each DFA state, called a **powerset state**, is one set of NFA states, and its transition on a symbol is exactly the step above:
+
+$$
+\delta_D(S, a) \;=\; E\Big(\bigcup_{q \in S} \delta(q, a)\Big).
+$$
+
+So **a powerset state's transition on a symbol is the ε-closure of the union of every state reachable on that symbol from the states in the set.**  The algorithm is a search over those sets:
+
+1. The DFA's start state is $$E(\{\text{start}\})$$.
+2. Keep a list of powerset states you have found but not yet *processed*.  To process a set $$S$$, compute $$\delta_D(S, a)$$ for every symbol $$a$$ in the alphabet.  Each result that you have not seen before is a new powerset state; add it to the list.
+3. A powerset state is **accepting** if it contains at least one accepting NFA state.
+4. Stop when every powerset state has been processed.
+
+The empty set ∅ can appear as a result.  It is a legitimate DFA state, a **dead state** that loops to itself on every symbol and never accepts, and it belongs in your table like any other row.
+
+**Worked example 1: "ends in `ab`" (from above).**
+
+```text
+{q0}      on a: q0 -> {q0, q1}                         = {q0, q1}   new
+          on b: q0 -> {q0}                             = {q0}
+{q0, q1}  on a: q0 -> {q0, q1}  ∪  q1 -> ∅             = {q0, q1}
+          on b: q0 -> {q0}      ∪  q1 -> {q2}          = {q0, q2}   new
+{q0, q2}  on a: q0 -> {q0, q1}  ∪  q2 -> ∅             = {q0, q1}
+          on b: q0 -> {q0}      ∪  q2 -> ∅             = {q0}
+nothing left to process: stop
+```
+
+| Powerset state | on `a` | on `b` | Accepting? |
+|---|---|---|---|
+| {q0} | {q0, q1} | {q0} | No |
+| {q0, q1} | {q0, q1} | {q0, q2} | No |
+| {q0, q2} | {q0, q1} | {q0} | Yes (contains q2) |
+
+Three NFA states could have produced up to $$2^3 = 8$$ subsets; only three are reachable.  Each one has a meaning you can read off: `{q0}` means "no part of `ab` in progress," `{q0, q1}` means "just read `a`," and `{q0, q2}` means "just read `ab`."  Compare the trace of `aab` above: the sets it printed are exactly rows of this table.
+
+**Worked example 2: `ab?` (from above), with closures and a dead state.**
+
+```text
+start: E({q0}) = {q0}
+{q0}       on a: move {q1},  close -> {q1, q2}     new
+           on b: move ∅,     close -> ∅            new (dead state)
+{q1, q2}   on a: move ∅                          -> ∅
+           on b: move {q2},  close -> {q2}         new
+{q2}       on a: ∅          on b: ∅
+∅          on a: ∅          on b: ∅
+```
+
+| Powerset state | on `a` | on `b` | Accepting? |
+|---|---|---|---|
+| {q0} | {q1, q2} | ∅ | No |
+| {q1, q2} | ∅ | {q2} | Yes |
+| {q2} | ∅ | ∅ | Yes |
+| ∅ | ∅ | ∅ | No |
+
+### Thompson's construction: regex to NFA
+
+**Why it exists.**  A regular expression is built up from small pieces by three operators: concatenation (`AB`, A then B), union (`A|B`, A or B), and star (`A*`, A zero or more times), starting from single symbols.  Thompson's construction mirrors that structure exactly.  It has one rule for a single symbol and one rule per operator, and it applies them from the inside of the expression outward, so the NFA is assembled the same way the regex was.  Nothing is left to judgment, which is why a program can do it: this is the first stage inside lexer generators and regex engines.
+
+**Why the result is an NFA.**  Union and star are *choices*.  `A|B` means "take either branch," and `A*` means "go around again, or stop."  An NFA expresses a choice directly, as two ε-arrows leaving one state, and the active-set simulation follows both.  Building a DFA directly would mean resolving every choice up front, which is the subset construction's job, not this one's.
+
+**The one rule every fragment obeys.**  Each fragment the construction builds has exactly **one start state and one accepting state**, with no arrows coming into its start and none leaving its accept.  That is what lets fragments snap together like plugs: to combine two fragments you only ever connect one fragment's accept to another's start (or to a new state) with an ε-arrow.  When a fragment is wired into a bigger one, its old accepting state stops being accepting; only the outermost fragment's accept state accepts in the finished NFA.
+
+In the pictures below, `[ A ]` stands for a whole fragment already built for the sub-expression A, drawn as a box with its single start on the left and its single accept on the right.
+
+**Rule 1: a single symbol `x`.**  Two new states and one arrow.  The fragment accepts exactly the one-symbol string `x`.
+
+```text
+  (s) --x--> ((f))
+```
+
+**Rule 2: concatenation `AB`.**  Connect A's accept to B's start with one ε-arrow.  The new fragment starts where A starts and accepts where B accepts.  Intuition: once A has matched its part of the input, slide for free into B and let it match the rest.  No new states are needed.
+
+```text
+  [ A ] --eps--> [ B ]
+```
+
+**Rule 3: union `A|B`.**  Add a new start `s` with ε-arrows into both fragments, and a new accept `f` with ε-arrows out of both.  Intuition: at `s` the machine "guesses" which branch the input follows; the active set simply follows both, and whichever branch matches reaches `f`.
+
+```text
+          +--eps--> [ A ] --eps--+
+  (s) ----+                      +----> ((f))
+          +--eps--> [ B ] --eps--+
+```
+
+**Rule 4: star `A*`.**  Add a new start `s` and a new accept `f`, plus four ε-arrows.  Each one has a job:
+
+```text
+  (s) --eps--> [ A ] --eps--> ((f))
+   |            ^   |            ^
+   |            +eps+            |
+   +-------------eps-------------+
+```
+
+| ε-arrow | its job |
+|---|---|
+| `s` to A's start | enter A to match one repetition |
+| A's accept to `f` | stop after any number of repetitions |
+| A's accept back to A's start | go around again for another repetition |
+| `s` straight to `f` | match **zero** repetitions, so `A*` accepts the empty string |
+
+Forgetting the `s`-to-`f` arrow turns `A*` into "one or more" (`A+`); forgetting the back arrow turns it into "zero or one" (`A?`).
+
+**How to apply it.**  First read the regex's structure: star binds tightest, then concatenation, then union, so `ab*|c` means `(a(b*))|c`.  Build fragments for the innermost pieces first (the single symbols), then apply the rule for each operator to fragments you have already built, working outward.  Number states in the order you create them, and keep those numbers when a fragment is reused, so a reader can find every earlier fragment inside the final machine.  Each rule adds at most two states, so the NFA has at most twice as many states as the regex has symbols and operators: the construction never blows up.
+
+**Worked example 1: `(x|y)z`** (union, then concatenation).
+
+```text
+1. x:        1 --x--> 2                                                     (Rule 1)
+   y:        3 --y--> 4                                                     (Rule 1)
+2. x|y:      5 --eps--> 1,  5 --eps--> 3,  2 --eps--> 6,  4 --eps--> 6      (Rule 3) start 5, accept 6
+3. z:        7 --z--> 8                                                     (Rule 1)
+4. (x|y)z:   6 --eps--> 7                                                   (Rule 2) start 5, accept 8
+```
+
+The finished NFA has eight states, starts at 5, and accepts only at 8; states 2, 4, and 6 were accepting in their own fragments but are not any more.  Check it on `yz` with the active-set method: $$E(\{5\}) = \{5, 1, 3\}$$; on `y`, move to $$\{4\}$$ and close to $$\{4, 6, 7\}$$; on `z`, move to $$\{8\}$$, which accepts.  On `xy`: after `x` the active set is $$\{2, 6, 7\}$$, and none of those has a `y` arrow, so the set becomes empty and `xy` is rejected.
+
+**Worked example 2: `(ab)*`** (concatenation, then star).
+
+```text
+1. a:        1 --a--> 2                                                     (Rule 1)
+   b:        3 --b--> 4                                                     (Rule 1)
+2. ab:       2 --eps--> 3                                                   (Rule 2) start 1, accept 4
+3. (ab)*:    5 --eps--> 1    enter                                          (Rule 4)
+             4 --eps--> 6    stop
+             4 --eps--> 1    repeat
+             5 --eps--> 6    zero times                                     start 5, accept 6
+```
+
+Trace three strings:
+
+```text
+""      start: E({5}) = {5, 1, 6}                     contains 6: accept (zero repetitions)
+abab    start: {1, 5, 6}
+        a: move {2},  close {2, 3}
+        b: move {4},  close {4, 1, 6}                 (the repeat arrow puts 1 back in play)
+        a: move {2},  close {2, 3}
+        b: move {4},  close {4, 1, 6}                 contains 6: accept
+aba     ... after the second a: {2, 3}                no 6: reject
+```
+
+Hand-drawn NFAs are often smaller than Thompson's (a person would draw `(ab)*` with two states), but Thompson's construction is the one a program can follow without thinking, and the subset construction can tidy the result afterward.
+
+---
+
 ## Part 0: Before You Start - Regular Expressions and Finite Automata
 
 Do this part on paper before you write any simulator code.  You may do it alone even though the rest of this lab is pair work.  A regular expression and a finite automaton are two ways to describe the same set of strings, and building both for one language is the fastest way to see that they agree.
 
 ### Step 0.1: Write a Regular Expression and a Matching NFA
 
+*Example.*  Identifiers: a letter, then any number of letters or digits.  With `L` standing for any letter and `D` for any digit, the regex is `L(L|D)*`, and a two-state NFA accepts the same language:
+
+```text
+                          L, D
+                         +----+
+                         |    |
+               L         |    v
+  start --> ( q0 ) -----> (( q1 ))
+```
+
+`x1` takes `q0` to `q1` on `x` and loops on `1`: accept.  `1x` has no arrow out of `q0` on a digit: reject.  The regex says the same thing, because `1x` does not start with a letter.  Pick a different token class for your own work.
+
 > **Do this.**
-> 1. Pick a token class, such as identifiers or floating-point literals.
+> 1. Pick a token class, such as floating-point literals, integer literals with an optional sign, or string literals.
 > 2. Write a regular expression for it.
 > 3. Draw an NFA that accepts the same language.  Mark the start state with an incoming arrow and each accepting state with a double circle.
 > 4. Check both against two strings the class should accept and two it should not.  The regex and the NFA must agree on all four.
 
 ### Step 0.2: Convert a Small NFA to a DFA by Hand
 
-The subset construction makes one DFA state for each set of NFA states the machine could be in at once.  You trace it in full in Part 3, so a short first pass here pays off twice.
+The subset construction makes one DFA state for each set of NFA states the machine could be in at once (see "The subset construction" in the Background section above).  You trace it in full in Part 3, so a short first pass here pays off twice.
+
+Use this NFA over `{a, b}`, which accepts strings whose **second-to-last symbol is `a`**.  Start state `q0`, accepting state `q2`, no ε-moves.  At each `a`, `q0` may guess "this is the second-to-last symbol":
+
+```text
+            a, b
+           +----+
+           |    |
+           |    v        a              a, b
+  start -->( q0 )--------------->( q1 )--------------->(( q2 ))
+```
+
+| state | on `a` | on `b` |
+|---|---|---|
+| q0 | {q0, q1} | {q0} |
+| q1 | {q2} | {q2} |
+| q2 | ∅ | ∅ |
+
+Here is the first row, worked, so you can see what each cell asks for.  Start at `{q0}`.  On `a`, the only state in the set is `q0`, and $$\delta(q0, a) = \{q0, q1\}$$, so the cell is `{q0, q1}`.  On `b`, $$\delta(q0, b) = \{q0\}$$, so the cell is `{q0}`.  The new set `{q0, q1}` becomes the next row to process.  For that row, each cell is the **union** over *both* states: on `a`, $$\delta(q0, a) \cup \delta(q1, a)$$.
 
 > **Do this.**
-> 1. Take a small NFA from the Finite Automata activity in the readings.
-> 2. Apply the subset construction over two or three input symbols.  Each DFA state is a set of NFA states; write each set out in full.
+> 1. Copy the NFA and its table above into your notes.
+> 2. Continue the subset construction from `{q0, q1}` until no new sets appear (or for at least two or three input symbols).  Each DFA state is a set of NFA states; write each set out in full, and for each cell write the union you took, in the form `q0 -> {...} ∪ q1 -> {...}`.
 > 3. Name one string the resulting DFA accepts.
 > 4. If the state set stopped being obvious at some step, circle that step and write one line saying what got hard.
 
@@ -293,7 +553,7 @@ python3 simulator.py machines/even_ones.json 0120
 
 ### Step 1.4: Design the Ends-in-ab DFA
 
-Designing a DFA means deciding what each state needs to remember.  Here the answer is short: how much of the suffix `ab` has the machine seen most recently?
+Designing a DFA means deciding what each state needs to remember.  Here the answer is short: how much of the suffix `ab` has the machine seen most recently?  The parity machine is the model: each of its two states stands for one fact about the input so far ("even number of 1s" or "odd"), and each arrow says how one more symbol changes that fact.  Do the same here, with one state per possible answer to "how much of `ab` have I just seen?", and remember that every state needs an arrow on both `a` and `b`.  (The subset-construction table for the "ends in `ab`" NFA in the Background section is one correct answer; try to design yours without looking, then compare.)
 
 > **Do this.**
 > 1. Design a DFA for **Ends in ab**: strings over `{a, b}` that end with the suffix `ab`.
@@ -400,6 +660,17 @@ A DFA is in one state at a time.  An NFA is in a set of states at a time, and `r
 2.  For each symbol in `s`, take the union of all `delta["state,symbol"]` lists over all active states, then take the epsilon-closure of that union.
 3.  Accept if the final active set shares at least one state with the accept set.
 
+Step 2 is the "move, then ε-close" rule from the Background section, and the union is the part people skip.  On each symbol, every active state contributes the targets of its own `"state,symbol"` key, and you collect all of them.  In code, that union is a loop that grows one set:
+
+```text
+active = {q0, q1},  symbol = b
+  q0: delta.get("q0,b", []) -> ["q0"]          moved = {q0}
+  q1: delta.get("q1,b", []) -> ["q2"]          moved = {q0, q2}
+active = eps_closure(machine, moved)
+```
+
+Python's set union (`moved |= set(targets)`, or `moved.update(targets)`) does exactly this.  A state with no key contributes nothing, and if no state contributes anything, `moved` is empty and stays empty for the rest of the input.
+
 > **Do this.**
 > 1. Add `run_nfa(machine, s, trace=False) -> bool` below `eps_closure` and fill in the `# TODO` lines.  `main` from Step 1.3 already picks `run_nfa` when `is_nfa` says so.
 > 2. With `trace` on, print the sorted active set after each symbol, the NFA counterpart of the single state a DFA prints.
@@ -436,7 +707,7 @@ An NFA lets you guess.  Here the guess is "the `aa` starts here," and the machin
 > 3. Test with at least four accepted and four rejected strings, and record them in `writeup.md`.
 > 4. Include the `--trace` output for at least one accepted string in the writeup, so the execution path is visible.
 
-Worked example: `"baaab"` -> accept; `"ababab"` -> reject.  Hint: nondeterministically guess where `aa` occurs.  Your design should really use nondeterminism, not be a DFA in disguise.
+Worked example: `"baaab"` -> accept; `"ababab"` -> reject.  Hint: nondeterministically guess where `aa` occurs.  The "ends in `ab`" NFA in the Background section shows the pattern: a start state that loops on every symbol (the machine has not guessed yet), a chain of states that spells out the pattern, and, because `aa` may appear anywhere rather than only at the end, an accepting state that loops on every symbol once the pattern has been seen.  Your design should really use nondeterminism, not be a DFA in disguise.
 
 > **Watch out.** At least one `"state,symbol"` key in your JSON should list two or more targets.  If every list has exactly one entry and there is no `eps` key, you have written a DFA in NFA clothing.
 
@@ -470,12 +741,23 @@ These are paper exercises in your writeup, with no code.  You trace each algorit
 > 2. Fill in the construction table below in `writeup.md`, one row per powerset state.
 > 3. Record how many DFA states result.
 
-The algorithm:
+The algorithm, from the Background section:
 
 1.  Start with `eps_closure({start})` as the first powerset state.
-2.  For each powerset state you have not yet processed, compute its transitions on each symbol and epsilon-close the results.  Each result is a new row if you have not seen it before.
+2.  For each powerset state you have not yet processed, compute its transition on each symbol: take the **union** of the targets of every NFA state in the set on that symbol, then epsilon-close the union.  Each result is a new row if you have not seen it before.
 3.  Mark a powerset state as accepting if it contains any NFA accept state.
 4.  Continue until every powerset state has been processed.
+
+**What each cell means.**  The cell in row $$S$$, column `a` answers: "if the NFA could be in any state of $$S$$, where could it be after reading one `a`?"  Fill it in three moves, and show them in your writeup the way the Background examples do:
+
+```text
+row {q0, q1}, column a:
+  list:    q0 -> {q0, q1}     q1 -> ∅           (look up each state on a)
+  union:   {q0, q1} ∪ ∅  =  {q0, q1}            (collect every target)
+  close:   E({q0, q1})  =  {q0, q1}             (no eps moves in this NFA)
+```
+
+Then check whether the result already has a row.  Compare sets by their contents, not by the order you wrote them in: `{q1, q0}` and `{q0, q1}` are the same row.  It helps to give each row a short name (A, B, C, ...) once you have written its set.  If a cell comes out as ∅, add a dead-state row for ∅ as in the `ab?` example.  For Contains aa, think about what happens once the machine has seen `aa`: the sets that contain your accepting state may keep growing for a few rows before they settle.
 
 > **Paste into your submission.** Copy this table into `writeup.md` and fill it in.
 
@@ -490,7 +772,7 @@ The algorithm:
 
 ### Step 3.2: Trace Thompson's Construction
 
-Thompson's construction turns a regular expression into an NFA one operator at a time, gluing small fragments together with ε-transitions.
+Thompson's construction turns a regular expression into an NFA one operator at a time, gluing small fragments together with ε-transitions.  Read the fragment pictures and the worked `(x|y)z` example in the Background section first; this step adds a star to the same procedure.  Work from the inside of the expression outward: the innermost pieces are single symbols, and each operator wraps or joins fragments you have already built.  Number states in the order you create them and keep the numbers when a fragment is reused, so a reader can find every earlier fragment inside the final machine.
 
 > **Do this.**
 > 1. Apply Thompson's construction to the regular expression `a(b|c)*` in `writeup.md`.
@@ -512,6 +794,8 @@ For reference, the fragment rules are:
 
 > **Do this.**
 > 1. Write one paragraph in `writeup.md` connecting these simulators to the lexer you will build next.  Which component of the lexer plays the role of your simulators?
+
+A lexer (scanner) reads source code character by character and groups the characters into tokens such as identifiers, numbers, and operators.  Each token class is described by a regular expression, like the identifier regex in Step 0.1.  As you write your paragraph, consider where each piece of this lab appears in that pipeline: the regex for each token, the NFA that Thompson's construction would build from it, the DFA that the subset construction would build from that, and the loop that feeds characters through a machine and checks for acceptance.
 
 ---
 
