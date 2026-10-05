@@ -348,6 +348,68 @@ for s in ["ab", "aab", "abab", "ba", "a", "b", ""]:
 - The blow-up is real but rarely reached: this NFA has three states, so at most eight subsets, and the construction finds fewer because most are unreachable.
 - A DFA state is accepting exactly when its set contains an accepting NFA state.  Compare that with Model 3's intersection test: the same rule, computed once ahead of time instead of on every run.
 
+### The Construction With ε-Moves
+
+The same construction on the worked example's ε-NFA for `(a|b)*abb`.  The two `closure(...)` calls are the two places the walkthrough closed: the start set, and every move result.  Leave either one out and the table above does not come back.
+
+```python
+import traceback
+
+# Thompson NFA for (a|b)*abb, states 0-10, from the worked example above.
+EPS  = {0: {1, 7}, 1: {2, 4}, 3: {6}, 5: {6}, 6: {1, 7}}
+MOVE = {(2, "a"): {3}, (4, "b"): {5}, (7, "a"): {8}, (8, "b"): {9}, (9, "b"): {10}}
+ACCEPT = {10}
+
+def closure(S):
+    """Every state reachable from S by epsilon moves alone, including S itself."""
+    stack, out = list(S), set(S)
+    while stack:
+        q = stack.pop()
+        for r in EPS.get(q, ()):
+            if r not in out:          # this check stops the 6 -> 1 back edge from looping
+                out.add(r)
+                stack.append(r)
+    return frozenset(out)
+
+def move(S, x):
+    """Every state reachable from S by exactly one x."""
+    return frozenset(r for q in S for r in MOVE.get((q, x), ()))
+
+try:
+    start = closure({0})                      # close the START set
+    names, order, work, table = {start: "A"}, [start], [start], {}
+    while work:
+        S = work.pop(0)
+        for x in "ab":
+            m = move(S, x)
+            T = closure(m)                    # close every MOVE result
+            if T not in names:
+                names[T] = "ABCDEFGH"[len(names)]
+                order.append(T)
+                work.append(T)
+            table[(S, x)] = (sorted(m), names[T])
+    for S in order:
+        acc = "yes" if S & ACCEPT else "no"
+        (ma, ta), (mb, tb) = table[(S, "a")], table[(S, "b")]
+        print(f"{names[S]}  {sorted(S)}  a: move={ma} -> {ta}   b: move={mb} -> {tb}   accept={acc}")
+except Exception as e:
+    print(f"[automata:eps_subset] {e}")
+    traceback.print_exc()
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+You should see the table from the worked example, row for row:
+
+```text
+A  [0, 1, 2, 4, 7]  a: move=[3, 8] -> B   b: move=[5] -> C   accept=no
+B  [1, 2, 3, 4, 6, 7, 8]  a: move=[3, 8] -> B   b: move=[5, 9] -> D   accept=no
+C  [1, 2, 4, 5, 6, 7]  a: move=[3, 8] -> B   b: move=[5] -> C   accept=no
+D  [1, 2, 4, 5, 6, 7, 9]  a: move=[3, 8] -> B   b: move=[5, 10] -> E   accept=no
+E  [1, 2, 4, 5, 6, 7, 10]  a: move=[3, 8] -> B   b: move=[5] -> C   accept=yes
+```
+
+Read row B's `b` column: `move` gives `[5, 9]`, and only the closure turns it into D.
+
 ### Try It Yourself
 
 Find a language where the exponential blow-up actually happens.
