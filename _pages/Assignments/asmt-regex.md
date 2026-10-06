@@ -75,12 +75,12 @@ python3 --version
 
 You should see one line such as `Python 3.12.3`; any version 3.10 or newer is fine.  If the terminal says `python3` is not found (common on Windows), use `python` in place of `python3` in every command on this page.
 
-> **Do this.** Make a project folder, move into it, and create the five files below: `patterns.py` (Part 2), `transformer.py` (Part 3), `log_parser.py` and `config.json` (Part 3), and `readme.md`.  Every command on this page runs from inside this folder.  `touch` works in the macOS and Linux shells and in Git Bash on Windows; you can also save each new empty file from your editor into `cs374-regex/`.
+> **Do this.** Make a project folder, move into it, and create the six files below: `writeups.md` (Part 1 and the reflection), `patterns.py` (Part 2), `transformer.py` (Part 3), `log_parser.py` and `config.json` (Part 3), and `readme.md`.  Every command on this page runs from inside this folder.  `touch` works in the macOS and Linux shells and in Git Bash on Windows; you can also save each new empty file from your editor into `cs374-regex/`.
 >
 > ```bash
 > mkdir cs374-regex
 > cd cs374-regex
-> touch patterns.py transformer.py log_parser.py config.json readme.md
+> touch writeups.md patterns.py transformer.py log_parser.py config.json readme.md
 > ```
 
 > **Time budget.** The three parts are sized roughly alike.  Spread them across the assignment window using the pacing table below.
@@ -215,7 +215,7 @@ for pattern, label in experiments:
 
 ### Step 1.3: What to write up
 
-Create `part1.md` in `cs374-regex` and answer these questions in it, using output you produced:
+Open `writeups.md` in `cs374-regex` (you created it in Getting Started) and answer these questions in it, using output you produced.  The Reflection Prompts at the end of the assignment go in the same file.
 
 1.  Predict, before running, what the redaction line prints.  What does `\b` contribute, and what over-matches without it?
 2.  Design a one-line experiment that distinguishes `re.match` from `re.search`.  Run it, and state the rule in one sentence.
