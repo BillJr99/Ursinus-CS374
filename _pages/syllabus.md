@@ -388,10 +388,6 @@ schedule:
   link: "Activities/liascript-recursivedescent.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Regular Expressions Due"
-    dlink: "Assignments/Regex"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-regex.md"
   - dtitle: "Lab: Finite Automata Simulators Handed Out"
     dlink: "Assignments/Automata"
     points: "15"
@@ -405,6 +401,10 @@ schedule:
   link: "Activities/liascript-parsingexpressions.md"
   liapage: true
   deliverables:
+  - dtitle: "Programming Assignment: Regular Expressions Due"
+    dlink: "Assignments/Regex"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-regex.md"
   - dtitle: "Programming Assignment: Build a Lexer Handed Out"
     dlink: "Assignments/Lexer"
     points: "100"
