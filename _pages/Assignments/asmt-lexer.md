@@ -352,14 +352,102 @@ assert tokens_a == tokens_b, "Consumption patterns disagree!"
 
 > **You should see.** No output at all; a silent run means the assertion passed.  If you see `AssertionError: Consumption patterns disagree!`, print both lists and find the first index where they differ.  The culprit is almost always `advance` failing to clear the buffer, or `peek` clearing it.
 
+### Before Step 2c: Groups and Group References, a Walkthrough
+
+Step 2c asks you to do two things with one string literal: match the whole lexeme (quotes and all) as a single token, and then take its body apart to decode the escapes.  Python's `re` library does both with *capture groups*: parentheses `(...)` remember the text they matched, `m.group(n)` reads that text back, and a group reference such as `\1` in `re.sub` puts it back into a replacement.  This walkthrough shows each technique on a toy language whose strings use single quotes and three escapes of their own (`\'`, `\\`, and `\s` for a space), so you see every move without being handed the double-quoted, four-escape version Step 2c asks for.
+
+> **Do this.**
+> 1. Create `groups_lexer_demo.py` in `cs374-lexer` and paste the code below into it.
+> 2. Run `python3 groups_lexer_demo.py`.  This file is practice, like `scratch.py`, and is not a deliverable.
+
+```python
+import re
+
+# A toy language with SINGLE-quoted strings and three escapes: \'  \\  \s (a space).
+# Your lexer's STRING is double-quoted with four escapes; the techniques carry over unchanged.
+source = r"say 'it\'s' then 'a\sb' then 'c:\\new'"
+
+# 1. Numbering: group(0) is the whole lexeme, group(1) is the first ( from the left.
+TOY_STRING = re.compile(r"'((?:[^'\\]|\\.)*)'")
+m = TOY_STRING.search(source)
+print("1. group(0):", m.group(0), "| group(1):", m.group(1), "| span(0):", m.span(0), "| span(1):", m.span(1))
+
+# 2. Alternation inside a group.  A lookahead after an ungrouped | guards only the LAST branch.
+print("2. ungrouped on 'iffy':", re.match(r"if|else|while(?!\w)", "iffy").group(0), "(matched the front of iffy)")
+print("   grouped on 'iffy':  ", re.match(r"(?:if|else|while)(?!\w)", "iffy"))
+print("   grouped on 'if (':  ", re.match(r"(?:if|else|while)(?!\w)", "if (").group(0))
+
+# 3. Non-capturing groups.  Make the inner group capturing and watch the numbering shift:
+#    a repeated group keeps only its LAST repetition.
+m = re.search(r"'(([^'\\]|\\.)*)'", source)
+print("3. groups() with a capturing inner group:", m.groups())
+m = TOY_STRING.search(source)
+print("   groups() with (?:...) inside:         ", m.groups())
+
+# 4. Group references in re.sub, then a FUNCTION replacement for decoding escapes.
+print("4. reference: ", re.sub(r"\\(.)", r"<\1>", r"it\'s a\sb"))
+TOY_ESCAPES = {"'": "'", "\\": "\\", "s": " "}
+def decode(body):
+    # One left-to-right pass: each backslash pairs with exactly ONE following character.
+    return re.sub(r"\\(.)", lambda m: TOY_ESCAPES.get(m.group(1), m.group(0)), body)
+for m in TOY_STRING.finditer(source):
+    print(f"   raw {m.group(0):12} body {m.group(1):10} decoded |{decode(m.group(1))}|")
+bad = r"c:\\new".replace("\\\\", "\\").replace("\\n", "\n")
+print("   two str.replace calls instead:", repr(bad), "<- the \\\\ became \\, and then that \\n became a newline")
+
+# 5. Named groups and lastgroup: every rule in ONE pattern, and the match names its own rule.
+SPEC = [("STR", r"'(?:[^'\\]|\\.)*'"), ("IDENT", r"[A-Za-z_]\w*"), ("WS", r"\s+")]
+MASTER = re.compile("|".join(f"(?P<{name}>{pattern})" for name, pattern in SPEC))
+pos = 0
+while pos < len(source):
+    m = MASTER.match(source, pos)
+    if m.lastgroup != "WS":
+        print(f"5. {m.lastgroup:5} {m.group():12} at {m.start()}")
+    pos = m.end()
+```
+
+> **You should see.** 17 lines, numbered by section.  The decoded column in section 4 is wrapped in `|...|` so you can see the space that `\s` became.
+
+```text
+1. group(0): 'it\'s' | group(1): it\'s | span(0): (4, 11) | span(1): (5, 10)
+2. ungrouped on 'iffy': if (matched the front of iffy)
+   grouped on 'iffy':   None
+   grouped on 'if (':   if
+3. groups() with a capturing inner group: ("it\\'s", 's')
+   groups() with (?:...) inside:          ("it\\'s",)
+4. reference:  it<'>s a<s>b
+   raw 'it\'s'      body it\'s      decoded |it's|
+   raw 'a\sb'       body a\sb       decoded |a b|
+   raw 'c:\\new'    body c:\\new    decoded |c:\new|
+   two str.replace calls instead: 'c:\new' <- the \\ became \, and then that \n became a newline
+5. IDENT say          at 0
+5. STR   'it\'s'      at 4
+5. IDENT then         at 12
+5. STR   'a\sb'       at 17
+5. IDENT then         at 24
+5. STR   'c:\\new'    at 29
+```
+
+**Reading the code.**
+
+- **Section 1, numbering.**  Groups are numbered by the position of their *opening* parenthesis, counting from the left and starting at 1.  Group 0 is always the whole match, so for a string literal `group(0)` is the raw lexeme (the `value` field of your `Token`) and `group(1)` is the body between the quotes, the part you decode.  The two spans differ by one character at each end: the quotes.
+- **Section 2, alternation.**  `|` has the lowest precedence of any operator, so `if|else|while(?!\w)` means "`if`, *or* `else`, *or* `while` not followed by a word character."  The boundary check guards only the last branch, and `iffy` splits.  Wrap the alternatives in a group, `(?:if|else|while)(?!\w)`, and the check applies to all of them.  If you ever collapse your keyword rules into one pattern, this is the bug waiting for you.
+- **Section 3, non-capturing groups.**  The string body needs parentheses to repeat "an ordinary character *or* a backslash pair" as one unit, but it does not need to remember each repetition.  A capturing inner group adds a group 2 that holds only the *last* repetition (`'s'` here), which is useless and shifts the numbering of anything after it.  `(?:...)` groups without capturing.  That is why the `STRING` rule in Step 2d's JSON is written with `(?:...)`.
+- **Section 4, references and function replacements.**  In the replacement string of `re.sub`, `\1` means "whatever group 1 captured in this match," and the replacement must be a raw string, or Python turns `"\1"` into the control character `\x01` before `re` sees it.  A fixed template cannot look an escape up in a table, so `re.sub` also accepts a *function*: it calls the function once per match with the match object and inserts whatever string the function returns.  Because `\\(.)` consumes a backslash *and* the one character after it, a single left-to-right pass pairs every backslash correctly.  Two chained `str.replace` calls do not: the first turns `\\` into `\`, and the second then reads that new backslash as the start of `\n`.
+- **Section 5, named groups and `lastgroup`.**  `(?P<name>...)` names a group.  Joining every rule as `(?P<NAME>pattern)` with `|` builds one master pattern that tries the rules in order (the same priority your `TOKEN_SPEC` loop gives), and `m.lastgroup` reports which named rule matched.  This is an optional alternative to Step 1c's loop over `COMPILED_SPEC`, and it is how the tokenizer example in the Python `re` documentation works.  If you adopt it, write any grouping inside a rule as `(?:...)`, so that only the rule names capture.
+
+> **Now try this.**
+> 1. In section 4, change `TOY_ESCAPES.get(m.group(1), m.group(0))` to `TOY_ESCAPES[m.group(1)]` and add `'bad\qescape'` to `source`.  Predict what happens before you run it.  Which behavior do you want for an unknown escape in your own lexer, and where does Part 3 want the error reported?
+> 2. In section 5, move the `IDENT` rule above `STR` and run again.  Nothing changes.  Why not, and which pair of rules in your own `TOKEN_SPEC` *would* change if you swapped them?
+
 ### Step 2c: String Literals with Escapes
 
 Extend the STRING pattern (or handle strings as a special case) to support four escape sequences: `\"` (a double-quote character), `\\` (a backslash), `\n` (newline, ASCII 10), and `\t` (tab, ASCII 9).
 
 > **Do this.**
 > 1. Add the decoded-value field to `Token` (the TODO you left in Step 1b).  A token stores both the raw lexeme (e.g., `"a\nb"` with a backslash-n) in `value` and the decoded value (with a real newline) in the new field.
-> 2. Make the STRING rule match a backslash followed by any character as one unit, so `\"` does not end the string early.
-> 3. After matching, decode the four escapes into the new field.  Leave `value` as the raw lexeme.
+> 2. Make the STRING rule match a backslash followed by any character as one unit, so `\"` does not end the string early.  Sections 1 and 3 of the walkthrough above show the shape.
+> 3. After matching, decode the four escapes into the new field with one `re.sub` and a function replacement (section 4 of the walkthrough).  Leave `value` as the raw lexeme.
 > 4. An unterminated string reaches end-of-line or end-of-file without a closing `"`.  Check for an opening quote explicitly and raise `LexError` at the *opening* quote's position, not at the end of input.  Otherwise the loop falls through to the "no rule matched" branch and reports the `"` as an unexpected character: the right position but the wrong message.
 
 > **You should see.** This worked example:
@@ -370,6 +458,43 @@ raw lexeme:    "hello\nworld"   (14 chars including quotes)
 decoded value: hello           (with a real newline between)
                world
 ```
+
+> **Building STRING in three moves.**  Work the string rule on its own with the self-test below before you move on to Step 2d.
+> 1. **Shape.**  Start from the toy `TOY_STRING` in the walkthrough: swap the single quotes for double quotes, and keep the body in one capture group so `group(0)` is the raw lexeme and `group(1)` is the body.  (If your `TOKEN_SPEC` loop only ever uses `m.group()`, you can drop the outer capture group and slice the quotes off instead.  Either way, decode only the body.)
+> 2. **Body.**  Inside the quotes, repeat "any character that is not `\"` or a backslash, *or* a backslash followed by any one character" as a single non-capturing group, exactly as section 3 does.  The second branch is what keeps `\"` from ending the string early.
+> 3. **Decode.**  Write a dictionary with your four escapes and decode the body with one `re.sub` call and a function replacement, as section 4 does.  Do not chain `str.replace` calls: the `"c:\\new"` case below is there to catch that.
+>
+> Then store the raw lexeme in `value` and the decoded text in your new field.
+
+Paste this self-test into `scratch.py`, set `DECODED_FIELD` to the name of your new field, and run `python3 scratch.py`.  Every line prints `ok` once the rule and the decoder are right.
+
+```python
+from lexer import tokenize
+
+DECODED_FIELD = "decoded"   # TODO: the name you gave the decoded-value field in Step 2c
+
+STRING_CASES = [
+    (r'"no escapes"',    "no escapes"),
+    (r'"tab\there"',     "tab\there"),     # a real tab
+    (r'"line\nbreak"',   "line\nbreak"),   # a real newline
+    (r'"quote\"end"',    'quote"end'),     # the \" did not end the string
+    (r'"back\\slash"',   "back\\slash"),   # one real backslash
+    (r'"c:\\new"',       "c:\\new"),       # a backslash, then the letter n: NOT a newline
+    (r'""',              ""),              # the empty string
+]
+
+for lexeme, expected in STRING_CASES:
+    tok = next(tokenize(lexeme + " after"))
+    got = getattr(tok, DECODED_FIELD, None)
+    good = tok.type == "STRING" and tok.value == lexeme and got == expected
+    print("ok      " if good else "MISMATCH", f"{lexeme:16} -> {tok.type} raw={tok.value!r} decoded={got!r}")
+```
+
+> **If it fails.**
+> - `MISMATCH` with type `IDENT` or a raw value that stops early (for example `"quote\"`), or a `LexError` on the escaped quote: the string ended at the escaped quote.  The backslash branch of the body is missing, or it comes *after* a branch that already accepts `\`.
+> - The `"c:\\new"` case decodes with a real newline: the decoder handled `\\` and `\n` in two separate passes.  Use one `re.sub` over `\\(.)`.
+> - `KeyError` inside the decoder: the dictionary is missing one of the four escapes, or the replacement function looked up `m.group(0)` (the backslash *and* the letter) instead of `m.group(1)` (the letter alone).
+> - `decoded=None` on every line: `DECODED_FIELD` does not match the field name you added to `Token`.
 
 ### Step 2d: JSON Configuration
 
