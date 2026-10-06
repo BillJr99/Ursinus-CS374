@@ -81,7 +81,30 @@ python3 --version
 
 Now create `grammar.md` in that folder with your editor.  Every part of the lab goes into this one file.  Start it with a title line, a `Partners:` line naming both of you (or saying you worked alone), and four headings, `## Part 0` through `## Part 3`, named as the parts of this page are, so I can find each piece when I grade it.
 
-> **Time budget.**  About three hours in two sittings.  See the course schedule for the assigned and due dates.  On assignment, do Part 0 alone (under an hour) and choose a partner.  By the midpoint, have the Part 1 grammar drafted and attacked by your partner at least once.  By the due date, have Parts 2 and 3 written and `grammar.md` previewed and submitted.  Parts 1 through 3 take one session of about two hours with your partner, most of it on Part 1.
+Put every grammar in a code block labeled `ebnf`, and every derivation and parse tree in a code block labeled `text`: three backticks and the label on the line before, and three backticks alone on the line after.  Outside a code block, Markdown reads `*` as italics and collapses the spacing that holds a tree together.  The start of `grammar.md` looks like this:
+
+````text
+# CS374 Lab: Grammar and Derivations Workshop
+Partners: <your name> and <partner name>   (or: worked alone)
+
+## Part 0: Before You Start - Derivations, Ambiguity, and Precedence
+
+```ebnf
+expr ::= expr PLUS expr
+       | INT
+```
+
+```text
+expr
+=> expr PLUS expr                  expr: expr PLUS expr
+```
+
+## Part 1: The EBNF Grammar
+````
+
+Every later step that says "an `ebnf` block" or "a `text` block" means a block in this format.
+
+> **Time budget.**  About three hours in two sittings.  See the course schedule for the assigned and due dates.  On assignment, do Part 0 alone (under an hour) and choose a partner.  By the midpoint, have the Part 1 grammar drafted and the `or`/`and` checkpoint answered.  By the due date, have Parts 2 and 3 written and `grammar.md` previewed and submitted.  Parts 1 through 3 take one session of about two hours with your partner, most of it on Part 1.
 
 ---
 
@@ -94,6 +117,15 @@ expr    ::= term ( PLUS term )*
 term    ::= factor ( STAR factor )*
 factor  ::= INT | LPAREN expr RPAREN
 ```
+
+The `( PLUS term )*` in the first production means "zero or more copies of `PLUS term`."  You will also see EBNF that writes the same repetition with braces, as `{ PLUS term }`; the two notations mean exactly the same thing, so these two lines define the same rule:
+
+```ebnf
+expr    ::= term ( PLUS term )*
+expr    ::= term { PLUS term }
+```
+
+Everything this page says about a `( ... )*` group applies equally to a `{ ... }` group, and you may use either notation in `grammar.md`.  Likewise, `( X )?` and `[ X ]` both mean "`X` once or not at all."
 
 One convention keeps derivations over EBNF clean: when you apply a production that contains a `( ... )*` group, decide how many times the group repeats and write out every copy in that one step, citing the production and the count.  Here is the leftmost derivation of `2 + 3 * 4`:
 
@@ -153,13 +185,13 @@ expr ::= expr PLUS expr
 
 > **Do this.**
 > 1. Pick a string with at least three operands and two different operators, for example one that mixes `-` and `*`.  Do not reuse the `a + b * c` string that Part 3 draws for you.
-> 2. Draw two distinct parse trees for it in `text` fences under `## Part 0` in `grammar.md`.  Both must follow the grammar above exactly: every node's children are one of its four right-hand sides.  If you can only find one tree, your string probably has a single operator; add a second, different one.
+> 2. Draw two distinct parse trees for it in `text` blocks under `## Part 0` in `grammar.md`.  Both must follow the grammar above exactly: every node's children are one of its four right-hand sides.  If you can only find one tree, your string probably has a single operator; add a second, different one.
 > 3. Under each tree, write the parenthesized expression it stands for and the value it computes.  If the two values differ, you have shown the ambiguity has a cost.
 
 ### Step 0.2: Rewrite the Grammar So Only One Tree Survives
 
 > **Do this.**
-> 1. Rewrite the grammar in an `ebnf` fence so it encodes precedence and associativity.  The worked example's ladder is the shape to imitate: one production per precedence level, each mentioning only itself (at most on one side) and the level below it.  A rewrite that still has `expr` on both ends of a right-hand side, such as `expr ::= expr PLUS expr`, is still ambiguous no matter how many levels you add.
+> 1. Rewrite the grammar in an `ebnf` block so it encodes precedence and associativity.  The worked example's ladder is the shape to imitate: one production per precedence level, each mentioning only itself (at most on one side) and the level below it.  A rewrite that still has `expr` on both ends of a right-hand side, such as `expr ::= expr PLUS expr`, is still ambiguous no matter how many levels you add.
 > 2. Redraw your Step 0.1 string under the new grammar.  Try to draw the second tree again and write one sentence saying which production now forbids it.
 > 3. Mark the rule that got harder to read with an EBNF comment (`//` to the end of the line, as the Parser assignment uses) saying what it used to say and why it changed.  That readability cost is the price of an unambiguous grammar, and Part 3 asks you to defend paying it.
 
@@ -168,7 +200,7 @@ expr ::= expr PLUS expr
 ### Step 0.3: Draw Both Associativities for 2 - 3 - 4
 
 > **Do this.**
-> 1. Draw the left-associative tree, which groups `(2 - 3) - 4`, and the right-associative tree, which groups `2 - (3 - 4)`, in two `text` fences.
+> 1. Draw the left-associative tree, which groups `(2 - 3) - 4`, and the right-associative tree, which groups `2 - (3 - 4)`, in two `text` blocks.
 > 2. Compute both by hand and write the two values under the trees.
 > 3. Ask your favorite language rather than guessing.  For Python, run `python3 -c "print(2 - 3 - 4)"` from the `cs374-grammar` folder; for JavaScript, `node -e "console.log(2 - 3 - 4)"`; for another language, evaluate the same expression in its REPL.  You get a single number: `-5` means the language grouped left, `(2 - 3) - 4`, and `3` means it grouped right, `2 - (3 - 4)`.
 > 4. Paste the command and its output into Part 0 with one sentence naming the associativity your language uses and which tree it agreed with.
@@ -184,12 +216,12 @@ Write the complete EBNF grammar for the class language used across the Lexer, Pa
 - `while` with blocks
 - expressions over numbers, strings, booleans, identifiers, calls, and the arithmetic, comparison, and logical operators
 
-Structure the expression productions as a ladder: one production per precedence level, from `or` at the top down through `and`, comparison, additive, multiplicative, unary, and primary.  This is exactly the shape the Parser assignment's Part 2 transcribes into functions, one function per production, so its shape matters more than its length.  EBNF notation, for reference: `*` means zero or more, `+` one or more, `?` zero or one, `|` separates alternatives, and `( )` groups.  Terminals are your Lexer's token names in all caps.  A nonterminal is a rule you define; if a name appears on a right-hand side, it must appear on a left-hand side somewhere in the grammar.
+Structure the expression productions as a ladder: one production per precedence level, from `or` at the top down through `and`, comparison, additive, multiplicative, unary, and primary.  This is exactly the shape the Parser assignment's Part 2 transcribes into functions, one function per production, so its shape matters more than its length.  EBNF notation, for reference: `*` means zero or more, `+` one or more, `?` zero or one, `|` separates alternatives, and `( )` groups.  Braces and brackets are the other common spelling: `{ X }` is the same as `( X )*`, and `[ X ]` is the same as `( X )?`.  Terminals are your Lexer's token names in all caps, with one exception: a name such as `x` or `count` is written `symbol` in this lab.  Your Lexer calls that token `IDENT`, short for identifier.  Treat `symbol` as a terminal, so it needs no production of its own.  A nonterminal is a rule you define; if a name appears on a right-hand side, it must appear on a left-hand side somewhere in the grammar.
 
 ### Step 1.1: Write the Statement Productions
 
 > **Do this.**
-> 1. Under `## Part 1` in `grammar.md`, open an `ebnf` fence and start from this skeleton.  Statements are the easier half, and finishing them first gives you a `program` production to hang everything else on.  Replace every `TODO` with a real right-hand side.
+> 1. Under `## Part 1` in `grammar.md`, open an `ebnf` block and start from this skeleton.  Statements are the easier half, and finishing them first gives you a `program` production to hang everything else on.  Replace every `TODO` with a real right-hand side.
 > 2. For each statement form, write a two-line program that uses it and read your production against it token by token.  If your Lexer would produce a token that your production doesn't mention, the production is wrong.
 
 ```ebnf
@@ -211,10 +243,11 @@ block       ::= TODO   // LBRACE ... RBRACE
 ### Step 1.2: Write the Expression Ladder
 
 > **Do this.**
-> 1. Continue the same `ebnf` fence with the ladder below, replacing each `TODO`.  Each level is built out of the level below it and mentions only its own operators.  `or_expr` is filled in to show the pattern; every binary level down to `multiplicative` has the same shape with different operator tokens.
-> 2. Put calls where they belong.  A call such as `f(x, 1)` is a primary followed by an argument list in parentheses; give it its own level between `unary` and `primary` or fold it into `primary`, and say which in a comment.
-> 3. Add a one-line comment on any other production where you made a design decision: how `else` attaches, whether comparisons chain.
-> 4. Read every right-hand side and confirm every name in it is defined.  An undefined nonterminal is the most common way to lose points on this part.
+> 1. Continue the same `ebnf` block with the ladder below, replacing each `TODO`.  Each level is built out of the level below it and mentions only its own operators.  `or_expr` is filled in to show the pattern; every binary level down to `multiplicative` has the same shape with different operator tokens.
+> 2. Write `unary` with care, because it is the one level that does not follow the `or_expr` pattern.  The operator comes *before* its operand, so there is no left operand and no `( ... )*` loop.  A unary expression is either a prefix operator (`MINUS` or `NOT`) followed by another unary expression, or the level below with no prefix at all.  Letting `unary` mention itself on the right is what allows `- - x` and `not not ok`.  Its place on the ladder sets its precedence: below `multiplicative`, so `-2 * 3` groups as `(-2) * 3`, and above `primary`, so `-(1 + 2)` negates the whole parenthesized sum.  The Lexer emits the same `MINUS` token for `a - b` and `-b`; the grammar tells them apart by position, because `additive` expects `MINUS` between two operands and `unary` expects it where an operand begins.  This is also why `-2` is two tokens, `MINUS INT`, and not a negative literal.
+> 3. Put calls where they belong.  A call such as `f(x, 1)` is a primary followed by an argument list in parentheses; give it its own level between `unary` and `primary` or fold it into `primary`, and say which in a comment.
+> 4. Add a one-line comment on any other production where you made a design decision: how `else` attaches, whether comparisons chain.
+> 5. Read every right-hand side and confirm every name in it is defined.  An undefined nonterminal is the most common way to lose points on this part.
 
 ```ebnf
 expr           ::= or_expr
@@ -224,10 +257,10 @@ comparison     ::= TODO   // LT, LE, GT, GE, EQEQ, NEQ; decide whether chaining 
 additive       ::= TODO   // PLUS, MINUS
 multiplicative ::= TODO   // STAR, SLASH
 unary          ::= TODO   // prefix MINUS and NOT, then the level below
-primary        ::= TODO   // literals, IDENT, and a parenthesized expr
+primary        ::= TODO   // literals, symbol, and a parenthesized expr
 ```
 
-> **Checkpoint.**  Hand the grammar to your partner and have them write a five-token program that the grammar derives wrongly or can't derive at all.  Every production that survives a serious attempt at breaking it is one you won't have to reopen during the Parser assignment.  The first Reflection Prompt asks which production took the most rounds, so keep a tally.
+> **Checkpoint: why does `and` bind tighter than `or`?**  Your ladder puts `or_expr` above `and_expr` for the same reason it puts `additive` above `multiplicative` and `multiplicative` above `unary`: the lower a level sits, the tighter its operator binds.  Make that argument for `or` and `and`, in a short paragraph under `## Part 1`.  Use `a or b and c`.  Draw the tree your ladder forces, write the grouping it stands for, and name the production that makes the other tree, `(a or b) and c`, impossible.  Then choose true or false values for `a`, `b`, and `c` that make the two groupings disagree, so the choice has a visible cost.  A hint, if you want one: read `and` as multiplication and `or` as addition, with true as 1 and false as 0.
 
 ---
 
@@ -238,10 +271,10 @@ Produce a leftmost derivation and the matching parse tree for two programs, citi
 ### Step 2.1: Derive Both Programs and Draw Their Trees
 
 > **Do this.**
-> 1. Under `## Part 2`, write program 1 in a `text` fence with its token sequence on the line below it, using your Lexer's token names (`LET IDENT EQ INT PLUS INT STAR INT SEMICOLON`).  Count the tokens: your derivation's final line must have exactly those nine terminals, in that order.
-> 2. Start from `program` and derive it in a `text` fence, one `=>` line per step, in the format of the worked example.  Rewrite the leftmost nonterminal only, and cite the production at the right of each line, including how many times any `( ... )*` group was used.
-> 3. Walk the ladder honestly.  Getting from `expr` down to an `INT` passes through every level in between, even the ones with no operator at this input, and each pass is one cited step.  Expect the derivation to run somewhat over a dozen lines because of the ladder; that length is correct.
-> 4. Draw the parse tree in a second `text` fence.  Every internal node is a nonterminal from your derivation, every leaf is a token, and the leaves read left to right as the token sequence.
+> 1. Under `## Part 2`, write program 1 in a `text` block with its token sequence on the line below it, using your Lexer's token names (`LET symbol EQ INT PLUS INT STAR INT SEMICOLON`).  Count the tokens: your derivation's final line must have exactly those nine terminals, in that order.
+> 2. Start from `program` and derive it in a `text` block, one `=>` line per step, in the format of the worked example.  Rewrite the leftmost nonterminal only, and cite the production at the right of each line, including how many times any `( ... )*` group was used.
+> 3. Walk every level of the ladder.  Getting from `expr` down to an `INT` passes through every level in between, even the ones with no operator at this input, and each pass is one cited step.  Expect the derivation to run somewhat over a dozen lines because of the ladder; that length is correct.
+> 4. Draw the parse tree in a second `text` block.  Every internal node is a nonterminal from your derivation, every leaf is a token, and the leaves read left to right as the token sequence.
 > 5. Write program 2 with its token sequence, then derive it the same way.  This one exercises `while_stmt`, `block`, `assign_stmt`, and the `comparison` level.  When you rewrite `block`, decide how many statements the `stmt*` group produces (here, one) and cite it.
 > 6. Draw program 2's tree.  It will be wider than program 1's, so leave room and check it in the Markdown preview.
 
@@ -259,21 +292,21 @@ Using your derivation of program 1, explain which productions force `*` to bind 
 ```ebnf
 expr ::= expr PLUS expr
        | expr STAR expr
-       | IDENT
+       | symbol
 ```
 
 ```text
-   Tree A: a + (b * c)                    Tree B: (a + b) * c
+   Tree A: a + (b * c)                      Tree B: (a + b) * c
 
-               expr                                  expr
-          _____/|\_____                         _____/|\_____
-         /      |      \                       /      |      \
-       expr    PLUS    expr                  expr    STAR    expr
-        |          ____/|\____           ____/|\____          |
-        |         /     |     \         /     |     \         |
-    IDENT(a)    expr   STAR   expr    expr   PLUS   expr   IDENT(c)
-                 |             |       |             |
-             IDENT(b)      IDENT(c)  IDENT(a)    IDENT(b)
+               expr                                    expr
+          _____/|\_____                           _____/|\_____
+         /      |      \                         /      |      \
+       expr    PLUS    expr                    expr    STAR    expr
+        |          ____/|\____             ____/|\____          |
+        |         /     |     \           /     |     \         |
+    symbol(a)   expr   STAR   expr      expr   PLUS   expr  symbol(c)
+                 |             |         |             |
+             symbol(b)     symbol(c) symbol(a)     symbol(b)
 ```
 
 Same string, same grammar, two trees, two meanings.  Nothing in the flat grammar prefers Tree A, so a parser built from it has no basis for choosing, and that is what ambiguous means.  Your ladder is the fix: with `STAR` confined to a lower level than `PLUS`, Tree B has no derivation at all, because no production ever puts a `STAR` node above a `PLUS` node.
@@ -284,14 +317,14 @@ Same string, same grammar, two trees, two meanings.  Nothing in the flat grammar
 > 1. In your Part 2 derivation of program 1, find the step where `1 + 2 * 3` split at the `PLUS`, and the later step where `2 * 3` split at the `STAR`.
 > 2. Write a short paragraph naming those two productions and explaining why the `STAR` step had to happen below the `PLUS` step: which production contains `PLUS`, which contains `STAR`, and which one is built from the other.
 > 3. Write a flat one-level grammar for `1 + 2 * 3` (the Part 0 or the example grammar above will do; say which).
-> 4. Draw the tree that groups `(1 + 2) * 3` in a `text` fence and write its value next to the correct tree's value.
+> 4. Draw the tree that groups `(1 + 2) * 3` in a `text` block and write its value next to the correct tree's value.
 > 5. State in one sentence which production of your ladder makes this tree impossible.
 
 ### Step 3.2: Show That 1 - 2 - 3 Associates Left
 
 > **Do this.**
 > 1. State in one or two sentences how your grammar makes `1 - 2 - 3` group as `(1 - 2) - 3`.
-> 2. Verify it with a three-line derivation sketch in a `text` fence: start at your additive level, apply its production once to expose both `MINUS` tokens, and show where the left group forms.  Three lines means a sketch, not a full derivation down to tokens.
+> 2. Verify it with a three-line derivation sketch in a `text` block: start at your additive level, apply its production once to expose both `MINUS` tokens, and show where the left group forms.  Three lines means a sketch, not a full derivation down to tokens.
 
 > **Watch out.**  A `( MINUS multiplicative )*` group produces a flat list of three operands at one level, and a flat list by itself does not say which two group first.  Decide where the left grouping comes from, and say so.  It can come from the grammar's shape: the left-recursive form `additive ::= additive MINUS multiplicative | multiplicative` puts the grouping in the tree.  Or it can come from the parser's left-fold loop that the Parser assignment describes for the `*` form.  Either is defensible, but an analysis that doesn't say which one it relies on isn't finished.
 
@@ -304,7 +337,7 @@ Submit `grammar.md` containing all parts, with both partners named at the top.  
 | File or artifact | What it shows | Rubric row |
 |------------------|---------------|------------|
 | `grammar.md`, `## Part 0` | Two trees for one string with their values, the disambiguated rewrite with the marked rule, both `2 - 3 - 4` trees, and the REPL command with its output | Part 0 |
-| `grammar.md`, `## Part 1` | The complete EBNF grammar in one `ebnf` fence, statements then ladder, with design decisions commented and no undefined nonterminals | EBNF Grammar |
+| `grammar.md`, `## Part 1` | The complete EBNF grammar in one `ebnf` block, statements then ladder, with design decisions commented and no undefined nonterminals, followed by the `or`/`and` precedence paragraph | EBNF Grammar |
 | `grammar.md`, `## Part 2` | Each program's token sequence, its leftmost derivation with a production cited on every line, and its matching parse tree | Derivations and Parse Trees |
 | `grammar.md`, `## Part 3` | The precedence paragraph naming both productions, the flat grammar's wrong tree with both values, the associativity statement, and the three-line sketch | Precedence and Ambiguity Analysis |
 
@@ -314,14 +347,14 @@ Submit `grammar.md` containing all parts, with both partners named at the top.  
 
 - [ ] Both partners are named at the top of `grammar.md`, or the top says you worked alone.
 - [ ] Part 0 has two distinct trees for one string, a rewritten grammar with the harder-to-read rule marked, both `2 - 3 - 4` trees, and the REPL command with its output.
-- [ ] The Part 1 ladder has one production per precedence level, `or` through `primary`; the grammar covers every statement form in the Part 1 list; and every nonterminal on a right-hand side is defined on a left-hand side.
+- [ ] The Part 1 ladder has one production per precedence level, `or` through `primary`; the grammar covers every statement form in the Part 1 list; every nonterminal on a right-hand side is defined on a left-hand side; and the `or`/`and` checkpoint paragraph is answered with its tree and a pair of disagreeing values.
 - [ ] Both Part 2 derivations rewrite the leftmost nonterminal at every step, cite a production on every line, end in exactly the program's token sequence, and match their parse trees node for node.
 - [ ] Part 3 names the productions that force precedence, shows the flat grammar's wrong tree, and includes the three-line `1 - 2 - 3` sketch with a stated source of left grouping.
-- [ ] Grammars are in `ebnf` fences, derivations and trees are in `text` fences, and the Markdown preview shows the trees intact.
+- [ ] Grammars are in `ebnf` blocks, derivations and trees are in `text` blocks, and the Markdown preview shows the trees intact.
 
 ---
 
 ## Reflection Prompts
 
-- Which production went through the most revisions before your partner could no longer break it, and what broke it last?
+- Which production did you revise most often, and what problem made you change it the last time?
 - If you worked in a pair, who did what, and name one thing your partner caught that you would have missed.  If you worked alone, note that instead.
