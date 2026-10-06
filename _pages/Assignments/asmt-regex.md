@@ -473,9 +473,17 @@ print("   m.group('month'):", m.group("month"), "| m.groupdict():", m.groupdict(
 noisy = "ids 12026-09-18 and 2026-09-180, real date 2026-09-18"
 print("6. no \\b:  ", re.sub(ISO, r"\3.\2.\1", noisy))
 print("   with \\b:", re.sub(r"\b" + ISO + r"\b", r"\3.\2.\1", noisy))
+
+# 7. Replacing WITHIN a group: capture the context you keep, rewrite only the part you change.
+cfg = "user=alice token=8f3a91 retries=3 token=77c0de"
+print("7.", re.sub(r"(token=)\w+", r"\1[REDACTED]", cfg))
+print("   year only:", re.sub(ISO, r"2027-\2-\3", text))
+print("   \\g<1> then digits:", re.sub(ISO, r"\g<1>0101", "2026-09-18"), "| \\1 then digits:", repr(re.sub(ISO, r"\10101", "2026-09-18")))
+MONTHS = {"09": "Sep", "10": "Oct", "11": "Nov"}
+print("   function:", re.sub(ISO_NAMED, lambda m: f"{m.group('year')}-{MONTHS[m.group('month')]}-{m.group('day')}", text))
 ```
 
-> **You should see.** Sixteen lines, numbered by section.  Section 4 and section 5 print the same sentence, and section 6 shows the boundaries protecting the two longer numbers.
+> **You should see.** Twenty lines, numbered by section.  Section 4 and section 5 print the same sentence, section 6 shows the boundaries protecting the two longer numbers, and section 7 changes one piece of each match while leaving the rest exactly as it was.
 
 ```text
 1. group(0): 2026-09-18 | group(1): 2026 | group(2): 09 | group(3): 18
@@ -494,6 +502,10 @@ print("   with \\b:", re.sub(r"\b" + ISO + r"\b", r"\3.\2.\1", noisy))
    m.group('month'): 09 | m.groupdict(): {'year': '2026', 'month': '09', 'day': '18'}
 6. no \b:   ids 118.09.2026 and 18.09.20260, real date 18.09.2026
    with \b: ids 12026-09-18 and 2026-09-180, real date 18.09.2026
+7. user=alice token=[REDACTED] retries=3 token=[REDACTED]
+   year only: 2027-09-18 was the deadline; it moved to 2027-10-02, then to 2027-11-30
+   \g<1> then digits: 20260101 | \1 then digits: 'A01'
+   function: 2026-Sep-18 was the deadline; it moved to 2026-Oct-02, then to 2026-Nov-30
 ```
 
 **Reading the code.**
@@ -504,10 +516,11 @@ print("   with \\b:", re.sub(r"\b" + ISO + r"\b", r"\3.\2.\1", noisy))
 - **Section 4, group references.**  In the *replacement* string of `re.sub`, `\3` means "whatever group 3 captured in this match."  `re.sub` applies the replacement to every match, so all three dates are rewritten, including the one at the very start of the string and the one at the very end.  The replacement must be a raw string: without the `r`, Python turns `"\3"` into the control character `\x03` before `re` ever sees it, as the `not raw` line shows.  `\g<3>` is the long form of `\3`.  Use it when a literal digit follows the reference, because `\30` would be read as group 30.
 - **Section 5, named groups.**  `(?P<year>...)` names a group, `\g<year>` refers to it in a replacement, and `m.group("year")` or `m.groupdict()` reads it in code.  The named form gives the same result as section 4 and cannot get the order wrong by miscounting.  Step 3.2 requires named groups for the log parser.
 - **Section 6, boundaries.**  Without `\b`, the pattern happily matches the last ten characters of `12026-09-18` and the first ten of `2026-09-180`, and rewrites those pieces of longer numbers.  `\b` on both ends requires a non-word character (or the edge of the string) just outside the date.
+- **Section 7, replacing within a group.**  `re.sub` always replaces the *whole match*; there is no way to point it at "just group 2."  So to change one piece and keep the rest, capture the pieces you keep and write them back with references, and write the new text literally where the changed piece goes.  In `r"\1[REDACTED]"`, `\1` puts back `token=` and `[REDACTED]` takes the place of the value, which was matched but deliberately not captured.  In `r"2027-\2-\3"`, the year is the changed piece, so it is the one part *not* referenced.  When a literal digit follows a reference, use the `\g<1>` form: `r"\10101"` does not mean "group 1, then `0101`"; Python's `re` reads `\101` as the octal escape for the letter `A`, so the year silently disappears and you get `'A01'`, with no error to warn you.  When the new text must be *computed* from what a group captured (a lookup, arithmetic, a change of case), pass a function instead: it receives the match object, transforms the one group it cares about, and passes the others through unchanged with `m.group(...)`.
 
 > **Now try this.**
 > 1. Change the section 4 replacement to `r"\2/\3/\1"` and predict the output before you run it.
-> 2. `re.sub` also accepts a function in place of the replacement string.  It calls the function once per match with the match object and inserts whatever string the function returns.  Predict, then run: `re.sub(ISO_NAMED, lambda m: f"{m.group('day')}.{m.group('month')}.{m.group('year')}", text)`.  When is a function worth the extra typing?  (One answer: when the new text needs arithmetic or a lookup, such as turning `09` into `September`.)
+> 2. Section 7 passed `re.sub` a function in place of the replacement string.  It calls the function once per match with the match object and inserts whatever string the function returns.  Predict, then run this one, which reorders instead of transforming: `re.sub(ISO_NAMED, lambda m: f"{m.group('day')}.{m.group('month')}.{m.group('year')}", text)`.  When is a function worth the extra typing?  (One answer: when the new text needs arithmetic or a lookup, such as turning `09` into `September`.)
 
 ### Step 3.1: Text Transformer
 

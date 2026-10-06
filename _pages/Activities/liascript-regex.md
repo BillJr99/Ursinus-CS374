@@ -24,11 +24,12 @@ By the end of *today*, you will be able to:
 - Trace a regular expression against a target string to predict whether it matches, citing the precedence rules where they apply
 - Show that each convenience in practical regex syntax (`+`, `?`, `[a-z]`, `{n,m}`) is shorthand, by rewriting a pattern in the three primitives and checking that both versions describe the same language
 - Write the regular expression for a programming language token type (identifier, integer literal, floating-point literal) that a lexer specification could use
+- Extract data with capture groups and rewrite text with `re.sub`, using group references (`\1`, `\g<name>`) and replacement functions to change one part of a match while keeping the rest
 - Search a source tree with `grep`, choosing the right flags and avoiding the BRE-versus-ERE trap
 
 Day 2 puts these into practice: Python's `re` in five verbs, how the engine backtracks, greed, and the point where regular expressions run out of power.
 
-Regular languages are the bottom rung of the Chomsky hierarchy, which the *Grammars and the Chomsky Hierarchy* activity mapped.  They come with the most widely used notation in computing.  Today's path is the three operators, then precedence, then real token patterns built from the primitives, then regex at the shell.
+Regular languages are the bottom rung of the Chomsky hierarchy, which the *Grammars and the Chomsky Hierarchy* activity mapped.  They come with the most widely used notation in computing.  Today's path is the three operators, then precedence, then real token patterns built from the primitives, then capture groups and replacement in Python, then regex at the shell.
 
 > **Before You Begin**, make sure you are comfortable with the following:
 >
@@ -58,6 +59,7 @@ A plain-English glossary.  Come back to it whenever one of these terms starts to
 | **Character class (`[0-9]`, `\d`)** | "Any one character from this menu" | Abbreviates a long alternation and keeps the pattern readable |
 | **Anchor (`^`, `$`, `\b`)** | Matches a *position* (start, end, word edge), not a character | Stops a match from beginning or ending in the middle of a word |
 | **Capture group `(...)`** | Parentheses that *remember* the text they matched | How you extract data from text instead of only detecting it |
+| **Group reference (`\1`, `\g<name>`)** | In a replacement string, "paste back what that group captured" | How you rewrite text while keeping the parts you matched |
 | **Greedy quantifier** | Takes as many characters as it can, and gives some back only when forced | Explains most "my regex matched too much" surprises |
 | **Token** | The smallest meaningful chunk of source code (a number, a name, an operator) | The lexer's output; one regex defines each token type |
 
@@ -364,7 +366,162 @@ To remember from Part II: `+`, `?`, character classes, and `{n,m}` are shorthand
 
 ---
 
-# Part III: Regex at the Command Line
+# Part III: Capture Groups and Replacement
+
+So far every pattern has answered a yes-or-no question: is this string in the set?  Parentheses do a second job that the theory never needed.  Besides grouping for precedence, a pair of parentheses *captures* the text it matched, so your code can read that text back out, or paste it back into a rewritten string.  The first use is extraction, which is what a lexer does when it pulls the digits out of an integer token.  The second is transformation, which is what every "find and replace with a pattern" tool does.
+
+## 3.  Theory: Numbering, Naming, and Pasting Back
+
+Four rules cover nearly everything:
+
+| Rule | Example | Reads as |
+|------|---------|----------|
+| Groups are numbered by their *opening* parenthesis, left to right, from 1 | `(\w+), (\w+)` | group 1 is the last name, group 2 the first |
+| Group 0 is always the whole match | `m.group(0)` | everything the pattern consumed |
+| `(?:...)` groups without capturing, and takes no number | `(?:\w+), (\w+)` | now group 1 is the first name |
+| `(?P<name>...)` captures under a name as well as a number | `(?P<last>\w+)` | `m.group("last")`, or `\g<last>` in a replacement |
+
+`re.sub(pattern, replacement, text)` finds every match and replaces the **whole match** with the replacement.  Inside the replacement string, `\1` (or `\g<1>`, or `\g<name>`) means "the text that group captured in *this* match."  This has a consequence worth stating plainly: there is no way to tell `re.sub` to replace "only group 2."  To change one part of a match and keep the rest, you capture the parts you keep, write them back with references, and write the new text literally in the place of the part you are changing.
+
+The backreference `\1` from Part II and the group reference `\1` here are the same notation in two places.  Inside a *pattern*, `\1` means "match the same text again," which is the feature that broke regularity.  Inside a *replacement*, `\1` only pastes text and adds no matching power at all.
+
+## Examples: Predict the Groups
+
+For the line `Hopper, Grace  09:45  ADD R1 R2`, fill in the last column with your team before you run Model 3.
+
+| Pattern | Question | Your prediction |
+|---------|----------|-----------------|
+| `(\w+), (\w+)\s+(\d{2}):(\d{2})` | What is `group(3)`?  What is `group(0)`? | ? |
+| `(?:\w+), (\w+)` | What is `group(1)` now? | ? |
+| `R\d` with `findall` | What list comes back? | ? |
+| `R(\d)` with `findall` | Does the list change?  How? | ? |
+
+## Model 3: Reading Groups Back Out
+
+```python
+import re
+
+line = "Hopper, Grace  09:45  ADD R1 R2"
+m = re.search(r"(\w+), (\w+)\s+(\d{2}):(\d{2})", line)
+
+print("group(0):", m.group(0))
+print("group(1):", m.group(1), "| group(2):", m.group(2))
+print("groups():", m.groups())
+print("span(3): ", m.span(3), "->", line[m.start(3):m.end(3)])
+
+named = re.search(r"(?P<last>\w+), (?P<first>\w+)\s+(?P<hh>\d{2}):(?P<mm>\d{2})", line)
+print("groupdict():", named.groupdict())
+
+plain = re.search(r"(?:\w+), (\w+)", line)
+print("with (?:...), group(1) is:", plain.group(1))
+
+print("findall, 0 groups:", re.findall(r"R\d", line))
+print("findall, 1 group: ", re.findall(r"R(\d)", line))
+print("findall, 2 groups:", re.findall(r"(R)(\d)", line))
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- `re.search` returns a *match object*, or `None` if nothing matched.  Real code checks for `None` before calling `.group()`; this demo knows the line matches.
+- `group(n)` is one capture, `groups()` is all of them as a tuple, and `span(n)` is where group `n` sits in the original string, so `line[m.start(3):m.end(3)]` recovers the same text.  A lexer uses exactly this to report the column of a bad token.
+- `groupdict()` turns named groups into a dictionary, which is the step from "a line of text" to "a structured record."
+- `findall` changes shape with the number of groups: whole matches with none, just the group with one, tuples with two or more.  That shape change surprises everyone once, so let it surprise you here.
+
+## Model 4: Rewriting with Group References
+
+Before you run it, predict line `c.` and both lines of `d.`.
+
+```python
+import re
+
+names = "Hopper, Grace; Lovelace, Ada; Turing, Alan"
+NAME = r"(\w+), (\w+)"
+
+# (a) Reorder: the replacement is rebuilt entirely from group references.
+print("a.", re.sub(NAME, r"\2 \1", names))
+
+# (b) The same thing with named groups: immune to miscounting.
+print("b.", re.sub(r"(?P<last>\w+), (?P<first>\w+)", r"\g<first> \g<last>", names))
+
+# (c) Replace WITHIN a match: capture what you keep, write the new text literally.
+config = "host=db1 password=hunter2 port=5432 password=letmein"
+print("c.", re.sub(r"(password=)\S+", r"\1****", config))
+times = "start 09:45, break 10:30, end 11:15"
+print("  ", re.sub(r"(\d{2}):\d{2}", r"\1:00", times))      # keep the hour, zero the minutes
+
+# (d) A digit right after a reference: \g<1> is unambiguous, \1 followed by digits is not.
+print("d.", re.sub(r"(\d{2}):\d{2}", r"\g<1>00", times))
+print("  ", repr(re.sub(r"(\d{2}):\d{2}", r"\100", times)))
+
+# (e) Forget the r prefix and Python rewrites \1 before re ever sees it.
+print("e.", repr(re.sub(NAME, "\2 \1", "Hopper, Grace")))
+
+# (f) A function: compute new text from ONE group, pass the others through untouched.
+def to_12h(m):
+    hh = int(m.group(1))
+    suffix = "AM" if hh < 12 else "PM"
+    return f"{hh % 12 or 12}:{m.group(2)} {suffix}"
+print("f.", re.sub(r"(\d{2}):(\d{2})", to_12h, "standup 09:45, lunch 12:30, demo 15:05"))
+print("  ", re.sub(r"\b(let|var)\s+(\w+)", lambda m: f"{m.group(1)} {m.group(2).upper()}", "let x = 1; var total = x"))
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- **(a) and (b), reordering.**  The replacement `r"\2 \1"` contains no literal text from the names at all.  It is built entirely from what the groups captured, in a new order.  The named version gives the same output and cannot be broken by miscounting parentheses.
+- **(c), replacing within a match.**  `(password=)\S+` captures the part to keep and matches, but does not capture, the part to replace.  The replacement `r"\1****"` writes the kept part back and puts `****` where the secret was.  The times line does the same thing: the hour is captured and kept, and the minutes are matched and replaced with a literal `00`.  This is the general recipe for "change one piece of every match": capture the context, leave the target uncaptured (or ignore its group), and write the new text literally.
+- **(d), a digit after a reference.**  `r"\g<1>00"` means "group 1, then `00`."  `r"\100"` does not: Python's `re` reads `\100` as an octal character escape (the `@` sign), so every time collapses to `@` with no error.  Whenever a digit follows a reference, use the `\g<n>` form.
+- **(e), the raw-string trap.**  Without the `r`, Python turns `"\2 \1"` into two control characters before `re` sees the string.  Every replacement with a backslash should be a raw string.
+- **(f), a function as the replacement.**  When the new text must be *computed*, such as arithmetic on the hour or a change of case, pass a function.  `re.sub` calls it once per match with the match object and inserts whatever string it returns.  `to_12h` transforms only the hour group and passes the minutes group through unchanged.  The `let`/`var` line uppercases only the variable name in a declaration and leaves the keyword alone, which is the shape of a tiny source-to-source rewriter.
+
+### Critical Thinking Questions
+
+9.  In Model 4 (c), why is `\S+` after `password=` *not* in parentheses?  What would change, in the pattern and in the replacement, if it were?
+10. `re.sub(r"(\d{2}):\d{2}", r"\1:00", times)` changes the minutes and keeps the hour.  Write the replacement that keeps the minutes and changes every hour to `12`.  Which part do you capture now?
+11. Line (d) printed `@` with no error.  Which is worse for a programmer, a regex that raises an exception or one that silently produces wrong output?  What habit from this model prevents the silent case?
+12. A lexer turns the text `0x1F` into an integer token with value 31.  Is that closer to Model 3 or Model 4?  Which `re` call and which group would you use, and where does `int(..., 16)` come in?
+
+### Try It Yourself
+
+Write a `(pattern, replacement)` pair for each rewrite.  Each one keeps part of the match and changes or rearranges the rest.
+
+```python
+import re
+
+# TODO: replace each None pair with (pattern, replacement).  Use capture groups
+#       and group references; every replacement should be a raw string.
+TASKS = [
+    ("swap 'key: value' into 'value (key)'",
+     None,
+     "name: Ada, lang: Python",            "Ada (name), Python (lang)"),
+    ("mask all but the last four digits of a card number",
+     None,
+     "card 4111-1111-1111-1234 on file",   "card ****-****-****-1234 on file"),
+    ("rewrite base**exp as pow(base, exp)",
+     None,
+     "y = x**2 + n**k",                     "y = pow(x, 2) + pow(n, k)"),
+]
+
+for desc, rule, given, want in TASKS:
+    print(f"\n{desc}")
+    if rule is None:
+        print("  (not written yet)")
+        continue
+    pattern, replacement = rule
+    got = re.sub(pattern, replacement, given)
+    print(f"  got:  {got!r}")
+    print(f"  want: {want!r}  -> {'ok' if got == want else 'FAILED'}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output once all three are written: every line reads `ok`.  The card number is the instructive one, because only the last four digits need a group; the first twelve are matched and thrown away.
+
+To remember from Part III: parentheses capture, groups are numbered by their opening parenthesis, and `re.sub` replaces the whole match.  To change part of a match, capture what you keep, write it back with `\1` or `\g<name>`, and write the new text literally; when the new text must be computed, pass a function.
+
+---
+
+# Part IV: Regex at the Command Line
 
 You will use regular expressions in two places this semester.  Inside Python, you write your lexer with them.  At the shell, you search your own source tree with them.  The Overview assignment asks you to submit a `grep` transcript, and you will reach for `grep` constantly once your interpreter is a few thousand lines long and "where do I construct a `BinOp` node?" becomes a search question instead of a scrolling question.
 
@@ -437,7 +594,7 @@ grep -nE "TODO|FIXME"   notes.md    # ERE: reads like Python
 
 > **Watch out.**  `grep` is line-oriented, so it cannot match a pattern that spans a newline.  When you want that ("find every function whose body contains `raise`"), you have left regular-language territory and you want a parser.  That is the same boundary Day 2 draws between regular expressions and context-free grammars.  It shows up in your tools as well as in your theory.
 
-To remember from Part III: `grep -rnE` covers nearly every search you will run, and plain `grep` treats `+`, `?`, `|`, and parentheses as literal characters.  Escape the dot when you mean a dot.
+To remember from Part IV: `grep -rnE` covers nearly every search you will run, and plain `grep` treats `+`, `?`, `|`, and parentheses as literal characters.  Escape the dot when you mean a dot.
 
 ---
 
@@ -488,6 +645,24 @@ Adding `{n,m}`, `[a-z]`, `?` and `+` to a regex dialect:
 
 ---
 
+In `re.sub(r"(\w+)=\S+", r"\1=***", "user=ada key=abc123")`, what does `\1` contribute to the output?
+
+[(X)] The text the first group captured in each match (`user`, then `key`), so the names survive while the values are masked
+[( )] The literal characters backslash and one
+[( )] The first match in the whole string, `user`, pasted into every replacement
+[( )] Nothing; `re.sub` replaces only the captured group, so `\1` is ignored
+
+---
+
+You want group 1 followed by the digits `00` in a replacement.  Which replacement string is correct?
+
+[(X)] `r"\g<1>00"`
+[( )] `r"\100"`
+[( )] `"\100"`
+[( )] `r"\1" "00"` written as two adjacent string literals
+
+---
+
 # Exercises
 
 **Exercise 1.**  Write a regular expression for a string literal: a double quote, any number of characters that are not double quotes, then a double quote.  Now amend it to allow `\"` inside the string.  What made the second version so much harder, and what does that suggest about hand-writing lexers for string literals?
@@ -515,10 +690,10 @@ Write a paragraph about another finite description of an infinite set that you r
 - Allison, Chapter 3 §3.1-3.2, on regular expressions and their equivalence to finite automata.
 - Allison, Chapter 4, on the pumping lemma (the standard tool for proving that a language is *not* regular, by showing that every long enough string in it has a piece you can repeat).  We work one example in class; it is background for the regular-versus-context-free boundary.
 - The Python [`re` HOWTO](https://docs.python.org/3/howto/regex.html), which Day 2 works through in five verbs.
-- [The Shell for Language Development](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ShellForLanguageDev), whose grep appendix goes further than Part III: named capture groups and a full log-triage walkthrough that turns unstructured log lines into structured records.
+- [The Shell for Language Development](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ShellForLanguageDev), whose grep appendix goes further than Part IV: named capture groups and a full log-triage walkthrough that turns unstructured log lines into structured records.
 - [regex101](https://regex101.com/): an interactive tester that explains every piece of a pattern and highlights each match.  Set the Flavor to Python so it behaves like `re`; its step-by-step debugger, which shows the engine backtracking, runs only in the PCRE flavor.
 - [pythex](https://pythex.org/): tests a pattern with Python's own `re` module, running in your browser, so what it reports is exactly what your code will do.
 
 ---
 
-> **Where the practice went.**  Everything that used to be a second day of this activity (Python's `re` in five verbs and watching the engine backtrack) opens the [Regular Expressions assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Regex), which goes out at the next meeting.  Parts 1 and 2 are written as a walkthrough: run every cell, then vary it.
+> **Where the practice went.**  Part III gave you a first look at groups and replacement.  Everything else that used to be a second day of this activity (Python's `re` in five verbs and watching the engine backtrack) opens the [Regular Expressions assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Regex), which goes out at the next meeting.  Parts 1 and 2 are written as a walkthrough: run every cell, then vary it.
