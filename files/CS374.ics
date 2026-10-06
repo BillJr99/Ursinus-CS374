@@ -148,16 +148,16 @@ BEGIN:VEVENT
 UID:00000000-0000-0000-0000-0366c95f180d
 DTSTAMP:20261015T000000Z
 DTSTART;VALUE=DATE:20261015
-SUMMARY:CS374 Principles of Programming Languages: Programming Assignment: Regular Expressions Due
+SUMMARY:CS374 Principles of Programming Languages: Lab: Finite Automata Simulators Handed Out
 LOCATION:
 DESCRIPTION:
 PRIORITY:3
 END:VEVENT
 BEGIN:VEVENT
 UID:00000000-0000-0000-0000-0366c95f180e
-DTSTAMP:20261015T000000Z
-DTSTART;VALUE=DATE:20261015
-SUMMARY:CS374 Principles of Programming Languages: Lab: Finite Automata Simulators Handed Out
+DTSTAMP:20261020T000000Z
+DTSTART;VALUE=DATE:20261020
+SUMMARY:CS374 Principles of Programming Languages: Programming Assignment: Regular Expressions Due
 LOCATION:
 DESCRIPTION:
 PRIORITY:3
