@@ -429,6 +429,86 @@ PASS MARKDOWN_LINK (3 positive, 3 negative)
 
 ## Part 3: Regex-Based Text Transformer and Log Parser
 
+### Step 3.0: Groups and Group References, a Walkthrough
+
+The date step of the transformer asks you to take a date apart and put the pieces back together in a different order.  Two tools do that work.  A *capture group* `(...)` remembers the text it matched.  A *group reference* such as `\1` in the replacement string of `re.sub` puts that remembered text back.  This walkthrough shows both on a date conversion that runs in the opposite direction from the one you will write: it turns ISO `YYYY-MM-DD` into the European `DD.MM.YYYY`.  You see every technique here, and you still decide for yourself how to apply it to `MM/DD/YYYY`.
+
+> **Do this.**
+> 1. Create `groups_demo.py` in `cs374-regex` and paste the code below into it.
+> 2. Run `python3 groups_demo.py`.  This file is practice, like `five_verbs.py`, and is not a deliverable.
+
+```python
+import re
+
+text = "2026-09-18 was the deadline; it moved to 2026-10-02, then to 2026-11-30"
+
+# 1. Numbering: each ( opens a group, counted left to right from 1.  Group 0 is the whole match.
+m = re.search(r"(\d{4})-(\d{2})-(\d{2})", text)
+print("1. group(0):", m.group(0), "| group(1):", m.group(1), "| group(2):", m.group(2), "| group(3):", m.group(3))
+print("   groups():", m.groups(), "| span(2):", m.span(2))
+
+# 2. Alternation inside a group.  Without the parentheses, | splits the WHOLE pattern in two.
+print("2. ungrouped:", re.search(r"\d{4}-0[1-9]|1[0-2]-\d{2}", "2026-12-25").group(0))
+print("   grouped:  ", re.search(r"\d{4}-(0[1-9]|1[0-2])-\d{2}", "2026-12-25").group(0))
+ISO = r"(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])"
+for s in ["2026-09-18", "2026-13-01", "2026-02-31", "2026-00-15"]:
+    print(f"   fullmatch {s}: {bool(re.fullmatch(ISO, s))}")
+
+# 3. Non-capturing groups (?:...) group without taking a number.
+m = re.search(r"(?:\d{4})-(\d{2})-(\d{2})", text)
+print("3. with (?:...) on the year, group(1) is now the month:", m.group(1), "| groups():", m.groups())
+
+# 4. Group references in re.sub: \1, \2, \3 in the replacement mean "the text group n captured".
+print("4.", re.sub(ISO, r"\3.\2.\1", text))
+print("   not raw: ", repr(re.sub(ISO, "\3.\2.\1", "2026-09-18")))
+print("   \\g<n> form:", re.sub(ISO, r"\g<3>.\g<2>.\g<1>", "2026-09-18"))
+
+# 5. Named groups: (?P<name>...) in the pattern, \g<name> in the replacement, m.group("name") in code.
+ISO_NAMED = r"(?P<year>\d{4})-(?P<month>0[1-9]|1[0-2])-(?P<day>0[1-9]|[12]\d|3[01])"
+print("5.", re.sub(ISO_NAMED, r"\g<day>.\g<month>.\g<year>", text))
+m = re.search(ISO_NAMED, text)
+print("   m.group('month'):", m.group("month"), "| m.groupdict():", m.groupdict())
+
+# 6. Word boundaries keep the pattern from rewriting part of a longer number.
+noisy = "ids 12026-09-18 and 2026-09-180, real date 2026-09-18"
+print("6. no \\b:  ", re.sub(ISO, r"\3.\2.\1", noisy))
+print("   with \\b:", re.sub(r"\b" + ISO + r"\b", r"\3.\2.\1", noisy))
+```
+
+> **You should see.** Sixteen lines, numbered by section.  Section 4 and section 5 print the same sentence, and section 6 shows the boundaries protecting the two longer numbers.
+
+```text
+1. group(0): 2026-09-18 | group(1): 2026 | group(2): 09 | group(3): 18
+   groups(): ('2026', '09', '18') | span(2): (5, 7)
+2. ungrouped: 12-25
+   grouped:   2026-12-25
+   fullmatch 2026-09-18: True
+   fullmatch 2026-13-01: False
+   fullmatch 2026-02-31: True
+   fullmatch 2026-00-15: False
+3. with (?:...) on the year, group(1) is now the month: 09 | groups(): ('09', '18')
+4. 18.09.2026 was the deadline; it moved to 02.10.2026, then to 30.11.2026
+   not raw:  '\x03.\x02.\x01'
+   \g<n> form: 18.09.2026
+5. 18.09.2026 was the deadline; it moved to 02.10.2026, then to 30.11.2026
+   m.group('month'): 09 | m.groupdict(): {'year': '2026', 'month': '09', 'day': '18'}
+6. no \b:   ids 118.09.2026 and 18.09.20260, real date 18.09.2026
+   with \b: ids 12026-09-18 and 2026-09-180, real date 18.09.2026
+```
+
+**Reading the code.**
+
+- **Section 1, numbering.**  Groups are numbered by the position of their *opening* parenthesis, counting from the left and starting at 1, so the year is group 1, the month group 2, and the day group 3.  Group 0 is always the whole match.  `span(2)` reports where group 2 sits in the string, here characters 5 through 7.
+- **Section 2, alternation.**  `|` has the lowest precedence of any operator, so `\d{4}-0[1-9]|1[0-2]-\d{2}` means "`\d{4}-0[1-9]`, *or* `1[0-2]-\d{2}`."  On `2026-12-25` the first branch fails, and the second branch matches only `12-25`, without the year.  Wrapping the alternation in parentheses confines the choice to the month position.  That is how `(0[1-9]|1[0-2])` expresses "01 through 12" and `(0[1-9]|[12]\d|3[01])` expresses "01 through 31," and the same parentheses that confine the choice also capture the result.  Notice that `2026-02-31` still passes: as P7 says, a regex checks the format and ranges, not the calendar.
+- **Section 3, non-capturing groups.**  `(?:...)` groups for precedence without capturing, so every group after it moves down one number.  If you add or remove a capturing group, renumber every reference that comes after it.
+- **Section 4, group references.**  In the *replacement* string of `re.sub`, `\3` means "whatever group 3 captured in this match."  `re.sub` applies the replacement to every match, so all three dates are rewritten, including the one at the very start of the string and the one at the very end.  The replacement must be a raw string: without the `r`, Python turns `"\3"` into the control character `\x03` before `re` ever sees it, as the `not raw` line shows.  `\g<3>` is the long form of `\3`.  Use it when a literal digit follows the reference, because `\30` would be read as group 30.
+- **Section 5, named groups.**  `(?P<year>...)` names a group, `\g<year>` refers to it in a replacement, and `m.group("year")` or `m.groupdict()` reads it in code.  The named form gives the same result as section 4 and cannot get the order wrong by miscounting.  Step 3.2 requires named groups for the log parser.
+- **Section 6, boundaries.**  Without `\b`, the pattern happily matches the last ten characters of `12026-09-18` and the first ten of `2026-09-180`, and rewrites those pieces of longer numbers.  `\b` on both ends requires a non-word character (or the edge of the string) just outside the date.
+
+> **Now try this.**
+> 1. Change the section 4 replacement to `r"\2/\3/\1"` and predict the output before you run it.
+> 2. `re.sub` also accepts a function in place of the replacement string.  It calls the function once per match with the match object and inserts whatever string the function returns.  Predict, then run: `re.sub(ISO_NAMED, lambda m: f"{m.group('day')}.{m.group('month')}.{m.group('year')}", text)`.  When is a function worth the extra typing?  (One answer: when the new text needs arithmetic or a lookup, such as turning `09` into `September`.)
+
 ### Step 3.1: Text Transformer
 
 In `transformer.py`, write a `transform(text: str) -> str` function that applies these three substitutions, in this order:
@@ -436,6 +516,30 @@ In `transformer.py`, write a `transform(text: str) -> str` function that applies
 1.  Redact emails: replace every email address with `[EMAIL]` using `re.sub`.  Use P5 from Part 2 without anchoring, because the address sits inside a longer sentence.
 2.  Normalize dates: convert `MM/DD/YYYY` dates to ISO `YYYY-MM-DD`.  Capture month, day, and year as groups, then reorder them with group references in the replacement string (e.g., `r"\3-\1-\2"`).
 3.  Redact phone numbers: replace US phone numbers (P6 from Part 2) with `[PHONE]`.
+
+> **Building `US_DATE` in three moves.**  Work the date step on its own first, with the self-test below, before you wire it into `transform`.
+> 1. **Shape.**  Write the literal layout with three capture groups: two digits, a `/`, two digits, a `/`, four digits.  Run the self-test.  The three valid dates convert, but some of the "left unchanged" cases get rewritten.
+> 2. **Ranges.**  Replace the month group and the day group with grouped alternations, as section 2 of Step 3.0 did for ISO dates.  Keep each alternation inside its parentheses, so the group count stays at three.
+> 3. **Edges.**  Put `\b` at both ends of the pattern, as section 6 of Step 3.0 did.
+>
+> Then write `DATE_ISO`.  Number your groups left to right (which one is the month here, which the day, which the year?) and list them in the order ISO wants, separated by `-`.  Keep it a raw string.
+
+Paste this self-test below the skeleton in `transformer.py`.  Every line prints `ok` once `US_DATE` and `DATE_ISO` are right.  The last three cases must come through *unchanged*.
+
+```python
+DATE_CASES = [
+    ("09/01/2026 opened registration",       "2026-09-01 opened registration"),     # date at the start
+    ("registration closed 12/15/2026",        "registration closed 2026-12-15"),     # date at the end
+    ("from 01/05/2026 to 05/01/2026",         "from 2026-01-05 to 2026-05-01"),      # two dates in one line
+    ("13/01/2026 is not a month",             "13/01/2026 is not a month"),          # month out of range
+    ("9/1/2026 has single digits",            "9/1/2026 has single digits"),         # MM/DD/YYYY needs two digits
+    ("ticket 109/01/20265 is not a date",     "ticket 109/01/20265 is not a date"),  # digits run past the edges
+]
+
+for given, expected in DATE_CASES:
+    got = re.sub(US_DATE, DATE_ISO, given)
+    print("ok      " if got == expected else "MISMATCH", repr(got))
+```
 
 > **Do this.**
 > 1. Open `transformer.py` and paste the skeleton below.  The three-line input paragraph you must demonstrate on is already in `SAMPLE`.
@@ -445,7 +549,8 @@ In `transformer.py`, write a `transform(text: str) -> str` function that applies
 import re
 
 EMAIL = r"..."      # TODO: P5 from Part 2, without anchors
-US_DATE = r"..."    # TODO: MM/DD/YYYY, with month, day, and year as three capture groups
+US_DATE = r"..."    # TODO: MM/DD/YYYY, with month, day, and year as three capture groups (see Step 3.0)
+DATE_ISO = r"..."   # TODO: replacement string that reorders the groups into YYYY-MM-DD
 US_PHONE = r"..."   # TODO: P6 from Part 2, without anchors
 
 def transform(text: str) -> str:
@@ -472,6 +577,10 @@ A second contact: [EMAIL], deadline 2026-12-15.
 > **If it fails.**
 > - Nothing is replaced: the pattern still carries `^` and `$` (or `\A` and `\Z`) from Part 2, so it can only match a whole string, never a piece of one.
 > - The date prints as `01-09-2026` or `09-01-2026`: the group references in the replacement string are in the wrong order.  Count the capture groups left to right.
+> - The output contains `\x01`, `\x02`, or odd symbols where the date should be: the replacement string is missing its `r` prefix, so Python turned `\1` into a control character (section 4 of Step 3.0).
+> - Only part of a date changes, or the output has empty slots such as `--` where a group should be: an alternation such as `0[1-9]|1[0-2]` is not wrapped in parentheses, so `|` split the whole pattern (section 2 of Step 3.0).
+> - `re.error: invalid group reference`: the replacement names a group number the pattern does not have.  Count the capturing parentheses again, and remember that `(?:...)` does not count.
+> - `13/01/2026` or `109/01/20265` gets rewritten: the month range or the `\b` boundaries are missing (moves 2 and 3 above).
 > - The phone number survives: the parentheses in the pattern are not escaped, so `(` opens a group instead of matching a literal `(`.
 
 ### Step 3.2: Log Parser
