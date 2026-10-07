@@ -5,9 +5,9 @@ title: "CS374: Principles of Programming Languages - Lab: Grammar and Derivation
 
 info:
   coursenum: CS374
-  purpose: "To close out the grammars and derivations unit with a partner: write a full EBNF grammar for the class language, derive programs that prove it produces what you expect, and settle precedence decisions you can defend."
+  purpose: "To close out the grammars and derivations unit, individually or with a partner: write a full EBNF grammar for the class language, derive programs that prove it produces what you expect, and settle precedence decisions you can defend."
   tilt:
-    task: "With a partner, write a complete EBNF grammar for the class language, produce leftmost derivations and parse trees for two worked programs, and show how the grammar's shape enforces precedence and associativity."
+    task: "Individually or with a partner, write a complete EBNF grammar for the class language, produce leftmost derivations and parse trees for two worked programs, and show how the grammar's shape enforces precedence and associativity."
     criteria: "I grade this on a complete and correct EBNF grammar, correct derivations with matching parse trees, and a demonstrated precedence and ambiguity analysis.  The rubric below has the details."
   points: 15
   goals:
@@ -104,7 +104,7 @@ expr
 
 Every later step that says "an `ebnf` block" or "a `text` block" means a block in this format.
 
-> **Time budget.**  About three hours in two sittings.  See the course schedule for the assigned and due dates.  On assignment, do Part 0 alone (under an hour) and choose a partner.  By the midpoint, have the Part 1 grammar drafted and the `or`/`and` checkpoint answered.  By the due date, have Parts 2 and 3 written and `grammar.md` previewed and submitted.  Parts 1 through 3 take one session of about two hours with your partner, most of it on Part 1.
+> **Time budget.**  About three hours in two sittings.  See the course schedule for the assigned and due dates.  On assignment, do Part 0 alone (under an hour) and, if you want one, choose a partner.  By the midpoint, have the Part 1 grammar drafted and the `or`/`and` checkpoint answered.  By the due date, have Parts 2 and 3 written and `grammar.md` previewed and submitted.  Parts 1 through 3 take one session of about two hours (with your partner, if you have one), most of it on Part 1.
 
 ---
 
@@ -170,7 +170,7 @@ Make one derivation of your own on this grammar, smaller than the one you'll wri
 
 ## Part 0: Before You Start - Derivations, Ambiguity, and Precedence
 
-Do this part first; you may do it alone even though the rest of the lab is pair work.  A grammar is ambiguous when one string has two different parse trees.  Precedence says which operator binds tighter; associativity says how a chain of the same operator groups.  Ambiguity stops being subtle the moment you have drawn it twice, so draw both trees, then rewrite the grammar until only one drawing survives.  That rewrite is the whole technique.  If it falls apart on you, bring it anyway; where it fell apart is what the discussion is for.
+Do this part first; you may do it alone even if you do the rest of the lab with a partner.  A grammar is ambiguous when one string has two different parse trees.  Precedence says which operator binds tighter; associativity says how a chain of the same operator groups.  Ambiguity stops being subtle the moment you have drawn it twice, so draw both trees, then rewrite the grammar until only one drawing survives.  That rewrite is the whole technique.  If it falls apart on you, bring it anyway; where it fell apart is what the discussion is for.
 
 ### Step 0.1: Show That a Flat Grammar Is Ambiguous
 
@@ -332,7 +332,7 @@ Same string, same grammar, two trees, two meanings.  Nothing in the flat grammar
 
 ## Deliverables
 
-Submit `grammar.md` containing all parts, with both partners named at the top.  Keep it: when the Parser assignment arrives later in the term, its Part 1 asks you to include this grammar and refine it if the coding surfaces issues.
+Submit `grammar.md` containing all parts, with your name (and your partner's, if you worked in a pair) at the top.  Keep it: when the Parser assignment arrives later in the term, its Part 1 asks you to include this grammar and refine it if the coding surfaces issues.
 
 | File or artifact | What it shows | Rubric row |
 |------------------|---------------|------------|

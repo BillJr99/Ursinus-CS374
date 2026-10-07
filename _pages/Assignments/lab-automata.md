@@ -7,7 +7,7 @@ info:
   coursenum: CS374
   purpose: "To build general simulators for deterministic finite automata (DFAs) and nondeterministic finite automata (NFAs) that read machine definitions from data files, so the theory beneath every lexer becomes a program you can run, and to trace the subset construction and Thompson's construction once by hand."
   tilt:
-    task: "With a partner, build DFA and NFA simulators that read machines from JSON, design one machine of each kind, and trace the subset construction and Thompson's construction by hand on small examples."
+    task: "Individually or with a partner, build DFA and NFA simulators that read machines from JSON, design one machine of each kind, and trace the subset construction and Thompson's construction by hand on small examples."
     criteria: "I grade correct simulators that handle the stated edge cases, two annotated machine designs, and by-hand construction traces.  The rubric below breaks this down in full."
   points: 15
   goals:
@@ -350,7 +350,7 @@ cd cs374-automata
 
 Open the folder in your editor and create two empty files at the top level.  `simulator.py` holds the loader, `run_dfa`, `eps_closure`, `run_nfa`, and the command line.  `writeup.md` holds your Part 0 work, construction traces, and reflection.  Each machine goes in `machines/` as its own JSON file.
 
-> **Time budget.** This lab follows the class material on regular expressions and finite automata.  The course schedule has the assigned and due dates.  Plan about three hours with your partner for Parts 1 and 2, and about an hour for the paper work in Parts 0 and 3.  Write the reflection as you go, not at the end.
+> **Time budget.** This lab follows the class material on regular expressions and finite automata.  The course schedule has the assigned and due dates.  Plan about three hours (with your partner, if you have one) for Parts 1 and 2, and about an hour for the paper work in Parts 0 and 3.  Write the reflection as you go, not at the end.
 > - On assignment: the loader and DFA simulator work on the provided machines.
 > - Midpoint: the NFA simulator and epsilon-closure work, and both designed machines are encoded and tested.
 > - Due date: the construction traces and writeup are assembled and the ZIP is submitted.
@@ -763,7 +763,7 @@ Submit a ZIP that contains the files below.  List your Python version in the wri
 | `machines/even_ones.json` | the provided parity machine, unchanged | Part 1 |
 | `machines/ends_in_ab.json` | your designed DFA | Part 1 |
 | `machines/contains_aa.json` | your designed NFA | Part 2 |
-| `writeup.md` | Part 0 paper work; state annotations and test strings for both designed machines; the subset-construction table with the DFA state count; the Thompson's construction fragments; the paragraph connecting these simulators to the lexer you will build next (which component of the lexer plays the role of your simulators?); both partners' names | Parts 0, 1, 2, 3 |
+| `writeup.md` | Part 0 paper work; state annotations and test strings for both designed machines; the subset-construction table with the DFA state count; the Thompson's construction fragments; the paragraph connecting these simulators to the lexer you will build next (which component of the lexer plays the role of your simulators?); your name (and your partner's, if you worked in a pair) | Parts 0, 1, 2, 3 |
 
 ---
 

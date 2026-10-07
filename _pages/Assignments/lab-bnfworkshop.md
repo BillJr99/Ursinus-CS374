@@ -7,7 +7,7 @@ info:
   coursenum: CS374
   purpose: "To turn the four-production Scheme grammar from the Syntax and BNF/EBNF activity into a real EBNF grammar for the subset of Scheme you have been programming in, then to build a regular grammar from scratch and use the shape of both to place them on the Chomsky hierarchy.  Grammar writing is the skill the Parser stretch of the course leans on hardest, and this is the first practice at it, on a language you already know."
   tilt:
-    task: "With a partner, grow a given four-production grammar into a complete EBNF grammar for a Scheme subset, build a right-linear grammar for even-parity binary strings, and classify six languages by Chomsky level using the shape of the grammars that generate them."
+    task: "Individually or with a partner, grow a given four-production grammar into a complete EBNF grammar for a Scheme subset, build a right-linear grammar for even-parity binary strings, and classify six languages by Chomsky level using the shape of the grammars that generate them."
     criteria: "I grade your work on complete and correct EBNF productions with every nonterminal defined, a correct right-linear grammar for the warm-up language, and correct Chomsky classifications argued from the productions rather than asserted.  See the rubric below for the full breakdown."
   points: 15
   goals:
