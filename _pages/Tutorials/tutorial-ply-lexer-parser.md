@@ -461,7 +461,7 @@ for src in sources:
 
 ## Model 5: A Complete Mini Language, Flex/Bison -> PLY Translation
 
-This model ties everything together into a small but complete language: lexer, parser, AST, and evaluator all working as a unit.  Its main job is to make the Flex/Bison-to-PLY translation concrete.  Inline comments in the code label every PLY construct with its Bison or Flex counterpart, so you can read the two tool families side by side and see exactly what changed.  After this model you should be able to take a `.l`/`.y` grammar you have already written and port it to PLY, or go the other direction.
+This model builds a small but complete language in which the lexer, parser, AST, and evaluator all work as a unit.  Its main job is to make the Flex/Bison-to-PLY translation concrete.  Inline comments in the code label every PLY construct with its Bison or Flex counterpart, so you can read the two tool families side by side and see exactly what changed.  After this model you should be able to take a `.l`/`.y` grammar you have already written and port it to PLY, or go the other direction.
 
 The mini language supports variables, `let` bindings, `if-else` conditionals, and a `print` statement.  After parsing, an evaluator walks the AST and computes the result, cleanly separated from the parser, exactly as the Dragon Book prescribes.
 

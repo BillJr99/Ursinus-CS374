@@ -90,7 +90,7 @@ print(f"add10's closure cells: {add10.__closure__[0].cell_contents}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-By the lifetime rules of the environments module, `make_adder`'s local scope should die at `return` and take `n` with it.  Yet `add5` still finds `n = 5`.  The resolution is that **a function value is not just code; it is a closure**, a pair of `(code, defining_environment)`.  When Python created `adder`, it captured a reference to the environment where `n` was bound.  That environment survives because the closure still points to it.  Lifetime follows reachability.
+By the lifetime rules of the environments module, `make_adder`'s local scope should die at `return` and take `n` with it.  Yet `add5` still finds `n = 5`.  The resolution is that **a function value is not just code; it is a closure**, a pair of `(code, defining_environment)`.  When Python created `adder`, it captured a reference to the environment where `n` was bound.  That environment survives because the closure still points to it.  Lifetime follows reachability: an environment stays alive as long as something, such as a closure, can still reach it.
 
 $$\text{closure} = \langle \text{params}, \text{body}, E_{\text{def}} \rangle$$
 
@@ -261,7 +261,7 @@ When the evaluator meets a function expression, it does **not** evaluate the bod
 Closure(param, body, env)
 ```
 
-The `param` and `body` come straight off the AST.  The third field, `env`, is the environment at the moment the function was created.  This is the function's lexical environment: the scope chain in force where the function appears in the source.  Capturing it is the one thing this record exists to do.
+The `param` and `body` come straight off the abstract syntax tree (AST).  The third field, `env`, is the environment at the moment the function was created.  This is the function's lexical environment: the scope chain in force where the function appears in the source.  Capturing it is the one thing this record exists to do.
 
 When the evaluator later meets a call, it evaluates the function, evaluates the argument, and then evaluates the body in
 

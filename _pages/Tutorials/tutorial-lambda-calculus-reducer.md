@@ -25,11 +25,11 @@ tags:
 
 By the end of this tutorial, you will have:
 
-- Implemented the `Var`, `Lam`, and `App` AST nodes for the lambda calculus and a pretty-printer that produces readable output
+- Implemented the `Var`, `Lam`, and `App` abstract syntax tree (AST) nodes for the lambda calculus and a pretty-printer that produces readable output
 - Implemented `free_vars` correctly and tested it on abstractions, applications, and variables bound vs. free in the same term
 - Implemented capture-avoiding substitution and verified it does not accidentally rename variables in the substituted term
 - Implemented both normal-order and applicative-order beta reduction strategies and observed on a concrete term where they differ
-- Built a step-tracer and REPL that interactively reduces lambda calculus terms, suitable for use in the Lambda Calculus assignment
+- Built a step-tracer and REPL (read-eval-print loop) that interactively reduces lambda calculus terms, suitable for use in the Lambda Calculus assignment
 
 This tutorial builds a complete, correct lambda calculus reducer in Python, the same one you need for the Lambda Calculus assignment.  It goes slowly through every design decision and every subtle point, so that when you write your own from scratch you understand *why* each piece works, not just *what* it does.  The finished pieces are an AST of `Var`, `Lam`, and `App` nodes, `free_vars`, a capture-avoiding `substitute`, a normal-order reducer, an applicative-order reducer, a step tracer, and a REPL.
 
@@ -256,7 +256,7 @@ print(beta_step(id_app))   # z
 
 ## 4.2 Normal-Order Reduction
 
-**Normal-order** always reduces the **leftmost, outermost** redex.  This is the strategy that finds a normal form whenever one exists.
+**Normal-order** always reduces the **leftmost, outermost** redex.  This is the strategy that finds a normal form (a term with no redex left to reduce) whenever one exists.
 
 ```python
 def normal_order_step(term):
@@ -687,7 +687,7 @@ This works!  But `step1(step1)` is repetitive, and the body has `self(self)(n-1)
 
 The self-application ugliness (`self(self)(n-1)`) is a leaky abstraction: the *caller's* machinery is bleeding into the function's *logic*.  The fix is a wrapper that absorbs the machinery, so the recursive call site looks like an ordinary call `rec(n-1)`.  Think of `rec` as a pre-packaged "call-me-again" token that the function receives and uses freely, without knowing or caring that underneath it is `self(self)`.
 
-The `self(self)(n-1)` pattern is ugly.  Let us hide it inside a helper `rec`:
+The `self(self)(n-1)` pattern is ugly.  Let's hide it inside a helper `rec`:
 
 ```python
 # Step 2: wrap the self-application so the body is clean
@@ -711,7 +711,7 @@ Now the body `lambda n: 1 if n == 0 else n * rec(n - 1)` looks like a normal rec
 
 This is the key abstraction step.  Once the self-application plumbing is hidden in `rec`, the factorial logic becomes a perfectly ordinary function generator: "give me a `rec` that handles the recursive call, and I will give you a working factorial."  This generator works for *any* recursive function, not just factorial.  The machinery that turns a generator into a recursive function is independent of what the function computes.  That machinery (currently called `Y_machinery`) is the Y combinator.  You have now rebuilt it from scratch.
 
-Notice that `lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1)` is just the factorial *logic*: a function that takes its recursive call-stub and returns the actual implementation.  Let us name this "the step" or "the generator":
+Notice that `lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1)` is just the factorial *logic*: a function that takes its recursive call-stub and returns the actual implementation.  Let's name this "the step" or "the generator":
 
 ```python
 # Separate the factorial logic from the fixed-point machinery
@@ -744,7 +744,7 @@ $$
 Y = \lambda f.\ (\lambda x.\ f\ (x\ x))\ (\lambda x.\ f\ (x\ x))
 $$
 
-It satisfies the **fixed-point equation**: $$Y\ g = g\ (Y\ g)$$ for any $$g$$. Let us verify this by reducing:
+It satisfies the **fixed-point equation**: $$Y\ g = g\ (Y\ g)$$ for any $$g$$. Let's verify this by reducing:
 
 $$
 Y\ g = (\lambda f.\ (\lambda x.\ f\ (x\ x))\ (\lambda x.\ f\ (x\ x)))\ g
@@ -1009,7 +1009,7 @@ $$
 \mathbf{S}\ a\ b\ c \;\Rightarrow\; a\ c\ (b\ c)
 $$
 
-Application associates left, so $$\mathbf{S}\ a\ b\ c$$ means $$(((\mathbf{S}\ a)\ b)\ c)$$. A **redex** in combinatory logic is any subterm of the form $$\mathbf{I}\ a$$, $$\mathbf{K}\ a\ b$$, or $$\mathbf{S}\ a\ b\ c$$ (and analogously for other combinators).  Reduction is confluent, exactly as in the lambda calculus, because the combinators are derived from it.
+Application associates left, so $$\mathbf{S}\ a\ b\ c$$ means $$(((\mathbf{S}\ a)\ b)\ c)$$. A **redex** in combinatory logic is any subterm of the form $$\mathbf{I}\ a$$, $$\mathbf{K}\ a\ b$$, or $$\mathbf{S}\ a\ b\ c$$ (and analogously for other combinators).  Reduction is confluent (if two different reduction orders both reach a normal form, they reach the same one), exactly as in the lambda calculus, because the combinators are derived from it.
 
 > **Watch out!  Argument counting**
 >
@@ -1241,7 +1241,7 @@ print(W(eq)(5))    # True -- a number always equals itself
 
 ### 9.  Everything from S, K, I
 
-You have now met seven birds.  You do not need seven.  You need *two*.  S and K alone (two LEGO bricks) can simulate every other bird, every lambda term, every computable function.  This is Schönfinkel's 1924 theorem, the combinatory-logic counterpart of the Church-Turing thesis.  The bracket abstraction algorithm in Section 1 is the constructive proof: it tells you mechanically how to turn any lambda term into an SKI expression.  Let us derive B, C, and W from SKI to see that concretely.
+You have now met seven birds.  You do not need seven.  You need *two*.  S and K alone (two LEGO bricks) can simulate every other bird, every lambda term, every computable function.  This is Schönfinkel's 1924 theorem, the combinatory-logic counterpart of the Church-Turing thesis.  The bracket abstraction algorithm in Section 1 is the constructive proof: it tells you mechanically how to turn any lambda term into an SKI expression.  Let's derive B, C, and W from SKI to see that concretely.
 
 **Deriving B (Compose) from SKI:**
 

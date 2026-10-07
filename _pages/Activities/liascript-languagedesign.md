@@ -43,7 +43,7 @@ The team project begins today.  You have built the whole pipeline, capped by the
 
 From today through Demo Day, your team works in **project roles**, rotated every sprint:
 
-- **Coordinator**: owns the sprint plan, runs stand-ups, and watches scope.
+- **Coordinator**: owns the sprint plan, runs stand-ups (short status meetings where each member says what they finished and what is next), and watches scope.
 - **Builder(s)**: own the code increment of the sprint.
 - **Evaluator**: owns the test suite, the sample programs, and release readiness.
 - **Scribe**: owns the design documents, `SEMANTICS.md`, meeting notes, and the decision log.
@@ -328,7 +328,7 @@ print("  Sprint 2 goal: zero TODOs for functions and your niche feature")
 ### Reading the Code
 
 - The inventory has one row per node and four columns: the class, its fields, the grammar rule that produces it, and the evaluator method that consumes it.  A row with `TODO` in the last column is a node your parser can build and your evaluator cannot run.
-- The script generates the table from a spec instead of asking you to maintain it by hand, so the table cannot drift from the code.  Regenerate it after every sprint; the `TODO` count is your burndown.
+- The script generates the table from a spec instead of asking you to maintain it by hand, so the table cannot drift from the code.  Regenerate it after every sprint; the `TODO` count is your burndown, the amount of remaining work that should shrink toward zero.
 - The columns are the stages of your pipeline.  A node with no grammar rule can never be produced.  A node with no evaluator method can never be consumed.  Both are bugs the table shows before the code does.
 
 ### Try It Yourself

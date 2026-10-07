@@ -124,7 +124,7 @@ let double = fun(n) -> n * 2;
 print apply(double, 8);
 ```
 
-> **CTQ 1.1:** Look at Example 5.  The inner `fun(x) -> x + n` refers to `n`, which is defined in `make_adder`'s scope.  After `make_adder` returns, does `n` still exist?  What language feature makes this work?
+> **CTQ 1.1:** (CTQ stands for Critical Thinking Question.)  Look at Example 5.  The inner `fun(x) -> x + n` refers to `n`, which is defined in `make_adder`'s scope.  After `make_adder` returns, does `n` still exist?  What language feature makes this work?
 
 > **CTQ 1.2:** In Example 4, `if` is used as an *expression* (its value is assigned to `status`).  What does this mean for the parser?  Can we use the same `if` rule for both statements and expressions?
 
@@ -506,7 +506,7 @@ graph TD
     F --> I[unary: 3]
 ```
 
-The multiplication `2 * 3` is deeper in the tree, so it evaluates first; this is how precedence emerges naturally from the grammar hierarchy.
+The multiplication `2 * 3` is deeper in the tree, so it evaluates first; this is how the grammar's hierarchy of rules encodes precedence without any extra machinery.
 
 > **CTQ 3.1:** Why does the grammar have separate `add_expr` and `mul_expr` rules instead of one `binary_expr` rule?  Trace through what would happen if you tried to combine them.
 

@@ -120,7 +120,7 @@ See the course schedule for the assigned and due dates.  Finish Parts 1 and 2 fi
 
 ## Part 1: The `re` API, and Watching the Engine Backtrack
 
-Python's `re` library adds engineering conveniences to the theory.  Anchors pin a match to a position: `^` is the start of the string and `$` is the end.  Character classes stand for one character from a set: `\d` is a digit, `\w` is a word character, and `\s` is whitespace.  Groups `(...)` capture the text they match so you can read it back later.  Five functions carry almost all the work: `re.search` (first match anywhere), `re.match` (match at the start), `re.findall` (all matches), `re.sub` (substitute), and `re.finditer` (iterate matches with positions).  Raw strings (`r"..."`) keep Python's own backslash handling out of your way.  Use them always.
+Python's `re` library adds engineering conveniences to the formal theory of regular expressions.  Anchors pin a match to a position: `^` is the start of the string and `$` is the end.  Character classes stand for one character from a set: `\d` is a digit, `\w` is a word character, and `\s` is whitespace.  Groups `(...)` capture the text they match so you can read it back later.  Five functions carry almost all the work: `re.search` (first match anywhere), `re.match` (match at the start), `re.findall` (all matches), `re.sub` (substitute), and `re.finditer` (iterate matches with positions).  Raw strings (`r"..."`) keep Python's own backslash handling out of your way.  Use them always.
 
 ### Step 1.1: The walkthrough
 
@@ -666,7 +666,7 @@ Submit one repository or archive containing the following.
 - `transformer.py` and `log_parser.py`, with the JSON configuration file the log parser reads and the `errors.txt` it produces.
 - `readme.md`, naming your partner if you paired on Parts 1 and 2, and listing anything you could not finish.
 
-Every pattern is a raw string.  Every file runs as submitted; a file that raises on import earns the preemerging row for whatever it was meant to demonstrate.
+Every pattern is a raw string.  Every file runs as submitted; a file that raises an exception on import earns the preemerging row for whatever it was meant to demonstrate.
 
 ---
 

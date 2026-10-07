@@ -225,7 +225,7 @@ The `diff` command reports every line that differs between two files.  A zero ex
 diff expected/fibonacci.txt output.txt
 ```
 
-You can skip the intermediate file entirely using a **process substitution** `<(...)`.  Everything inside `<(...)` runs as a subshell and its stdout is presented to the outer command as if it were a file:
+You can skip the intermediate file entirely using a **process substitution** `<(...)`.  Everything inside `<(...)` runs in a subshell (a separate copy of the shell), and its stdout is presented to the outer command as if it were a file:
 
 ```bash
 diff expected/fibonacci.txt <(python3 mylang.py tests/fibonacci.ml)
@@ -331,7 +331,7 @@ Commit both `tests/` and `expected/` to git so the test harness has something to
 
 ## Step 4: Standardize the Commands with a Makefile
 
-A `Makefile` gives every contributor (including you after a vacation) a single consistent interface. `make run FILE=tests/fib.ml`, `make test`, `make clean` all just work.
+A `Makefile` gives every contributor (including you after a vacation) a single consistent interface: `make run FILE=tests/fib.ml`, `make test`, and `make clean` work the same way for everyone.
 
 ### Complete Makefile
 
@@ -623,7 +623,7 @@ Plain `grep` uses BRE, where `|` is a literal character; it searched for the str
 
 ---
 
-Capture groups are what turn a regex from a yes/no detector into a *parser of flat records*: each group carves out one field of the matched text, and named groups label the fields.  Nothing exercises this like log triage: the daily chore of turning thousands of text lines into structured data you can count, filter, and sort.
+Capture groups are what turn a regex from a yes/no detector into a *parser of flat records*: each group carves out one field of the matched text, and named groups label the fields.  Log triage exercises this well: it is the daily chore of turning thousands of text lines into structured data you can count, filter, and sort.
 
 ### Log Triage: A Capture-Group Walkthrough
 

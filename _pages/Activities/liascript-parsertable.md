@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Table-Driven and LR Parsing
 
-Table-driven parsers, LL(1) and LR, replace moment-to-moment grammar reasoning with a lookup.  Think of a parsing table like a GPS route precomputed from every intersection: instead of rethinking the best path each time you reach a fork, you consult the table and execute the move it prescribes.  The table was built once, offline, from the grammar's FIRST and FOLLOW sets; at parse time all the "thinking" has already been done.  This makes table-driven parsers fast, systematic, and amenable to machine generation, which is exactly why industrial parser generators emit them.
+Table-driven parsers, LL(1) and LR, replace moment-to-moment grammar reasoning with a lookup.  Think of a parsing table like a GPS route precomputed from every intersection: instead of rethinking the best path each time you reach a fork, you consult the table and execute the move it prescribes.  The table was built once, offline, from the grammar's FIRST and FOLLOW sets; at parse time all the "thinking" has already been done.  This makes table-driven parsers fast, systematic, and easy for a program to generate, which is exactly why industrial parser generators emit them.
 
 ## Learning Goals
 
@@ -51,7 +51,7 @@ Recursive descent builds a parse tree from the root downward, predicting what ha
 
 ## 1.  Bottom-Up in One Picture
 
-An LR parser maintains a stack and looks at one input token.  At each step it consults a table and performs one of two moves: **shift** (push the next input token onto the stack) or **reduce** (the top of the stack matches some production's right-hand side; pop it and push the production's left-hand nonterminal).  Accept when the stack holds exactly the start symbol and the input is exhausted.  The parse is a *rightmost derivation discovered in reverse*: the tree grows from the leaves upward, which is why left-recursive rules like `E -> E + T` are not merely tolerable but natural; the parser simply reduces `E + T` to `E` whenever it sees one completed on the stack.
+An LR parser maintains a stack and looks at one input token.  At each step it consults a table and performs one of two moves: **shift** (push the next input token onto the stack) or **reduce** (the top of the stack matches some production's right-hand side; pop it and push the production's left-hand nonterminal).  The parser accepts when the stack holds exactly the start symbol and the input is exhausted.  The parse is a *rightmost derivation discovered in reverse*: the tree grows from the leaves upward, which is why left-recursive rules like `E -> E + T` are not merely tolerable but natural; the parser simply reduces `E + T` to `E` whenever it sees one completed on the stack.
 
 Using the ladder grammar (`E -> E + T | T`, `T -> T * F | F`, `F -> num | ( E )`), the parse of `2 + 3`:
 
@@ -356,7 +356,7 @@ A parser generator reports a shift-reduce conflict on the team's grammar at the 
 
 A conflict tells you that your grammar sits outside a class.  Before you reach for a larger class, learn what the classes are actually worth, because lookahead does not pay off the same way for LL and for LR.
 
-**More lookahead extends LL.  It does not extend LR.**  The LL($k$) *languages* form a strict infinite hierarchy: for every $k$, some language has an LL($k+1$) grammar and no LL($k$) grammar.  An LL parser must commit to a production before it has generated that production's body, so each extra token of lookahead genuinely extends how far it sees before committing.  LR behaves differently.  Knuth proved in 1965 that a language has an LR(1) grammar exactly when a deterministic pushdown automaton recognizes it, which makes the LR(1) languages precisely the **deterministic context-free languages**.  Every LR($k$) language is therefore already LR(1).  Extra lookahead may spare you the work of rewriting a particular grammar, but it never enlarges the set of languages you can parse.
+**More lookahead extends LL.  It does not extend LR.**  The LL($k$) *languages* form a strict infinite hierarchy: for every $k$, some language has an LL($k+1$) grammar and no LL($k$) grammar.  An LL parser must commit to a production before it has generated that production's body, so each extra token of lookahead genuinely extends how far it sees before committing.  LR behaves differently.  Knuth proved in 1965 that a language has an LR(1) grammar exactly when a deterministic pushdown automaton (a finite-state machine with a stack that never has more than one move to choose from) recognizes it, which makes the LR(1) languages precisely the **deterministic context-free languages**.  Every LR($k$) language is therefore already LR(1).  Extra lookahead may spare you the work of rewriting a particular grammar, but it never enlarges the set of languages you can parse.
 
 The commitment point explains the difference.  LL decides at the *top* of a production, having seen $k$ tokens of what that production will eventually produce.  LR decides at the *bottom*, having seen the entire right-hand side plus $k$ tokens.  Deciding later means deciding with more information.  That is also why left recursion is fatal to recursive descent while an LR table handles it comfortably, and even prefers it, since left recursion keeps the parse stack shallow.
 
@@ -401,7 +401,7 @@ Your project grammar contains the left-recursive list rule `args -> args "," exp
 
 ## Model 3: FIRST and FOLLOW Sets
 
-Before you can build a parse table, you need to know two things about every nonterminal: what tokens can start a phrase derived from it (FIRST), and what tokens can legally appear right after it in any sentential form (FOLLOW).  The code below computes both sets automatically for a grammar you provide; run it, then use the output to answer the questions that follow.
+Before you can build a parse table, you need to know two things about every nonterminal: what tokens can start a phrase derived from it (FIRST), and what tokens can legally appear right after it in any sentential form, meaning any string of symbols the grammar can derive from the start symbol (FOLLOW).  The code below computes both sets automatically for a grammar you provide; run it, then use the output to answer the questions that follow.
 
 **FIRST(A)** is the set of terminals that can begin any string derived from A. **FOLLOW(A)** is the set of terminals (and `$`) that can appear immediately after A in some sentential form.  Together they power LL(1) table construction: the parse table entry for nonterminal A on lookahead token t is the production to use when t ∈ FIRST(RHS), or when ε is derivable from RHS and t ∈ FOLLOW(A).
 

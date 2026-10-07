@@ -39,7 +39,7 @@ By the end of this activity, you will be able to:
 
 ## Directions and Group Roles
 
-Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Please think each model and question through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever you disagreed or found another approach.  After class, please respond to the reflective prompt on your own in your notebook.
+Work in your POGIL (Process Oriented Guided Inquiry Learning) team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Please think each model and question through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever you disagreed or found another approach.  After class, please respond to the reflective prompt on your own in your notebook.
 
 ---
 
@@ -392,7 +392,7 @@ Your `While` executor re-evaluates the condition before each pass.  The semantic
 
 1.  Does the body create a fresh scope per iteration?
 2.  Do you provide `break`/`continue`, and if so, how?
-3.  Will you offer a counting `for`, and is it core syntax or sugar?
+3.  Will you offer a counting `for`, and is it core syntax or syntactic sugar?
 
 The break/continue trick: use exception classes.  A `break` statement raises a `BreakSignal`, and the `While` executor catches it and leaves the loop.  `continue` works the same way with a `ContinueSignal`.
 

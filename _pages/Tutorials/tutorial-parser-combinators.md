@@ -490,7 +490,7 @@ except Exception as e:
     import traceback; traceback.print_exc()
 ```
 
-The connection is complete: **the Parser monad is the Monads activity's Exercise 2**, and `do`-notation lets you write parsers that look like grammars.
+The connection is complete: **the Parser monad is the Monads activity's Exercise 2**, and `do`-notation (Haskell's shorthand for a chain of bind calls) lets you write parsers that look like grammars.
 
 ---
 
@@ -875,7 +875,7 @@ show("Standard precedence (left assoc)", PREC_STANDARD, tokens2)
 4.  The standard table gives `2 + 3 * 4 = 14`; the flat table gives `20`.  Trace exactly which fold step differs between the two tables for these five tokens.
 5.  The flat table makes all operators equal in precedence and left-associative.  What value does `6 - 2 - 1` produce under flat precedence?  Is it the same as under standard precedence?  Explain why or why not.
 6.  APL evaluates all binary operators right-to-left at equal precedence.  Modify `PREC_FLAT` to test that claim for `6 - 2 - 1` by changing the fold direction.  What value do you expect, and does it match?
-7.  Annotate the correspondence: which EBNF symbol became the `while` condition, which became `advance()`, which became the recursive call?  (This is the translation table earning its keep.)
+7.  Annotate the correspondence: which EBNF (Extended Backus-Naur Form) symbol became the `while` condition, which became `advance()`, which became the recursive call?  (This is the translation table earning its keep.)
 
 ---
 

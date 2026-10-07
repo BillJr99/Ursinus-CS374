@@ -353,7 +353,7 @@ for r in query(db, Compound("member", (Mx, lst(a("p"),a("q"),a("r")))), Mx):
 
 > **CTQ 5.4** Examine the `db.fact("append", NIL, Y, Y)` line.  The variable `Y` is a Python variable referencing a `Var("Y")` object.  Every call to `db.fact("append", ...)` with `Y` stores the *same* `Var("Y")` object in two argument positions.  Why is this safe?  What operation do we rely on to make it not interfere across queries?
 
-> **CTQ 5.5** How would you add a `not_member(X, L)` predicate?  What is the challenge of implementing "negation" in a pure SLD resolution engine?
+> **CTQ 5.5** How would you add a `not_member(X, L)` predicate?  What is the challenge of implementing "negation" in a pure SLD (Selective Linear Definite clause) resolution engine?
 
 ### Reflection prompt (for the advanced section)
 

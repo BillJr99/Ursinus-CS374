@@ -33,7 +33,7 @@ tags:
 
 # Building an LR Parser from the Grammar Up
 
-This tutorial is the companion to **Part 4 of the Parser assignment**, where you implement SLR(1) table construction and a shift-reduce driver.  It explains the mechanism the assignment asks you to build, and it does so on a *different, smaller grammar* than the assignment uses.  That is deliberate.  You can read every line here, run it, and take it apart, and the assignment's ladder grammar is still yours to do.  The two differ in exactly the places that make the assignment interesting: operator precedence between `+` and `*`, and parentheses.
+This tutorial is the companion to **Part 4 of the Parser assignment**, where you implement SLR(1) (Simple LR with one token of lookahead) table construction and a shift-reduce driver.  It explains the mechanism the assignment asks you to build, and it does so on a *different, smaller grammar* than the assignment uses.  That is deliberate.  You can read every line here, run it, and take it apart, and the assignment's ladder grammar is still yours to do.  The two differ in exactly the places that make the assignment interesting: operator precedence between `+` and `*`, and parentheses.
 
 You already know recursive descent from Part 2.  This tutorial takes you from "I wrote one function per non-terminal" to "I built the table a generator emits, and I know why each cell holds what it holds."
 

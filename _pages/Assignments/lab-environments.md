@@ -200,7 +200,7 @@ class Environment:
         raise NotImplementedError("assign")
 ```
 
-> **Watch out.** `if self._parent:` runs the parent's truthiness, and an `Environment` with no bindings is still a real parent.  Compare against `None` explicitly: `if self._parent is not None:`.
+> **Watch out.** `if self._parent:` tests the parent's truthiness, and an `Environment` with no bindings is still a real parent.  Compare against `None` explicitly: `if self._parent is not None:`.
 
 > **Watch out.** The Interpreter assignment's Step 5a defines the same `LangError` hierarchy in `interpreter.py`.  Keep one definition: import `LangError` and `LangNameError` from `environment.py`, or move them into the interpreter's error module and import them back here.  With two copies of `LangNameError`, an `except LangNameError` in the evaluator can miss the one your `Environment` raises.
 

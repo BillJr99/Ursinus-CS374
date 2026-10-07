@@ -774,7 +774,7 @@ match xs with
 
 # Advanced: A Metacircular Scheme Evaluator, Scheme in Python
 
-This advanced section deepens the same lexer -> parser -> environment -> evaluator architecture you built for Mini above, and it backs Direction G of the Functional assignment (contributing to mal: Make-a-Lisp) for students heading that way.
+This advanced section goes deeper into the same lexer -> parser -> environment -> evaluator architecture you built for Mini above, and it backs Direction G of the Functional assignment (contributing to mal: Make-a-Lisp) for students heading that way.
 
 An interpreter written in the very language it interprets sounds like a paradox, but it is actually one of the most clarifying ideas in computer science: it proves that the language's evaluation rules are self-consistent and complete.  Think of it like a dictionary that defines every word using other words in the same dictionary: the circularity is the point here, because it shows the system is closed.  Building this evaluator in Python forces every semantic choice to become explicit code, revealing the machinery that the Mini interpreter you just built already contains.
 
@@ -1813,7 +1813,7 @@ Verify that your implementation produces the correct result by running it in the
 
 ### Exercise 4: The Y Combinator
 
-Without `define`, a lambda cannot refer to itself by name.  The **Y combinator** makes anonymous recursion possible.  In our evaluator (which uses applicative-order evaluation), the Z combinator (the strict variant) works:
+Without `define`, a lambda cannot refer to itself by name.  The **Y combinator** makes anonymous recursion possible.  In our evaluator (which uses applicative-order evaluation, meaning arguments are evaluated before the procedure is applied), the Z combinator (the strict variant) works:
 
 ```scheme
 (define Z

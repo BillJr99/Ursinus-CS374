@@ -565,7 +565,7 @@ A grammar rule `stmt -> IDENT "=" expr | IDENT "(" args ")"` cannot be parsed wi
 
 ## Practice, Parser Tracing: Hand-Simulate a Descent Parser
 
-These exercises build your confidence in the grammar-to-code mapping and the call structure of a recursive descent parser.  You hand-simulate the exact sequence of function calls and token consumption.  They prepare you for the parser assignment by showing the execution you will later trace in a debugger.
+These exercises give you practice with the grammar-to-code mapping and the call structure of a recursive descent parser.  You hand-simulate the exact sequence of function calls and token consumption.  They prepare you for the parser assignment by showing the execution you will later trace in a debugger.
 
 > *Exercises adapted from the recursive descent parsing technique covered in standard compiler texts, including Douglas Thain's *Introduction to Compilers and Language Design* (Chapter 4).*
 

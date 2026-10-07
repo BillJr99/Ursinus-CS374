@@ -20,7 +20,7 @@ The lambda calculus is a small formal system that Alonzo Church invented in the 
 
 By the end of this activity, you will be able to:
 
-- Write and read lambda calculus expressions in formal notation, applying left-associative application and maximal-body abstraction conventions
+- Write and read lambda calculus expressions in formal notation, applying the conventions that application associates left and that a λ's body extends as far right as possible
 - Classify every variable occurrence in a lambda expression as either bound (and identify its binding λ) or free
 - Perform beta reduction step by step on paper, substituting arguments into function bodies following the one reduction rule
 - Recognize when variable capture would occur during substitution and apply alpha renaming to avoid it
@@ -668,7 +668,7 @@ print("They match -> alpha-equivalent.")
 
 > **Intuition**: Weak head normal form (WHNF) is the "good enough" answer for lazy evaluation.  An expression is in WHNF when its outermost position is not a redex: it is a variable, a lambda, or an application whose function part is not a lambda.  Haskell stops here rather than reducing everything inside.  That is how it can represent infinite lists: the spine of the list is in WHNF (a cons cell whose tail is an unevaluated thunk), and the tail is reduced only when you ask for the next element.
 
-Weak Head Normal Form (WHNF) is a partial normal form used by lazy languages such as Haskell.  An expression is in WHNF when its outermost constructor is not a redex, even if sub-expressions remain unreduced.  Full normal form is stricter: no redexes remain anywhere.
+Weak Head Normal Form (WHNF) is a partial normal form used by lazy languages such as Haskell.  An expression is in WHNF when its outermost form is not a redex, even if sub-expressions remain unreduced.  Full normal form is stricter: no redexes remain anywhere.
 
 ```python
 # Demonstrate free/bound variable analysis and WHNF detection.

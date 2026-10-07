@@ -32,7 +32,7 @@ By the end of this tutorial, you will have:
 - Explained how type erasure in `std::function` achieves runtime polymorphism without virtual dispatch
 
 > **Prerequisites:** C++ fundamentals, basic pointers, classes/structs
-> **Goal:** Learn modern C++ memory management, generic programming, and the STL, and see how C++ achieves zero-cost abstractions through templates and type erasure.
+> **Goal:** Learn modern C++ memory management, generic programming, and the STL, and see how C++ achieves zero-cost abstractions (abstractions that cost nothing at runtime beyond the code you would have written by hand) through templates and type erasure.
 
 ---
 
@@ -99,7 +99,7 @@ freed by thread T0 here:
     #1 0x... in double_free_demo() demo.cpp:5
 ```
 
-The allocator's bookkeeping structures (size, free-list links) live adjacent to heap blocks.  A double-free corrupts them, enabling heap exploitation primitives used in real-world Common Vulnerabilities and Exposures (CVEs).
+The allocator's bookkeeping structures (size, free-list links) live adjacent to heap blocks.  A double-free corrupts them, and attackers can use that corruption as a building block (a heap exploitation primitive) for attacks, as in real-world Common Vulnerabilities and Exposures (CVEs).
 
 ---
 
@@ -590,7 +590,7 @@ int main() {
 }
 ```
 
-**The Rule of Five:** if you define *any* of destructor / copy-ctor / copy-assign / move-ctor / move-assign, you should define *all five*.  The compiler-generated defaults become incorrect once you manage a raw resource.
+**The Rule of Five:** if you define *any* of the destructor / copy constructor / copy assignment operator / move constructor / move assignment operator, you should define *all five*.  The compiler-generated defaults become incorrect once you manage a raw resource.
 
 ---
 
@@ -1574,7 +1574,7 @@ The challenge: the high-level language's runtime and the C runtime make differen
 
 ### Model 1: The C Application Binary Interface (ABI)
 
-*Intuition:* When you call a function, the CPU needs to know: where are the arguments?  (In registers?  On the stack?  Which ones?)  Who cleans up after the call?  What format does the return value come back in?  The ABI is the contract that answers all of these questions.  Think of it as the physical handshake protocol between two programs.  C's ABI has become the universal handshake because C was the first widely-portable systems language, and every other language that wanted to talk to the operating system had to agree to shake hands on C's terms.
+*Intuition:* When you call a function, the CPU needs to know: where are the arguments?  (In registers?  On the stack?  Which ones?)  Who cleans up after the call?  What format does the return value come back in?  The ABI is the contract that answers all of these questions.  Think of it as the physical handshake protocol between two programs.  C's ABI has become the universal handshake because C was the first widely portable systems language, and every other language that wanted to talk to the operating system had to agree to shake hands on C's terms.
 
 > **Watch out!**  You must declare `argtypes` and `restype` on a `ctypes` function object before calling it.  If you skip this step, `ctypes` will guess (usually defaulting to `c_int`) and you will get silent data corruption or crashes instead of a clean error.  Always set both, even for functions whose return type is `void`.
 
@@ -1905,7 +1905,7 @@ for cls, fn, params in examples:
 
 ### Model 5: Implementing a Simple FFI in a Mini Interpreter
 
-*Intuition:* Now that you understand the mechanics of crossing the language boundary, you can add that crossing point to your own interpreter.  The key design decision is: what does an FFI call look like *in your language's syntax*, and how does the interpreter translate that into an actual call?  This model shows the minimum viable implementation: an `FfiCall` AST node carries the library name, function name, type annotations, and arguments.  The interpreter's `eval_node` function dispatches it to a registry that handles the marshaling.  Even a simple version like this is enough to give your mini language access to the entire C standard library.
+*Intuition:* Now that you understand the mechanics of crossing the language boundary, you can add that crossing point to your own interpreter.  The key design decision is: what does an FFI call look like *in your language's syntax*, and how does the interpreter translate that into an actual call?  This model shows the smallest implementation that works: an `FfiCall` AST node carries the library name, function name, type annotations, and arguments.  The interpreter's `eval_node` function dispatches it to a registry that handles the marshaling.  Even a simple version like this is enough to give your mini language access to the entire C standard library.
 
 A language interpreter can support FFI by letting programs call Python built-ins or C functions by name.  Here is a minimal implementation.
 
