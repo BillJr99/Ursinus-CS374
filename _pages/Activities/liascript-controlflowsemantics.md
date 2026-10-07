@@ -221,7 +221,7 @@ $$
 
 (Note the Python-style refinement: returning the deciding operand rather than a normalized boolean is itself a design choice.  Java normalizes; Python does not.)
 
-> **Watch out!**  Short-circuit evaluation is not universal.  Some languages do not promise it: standard Pascal and Fortran leave it to the compiler whether the second operand of `and`/`or` is evaluated, and Visual Basic's `And`/`Or` always evaluate both operands (VB.NET adds `AndAlso`/`OrElse` for short-circuiting).  If you port code that relies on short-circuiting as a guard, check the target language's specification.  You cannot assume the right operand is skipped.
+> **Watch out!**  Short-circuit evaluation is not universal.  Some languages do not promise it: standard Pascal (ISO 7185) leaves the order of evaluation of the operands of `and`/`or` to the implementation, and they may not both be evaluated; Fortran likewise lets the compiler skip an operand of `.and.`/`.or.` when the result is already known, without requiring it to.  Visual Basic's `And`/`Or` always evaluate both operands (VB.NET adds `AndAlso`/`OrElse` for short-circuiting).  If you port code that relies on short-circuiting as a guard, check the target language's specification.  You cannot assume the right operand is skipped.
 
 ---
 
@@ -806,7 +806,7 @@ print(f"\nFinal environment: {env}")
 
 ### Critical Thinking Questions
 
-17.  A real REPL must handle errors without dying: if the user types `1/0` or `undefined_var`, the REPL should print an error and continue.  Wrap the inner call in a `try/except` and identify the three error classes you must catch (one per stage: lex, parse, eval).
+17.  A real REPL must handle errors without dying: if the user types `1/0` or `undefined_var`, the REPL should print an error and continue.  The session loop above already wraps each line in `try/except Exception`.  Add `"1/0"` and `"undefined_var"` to `repl_input` and run it.  Which line reaches the `except`, and why does the other one never raise (look at the `Var` case of `evaluate`)?  What would happen to the rest of the session without the `try/except`?  Catching every `Exception` lumps all failures together; identify the three error classes you would catch instead (one per stage: lex, parse, eval).
 18.  The REPL above has a persistent `env` dictionary.  If a user types `x = 10` and then `x = 20`, what should happen?  Should the language allow rebinding?
 19.  REPLs for functional languages (Haskell's `ghci`, Scheme's REPL) do not allow mutation.  How would you implement a purely functional REPL where each "assignment" introduces a new immutable binding rather than updating an old one?
 
@@ -869,7 +869,7 @@ In Python, `0 or "fallback"` evaluates to `"fallback"`. This shows that Python's
 7.  *The REPL.* Write the read-evaluate-print loop: prompt, read a line, tokenize, parse, execute against a persistent environment, repeat, catching and printing every error class without dying.  Your language now has an interactive shell; transcript required.
 8.  *Error taxonomy.*  Construct one program each that fails in the lexer, the parser, and the evaluator.  Verify each error message names its stage and location; improve the worst one.
 9.  *Semantics memo.*  Document three semantics decisions your team made today (truthiness, division by zero, loop variable persistence) in a `SEMANTICS.md` your project will grow all semester.
-10.  *Loop counter and step limit.*  Modify the `While` executor to count the number of times the loop body executes.  Then add a "step limit" parameter that raises a `RuntimeError` if the loop exceeds 10,000 iterations.  This protects against infinite loops in student-written programs.  Show it triggering on `while 1 > 0: print 1`.
+10.  *Loop counter.*  Modify the `While` executor to count the number of times the loop body executes, and report the count after the loop ends (for example, add it to a statistics dictionary your interpreter prints at the end of a run).  Show the count for the summation program and for a loop whose condition is false the first time (count 0).  If you also did Exercise 5, let the step limit read this same counter rather than keeping a second one.
 
 ---
 

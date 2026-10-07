@@ -5,9 +5,9 @@ title: "CS374: Principles of Programming Languages - Lab: Environments and Scope
 
 info:
   coursenum: CS374
-  purpose: "To build the Interpreter assignment's Environment class with a partner, covering nested scopes, define versus assign, and shadowing, and to verify it against the exact behaviors the Interpreter's evaluator depends on."
+  purpose: "To build the Interpreter assignment's Environment class, individually or with a partner, covering nested scopes, define versus assign, and shadowing, and to verify it against the exact behaviors the Interpreter's evaluator depends on."
   tilt:
-    task: "With a partner, implement an Environment class with parent chaining, distinguish define from assign, and verify shadowing, scope restoration, and name-error behavior against a provided test script."
+    task: "Individually or with a partner, implement an Environment class with parent chaining, distinguish define from assign, and verify shadowing, scope restoration, and name-error behavior against a provided test script."
     criteria: "I grade a correct Environment class that passes all provided behavior tests, and a short trace exercise that predicts scope behavior on paper.  The full breakdown is in the rubric below."
   points: 15
   goals:

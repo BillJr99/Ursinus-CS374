@@ -844,17 +844,20 @@ An AST can be traversed multiple times for different purposes (type checking, op
 
 ### Exercise 1: Add a `while` Loop
 
-The mini language from Model 5 has `let` and `if-else` but no looping construct.  Add a `while` loop with the syntax `while cond do body`.
+The mini language from Model 5 has `let` and `if-else` but no looping construct.  Add a `while` loop with the syntax `while cond do body`, where `cond` and `body` are each an `expr`.  Change only the Model 5 code; keep its existing tokens, rules, and node names.
 
-1.  Add the lexer rule (or reserved word entry) for `while` and `do`.
-2.  Add the parser rule `p_expr_while`.
-3.  Add a `While` dataclass with fields `cond` and `body`.
-4.  Add the `While` case to the `evaluate` function.
+1.  Add two entries to the `reserved` dict: `'while': 'WHILE'` and `'do': 'DO'`.  Because `tokens` is built from `reserved.values()`, and `t_ID` already looks words up in `reserved`, you need no new `t_` rule.
+2.  Add a `While` dataclass with fields `cond` and `body`, next to `IfExpr` and `Let`.
+3.  Add the parser rule `p_expr_while` with the docstring `'expr : WHILE expr DO expr'`, building `While(p[2], p[4])`.  Like `let ... in body`, the body extends as far to the right as it can, so `while c do x + 1` loops over `x + 1`.  Use parentheses, as in `(while c do x) + 1`, to end the loop sooner.
+4.  Add the `While` case to `evaluate`.  Use the same truth test as `IfExpr` (any nonzero number is true).  `while` is an expression in this language: it returns the value of the last evaluation of `body`, or `0.0` if the condition is false the first time it is checked.
 
-Hint: `while` is an expression in this language; it should return the value of the last iteration of `body`, or `0.0` if the condition is never true.
+Test your solution with these programs, adding them to the `tests` list:
 
-Test your solution with: `let x = 7 in while x < 5 do x`, which should evaluate to `0.0`.
-(Then think about this: `let` creates a new binding rather than updating `x`.  What happens when the condition starts out true, and what would the language need for a `while` loop to be useful?)
+- `let x = 7 in while x < 5 do x` should evaluate to `0.0` (the condition is false at the start).
+- `while 0 do 1 + 2` should evaluate to `0.0`.
+- `let x = 7 in (while x < 5 do x) + 1` should evaluate to `1.0`.
+
+Do not test a loop whose condition starts out true, such as `let x = 1 in while x < 5 do x`: it never ends.  Then explain why it never ends.  (Hint: `let` creates a new binding rather than updating `x`, and the language has no other way to change a variable.)  What would the language need for a `while` loop to be useful?
 
 ### Exercise 2: Strings and Concatenation
 

@@ -5,9 +5,9 @@ title: "CS374: Principles of Programming Languages - Lab: Type Checker Starter"
 
 info:
   coursenum: CS374
-  purpose: "To build the core of the Interpreter assignment's required static type checker with a partner, covering literal, variable, and operator checks over the class AST, all running before any code is evaluated."
+  purpose: "To build the core of the Interpreter assignment's required static type checker, individually or with a partner, covering literal, variable, and operator checks over the class AST, all running before any code is evaluated."
   tilt:
-    task: "With a partner, implement a checker that walks the class AST with a type environment, verifying annotated declarations, variable uses, and operator applications, and reporting positioned type errors."
+    task: "Individually or with a partner, implement a checker that walks the class AST with a type environment, verifying annotated declarations, variable uses, and operator applications, and reporting positioned type errors."
     criteria: "I grade this on a checker that accepts the well-typed programs and rejects each ill-typed program with a positioned two-type error message, plus a set of typing-rule statements written on paper.  See the rubric below for the full breakdown."
   points: 15
   goals:
@@ -48,7 +48,7 @@ tags:
 
 ---
 
-This **lab** builds the core of the Interpreter assignment's Part 4: a small static type checker that runs between parsing and evaluation.  A static type checker reads the abstract syntax tree (AST) of a program and decides whether each operation makes sense before any of the program runs.  With a partner, you get the checker working on its three simplest cases: literals, variables, and operators.  You leave with a `typechecker.py` that accepts six well-typed programs and rejects six ill-typed ones, a run log that shows it doing so, and a `RULES.md` that states each typing rule you implemented.  The Interpreter assignment then has you extend the checker on your own to call sites and return types.  Plan on one working session.
+This **lab** builds the core of the Interpreter assignment's Part 4: a small static type checker that runs between parsing and evaluation.  A static type checker reads the abstract syntax tree (AST) of a program and decides whether each operation makes sense before any of the program runs.  Working alone or with a partner (see the pair policy below), you get the checker working on its three simplest cases: literals, variables, and operators.  You leave with a `typechecker.py` that accepts six well-typed programs and rejects six ill-typed ones, a run log that shows it doing so, and a `RULES.md` that states each typing rule you implemented.  The Interpreter assignment then has you extend the checker on your own to call sites and return types.  Plan on one working session.
 
 **Pair policy.**  You may do this lab in pairs.  Submit the same files, name both partners in them, and you will both earn the same grade.  Working alone is also allowed.  The Interpreter assignment remains individual work: both partners may carry this shared checker core into it, but the extension to calls and returns must be your own.
 
@@ -83,7 +83,7 @@ This lab lands inside the Interpreter assignment's window; see the course schedu
 
 ## Part 0: Worked Models (read before you code)
 
-Part 0 opens with a short paper exercise, which is the graded piece.  The rest is four worked models from the Type Systems class session: a runtime checker for the interpreter you are building, a trace of it on compound expressions, inference by hand, and a type-error postmortem.  Each model has a script you can run and questions to talk through with your partner.  Read all four before you start Part 1.
+Part 0 opens with a short paper exercise, which is the graded piece.  The rest is four worked models from the Type Systems class session: a runtime checker for the interpreter you are building, a trace of it on compound expressions, inference by hand, and a type-error postmortem.  Each model has a script you can run and questions to talk through (with your partner, if you have one).  Read all four before you start Part 1.
 
 ### Type Systems on Paper
 
@@ -594,7 +594,7 @@ In `RULES.md`, state the typing rule for each construct your checker covers, one
 ### Step 2.1: State one rule per construct and cite its code
 
 > **Do this.**
-> 1. Create `RULES.md` in your lab folder, with both partners named at the top (below your Part 0 answers, if you typed them there).
+> 1. Create `RULES.md` in your lab folder, with your name (and your partner's, if you worked in a pair) at the top (below your Part 0 answers, if you typed them there).
 > 2. For each construct the checker covers (each literal type, variable use, `let` declaration, and each operator family), write one rule in either inference-rule layout (premises above a line, conclusion below it) or a disciplined "if... then..." sentence.
 > 3. Under each rule, name the function or branch in `typechecker.py` that implements it (for example, "the `BinOp` branch of `check_expr` for `+ - * /`").
 > 4. Check each rule against its cited code.  If the code enforces a premise the rule does not state, or the rule states one the code does not check, fix whichever is wrong.  Confirm the cited code raises an error naming both types whenever a premise fails.
@@ -620,7 +620,7 @@ Close `RULES.md` with two theory questions from the Type Systems session:
 
 ## Deliverables
 
-Submit a ZIP containing the files below, with both partners named in `RULES.md`.
+Submit a ZIP containing the files below, with your name (and your partner's, if you worked in a pair) in `RULES.md`.
 
 | File or artifact | What it shows | Rubric row |
 |------------------|---------------|------------|
@@ -637,7 +637,7 @@ Submit a ZIP containing the files below, with both partners named in `RULES.md`.
 - [ ] The checker calls no evaluator and prints nothing except the error.
 - [ ] `RULES.md` has one rule per construct the checker covers, each with its premises stated and its implementing function cited.
 - [ ] `RULES.md` answers the quadrant question and the gradual-typing question.
-- [ ] Both partners are named in `RULES.md`, and any reference component you built on is declared in one line.
+- [ ] Your name, and your partner's if you worked in a pair, is in `RULES.md`, and any reference component you built on is declared in one line.
 
 ## Reflection Prompts
 
