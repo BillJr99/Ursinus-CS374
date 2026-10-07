@@ -5,9 +5,9 @@ title: "CS374: Principles of Programming Languages - Lab: Lambda Calculus"
 
 info:
   coursenum: CS374
-  purpose: "To evaluate lambda calculus expressions by hand with a partner, working beta reduction with capture-avoiding substitution and Church encodings of booleans and numerals, which are the theory floor beneath functional programming."
+  purpose: "To evaluate lambda calculus expressions by hand, individually or with a partner, working beta reduction with capture-avoiding substitution and Church encodings of booleans and numerals, which are the theory floor beneath functional programming."
   tilt:
-    task: "With a partner, carry out step-by-step beta reductions including a capture-avoidance case, and verify Church-encoded booleans and numerals by reduction."
+    task: "Individually or with a partner, carry out step-by-step beta reductions including a capture-avoidance case, and verify Church-encoded booleans and numerals by reduction."
     criteria: "I assess your work on correct, fully-shown reduction sequences and correct Church-encoding verifications.  Please read the rubric below for the details."
   points: 15
   goals:
@@ -51,9 +51,9 @@ tags:
 
 ---
 
-In this lab you and a partner evaluate lambda calculus expressions by hand, the way the Lambda Calculus class sessions do at the board.  It is entirely on paper.  You leave with a page of reductions carried out one step at a time, a capture case you handled by renaming a bound variable, and Church-encoded booleans and numerals you verified by reduction rather than by trust.  No later assignment imports this lab, but it prepares you for the Functional Programming assignment's Direction C (Church encodings in code, where these reductions become the test cases your reducer has to reproduce) and for the closures material, where "a function that captures a variable" stops being mysterious once you have alpha-renamed by hand.  Work the reductions slowly; rushing them defeats the purpose.
+In this lab you (alone or with a partner) evaluate lambda calculus expressions by hand, the way the Lambda Calculus class sessions do at the board.  It is entirely on paper.  You leave with a page of reductions carried out one step at a time, a capture case you handled by renaming a bound variable, and Church-encoded booleans and numerals you verified by reduction rather than by trust.  No later assignment imports this lab, but it prepares you for the Functional Programming assignment's Direction C (Church encodings in code, where these reductions become the test cases your reducer has to reproduce) and for the closures material, where "a function that captures a variable" stops being mysterious once you have alpha-renamed by hand.  Work the reductions slowly; rushing them defeats the purpose.
 
-**Pair policy.**  You may do this lab in pairs.  Reduce independently, then reconcile line by line; the disagreements are where the learning is.  Hand in one document between you, each naming the other, and you both receive the same grade.  You may also do this alone.
+**Pair policy.**  You may do this lab in pairs.  Reduce independently, then reconcile line by line; the disagreements are where the learning is.  Hand in one document between you, each naming the other, and you both receive the same grade.  You may also do this alone; if you do, redo each reduction independently after a break and reconcile it against your first attempt.
 
 Five terms come up throughout:
 
@@ -78,7 +78,7 @@ There is nothing to install.  You may hand in a typed Markdown file or a legible
 
 > **Do this.**
 > 1. Create a folder named `cs374-lambda` (File, Open Folder in VS Code, or the two commands below).
-> 2. **Typed route:** create `reductions.md` inside it.  Put both partners' names on the first line, then the headings `## Part 0`, `## Part 1`, and `## Part 2`, each with `### Item 1`, `### Item 2`, and so on for its items, plus `### Least-confident step` under Part 0.
+> 2. **Typed route:** create `reductions.md` inside it.  Put your name (and your partner's, if you worked in a pair) on the first line, then the headings `## Part 0`, `## Part 1`, and `## Part 2`, each with `### Item 1`, `### Item 2`, and so on for its items, plus `### Least-confident step` under Part 0.
 > 3. **Handwritten route:** write both names at the top of the first sheet and label every part and item number the same way, so I can find item 4 of Part 1 without hunting.  When done, photograph each page in good light with the page filling the frame, confirm every symbol is readable, and hand in one `reductions.pdf` with the pages in order (or `reductions-1.jpg`, `reductions-2.jpg`, and so on).
 
 ```bash
@@ -102,7 +102,7 @@ If you type, write every lambda term in display math: open with `$$`, type the t
 
 For example, `$$\underline{(\lambda x.\, x)\ y} \to_\beta y$$` renders as $$\underline{(\lambda x.\, x)\ y} \to_\beta y$$.
 
-> **Time budget.**  Two to three hours, most of it in one sitting with your partner: about half an hour for Part 0 and an hour each for Parts 1 and 2, with the reconciliation inside those.
+> **Time budget.**  Two to three hours, most of it in one sitting (with your partner, if you have one): about half an hour for Part 0 and an hour each for Parts 1 and 2, with the reconciliation inside those.
 
 ---
 
@@ -200,7 +200,7 @@ When an item names an encoding from the table above, write its definition in ful
 | `## Part 0` section of `reductions.md` (or `reductions.pdf`) | Both Part 0 reductions step by step, the non-terminating case explained, $$\text{SUCC}\ \text{ZERO}$$ verified, and the least-confident step marked | Part 0: Before You Start |
 | `## Part 1` section | Five reductions, one beta-step per line with the redex marked, the capture case alpha-renamed with a sentence, and the evaluation-order answer with the divergence example | Beta Reduction (Goal 1) |
 | `## Part 2` section | Three complete verifications ending at the expected term, and the closing answer connecting Church numerals to a higher-order-function idiom | Church Encodings (Goals 2, 3) |
-| Partner names on the first line | Who did the work; both partners receive the same grade | All rows |
+| Your name (and your partner's, if you worked in a pair) on the first line | Who did the work; partners receive the same grade | All rows |
 
 ---
 
@@ -219,5 +219,5 @@ When an item names an encoding from the table above, write its definition in ful
 
 ## Reflection Prompts
 
-- Which reduction did you and your partner disagree on, and what settled it?
+- Which reduction did you and your partner disagree on, and what settled it?  Or, if you worked alone, which reduction did you have to redo, and what settled it?
 - If you worked in a pair, note who did what.  If you worked alone, note that instead.

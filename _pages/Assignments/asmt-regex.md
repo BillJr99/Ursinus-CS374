@@ -54,7 +54,7 @@ In this assignment you learn Python's regular-expression library by running it, 
 
 Work the parts in order, because I test each one on its own and each part uses what the one before it built.  Part 1 is a walkthrough: I show you something, you run it, then you vary it and write down what happened.  Every code block here runs as it stands, so put it in a file, run it, change something, and run it again.  Reading these blocks without running them is the one way to get nothing out of this assignment.  Write every pattern as a raw string (`r"..."`) so that backslashes reach the regex engine unchanged.
 
-**Pair policy.**  Parts 1 and 2 may be done in pairs, with driver and navigator at one screen and a swap at the start of Part 2.  If you pair, you each submit the same files for those parts and name the other in your readme.  Part 3 is individual work.
+**Pair policy.**  Parts 1 and 2 may be done in pairs, with driver and navigator at one screen and a swap at the start of Part 2.  If you pair, you each submit the same files for those parts and name the other in your readme.  You may also work alone.  Part 3 is individual work.
 
 ---
 
