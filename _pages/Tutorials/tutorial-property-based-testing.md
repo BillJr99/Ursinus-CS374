@@ -30,7 +30,7 @@ tags:
 
 # Property-Based Testing Your Language with Hypothesis
 
-This tutorial is the companion to the property-based-testing steps in the **Parser** assignment (Step 3e) and the **Interpreter** assignment (Step 2e).  It shows you how to let a library generate thousands of test programs for you and automatically shrink any failure to the smallest program that still breaks, which is exactly the kind of bug your hand-written examples miss.
+This tutorial is the companion to the property-based-testing steps in the **Parser** assignment (Step 3e) and the **Interpreter** assignment (Step 2e).  It shows you how to let a library generate thousands of test programs for you and automatically shrink any failure to the smallest program that still breaks.  Those failing programs are exactly the kind of bug your hand-written examples miss.
 
 You already know Python and `pytest`.  This tutorial bridges the gap between "my ten test cases pass" and "I have evidence the law holds for *every* program my generator can produce."
 
@@ -65,7 +65,7 @@ uv add hypothesis      # or: pip install hypothesis
 
 ## Section 2: Generating ASTs with `recursive`
 
-The key to testing a language is generating *trees* rather than strings.  A random string is almost never a valid program, but a random AST always is (and you can `unparse` it to a valid string).  Hypothesis builds recursive data with `st.recursive(base, extend)`: `base` is the strategy for leaves, and `extend` takes a strategy for children and returns a strategy for one-level-deeper trees.
+The key to testing a language is generating *trees* rather than strings.  A random string is almost never a valid program, but a random abstract syntax tree (AST) always is (and you can `unparse` it to a valid string).  Hypothesis builds recursive data with `st.recursive(base, extend)`: `base` is the strategy for leaves, and `extend` takes a strategy for children and returns a strategy for one-level-deeper trees.
 
 Assume your AST node classes are `Num(value)`, `Var(name)`, and `BinOp(op, left, right)`:
 

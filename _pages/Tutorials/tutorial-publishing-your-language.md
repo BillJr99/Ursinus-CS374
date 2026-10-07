@@ -31,11 +31,11 @@ tags:
 
 ## Getting Your Language onto Someone Else's Machine
 
-By the end of CS374 you have built a real programming language, with a lexer, a parser, an evaluator or compiler, and probably a REPL.  Right now that implementation lives in a folder on your laptop.  This tutorial shows you how to publish it so that anyone (without cloning your repository or installing your dependencies by hand) can run programs written in your language.
+By the end of CS374 you have built a real programming language, with a lexer, a parser, an evaluator or compiler, and probably a REPL (read-eval-print loop).  Right now that implementation lives in a folder on your laptop.  This tutorial shows you how to publish it so that anyone (without cloning your repository or installing your dependencies by hand) can run programs written in your language.
 
 There are three scenarios, and you only need the one that fits your project:
 
-- **pip**: Your interpreter is written in Python.  After publishing, anyone who runs `pip install mylang-cs374` will get the `mylang` command on their PATH and can run `mylang program.ml` directly.
+- **pip**: Your interpreter is written in Python.  After publishing, anyone who runs `pip install mylang-cs374` will get the `mylang` command on their PATH (the list of folders the shell searches for commands) and can run `mylang program.ml` directly.
 - **npm**: Your transpiler emits JavaScript.  After publishing, anyone who runs `npx @yourname/mylang program.ml` will transpile and run the source file using Node.js; no installation required.
 - **Docker / ghcr.io**: Your language has native dependencies that are difficult to install (Flex/Bison, LLVM, a custom C runtime).  A Docker image bundles everything.  After publishing, users run `docker run --rm -v $(pwd):/work ghcr.io/yourname/mylang program.ml` and it just works.
 
@@ -313,7 +313,7 @@ npm login
 
 **Testing locally before publishing**
 
-Pack the package into a tarball without uploading it.  This lets you inspect exactly what will be published and install it locally for testing:
+Pack the package into a tarball (a single compressed archive file) without uploading it.  This lets you inspect exactly what will be published and install it locally for testing:
 
 ```bash
 npm pack

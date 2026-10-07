@@ -70,7 +70,7 @@ This is a plain-English glossary.  Come back to it whenever one of these terms s
 | **Strong typing** | The language refuses to silently mix incompatible types | Broken promises stop the program instead of flowing onward as wrong values |
 | **Weak typing** | The language silently converts operands so the operation can proceed | The source of `"5" - 1 == 4` surprises; convenience purchased with silence |
 | **Coercion** | An implicit, automatic conversion the programmer never asked for | The defining behavior of weak typing; contrast with explicit conversion |
-| **Type inference** | The checker deduces types from values and context, with no annotations written | Static safety without annotation ceremony: Rust, Haskell, TypeScript |
+| **Type inference** | The checker deduces types from values and context, with no annotations written | Static safety without writing type annotations everywhere: Rust, Haskell, TypeScript |
 | **Type environment** | A mapping from variable names to their types | The checker's version of your interpreter's environment: names to types, not values |
 | **Gradual typing** | Some parts of a program are checked statically, the rest stay dynamic | How mypy and TypeScript retrofit checking onto languages that started without it |
 

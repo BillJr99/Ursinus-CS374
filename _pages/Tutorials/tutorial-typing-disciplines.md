@@ -108,7 +108,7 @@ const x: any = [];        // 'any' opts out
 x.foo();                  // tsc: no error - 'any' silences the check
 ```
 
-**The key insight: gradual type systems are *unsound* by design.** `Any` (mypy) and `any` (TypeScript) are escape hatches that turn checking *off*, so a type-checked program can still fail at runtime.  That is a deliberate trade: adoptability and flexibility in exchange for the airtight guarantee a fully static language like Haskell gives you.  Contrast this with your HM checker, which has no `Any` escape hatch and so is sound for the fragment it covers.
+**The key insight: gradual type systems are *unsound* by design.** `Any` (mypy) and `any` (TypeScript) are escape hatches that turn checking *off*, so a type-checked program can still fail at runtime.  That is a deliberate trade: these systems give up the airtight guarantee a fully static language like Haskell gives you in exchange for adoptability and flexibility.  Contrast this with your Hindley-Milner (HM) checker, which has no `Any` escape hatch and so is sound for the fragment it covers.
 
 ---
 
@@ -248,7 +248,7 @@ Questions to consider:
 1.  In nominal typing, what must a class do to be considered a subtype of an interface?  In structural typing, what determines subtyping?
 2.  Duck typing defers type checking to runtime.  What is the trade-off compared to structural typing checked at compile time?
 3.  Go uses structural typing for interfaces: a type satisfies an interface by having the right methods, no `implements` needed.  What advantage does this give to library designers?  What risk does it introduce?
-4.  Do `Circle` and `Square` inherit from `Drawable`?  Check the MRO output.  Yet `isinstance(circle, Drawable)` returns `True`.  Explain why.
+4.  Do `Circle` and `Square` inherit from `Drawable`?  Check the MRO (method resolution order) output.  Yet `isinstance(circle, Drawable)` returns `True`.  Explain why.
 5.  In Java, to achieve the same effect you would write `class Circle implements Drawable`.  What does that declaration cost you (coupling, compile-time checking, file organization)?  What does Python's structural approach cost you in return?
 6. `NotDrawable` has `draw` but not `area`.  How does `isinstance(NotDrawable(), Drawable)` respond, and why?  What does this tell you about the granularity of Protocol checking?
 7.  The `...` (Ellipsis) in `def draw(self) -> str: ...` is a body placeholder.  How is this different from `pass`?  When would you use each?

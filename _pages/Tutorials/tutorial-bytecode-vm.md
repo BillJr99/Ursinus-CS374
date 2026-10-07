@@ -32,7 +32,7 @@ By the end of this tutorial, you will have:
 - Implemented upvalues (the Lua trick) so that closures in the VM correctly capture variables from enclosing frames
 - Verified that the VM produces identical output to the tree-walking interpreter on all provided test programs and measured the speedup
 
-Your tree-walking interpreter is correct and elegant, but every time it evaluates `x + 1` it traverses three AST nodes, looks up `x` in the environment dictionary, allocates a new addition result, and works its way back up.  For programs with tight loops or deeply recursive functions, this overhead adds up.  **Bytecode virtual machines** solve this by translating the AST once into a flat sequence of simple instructions, then running those instructions in a tight loop.  This is the architecture behind CPython, the Java Virtual Machine, Lua, Ruby's YARV, and dozens of other production runtimes.
+Your tree-walking interpreter is correct and elegant, but every time it evaluates `x + 1` it traverses three abstract syntax tree (AST) nodes, looks up `x` in the environment dictionary, allocates a new addition result, and works its way back up.  For programs with tight loops or deeply recursive functions, this overhead adds up.  **Bytecode virtual machines (VMs)** solve this by translating the AST once into a flat sequence of simple instructions, then running those instructions in a tight loop.  This is the architecture behind CPython, the Java Virtual Machine, Lua, Ruby's YARV, and dozens of other production runtimes.
 
 This tutorial builds a complete bytecode VM for Mini in six phases:
 
@@ -115,7 +115,7 @@ Source code
     VM     --> Result                                <- run many times
 ```
 
-The compiler runs once.  The VM runs the same bytecode repeatedly, or, in the case of a REPL, compiles each expression and immediately runs it.  The bytecode can also be serialized to disk (like `.pyc` files) so that compilation cost is paid only when the source changes.
+The compiler runs once.  The VM runs the same bytecode repeatedly, or, in the case of a REPL (read-eval-print loop), compiles each expression and immediately runs it.  The bytecode can also be serialized to disk (like `.pyc` files) so that compilation cost is paid only when the source changes.
 
 ---
 
@@ -1994,7 +1994,7 @@ By the end of this section, you will be able to:
 >
 > If any of these feel shaky, re-read the functional programming and lambda calculus notes before proceeding; the safety proofs in this section rely on all four.
 
-> **"The first 90% of the code accounts for the first 90% of the development time.  The remaining 10% of the code accounts for the other 90% of the development time."**, Tom Cargill
+> **"The first 90% of the code accounts for the first 90% of the development time.  The remaining 10% of the code accounts for the other 90% of the development time."** - Tom Cargill
 >
 > Optimizations speed up programs *without changing their meaning*.  In this appendix you will implement five core optimizations: constant folding, dead code elimination, common subexpression elimination, inlining, and tail call optimization.  Each operates on the AST or an intermediate representation (IR), the same data structures you've been building throughout the course.
 
@@ -2604,7 +2604,7 @@ Add tail call optimization to your Mini interpreter:
 
 - **"Engineering a Compiler"**: Cooper & Torczon, Chapters 8-10: the canonical compiler optimization textbook
 - **"Compilers: Principles, Techniques, and Tools"**: Aho, Lam, Sethi, Ullman (Dragon Book): Chapters 9-10
-- **"Compiling with Continuations"**: Appel: how CPS enables many optimizations uniformly
+- **"Compiling with Continuations"**: Appel: how continuation-passing style (CPS) enables many optimizations uniformly
 - **GCC optimization flags**: `gcc -O2` enables ~50 optimizations; the manual lists them all
 - **LLVM passes**: each LLVM optimization is a separate pass; the source code is readable: https://llvm.org/docs/Passes.html
 - **"Hacker's Delight"**: Henry Warren: arithmetic tricks behind strength reduction

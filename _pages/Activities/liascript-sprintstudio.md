@@ -22,7 +22,7 @@ Building a programming language in a semester takes the same discipline that shi
 
 By the end of this activity, you will be able to:
 
-- Conduct a structured stand-up by reporting concrete metrics (passing tests, completed AST nodes, known failures) rather than qualitative status assessments
+- Conduct a structured stand-up by reporting concrete metrics (passing tests, completed AST nodes, known failures) rather than qualitative descriptions of status
 - Calculate sprint velocity from planned versus completed work items and use it to project whether the team will finish on time
 - Apply the gallery walk protocol to give and receive structured peer feedback on a language implementation in progress
 - Triage feedback into backlog items with owners and dates, prioritized by risk and impact on the final release
@@ -408,4 +408,4 @@ In your notebook: compare the feedback your team received today with the error m
 
 ---
 
-These studios are the Team Language Project's build engine.  The road ends at Demo Day, where your language meets its audience.
+These studios are where most of the Team Language Project gets built, and they lead to Demo Day, where you present your language to its audience.

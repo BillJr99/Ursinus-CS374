@@ -42,7 +42,7 @@ The algorithm has four components, built in order:
 1.  **Type terms**: the language of types: `Int`, `Bool`, `α` (type variable), `α -> β` (function type)
 2.  **Substitution**: mapping from type variable names to types; `apply(subst, type)` replaces variables
 3.  **Unification**: given two types, find the most general substitution making them equal
-4.  **Algorithm W**: walk the AST, generate and solve type constraints, return the principal type
+4.  **Algorithm W**: walk the AST, generate and solve type constraints, return the principal type (the most general type the expression can have)
 
 ---
 
@@ -187,7 +187,7 @@ except Exception as e:
 
 ## Phase 3: Unification
 
-Unification finds the most general substitution (MGU) that makes two types equal.  The occurs check prevents creating infinite types like `α = List α`.
+Unification finds the most general substitution (MGU) that makes two types equal.  The occurs check, which refuses to bind a type variable to a type that contains that same variable, prevents creating infinite types like `α = List α`.
 
 ```python
 try:

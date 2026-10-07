@@ -56,7 +56,7 @@ By the end of this tutorial, you will have:
 - Used `coverage.py` to generate an HTML coverage report and identified untested paths in your evaluator
 - Structured your interpreter as independent, testable functions so that each stage (lexer, parser, evaluator) can be tested in isolation
 
-Interpreters are unusually hard to debug manually.  When you run a program and get the wrong answer, the bug could live in the lexer, the parser, the AST representation, the environment lookup, the evaluator dispatch, or the closure construction.  A good test suite isolates each stage and catches regressions the moment you introduce them.  Continuous integration then ensures those tests run on every push, not just when you remember to.
+Interpreters are unusually hard to debug manually.  When you run a program and get the wrong answer, the bug could live in the lexer, the parser, the AST representation, the environment lookup, the evaluator dispatch, or the closure construction.  A good test suite isolates each stage and catches regressions the moment you introduce them.  Continuous integration (CI) then ensures those tests run on every push, not just when you remember to.
 
 **What you need:**
 
@@ -1053,7 +1053,7 @@ Two studio tools from the Sprint Studio sessions: measuring what "done" means ac
 
 ## Model 1: Sprint Velocity; Measuring What "Done" Looks Like
 
-A sprint velocity is a *count*, and not a feeling.  The Evaluator tracks two numbers: **stories completed** (AST nodes with passing tests) and **tests passing**.  A flat trend three sprints before Demo Day is a crisis nobody has named yet, and the number is how you name it.  The cell below simulates a three-sprint project and plots the velocity trend, so you can read a healthy trajectory against a warning one before your own numbers are in the dashboard.
+A sprint velocity is a *count*, and not a feeling.  The Evaluator tracks two numbers: **stories completed** (AST nodes with passing tests) and **tests passing**.  A flat trend three sprints before Demo Day is a crisis nobody has named yet, and the number is how you name it.  The cell below simulates a three-sprint project and prints the velocity trend, so you can read a healthy trajectory against a warning one before your own numbers are in the dashboard.
 
 ```python
 # Sprint health dashboard: velocity, test coverage, and projection.
@@ -1134,7 +1134,7 @@ print("  Rule: a sprint with more than 2 known failures is not done.")
 print("  Rule: test_pct < 80% triggers a test-debt sprint before new features.")
 ```
 
-> **Watch out!**  The projection formula assumes your last sprint's velocity holds constant.  Real project velocity rarely stays constant; it often drops in the final sprint because of integration work and debugging.  If you are already at 80% velocity, the projection is optimistic.  Use the projection as a floor rather than a ceiling.
+> **Watch out!**  The projection formula assumes your last sprint's velocity holds constant.  Real project velocity rarely stays constant; it often drops in the final sprint because of integration work and debugging.  If you are already at 80% velocity, the projection is optimistic.  Treat the projected number of sprints as a floor rather than a ceiling.
 
 ### Critical Thinking Questions
 

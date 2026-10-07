@@ -226,7 +226,7 @@ print(outer())                      # ('inner', 'outer')
 
 Here is the step-by-step trace of name lookup under static scope for the `demo()` -> `show()` call above:
 
-1. `demo()` is called.  Python creates a new local frame for `demo`.  It executes `x = 99`, which binds `x` to `99` in `demo`'s local frame only.
+1. `demo()` is called.  Python creates a new local frame (a table of that call's local names) for `demo`.  It executes `x = 99`, which binds `x` to `99` in `demo`'s local frame only.
 2. `show()` is called from inside `demo`.  Python creates a new local frame for `show`.  That frame has no `x`.
 3. `show` uses `x` in `print(...)`.  Python walks the textual enclosing regions: first `show`'s own locals (no `x`), then the global module scope, where `x = 10` lives.  It finds `x = 10` there and uses it.
 4.  Python never looks at `demo`'s frame when resolving `show`'s names, because `demo` does not textually enclose `show`.  Both functions are defined at the top level.  They are siblings in the text, not parent and child.

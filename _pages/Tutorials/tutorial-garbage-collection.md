@@ -52,7 +52,7 @@ Three main strategies exist:
 
 ## Part 1: Simulated Heap
 
-All three algorithms share a common simulated heap: a dictionary from address (integer) to object, plus a free list.
+All three algorithms share a common simulated heap: a dictionary from address (integer) to object, plus a free list (the addresses not currently holding an object).
 
 ```python
 try:
@@ -209,7 +209,7 @@ except Exception as e:
 ## Part 3: Mark-and-Sweep
 
 Mark-and-sweep runs in two phases:
-1.  **Mark:** start from all **root** references (stack variables, global env); recursively mark every reachable object.
+1.  **Mark:** start from all **root** references (stack variables, the global environment); recursively mark every reachable object.
 2.  **Sweep:** free every object that was NOT marked.
 
 ```python
@@ -509,5 +509,5 @@ If you choose the GC extension for your final project:
 - Wilson, Paul R. "Uniprocessor Garbage Collection Techniques" (1992).  The definitive survey of all algorithms, readable and thorough.
 - Cheney, C.J. "A Nonrecursive List Compacting Algorithm" (1970, CACM).  The original two-page paper; one of the most elegant algorithms ever published.
 - Jones, Richard et al. *The Garbage Collection Handbook* (CRC Press, 2011).  The standard modern reference.
-- Python's GC documentation: https://docs.python.org/3/library/gc.html: explains CPython's reference counting + generational cycle collector.
+- Python's GC documentation: https://docs.python.org/3/library/gc.html: explains CPython's reference counting and its generational cycle collector.
 - Go GC guide: https://go.dev/doc/gc-guide: explains the tri-color mark-and-sweep used in Go's runtime.

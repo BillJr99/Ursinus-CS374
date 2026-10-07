@@ -613,7 +613,7 @@ OK
 
 ### What you build
 
-In this direction, you build the same component with a lexer generator instead of a hand-rolled `re` loop.  The generator does the maximal-munch machinery for you.  Your job shifts to three things: write the rule specification correctly, wrap the generated scanner behind the interface contract, and prove the same properties with the same tests.  The three parts above map onto this direction as follows.  The course tutorials on [Flex and Bison]({{ site.baseurl }}/Tutorials/FlexAndBison) and on the [PLY lexer and parser]({{ site.baseurl }}/Tutorials/PLYLexerAndParser) cover the tools' own mechanics.
+In this direction, you build the same component with a lexer generator instead of a hand-rolled `re` loop.  The generator handles the maximal-munch machinery for you.  Your job shifts to three things: write the rule specification correctly, wrap the generated scanner behind the interface contract, and prove the same properties with the same tests.  The three parts above map onto this direction as follows.  The course tutorials on [Flex and Bison]({{ site.baseurl }}/Tutorials/FlexAndBison) and on the [PLY lexer and parser]({{ site.baseurl }}/Tutorials/PLYLexerAndParser) cover the tools' own mechanics.
 
 > **What this direction requires.** Part 0 and the Getting Started ramp apply as written, with your rule file in place of `lexer.py`'s `TOKEN_SPEC`.  Part 1 becomes a rule specification, Part 2 becomes a wrapper around the generated scanner, and Part 3 applies unchanged.  You still submit a `test_lexer.py`, a `test_output.txt`, and a readme; the readme also records your toolchain versions and explains the keyword-table idiom.
 
