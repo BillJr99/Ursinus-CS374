@@ -31,7 +31,7 @@ By the end of this tutorial, you will have:
 - Connected parser combinators to the monad abstraction from the Monads activity and explained what `bind` does in the parsing context
 - Compared the combinator parser to the recursive-descent parser from the interpreter assignment, identifying the tradeoffs in readability, error messages, and extensibility
 
-A **parser combinator library** builds parsers by composing small parser values with combinator functions.  A parser is simply a function from a string position to either `(value, new_position)` on success or `None` on failure.  Combinators (`seq`, `alt`, `many`, `map`) combine parsers into larger parsers the same way function composition combines functions.  The result is a recursive-descent parser written in the host language's normal expression syntax, with no separate grammar notation.  This tutorial walks from the atomic building block up to a complete expression parser for Mini's arithmetic, all in ~200 lines of Python.  **Prerequisites:** Monads activity (parsers form a monad); Lambda Calculus and Recursive Descent activities.
+A **parser combinator library** builds parsers by composing small parser values with combinator functions.  A parser is a function from a string position to either `(value, new_position)` on success or `None` on failure.  Combinators (`seq`, `alt`, `many`, `map`) combine parsers into larger parsers the same way function composition combines functions.  The result is a recursive-descent parser written in the host language's normal expression syntax, with no separate grammar notation.  This tutorial walks from the atomic building block up to a complete expression parser for Mini's arithmetic, all in ~200 lines of Python.  **Prerequisites:** Monads activity (parsers form a monad); Lambda Calculus and Recursive Descent activities.
 
 ---
 
@@ -786,13 +786,13 @@ except Exception as e:
 
 # From the Parsing Expressions Activity: Runnable Models
 
-The three models below were previously embedded in the *Parsing Expressions* class session.  They are code you run rather than reasoning you do together, so they live here.  Pratt parsing in particular is beyond the grammar the Parser assignment requires; it is here because it is the technique most real hand-written parsers actually use.
+The three models below were previously embedded in the *Parsing Expressions* class session.  They are code you run rather than reasoning you do together, so they live here.  Pratt parsing in particular is beyond the grammar the Parser assignment requires; it is here because it is the technique most real hand-written parsers use.
 
 ## Model 2: Precedence Table (Runnable)
 
 Before writing parser code, it helps to see that "precedence" is just a number: a higher number means "bind tighter" (resolve sooner).  This model lets you experiment with two different precedence tables on the same token stream so you can observe concretely how changing one number changes the resulting tree, and therefore the numeric result.  Pay attention to the flat-precedence case: it is a useful stress-test for understanding what your parser *actually* does rather than what you think it does.
 
-Different precedence assignments for the same token stream produce completely different trees and values.  The model below encodes two precedence tables and a simple "what would this mean?" validator that folds a flat token list according to each table, showing both resulting trees.
+Different precedence assignments for the same token stream produce different trees and values.  The model below encodes two precedence tables and a simple "what would this mean?" validator that folds a flat token list according to each table, showing both resulting trees.
 
 ```python
 # Model 2: Two precedence tables, one token stream - two different meanings.

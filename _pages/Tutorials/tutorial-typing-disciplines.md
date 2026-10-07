@@ -63,7 +63,7 @@ Worked contrasts to try:
   - **Python** (strong/dynamic): `TypeError` at runtime.
   - **Haskell** (strong/static): compile error.
   - **JavaScript** (weak/dynamic): `"a1"`, silent coercion.
-  - **C** (weak/static): `'a' + 1` is `98`, a `char` is just a small int.
+  - **C** (weak/static): `'a' + 1` is `98`, because a `char` is just a small int.
 - Your **CS374 interpreter** deliberately sits in the *strong/dynamic* box: `SEMANTICS.md` says adding a string to a number raises a `LangTypeError` at evaluation time.  That is a design choice, and stating it precisely is part of the Interpreter assignment.
 
 > **Common misconception:** "static" does not imply "strong," and "dynamic" does not imply "weak."  C is static but weak; Python is dynamic but strong.  Keep the axes separate.
@@ -77,7 +77,7 @@ You have built (or will build) *both* type stories:
 - The **tree-walking interpreter** enforces types **dynamically and strongly**: `"a" + 1` gets as far as evaluation and then raises a positioned `LangTypeError`.  The rule lives in `SEMANTICS.md`.
 - The **Hindley-Milner type-checking direction** moves the *same* language to **static** checking: it rejects `"a" + 1` *before evaluation ever begins*, the way Haskell and OCaml do, and documents each rule in `TYPES.md`.  Notice this direction is also *stricter* than the dynamic version in places (it requires `if`/`while` conditions to be `Bool`, not merely truthy).
 
-Choosing the type-checking direction is literally moving your language one column left in the quadrant.
+Choosing the type-checking direction moves your language one column left in the quadrant.
 
 ---
 
@@ -125,7 +125,7 @@ x.foo();                  // tsc: no error - 'any' silences the check
 
 > **Intuition:** Imagine hiring for a job.  A nominal hiring process checks your official job title on your resume: if it doesn't say "Senior Engineer," you don't qualify, even if you can do everything the role requires.  A structural hiring process checks your skills: if you can write code, debug systems, and design architecture, you qualify, regardless of what your title says.  Nominal typing is the first process; structural typing is the second.  Python's duck typing takes this to the extreme: it doesn't even check at hire time, it just tries the work and fails if you can't do it.
 
-The axes in Sections 1-2 concern *when* and *how strictly* types are checked.  A separate design question is how the type system decides whether one type is *compatible* with another: two classes that have the same methods but no shared parent: should a function that accepts one also accept the other?  Two philosophies govern the answer:
+The axes in Sections 1-2 concern *when* and *how strictly* types are checked.  A separate design question is how the type system decides whether one type is *compatible* with another.  Given two classes that have the same methods but no shared parent, should a function that accepts one also accept the other?  Two philosophies govern the answer:
 
 **Nominal typing**: compatibility is determined by *name* (and explicit declaration).
 
@@ -241,7 +241,7 @@ print(f"Circle MRO: {[c.__name__ for c in Circle.__mro__]}")
 print(f"Square MRO: {[c.__name__ for c in Square.__mro__]}")
 ```
 
-> **Watch out!**  Python's `Protocol` and duck typing look similar but operate at different times.  Duck typing is a *runtime* check: Python tries to call the method and raises `AttributeError` if it's missing.  A `Protocol` with `@runtime_checkable` allows `isinstance` checks at runtime, but the real power is enabling *static* tools like `mypy` to verify structural compatibility before you run the program at all.
+> **Watch out!**  Python's `Protocol` and duck typing look similar but operate at different times.  Duck typing is a *runtime* check: Python tries to call the method and raises `AttributeError` if it's missing.  A `Protocol` with `@runtime_checkable` allows `isinstance` checks at runtime, but its main purpose is to let *static* tools like `mypy` verify structural compatibility before you run the program at all.
 
 Questions to consider:
 
@@ -573,7 +573,7 @@ Questions to consider:
 
 When two parties sign a contract, a violation needs to be traced back to whoever broke it, not to some innocent bystander in the middle.  The blame calculus does exactly this for type boundaries: it tags each boundary with a label so that when a runtime cast fails, the error message names the site that made the broken promise rather than the function body that happened to discover the problem.
 
-When a gradually-typed program fails at runtime (because a `DYN` value turned out to be the wrong type at a typed boundary) the system needs to say **which boundary** was violated.  This is the **blame calculus** (Wadler and Findler, 2009).  Without blame, a runtime failure deep inside a library could be misleadingly attributed to the library itself, when the real problem is that the caller passed an untyped value that violated the library's contract.
+When a gradually-typed program fails at runtime (because a `DYN` value turned out to be the wrong type at a typed boundary), the system needs to say **which boundary** was violated.  This is the **blame calculus** (Wadler and Findler, 2009).  Without blame, a runtime failure deep inside a library could be misleadingly attributed to the library itself, when the real problem is that the caller passed an untyped value that violated the library's contract.
 
 The key insight: when typed code calls untyped code, or untyped code calls typed code, a **cast** is inserted at the boundary.  If the cast fails, blame is assigned to the boundary label, the name of the site that promised a value of the wrong type.
 

@@ -66,7 +66,7 @@ Your language needs a reason to exist beyond the assignment.  The strongest stud
 
 ---
 
-Two cookbooks can hold identical recipes, one written as numbered steps and the other as dense paragraphs.  The recipes are the same, but following them feels completely different.  Syntax is your language's cookbook format.  It does not change what a program means, but it shapes how easy the program is to write, read, and teach.  This model puts two syntactically different versions of the same language side by side so that you can measure that difference instead of only feeling it.
+Two cookbooks can hold identical recipes, one written as numbered steps and the other as dense paragraphs.  The recipes are the same, but following them feels different.  Syntax is your language's cookbook format.  It does not change what a program means, but it shapes how easy the program is to write, read, and teach.  This model puts two syntactically different versions of the same language side by side so that you can measure that difference instead of only feeling it.
 
 ## Model 1: Syntax Choices Make a Language Feel Like Itself
 

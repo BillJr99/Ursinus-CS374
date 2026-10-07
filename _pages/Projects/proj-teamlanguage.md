@@ -178,7 +178,7 @@ The rubric is the same on both directions.
 
 ### Direction A: A General-Purpose or Domain Language of Your Design
 
-This is the default framing above.  Design a language with a niche of your choosing (a recipe DSL, a query language over in-memory lists, a turtle-graphics language, a logic language, a constraint language, or a compelling original idea), implement the required scope end to end from your semester components, and add a distinctive feature that serves the niche.  Everything in the milestone sections below applies as written.
+This is the default framing above.  Design a language with a niche of your choosing (a recipe domain-specific language (DSL), a query language over in-memory lists, a turtle-graphics language, a logic language, a constraint language, or a compelling original idea), implement the required scope end to end from your semester components, and add a distinctive feature that serves the niche.  Everything in the milestone sections below applies as written.
 
 > **Code path.**  Scaffold option: Make-a-Lisp (mal).  If your team's niche is a Lisp-shaped or expression-oriented language, you may build on the [Make-a-Lisp (mal)](https://github.com/kanaka/mal) process as your scaffold instead of starting the front end from scratch.  mal is an eleven-step incremental path to a working Lisp.  What makes it useful here is its shared test harness (`runtest.py` against per-step `.mal` test files), which becomes a free, rigorous regression suite for your language as you build.  You still own the design.  You must give the language a niche of its own and a distinctive feature of your own (mal out of the box is a generic Lisp, which is not by itself a distinctive feature), document your semantics, and integrate your team's components.  mal's staged tests and reference structure can carry the routine reader/eval/print plumbing, so your sprint time goes to the parts that make your language *yours*.  Cite mal in your proposal if you adopt it, and note which steps you used.
 
@@ -216,7 +216,7 @@ Add a two-phase back end: a compiler that lowers your AST to a linear stack-mach
 
 ### Pattern Matching over Algebraic Data Types
 
-Add user-definable algebraic data types and a `match` construct supporting at minimum constructor patterns and wildcard.  Exhaustiveness checking is recognized in grading.  Demonstrate with at least one recursive ADT (a list or tree) and a recursive function over it.
+Add user-definable algebraic data types (ADTs) and a `match` construct supporting at minimum constructor patterns and wildcard.  Exhaustiveness checking is recognized in grading.  Demonstrate with at least one recursive ADT (a list or tree) and a recursive function over it.
 
 ### Garbage Collector
 
@@ -394,7 +394,7 @@ python3 -m pytest tests/               # runs the test suite
 > - A program that lexes and parses but crashes in the evaluator is a stage-boundary bug.  Write it down; it is a bug story for Demo Day.
 > - If one component is too broken to merge, swap in the reference component and keep moving.  Declare it in the README.
 
-**The peer pulse.**  This checkpoint carries the project's one structured team-health pause.  Each member sends me a confidential peer pulse: rate yourself and each teammate 1-5 on contributing to the work, interacting with teammates, keeping the team on track, expecting quality, and having relevant knowledge and skills (the CATME dimensions), with a sentence of evidence for any 2 or below.  Only I read the pulse.  I never average it mechanically into a grade; I use it to calibrate individual contribution and to start a coaching conversation where self-views and peer-views diverge.
+**The peer pulse.**  This checkpoint carries the project's one structured team-health pause.  Each member sends me a confidential peer pulse: rate yourself and each teammate 1-5 on contributing to the work, interacting with teammates, keeping the team on track, expecting quality, and having relevant knowledge and skills (the dimensions of CATME, the Comprehensive Assessment of Team Member Effectiveness), with a sentence of evidence for any 2 or below.  Only I read the pulse.  I never average it mechanically into a grade; I use it to calibrate individual contribution and to start a coaching conversation where self-views and peer-views diverge.
 
 **Deliverables checklist:**
 
@@ -755,7 +755,7 @@ A: Guests are invited as available.  Some years the room is full; some years it 
 A: The Demo Day presentation is graded by its existing rubric dimension.  Guest attendance and guest reactions are never grading conditions.  The mock-interview rehearsal is credited as ordinary class participation for the studio session it happens in.
 
 **Q: I get nervous in interview settings.  Can I opt out of the mock interview?**
-A: Talk to the instructor beforehand; the format can be adjusted (a smaller room, a written walk-through, extra prep time).  The rehearsal exists precisely because the tenth time explaining your pipeline is calmer than the first.  We want you to spend the nervous repetitions here, where they are cheap.
+A: Talk to the instructor beforehand; the format can be adjusted (a smaller room, a written walk-through, extra prep time).  The rehearsal exists because the tenth time explaining your pipeline is calmer than the first.  We want you to spend the nervous repetitions here, where they are cheap.
 
 **Q: What should I wear / bring on Demo Day?**
 A: Whatever you present comfortably in.  Bring a machine with the demo rehearsed and a fallback (a recording or transcript of the REPL session) in case of technical trouble.  A rehearsed fallback is professional practice, and nobody will read it as doubt.

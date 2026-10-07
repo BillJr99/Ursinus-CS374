@@ -1943,7 +1943,7 @@ Before submitting your bytecode VM implementation, verify all of the following:
 
 ### What Is Next: GC and JIT
 
-**Garbage Collector**: the VM currently never frees memory.  Add a mark-and-sweep GC: the GC roots are the value stack, all call frames, and the globals table.  Everything reachable from roots is live; everything else can be reclaimed.  See the Garbage Collection tutorial for a complete implementation over a simulated heap.
+**Garbage Collector**: the VM currently never frees memory.  Add a mark-and-sweep garbage collector (GC): the GC roots are the value stack, all call frames, and the globals table.  Everything reachable from roots is live; everything else can be reclaimed.  See the Garbage Collection tutorial for a complete implementation over a simulated heap.
 
 **Just-in-Time Compilation**: modern VMs (V8, LuaJIT, PyPy) profile which bytecode sequences run most frequently ("hot paths") and compile those sequences to native machine code at runtime.  What makes this work is that the JIT can specialize on observed types: if `ADD` has only ever seen integers, the JIT emits a single native `ADD` instruction instead of a general dispatch.  Python 3.13's "copy-and-patch" JIT uses exactly this approach.
 
@@ -1972,7 +1972,7 @@ The architecture you built is not academic: it is the same design used by Lua, C
 
 This appendix supports the Team Language Project's **Bytecode Compiler and Stack VM** extension: once your compiler emits bytecode, these optimization passes are the natural next step for making the programs it produces run faster.
 
-Think of a compiler optimizer as an editor who rewrites a paragraph to say the same thing in fewer words: the meaning is perfectly preserved, but the form is tightened.  A compiler does the same thing to your program: it replaces slow, verbose machine instructions with fast, compact ones while guaranteeing that every possible input still produces the same output.  You will build five such "editors" (constant folding, dead-code elimination, CSE, inlining, and tail-call optimization), each implemented as a tree rewrite over the AST you have been building throughout the course.
+Think of a compiler optimizer as an editor who rewrites a paragraph to say the same thing in fewer words: the meaning is preserved, but the form is tightened.  A compiler does the same thing to your program: it replaces slow, verbose machine instructions with fast, compact ones while guaranteeing that every possible input still produces the same output.  You will build five such "editors" (constant folding, dead-code elimination, common subexpression elimination (CSE), inlining, and tail-call optimization), each implemented as a tree rewrite over the AST you have been building throughout the course.
 
 ### Learning Goals
 
@@ -1996,7 +1996,7 @@ By the end of this section, you will be able to:
 
 > **"The first 90% of the code accounts for the first 90% of the development time.  The remaining 10% of the code accounts for the other 90% of the development time."**, Tom Cargill
 >
-> Optimizations speed up programs *without changing their meaning*.  In this appendix you will implement five core optimizations: constant folding, dead code elimination, common subexpression elimination, inlining, and tail call optimization.  Each operates on the AST or IR, the same data structures you've been building throughout the course.
+> Optimizations speed up programs *without changing their meaning*.  In this appendix you will implement five core optimizations: constant folding, dead code elimination, common subexpression elimination, inlining, and tail call optimization.  Each operates on the AST or an intermediate representation (IR), the same data structures you've been building throughout the course.
 
 ---
 
@@ -2490,7 +2490,7 @@ print(f"\nfact body has tail call to 'fact': {is_tail_call(fact_body, 'fact')}")
 
 > **CTQ 5.3** Trampolining achieves tail call optimization without changing the language runtime; it works in Python, Java, or any language.  What is the tradeoff compared to a language that natively supports TCO (like Scheme or Haskell)?
 
-> **Watch out!**  Not every recursive call in a tail position belongs to a *tail-recursive* function.  Mutual recursion (`f` calls `g`, which calls `f`) also creates tail calls, and TCO applies there too, but detecting it requires tracking which functions are in the current call chain.  The simple `is_tail_call` detector below only checks for self-recursion.  A production compiler needs to handle the mutual case, which is why Scheme's TCO guarantee covers all proper tail calls, not just self-calls.
+> **Watch out!**  Not every recursive call in a tail position belongs to a *tail-recursive* function.  Mutual recursion (`f` calls `g`, which calls `f`) also creates tail calls, and TCO applies there too, but detecting it requires tracking which functions are in the current call chain.  The simple `is_tail_call` detector above only checks for self-recursion.  A production compiler needs to handle the mutual case, which is why Scheme's TCO guarantee covers all proper tail calls, not just self-calls.
 
 ---
 

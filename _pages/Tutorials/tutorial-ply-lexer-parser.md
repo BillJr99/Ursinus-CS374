@@ -24,9 +24,9 @@ tags:
 ---
 # Lexing and Parsing with PLY (Python Lex-Yacc)
 
-> **Note:** this activity's code cells install PLY at runtime; in the browser CodeRunner this may fail without network access; download and run locally if cells error.  This activity is a companion to the [Flex and Bison tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/FlexAndBison).
+> **Note:** this activity's code cells install PLY at runtime.  In the browser CodeRunner this may fail without network access, so if a cell errors, download the code and run it locally.  This activity is a companion to the [Flex and Bison tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/FlexAndBison).
 
-PLY (Python Lex-Yacc) is Flex and Bison reimplemented in pure Python: you write the same declarative grammar rules and get the same LALR(1) parsing power, but without a C toolchain, a build step, or generated `.c` files to manage.  Think of it as Flex/Bison with Python as the host language; the concepts translate one-to-one, and every rule you write here has a direct counterpart in a `.l` or `.y` file.  That makes PLY ideal for rapid prototyping in this course: you can explore a grammar idea, run it instantly in the browser, and see the token stream or AST before committing to a full C-based toolchain.
+PLY (Python Lex-Yacc) is Flex and Bison reimplemented in pure Python: you write the same declarative grammar rules and get the same LALR(1) parsing power, but without a C toolchain, a build step, or generated `.c` files to manage.  Think of it as Flex/Bison with Python as the host language; the concepts translate one-to-one, and every rule you write here has a direct counterpart in a `.l` or `.y` file.  That makes PLY a good fit for rapid prototyping in this course: you can explore a grammar idea, run it instantly in the browser, and see the token stream or AST before committing to a full C-based toolchain.
 
 ## Learning Goals
 
@@ -49,7 +49,7 @@ Make sure you are comfortable with the following before starting this activity:
 
 ## How to Work Through This Activity
 
-This POGIL activity teaches lexical analysis and parsing using **PLY (Python Lex-Yacc)**, a pure-Python library that implements the same algorithms as the classic Flex and Bison tools you have studied.  Every code example runs directly in your browser, so you can experiment with grammars, tokens, and abstract syntax trees without a C compiler or build system.
+This POGIL (Process Oriented Guided Inquiry Learning) activity teaches lexical analysis and parsing using **PLY (Python Lex-Yacc)**, a pure-Python library that implements the same algorithms as the classic Flex and Bison tools you have studied.  Every code example runs directly in your browser, so you can experiment with grammars, tokens, and abstract syntax trees without a C compiler or build system.
 
 Work in groups of 3-4.  Read each Model carefully, run the code, observe the output, and then answer the Critical Thinking Questions (CTQs) before moving to the next Model.  The Exercises at the end require you to write new code.
 
@@ -899,7 +899,7 @@ The error-recovery code in Model 6 already collects errors in `errors_found`.  E
 
 ## Reflection
 
-PLY uses the same LALR(1) algorithm as Bison, but expressed entirely in Python using functions and docstrings instead of a separate specification language compiled by a dedicated tool.  What does this tell you about the relationship between the algorithm and the implementation language?  Consider: does the choice of Python vs. C vs. a custom DSL change what grammars you can express, or only how you express them?  How does the interactive, browser-runnable nature of PLY change your ability to experiment with and understand the parsing algorithm compared to the Flex/Bison workflow?
+PLY uses the same LALR(1) algorithm as Bison, but expressed entirely in Python using functions and docstrings instead of a separate specification language compiled by a dedicated tool.  What does this tell you about the relationship between the algorithm and the implementation language?  Consider: does the choice of Python vs. C vs. a custom domain-specific language change what grammars you can express, or only how you express them?  How does the interactive, browser-runnable nature of PLY change your ability to experiment with and understand the parsing algorithm compared to the Flex/Bison workflow?
 
 ---
 

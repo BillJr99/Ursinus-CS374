@@ -98,7 +98,7 @@ Do this part before you write any parser code; you need pencil and paper and abo
 A recursive descent parser is one function per non-terminal, and each of those functions runs the same three-beat pattern: look at the next token without consuming it, decide which production applies, then consume the tokens that production calls for.  Tracing that pattern once by hand now is worth an hour of debugging later, because every tier in Part 2 repeats it.
 
 > **Do this.**
-> 5. Pick one non-terminal from the grammar in Part 1 and write the pseudocode for its recursive-descent function, four or five lines is plenty.
+> 5. Pick one non-terminal from the grammar in Part 1 and write the pseudocode for its recursive-descent function; four or five lines is plenty.
 > 6. Trace that pseudocode by hand on a three-token input, marking every point where the function looks ahead at the next token to make a decision.
 > 7. Find a rule that would make naive recursive descent loop forever (a production whose right-hand side starts with the non-terminal it defines), name it as left recursion, and rewrite it so it terminates.
 

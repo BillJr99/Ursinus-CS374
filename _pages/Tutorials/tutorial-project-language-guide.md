@@ -31,7 +31,7 @@ By the end of this tutorial, you will have:
 - Added at least one extension to the baseline interpreter (e.g., lists, pattern matching, or a type checker)
 - Delivered a working REPL and file-runner that can run all provided example programs
 
-> **Tutorial Goal:** By the end of this tutorial, you will have built a fully working interpreter for the Mini programming language, complete with variables, functions, closures, recursion, and a REPL. Each phase builds directly on the previous one, so follow them in order.
+> **Tutorial Goal:** By the end of this tutorial, you will have built a fully working interpreter for the Mini programming language, complete with variables, functions, closures, recursion, and a REPL (read-eval-print loop). Each phase builds directly on the previous one, so follow them in order.
 >
 > **Time estimate:** 8-12 hours total (all 10 phases)
 >
@@ -126,7 +126,7 @@ print apply(double, 8);
 
 > **CTQ 1.1:** Look at Example 5.  The inner `fun(x) -> x + n` refers to `n`, which is defined in `make_adder`'s scope.  After `make_adder` returns, does `n` still exist?  What language feature makes this work?
 
-> **CTQ 1.2:** In Example 4, `if` is used as an *expression* (its value is assigned to `status`).  What does this mean for the parser; can we use the same `if` rule for both statements and expressions?
+> **CTQ 1.2:** In Example 4, `if` is used as an *expression* (its value is assigned to `status`).  What does this mean for the parser?  Can we use the same `if` rule for both statements and expressions?
 
 > **CTQ 1.3:** Why does Example 3 require reassigning `result` and `i` inside the loop?  What would need to change if variables were immutable?
 
@@ -1047,7 +1047,7 @@ pretty_print(tree)
 
 ## Phase 6: Environment
 
-The **environment** is the data structure that tracks variable bindings at runtime.  It is a linked list of *frames*, where each frame is a Python dictionary.  When a function is called, a new frame is pushed; when it returns, the frame is popped.  Crucially, closures *capture* the environment at the time they are created.
+The **environment** is the data structure that tracks variable bindings at runtime.  It is a linked list of *frames*, where each frame is a Python dictionary.  When a function is called, a new frame is pushed; when it returns, the frame is popped.  Closures *capture* the environment at the time they are created.
 
 ### 6.1 Environment Class
 
@@ -1574,7 +1574,7 @@ if __name__ == "__main__":
 
 > **CTQ 8.3:** When running with `--file`, should the interpreter share state across multiple `run_file` calls?  What would need to change to support passing multiple files on the command line and having them share a global environment?
 
-**Try It Exercise 8.1:** Add a `--debug` flag that calls `pretty_print(tree)` after parsing but before evaluating when running from a file.  This is extremely useful for tracking down parser bugs.
+**Try It Exercise 8.1:** Add a `--debug` flag that calls `pretty_print(tree)` after parsing but before evaluating when running from a file.  This is useful for tracking down parser bugs.
 
 ---
 
@@ -2001,7 +2001,7 @@ You now have a complete working interpreter for Mini.  The following extensions 
 - **Interactive debugger**: Add a `breakpoint;` statement that drops into a mini-REPL inside the running program.
 - **Language Server Protocol (LSP) server**: Expose go-to-definition, hover documentation, and diagnostics to editors like VS Code.
 
-> **CTQ 10.1:** The `test_early_return_from_nested_while` test validates that `return` inside a `while` exits the entire function.  Trace through the Python call stack to explain exactly how `ReturnSignal` achieves this, specifically, what happens when `raise ReturnSignal(...)` is executed inside `_eval_block`, called from `eval(WhileStmt, ...)`, called from `_eval_block_or_expr`, called from `_apply`.
+> **CTQ 10.1:** The `test_early_return_from_nested_while` test validates that `return` inside a `while` exits the entire function.  Trace through the Python call stack to explain exactly how `ReturnSignal` achieves this: specifically, what happens when `raise ReturnSignal(...)` is executed inside `_eval_block`, called from `eval(WhileStmt, ...)`, called from `_eval_block_or_expr`, called from `_apply`.
 
 > **CTQ 10.2:** The test suite uses `io.StringIO` to capture `print` output.  Is this a good testing strategy?  What would be a cleaner approach that does not depend on stdout redirection?
 
@@ -2139,7 +2139,7 @@ print("  To add a feature: set the flag to True and add its grammar rule.")
 print("  Each True flag = at minimum one new grammar rule + one new AST node.")
 ```
 
-> **Watch out!**  Adding a feature flag to `True` in the skeleton does not implement the feature; it only declares intent.  The real cost shows up in two places: (1) every new grammar rule becomes a new parsing function your Builder must write and test, and (2) every new grammar rule introduces at least one new AST node that your Evaluator must handle.  Teams commonly underestimate Sprint 1 scope by counting features rather than counting grammar rules plus AST nodes.
+> **Watch out!**  Setting a feature flag to `True` in the skeleton does not implement the feature; it only declares intent.  The real cost shows up in two places: (1) every new grammar rule becomes a new parsing function your Builder must write and test, and (2) every new grammar rule introduces at least one new AST node that your Evaluator must handle.  Teams commonly underestimate Sprint 1 scope by counting features rather than counting grammar rules plus AST nodes.
 
 ### Critical Thinking Questions
 

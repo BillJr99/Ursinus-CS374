@@ -28,7 +28,7 @@ By the end of this tutorial, you will have:
 - Identified and fixed the three classic memory bugs (double-free, use-after-free, memory leak) using `valgrind` or AddressSanitizer
 - Replaced raw-pointer ownership patterns with `std::unique_ptr` and `std::shared_ptr` and explained when each is appropriate
 - Written at least one function and one class template, including a template specialization
-- Used STL containers (`vector`, `map`, `unordered_map`) and algorithms (`sort`, `find_if`, `transform`) with lambda expressions
+- Used Standard Template Library (STL) containers (`vector`, `map`, `unordered_map`) and algorithms (`sort`, `find_if`, `transform`) with lambda expressions
 - Explained how type erasure in `std::function` achieves runtime polymorphism without virtual dispatch
 
 > **Prerequisites:** C++ fundamentals, basic pointers, classes/structs
@@ -40,7 +40,7 @@ By the end of this tutorial, you will have:
 
 ### Model 1.1: Stack vs Heap Allocation
 
-C++ gives the programmer explicit control over where memory lives.  Stack memory is managed automatically (LIFO cleanup when scope exits).  Heap memory is managed manually via `new` and `delete`.
+C++ gives the programmer explicit control over where memory lives.  Stack memory is managed automatically (last-in, first-out cleanup when scope exits).  Heap memory is managed manually via `new` and `delete`.
 
 ```cpp
 #include <iostream>
@@ -99,7 +99,7 @@ freed by thread T0 here:
     #1 0x... in double_free_demo() demo.cpp:5
 ```
 
-The allocator's bookkeeping structures (size, free-list links) live adjacent to heap blocks.  A double-free corrupts them, enabling heap exploitation primitives used in real-world CVEs.
+The allocator's bookkeeping structures (size, free-list links) live adjacent to heap blocks.  A double-free corrupts them, enabling heap exploitation primitives used in real-world Common Vulnerabilities and Exposures (CVEs).
 
 ---
 
@@ -190,7 +190,7 @@ g++ -g -fsanitize=address,undefined demo.cpp -o demo_asan && ./demo_asan
 
 ### Critical Thinking Questions, Part 1
 
-1.  **Bug identification.**  For each snippet, identify the bug category (double free, use after free, or memory leak) and explain *why* it is undefined behaviour at the C++ specification level:
+1.  **Bug identification.**  For each snippet, identify the bug category (double free, use after free, or memory leak) and explain *why* it is undefined behavior at the C++ specification level:
 
    a.
    ```cpp
@@ -228,7 +228,7 @@ g++ -g -fsanitize=address,undefined demo.cpp -o demo_asan && ./demo_asan
 
 ### Model 2.1: RAII: The Core Principle
 
-**Resource Acquisition Is Initialization (RAII):** tie a resource's lifetime to an object's lifetime.  The constructor acquires; the destructor releases.  Since C++ guarantees destructors run when objects go out of scope (even through exceptions), RAII makes resource leaks nearly impossible.
+**Resource Acquisition Is Initialization (RAII):** tie a resource's lifetime to an object's lifetime.  The constructor acquires; the destructor releases.  Because C++ guarantees destructors run when objects go out of scope (even through exceptions), RAII makes resource leaks nearly impossible.
 
 ```cpp
 #include <fstream>
@@ -484,7 +484,7 @@ make run     # compiles if needed, then runs ./smartptr
 make clean   # removes the built binary
 ```
 
-A `Makefile`'s recipe lines must be indented with a **real tab**, not spaces, a classic first-time error.  The `-fsanitize=address` flag links AddressSanitizer, which reports use-after-free, double-free, and leaks at runtime: run `make run` on a raw-pointer (`new`/`delete`) version and on the `unique_ptr` version and compare; the sanitizer stays quiet only when ownership is correct, which is the whole case for smart pointers in one command.
+A `Makefile`'s recipe lines must be indented with a **real tab**, not spaces, a classic first-time error.  The `-fsanitize=address` flag links AddressSanitizer, which reports use-after-free, double-free, and leaks at runtime.  Run `make run` on a raw-pointer (`new`/`delete`) version and on the `unique_ptr` version and compare.  The sanitizer stays quiet only when ownership is correct, which is the whole case for smart pointers in one command.
 
 ---
 
@@ -791,7 +791,7 @@ int main() {
 }
 ```
 
-**SFINAE / `std::enable_if` (pre-C++20 approach):** enable or disable template overloads based on type properties.
+**SFINAE (Substitution Failure Is Not An Error) / `std::enable_if` (pre-C++20 approach):** enable or disable template overloads based on type properties.
 
 ```cpp
 #include <type_traits>
@@ -983,7 +983,7 @@ void stl_algorithms() {
    - A text editor stores a long document where characters are frequently inserted and deleted at the cursor position.
    - A cache needs to iterate in insertion order and do O(1) lookup by key.
 
-2.  **Iterator invalidation.**  What happens to existing iterators into a `std::vector<int>` after you call `push_back`?  How does this differ for `std::list<int>`?  Write a code snippet that exhibits undefined behaviour due to iterator invalidation in a `vector`.
+2.  **Iterator invalidation.**  What happens to existing iterators into a `std::vector<int>` after you call `push_back`?  How does this differ for `std::list<int>`?  Write a code snippet that exhibits undefined behavior due to iterator invalidation in a `vector`.
 
 3.  **Lambda capture modes.**  Explain the difference between `[=]`, `[&]`, `[x]`, `[&x]`, and `[this]` lambda captures.  Why can capturing `[&]` in a lambda returned from a function cause use-after-free?
 
@@ -1216,7 +1216,7 @@ except Exception as e:
 
 ### Critical Thinking Questions, Part 6
 
-1.  **Virtual dispatch cost.**  A non-virtual function call is resolved at compile time (direct call instruction).  A virtual function call requires: (a) load the vptr from the object, (b) index into the vtable, (c) load the function pointer, (d) call indirectly.  In tight loops, this indirect branch can cause branch-misprediction penalties.  Name two techniques used in production code to recover this performance while keeping polymorphic behaviour.
+1.  **Virtual dispatch cost.**  A non-virtual function call is resolved at compile time (direct call instruction).  A virtual function call requires: (a) load the vptr from the object, (b) index into the vtable, (c) load the function pointer, (d) call indirectly.  In tight loops, this indirect branch can cause branch-misprediction penalties.  Name two techniques used in production code to recover this performance while keeping polymorphic behavior.
 
 2.  **Why virtual destructors?**  Suppose `Shape` does not have a `virtual` destructor.  You write `Shape* s = new Circle(3.0); delete s;`.  What happens?  Write out the exact sequence of destructor calls in both cases (virtual vs non-virtual).
 
@@ -1534,7 +1534,7 @@ This appendix supports the Team Language Project's **Foreign Function Interface*
 
 By the end of this section, you will be able to:
 
-- Explain the C Application Binary Interface (ABI) and identify why it serves as the universal interoperability layer between languages
+- Explain the C Application Binary Interface (ABI) and identify why it is the universal interoperability layer between languages
 - Use Python's `ctypes` and `cffi` to call C library functions, correctly specifying argument types, return types, and memory ownership
 - Identify the challenges FFI introduces (data layout differences, memory ownership, calling conventions, and error handling) and describe how each is addressed
 - Trace the lifecycle of a foreign call from the high-level language through marshaling, native execution, and unmarshaling back
@@ -1646,7 +1646,7 @@ for name, ctype, example in type_map:
 
 ### Model 2: Structs, Pointers, and Memory Layout
 
-*Intuition:* A C struct is just a named chunk of memory.  The compiler decides exactly how many bytes each field occupies and at what offset from the start of the struct, and it follows strict rules about *alignment* (each field must start at an address that is a multiple of its size).  When you pass a struct across an FFI boundary, the receiving side must use *exactly* the same layout, or it will read the wrong bytes. `ctypes.Structure` exists precisely to let Python declare the layout explicitly so the two sides agree.
+*Intuition:* A C struct is just a named chunk of memory.  The compiler decides exactly how many bytes each field occupies and at what offset from the start of the struct, and it follows strict rules about *alignment* (each field must start at an address that is a multiple of its size).  When you pass a struct across an FFI boundary, the receiving side must use *exactly* the same layout, or it will read the wrong bytes. `ctypes.Structure` exists to let Python declare the layout explicitly so the two sides agree.
 
 > **Watch out!**  Struct padding is invisible in the source code but very real in memory.  A struct with fields `uint8, uint32, uint16` (1+4+2 = 7 bytes naively) will actually occupy 8 or more bytes because the `uint32` field must be 4-byte aligned.  Always use `ctypes.sizeof` to check the real size; never compute it by adding field sizes by hand.
 
@@ -2285,11 +2285,11 @@ except ImportError as e:
 
 ### Reflection
 
-1.  The FFI is fundamentally an "escape hatch" from your language's safety guarantees.  A type-safe language can call unsafe C code via FFI. How do language designers manage this tension?  Name the strategies used by Python, Haskell, and Rust respectively.
+1.  The FFI is an "escape hatch" from your language's safety guarantees.  A type-safe language can call unsafe C code via FFI. How do language designers manage this tension?  Name the strategies used by Python, Haskell, and Rust respectively.
 
 2.  Your mini interpreter runs Python as its host language.  This means your "FFI" to Python is essentially free; you can call any Python function.  But if your language was a compiled language generating machine code, FFI would require real ABI compatibility.  What would change in your implementation?
 
-3.  The `SAFE_MODULES` allowlist in Exercise 3 prevents calling `os.system` via FFI. Is a whitelist the right security model for an FFI? What are the limitations of this approach?
+3.  The `SAFE_MODULES` allowlist in Exercise 3 prevents calling `os.system` via FFI. Is an allowlist the right security model for an FFI? What are the limitations of this approach?
 
 ---
 

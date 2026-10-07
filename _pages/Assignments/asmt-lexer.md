@@ -203,7 +203,7 @@ TOKEN_SPEC = [
 
 ### Step 1b: Token Dataclass
 
-A `Token` is one labeled piece of source text together with where it came from.  Define it at the top of `lexer.py` as a dataclass (or namedtuple) with four fields: `type` (string), `value` (string, the raw lexeme), `line` (int), and `col` (int).  The EOF token has type `"EOF"`, value `""`, and the line and column of the last character consumed.  Step 2c adds one more field for the decoded value of a string literal.
+A `Token` is one labeled piece of source text together with where it came from.  Define it at the top of `lexer.py` as a dataclass (or namedtuple) with four fields: `type` (string), `value` (string, the raw lexeme), `line` (int), and `col` (int).  The EOF (end-of-file) token has type `"EOF"`, value `""`, and the line and column of the last character consumed.  Step 2c adds one more field for the decoded value of a string literal.
 
 ```python
 from dataclasses import dataclass
@@ -641,7 +641,7 @@ This direction requires precise line and column positions on every error, the fa
 
 ### Where the toolchain goes next
 
-Flex is one half of a pair.  Its companion parser generator, Bison (or PLY's `yacc` module), turns a context-free grammar with precedence declarations into an LALR parser.  That half is deliberately out of scope here.  It is the natural continuation of this direction, and the Parser assignment offers a matching generator-toolchain direction where your Flex/PLY scanner feeds a Bison/PLY grammar.  Choosing the generator direction now sets you up well for that one, but the two choices are independent: you choose a direction assignment by assignment.
+Flex is one half of a pair.  Its companion parser generator, Bison (or PLY's `yacc` module), turns a context-free grammar with precedence declarations into an LALR (look-ahead LR) parser.  That half is deliberately out of scope here.  It is the natural continuation of this direction, and the Parser assignment offers a matching generator-toolchain direction where your Flex/PLY scanner feeds a Bison/PLY grammar.  Choosing the generator direction now sets you up well for that one, but the two choices are independent: you choose a direction assignment by assignment.
 
 ---
 

@@ -649,7 +649,7 @@ The engine walks left to right, and each group records the *span* of text it con
 | `level` | `[A-Z]+` | `WARN` | (20, 24) |
 | `msg` | `.*` | `disk usage 91%` | (25, 39) |
 
-Two details deserve attention.  First, `[A-Z]+` is greedy, yet it stops cleanly after `WARN`: the next character is a space, which is not in the class `[A-Z]`, so the quantifier has nothing more it is *allowed* to take: the class boundary does the work, and no backtracking is needed.  Second, `.*` in `msg` is also greedy and *does* swallow spaces, running to the end of the line (`.` matches every character except newline).
+Two details deserve attention.  First, `[A-Z]+` is greedy, yet it stops cleanly after `WARN`: the next character is a space, which is not in the class `[A-Z]`, so the quantifier has nothing more it is *allowed* to take.  The class boundary does the work, and no backtracking is needed.  Second, `.*` in `msg` is also greedy and *does* swallow spaces, running to the end of the line (`.` matches every character except newline).
 
 ```python
 import re

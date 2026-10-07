@@ -209,7 +209,7 @@ Result: `g(g a)`.  This applies `g` twice to `a`, exactly what `twice(g)(a)` doe
 
 ## 3.  Alpha Renaming: When Names Collide
 
-> **Intuition**: Variable capture is subtle but important.  Suppose you substitute a free variable `y` into an expression that binds its own `y`.  The substituted `y` would fall under the inner binder and mean something different.  The fix is simple: rename the inner binder to a fresh name before substituting.  This is the same habit as picking a local variable name that does not clash with anything in scope, which is what careful programmers do to avoid shadowing bugs.
+> **Intuition**: Suppose you substitute a free variable `y` into an expression that binds its own `y`.  The substituted `y` would fall under the inner binder and mean something different.  The fix is simple: rename the inner binder to a fresh name before substituting.  This is the same habit as picking a local variable name that does not clash with anything in scope, which is what careful programmers do to avoid shadowing bugs.
 
 Substitution has one trap: capture.  Reduce $(\lambda x. \lambda y.\, x)\; y$ without care and the free $y$ we substitute lands inside $\lambda y$.  There it is suddenly, and wrongly, bound, so the meaning changed.  The repair is alpha renaming.  Bound names are arbitrary ($\lambda y. e$ and $\lambda z. e[y := z]$ are the same function), so rename the binder first:
 
@@ -666,7 +666,7 @@ print("They match -> alpha-equivalent.")
 
 ## Model 5: Free vs Bound Variables and WHNF
 
-> **Intuition**: WHNF is the "good enough" answer for lazy evaluation.  An expression is in WHNF when its outermost position is not a redex: it is a variable, a lambda, or an application whose function part is not a lambda.  Haskell stops here rather than reducing everything inside.  That is how it can represent infinite lists: the spine of the list is in WHNF (a cons cell whose tail is an unevaluated thunk), and the tail is reduced only when you ask for the next element.
+> **Intuition**: Weak head normal form (WHNF) is the "good enough" answer for lazy evaluation.  An expression is in WHNF when its outermost position is not a redex: it is a variable, a lambda, or an application whose function part is not a lambda.  Haskell stops here rather than reducing everything inside.  That is how it can represent infinite lists: the spine of the list is in WHNF (a cons cell whose tail is an unevaluated thunk), and the tail is reduced only when you ask for the next element.
 
 Weak Head Normal Form (WHNF) is a partial normal form used by lazy languages such as Haskell.  An expression is in WHNF when its outermost constructor is not a redex, even if sub-expressions remain unreduced.  Full normal form is stricter: no redexes remain anywhere.
 
@@ -833,7 +833,7 @@ In your notebook: Church built this system in 1936 to study what "computable" me
 - Raul Rojas.  "A Tutorial Introduction to the Lambda Calculus" (online): short and gentle.
 - Henk Barendregt and Erik Barendsen.  "Introduction to Lambda Calculus" (online notes), for the formal substitution definition.
 - Gabriel Lebec.  "Lambda as JS, or A Flock of Functions" (talk and slides), which Part 2 follows: https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript
-- **Lambda-Py / pycombinator**; combinators and Church encodings in Python; run the calculus interactively in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html, and try the reductions from today's module without installing anything.
+- **Lambda-Py / pycombinator**: combinators and Church encodings in Python.  Run the calculus interactively in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html, and try the reductions from today's module without installing anything.
 - [Implementing a Lambda Calculus Reducer](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LambdaCalculusReducer): combinatory logic and the SKI calculus (S, K, I, B, C, W), deriving B and C from S and K, bracket abstraction, and point-free programming.  Direction D of the Functional assignment builds on this.
 - [Typing Disciplines](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypingDisciplines): product and sum types.  Pattern matching on nested structures is in the Modern Language Features material; safe lookups, Maybe-style values, and symbolic differentiation over an expression tree make good self-study exercises.
 

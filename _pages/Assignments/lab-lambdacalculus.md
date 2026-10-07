@@ -220,4 +220,4 @@ When an item names an encoding from the table above, write its definition in ful
 ## Reflection Prompts
 
 - Which reduction did you and your partner disagree on, and what settled it?
-- If you worked in a pair, who did what.  If you worked alone, note that instead.
+- If you worked in a pair, note who did what.  If you worked alone, note that instead.

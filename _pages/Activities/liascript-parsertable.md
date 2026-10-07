@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Table-Driven and LR Parsing
 
-Table-driven parsers, LL(1) and LR, replace moment-to-moment grammar reasoning with a lookup.  Think of a parsing table like a GPS route precomputed from every intersection: instead of rethinking the best path each time you reach a fork, you simply consult the table and execute the move it prescribes.  The table was built once, offline, from the grammar's FIRST and FOLLOW sets; at parse time all the "thinking" has already been done.  This makes table-driven parsers fast, systematic, and amenable to machine generation, which is exactly why industrial parser generators emit them.
+Table-driven parsers, LL(1) and LR, replace moment-to-moment grammar reasoning with a lookup.  Think of a parsing table like a GPS route precomputed from every intersection: instead of rethinking the best path each time you reach a fork, you consult the table and execute the move it prescribes.  The table was built once, offline, from the grammar's FIRST and FOLLOW sets; at parse time all the "thinking" has already been done.  This makes table-driven parsers fast, systematic, and amenable to machine generation, which is exactly why industrial parser generators emit them.
 
 ## Learning Goals
 
@@ -82,7 +82,7 @@ In the second-to-last row, the stack `E + T` with input `$` is reduced using the
 
 ## Worked Example: Building the Table by Hand
 
-The trace above used a table without saying where the table came from.  That is the gap this section closes: an LR parser is a stack plus a *table*, and the table is not magic: it is a finite automaton over **items**, and you can build it with a pencil.
+The trace above used a table without saying where the table came from.  That is the gap this section closes: an LR parser is a stack plus a *table*, and the table is not magic.  It is a finite automaton over **items**, and you can build it with a pencil.
 
 An **item** is a production with a dot marking how much of the right-hand side we have already seen. `T -> T . * F` means "we are partway through `T -> T * F`; we have the `T`, we expect a `*` next."
 
@@ -378,7 +378,7 @@ Every containment shown is strict.  The grammar block needs two rows rather than
 
 ## Model 2: Technology Selection
 
-Now that you have seen how the machinery works, the practical question is whether to build it yourself or let a generator do it.  This is not a trivial decision: the choice affects error messages, grammar expressiveness, and how much work it takes to change the language later.  Real-world production compilers have landed on both sides of this debate.
+Now that you have seen how the machinery works, the practical question is whether to build it yourself or let a generator do it.  This is not a trivial decision: the choice affects error messages, grammar expressiveness, and how much work it takes to change the language later.  Production compilers have landed on both sides of this debate.
 
 Your project must choose its parsing technology; most teams hand-write recursive descent, and you should know what you are declining.
 

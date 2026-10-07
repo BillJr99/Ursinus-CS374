@@ -283,7 +283,7 @@ In `parse_addsub`, the line `node = (op, node, right)` places the previous resul
 
 The ladder works, and its cost is easy to count.  Every precedence level is one function.  Every one of those functions calls down to the next even when the input has nothing to do with that level.  Parsing the single token `5` in the Part I grammar still walks `expr -> addsub -> muldiv -> unary -> primary`: four calls to reach one number.
 
-C has fifteen precedence levels.  As a ladder, that is fifteen functions, fifteen stack frames per literal, and fifteen near-identical bodies to keep in sync when you add an operator.  Adding one operator at a new level means writing a new function and editing its two neighbours.
+C has fifteen precedence levels.  As a ladder, that is fifteen functions, fifteen stack frames per literal, and fifteen near-identical bodies to keep in sync when you add an operator.  Adding one operator at a new level means writing a new function and editing its two neighbors.
 
 Precedence climbing (also called Pratt parsing, after Vaughan Pratt's 1973 paper) replaces the chain of functions with a number.  Each operator gets a **binding power**: a number that says how tightly it grips its operands.  One loop then reads operators and decides, by comparing numbers alone, whether to keep going or return.
 
