@@ -1493,7 +1493,7 @@ Coroutines are functions that can be suspended and resumed.  C++20 provides the 
   The definitive online reference for every C++ standard library component.  When the standard says "effects as if," cppreference shows the actual complexity, iterator invalidation rules, and example code.  Bookmark it.
 
 - **Scott Meyers, "Effective Modern C++" (O'Reilly, 2014)**
-  42 specific items covering `auto`, smart pointers, move semantics, lambdas, and concurrency.  Items 1-9 (type deduction), 18-22 (smart pointers), and 23-30 (move semantics) map directly to this tutorial.  Read it after you feel comfortable with the concepts here.
+  42 specific items covering `auto`, smart pointers, move semantics, lambdas, and concurrency.  Items 1-4 (type deduction), 18-22 (smart pointers), and 23-30 (move semantics) map directly to this tutorial.  Read it after you feel comfortable with the concepts here.
 
 - **"C++ Templates: The Complete Guide", Vandevoorde, Josuttis, Gregor (2nd ed.)**
   Covers template mechanics in depth: instantiation, argument deduction, SFINAE, variadic templates, and expression templates.  Essential for library authors.
@@ -1501,7 +1501,6 @@ Coroutines are functions that can be suspended and resumed.  C++20 provides the 
 - **CppCon talks (YouTube)**: Search for:
   - "Back to Basics: Smart Pointers", Arthur O'Dwyer
   - "Type Erasure", Klaus Iglberger
-  - "The Most Vexing Parse", Howard Hinnant
   - "What Has My Compiler Done for Me Lately?", Matt Godbolt
 
 ---
@@ -1566,7 +1565,7 @@ A **Foreign Function Interface (FFI)** is the mechanism by which one language ca
 
 1.  **C is the universal ABI:** Nearly all languages can call C; C is the *lingua franca* of system interfaces.
 2.  **Performance:** Native code runs without an interpreter loop.
-3.  **Library reuse:** Millions of mature, widely used C libraries exist.
+3.  **Library reuse:** A vast ecosystem of mature, widely used C libraries already exists (compression, cryptography, databases, graphics).
 
 The challenge: the high-level language's runtime and the C runtime make different assumptions about data layout, memory ownership, error handling, and calling conventions.
 
@@ -1810,7 +1809,7 @@ print(f"  Direct test of callback: my_handler(10, 3) = {cb.c_ptr(10, 3)}")
 
 **CTQ 7.** `COMPARATOR = ctypes.CFUNCTYPE(c_int, c_void_p, c_void_p)` describes the function signature.  What would happen if you passed a Python function with the wrong signature (e.g., one that takes only one argument instead of two)?
 
-**CTQ 8.**  The comment warns: "if c_compare is garbage collected, the pointer becomes dangling."  Why can't Python's garbage collector know that C is holding a reference?  What would a language with linear types (like Rust) do differently?
+**CTQ 8.**  The comment warns: "if c_compare is garbage collected, the pointer becomes dangling."  Why can't Python's garbage collector know that C is holding a reference?  What would a language with affine (ownership) types, like Rust, do differently?
 
 **CTQ 9.** `qsort` calls the comparator multiple times on different pairs.  The comparator modifies `call_count`, a Python list (mutable container).  This works because Python closures capture by reference.  If the comparator modified a Python integer directly (`count = count + 1`), it would fail due to Python's scoping rules.  Why?  What does this reveal about closures and rebinding?
 
@@ -1818,7 +1817,7 @@ print(f"  Direct test of callback: my_handler(10, 3) = {cb.c_ptr(10, 3)}")
 
 ### Model 4: Name Mangling and Symbol Resolution
 
-*Intuition:* When a program links against a library, it looks up function names in the library's *symbol table*, a dictionary inside the compiled binary.  C's symbol for `strlen` is literally the string `"strlen"`.  C++ cannot do this for overloaded functions: `foo(int)` and `foo(double)` both spell `foo`, but they are different functions with different machine code.  C++ solves this by *mangling* the name, encoding the parameter types into the symbol string so that `foo(int)` becomes something like `_ZN3foo1iE`.  This is the "name" the linker actually looks up.  FFI tools must understand mangling to call C++ functions correctly.
+*Intuition:* When a program links against a library, it looks up function names in the library's *symbol table*, a dictionary inside the compiled binary.  C's symbol for `strlen` is literally the string `"strlen"`.  C++ cannot do this for overloaded functions: `foo(int)` and `foo(double)` both spell `foo`, but they are different functions with different machine code.  C++ solves this by *mangling* the name, encoding the parameter types into the symbol string so that, under the Itanium C++ ABI used by GCC and Clang, `foo(int)` becomes `_Z3fooi` and `foo(double)` becomes `_Z3food`.  This is the "name" the linker actually looks up.  FFI tools must understand mangling to call C++ functions correctly.
 
 C uses simple symbol names (`strlen`, `printf`).  C++ mangles names to encode type signatures.  Understanding this is essential for building FFI tools.
 
@@ -2048,7 +2047,7 @@ print("  print n;   # 5")
 
 **CTQ 14.**  FFI calls bypass your interpreter's type checker.  A language-level type error (e.g., passing a string where `c_int` is expected) will become a ctypes exception rather than a friendly language error.  How would you add a "type gate" to the FFI call path?
 
-**CTQ 15.**  A language with FFI can call any C function, including `malloc`, `free`, `exec`, and `system`.  This breaks memory safety and security.  How do languages like Haskell (via `Foreign.Unsafe`) or Rust (via `unsafe`) signal that FFI code requires special trust?
+**CTQ 15.**  A language with FFI can call any C function, including `malloc`, `free`, `exec`, and `system`.  This breaks memory safety and security.  How do languages like Haskell (via `IO` in foreign import types, escaped only through `System.IO.Unsafe.unsafePerformIO`) or Rust (via `unsafe`) signal that FFI code requires special trust?
 
 ---
 
@@ -2300,8 +2299,7 @@ except ImportError as e:
 - **Article:** *How Python calls C*: a close look at CPython's C API
 - **Rust book:** Chapter, "Unsafe Rust": `extern "C"` and `unsafe fn`
 - **Haskell wiki:** `Foreign Function Interface`: `Foreign.Ptr`, `Foreign.Marshal`
-- **Paper:** *A Semantic Framework for C (and the Rest)*: Norrish (1998), the formal semantics behind C's ABI behavior
-- **Talk:** Brandon Williams, "ctypes Without the Boilerplate": automating struct generation from C headers
+- **Technical report:** *C formalised in HOL*: Michael Norrish (University of Cambridge, UCAM-CL-TR-453, 1998), a formal semantics of most of C89 in the HOL theorem prover
 
 ---
 

@@ -752,7 +752,7 @@ match xs with
 
 ## 6.3 Suggested Exercises
 
-1.  **Add `and` and `or`** as short-circuit operators.  Add them to the lexer, parser (between `parse_cmp` and `parse_arith`), and evaluator.
+1.  **Add `and` and `or`** as short-circuit operators.  Add them to the lexer, parser (between `parse_expr` and `parse_cmp`, so that comparisons bind tighter than `and`, and `and` binds tighter than `or`), and evaluator.
 
 2.  **Add `let x = e` without `in`** for a top-level definition form.  The evaluator should update the global environment.
 
@@ -776,7 +776,7 @@ match xs with
 
 This advanced section goes deeper into the same lexer -> parser -> environment -> evaluator architecture you built for Mini above, and it backs Direction G of the Functional assignment (contributing to mal: Make-a-Lisp) for students heading that way.
 
-An interpreter written in the very language it interprets sounds like a paradox, but it is actually one of the most clarifying ideas in computer science: it proves that the language's evaluation rules are self-consistent and complete.  Think of it like a dictionary that defines every word using other words in the same dictionary: the circularity is the point here, because it shows the system is closed.  Building this evaluator in Python forces every semantic choice to become explicit code, revealing the machinery that the Mini interpreter you just built already contains.
+An interpreter written in the very language it interprets sounds like a paradox, but it is actually one of the most clarifying ideas in computer science: it shows that the language is expressive enough to describe its own evaluation rules, and it makes those rules precise enough to run.  Think of it like a dictionary that defines every word using other words in the same dictionary: the circularity is the point here, because nothing outside the language is needed to explain it.  Building this evaluator in Python forces every semantic choice to become explicit code, revealing the machinery that the Mini interpreter you just built already contains.
 
 ## Learning Goals
 
@@ -1467,9 +1467,9 @@ print("(list 1 2 3 4) as Python:", scheme_list_to_python(lst))
 
 ### Model 5: The Stack Overflow Problem and the Trampoline
 
-A properly tail-recursive Scheme program should run in constant stack space; that is the Scheme specification's guarantee.  But our Python evaluator grows a Python stack frame for every recursive `scheme_eval` call, even when the Scheme call is in tail position.  The trampoline fixes this without changing Python's runtime: instead of recursing, tail calls return a "do this next" object (a `Thunk`), and a top-level loop bounces on those thunks until a real value appears.  It converts recursion into iteration by making "what to do next" explicit.
+A properly tail-recursive Scheme program should run in constant stack space; that is the Scheme specification's guarantee.  But our Python evaluator grows a Python stack frame for every recursive `scheme_eval` call, even when the Scheme call is in tail position.  A trampoline fixes this without changing Python's runtime: instead of recursing, a tail call hands back a "do this next" description, and a loop keeps running those descriptions until a real value appears.  It converts recursion into iteration by making "what to do next" explicit.  The classic form returns a `Thunk` object to an outer `trampoline` loop; the `scheme_eval_tco` below uses the inlined form, where "what to do next" is just new values for `x` and `env`, and the `while True` loop inside the evaluator is the trampoline.
 
-> **Watch out!**  The TCO evaluator uses a `while True` loop with `continue` for self-tail-calls.  This is only an optimization for calls where the current function calls itself.  Calls to a *different* procedure still need to update `x` and `env` and `continue` the loop, which is what the `Procedure call` branch does.  Missing the `continue` after updating `env` and `x` would send execution to the bottom of the loop body instead of restarting from the top.
+> **Watch out!**  The TCO evaluator uses a `while True` loop with `continue` for *every* tail position, not only for a procedure calling itself.  A tail call to any user-defined procedure, the same one or a different one, updates `x` and `env` and hits `continue`, which is what the `Procedure call` branch does.  That is why mutually recursive procedures also run in constant Python stack.  Missing the `continue` after updating `env` and `x` would send execution to the bottom of the loop body instead of restarting from the top.
 
 Python has a default recursion limit of about 1000 frames.  A naive Scheme-in-Python evaluator will hit this limit when evaluating deeply recursive Scheme programs, even if the Scheme program is *tail recursive* and should need no stack at all.
 
@@ -1484,7 +1484,7 @@ Consider:
 (count-down 10000)   ; Should work in Scheme; crashes in naive Python evaluator
 ```
 
-The fix is a **trampoline**: instead of calling the recursive eval directly, return a *thunk* (a zero-argument lambda that will do the work) from tail positions.  The trampoline loop bounces on thunks until a real value emerges.
+The fix is a **trampoline**: instead of calling the recursive eval directly, return a *thunk* (a zero-argument lambda that will do the work) from tail positions.  The trampoline loop bounces on thunks until a real value emerges.  The `Thunk` and `trampoline` definitions below show that classic form.  `scheme_eval_tco` then inlines it: rather than building a `Thunk`, each tail position rewrites `x` and `env` and loops.  Because it never actually returns a `Thunk`, each `trampoline(...)` wrapper around its non-tail calls simply passes the value through.
 
 ```python
 # Trampoline-based TCO evaluator
@@ -1502,12 +1502,12 @@ def trampoline(val):
         val = val()
     return val
 
-# In scheme_eval_tco we return Thunk objects at tail positions.
+# scheme_eval_tco inlines the trampoline: tail positions loop instead of returning a Thunk.
 # Here is the key part of the TCO evaluator - only the changed branches shown:
 
 def scheme_eval_tco(x, env):
     """
-    TCO variant: tail calls return Thunk instead of recursing.
+    TCO variant: tail calls rewrite x and env and loop instead of recursing.
     Call via trampoline(scheme_eval_tco(expr, env)).
     """
     while True:   # Use a loop for self-tail-calls to avoid Python stack growth
@@ -1869,8 +1869,6 @@ Answer these questions in your course notebook after completing this section.
 
 Twenty lines that give your interpreter first-class functions, plus why closures are what make recursion work.  Previously part of the Closures class session.
 
-# Part II: Closures in Your Interpreter
-
 Building an interpreter that supports closures requires translating the abstract idea ("a function carries its birth environment") into concrete data structures.  Think of it like building a passport system: when a function is created, you stamp its passport with the environment it was born in; when it is called later, you open a new room that is connected back to that stamped environment, not to wherever the function happens to be called from.  This section shows exactly how `Environment`, `Closure`, and `eval_call` work together to implement that passport stamp.
 
 ## 2.  Twenty Lines to First-Class Functions
@@ -1996,9 +1994,9 @@ print(f"make_adder captured env has 'make_adder': {'make_adder' in ma.env._vars}
 
 ---
 
-For a function to call itself recursively, it must be able to look up its own name at the moment it runs.  This is not automatic; it requires the function's name to be bound in the environment *before* the function body executes.  Think of it like a business that must be registered with the government before it can issue contracts referencing itself.  This model shows the precise ordering: bind the name first, then use the closure, so that recursive lookup through the captured environment succeeds.
-
 ## Model 3: Closures Enable Recursion
+
+For a function to call itself recursively, it must be able to look up its own name at the moment it runs.  This is not automatic; it requires the function's name to be bound in the environment *before* the function body executes.  Think of it like a business that must be registered with the government before it can issue contracts referencing itself.  This model shows the precise ordering: bind the name first, then use the closure, so that recursive lookup through the captured environment succeeds.
 
 ```python
 # Recursion requires the function to see itself in its own closure.
@@ -2046,9 +2044,9 @@ print(f"fact(10) = {global_env.lookup('fact')(10)}")
 
 ---
 
-Every closure question becomes answerable the moment you draw the boxes.  Here we take the classic **counter factory** (the "hello world" of stateful closures) and draw every environment box and arrow it creates, then verify the picture by peeking at Python's actual closure cells.
-
 ## Model 4: The Counter Factory, Drawn as Environment Boxes
+
+Every closure question becomes answerable the moment you draw the boxes.  Here we take the classic **counter factory** (the "hello world" of stateful closures) and draw every environment box and arrow it creates, then verify the picture by peeking at Python's actual closure cells.
 
 **Worked example.**  Trace this program by hand before running anything:
 
@@ -2147,7 +2145,7 @@ Each *call to `make_counter`* created its own environment box, so `c1` and `c2` 
 
 > **CTQ 5.3** `nonlocal count` makes `count += 1` an **assign** into E1 rather than a **define** of a new local.  Connect this to the environments module: without `nonlocal`, which operation would `count += 1` attempt, and why does it fail here?  (Delete the `nonlocal` line in the cell and read the error.)
 
-> **CTQ 5.4** Redraw the boxes for the `make_counter` of Model 1, which returns *two* closures (`increment` and `reset`).  How many E-boxes does one call create, and which arrows in your drawing explain why the pair shares state?
+> **CTQ 5.4** Suppose `make_counter` also defined a second inner function, `reset`, that sets `count` back to 0, and returned *both* closures (`return increment, reset`).  Redraw the boxes for that version.  How many E-boxes does one call create, and which arrows in your drawing explain why the pair shares state?
 
 ---
 

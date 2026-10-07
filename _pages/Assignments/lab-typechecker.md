@@ -262,7 +262,7 @@ An interpreter with dynamic (runtime) checking evaluates `(3.0 + 4.0) < ("a" + 1
 
 Type inference is the trick where the checker works out every variable's type from context alone: you write `let a = 2` and it deduces `a: int` without you saying so.  Mechanically, it is a tree walk.  Visit each node, compute the type it must produce, and pass that type upward.  When two branches disagree (for example, adding an `int` to a `str`), the checker reports an error *at that node*, which can be far from the actual mistake.
 
-The script below implements Hindley-Milner style inference (inference that works out types with no annotations at all) in miniature.  Each `if kind == ...` branch of `infer` is one typing rule, and the `let` branch is where the type environment grows.  This is the closest model to what you build in Part 1: your checker walks the same way and keeps the same kind of environment, but reads the type from the annotation on each `let` instead of deducing it from the initializer.
+The script below is a miniature of bottom-up type inference: it works out each `let` binding's type from its initializer, with no annotations.  It is not full Hindley-Milner inference, which adds type variables and unification so that it can also infer the types of function parameters; here every expression's type is fixed by its parts, so a single bottom-up walk is enough.  Each `if kind == ...` branch of `infer` is one typing rule, and the `let` branch is where the type environment grows.  This is the closest model to what you build in Part 1: your checker walks the same way and keeps the same kind of environment, but reads the type from the annotation on each `let` instead of deducing it from the initializer.
 
 > **Do this.**  Create `model3_infer.py` in your lab folder, paste the script below into it, and run `python3 model3_infer.py`.
 
@@ -513,6 +513,7 @@ if __name__ == "__main__":
 
 > **If it fails.**
 > - `ModuleNotFoundError: No module named 'ast_nodes'` (or `parser`): the AST and parser files are not in the same folder as `typechecker.py`, or their names differ from the `import` lines.
+> - `ImportError: cannot import name 'Str'` (or `BoolLit`, `LogicOp`): the Parser assignment made these classes optional, and your AST represents those constructs another way (for example, `and`/`or` as a `BinOp`).  Delete the missing names from the `import` line, and handle those constructs in the branch for the node class your parser actually produces.
 > - `None` prints instead of `Num`: `lookup` still ends in `pass`.
 > - `KeyError: 'x'`: `lookup` checks this scope but never asks `self.parent`.
 

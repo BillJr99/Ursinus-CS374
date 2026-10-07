@@ -30,7 +30,7 @@ tags:
 
 # Property-Based Testing Your Language with Hypothesis
 
-This tutorial is the companion to the property-based-testing steps in the **Parser** assignment (Step 3e) and the **Interpreter** assignment (Step 2e).  It shows you how to let a library generate thousands of test programs for you and automatically shrink any failure to the smallest program that still breaks.  Those failing programs are exactly the kind of bug your hand-written examples miss.
+This tutorial is the companion to the property-based-testing steps in the **Parser** assignment (Step 3e) and the **Interpreter** assignment (Step 2e).  It shows you how to let a library generate hundreds of test programs for you and automatically shrink any failure to a small program that still breaks.  Those failing programs are exactly the kind of bug your hand-written examples miss.
 
 You already know Python and `pytest`.  This tutorial bridges the gap between "my ten test cases pass" and "I have evidence the law holds for *every* program my generator can produce."
 
@@ -51,7 +51,7 @@ you are checking one program: the one you thought of.  But the bugs in a parser 
 
 1.  Describe a *space of inputs* (a generator).
 2.  State a *property* (a law) that must hold for **every** input in that space.
-3.  Let the library sample hundreds of inputs, and (when one fails) automatically **shrink** it to a minimal counterexample.
+3.  Let the library sample many inputs (Hypothesis tries 100 per test by default), and (when one fails) automatically **shrink** it to a minimal counterexample.
 
 The library we use is [Hypothesis](https://hypothesis.readthedocs.io/), the standard property-based testing tool for Python.
 
@@ -94,7 +94,7 @@ exprs = st.recursive(
 
 `max_leaves` bounds how big trees get.  Start small (10-25) while developing; raise it once your code passes.
 
-> **Tip:** if your node classes are frozen dataclasses with structural equality (the default for `@dataclass`), `ast1 == ast2` compares whole trees for you, which is exactly what the round-trip law needs.
+> **Tip:** if your node classes are dataclasses, they get structural equality by default (`@dataclass` generates `__eq__`; `frozen=True` additionally makes them immutable and hashable), so `ast1 == ast2` compares whole trees for you, which is exactly what the round-trip law needs.
 
 ---
 
@@ -162,13 +162,13 @@ def test_short_circuit(rhs):
 
 Hypothesis will search for the operand shape that sneaks past a buggy short-circuit implementation.
 
-**What to report (Interpreter Step 2e):** at least three invariants (the first two required), and one that caught a real bug, or a reasoned all-clear with the properties and generator shown.
+**What to report (Interpreter Step 2e):** at least four invariants (determinism, scope restoration, and short-circuit non-evaluation required, plus at least one more), and one that caught a real bug, or a reasoned all-clear with the properties and generator shown.
 
 ---
 
 ## Section 5: Shrinking, `@example`, and reproducibility
 
-- **Shrinking** is automatic: Hypothesis always reports the *smallest* failing input, which is what makes the counterexample readable.
+- **Shrinking** is automatic: Hypothesis reports a *minimal* failing input (one it could not shrink any further, though not guaranteed to be the smallest possible), which is what makes the counterexample readable.
 - **Pin a known-hard case** with `@example(...)` above `@given(...)` so a specific tree is always tested.
 - **Reproduce a failure**: Hypothesis prints a `@reproduce_failure` decorator you can paste in to replay the exact input.
 - **Keep runs fast** with `max_leaves` and, if needed, `@settings(max_examples=200)`.
@@ -177,4 +177,4 @@ Hypothesis will search for the operand shape that sneaks past a buggy short-circ
 
 ## Section 6: Reusing this in the Team Language Project
 
-Write your generators and invariant tests so they are parameterized by your node classes and evaluator entry point.  When your team integrates the pipeline, the same three invariants (generalized to your team's language) become the backbone of its property-based test suite, and the round-trip generator becomes your parser's regression net.  Property-based tests are one of the highest-value, lowest-effort ways to make your language demonstrably correct at Demo Day.
+Write your generators and invariant tests so they are parameterized by your node classes and evaluator entry point.  When your team integrates the pipeline, the same invariants (generalized to your team's language) become the backbone of its property-based test suite, and the round-trip generator becomes your parser's regression net.  Property-based tests are one of the highest-value, lowest-effort ways to make your language demonstrably correct at Demo Day.

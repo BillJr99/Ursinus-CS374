@@ -83,7 +83,7 @@ Choosing the type-checking direction moves your language one column left in the 
 
 ## Section 4: Gradual typing, mypy and TypeScript
 
-What if you want *both*: dynamic flexibility during prototyping and static guarantees where it matters?  **Gradual typing** (Siek and Taha, 2006) lets you annotate *some* parts of a program with static types and leave others dynamic, inserting runtime checks at the boundary between the two.
+What if you want *both*: dynamic flexibility during prototyping and static guarantees where it matters?  **Gradual typing** (Siek and Taha, 2006) lets you annotate *some* parts of a program with static types and leave others dynamic.  In a sound gradual type system, runtime checks are inserted at the boundary between the two (Section 9 returns to this; popular tools such as mypy and TypeScript skip those checks).
 
 - **mypy** adds gradual static typing to Python.  Unannotated code is treated as the dynamic type `Any` and passes silently; annotated code is checked.
 - **TypeScript** does the same for JavaScript.
@@ -108,7 +108,7 @@ const x: any = [];        // 'any' opts out
 x.foo();                  // tsc: no error - 'any' silences the check
 ```
 
-**The key insight: gradual type systems are *unsound* by design.** `Any` (mypy) and `any` (TypeScript) are escape hatches that turn checking *off*, so a type-checked program can still fail at runtime.  That is a deliberate trade: these systems give up the airtight guarantee a fully static language like Haskell gives you in exchange for adoptability and flexibility.  Contrast this with your Hindley-Milner (HM) checker, which has no `Any` escape hatch and so is sound for the fragment it covers.
+**The key insight: mypy and TypeScript are *unsound* by design.** `Any` (mypy) and `any` (TypeScript) are escape hatches that turn checking *off*, so a type-checked program can still fail at runtime.  That is a deliberate trade: these systems give up the airtight guarantee a fully static language like Haskell gives you in exchange for adoptability and flexibility.  Contrast this with your Hindley-Milner (HM) checker, which has no `Any` escape hatch and so is sound for the fragment it covers.
 
 ---
 
@@ -257,7 +257,7 @@ Questions to consider:
 
 ## Section 7: Type Erasure
 
-> **Intuition:** Type erasure is the compiler's answer to a performance problem: if `List<String>` and `List<Integer>` had to be separate classes in memory, you would need an explosion of class definitions.  Instead, the Java compiler checks all the generic types at compile time for correctness, then *throws away* the type parameters and produces a single `List` class at the bytecode level.  The safety was verified already; no need to repeat it at runtime.  C++ takes the opposite approach (monomorphization): it keeps the type information and generates a separate specialized function for each instantiation, trading binary size for the ability to optimize each version independently.
+> **Intuition:** Type erasure is Java's answer to a backward-compatibility problem: generics arrived in Java 5, and erased generic code still runs on the existing JVM and interoperates with older, non-generic libraries (it also avoids generating a separate class for `List<String>` and `List<Integer>`).  So the Java compiler checks all the generic types at compile time for correctness, then *throws away* the type parameters and produces a single `List` class at the bytecode level.  The safety was verified already; no need to repeat it at runtime.  C++ takes the opposite approach (monomorphization): it keeps the type information and generates a separate specialized function for each instantiation, trading binary size for the ability to optimize each version independently.
 
 When generic types are compiled, the type parameter often disappears.  This is **type erasure**.
 
@@ -288,7 +288,7 @@ int    max_val(int a,    int b);     // for int
 double max_val(double a, double b);  // for double
 ```
 
-C++ templates are erased in a different sense: the source template disappears, but each instantiation becomes a fully typed, specialized function.
+Nothing is erased here: the generic template itself does not appear in the compiled program, but each instantiation becomes a fully typed, specialized function that keeps its concrete types.
 
 ### Python: no runtime generics at all
 

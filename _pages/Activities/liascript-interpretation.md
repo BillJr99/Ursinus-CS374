@@ -26,6 +26,8 @@ By the end of this activity, you will be able to:
 - Identify and resolve the semantic design decisions embedded in an evaluator (short-circuit evaluation, type coercion, division semantics)
 - Integrate a lexer, parser, and evaluator into a working read-eval-print loop (REPL) and trace the complete pipeline from source string to printed output
 
+Today covers expressions; the statement and REPL goals are completed on Day 2, in the *Control Flow and Statement Semantics* activity.
+
 This two-day module builds the evaluator: a recursive tree walk that turns ASTs into values.  Your pretty-printer from the AST module already has the right skeleton; the evaluator upgrades it to return values instead of printing text.  With lexer, parser, and evaluator joined, you will run a program in a language that exists because you built it.  Today's route runs **evaluation as recursion $\rightarrow$ the evaluator in code $\rightarrow$ semantics decisions hiding in plain sight $\rightarrow$ the REPL**.
 
 ---
@@ -645,9 +647,10 @@ def eval_postorder(root: TreeNode) -> float:
     if not root.children:            # leaf node
         return float(root.label)
     child_vals = [eval_postorder(c) for c in root.children]
-    ops = {'+': sum(child_vals), '-': child_vals[0] - child_vals[1],
-           '*': child_vals[0] * child_vals[1], '/': child_vals[0] / child_vals[1]}
-    return ops[root.label]
+    a, b = child_vals                # lambdas, as in Model 2: only the selected operator runs
+    ops = {'+': lambda: a + b, '-': lambda: a - b,
+           '*': lambda: a * b, '/': lambda: a / b}
+    return ops[root.label]()
 
 print(f"\nEvaluated result: {eval_postorder(expr_tree)}  (expected 9.0)")
 ```
@@ -708,7 +711,7 @@ In Model 3, why does `evaluate` raise at the node where the problem is found rat
    ```
    Draw the tree.  Then list the nodes in BFS order and in post-order.  Explain why the evaluator *must* use post-order for the body and cannot use BFS.
 
-3.  *Iterative post-order.*  Rewrite `eval_postorder` using an explicit stack (no recursion).  Test it on both trees from Model 4 (above) and on an AST from the *Abstract Syntax Trees* activity.
+3.  *Iterative post-order.*  Rewrite `eval_postorder` using an explicit stack (no recursion).  Test it on the tree from Model 4 (above), on your tree from Exercise 1, and on an AST from the *Abstract Syntax Trees* activity.
 
 4.  *Tree statistics.*  Write `max_depth(root)` and `node_count(root)` as tree walks.  For the BFS traversal of a complete binary tree of depth 4, how many nodes are at level 3?  Verify with code.
 

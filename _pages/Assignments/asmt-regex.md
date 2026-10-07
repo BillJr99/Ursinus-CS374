@@ -315,7 +315,7 @@ A test harness is a small function that runs your pattern against strings you al
 ### Step 2.1: The walkthrough: one pattern through the harness
 
 > **Do this.**
-> 1. Create `patterns.py` in `cs374-regex` and paste the code below into it.
+> 1. Your `patterns.py` already holds this harness and P1 from Your First 30 Minutes; compare it with the code below (the P1 test cases here differ slightly, and either set is fine).  If you skipped that section, paste the code below into `patterns.py` now.
 > 2. Run `python3 patterns.py`.
 > 3. Break the pattern on purpose: delete the `-?` from `COURSE_CODE` and run again.  Read what the harness says, then put the `-?` back.
 

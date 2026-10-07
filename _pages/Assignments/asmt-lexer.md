@@ -119,7 +119,7 @@ Make one folder for the assignment (`mkdir cs374-lexer`, then `cd cs374-lexer`) 
 > 5. Change the source to `"lets x = 42;"` and run again: `lets` must come out as a single `IDENT`.
 
 > **If it fails.**
-> - `lets` comes out as `LET` followed by `IDENT("s")`: your keyword pattern is missing its boundary check.  Add a negative lookahead such as `(?!\w)` after the keyword.  Learn that now with six rules, not later with twenty-nine.
+> - `lets` comes out as `LET` followed by `IDENT("s")`: your keyword pattern is missing its boundary check.  Add a negative lookahead such as `(?!\w)` after the keyword.  Learn that now with six rules, not later with thirty-seven.
 > - `ModuleNotFoundError: No module named 'lexer'`: you ran the command from a different folder.  `cd` into `cs374-lexer` and run it again.
 
 ### Suggested Pacing
@@ -137,7 +137,7 @@ See the course schedule for the assigned and due dates.  Your starting point is 
 
 ## Part 1: Token Specification
 
-> **Why this matters.** A lexer built on regular expressions applies its rules in order and uses *maximal munch*: at each position, it matches the longest string it can.  Order the rules wrong and you get bugs: if `IDENT` appears before `IF`, then `if` lexes as an identifier named `"if"`; if `LT` (`<`) appears before `LE` (`<=`), then `<=` lexes as `LT` followed by `EQ`.  Keywords go before identifiers, and longer operators before their prefixes.
+> **Why this matters.** The lexer you want follows *maximal munch*: at each position, it takes the longest token it can.  The `tokenize` loop in Step 1c does not search for the longest match, though: it tries the rules in order and takes the *first* one that matches.  So rule order is how this lexer gets maximal munch, and order the rules wrong and you get bugs: if `IDENT` appears before `IF`, then `if` lexes as an identifier named `"if"`; if `LT` (`<`) appears before `LE` (`<=`), then `<=` lexes as `LT` followed by `EQ`.  Keywords go before identifiers, and longer operators before their prefixes.  (A generator such as Flex works the other way around: it takes the longest match across all rules and uses rule order only to break ties.  Step 1d's first question asks you to reason about both rules.)
 
 ### Step 1a: Define the TOKEN_SPEC
 
@@ -164,7 +164,7 @@ TOKEN_SPEC = [
 | `COMMENT` | `# this is a comment` | Match to end of line; to be skipped |
 | `WHITESPACE` | ` `, `\t`, `\n` | Skip; track newlines for line counting |
 | `STRING` | `"hello"`, `"a\nb"` | Double-quoted; see Part 3 for escapes |
-| `FLOAT` | `3.14`, `-0.5` | Must appear before INT |
+| `FLOAT` | `3.14`, `0.5` | Must appear before INT |
 | `INT` | `42`, `0` | Non-negative; sign handled by unary minus |
 | `IF` | `if` | Must appear before IDENT |
 | `ELSE` | `else` | Must appear before IDENT |
@@ -199,11 +199,11 @@ TOKEN_SPEC = [
 | `COLON` | `:` | Type annotations, e.g. `let x: Num = 42;` |
 | `COMMA` | `,` | Parameter and argument lists |
 
-**Maximal-munch test cases you must pass:** `iffy` -> `IDENT("iffy")` (not `IF` + `IDENT("ffy")`); `<=` -> `LE` (not `LT` + `EQ`); `==` -> `EQEQ` (not two `EQ`s); `whiles` -> `IDENT("whiles")`; `notable` -> `IDENT("notable")` (not `NOT` + `IDENT("able")`); `->` -> `ARROW` (not `MINUS` + `GT`); `!=` -> `NEQ` (not `BANG` + `EQ`).  Once Step 1c's `tokenize` works, run each of the seven through `scratch.py`.  If any one of them splits, the fix is the order of two rules in `TOKEN_SPEC`, never the loop.
+**Maximal-munch test cases you must pass:** `iffy` -> `IDENT("iffy")` (not `IF` + `IDENT("fy")`); `<=` -> `LE` (not `LT` + `EQ`); `==` -> `EQEQ` (not two `EQ`s); `whiles` -> `IDENT("whiles")`; `notable` -> `IDENT("notable")` (not `NOT` + `IDENT("able")`); `->` -> `ARROW` (not `MINUS` + `GT`); `!=` -> `NEQ` (not `BANG` + `EQ`).  Once Step 1c's `tokenize` works, run each of the seven through `scratch.py`.  If any one of them splits, the fix is the order of two rules in `TOKEN_SPEC`, never the loop.
 
 ### Step 1b: Token Dataclass
 
-A `Token` is one labeled piece of source text together with where it came from.  Define it at the top of `lexer.py` as a dataclass (or namedtuple) with four fields: `type` (string), `value` (string, the raw lexeme), `line` (int), and `col` (int).  The EOF (end-of-file) token has type `"EOF"`, value `""`, and the line and column of the last character consumed.  Step 2c adds one more field for the decoded value of a string literal.
+A `Token` is one labeled piece of source text together with where it came from.  Define it at the top of `lexer.py` as a dataclass (or namedtuple) with four fields: `type` (string), `value` (string, the raw lexeme), `line` (int), and `col` (int).  The EOF (end-of-file) token has type `"EOF"`, value `""`, and the line and column just past the last character consumed (where the next character would have been), so `"let x = 42;"` ends with EOF at col 12.  Step 2c adds one more field for the decoded value of a string literal.
 
 ```python
 from dataclasses import dataclass
@@ -623,7 +623,7 @@ Write a Flex `.l` file (or a PLY `tokens`/`t_*` module) that covers the full tok
 
 - **Numeric literals**: integers and floats (`[0-9]+\.[0-9]*` and `[0-9]*\.[0-9]+`), with FLOAT tried before INT.
 - **String literals** in double quotes with `\"`, `\\`, `\n`, `\t` escape sequences, decoded at scan time (in Flex, store the decoded string via `strdup`; in PLY, set `t.value` to the decoded text while keeping the raw lexeme available).
-- **Identifiers vs. keywords**: match `[a-zA-Z_][a-zA-Z0-9_]*` and check a keyword table, returning the keyword's own token type for `if`, `else`, `while`, `let`, `print`, `true`, `false`.  This is the generator idiom for "keywords before IDENT."  Your readme must explain why the keyword-table approach and the rule-ordering approach are equivalent.
+- **Identifiers vs. keywords**: match `[a-zA-Z_][a-zA-Z0-9_]*` and check a keyword table, returning the keyword's own token type for `if`, `else`, `while`, `let`, `print`, `true`, `false`, `and`, `or`, `not`, `fun`.  This is the generator idiom for "keywords before IDENT."  Your readme must explain why the keyword-table approach and the rule-ordering approach are equivalent.
 - **Multi-character operators**: `<=`, `>=`, `==`, `!=` as single tokens, listed so they win over their single-character prefixes.
 - **Comments and whitespace**: `#` to end of line, skipped; whitespace skipped with newlines counted (`%option yylineno` in Flex; track `t.lexer.lineno` in PLY).
 

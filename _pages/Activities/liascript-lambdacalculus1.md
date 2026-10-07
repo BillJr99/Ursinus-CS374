@@ -124,7 +124,7 @@ $$
 
 Read the right side as "$e$ with every free occurrence of $x$ replaced by $a$."  A **redex** (reducible expression) is any sub-expression of that shape: an abstraction applied to an argument.  An expression with no redexes is in normal form, and normal form is the answer.  Reduce one redex at a time, and draw one arrow per step.
 
-> **Watch out**: Beta reduction is syntactic substitution and nothing more.  `(λx.x*x) (2+3)` does not compute `2+3` first.  It substitutes the unevaluated `(2+3)` for `x` and gives `(2+3)*(2+3)`.  Whether a language evaluates arguments before substitution (eager) or after (lazy) is the call-by-value versus call-by-name distinction.  Python is call-by-value, so Python computes `5` first and then substitutes.  The pure lambda calculus, by default, is call-by-name.
+> **Watch out**: Beta reduction is syntactic substitution and nothing more.  `(λx.x*x) (2+3)` does not compute `2+3` first.  It substitutes the unevaluated `(2+3)` for `x` and gives `(2+3)*(2+3)`.  Whether a language evaluates arguments before substitution (eager) or after (lazy) is the call-by-value versus call-by-name distinction.  Python is call-by-value, so Python computes `5` first and then substitutes.  The pure lambda calculus itself fixes no order: beta reduction may fire any redex, and call-by-value and call-by-name are evaluation strategies layered on top of it.
 
 ### Worked Example 1: Identity Function
 
@@ -388,7 +388,7 @@ print("Free vars in (λx.λy. x):", free_vars(lam('x', lam('y', var('x')))))
 - The three tuple shapes `('var', n)`, `('lam', p, b)` and `('app', f, a)` are the entire grammar of the lambda calculus.  There is nothing else to represent, which is why the tracer fits on one screen.
 - `subst` is where capture avoidance lives.  It consults `free_vars` before descending into a `lam`, and it renames the bound variable if substituting would otherwise capture a free one.  Every hard part of this session is in that one check.
 - `step` finds the **outermost** redex first, which is normal order.  Normal order reaches a normal form whenever one exists.  Python's own evaluation is the opposite: it evaluates arguments first.
-- The tracer stops when `step` reports no redex.  That is the definition of normal form: not "the answer," but "nothing left to reduce."
+- The tracer stops when `step` reports no redex.  That is the definition of normal form, and the precise sense in which normal form is "the answer": the tracer does not recognize a result, it only notices that nothing is left to reduce.
 
 ### Try It Yourself
 

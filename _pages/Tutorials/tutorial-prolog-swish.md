@@ -140,7 +140,7 @@ If you took the **type-checking direction** of the Interpreter assignment, make 
 
 ### Putting it all together
 
-We now have all the pieces: terms, unification, clause representation, variable renaming, and the backtracking solver.  A complete mini-Prolog interpreter adds:
+The engine below is built from five pieces: terms, unification, clause representation, variable renaming, and the backtracking solver.  On top of those pieces, a complete mini-Prolog interpreter adds:
 
 1.  A **database class** with methods to assert facts and rules
 2.  A **query interface** that returns human-readable results
@@ -150,12 +150,12 @@ The `reify` function applies the final substitution to a query variable to get i
 
 ---
 
-**Intuition.**  You now have all the ingredients: a term language (Var/Atom/Compound), a unifier, variable renaming, and the solver loop.  Assembling them into a `DB` class with `fact`/`rule` methods and a `query` helper gives you a complete, self-contained Prolog engine.  As you read Model 5, focus on the *interface*, not the internals; the internals are exactly what you built piecemeal in Models 2 and 3.  The new thing is the clean `query(db, goal, *vars)` API that hides the generator machinery.
+**Intuition.**  Assembling a term language (Var/Atom/Compound), a unifier, variable renaming, and the solver loop into a `DB` class with `fact`/`rule` methods and a `query` helper gives you a complete, self-contained Prolog engine.  As you read the interpreter below, focus on the *interface* first; the internals are the unification and backtracking you met conceptually in Sections 4 and 5, written out in Python.  The new thing is the clean `query(db, goal, *vars)` API that hides the generator machinery.
 
 ### The full mini-Prolog interpreter
 
 ```python
-# Model 5: Complete mini-Prolog interpreter
+# Complete mini-Prolog interpreter
 from dataclasses import dataclass
 from typing import Iterator, Any
 

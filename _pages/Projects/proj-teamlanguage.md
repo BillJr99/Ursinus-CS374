@@ -125,7 +125,7 @@ It ships with a REPL, a file-runner, at least five sample programs (one that sho
 
 Teams are three members each, formed in the design phase from your standing POGIL groups.  The project uses four roles: Coordinator (sprint planning and scope), Builder (implementation), Evaluator (testing and sample programs), and Scribe (documentation and the decision log).  Roles rotate at every sprint boundary so that every member holds every role.  Your report's contribution statements must show the rotation.
 
-**Your team over the project's seven weeks.**  Teams reliably pass through recognizable stages (Tuckman, 1965), and I placed this project's milestones on that map on purpose:
+**Your team over the project's seven weeks.**  Teams reliably pass through recognizable stages (Tuckman, 1965; the fifth stage, *adjourning*, was added by Tuckman and Jensen, 1977), and I placed this project's milestones on that map on purpose:
 
 - *Forming* is the team charter, drafted at the design-phase check and signed with the proposal.  You do it before the stakes get high.
 - *Storming* is the design phase.  The argument over which niche to serve and what the design scorecard says is productive conflict, so have it out loud in your own team meeting instead of quietly in a group chat.
@@ -742,7 +742,7 @@ During the final sprint studio sessions, you will pair across teams for intervie
 
 The project does not have to end at Demo Day:
 
-- **[CCSC-Eastern](https://ccscne.org/)** and similar regional conferences run student poster sessions.  A team language with a live REPL demo is exactly the kind of work they exist to present.  Talk to the instructor about submitting; the proposal you already wrote is most of the abstract.
+- **[CCSC-Eastern](https://sites.google.com/site/ccsceastern/)** and similar regional conferences run student poster sessions.  A team language with a live REPL demo is exactly the kind of work they exist to present.  Talk to the instructor about submitting; the proposal you already wrote is most of the abstract.
 - **Campus research and creative-work showcases** welcome course projects of this scope.  Presenting there is a low-stakes rehearsal for any external venue.
 - **Your profile.**  The [ShipIt guide]({{ site.baseurl }}/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist)'s Stage 4 (the pinned repository and 200-word project story) is the durable version of everything you rehearsed here.  Update your resume and LinkedIn while the numbers (test counts, sample programs, the verified install) are fresh.
 

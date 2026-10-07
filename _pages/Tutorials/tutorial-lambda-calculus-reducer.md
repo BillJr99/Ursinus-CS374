@@ -759,7 +759,7 @@ $$
 = g\ (Y\ g)
 $$
 
-This is the **unfolding equation**: $$Y\ g$$ reduces to $$g$$ applied to $$Y\ g$$ applied to itself.  Exactly what a recursive call does.
+This is the **unfolding equation**: $$Y\ g = g\ (Y\ g)$$, so $$g$$ receives the whole recursive computation $$Y\ g$$ as its argument, ready to unfold again.  Exactly what a recursive call does.  (Strictly, the two sides are equal because both reduce to the same term $$g\ ((\lambda x.\ g\ (x\ x))\ (\lambda x.\ g\ (x\ x)))$$, as the last step shows.)
 
 **Why we need the Z variant for strict languages:** Pure Y in Python loops:
 
@@ -1009,7 +1009,7 @@ $$
 \mathbf{S}\ a\ b\ c \;\Rightarrow\; a\ c\ (b\ c)
 $$
 
-Application associates left, so $$\mathbf{S}\ a\ b\ c$$ means $$(((\mathbf{S}\ a)\ b)\ c)$$. A **redex** in combinatory logic is any subterm of the form $$\mathbf{I}\ a$$, $$\mathbf{K}\ a\ b$$, or $$\mathbf{S}\ a\ b\ c$$ (and analogously for other combinators).  Reduction is confluent (if two different reduction orders both reach a normal form, they reach the same one), exactly as in the lambda calculus, because the combinators are derived from it.
+Application associates left, so $$\mathbf{S}\ a\ b\ c$$ means $$(((\mathbf{S}\ a)\ b)\ c)$$. A **redex** in combinatory logic is any subterm of the form $$\mathbf{I}\ a$$, $$\mathbf{K}\ a\ b$$, or $$\mathbf{S}\ a\ b\ c$$ (and analogously for other combinators).  Reduction is confluent (if two different reduction orders both reach a normal form, they reach the same one), just as in the lambda calculus.  This is a theorem about combinatory logic in its own right, proved the same way; it is not inherited automatically from the lambda calculus.
 
 > **Watch out!  Argument counting**
 >
@@ -1137,19 +1137,19 @@ B = lambda f: lambda g: lambda x: f(g(x))
 C = lambda f: lambda a: lambda b: f(b)(a)
 
 subtract = lambda x: lambda y: x - y   # curried subtraction
-subtract_from_10 = C(subtract)(10)      # flip: now b goes first
-print(subtract_from_10(3))              # 10 - 3 = 7 (without flip: 3 - 10 = -7)
+subtract_10 = C(subtract)(10)           # flip: 10 now fills the SECOND slot
+print(subtract_10(3))                   # 3 - 10 = -7 (without flip: 10 - 3 = 7)
 
 # C is derivable: C = S (B B S) (K K)
 C_from_SK = S(B(B)(S))(K(K))
-print(C_from_SK(subtract)(10)(3))   # 7
+print(C_from_SK(subtract)(10)(3))   # -7
 ```
 
 ---
 
 ### 6.  The Starling, **S** (the Power Bird)
 
-The Starling is the "fork and merge" brick, the one that makes the calculus powerful enough to compute anything.  Given $$x$$, it routes $$x$$ down two separate paths simultaneously: one path feeds $$x$$ into $$f$$, producing a function; the other path feeds $$x$$ into $$g$$, producing an argument; then the results are merged by application.  This is the combinator encoding of *sharing*: the same input reaches two different parts of a computation.  Without this sharing capability, the calculus could only compute linear functions.
+The Starling is the "fork and merge" brick, the one that makes the calculus powerful enough to compute anything.  Given $$x$$, it routes $$x$$ down two separate paths simultaneously: one path feeds $$x$$ into $$f$$, producing a function; the other path feeds $$x$$ into $$g$$, producing an argument; then the results are merged by application.  This is the combinator encoding of *sharing*: the same input reaches two different parts of a computation.  Without some way to share (S, or another duplicating bird such as W), every term could use each input at most once; that fragment of the calculus always terminates, so it cannot express general recursion.
 
 $$
 \mathbf{S}\ f\ g\ x = f\ x\ (g\ x)
@@ -1327,7 +1327,7 @@ print([fib(n) for n in range(10)])   # [0,1,1,2,3,5,8,13,21,34]
 
 ### 11.  Gabriel Lebec's Birds in JavaScript, and in Python
 
-The birds stop being an abstract curiosity the moment you recognize them in code you already write.  Every time you call `map(lambda x: x + 1, lst)` you are using I. Every time you write `key=lambda _: 0` you are using K. Every time you write `sorted(lst, key=lambda x: -x)` you are using a partial application of C. Gabriel Lebec's 2016 talk "*A Flock of Functions*" makes this explicit for JavaScript: every standard higher-order function there is a bird in disguise.  **The birds are the names for patterns you already reach for every day**; you just call them `const`, `id`, `flip`, `compose`, and `curry`.  Here is the full correspondence, in Python:
+The birds stop being an abstract curiosity the moment you recognize them in code you already write.  Every time you pass `lambda x: x` as a "no change" transform, as in `sorted(lst, key=lambda x: x)`, you are using I. Every time you write `key=lambda _: 0` you are using K. Every time you write `lambda a, b: f(b, a)` to swap a function's arguments you are using C. Gabriel Lebec's 2016 talk "*A Flock of Functions*" makes this explicit for JavaScript: every standard higher-order function there is a bird in disguise.  **The birds are the names for patterns you already reach for every day**; you just call them `const`, `id`, `flip`, `compose`, and `curry`.  Here is the full correspondence, in Python:
 
 ```python
 # === The Flock - Python Edition ===
