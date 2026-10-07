@@ -120,7 +120,33 @@ See the course schedule for the assigned and due dates.  Finish Parts 1 and 2 fi
 
 ## Part 1: The `re` API, and Watching the Engine Backtrack
 
-Python's `re` library adds engineering conveniences to the formal theory of regular expressions.  Anchors pin a match to a position: `^` is the start of the string and `$` is the end.  Character classes stand for one character from a set: `\d` is a digit, `\w` is a word character, and `\s` is whitespace.  Groups `(...)` capture the text they match so you can read it back later.  Five functions carry almost all the work: `re.search` (first match anywhere), `re.match` (match at the start), `re.findall` (all matches), `re.sub` (substitute), and `re.finditer` (iterate matches with positions).  Raw strings (`r"..."`) keep Python's own backslash handling out of your way.  Use them always.
+Python's `re` library adds engineering conveniences to the formal theory of regular expressions.  The first table lists the pattern syntax this assignment relies on, and the second lists the functions that do the work.  Keep both open while you work; every step below uses something from each.
+
+| Syntax | Meaning | Example |
+|--------|---------|---------|
+| `^` | Anchor: the start of the string (of each line with `re.MULTILINE`) | `^#` matches a `#` only in the first position |
+| `$` | Anchor: the end of the string (of each line with `re.MULTILINE`) | `\d$` matches a digit only in the last position |
+| `\d` | Character class: one digit, `0`-`9` | `\d\d` matches `42` |
+| `\w` | Character class: one word character (letter, digit, or `_`) | `\w+` matches `count_2` |
+| `\s` | Character class: one whitespace character (space, tab, newline) | `a\s+b` matches `a   b` |
+| `\b` | Word boundary: a zero-width position between a `\w` and a non-`\w` character, matching no character itself | `\b\d{5}\b` matches `19426` but not inside `194260` |
+| `(...)` | Capturing group: remembers the text it matched so you can read it back | `#(\d+)` captures `1042` from `#1042` |
+| `(?P<name>...)` | Named group: a capturing group you read by name instead of by number | `(?P<year>\d{4})` |
+| `r"..."` | Raw string (Python, not regex): keeps Python's own backslash handling out of your way, so `r"\d"` reaches the engine as `\d`.  Use raw strings always. | `r"\b\d{5}\b"` |
+
+Seven functions carry almost all the work.  The first three differ only in *where* the pattern must match; the next two differ in *how many* matches you get back and in what form.  There is no `re.matchall`: if you want every match, use `findall` or `finditer`; if you want the whole string to match, use `fullmatch`.
+
+| Function | Where it looks | Returns | Use it when |
+|----------|----------------|---------|-------------|
+| `re.search(p, s)` | Anywhere in `s` | The first match object, or `None` | You want to know whether, and where, a pattern first appears |
+| `re.match(p, s)` | Only at the start of `s` | A match object, or `None` | The text must *begin* with the pattern (it may continue past it) |
+| `re.fullmatch(p, s)` | All of `s`, start to end | A match object, or `None` | You are validating: the *whole* string must be in the language, which is the formal-theory question "is `s` in L?" |
+| `re.findall(p, s)` | All non-overlapping matches | A list of strings or tuples (shape depends on groups; see Step 1.1) | You want the matched text and nothing else |
+| `re.finditer(p, s)` | All non-overlapping matches | An iterator of match objects, each with positions | You need the positions as well as the text, as a lexer does |
+| `re.sub(p, repl, s)` | All non-overlapping matches | A new string with each match replaced by `repl` (which may use `\1` or `\g<name>`) | You want to rewrite or redact text |
+| `re.compile(p)` | (none yet) | A compiled pattern with the same methods: `pat.search(s)`, `pat.finditer(s)`, and so on | You reuse one pattern many times, or want to name it once at the top of a file |
+
+Each function also takes a `flags=` argument.  This assignment uses two: `re.IGNORECASE` makes letters match either case, and `re.MULTILINE` makes `^` and `$` match at every line break rather than only at the ends of the string.
 
 ### Step 1.1: The walkthrough
 
@@ -169,11 +195,26 @@ Order #1042 shipped 2026-09-18 to Collegeville, PA [ZIP]; order #1043 pending.
 > 1. Replace `19426` in the text with `194260` and run the file again.  The `[ZIP]` disappears, because `\b\d{5}\b` no longer finds five digits with a boundary on both sides.
 > 2. Put `19426` back and confirm the redaction returns.  That loop (edit, run, read the output) is the entire method for this assignment.
 
-**Reading the code.**
+**Reading the code.**  `re.search` returns a match object or `None`, which is why every use above checks `m` before reading it.  Once you have a match object `m`, these are the ways to read it:
 
-- `re.search` returns a match object or `None`, which is why every use above checks `m` before reading it.  `m.group(1)` is the text captured by the first parenthesized group, `m.group(0)` is the whole match, and `m.groups()` returns all captures at once.
-- `re.findall` changes shape with your pattern: no groups gives whole matches, exactly one group gives only that group (so `r"#(\d+)"` yields bare numbers), and two or more groups give tuples.  This trips up everyone once; the next step makes it trip you now, where it costs nothing.
-- `\b` is a word boundary, a zero-width assertion that matches a position between characters rather than a character.  Without it, `\d{5}` would match the first five digits of a longer number.  `finditer` yields match objects with `.start()` and `.end()`, so you learn where each match sits, and that is why a lexer is built on `finditer` rather than `findall`.
+| On a match object `m` | Gives you | In the walkthrough |
+|-----------------------|-----------|--------------------|
+| `m.group(0)` (or `m.group()`) | The whole matched text | `#1042` |
+| `m.group(1)`, `m.group(2)`, ... | The text captured by the first, second, ... parenthesized group, counting open parentheses from the left | `1042` from `#(\d+)` |
+| `m.groups()` | A tuple of every capture at once | `('2026', '09', '18')` from the date pattern |
+| `m.group("name")`, `m.groupdict()` | A named group's text, or a dictionary of all of them (Steps 3.0 and 3.2) | `m.group("year")` |
+| `m.start()`, `m.end()` | The index where the match begins, and the index just past where it ends | `0` and `5` for the first `Order` |
+| `m.span()` | Both at once, as `(start, end)` | `(0, 5)` |
+
+`re.findall` changes shape with your pattern, and this trips up everyone once.  The next step makes it trip you now, where it costs nothing.
+
+| Groups in the pattern | `re.findall` returns | Example on the walkthrough text |
+|-----------------------|----------------------|---------------------------------|
+| None | A list of whole matches | `r"#\d+"` gives `['#1042', '#1043']` |
+| Exactly one | A list of just that group's text | `r"#(\d+)"` gives `['1042', '1043']` |
+| Two or more | A list of tuples, one tuple per match | `r"#(\d)(\d+)"` gives `[('1', '042'), ('1', '043')]` |
+
+Two more details from the code.  `\b` matches a position, not a character, so without it `\d{5}` would happily match the first five digits of a longer number.  And `finditer` yields match objects with `.start()` and `.end()`, so you learn where each match sits; that is why a lexer is built on `finditer` rather than `findall`.
 
 ### Step 1.2: Now you: the `findall` shape experiment
 
