@@ -31,7 +31,7 @@ By the end of this tutorial, you will have:
 - Implemented let-polymorphism (generalization and instantiation) so that a polymorphic identity function type-checks at multiple types in the same scope
 - Produced clear, position-tagged type error messages that name both conflicting types and the source location
 
-Hindley-Milner (HM) type inference deduces the type of every expression without any type annotations.  It powers Haskell, OCaml, and Rust's type inference.  This tutorial walks you step-by-step through building a complete HM inference engine over the Mini language AST: types, unification with occurs check, Algorithm W, and let-polymorphism.  Each phase includes working Python code you can run and test before moving to the next.  **Prerequisites:** the Type Systems activity, the Curry-Howard activity, and your Mini interpreter assignment.
+Hindley-Milner (HM) type inference deduces the type of every expression without any type annotations.  It powers Haskell, OCaml, and Rust's type inference.  This tutorial walks you step-by-step through building a complete HM inference engine over the Mini language abstract syntax tree (AST): types, unification with occurs check, Algorithm W, and let-polymorphism.  Each phase includes working Python code you can run and test before moving to the next.  **Prerequisites:** the Type Systems activity, the Curry-Howard activity, and your Mini interpreter assignment.
 
 ---
 
@@ -698,7 +698,7 @@ except Exception as e:
 
 ## Phase 6: Error Messages
 
-Good error messages include: the source line, the conflicting types, and context.  Wrap every `TypeError` in a richer class:
+Good error messages include the source line, the conflicting types, and context.  Wrap every `TypeError` in a richer class:
 
 ```python
 try:

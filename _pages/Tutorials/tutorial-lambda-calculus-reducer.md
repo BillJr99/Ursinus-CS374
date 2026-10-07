@@ -607,13 +607,13 @@ The one step not covered here: **alpha-equivalence checking** for your cross-ver
 
 *"The Y combinator is probably the most ingenious and least intuitive result in the lambda calculus."*, Pierce, *TAPL*
 
-This optional advanced section stands apart from the reducer you built above: it answers the question the reducer raises but cannot answer on its own: how does an *anonymous* function recurse?
+This optional advanced section stands apart from the reducer you built above.  It answers the question the reducer raises but cannot answer on its own: how does an *anonymous* function recurse?
 
 Imagine a self-playing record: the groove that plays the current note also contains the instruction to move to the next note.  The record does not need to consult an external playlist; the mechanism for advancing is baked into every moment of the playback.  The Y combinator works the same way: the code that produces the next recursive call is folded directly into each call site, with no external name, no registry, no environment entry needed.
 
 Every recursive function you have ever written calls itself by name: `factorial` calls `factorial`, `fib` calls `fib`.  This seems obvious and necessary.  But names are a feature of programming environments rather than a feature of computation itself.  The lambda calculus has no names; every definition is anonymous.  So how do you write a recursive function when you cannot name it?  How do you call a function you cannot refer to?
 
-The answer is the **Y combinator**: a fixed-point operator that provides every function the gift of self-reference, without requiring a name.  This section builds to Y from scratch (through a carefully designed sequence of wrong answers that teach the right intuition) and then shows Y at work in modern Python, JavaScript, and Haskell.
+The answer is the **Y combinator**: a fixed-point operator that gives every function a way to refer to itself without requiring a name.  This section builds to Y from scratch (through a carefully designed sequence of wrong answers that teach the right intuition) and then shows Y at work in modern Python, JavaScript, and Haskell.
 
 By the end of this section, you will be able to:
 
@@ -675,7 +675,7 @@ This works!  But `step1(step1)` is repetitive, and the body has `self(self)(n-1)
 >
 > In `step1`, the argument called `self` is not a number: it is a *function* (specifically, it will be `step1` itself).  The call `self(self)` returns a *function* (one that takes `n`), and then `(n - 1)` calls that function.  It is easy to confuse `self(self)(n-1)` with `self(n-1)`: the first passes `self` as argument to produce a callable, then calls that callable on `n-1`; the second would pass `n-1` directly to `self`, which expects a function.  Always trace the types.
 
-**Check your understanding**, answer these for yourself before moving on:
+**Check your understanding.** Answer these for yourself before moving on:
 
 1.  In `step1 = lambda self: lambda n: ...`, what type does `self` have?  (Hint: what does `self(self)` produce?)
 2.  Why does the recursive call have `self(self)(n-1)` rather than `self(n-1)`?
@@ -1097,7 +1097,7 @@ $$
 \mathbf{B}\ f\ g\ x = f\ (g\ x)
 $$
 
-The Bluebird composes two functions: apply $$g$$ first, then $$f$$. In lambda calculus it is $$\lambda f.\ \lambda g.\ \lambda x.\ f\ (g\ x)$$. In Haskell it is `(.)`.  It is one of the most-used birds in practice because function composition is the primary method of building programs in functional style.
+The Bluebird composes two functions: apply $$g$$ first, then $$f$$. In lambda calculus it is $$\lambda f.\ \lambda g.\ \lambda x.\ f\ (g\ x)$$. In Haskell it is `(.)`.  It is one of the most-used birds in practice because function composition is the primary way to build programs in functional style.
 
 ```python
 K = lambda a: lambda b: a

@@ -728,7 +728,7 @@ match xs with
 | h :: t -> h + sum t
 ```
 
-**Tail-call optimization:** The `eval_App` call above will blow Python's stack on deeply recursive functions.  Trampolining converts tail calls to iteration, research "trampoline in Python" for a clean implementation.
+**Tail-call optimization:** The `eval_App` call above will blow Python's stack on deeply recursive functions.  Trampolining converts tail calls to iteration; research "trampoline in Python" for a clean implementation.
 
 **Print / IO:** Add a `print` built-in function to the global environment.
 
@@ -794,7 +794,7 @@ By the end of this section, you will be able to:
 >
 > If any of these feel shaky, review them first.
 
-> **"To understand the evaluator is to understand computation."**, SICP
+> **"To understand the evaluator is to understand computation."** - SICP
 
 A **metacircular evaluator** is an interpreter for a language written in (or very close to) that language itself.  In SICP Chapter 4, Abelson and Sussman build a Scheme interpreter *in Scheme*, revealing that the evaluation rules almost write themselves, because the host language and the implemented language share the same underlying ideas.  Here, we build a Scheme interpreter in Python.  Python is close enough that the translation is direct; different enough that we must make every semantic choice explicit.
 

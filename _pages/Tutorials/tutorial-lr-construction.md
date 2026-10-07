@@ -35,7 +35,7 @@ tags:
 
 This tutorial is the companion to **Part 4 of the Parser assignment**, where you implement SLR(1) table construction and a shift-reduce driver.  It explains the mechanism the assignment asks you to build, and it does so on a *different, smaller grammar* than the assignment uses.  That is deliberate.  You can read every line here, run it, and take it apart, and the assignment's ladder grammar is still yours to do.  The two differ in exactly the places that make the assignment interesting: operator precedence between `+` and `*`, and parentheses.
 
-You already know recursive descent from Part 2.  This tutorial bridges the gap between "I wrote one function per non-terminal" and "I built the table a generator emits, and I know why each cell holds what it holds."
+You already know recursive descent from Part 2.  This tutorial takes you from "I wrote one function per non-terminal" to "I built the table a generator emits, and I know why each cell holds what it holds."
 
 Two companions sit beside it.  The [Table-Driven and LR Parsing activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsertable.md) builds the assignment's larger grammar by hand and prints the correct closure, item sets, FOLLOW sets, and table, which makes it the answer key for Part 4.  The [Flex and Bison tutorial]({{ site.baseurl }}/Tutorials/FlexAndBison) goes the other way, generating a parser with real tools, and its appendix reads an actual `bison -v` automaton.
 
@@ -92,7 +92,7 @@ Write this helper first.  Every checkpoint below is something you read, and an i
 
 **The rule.** If the dot sits immediately before a non-terminal, the parser is also about to begin parsing that non-terminal, so add every production for it with the dot at the front.
 
-**Why it is a fixed point.** The rule feeds itself.  Start from `S' -> . E`.  The dot sits before `E`, so add `E -> . E + T` and `E -> . T`.  That second item now has a dot before `T`, which was not true of anything in the original set, so the rule applies again and adds `T -> . n`.  A single pass over the starting item would have stopped after two additions and produced a state that is simply wrong.
+**Why it is a fixed point.** The rule feeds itself.  Start from `S' -> . E`.  The dot sits before `E`, so add `E -> . E + T` and `E -> . T`.  That second item now has a dot before `T`, which was not true of anything in the original set, so the rule applies again and adds `T -> . n`.  A single pass over the starting item would have stopped after two additions and produced a state that is wrong.
 
 So closure loops until a full pass adds nothing.  That is the definition of a fixed point, and it is the single most common place this algorithm is implemented incorrectly.
 

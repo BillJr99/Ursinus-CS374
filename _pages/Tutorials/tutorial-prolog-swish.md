@@ -81,7 +81,7 @@ rev_acc([], Acc, Acc).
 rev_acc([H|T], Acc, Rev) :- rev_acc(T, [H|Acc], Rev).
 ```
 
-Query `?- rev([1,2,3], R).` gives `R = [3,2,1]`.  Note there is no "return", `rev/2` *relates* a list to its reversal.
+Query `?- rev([1,2,3], R).` gives `R = [3,2,1]`.  Note there is no "return": `rev/2` *relates* a list to its reversal.
 
 ---
 
@@ -98,7 +98,7 @@ Direction F asks for a deliberately small, representative slice of the classic [
 | P46 | `table(A, B, Expr)` | logic connectives as relations |
 | P90 | `queens(Qs)` | backtracking search; eight non-attacking queens |
 
-Work each in SWISH, and record the query and its answer(s) in your `logic_session.md`.  For P90, press `;` repeatedly (or use `findall/3`) to enumerate and **count** the solutions; the declarative style shines when the same clauses that *describe* a valid board also *search* for one.
+Work each in SWISH, and record the query and its answer(s) in your `logic_session.md`.  For P90, press `;` repeatedly (or use `findall/3`) to enumerate and **count** the solutions; the declarative style pays off when the same clauses that *describe* a valid board also *search* for one.
 
 A note on P31 and negation: `\+ Goal` succeeds when `Goal` cannot be proven ("negation as failure").  Explain in your writeup why this is subtly different from logical "not".
 
@@ -146,7 +146,7 @@ We now have all the pieces: terms, unification, clause representation, variable 
 2.  A **query interface** that returns human-readable results
 3.  A **reification** step that walks the answer substitution to produce ground terms
 
-The `reify` function applies the final substitution to a query variable to get its answer.  If a variable is still unbound, it prints as itself; meaning the query is satisfied for *any* value of that variable.
+The `reify` function applies the final substitution to a query variable to get its answer.  If a variable is still unbound, it prints as itself, meaning the query is satisfied for *any* value of that variable.
 
 ---
 
@@ -345,13 +345,13 @@ for r in query(db, Compound("member", (Mx, lst(a("p"),a("q"),a("r")))), Mx):
 
 **Critical Thinking Questions (CTQs)**
 
-> **CTQ 5.1** The `DB` class stores all clauses in a single list.  What is the consequence of this for predicate lookup; specifically, when the solver tries to match a goal `parent(tom, X)`, it must scan *all* clauses.  How would a real Prolog implementation index the database to make this faster?
+> **CTQ 5.1** The `DB` class stores all clauses in a single list.  What is the consequence of this for predicate lookup?  Specifically, when the solver tries to match a goal `parent(tom, X)`, it must scan *all* clauses.  How would a real Prolog implementation index the database to make this faster?
 
 > **CTQ 5.2** The `query` function has a `limit=10` parameter to prevent infinite output.  What class of queries would produce infinitely many results without this limit?  Give an example using the family database.
 
 > **CTQ 5.3** The `fresh` function renames variables by appending `_N` where N is a global counter.  Why must this counter be global (or at least shared across all calls to `fresh`) rather than local to each call?  What would go wrong if it reset to 0 for each query?
 
-> **CTQ 5.4** Examine the `db.fact("append", NIL, Y, Y)` line.  The variable `Y` is a Python variable referencing a `Var("Y")` object.  Every call to `db.fact("append", ...)` with `Y` stores the *same* `Var("Y")` object in two argument positions.  Why is this safe: what operation do we rely on to make it not interfere across queries?
+> **CTQ 5.4** Examine the `db.fact("append", NIL, Y, Y)` line.  The variable `Y` is a Python variable referencing a `Var("Y")` object.  Every call to `db.fact("append", ...)` with `Y` stores the *same* `Var("Y")` object in two argument positions.  Why is this safe?  What operation do we rely on to make it not interfere across queries?
 
 > **CTQ 5.5** How would you add a `not_member(X, L)` predicate?  What is the challenge of implementing "negation" in a pure SLD resolution engine?
 

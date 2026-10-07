@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Sprint Studio and Gallery Walk
 
-This deck serves two class sessions: *Sprint Studio: Sprints 1-2 and Gallery Walk*, then *Sprint Studio: Sprint 3 and Release Hardening*.
+This deck covers two class sessions: *Sprint Studio: Sprints 1-2 and Gallery Walk*, then *Sprint Studio: Sprint 3 and Release Hardening*.
 
 Building a programming language in a semester takes the same discipline that shipping any complex software takes.  You have to know exactly where you stand, not where you feel like you stand.  Sprint studio days replace "mostly working" with numbers, and the gallery walk replaces private uncertainty with structured peer review.  Together they help teams find their blind spots before Demo Day instead of during it.
 

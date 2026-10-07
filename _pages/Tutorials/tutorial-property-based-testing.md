@@ -94,7 +94,7 @@ exprs = st.recursive(
 
 `max_leaves` bounds how big trees get.  Start small (10-25) while developing; raise it once your code passes.
 
-> **Tip:** if your node classes are frozen dataclasses with structural equality (the default for `@dataclass`), `ast1 == ast2` compares whole trees for you; which is exactly what the round-trip law needs.
+> **Tip:** if your node classes are frozen dataclasses with structural equality (the default for `@dataclass`), `ast1 == ast2` compares whole trees for you, which is exactly what the round-trip law needs.
 
 ---
 
@@ -119,7 +119,7 @@ Falsifying example: test_round_trip(
 )
 ```
 
-That is the **minimal** tree that breaks the law. `2 * (3 + 4)` shrank all the way down to `0 * (0 + 0)`, the numbers do not matter, the *shape* does.  The bug is almost always in `unparse`: it failed to parenthesize a lower-precedence subtraction/addition under a higher-precedence multiplication.  Fix the parenthesization rule and re-run.
+That is the **minimal** tree that breaks the law. `2 * (3 + 4)` shrank all the way down to `0 * (0 + 0)`: the numbers do not matter, but the *shape* does.  The bug is almost always in `unparse`: it failed to parenthesize a lower-precedence subtraction/addition under a higher-precedence multiplication.  Fix the parenthesization rule and re-run.
 
 **What to report (Parser Step 3e):** the one shrunk counterexample you fixed, its root cause in one sentence, and the fix.
 
@@ -129,7 +129,7 @@ That is the **minimal** tree that breaks the law. `2 * (3 + 4)` shrank all the w
 
 The same generator, pointed at your evaluator, checks *meaning*.  Restrict the generator to the nodes your evaluator supports, then state invariants:
 
-**Determinism**, same tree, same result, twice:
+**Determinism**: same tree, same result, twice:
 
 ```python
 from interpreter import eval_program, fresh_env
@@ -139,7 +139,7 @@ def test_deterministic(tree):
     assert eval_program(tree, fresh_env()) == eval_program(tree, fresh_env())
 ```
 
-**Scope restoration**, an inner `let` does not leak to the outer environment:
+**Scope restoration**: an inner `let` does not leak to the outer environment:
 
 ```python
 @given(exprs, st.sampled_from(["a", "b", "c"]))

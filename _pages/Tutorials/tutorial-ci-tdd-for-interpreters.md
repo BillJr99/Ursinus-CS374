@@ -1134,7 +1134,7 @@ print("  Rule: a sprint with more than 2 known failures is not done.")
 print("  Rule: test_pct < 80% triggers a test-debt sprint before new features.")
 ```
 
-> **Watch out!**  The projection formula assumes your last sprint's velocity holds constant.  Real project velocity rarely stays constant; it often drops in the final sprint due to integration work and debugging.  If you are already at 80% velocity, the projection is optimistic.  Use the projection as a floor rather than a ceiling.
+> **Watch out!**  The projection formula assumes your last sprint's velocity holds constant.  Real project velocity rarely stays constant; it often drops in the final sprint because of integration work and debugging.  If you are already at 80% velocity, the projection is optimistic.  Use the projection as a floor rather than a ceiling.
 
 ### Critical Thinking Questions
 

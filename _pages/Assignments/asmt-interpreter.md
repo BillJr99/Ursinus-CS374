@@ -151,7 +151,7 @@ Three pieces of this assignment exist before you start, and the schedule put the
 - **The checker core, for Part 4.**  The Type Checker Starter lab is due on day five, inside this window.  Read Part 4 before that lab so you know what you are extending, then grow the lab's checker to cover call sites and return types.
 - **The parser and its generator, for Parts 1 and 2e.**  Your Parser assignment supplies `parse` and your existing `ast_nodes.py`, so Step 1a reconciles nodes rather than inventing them.  That assignment's recursive expression generator is what Step 2e feeds to Hypothesis here.
 
-That leaves Parts 1, 2, 3, and 5 as the work genuinely in front of you.  Budget your twelve days against those four.
+That leaves Parts 1, 2, 3, and 5 as the work in front of you.  Budget your twelve days against those four.
 
 ### Your First 30 Minutes
 

@@ -93,7 +93,7 @@ for v in test_values:
 
 ## Model 2: If Is Non-Strict
 
-Saying "the untaken branch is not evaluated" is one thing.  Proving it is another.  In this model a special `Bomb` node plays the role of a branch that would crash the program if it were ever executed.  If the interpreter is truly non-strict, the bomb never goes off, and that silence is the evidence.  Watch the single line that makes this work: a Python ternary that chooses which recursive call to make, rather than making both.
+Saying "the untaken branch is not evaluated" is one thing.  Proving it is another.  In this model a special `Bomb` node plays the role of a branch that would crash the program if it were ever executed.  If the interpreter is non-strict, the bomb never goes off, and that silence is the evidence.  Watch the single line that makes this work: a Python ternary that chooses which recursive call to make, rather than making both.
 
 Prove that `if` does not evaluate the untaken branch:
 
@@ -708,7 +708,7 @@ except (BreakSignal, ContinueSignal) as sig:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output as written: the numbers 1 through 10.  Add a `Break` and, until TODO 1 is done, the signal escapes the loop entirely and the outer handler catches it.  That is precisely the bug the `except` inside `While` prevents.
+Expected output as written: the numbers 1 through 10.  Add a `Break` and, until TODO 1 is done, the signal escapes the loop entirely and the outer handler catches it.  That is the bug the `except` inside `While` prevents.
 
 ## Model 6: The REPL
 

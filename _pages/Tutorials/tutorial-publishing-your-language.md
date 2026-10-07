@@ -31,7 +31,7 @@ tags:
 
 ## Getting Your Language onto Someone Else's Machine
 
-By the end of CS374 you have built a real programming language, with a lexer, a parser, an evaluator or compiler, and probably a REPL.  Right now that implementation lives in a folder on your laptop.  This tutorial shows you how to share it with the world so that anyone (without cloning your repository or installing your dependencies by hand) can run programs written in your language.
+By the end of CS374 you have built a real programming language, with a lexer, a parser, an evaluator or compiler, and probably a REPL.  Right now that implementation lives in a folder on your laptop.  This tutorial shows you how to publish it so that anyone (without cloning your repository or installing your dependencies by hand) can run programs written in your language.
 
 There are three scenarios, and you only need the one that fits your project:
 
@@ -39,13 +39,13 @@ There are three scenarios, and you only need the one that fits your project:
 - **npm**: Your transpiler emits JavaScript.  After publishing, anyone who runs `npx @yourname/mylang program.ml` will transpile and run the source file using Node.js; no installation required.
 - **Docker / ghcr.io**: Your language has native dependencies that are difficult to install (Flex/Bison, LLVM, a custom C runtime).  A Docker image bundles everything.  After publishing, users run `docker run --rm -v $(pwd):/work ghcr.io/yourname/mylang program.ml` and it just works.
 
-Pick the section that matches your project.  The three parts are completely independent.
+Pick the section that matches your project.  The three parts are independent.
 
 ---
 
 ## Semantic Versioning Quick Reference
 
-Before you touch any of the tooling, agree on version numbers.  All three ecosystems (PyPI, npm, Docker) use the same **semantic versioning** convention: `MAJOR.MINOR.PATCH`.
+Before you touch any of the tooling, agree on version numbers.  All three ecosystems (the Python Package Index, or PyPI; npm; and Docker) use the same **semantic versioning** convention: `MAJOR.MINOR.PATCH`.
 
 | Change | Version bump | Example |
 |---|---|---|
@@ -111,7 +111,7 @@ Key points:
 
 ### A3: \_\_main\_\_.py
 
-This file is the CLI entry point.  It reads a source file from the command line, passes its contents to your evaluator, and handles errors gracefully.
+This file is the command-line interface (CLI) entry point.  It reads a source file from the command line, passes its contents to your evaluator, and handles errors gracefully.
 
 ```python
 import sys
