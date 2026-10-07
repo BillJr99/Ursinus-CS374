@@ -260,7 +260,7 @@ unary          ::= TODO   // prefix MINUS and NOT, then the level below
 primary        ::= TODO   // literals, symbol, and a parenthesized expr
 ```
 
-> **Checkpoint: why does `and` bind tighter than `or`?**  Your ladder puts `or_expr` above `and_expr` for the same reason it puts `additive` above `multiplicative` and `multiplicative` above `unary`: the lower a level sits, the tighter its operator binds.  Make that argument for `or` and `and`, in a short paragraph under `## Part 1`.  Use `a or b and c`.
+> **Checkpoint: why does `and` bind tighter than `or`?**  Your ladder puts `or_expr` above `and_expr` for the same reason it puts `additive` above `multiplicative` and `multiplicative` above `unary`: the lower a level sits, the tighter its operator binds.  Make that argument for `or` and `and`, in a short paragraph under `## Part 1`.  Use `a or b and c`.  Before you write it, and with nothing to submit, sketch the derivation of `a or b and c` from `expr` and confirm that your grammar produces each level in order, `or_expr` to `and_expr` to `comparison` and on down to `primary`, never skipping one, just as the worked example reaches `factor` only through `term`, and `additive` reaches `unary` only through `multiplicative`.
 
 > **Checkpoint: try to break it.**  Hand the grammar to your partner, or, if you are working alone, switch roles and attack it yourself.  Write a five-token program that the grammar derives wrongly or can't derive at all.  Every production that survives a serious attempt at breaking it is one you won't have to reopen during the Parser assignment.  The first Reflection Prompt asks which production took the most rounds, so keep a tally.
 
