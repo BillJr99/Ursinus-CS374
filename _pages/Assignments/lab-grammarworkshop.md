@@ -104,7 +104,7 @@ expr
 
 Every later step that says "an `ebnf` block" or "a `text` block" means a block in this format.
 
-> **Time budget.**  About three hours in two sittings.  See the course schedule for the assigned and due dates.  On assignment, do Part 0 alone (under an hour) and, if you want one, choose a partner.  By the midpoint, have the Part 1 grammar drafted, the `or`/`and` paragraph written, and the five-token break attempt done.  By the due date, have Parts 2 and 3 written and `grammar.md` previewed and submitted.  Parts 1 through 3 take one session of about two hours (with your partner, if you have one), most of it on Part 1.
+> **Time budget.**  About three hours in two sittings.  See the course schedule for the assigned and due dates.  On assignment, do Part 0 alone (under an hour) and, if you want one, choose a partner.  By the midpoint, have the Part 1 grammar drafted and the `or`/`and` paragraph written.  By the due date, have Parts 2 and 3 written and `grammar.md` previewed and submitted.  Parts 1 through 3 take one session of about two hours (with your partner, if you have one), most of it on Part 1.
 
 ---
 
@@ -352,7 +352,7 @@ Submit `grammar.md` containing all parts, with your name (and your partner's, if
 
 - [ ] Both partners are named at the top of `grammar.md`, or the top says you worked alone.
 - [ ] Part 0 has two distinct trees for one string, a rewritten grammar with the harder-to-read rule marked, both `2 - 3 - 4` trees, and the REPL command with its output.
-- [ ] The Part 1 ladder has one production per precedence level, `or` through `primary`; the grammar covers every statement form in the Part 1 list; every nonterminal on a right-hand side is defined on a left-hand side; the `or`/`and` paragraph is written; and the grammar has survived at least one five-token attempt to break it.
+- [ ] The Part 1 ladder has one production per precedence level, `or` through `primary`; the grammar covers every statement form in the Part 1 list; every nonterminal on a right-hand side is defined on a left-hand side; and the `or`/`and` paragraph is written.
 - [ ] Both Part 2 derivations rewrite the leftmost nonterminal at every step, cite a production on every line, end in exactly the program's token sequence, and match their parse trees node for node.
 - [ ] Part 3 names the productions that force precedence, shows the flat grammar's wrong tree, and includes the `1 - 2 - 3` associativity statement, the right-associative counterexample, and the three-line sketch with a stated source of left grouping.
 - [ ] Grammars are in `ebnf` blocks, derivations and trees are in `text` blocks, and the Markdown preview shows the trees intact.
