@@ -412,6 +412,9 @@
     if (todoTokens) {
       result.warnings.push({ msg: 'The grammar still contains TODO. The tester is treating TODO as a token, so fill those rules in before trusting the results.' });
     }
+    // Recursion with no way out is checked here, before the early return,
+    // so a grammar that also has undefined names reports both problems.
+    exitlessRules(byName, order, notation).forEach(function (msg) { result.warnings.push({ msg: msg }); });
     if (result.errors.length) return result;
 
     // Desugar to plain BNF productions.
@@ -517,18 +520,73 @@
         result.warnings.push({ msg: ntLabel(name, notation) + ' can never be reached from the start symbol ' + ntLabel(start, notation) + '.' });
       }
     });
-    order.forEach(function (name) {
-      if (height[name] === undefined) {
-        result.warnings.push({ msg: ntLabel(name, notation) + ' can never finish: every alternative uses a nonterminal that recurses forever, so it derives no string at all.' +
-          ' A recursive rule needs at least one way out (a base case).' });
-      }
-    });
     var lr = leftRecursive(grammar);
     if (lr.length) {
       result.notes.push({ msg: 'Left recursion: ' + lr.map(function (n) { return ntLabel(n, notation); }).join(', ') +
         '. That is fine for this tester and for LR parsers, but a recursive-descent parser would call itself forever on this rule.' });
     }
     return result;
+  }
+
+  // A rule can finish when some alternative is made only of tokens,
+  // terminals, optional parts, and rules that can finish.  Undefined names
+  // are given the benefit of the doubt (they are reported as errors on
+  // their own), so every rule flagged here really is stuck in a recursion
+  // with no alternative that escapes it, such as
+  //     additive ::= additive multiplicative
+  // with no  | multiplicative  to stop it.
+  function exitlessRules(byName, order, notation) {
+    var done = Object.create(null);
+    function itemOk(it) {
+      switch (it.type) {
+        case 'sym': return it.kind !== 'nt' || !!done[it.name];
+        case 'group': return it.alt.seqs.some(seqOk);
+        case 'star': case 'opt': return true;
+        case 'plus': return itemOk(it.inner);
+      }
+      return true;
+    }
+    function seqOk(seq) { return seq.items.every(itemOk); }
+    var changed = true;
+    while (changed) {
+      changed = false;
+      order.forEach(function (name) {
+        if (!done[name] && byName[name].alt.seqs.some(seqOk)) { done[name] = true; changed = true; }
+      });
+    }
+    function mentions(it, name) {
+      switch (it.type) {
+        case 'sym': return it.name === name;
+        case 'group': return it.alt.seqs.some(function (s) { return s.items.some(function (x) { return mentions(x, name); }); });
+        case 'star': case 'opt': case 'plus': return mentions(it.inner, name);
+      }
+      return false;
+    }
+    var msgs = [];
+    order.forEach(function (name) {
+      if (done[name]) return;
+      var label = ntLabel(name, notation);
+      var seqs = byName[name].alt.seqs;
+      var selfRec = seqs.some(function (s) { return s.items.some(function (it) { return mentions(it, name); }); });
+      var msg = label + ' can never finish: ' +
+        (selfRec ? 'every alternative leads back to ' + label + ' (directly or through another rule that never finishes)'
+                 : 'every alternative uses a rule that recurses forever') +
+        ', so it derives no string at all.  A recursive rule needs at least one alternative that escapes the recursion (a base case)';
+      // Suggest the level below as the way out: the first other rule named
+      // beside the self-reference, as in  additive ::= additive multiplicative.
+      var below = null;
+      seqs.forEach(function (s) {
+        if (below || !s.items.some(function (it) { return mentions(it, name); })) return;
+        s.items.forEach(function (it) {
+          if (!below && it.type === 'sym' && it.kind !== 'tok' && it.name !== name) below = it.name;
+        });
+      });
+      if (below) {
+        msg += ', for example  ' + label + ' ::= ' + printAlt(byName[name].alt, notation) + ' | ' + ntLabel(below, notation);
+      }
+      msgs.push(msg + '.');
+    });
+    return msgs;
   }
 
   function reachableFrom(g, start) {

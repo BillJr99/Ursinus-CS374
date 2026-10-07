@@ -104,7 +104,7 @@ expr
 
 Every later step that says "an `ebnf` block" or "a `text` block" means a block in this format.
 
-> **Time budget.**  About three hours in two sittings.  See the course schedule for the assigned and due dates.  On assignment, do Part 0 alone (under an hour) and, if you want one, choose a partner.  By the midpoint, have the Part 1 grammar drafted and the `or`/`and` checkpoint answered.  By the due date, have Parts 2 and 3 written and `grammar.md` previewed and submitted.  Parts 1 through 3 take one session of about two hours (with your partner, if you have one), most of it on Part 1.
+> **Time budget.**  About three hours in two sittings.  See the course schedule for the assigned and due dates.  On assignment, do Part 0 alone (under an hour) and, if you want one, choose a partner.  By the midpoint, have the Part 1 grammar drafted, the `or`/`and` paragraph written, and the five-token break attempt done.  By the due date, have Parts 2 and 3 written and `grammar.md` previewed and submitted.  Parts 1 through 3 take one session of about two hours (with your partner, if you have one), most of it on Part 1.
 
 ---
 
@@ -260,7 +260,9 @@ unary          ::= TODO   // prefix MINUS and NOT, then the level below
 primary        ::= TODO   // literals, symbol, and a parenthesized expr
 ```
 
-> **Checkpoint: why does `and` bind tighter than `or`?**  Your ladder puts `or_expr` above `and_expr` for the same reason it puts `additive` above `multiplicative` and `multiplicative` above `unary`: the lower a level sits, the tighter its operator binds.  Make that argument for `or` and `and`, in a short paragraph under `## Part 1`.  Use `a or b and c`.  Draw the tree your ladder forces, write the grouping it stands for, and name the production that makes the other tree, `(a or b) and c`, impossible.  Then choose true or false values for `a`, `b`, and `c` that make the two groupings disagree, so the choice has a visible cost.  A hint, if you want one: read `and` as multiplication and `or` as addition, with true as 1 and false as 0.
+> **Checkpoint: why does `and` bind tighter than `or`?**  Your ladder puts `or_expr` above `and_expr` for the same reason it puts `additive` above `multiplicative` and `multiplicative` above `unary`: the lower a level sits, the tighter its operator binds.  Make that argument for `or` and `and`, in a short paragraph under `## Part 1`.  Use `a or b and c`.
+
+> **Checkpoint: try to break it.**  Hand the grammar to your partner, or, if you are working alone, switch roles and attack it yourself.  Write a five-token program that the grammar derives wrongly or can't derive at all.  Every production that survives a serious attempt at breaking it is one you won't have to reopen during the Parser assignment.  The first Reflection Prompt asks which production took the most rounds, so keep a tally.
 
 ---
 
@@ -322,9 +324,12 @@ Same string, same grammar, two trees, two meanings.  Nothing in the flat grammar
 
 ### Step 3.2: Show That 1 - 2 - 3 Associates Left
 
+Associativity is decided by which side of a production its own name sits on.  In `additive ::= additive MINUS multiplicative | multiplicative`, the name `additive` appears on the *left* of `MINUS`, so the rule is left-recursive, and that tags the operator as left-associative.  The left operand is the only place a chain can keep growing, so each new `MINUS` attaches above everything parsed so far, and the earlier subtraction ends up deeper in the tree.  For `1 - 2 - 3`, the top `additive` splits at the second `MINUS`; its left child is itself an `additive` holding `1 - 2`.  That inner subtree is evaluated first, which gives `(1 - 2) - 3 = -4`.  Move the name to the right, as in `additive ::= multiplicative MINUS additive | multiplicative`, and the same reasoning tags the rule right-associative: the chain grows on the right, the top splits at the *first* `MINUS`, and you get `1 - (2 - 3) = 2`.  Allow the name on both sides, as in `additive ::= additive MINUS additive`, and both trees are legal, which is the ambiguity of Part 0.  A parser generator says the same thing in a declaration: Bison's `%left MINUS` is this tag, written once instead of encoded in the rule's shape.
+
 > **Do this.**
-> 1. State in one or two sentences how your grammar makes `1 - 2 - 3` group as `(1 - 2) - 3`.
-> 2. Verify it with a three-line derivation sketch in a `text` block: start at your additive level, apply its production once to expose both `MINUS` tokens, and show where the left group forms.  Three lines means a sketch, not a full derivation down to tokens.
+> 1. State in one or two sentences how your grammar makes `1 - 2 - 3` group as `(1 - 2) - 3`: name the production and the side its own name sits on, or, if you used the `( MINUS multiplicative )*` form, the parser loop that supplies the grouping (see **Watch out** below).
+> 2. Explain in two or three sentences why this production must not be right-associative.  Write the right-recursive version of your production, compute `1 - 2 - 3` under it, and say which answer a programmer would expect.  Then say why addition alone would not have revealed the problem.
+> 3. Verify it with a three-line derivation sketch in a `text` block: start at your additive level, apply its production once to expose both `MINUS` tokens, and show where the left group forms.  Three lines means a sketch, not a full derivation down to tokens.
 
 > **Watch out.**  A `( MINUS multiplicative )*` group produces a flat list of three operands at one level, and a flat list by itself does not say which two group first.  Decide where the left grouping comes from, and say so.  It can come from the grammar's shape: the left-recursive form `additive ::= additive MINUS multiplicative | multiplicative` puts the grouping in the tree.  Or it can come from the parser's left-fold loop that the Parser assignment describes for the `*` form.  Either is defensible, but an analysis that doesn't say which one it relies on isn't finished.
 
@@ -339,7 +344,7 @@ Submit `grammar.md` containing all parts, with your name (and your partner's, if
 | `grammar.md`, `## Part 0` | Two trees for one string with their values, the disambiguated rewrite with the marked rule, both `2 - 3 - 4` trees, and the REPL command with its output | Part 0 |
 | `grammar.md`, `## Part 1` | The complete EBNF grammar in one `ebnf` block, statements then ladder, with design decisions commented and no undefined nonterminals, followed by the `or`/`and` precedence paragraph | EBNF Grammar |
 | `grammar.md`, `## Part 2` | Each program's token sequence, its leftmost derivation with a production cited on every line, and its matching parse tree | Derivations and Parse Trees |
-| `grammar.md`, `## Part 3` | The precedence paragraph naming both productions, the flat grammar's wrong tree with both values, the associativity statement, and the three-line sketch | Precedence and Ambiguity Analysis |
+| `grammar.md`, `## Part 3` | The precedence paragraph naming both productions, the flat grammar's wrong tree with both values, the associativity statement, the right-associative counterexample, and the three-line sketch | Precedence and Ambiguity Analysis |
 
 ---
 
@@ -347,9 +352,9 @@ Submit `grammar.md` containing all parts, with your name (and your partner's, if
 
 - [ ] Both partners are named at the top of `grammar.md`, or the top says you worked alone.
 - [ ] Part 0 has two distinct trees for one string, a rewritten grammar with the harder-to-read rule marked, both `2 - 3 - 4` trees, and the REPL command with its output.
-- [ ] The Part 1 ladder has one production per precedence level, `or` through `primary`; the grammar covers every statement form in the Part 1 list; every nonterminal on a right-hand side is defined on a left-hand side; and the `or`/`and` checkpoint paragraph is answered with its tree and a pair of disagreeing values.
+- [ ] The Part 1 ladder has one production per precedence level, `or` through `primary`; the grammar covers every statement form in the Part 1 list; every nonterminal on a right-hand side is defined on a left-hand side; the `or`/`and` paragraph is written; and the grammar has survived at least one five-token attempt to break it.
 - [ ] Both Part 2 derivations rewrite the leftmost nonterminal at every step, cite a production on every line, end in exactly the program's token sequence, and match their parse trees node for node.
-- [ ] Part 3 names the productions that force precedence, shows the flat grammar's wrong tree, and includes the three-line `1 - 2 - 3` sketch with a stated source of left grouping.
+- [ ] Part 3 names the productions that force precedence, shows the flat grammar's wrong tree, and includes the `1 - 2 - 3` associativity statement, the right-associative counterexample, and the three-line sketch with a stated source of left grouping.
 - [ ] Grammars are in `ebnf` blocks, derivations and trees are in `text` blocks, and the Markdown preview shows the trees intact.
 
 ---

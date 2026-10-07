@@ -266,6 +266,33 @@ errorMatches('unclosed { is caught', `<a> ::= { "x"`, { notation: 'course', ebnf
   check('TODO in token notation is warned', t.ok && t.warnings.some(w => /TODO/.test(w.msg)));
 }
 
+// --- Left recursion with no way out --------------------------------------
+{
+  // A ladder whose levels recurse but never step down: compiles, warns on
+  // each stuck level with a suggested exit, and names nothing as undefined.
+  const ladder = `additive ::= additive multiplicative\nmultiplicative ::= multiplicative unary\nunary ::= INT`;
+  const c = E.compile(ladder, { notation: 'token' });
+  check('exit-less ladder compiles', c.ok, c.errors.map(e => e.msg).join(' | '));
+  check('exit-less ladder warns on additive with a fix',
+    c.warnings.some(w => /additive can never finish[\s\S]*additive ::= additive multiplicative \| multiplicative/.test(w.msg)));
+  check('exit-less ladder warns on multiplicative with a fix',
+    c.warnings.some(w => /multiplicative can never finish[\s\S]*\| unary/.test(w.msg)));
+  check('exit-less ladder warns only on the stuck levels',
+    !c.warnings.some(w => /unary can never finish/.test(w.msg)));
+  const k = E.compile(`<additive> ::= <additive> <multiplicative>\n<multiplicative> ::= <multiplicative> <unary>\n<unary> ::= "1"`, { notation: 'course' });
+  check('exit-less ladder warns in course notation',
+    k.ok && k.warnings.some(w => /<additive> can never finish[\s\S]*\| <multiplicative>/.test(w.msg)));
+  // A partial grammar reports both the undefined name and the recursion.
+  const p = E.compile(`additive ::= additive multiplicative\nmultiplicative ::= multiplicative unary`, { notation: 'token' });
+  check('partial grammar reports the undefined name', !p.ok && p.errors.some(e => /unary is used but never defined/.test(e.msg)));
+  check('partial grammar still warns about the recursion', p.warnings.some(w => /additive can never finish/.test(w.msg)));
+  check('partial grammar does not call a defined rule undefined', !p.errors.some(e => /(additive|multiplicative) is used but never defined/.test(e.msg)));
+  // The same ladder with its exits is clean.
+  const ok = compileOk('ladder with exits', `additive ::= additive MINUS multiplicative | multiplicative\nmultiplicative ::= multiplicative STAR unary | unary\nunary ::= INT`, { notation: 'token' });
+  check('ladder with exits has no finish warning', !ok.warnings.some(w => /can never finish/.test(w.msg)));
+  accepts(ok, 'ladder with exits', 'INT MINUS INT MINUS INT');
+}
+
 // --- EBNF nesting and nullable repetition --------------------------------
 {
   const c = compileOk('nested EBNF', `<l> ::= "[" [ <v> { "," <v> } ] "]"\n<v> ::= "1" | <l>`, { notation: 'course', ebnf: true });
