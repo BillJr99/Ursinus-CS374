@@ -548,7 +548,7 @@ Implement two modes, chosen at construction time.  With `error_mode="fail_fast"`
 
 Build `test_lexer.py` with at least the test cases below.  Each test must assert the token types in order and, for selected tokens, the value, line, and col.
 
-- **Token type coverage (one test per type):** INT, FLOAT, STRING (with escape), IDENT, IF, ELSE, WHILE, LET, PRINT, TRUE, FALSE, and all operators: PLUS, MINUS, STAR, SLASH, EQ, EQEQ, NEQ, LT, LE, GT, GE, LPAREN, RPAREN, LBRACE, RBRACE, SEMICOLON.
+- **Token type coverage (one test per type in the Step 1a table):** every token type in the table, as the rubric requires.  That is the literals INT, FLOAT, STRING (with escape), and IDENT; every keyword: IF, ELSE, WHILE, LET, PRINT, TRUE, FALSE, AND, OR, NOT, FUN; and every operator and punctuation token: PLUS, MINUS, STAR, SLASH, EQ, EQEQ, NEQ, BANG, ARROW, LT, LE, GT, GE, LPAREN, RPAREN, LBRACE, RBRACE, SEMICOLON, COLON, COMMA.  For the two skipped types, COMMENT and WHITESPACE, assert that they produce no token (for example, `x # note` lexes to just IDENT, and the newline in `x\ny` advances `line` on the second IDENT).
 - **Maximal-munch cases:** `iffy` -> single IDENT, not IF + IDENT; `whiles` -> single IDENT; `<=` -> LE, not LT + EQ; `==` -> EQEQ, not EQ + EQ; `!=` -> NEQ, not two tokens.
 - **String escape cases:** `"no escapes"` -> value equals `no escapes`; `"tab\there"` -> value contains a real tab; `"line\nbreak"` -> value contains a real newline; `"quote\"end"` -> value contains a double-quote.
 - **Deliberate error programs (five required):**

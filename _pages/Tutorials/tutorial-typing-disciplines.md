@@ -85,20 +85,24 @@ Choosing the type-checking direction moves your language one column left in the 
 
 What if you want *both*: dynamic flexibility during prototyping and static guarantees where it matters?  **Gradual typing** (Siek and Taha, 2006) lets you annotate *some* parts of a program with static types and leave others dynamic.  In a sound gradual type system, runtime checks are inserted at the boundary between the two (Section 9 returns to this; popular tools such as mypy and TypeScript skip those checks).
 
-- **mypy** adds gradual static typing to Python.  Unannotated code is treated as the dynamic type `Any` and passes silently; annotated code is checked.
+- **mypy** adds gradual static typing to Python.  By default, unannotated functions are treated as the dynamic type `Any` and pass silently; annotated code is checked (`mypy --strict` instead reports every unannotated function).
 - **TypeScript** does the same for JavaScript.
 
 Try the same buggy snippet under both (this is the in-class compare):
 
 ```python
 # Python + mypy
+from typing import Any
+
 def add(x: int, y: int) -> int:
     return x + y
 
-add("a", 3)     # mypy: error: Argument 1 to "add" has incompatible type "str"
-untyped = []    # inferred Any
-untyped.foo()   # mypy: no error - Any silences the check
+add("a", 3)          # mypy: error: Argument 1 to "add" has incompatible type "str"
+untyped: Any = []    # 'Any' opts out
+untyped.foo()        # mypy: no error - Any silences the check
 ```
+
+The `Any` must be written out.  A bare `untyped = []` gets no free pass: mypy (default and `--strict` alike) cannot infer the element type of an empty list, so it reports `Need type annotation for "untyped"` and then `"list[Any]" has no attribute "foo"`.
 
 ```typescript
 // TypeScript

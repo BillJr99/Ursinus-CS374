@@ -573,7 +573,7 @@ Expected output: whatever your design says, plus a rejection for Probe B.  Write
 
 **Gradual typing** (Siek and Taha, 2006) lets you annotate *some* of a program statically and leave the rest dynamic.  The language inserts checks at the boundary between the two.  You get dynamic flexibility while prototyping and static guarantees where they matter.
 
-**mypy** adds gradual static typing to Python.  Unannotated code is given the dynamic type `Any` and passes silently, while annotated code is checked.  **TypeScript** does the same for JavaScript with `any`.
+**mypy** adds gradual static typing to Python.  By default, unannotated functions are given the dynamic type `Any` and pass silently, while annotated code is checked (`mypy --strict` instead reports every unannotated function).  **TypeScript** does the same for JavaScript with `any`.
 
 Carry one fact out of today: gradual type systems are unsound by design.  A checker is **sound** when every program it approves is free of the errors it checks for.  `Any` and `any` are escape hatches that turn checking *off*, so a program that type-checks cleanly can still fail at runtime.  That is a deliberate trade.  You give up the airtight guarantee and gain adoptability: you can add types to a million-line codebase one file at a time.  Contrast that with the checker you wrote in Model 2, which has no escape hatch and so is sound for the fragment it covers.
 
@@ -583,12 +583,14 @@ The same mistake, written in both languages, with the checker's verdict beside i
 
 ```python
 # Python + mypy
+from typing import Any
+
 def add(x: int, y: int) -> int:
     return x + y
 
-add("a", 3)      # mypy: Argument 1 to "add" has incompatible type "str"
-untyped = []     # inferred as Any
-untyped.foo()    # mypy: no error; Any silences the check
+add("a", 3)          # mypy: Argument 1 to "add" has incompatible type "str"
+untyped: Any = []    # 'Any' opts out
+untyped.foo()        # mypy: no error; Any silences the check
 ```
 
 ```typescript
@@ -600,7 +602,7 @@ const x: any = [];    // 'any' opts out
 x.foo();              // tsc: no error; 'any' silences the check
 ```
 
-Both checkers catch the first mistake, and both are silent on the second.  The silence is not a bug in mypy or in `tsc`.  It is the definition of gradual.
+Both checkers catch the first mistake, and both are silent on the second, with or without `mypy --strict`.  The `Any` must be written out: a bare `untyped = []` gets no free pass, because mypy cannot infer the element type of an empty list and reports `Need type annotation for "untyped"` (and then `"list[Any]" has no attribute "foo"`).  The silence is not a bug in mypy or in `tsc`.  It is the definition of gradual.
 
 ## Model 4: Build the Gradual Boundary Yourself
 

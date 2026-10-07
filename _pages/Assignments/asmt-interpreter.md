@@ -114,7 +114,7 @@ Your file runner is `mylang.py` and your programs end in `.ml`; the reference pi
 > - `ImportError: cannot import name 'parse'`: your parser's entry point has a different name.  Use that name here and in `mylang.py`.
 > - A `LexError` or `ParseError` on this one-line program: fix that stage first, or swap in the reference component.
 
-> **Time budget.** Part 0 takes about thirty minutes with pencil and paper.  The rest has five parts that each depend on the one before, so it rewards steady work and punishes a final-week push harder than anything else this term.  This window runs twelve days and holds two class meetings, which makes it the tightest run of any programming assignment this term.  Two pair labs of about two to three hours each carry pieces of it for you.  The Environments and Scope lab closes before this assignment opens, so Step 2c is largely written already.  The Type Checker Starter lab falls on day five and finishes the core of Part 4.  Start Part 1 the day the assignment goes out, and read What You Already Have below before you write anything.
+> **Time budget.** Part 0 takes about thirty minutes with pencil and paper.  The rest has five parts that each depend on the one before, so it rewards steady work and punishes a final-week push harder than anything else this term.  Its window is the tightest of any programming assignment this term (see the schedule in the [syllabus]({{ site.baseurl }}/) for its dates).  Two labs of about two to three hours each, which you may do with a partner, carry pieces of it for you.  The Environments and Scope lab closes before this assignment opens, so Step 2c is largely written already.  The Type Checker Starter lab falls inside this window and finishes the core of Part 4.  Start Part 1 the day the assignment goes out, and read What You Already Have below before you write anything.
 
 ---
 
@@ -147,11 +147,11 @@ print x;
 
 Three pieces of this assignment exist before you start, and the schedule put them there deliberately.  Find them first, because the window is too short to rebuild any of them.
 
-- **`Environment`, for Step 2c.**  The Environments and Scope lab closes two class meetings before this assignment opens.  Copy that `Environment` class into your project on day one and wire it into the statement branches.  If the lab is still open when you reach Step 2c, finish the lab first.
-- **The checker core, for Part 4.**  The Type Checker Starter lab is due on day five, inside this window.  Read Part 4 before that lab so you know what you are extending, then grow the lab's checker to cover call sites and return types.
+- **`Environment`, for Step 2c.**  The Environments and Scope lab closes before this assignment opens.  Copy that `Environment` class into your project on day one and wire it into the statement branches.  If the lab is still open when you reach Step 2c, finish the lab first.
+- **The checker core, for Part 4.**  The Type Checker Starter lab is due inside this window (the syllabus has the date).  Read Part 4 before that lab so you know what you are extending, then grow the lab's checker to cover call sites and return types.
 - **The parser and its generator, for Parts 1 and 2e.**  Your Parser assignment supplies `parse` and your existing `ast_nodes.py`, so Step 1a reconciles nodes rather than inventing them.  That assignment's recursive expression generator is what Step 2e feeds to Hypothesis here.
 
-That leaves Parts 1, 2, 3, and 5 as the work in front of you.  Budget your twelve days against those four.
+That leaves Parts 1, 2, 3, and 5 as the work in front of you.  Budget your time in the window against those four.
 
 ### Your First 30 Minutes
 
@@ -170,7 +170,7 @@ python3 -c "from parser import parse; from interpreter import Interpreter; Inter
 
 ### Suggested Pacing
 
-See the course schedule for the assigned and due dates.  Two pair labs do real work for you here, and it helps to know where each one sits.  The **Environments and Scope lab** builds the `Environment` machinery of Step 2c.  That lab closes before this assignment opens, so you arrive already holding the file.  The **Type Checker Starter lab** builds the core of Part 4's checker, and it falls partway through this window.  Neither is a detour; each one hands you a file this assignment then imports.  Part 2 is the steepest section, so climb it in the small steps below rather than in one sitting.
+See the course schedule for the assigned and due dates.  Two labs (which you may do with a partner) do real work for you here, and it helps to know where each one sits.  The **Environments and Scope lab** builds the `Environment` machinery of Step 2c.  That lab closes before this assignment opens, so you arrive already holding the file.  The **Type Checker Starter lab** builds the core of Part 4's checker, and it falls partway through this window.  Neither is a detour; each one hands you a file this assignment then imports.  Part 2 is the steepest section, so climb it in the small steps below rather than in one sitting.
 
 | Checkpoint | You should have |
 |------------|----------------|
@@ -195,7 +195,7 @@ When time runs short, work in this order:
 4. **Part 4, the type checker.**  The lab already handed you its core, so this is extension rather than construction.
 5. **Part 5.**  `SEMANTICS.md` and the error hierarchy repay an hour of honest writing more than a rushed feature does.
 
-Please tell me early rather than late if twelve days is not working for you.  The course's three-day extension policy asks only for a reasonable first draft by the deadline, and it exists for exactly this.
+Please tell me early rather than late if this window is not working for you.  The course's three-day extension policy asks only for a reasonable first draft by the deadline, and it exists for exactly this.
 
 ---
 

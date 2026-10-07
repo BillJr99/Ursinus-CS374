@@ -56,7 +56,7 @@ Today's path runs **get a REPL open $\rightarrow$ one syntax rule $\rightarrow$ 
 
 Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Presenter**, **Reflector**).  Today is hands-on, so the Manager drives the REPL and everyone predicts before running.  Please think each model through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board, and the Presenter reports out wherever you disagreed or found another approach.
 
-> **How today runs.**  Parts I through III are the core.  Part III's closure model is the one to protect if we run short, because "compare closures and objects" is the question that pays off again in November.  The Scheme assignment goes out Thursday and is due the Thursday after, and it asks you to write everything you read today, so treat these models as worked examples for homework you already have.
+> **How today runs.**  Parts I through III are the core.  Part III's closure model is the one to protect if we run short, because "compare closures and objects" is the question that pays off again in November.  The Scheme assignment goes out at the next session, *Functional Programming and Higher-Order Functions* (see the [syllabus](https://www.billmongan.com/Ursinus-CS374-Fall2026/) for its due date), and it asks you to write everything you read today, so treat these models as worked examples for homework you already have.
 
 ---
 
