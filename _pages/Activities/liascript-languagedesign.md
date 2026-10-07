@@ -28,7 +28,7 @@ By the end of this activity, you will be able to:
 - Weigh pattern matching, generics, ownership, and async against one another as candidates for your own language, and defend which ones earn their place
 - Write an evaluator branch with `match`/`case` and say what the exhaustiveness checker does that an if-chain cannot
 
-The team project begins today.  You have built the whole pipeline, capped by the Church encodings of *The Lambda Calculus, Part 2*.  Your team will now design and implement **a programming language of your own**.  You will assemble the lexer, parser, AST (abstract syntax tree), environments, and evaluator you each built into one system with an identity, a grammar, and a Demo Day.  The work runs in sprints.  A sprint is a short, fixed block of work that ends with something runnable and reviewed; here, the sprints line up with the in-class studio days.  Today is Sprint 0, the planning sprint.  It produces four things, in this order: **what makes a language yours $\rightarrow$ the design scorecard $\rightarrow$ grammar and node inventory v0 $\rightarrow$ sprint roles and cadence**.
+The team project begins today.  You have built the whole pipeline, capped by the type checker of *Type Systems*.  Your team will now design and implement **a programming language of your own**.  You will assemble the lexer, parser, AST (abstract syntax tree), environments, and evaluator you each built into one system with an identity, a grammar, and a Demo Day.  The work runs in sprints.  A sprint is a short, fixed block of work that ends with something runnable and reviewed; here, the sprints line up with the in-class studio days.  Today is Sprint 0, the planning sprint.  It produces four things, in this order: **what makes a language yours $\rightarrow$ the design scorecard $\rightarrow$ grammar and node inventory v0 $\rightarrow$ sprint roles and cadence**.
 
 > **Before You Begin:** This activity assumes you can:
 > - Read and write a basic recursive-descent parser and explain how grammar rules map to parsing functions
@@ -256,7 +256,7 @@ Part II has three written outputs.
 The grammar skeleton in the project guide works like a checklist.  You go through each language feature, decide yes or no, and the skeleton generates the grammar rules you need to implement.  Features you skip do not disappear.  They become explicit TODOs on your sprint backlog, which is far better than discovering a missing feature on Demo Day.
 
 
-> **The runnable grammar-v0 builder is in the project guide:** [The Project Language Guide](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ProjectLanguageGuide).  Use it while drafting.  Today's session is for deciding *what* your language is, not for generating skeletons.
+> **The runnable grammar-v0 builder, this session's Model 2 with Critical Thinking Questions 5-7, is in the project guide:** [The Project Language Guide](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ProjectLanguageGuide).  Use it while drafting.  Today's session is for deciding *what* your language is, not for generating skeletons.
 
 ## Model 3: Node Inventory, Every Node Mapped
 
@@ -400,7 +400,7 @@ The remaining weeks run in sprints aligned with in-class studio days (see the sp
 3.  Sprint 3 completes the feature, hardens errors, and builds the sample program suite.
 4.  The gallery walk then decides what to polish and what to disclose for Demo Day.
 
-Before NASA launches a rocket, engineers hold a "failure review".  They deliberately picture every way the mission could go wrong and build mitigations before leaving the launchpad.  You have the same tool available right now, before you write a line of your language's code.  A pre-mortem starts from failure and works backward.  That is more honest than optimistic planning, because it forces the team to name the fears it would otherwise suppress.
+Many engineering teams hold a *pre-mortem* before a big launch.  They deliberately picture every way the project could go wrong and build mitigations before work begins.  You have the same tool available right now, before you write a line of your language's code.  A pre-mortem starts from failure and works backward.  That is more honest than optimistic planning, because it forces the team to name the fears it would otherwise suppress.
 
 ## Model 4: Risk Pre-Mortem, Surface Your Threats Now
 
@@ -506,7 +506,7 @@ print(describe(("+", ("num", 2), ("neg", ("num", 3)))))
 
 ## 6.  Ownership: Memory Safety without a Garbage Collector
 
-*The problem.*  C frees memory by hand (use-after-free, leaks, security holes).  Java collects garbage at run time (safe, but with pauses and overhead).  *The mechanism.*  Rust's third way: every value has exactly one owner; assignment *moves* ownership; *borrows* lend access temporarily (many readers or one writer, never both); and the compiler proves at compile time that no reference outlives its value.  The program needs neither `free` nor a collector.  *The cost and the criterion.*  A famously steep learning curve ("fighting the borrow checker"): writability spent for reliability *and* performance at the same time, which is why Rust keeps winning systems-programming converts.  Through the binding-time lens, Rust moved memory correctness from run time (the garbage collector, or GC) or never (C) to compile time.
+*The problem.*  C frees memory by hand (use-after-free, leaks, security holes).  Java collects garbage at run time (safe, but with pauses and overhead).  *The mechanism.*  Rust's third way: every value has exactly one owner; assignment *moves* ownership; *borrows* lend access temporarily (many readers or one writer, never both); and the compiler proves at compile time that no reference outlives its value.  The program needs neither `free` nor a collector.  *The cost and the criterion.*  A famously steep learning curve ("fighting the borrow checker"): writability spent for reliability *and* performance at the same time, which is the trade that draws many systems programmers to Rust.  Through the binding-time lens, Rust moved memory correctness from run time (the garbage collector, or GC) or never (C) to compile time.
 
 ## 7.  Async/Await: Concurrency as Syntax
 
@@ -522,13 +522,6 @@ print(describe(("+", ("num", 2), ("neg", ("num", 3)))))
 2.  Run the pattern-matching cell, then rewrite *your interpreter's* `evaluate` dispatch as a `match` on node classes (`case Num(value=n):` works on your classes).  Report: lines saved, a readability verdict, and one behavior the if-chain allowed that match's structure discourages.
 3.  Ownership and garbage collection are both answers to "when may memory be reclaimed?"  Place C, Java/Python, and Rust on a binding-time axis for that decision, and state each position's billion-dollar risk.
 4.  Which of the four features could a *tree-walking interpreter team* plausibly implement a slice of in three weeks, and which are out of reach?  Justify with reference to the pipeline stage each feature lives in (parser? evaluator? a checker between them?).
-
-Rust achieves memory safety without a garbage collector primarily by:
-
-[( )] Forbidding heap allocation
-[( )] Checking every pointer at runtime
-[(X)] Compile-time ownership and borrowing rules that prove references cannot outlive the values they point to
-[( )] Running a collector only at program exit
 
 ---
 
@@ -627,7 +620,7 @@ for val in [-3, 0, 4, 7]:
 ### Reading the Code
 
 - Each `case` names a *shape*, not a type test followed by field access.  `case BinOp(op="+", left=l, right=r)` checks the class, checks that `op` is `"+"`, and binds `l` and `r`, all in one line.
-- The wildcard `case _` is the exhaustiveness escape hatch.  A language with real exhaustiveness checking (Rust, Haskell, OCaml) would *refuse to compile* a match that is missing a case, and would no longer need the wildcard.
+- The wildcard `case _` is the exhaustiveness escape hatch.  A language with real exhaustiveness checking flags a match that is missing a case before the program ever runs: Rust *refuses to compile* it, and OCaml and Haskell warn at compile time.  There, the wildcard is no longer your only safety net.
 - The unhandled node at the end is the demonstration.  Python matches nothing, falls to `case _`, and reports it at run time.  In a checked language that would have been a compile error, which is the binding-time lens applied to control flow.
 
 ### Try It Yourself
@@ -712,7 +705,7 @@ Expected output as written: the first two rows agree, and the last two report `D
 ## 8.  Exercises (Today's Deliverables)
 
 1.  *The one-pager.*  Language name, niche, the four-row scorecard, and the team's three-sentence pitch.  Post it; it is the cover page of your proposal.
-2.  *Grammar v0 and node inventory.*  As specified above, committed to the team repository with the decision log.  Use the Model 3 skeleton as a starting point: edit the feature flags, run it, copy the output into your grammar file, then hand-edit the niche feature's rules.
+2.  *Grammar v0 and node inventory.*  As specified above, committed to the team repository with the decision log.  Use the grammar-v0 builder in [The Project Language Guide](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ProjectLanguageGuide) as a starting point: edit the feature flags, run it, copy the output into your grammar file, then hand-edit the niche feature's rules.  Build the node inventory from the Model 3 script.
 3.  *Sprint 1 plan.*  The Coordinator drafts: whose lexer, whose parser, and whose evaluator seed the merge (a real decision; discuss kindly), the merge order, and each member's first task with a date.
 4.  *Risk pre-mortem.*  As a team, name the **three** technical risks most likely to derail you (the Model 4 template gives structure), rank them by probability × impact, assign the mitigation experiment for the top risk, and commit the result to your design repo as `RISKS.md`.
 5.  *SEMANTICS.md skeleton.*  Using your prior assignment documentation, populate a `SEMANTICS.md` with at minimum: truthiness policy, division by zero policy, scoping rules (lexical or dynamic, block or function scope), variable-before-assignment behavior, and your null/absent-value policy.  Each section holds the rule, an example program, and the expected output.
@@ -918,9 +911,9 @@ asyncio.run(main())
 
 #### Reading the Code
 
-- `await asyncio.sleep(delay)` is the pause point.  Everything before it runs, control returns to the scheduler, and the rest resumes when the sleep finishes.  That is the state machine the theory section describes, and Python builds it from the generator machinery you met in *Control Flow Semantics*.
+- `await asyncio.sleep(delay)` is the pause point.  Everything before it runs, control returns to the scheduler, and the rest resumes when the sleep finishes.  That is the state machine the theory section describes, and Python builds it from the same generator machinery behind the `yield`-based `tokenize` you met in *Tokens and Scanning* (Model 8 below revisits generators).
 - `sequential` takes about twice as long as `concurrent` while doing identical work.  Nothing ran in parallel; the waits overlapped.
-- Only `async def` functions may `await`.  Try adding `await` inside `attempt` from the borrow-checker cell above, and Python refuses at compile time.  That constraint is the "function colour" problem: async-ness is contagious upward through every caller.
+- Only `async def` functions may `await`.  Try adding `await` inside `attempt` from the borrow-checker cell above, and Python refuses at compile time.  That constraint is the "function color" problem: async-ness is contagious upward through every caller.
 
 ---
 

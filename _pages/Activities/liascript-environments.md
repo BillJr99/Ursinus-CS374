@@ -159,7 +159,7 @@ except NameError as e:
 - `vars` and `parent` are the whole data structure.  Each `Environment` object is one frame: one box in your drawing.  Every method on the class is a walk over the chain of frames.  There is no other state anywhere.
 - `define` writes to `self.vars` and never looks at `parent`.  `assign` never writes to `self.vars` unless the name is already there.  That one asymmetry is the whole difference between declaring and updating, and it is where most interpreter bugs live.
 - `lookup` walks outward and stops at the first frame that has the name.  Shadowing is not a special case in the code.  It falls out of stopping early.
-- Leaving a block is not an operation.  There is no `pop`.  The code stops using `block`, so nothing points to it anymore.  Memory that nothing points to is garbage, and Python's garbage collector reclaims it.  A scope ends when its last reference disappears, not when an instruction says so.
+- Leaving a block is not an operation.  There is no `pop`.  The code stops using `block`, so nothing points to it anymore.  Memory that nothing points to is garbage, and Python's garbage collector reclaims it.  Keep two ideas apart here.  The block's *scope*, the stretch of program text where its names are visible, ends at the closing brace.  The environment *object* lives until its last reference disappears, not when an instruction says so, and a closure created inside the block can keep it alive long after the block's scope has ended.
 - `__repr__` prints the chain outward with `->`, which is why the printed trace reads like the boxes you drew on paper.
 
 ### Try It Yourself

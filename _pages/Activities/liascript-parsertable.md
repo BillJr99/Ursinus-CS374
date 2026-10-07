@@ -331,7 +331,7 @@ for src in [["num","+","num","*","num"], ["num","*","num","+","num"]]:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output: the two reduction sequences, each ending in `T -> E`.  For TODO 2, changing that single cell turns `2 + 3 * 4` into the tree for `(2 + 3) * 4`, which is the same wrong answer the ambiguous grammar produced back in *Derivations, Parse Trees, Ambiguity, and Precedence*.
+Expected output: the two reduction sequences, each ending in `E + T -> E`.  For TODO 2, changing that single cell makes the parser reduce `2 + 3` to `E` before it has seen `* 4`, which is the first step toward the tree for `(2 + 3) * 4`, the same wrong grouping the ambiguous grammar produced back in *Derivations, Parse Trees, Ambiguity, and Precedence*.  This grammar has no way to finish that tree, though: the parser lands in state 1 with `*` next, finds an empty cell, and reports `ERROR at '*'`.
 
 ---
 
@@ -370,7 +370,7 @@ languages:   regular  <  deterministic CFL  <  context-free
                           ( = the LR(1) languages = the LALR(1) languages )
 ```
 
-Every containment shown is strict.  The grammar block needs two rows rather than one chain, because LL(1) is not a rung on the SLR-to-LALR-to-LR ladder.  Every left-recursive grammar shows why: an LALR(1) table accepts left recursion and an LL(1) parser never does.  The language block is a single chain, and even-length palindromes $\{w w^R\}$ separate the deterministic context-free languages from the rest, because a deterministic machine cannot know where the middle of the string is.
+Every containment shown is strict.  The grammar block needs two rows rather than one chain, because LL(1) is not a rung on the SLR-to-LALR-to-LR ladder.  Left recursion shows why: an LALR(1) table handles left-recursive rules like `E -> E + T` without complaint (our expression grammar is one), while no left-recursive grammar is LL(1).  The language block is a single chain, and even-length palindromes $\{w w^R\}$ separate the deterministic context-free languages from the rest, because a deterministic machine cannot know where the middle of the string is.
 
 > **Watch out!**  Some context-free languages are *inherently ambiguous*, which means that no unambiguous grammar exists for them at all.  The standard example is $\{a^n b^n c^m d^m\} \cup \{a^n b^m c^m d^n\}$.  Its two halves overlap on the strings $a^n b^n c^n d^n$, and they pair those strings up in conflicting ways.  No such language is LR($k$) for any $k$, because every LR($k$) grammar is unambiguous.  These languages are the one place where our usual slogan, "ambiguity is a property of the grammar and not of the language," breaks down.  They never arise in expression syntax.  Take the practical lesson: when your project grammar is ambiguous, fix the grammar.  The language is not the problem.
 
@@ -392,7 +392,7 @@ Your project grammar contains the left-recursive list rule `args -> args "," exp
 ### Critical Thinking Questions
 
 5.  Compare hand-written descent versus a generated LR parser on four axes: error message quality you control, grammar restrictions (left recursion, factoring), effort to change the grammar mid-project, and what you learn by writing it.  Fill the matrix as a team.
-6.  Python's own parser moved from a hand-written LL variant to a PEG-based generator in 2020 after decades; major C compilers use hand-written descent for error-message control.  What do these production choices suggest about the matrix you just filled?
+6.  Python's own parser moved in 2020 from pgen, the LL(1) parser generator it had used for decades, to a new PEG-based generator; major C compilers use hand-written descent for error-message control.  What do these production choices suggest about the matrix you just filled?
 7.  Write your team's one-paragraph technology decision for the project, citing two cells of your matrix.  File it with your design documents.
 
 ---
@@ -587,9 +587,7 @@ A C file calls `helper()` on line 10 and defines it on line 80.  The compiler re
 
 ## Model 4 (At Home): LL(1) Parse Table Construction and Table-Driven Parser
 
-Armed with FIRST and FOLLOW, building the LL(1) table is a purely mechanical process: iterate over every production, look at what tokens can start it, and fill in the corresponding table cells.  The table-driven parser then replaces the call stack of recursive descent with an explicit stack and a loop, same logic, different bookkeeping.
-
-With FIRST and FOLLOW sets in hand, the LL(1) parse table is mechanical: for each production `A -> α`, add it to table[A][t] for every `t ∈ FIRST(α) - {ε}`, and for every `t ∈ FOLLOW(A)` if `ε ∈ FIRST(α)`.  A conflict (two entries in one cell) means the grammar is not LL(1).
+Armed with FIRST and FOLLOW, building the LL(1) table is a purely mechanical process: for each production `A -> α`, add it to table[A][t] for every `t ∈ FIRST(α) - {ε}`, and for every `t ∈ FOLLOW(A)` if `ε ∈ FIRST(α)`.  A conflict (two entries in one cell) means the grammar is not LL(1).  The table-driven parser then replaces the call stack of recursive descent with an explicit stack and a loop, same logic, different bookkeeping.
 
 ```python
 # Build the LL(1) parse table and run a table-driven LL(1) parser.
@@ -775,7 +773,7 @@ print(f"\nResult: {'ACCEPTED' if accepted else 'REJECTED'}")
 
 12.  The table cell `table['E'']['num']` is empty (no entry).  Look at the FOLLOW set of `E'` and explain: what action should the parser take when the stack top is `E'` and the lookahead is something in `FOLLOW(E')` but not `FIRST(E')`?
 13.  Trace the parse of `num + num * num` by hand using the printed table before running; predict the first five rows of the trace.  After running, compare with your prediction and identify any step you got wrong.
-14.  An LL(1) grammar has *at most one* entry per table cell.  If you added the production `E' -> - T E'` to the grammar, which cell would now have two entries, and what conflict type would that be?
+14.  An LL(1) grammar has *at most one* entry per table cell.  If you added the production `E' -> - T E'` to the grammar, which cell would it fill?  Would any cell now hold two entries?  Check your answer against your CTQ 11 prediction, and then describe what change to the grammar *would* put two entries in one cell.
 15.  The table-driven parser and a recursive-descent parser for the same LL(1) grammar compute *identical* derivations.  The table version uses an explicit stack while descent uses the call stack.  Identify one practical engineering advantage of each approach.
 
 ---
@@ -1282,7 +1280,7 @@ In an LR(0) shift-reduce parser, the stack corresponds to:
 
 2.  *PDA for balanced parentheses.*  Design a PDA for the language of properly nested parentheses (e.g., `()`, `(())`, `(()())`).  Trace it on `(())` and on the malformed input `(()`.
 
-3.  *PDA to CFG.* The language $\{ww^R \mid w \in \{a,b\}^*\}$ (strings that are palindromes) is context-free.  Write a CFG for it, then describe how a PDA would recognize it.  What is the key operation the PDA performs at the midpoint?
+3.  *PDA to CFG.* The language $\{ww^R \mid w \in \{a,b\}^*\}$ (even-length palindromes) is context-free.  Write a CFG for it, then describe how a PDA would recognize it.  What is the key operation the PDA performs at the midpoint?
 
 4.  *Shift-reduce as PDA.* A shift-reduce parser is a PDA in disguise.  For the simple grammar `E -> E + T | T` and `T -> id`, trace the shift-reduce actions on input `id + id`:
    - List each action (SHIFT or REDUCE) and the stack contents after each step
@@ -1316,7 +1314,7 @@ Attempt this as a team **before** you read it.  Fourteen rows, using the ACTION/
 
 **CTQ 3 answered from this table:** the subtree for `2 * 3` finishes at **row 7**, where `T -> T * F` reduces three stack symbols into one `T`.  Everything above row 7 is that subtree being built; everything below is it being used.  The parent `E -> E + T` does not reduce until row 13, six rows *after* its own child existed.  That is what "bottom-up" means, and the row numbers are the evidence.
 
-**Contrast with row 4.**  At `0 T(2)` with `*` next, the parser shifts instead of reducing `E -> T`.  Had it reduced, `2` would have become a complete `E` and the `*` would have had to attach to it, yielding `(2) * (3 + 4)`.  Precedence is decided in exactly one table cell.
+**Contrast with row 4.**  At `0 T(2)` with `*` next, the parser shifts instead of reducing `E -> T`.  Had it reduced, `2` would have become a complete `E` and the parser would have landed in state 1 with `*` next.  Row 1 has no entry under `*`, because this grammar never lets `*` follow an `E`, so the parse would have died with an error.  Shifting keeps `2` waiting as a `T` so that `2 * 3` can become one `T` first.  Precedence is decided in exactly one table cell.
 
 ---
 
@@ -1329,7 +1327,7 @@ In your notebook: the LR table is compiled knowledge, decisions made once, ahead
 ## 4.  Further Reading
 
 - Douglas Thain.  *Introduction to Compilers and Language Design*, Chapter 5 (LR parsing).
-- Aho, Lam, Sethi, Ullman.  *Compilers*, sections 4.5 through 4.7, for table construction we executed but did not build.
+- Aho, Lam, Sethi, Ullman.  *Compilers*, sections 4.5 through 4.7, for the canonical LR(1) and LALR(1) table constructions that go beyond the SLR table we built by hand.
 - Donald Knuth.  "On the Translation of Languages from Left to Right."  (1965).  Where LR was born.
 - [Flex and Bison from Zero to a Working Language](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/FlexAndBison): installing Flex and Bison, a complete `.l`/`.y` walkthrough of a calculator language with variables, and an appendix on LR(0) item-set construction and how Yacc builds and resolves its parse tables.  The ready-to-build mini-notation scaffold is in the course examples at [files/examples/mininote/](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/examples/mininote/).
 - [Building a Bytecode VM for Mini](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BytecodeVM): compiling expressions to bytecode and executing them on a stack machine.

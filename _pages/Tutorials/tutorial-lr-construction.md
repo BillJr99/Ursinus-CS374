@@ -113,7 +113,7 @@ def closure(items):
     return frozenset(result)
 ```
 
-Line 12 is the fixed-point guard.  Setting `changed = True` unconditionally gives you an infinite loop; setting it only when `add` was new gives you termination.
+Line 13, `changed = True` under the `not in result` test on line 11, is the fixed-point guard.  Setting `changed = True` unconditionally gives you an infinite loop; setting it only when `add` was new gives you termination.
 
 > **You should see.** `closure({(0, 0)})` returns four items:
 >

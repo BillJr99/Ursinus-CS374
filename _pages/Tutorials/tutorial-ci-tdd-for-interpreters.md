@@ -56,7 +56,7 @@ By the end of this tutorial, you will have:
 - Used `coverage.py` to generate an HTML coverage report and identified untested paths in your evaluator
 - Structured your interpreter as independent, testable functions so that each stage (lexer, parser, evaluator) can be tested in isolation
 
-Interpreters are unusually hard to debug manually.  When you run a program and get the wrong answer, the bug could live in the lexer, the parser, the AST representation, the environment lookup, the evaluator dispatch, or the closure construction.  A good test suite isolates each stage and catches regressions the moment you introduce them.  Continuous integration (CI) then ensures those tests run on every push, not just when you remember to.
+Interpreters are unusually hard to debug manually.  When you run a program and get the wrong answer, the bug could live in the lexer, the parser, the AST representation, the environment lookup, the evaluator dispatch, or the closure construction.  A good test suite isolates each stage and catches regressions the moment you introduce them.  Continuous integration (CI) then ensures those tests run on every push, not just when you remember to.  Continuous delivery (CD) builds on the same pipeline by keeping every commit that passes CI ready to release; this tutorial focuses on the CI half, which is the foundation for both.
 
 **What you need:**
 
@@ -102,7 +102,7 @@ GitHub Actions runs your test suite every time you push a commit.  The benefits 
 - You never merge a branch that breaks the existing test cases.
 - Your collaborators (or your future self) can see at a glance whether the interpreter is healthy.
 - You can require a green CI badge before merging pull requests for new features.
-- Coverage enforcement (via `--cov-fail-under`) prevents you from shipping features with no tests at all.
+- Coverage enforcement (via `--cov-fail-under`) fails the build when overall coverage drops below a threshold, so large untested areas cannot pile up unnoticed.
 
 ---
 
@@ -124,10 +124,10 @@ def evaluate(ast: ASTNode, env: Environment) -> Value: ...
 
 # mylang.py - convenience entry point
 def run(source: str) -> Value:
-    return evaluate(parse(tokenize(source)))
+    return evaluate(parse(tokenize(source)), Environment())
 ```
 
-If each function is pure (no global state, no mutation of shared objects) then every test is three lines: call the function, check the result.
+If each function is pure (no global state, no mutation of shared objects) then every test is two lines: call the function, check the result.
 
 ---
 
@@ -176,7 +176,7 @@ When `run(source)` creates a fresh `Environment()` on every call, every test is 
 
 A second common problem: if your interpreter prints results via `print()` instead of returning them, testing requires capturing `sys.stdout`.  This is doable, but it adds boilerplate to every test.
 
-The better design is to make `evaluate` return a Python value.  Add a thin `run_and_print` wrapper only for the REPL and file-runner:
+The better design is to make `evaluate` return a Python value.  Keep printing in a thin wrapper used only by the REPL and file-runner, such as the `repl()` loop below:
 
 ```python
 # evaluator.py
@@ -784,7 +784,7 @@ jobs:
 | `pytest tests/ -v --tb=short` | Runs all tests; `--tb=short` prints concise tracebacks |
 | `pytest ... --cov-fail-under=70` | Fails the job if coverage drops below 70% |
 
-**`--cov-fail-under=70`** - if your test suite covers fewer than 70% of your interpreter's lines, the CI job fails and GitHub marks the commit with a red X. This prevents you from shipping a feature with zero test coverage.  You can raise the threshold over time as your suite grows.
+**`--cov-fail-under=70`** - if your test suite covers fewer than 70% of your interpreter's lines, the CI job fails and GitHub marks the commit with a red X. This keeps overall coverage from sliding as you add features.  Because the threshold applies to the total, a small feature with zero tests can still pass, so read the `term-missing` report to see which lines no test reaches.  You can raise the threshold over time as your suite grows.
 
 ---
 
@@ -936,7 +936,7 @@ def run(source):
     return evaluate(parse(tokenize(source)), env)
 ```
 
-If you find tests passing in isolation but failing when the full suite runs, global state is almost always the cause.  Run `pytest -p no:randomly` to fix test order and isolate the problem.
+If you find tests passing in isolation but failing when the full suite runs, global state is almost always the cause.  If you use the `pytest-randomly` plugin, which shuffles test order on every run, run `pytest -p no:randomly` to restore a fixed order while you isolate the problem.
 
 ---
 
@@ -1044,8 +1044,8 @@ Pick the `TestArithmetic` class or the `TestBooleans` class.  Replace the indivi
 - Krekel, Holger, et al. *pytest: helps you write better programs*. pytest.org, 2024. https://docs.pytest.org/
 - GitHub.  *GitHub Actions Documentation*. docs.github.com, 2024. https://docs.github.com/en/actions
 - Batchelder, Ned.  *coverage.py: Code Coverage for Python*. coverage.readthedocs.io, 2024. https://coverage.readthedocs.io/
-- Beck, Kent.  *Test Driven Development: By Example*.  Addison-Wesley, 2002., The original TDD book; the Red-Green-Refactor cycle comes from Chapter 1.
-- Fowler, Martin.  *Refactoring: Improving the Design of Existing Code*, 2nd ed.  Addison-Wesley, 2018., Chapter 4 covers test strategy for larger systems.
+- Beck, Kent.  *Test Driven Development: By Example*.  Addison-Wesley, 2002.  The original TDD book; the Red-Green-Refactor cycle comes from Chapter 1.
+- Fowler, Martin.  *Refactoring: Improving the Design of Existing Code*, 2nd ed.  Addison-Wesley, 2018.  Chapter 4 covers test strategy for larger systems.
 
 # From the Sprint Studio: Velocity and Red-Green Discipline
 
@@ -1053,7 +1053,7 @@ Two studio tools from the Sprint Studio sessions: measuring what "done" means ac
 
 ## Model 1: Sprint Velocity; Measuring What "Done" Looks Like
 
-A sprint velocity is a *count*, and not a feeling.  The Evaluator tracks two numbers: **stories completed** (AST nodes with passing tests) and **tests passing**.  A flat trend three sprints before Demo Day is a crisis nobody has named yet, and the number is how you name it.  The cell below simulates a three-sprint project and prints the velocity trend, so you can read a healthy trajectory against a warning one before your own numbers are in the dashboard.
+A sprint velocity is a *measurement*, and not a feeling.  The Evaluator tracks two counts, **stories completed** (AST nodes with passing tests) and **tests passing**, and the dashboard below turns each into a ratio: velocity is nodes completed divided by nodes planned, printed as a percentage.  A flat trend three sprints before Demo Day is a crisis nobody has named yet, and the number is how you name it.  The cell below simulates a three-sprint project and prints the velocity trend, so you can read a healthy trajectory against a warning one before your own numbers are in the dashboard.
 
 ```python
 # Sprint health dashboard: velocity, test coverage, and projection.

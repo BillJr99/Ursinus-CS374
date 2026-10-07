@@ -203,7 +203,7 @@ Please tell me early rather than late if twelve days is not working for you.  Th
 
 ### Step 1a: Define the Node Types
 
-A Python `dataclass` writes `__init__`, `__repr__`, and optional `__eq__` for you, so a failing test prints the exact tree it was handed.  Define the node types below as `@dataclass` classes in `ast_nodes.py`.  Every field must have a type annotation and a one-line comment explaining its meaning.  Store source positions (line, col) on nodes where they aid error reporting, at minimum on `Var`, `BinOp`, `UnaryOp`, `Let`, and `Assign`.  Three design decisions are built into the list: `Var` carries a line because an undefined name is the first runtime error you report with a position; `LogicOp` is separate from `BinOp` because `and` and `or` must short-circuit (Step 2b); and `Let` and `Assign` are separate because defining a name and updating one are different operations on the environment (Step 2c).  If your parser already defines these nodes, compare each one against the definitions below and reconcile field names, since the evaluator dispatches on exactly these classes.
+A Python `dataclass` writes `__init__`, `__repr__`, and `__eq__` for you, so a failing test prints the exact tree it was handed.  Define the node types below as `@dataclass` classes in `ast_nodes.py`.  Every field must have a type annotation and a one-line comment explaining its meaning.  Store source positions (line, col) on nodes where they aid error reporting, at minimum on `Var`, `BinOp`, `UnaryOp`, `Let`, and `Assign`.  Three design decisions are built into the list: `Var` carries a line because an undefined name is the first runtime error you report with a position; `LogicOp` is separate from `BinOp` because `and` and `or` must short-circuit (Step 2b); and `Let` and `Assign` are separate because defining a name and updating one are different operations on the environment (Step 2c).  If your parser already defines these nodes, compare each one against the definitions below and reconcile field names, since the evaluator dispatches on exactly these classes.
 
 ```python
 from dataclasses import dataclass, field
@@ -424,14 +424,14 @@ class ContinueSignal(Exception): pass
 
 ### Step 2e: Verify Invariants with Hypothesis
 
-In the Parser assignment you used [Hypothesis](https://hypothesis.readthedocs.io/) to check a *syntactic* law (round-trip).  Here you check *semantic* laws: properties that must hold for every program, not only the ones in your test file.  The programs you did not think to write are where scoping and short-circuit bugs hide.  This step is required.  Reuse the recursive AST generator you built for the parser (copy it into `test_interpreter.py` or import it), restricted to the expression and small-statement nodes your evaluator supports, and encode **at least three** of the following invariants as `@given` tests.  The first two are required; pick at least one more:
+In the Parser assignment you used [Hypothesis](https://hypothesis.readthedocs.io/) to check a *syntactic* law (round-trip).  Here you check *semantic* laws: properties that must hold for every program, not only the ones in your test file.  The programs you did not think to write are where scoping and short-circuit bugs hide.  This step is required.  Reuse the recursive AST generator you built for the parser (copy it into `test_interpreter.py` or import it), restricted to the expression and small-statement nodes your evaluator supports, and encode **at least four** invariants as `@given` tests.  The first three below are required; add at least one more, either the fourth below or one of your own:
 
 1.  Determinism.  Evaluating the same AST twice in fresh environments produces identical output and result.  `eval(tree)` has no hidden state that leaks between runs.
 2.  Scope restoration.  For any generated expression `e` and a fresh variable name `v` not free in `e`, evaluating a block that binds `v` with `let` and then evaluates `e` leaves the outer environment without `v` afterward: the inner `let` does not leak.  (Generate `e`; wrap it; assert the outer env is unchanged.)
-3.  Short-circuit non-evaluation.  Give `and`/`or` a right operand with an observable side effect (for example, a call to a tool that appends to a list, or a subexpression that divides by zero).  Assert that when the left operand determines the result (`false and X`, `true or X`), the right operand's side effect never fires.  Hypothesis will hunt for the operand shape that sneaks past your short-circuit.
+3.  Short-circuit non-evaluation.  Give `and`/`or` a right operand with an observable side effect (for example, a call to a test-only built-in function that appends to a Python list each time it runs, or a subexpression that divides by zero).  Assert that when the left operand determines the result (`false and X`, `true or X`), the right operand's side effect never fires.  Hypothesis will hunt for the operand shape that sneaks past your short-circuit.
 4.  Arithmetic agreement (metamorphic).  For generated integer-only expressions using `+ - *`, your evaluator's result equals Python's evaluation of the same expression.  This is a cheap oracle that catches precedence and associativity bugs that slipped through the parser into evaluation.
 
-The first invariant is written out in full below, because the shape of one of these is most of the difficulty; the other two are yours.  Note the two things it does that a hand-written test does not: it builds a *fresh* `Interpreter` for each run, so state cannot leak between them, and it captures stdout so that printed output counts as part of the result.
+The first invariant is written out in full below, because the shape of one of these is most of the difficulty; the others are yours.  Note the two things it does that a hand-written test does not: it builds a *fresh* `Interpreter` for each run, so state cannot leak between them, and it captures stdout so that printed output counts as part of the result.
 
 ```python
 import io
@@ -457,14 +457,14 @@ def test_determinism(tree):
     second = run(tree)
     assert first == second, f"same tree gave {first!r} then {second!r}"
 
-# TODO: test_scope_restoration, and test_short_circuit_non_evaluation or test_arithmetic_agreement
+# TODO: test_scope_restoration, test_short_circuit_non_evaluation, and at least one more (e.g. test_arithmetic_agreement)
 #       Model them on test_determinism: generate a tree, run it in a fresh interpreter,
 #       and assert the property over the (value, output) pair rather than over internals.
 ```
 
-> **You should see.** After `python3 -m pytest test_interpreter.py`, each property test listed as passed, or a `Falsifying example` block showing the smallest program that breaks the invariant (Hypothesis shrinks a failure to the minimal offending program).  In your `readme.md`, report one invariant that caught a real bug, or a reasoned all-clear with the three properties and the generator shown.
+> **You should see.** After `python3 -m pytest test_interpreter.py`, each property test listed as passed, or a `Falsifying example` block showing the smallest program that breaks the invariant (Hypothesis shrinks a failure to the minimal offending program).  In your `readme.md`, report one invariant that caught a real bug, or a reasoned all-clear with your properties and the generator shown.
 
-> **Why this matters.** The same three invariants, generalized to your team's language, become the core of the Team Language Project's property-based test suite, so write them to be reusable.
+> **Why this matters.** The same invariants, generalized to your team's language, become the core of the Team Language Project's property-based test suite, so write them to be reusable.
 
 ---
 
@@ -549,7 +549,7 @@ Your evaluator enforces types *dynamically*: a type error surfaces only when the
 
 ### Step 4a: Carry Type Annotations on Declarations
 
-Your language's `define` statements and function definitions carry (or are extended to carry) type annotations: `let x: Num = 42;`, `fun f(a: Num, b: Str) -> Bool { ... }`.  The checker can only verify what the parser hands it, so the annotation has to survive lexing and parsing and land on the AST node.  Extend your lexer and parser so `let` accepts an optional `: Type` after the name (and so function definitions carry parameter and return annotations, if your language has functions), then add the annotation to the node.
+Your language's `let` declarations and function definitions carry (or are extended to carry) type annotations: `let x: Num = 42;`, `fun f(a: Num, b: Str) -> Bool { ... }`.  The checker can only verify what the parser hands it, so the annotation has to survive lexing and parsing and land on the AST node.  Extend your lexer and parser so `let` accepts an optional `: Type` after the name (and so function definitions carry parameter and return annotations, if your language has functions), then add the annotation to the node.
 
 > **This step is yours even if you are using the reference parser.**  The reference lexer has no `COLON` token and the reference `Let` node has no annotation field, so `let x: Num = 1;` does not lex, let alone parse, against it out of the box.  That is deliberate: reading a new token, threading it through one production, and landing it on a node is the smallest end-to-end change you can make to a language pipeline, and Part 4 is the right moment to make it.  The Type Checker Starter lab walks the same extension and budgets about ten minutes for it.  Do it in whichever lexer and parser you are building on, and note in your readme which one that was.  One way is an optional field on `Let`, `type_ann: Optional[str] = None`, holding `"Num"`, `"Str"`, `"Bool"`, or `None`.  Confirm the annotation lands on the node:
 
@@ -563,7 +563,7 @@ python3 -c "from parser import parse; print(parse('let x: Num = 42;'))"
 
 The checker walks the AST once, maintaining a type environment that mirrors your `Environment` class (a table from names to declared types, with a parent link for nested blocks), and verifies three things:
 
-- Literals and variables.  Every literal has its constant type; every variable use looks up the declared type; a `define` whose initializer's type disagrees with its annotation is an error.
+- Literals and variables.  Every literal has its constant type; every variable use looks up the declared type; a `let` whose initializer's type disagrees with its annotation is an error.
 - Operators.  Arithmetic operators require `Num` operands; comparison operators yield `Bool`; mixed-type operands are rejected naming *both* types.
 - Operators whose static rule is yours to set.  `and`/`or` and the conditions of `if` and `while` are where the strictness decision above becomes concrete.  Requiring `Bool` is the simpler rule and the one the lab's skeleton assumes.  Allowing any type, and letting truthiness decide at run time, keeps every program your evaluator can run.  Either is defensible; pick one, apply it to all four places, and record it.
 - Call sites.  Every function call checks arity and each argument's type against the parameter annotations, and the call expression takes the declared return type; a function whose body cannot produce its declared return type is an error.
@@ -708,7 +708,7 @@ Create `typecheck.py` (it may grow out of Part 4's `typechecker.py`; keep whiche
 - `Assign` unifies the new value's type with the variable's existing type.
 - `Block` checks its statements in a child type environment that mirrors your `Environment` scoping.
 
-Wire it into `mylang.py` as a stage: `python3 mylang.py --typed program.ml` (or make it the default; document your choice) lexes, parses, **type-checks**, and only then evaluates.  The stage label `Type error` joins the staged-error format of Part 3: `Type error at line L: <message>`.  Run `python3 mylang.py --typed shadow.ml` and confirm it still prints `51` then `2`: a well-typed program must pass through the new stage unchanged.
+Wire it into `mylang.py` as a stage: `python3 mylang.py --typed program.ml` (or make it the default; document your choice) lexes, parses, **type-checks**, and only then evaluates.  The stage label `Type error` keeps the staged-error format of Step 4c: `Type error at line L, col C: <message>`.  Run `python3 mylang.py --typed shadow.ml` and confirm it still prints `51` then `2`: a well-typed program must pass through the new stage unchanged.
 
 ### Step T.3: Positioned Type Errors
 
@@ -792,7 +792,7 @@ Add a test that an illegal opcode raises `LangRuntimeError` with the `pc` at fau
 
 The two execution models must agree where they overlap.  Write a differential test: for a handful of integer arithmetic expressions, evaluate each **both** with your Part 2 tree-walker and with an equivalent hand-assembled Intcode program, and assert that the results match.  Show each Intcode program's assembly in the test so a reader can check the correspondence.  In your readme, name one thing the VM makes easy that the tree-walker makes hard (or vice versa), e.g., self-modifying code, or explicit control over evaluation order.
 
-> **Scope note.** This direction is warm-up-scale by design.  The VM is a couple hundred lines and its correctness is externally checkable, so your effort goes into the *precise semantics* and the *model comparison*, which is what the 15-point Part 5 rubric rewards.
+> **Scope note.** This direction is warm-up-scale by design.  The VM is a couple hundred lines and its correctness is externally checkable, so your effort goes into the *precise semantics* and the *model comparison*, which is what the 14-point Part 5 rubric rewards.
 
 ---
 
@@ -823,7 +823,7 @@ Every direction includes the required Step 2e Hypothesis invariant tests in `tes
 - [ ] Every node type from Step 1a is a dataclass with annotated, commented fields, and `Var`, `BinOp`, `UnaryOp`, `Let`, and `Assign` carry positions.
 - [ ] The shadowing program prints `51` then `2`, and the bomb test passes without evaluating its right side.
 - [ ] Every runtime error is a Step 5a class raised at the language level with stage and position, and type errors name both operand types.
-- [ ] At least three Hypothesis invariants (determinism, scope restoration, and one more) are in `test_interpreter.py`, and the readme reports a shrunk counterexample or a reasoned all-clear.
+- [ ] At least four Hypothesis invariants (determinism, scope restoration, short-circuit non-evaluation, and at least one more) are in `test_interpreter.py`, and the readme reports a shrunk counterexample or a reasoned all-clear.
 - [ ] The REPL keeps its environment across an error, and `repl_transcript.txt` shows every error class and recovery.
 - [ ] The file runner prints a stage label (`Lexical`, `Syntax`, `Type`, `Runtime`) in every error message, and the Type stage fires before any code runs.
 - [ ] The Part 5 deliverable for your direction is complete (`SEMANTICS.md` and the differential programs, or `types.py` + `typecheck.py` + `TYPES.md`, or `intcode.py` + `INTCODE.md` with the AoC checkpoints and the differential test), and the control-flow theory questions are answered in the readme.

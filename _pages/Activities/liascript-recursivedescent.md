@@ -330,8 +330,8 @@ for source in ["print 42;", "let x = 7;", "let x 7;"]:
 
 ### Reading the Code
 
-- Read the parser and the grammar side by side.  Every production is one function, every alternative is one branch, and every `{ ... }` repetition is one `while`.  There is no cleverness anywhere; the grammar *is* the control flow.
-- `expect(kind)` is the only place that consumes a token or raises an error.  Everything else peeks first and then decides.  That is what makes the parser LL(1): one token of lookahead is enough to pick a branch.
+- Read the parser and the grammar side by side.  Every production is one function and every alternative is one branch.  This grammar has no `{ ... }` repetition yet; when the expression ladder adds one, it becomes one `while`.  There is no cleverness anywhere; the grammar *is* the control flow.
+- The statement functions consume tokens only through `expect(kind)`, which checks the kind and raises if it is wrong.  The other consumer is the stub `parse_expr`, which calls `advance()` only after peeking, and the other errors come from `parse_stmt` and `parse_expr` when no alternative matches.  Every decision peeks first and then commits.  That is what makes the parser LL(1): one token of lookahead is enough to pick a branch.
 - Each function returns the node it built and leaves the position one past what it consumed.  That contract lets the functions compose without any of them knowing about the others.
 - The error case reports the token it *found* next to the one it wanted.  A parser that says only "syntax error" gives the user nothing to act on.  CTQ 2.6 asks you to fix that.
 
@@ -605,7 +605,7 @@ When parsing a statement like `if ( cond ) stmt`, the parser's call sequence is:
      pos=2, peek()='2'
      call parse_term()
        consume INT('2')
-       pos=3, return 3
+       pos=3, return 2
      pos=3, peek()=EOF -> loop condition false
      return tree for (1 + 2)
    ```
@@ -911,7 +911,7 @@ pprint.pprint(ast)
 
 ## Model 4: Mini Calculator Language, Lexer, Parser, and Evaluator Together
 
-> **Intuition:** The calculator language has only five kinds of tokens (numbers, `+`, `*`, `(`, `)`) and three grammar rules.  It is already a complete language implementation.  The lexer breaks input into tokens, the parser turns tokens into an AST, and the evaluator walks the AST to compute the answer.  Your final project follows this same three-layer pattern, with more rules.
+> **Intuition:** The calculator language has only eight kinds of tokens (`INT`, `FLOAT`, `+`, `-`, `*`, `/`, `(`, `)`), plus an end-of-input marker, and three grammar rules.  It is already a complete language implementation.  The lexer breaks input into tokens, the parser turns tokens into an AST, and the evaluator walks the AST to compute the answer.  Your final project follows this same three-layer pattern, with more rules.
 >
 > Read this code as a template.  Swap in your own token types, your own grammar rules, and your own evaluator actions, and you have your project's core.
 

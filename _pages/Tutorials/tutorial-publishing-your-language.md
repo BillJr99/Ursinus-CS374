@@ -36,7 +36,7 @@ By the end of CS374 you have built a real programming language, with a lexer, a 
 There are three scenarios, and you only need the one that fits your project:
 
 - **pip**: Your interpreter is written in Python.  After publishing, anyone who runs `pip install mylang-cs374` will get the `mylang` command on their PATH (the list of folders the shell searches for commands) and can run `mylang program.ml` directly.
-- **npm**: Your transpiler emits JavaScript.  After publishing, anyone who runs `npx @yourname/mylang program.ml` will transpile and run the source file using Node.js; no installation required.
+- **npm**: Your transpiler emits JavaScript.  After publishing, anyone who runs `npx @yourname/mylang program.ml` will transpile and run the source file using Node.js; `npx` downloads the package into a temporary cache, so there is no separate install step (users still need Node.js).
 - **Docker / ghcr.io**: Your language has native dependencies that are difficult to install (Flex/Bison, LLVM, a custom C runtime).  A Docker image bundles everything.  After publishing, users run `docker run --rm -v $(pwd):/work ghcr.io/yourname/mylang program.ml` and it just works.
 
 Pick the section that matches your project.  The three parts are independent.
@@ -209,7 +209,7 @@ Users get the update by running `pip install --upgrade mylang-cs374`.
 
 ## Part B: Publishing to npm
 
-Use this section if your transpiler emits JavaScript.  Your users will run programs with `npx @yourname/mylang program.ml`; no install step needed for one-off use.
+Use this section if your transpiler emits JavaScript.  Your users will run programs with `npx @yourname/mylang program.ml`; `npx` fetches the package into a cache on first use, so one-off runs need no separate install step.
 
 ### B1: When to Use npm
 
@@ -217,7 +217,7 @@ The npm ecosystem is the right fit when:
 
 - Your transpiler is written in JavaScript or TypeScript (running under Node.js).
 - Your transpiler is written in another language but produces JavaScript output that users want to run directly.
-- You want users to be able to run `npx @yourname/mylang program.ml` without any installation.
+- You want users to be able to run `npx @yourname/mylang program.ml` without a separate `npm install` step (`npx` downloads the package to a cache for them).
 
 If your interpreter is written in Python and produces Python-like semantics, use Part A instead.
 
@@ -510,10 +510,10 @@ jobs:
 {% endraw %}
 ```
 
-To publish a new release, bump your version in `pyproject.toml`, commit, tag, and push:
+To publish a new release, bump your version wherever your project records it (`pyproject.toml` for the Python-based Dockerfile above; for a compiled project, wherever your build keeps it, such as `Cargo.toml` or a version header), commit, tag, and push.  The image tag comes from the git tag:
 
 ```bash
-git add pyproject.toml
+git add pyproject.toml   # or your project's version file
 git commit -m "Bump version to 0.2.0"
 git tag v0.2.0
 git push origin main --tags

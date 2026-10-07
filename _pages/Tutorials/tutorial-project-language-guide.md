@@ -428,7 +428,7 @@ Token(LBRACE, '{', line=2)
 
 > **CTQ 2.2:** The `_skip_whitespace_and_comments` method is called at the *start* of `next_token`.  Could you instead call it at the *end*?  What would break (or not break)?
 
-> **CTQ 2.3:** Currently, strings support `\n`, `\t`, `\\`, and `\"` escapes.  What would you need to add to support Unicode escapes like `A`?
+> **CTQ 2.3:** Currently, strings support `\n`, `\t`, `\\`, and `\"` escapes.  What would you need to add to support Unicode escapes like `\u0041`?
 
 **Try It Exercise 2.1:** Modify the lexer to also support `//` line comments (C-style).  Which method do you change, and what is the minimal addition?
 
@@ -1724,7 +1724,7 @@ With all phases complete, this final phase gives you a systematic way to verify 
 1.  **Lexical scoping**: Inner functions see outer-scope variables; sibling functions do not share locals.
 2.  **Closures capture by reference**: A returned closure correctly reflects mutations to captured variables.
 3.  **Recursion correctness**: `fib(10)` returns `55`; `factorial(6)` returns `720`.
-4.  **Tail recursion pitfall**: Mini does *not* optimize tail calls (Python doesn't either).  For `fib(40)`, Python will hit its default recursion limit.  Document this limitation clearly in your README.
+4.  **Tail recursion pitfall**: Mini does *not* optimize tail calls (Python doesn't either).  A deeply recursive call such as `factorial(5000)` will hit Python's default recursion limit.  (`fib(40)` is a different problem: it only recurses about 40 calls deep, but it makes over 300 million calls, so it takes exponential time.)  Document both limitations clearly in your README.
 5.  **Mutual recursion with forward references**: Two functions that call each other both work correctly when both definitions precede any calls.
 6.  **String escapes**: `"\n"`, `"\t"`, `"\\"`, and `"\""` produce the correct Python characters.
 7.  **Division by zero**: `1 / 0` raises a `RuntimeError_` with a clear message, not an uncaught Python `ZeroDivisionError`.
@@ -2005,7 +2005,7 @@ You now have a complete working interpreter for Mini.  The following extensions 
 
 > **CTQ 10.2:** The test suite uses `io.StringIO` to capture `print` output.  Is this a good testing strategy?  What would be a cleaner approach that does not depend on stdout redirection?
 
-> **CTQ 10.3:** `test_fibonacci_10` calls `fib(10)`.  Why not `fib(35)` or `fib(40)`?  What would you need to add to Mini to make large Fibonacci computations practical without hitting Python's recursion limit?
+> **CTQ 10.3:** `test_fibonacci_10` calls `fib(10)`.  Why not `fib(35)` or `fib(40)`?  How deep does `fib(40)` recurse, and how many calls does it make?  What would you need to add to Mini to make large Fibonacci computations practical?
 
 ---
 

@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Parsing Expressions: Left Factoring, Precedence, and Iteration
 
-Expression parsing is the most common and the trickiest part of building a language.  Without a deliberate grammar, `2 + 3 * 4` can parse as `(2 + 3) * 4 = 20` instead of the correct `2 + (3 * 4) = 14`.  The fix is a layered grammar: each precedence level gets its own rule.  A top-down parser cannot run that grammar until you remove its left recursion, and this activity shows you how, one tier at a time.  The "left factoring" in the title is the family of grammar rewrites that prepare a grammar for top-down parsing; removing left recursion is the member of that family you need today.  You will see two strategies that solve the same problem: recursive descent with one function per tier, and Pratt parsing with numeric binding powers.  Knowing both lets you handle any operator grammar you meet later.
+Expression parsing is the most common and the trickiest part of building a language.  Without a deliberate grammar, `2 + 3 * 4` can parse as `(2 + 3) * 4 = 20` instead of the correct `2 + (3 * 4) = 14`.  The fix is a layered grammar: each precedence level gets its own rule.  A top-down parser cannot run that grammar until you remove its left recursion, and this activity shows you how, one tier at a time.  The title names two separate grammar rewrites that prepare a grammar for top-down parsing: left factoring pulls a shared prefix out of competing alternatives, and left-recursion removal turns a rule that calls itself first into a loop.  Left-recursion removal is the one you need today.  You will see two strategies that solve the same problem: recursive descent with one function per tier, and Pratt parsing with numeric binding powers.  Knowing both lets you handle any operator grammar you meet later.
 
 ## Learning Goals
 
@@ -265,7 +265,7 @@ def parse_primary(self):
 
 Part II checks and extends what you built in Part I.  First you answer one multiple-choice question about the fold.  Then you meet Pratt parsing, a second strategy that encodes precedence as numbers rather than as a chain of functions.  Finally you push the parser further: right-associative operators, comparison tiers, and function-call syntax.  Your project language will need these same extensions, so treat the exercises as early project work rather than as isolated drills.
 
-> **Watch out!**  The `while`-loop (left-fold) pattern cannot handle right-associative operators like `**` (exponentiation), because that pattern always folds left.  Use the original right-recursive rule `power -> unary [ "^" power ]` instead.  It makes one optional recursive call, not a loop, so it builds a right-leaning tree.  In a Pratt parser the equivalent move is to pass `bp - 1` rather than `bp` as the minimum binding power for the right-hand recursive call.
+> **Watch out!**  The `while`-loop (left-fold) pattern cannot handle right-associative operators like `**` (exponentiation), because that pattern always folds left.  Use the original right-recursive rule `power -> unary [ "^" power ]` instead.  It makes one optional recursive call, not a loop, so it builds a right-leaning tree.  In a Pratt parser the equivalent move is to pass `bp` rather than `bp + 1` as the minimum binding power for the right-hand recursive call, as Model 2 below shows.
 
 ## 2.  One Line Decides Associativity
 
@@ -281,11 +281,11 @@ In `parse_addsub`, the line `node = (op, node, right)` places the previous resul
 
 ## 3.  Theory: The Ladder Does Not Scale
 
-The ladder works, and its cost is easy to count.  Every precedence level is one function.  Every one of those functions calls down to the next even when the input has nothing to do with that level.  Parsing the single token `5` in the Part I grammar still walks `expr -> addsub -> muldiv -> unary -> primary`: four calls to reach one number.
+The ladder works, and its cost is easy to count.  Every precedence level is one function.  Every one of those functions calls down to the next even when the input has nothing to do with that level.  Parsing the single token `5` in the Part I grammar still walks `expr -> addsub -> muldiv -> unary -> primary`: five functions on the stack to reach one number.
 
 C has fifteen precedence levels.  As a ladder, that is fifteen functions, fifteen stack frames per literal, and fifteen near-identical bodies to keep in sync when you add an operator.  Adding one operator at a new level means writing a new function and editing its two neighbors.
 
-Precedence climbing (also called Pratt parsing, after Vaughan Pratt's 1973 paper) replaces the chain of functions with a number.  Each operator gets a **binding power**: a number that says how tightly it grips its operands.  One loop then reads operators and decides, by comparing numbers alone, whether to keep going or return.
+Precedence climbing, and its close relative Pratt parsing (after Vaughan Pratt's 1973 paper), replace the chain of functions with a number.  Each operator gets a **binding power**: a number that says how tightly it grips its operands.  One loop then reads operators and decides, by comparing numbers alone, whether to keep going or return.  The two were developed independently and organize their code differently (Pratt attaches a parsing function to each token, and precedence climbing loops over a precedence table), but they share the same core loop and build the same trees.  The loop below is that shared core.
 
 The rule is short enough to state completely:
 
@@ -408,7 +408,7 @@ print("  That single '+ 1' is the entire associativity mechanism.")
 
 > **CTQ 3.2** `8 - 4 - 2` and `2 ^ 3 ^ 2` differ only in the `+ 1`.  Explain, in terms of what the recursive call is allowed to absorb, why that produces opposite tree shapes.
 
-> **CTQ 3.3** The Part I ladder is four functions; Model 2 is one function plus a five-row table.  For a language with fifteen precedence levels, count each version's cost: functions written, and frames pushed to parse the single literal `5`.
+> **CTQ 3.3** The Part I ladder is five functions; Model 2 is one function plus a five-row table.  For a language with fifteen precedence levels, count each version's cost: functions written, and frames pushed to parse the single literal `5`.
 
 > **CTQ 3.4** Both approaches produce the same trees, so the choice is not about correctness.  State the case for each, and say which your team will use and why.
 

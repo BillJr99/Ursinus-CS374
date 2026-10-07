@@ -377,7 +377,7 @@ Implement each function below in order.  Each tier parses the tier below it and 
 - `parse_or()`: left-fold `and` expressions over `OR`.  Verify `a or b and c` builds `BinOp("or", Var("a"), BinOp("and", Var("b"), Var("c")))`.
 - `parse_expr()`: delegates to `parse_or()`.
 
-Every test in this assignment is a **tree-shape test**: it asserts on node types and fields, never on printed output.  Comparing `str(node)` or `repr(node)` to a string feels quicker, but a repr changes the moment you add a field, so those tests break on edits that were entirely correct.  The shape of the tree is what the interpreter will walk next term, so the shape is what you assert on.
+Every test in this assignment is a **tree-shape test**: it asserts on node types and fields, never on printed output.  Comparing `str(node)` or `repr(node)` to a string feels quicker, but a repr changes the moment you add a field, so those tests break on edits that were entirely correct.  The shape of the tree is what your interpreter will walk in the [Interpreter assignment]({{ site.baseurl }}/Assignments/Interpreter), so the shape is what you assert on.
 
 > **Do this.**
 > 1. Open `test_parser.py` and paste in the harness below.
@@ -428,7 +428,7 @@ if __name__ == "__main__":
     print(f"{len(tests) - failed} passed, {failed} failed")
 ```
 
-> **You should see.** One `PASS` line per test and a final count, for example `PASS test_muldiv_left_associates` and `1 passed`.  A failing assertion stops the run with an `AssertionError` traceback that names the test.  The same file also runs under `python3 -m pytest test_parser.py` once you install pytest in Step 3e.
+> **You should see.** One `PASS` line per test and a final count, for example `PASS test_muldiv_left_associates` and `1 passed, 0 failed`.  A failing assertion does not stop the run: the harness catches it, prints a `FAIL` line with the test name and the assertion message, and moves on to the next test.  The same file also runs under `python3 -m pytest test_parser.py` once you install pytest in Step 3e.
 
 > **If it fails.**
 > - `8 / 4 / 2` right-associates: your loop parses the *right* side with the same tier instead of the tier below it, which recurses instead of folding.

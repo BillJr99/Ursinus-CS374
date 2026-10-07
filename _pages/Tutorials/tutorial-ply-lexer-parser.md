@@ -44,7 +44,7 @@ By the end of this activity, you will be able to:
 Make sure you are comfortable with the following before starting this activity:
 
 - **Python decorators and docstrings**: PLY uses docstrings as the grammar-rule specification language, and it relies on Python's function-object mechanism to collect rules at module load time.  If docstrings feel unfamiliar, review how `def f(): """..."""` exposes `f.__doc__` before proceeding.
-- **BNF / EBNF grammar notation**: You should be able to read a production such as `expr : expr PLUS term | term` and identify the non-terminal on the left, the terminals on the right, and what "alternative" means.  PLY's docstrings use this notation directly.
+- **BNF / EBNF grammar notation**: You should be able to read a production such as `expr : expr PLUS term | term` and identify the non-terminal on the left, the symbols on the right (terminals such as `PLUS` and non-terminals such as `term`), and what "alternative" means.  PLY's docstrings use this notation directly.
 - **What a token is**: A token is a (type, value) pair produced by the lexer.  For example, the string `42` becomes `(NUMBER, 42.0)`.  The parser never sees raw characters; it works entirely with the token stream.
 
 ## How to Work Through This Activity
@@ -66,7 +66,7 @@ The two mechanisms PLY provides are:
 
 > **Watch out!**  PLY uses a function's **docstring** as its grammar or lexer rule: `def t_NUMBER(t): r'\d+'` means the docstring `r'\d+'` *is* the regex pattern.  This is unusual Python; it has nothing to do with documentation.  If you accidentally put the pattern in a comment or a regular string variable, PLY will silently ignore the rule.
 
-PLY always tries the **longest match first**.  When two rules could match the same input, PLY chooses the one whose regex is defined first (for function rules) or whose pattern is longer (for string rules).
+PLY does **not** simply take the longest match.  It combines all of your rules into one master regex in a fixed order: first the function rules, in the order they are defined in the file, then the string rules, sorted by decreasing regex length.  At each input position, the first rule in that order that matches wins.  (Sorting the string rules longest first is what lets `==` beat `=`.)
 
 ```python
 import subprocess
@@ -151,7 +151,7 @@ PLY provides three mechanisms for silent consumption:
 - A function rule that returns `None` (or falls off the end): the token is consumed but not emitted.
 - A function rule that modifies `t.value` before returning: useful for stripping delimiters from string literals.
 
-> **Watch out!**  Both `t_error` (in the lexer) and `p_error` (in the parser) are **mandatory**.  If either is missing, PLY will raise an exception the moment it encounters an unrecognized character or an unexpected token.  You do not get a helpful message; you get a crash.  Always define both, even if the body is just `pass` or a `print` statement.
+> **Watch out!**  Always define both `t_error` (in the lexer) and `p_error` (in the parser).  PLY only prints a warning when you build a lexer or parser without them, but the defaults are unhelpful: without `t_error`, the lexer raises a `LexError` the moment it meets an illegal character, and without `p_error`, the parser writes a terse `yacc: Syntax error ...` line to stderr and tries to keep going.  Define both, even if the body is just a `print` statement (and, in `t_error`, a call to `t.lexer.skip(1)`).
 
 Observe how the code below tracks line numbers using the `t.lexer.lineno` attribute, which PLY does *not* manage automatically.
 
@@ -224,7 +224,7 @@ for tok in lexer:
 
 ---
 
-## Model 3: A Recursive Descent in PLY, Arithmetic Expressions
+## Model 3: An LALR(1) Parser in PLY, Arithmetic Expressions
 
 A **parser** checks that a token stream conforms to a grammar and, optionally, computes a value or builds a data structure.  PLY's parser works exactly like Bison: you write grammar productions (here, as docstrings), declare operator precedence, and PLY generates an **LALR(1)** parse table behind the scenes, using the same algorithm as GNU Bison.  For now the parser evaluates arithmetic directly, with no AST, so you can focus on the grammar rules and precedence declarations before adding tree construction in Model 4.
 
@@ -463,7 +463,7 @@ for src in sources:
 
 This model builds a small but complete language in which the lexer, parser, AST, and evaluator all work as a unit.  Its main job is to make the Flex/Bison-to-PLY translation concrete.  Inline comments in the code label every PLY construct with its Bison or Flex counterpart, so you can read the two tool families side by side and see exactly what changed.  After this model you should be able to take a `.l`/`.y` grammar you have already written and port it to PLY, or go the other direction.
 
-The mini language supports variables, `let` bindings, `if-else` conditionals, and a `print` statement.  After parsing, an evaluator walks the AST and computes the result, cleanly separated from the parser, exactly as the Dragon Book prescribes.
+The mini language supports variables, `let` bindings, `if-else` conditionals, and a `print` statement.  After parsing, an evaluator walks the AST and computes the result, cleanly separated from the parser.
 
 ```python
 import subprocess
@@ -511,7 +511,7 @@ tokens = ['NUMBER', 'ID', 'PLUS', 'MINUS', 'TIMES',
 t_PLUS   = r'\+'
 t_MINUS  = r'-'
 t_TIMES  = r'\*'
-t_EQEQ   = r'=='    # must come before t_EQ (longer match wins for strings)
+t_EQEQ   = r'=='    # string rules are sorted longest first, so == is tried before =
 t_EQ     = r'='
 t_LT     = r'<'
 t_LPAREN = r'\('
@@ -853,8 +853,8 @@ The mini language from Model 5 has `let` and `if-else` but no looping construct.
 
 Hint: `while` is an expression in this language; it should return the value of the last iteration of `body`, or `0.0` if the condition is never true.
 
-Test your solution with: `while x < 5 let x = x + 1 in x do x`
-(This syntax will require you to think carefully about where the condition ends.)
+Test your solution with: `let x = 7 in while x < 5 do x`, which should evaluate to `0.0`.
+(Then think about this: `let` creates a new binding rather than updating `x`.  What happens when the condition starts out true, and what would the language need for a `while` loop to be useful?)
 
 ### Exercise 2: Strings and Concatenation
 

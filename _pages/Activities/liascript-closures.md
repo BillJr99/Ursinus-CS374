@@ -537,17 +537,17 @@ print("Fix 2 (factory):", [f() for f in fns_fixed2])   # [0, 1, 2]
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-> **CTQ 6.1** All three lambdas captured the same `i` binding.  After the loop, what is `i`?  Why do all three lambdas return 2?
+> **CTQ 4.1** All three lambdas captured the same `i` binding.  After the loop, what is `i`?  Why do all three lambdas return 2?
 
-> **CTQ 6.2** Fix 1 uses `lambda i=i: i`.  Python evaluates the outer `i` (the default argument value) at *definition time*, which captures the current value.  Why does this work, while the capture in the original version does not?
+> **CTQ 4.2** Fix 1 uses `lambda i=i: i`.  Python evaluates the outer `i` (the default argument value) at *definition time*, which captures the current value.  Why does this work, while the capture in the original version does not?
 
-> **CTQ 6.3** Fix 2 uses a factory function `make_fn(i)` that creates a new scope.  Draw the environment diagram showing why each returned lambda has a *different* captured environment.
+> **CTQ 4.3** Fix 2 uses a factory function `make_fn(i)` that creates a new scope.  Draw the environment diagram showing why each returned lambda has a *different* captured environment.
 
-> **CTQ 6.4** JavaScript's historic `var` scoping caused the same bug; `let` was introduced to fix it.  How does `let` create "per-iteration" scope?  Why can't `var` do this?
+> **CTQ 4.4** JavaScript's historic `var` scoping caused the same bug; `let` was introduced to fix it.  How does `let` create "per-iteration" scope?  Why can't `var` do this?
 
 ---
 
-The code above showed the trap and two fixes.  The notes below explain the code, the Try It Yourself asks you to predict five variants, and Model 5 then draws the trap as boxes.  The broken and fixed versions differ by exactly one thing (how many environment boxes exist), and the box diagram makes the bug visible at a glance.
+The code above showed the trap and two fixes.  The notes below explain the code, the Try It Yourself asks you to predict five variants, and Model 4 then draws the trap as boxes.  The broken and fixed versions differ by exactly one thing (how many environment boxes exist), and the box diagram makes the bug visible at a glance.
 
 ### Reading the Code
 
@@ -591,7 +591,7 @@ print("or why there isn't one.")
 
 Expected output: `a` and `d` give `[2, 2, 2]`; `b`, `c`, and `e` give `[0, 1, 2]`.  If you predicted the comprehension and the for-loop would differ, note that they do not.  The comprehension's scope is not what saves you.
 
-## Model 5: The Loop Trap, Drawn as Boxes
+## Model 4: The Loop Trap, Drawn as Boxes
 
 **Broken:** `fns = [lambda: i for i in range(3)]`.  The comprehension runs in a single scope, so there is exactly one box holding `i`, and every lambda's capture arrow points at it:
 
@@ -661,11 +661,11 @@ Remember two things from this part.  Closures made in one scope share one bindin
 
 **Critical Thinking Questions (CTQs)**
 
-> **CTQ 7.1** Which single line of the cell's output is direct evidence for the "three arrows, one box" picture?  Which line is evidence for "three boxes"?
+> **CTQ 5.1** Which single line of the cell's output is direct evidence for the "three arrows, one box" picture?  Which line is evidence for "three boxes"?
 
-> **CTQ 7.2** In the fixed diagram, what act creates each new box: the `lambda` *definition*, or the *call* to `make_fn`?  Justify your answer with the environment-creation rule from Part II (`eval_call` builds a new environment per call).
+> **CTQ 5.2** In the fixed diagram, what act creates each new box: the `lambda` *definition*, or the *call* to `make_fn`?  Justify your answer with the environment-creation rule from Part II (`eval_call` builds a new environment per call).
 
-> **CTQ 7.3** Fix 1's lambdas report `__closure__ = None`; they are not closures at all.  Where does each one's `i` live instead, and why does that location make capture unnecessary?
+> **CTQ 5.3** Fix 1's lambdas report `__closure__ = None`; they are not closures at all.  Where does each one's `i` live instead, and why does that location make capture unnecessary?
 
 ---
 
@@ -728,11 +728,11 @@ print(f"Closure counter: {clo_counter['value']()}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-> **CTQ 8.1** In the closure-based counter, `count` is a shared mutable cell.  In the object-based counter, `self._count` is a field.  What is the structural difference?  What is the conceptual difference?
+> **CTQ 6.1** In the closure-based counter, `count` is a shared mutable cell.  In the object-based counter, `self._count` is a field.  What is the structural difference?  What is the conceptual difference?
 
-> **CTQ 8.2** The closure counter uses a list `[start]` to work around Python's scoping rules for `nonlocal`.  Rewrite it using `nonlocal count` (Python 3) instead of a list.  Why is `nonlocal` cleaner?
+> **CTQ 6.2** The closure counter uses a list `[start]` to work around Python's scoping rules for `nonlocal`.  Rewrite it using `nonlocal count` (Python 3) instead of a list.  Why is `nonlocal` cleaner?
 
-> **CTQ 8.3** Languages like OCaml and Haskell have closures but no classes.  Languages like Java (pre-lambda) have classes but no closures (lambdas are objects).  From what you now know about the implementation of each, argue: which is more fundamental?
+> **CTQ 6.3** Languages like OCaml and Haskell have closures but no classes.  Java before version 8 had classes but no lambdas; its nearest thing to a closure was an anonymous inner class, an object that could capture only `final` local variables.  From what you now know about the implementation of each, argue: which is more fundamental?
 
 ---
 
@@ -746,11 +746,11 @@ The two mechanisms are unrelated.  One is pure and needs no notion of memory at 
 
 This is also why CTQ 3.3 was harder than it looked.  When `Fun` runs, the function's own name is not in `env` yet, so a closure cannot capture it.  The fix in the Try It Yourself is to reach into the captured environment afterward and point the name at the closure.  That is called *tying the knot*, and it is the mutation-based answer to exactly the problem $\textbf{Y}$ solves without mutation.  Your interpreter is free to pick either one.  Most real languages pick the knot, because it is cheaper and because programmers want to write the name.
 
-> **CTQ 9.1** Scheme ships both mechanisms.  Write `factorial` twice, once with `define` and a self-reference, once with $\textbf{Z}$ and a generator.  Which one would you hand a first-year student, and which one would you rather implement in your evaluator?  Notice those may not be the same answer.
+> **CTQ 7.1** Scheme ships both mechanisms.  Write `factorial` twice, once with `define` and a self-reference, once with $\textbf{Z}$ and a generator.  Which one would you hand a first-year student, and which one would you rather implement in your evaluator?  Notice those may not be the same answer.
 
-> **CTQ 9.2** Tying the knot creates a cycle: an environment holds a closure whose captured environment is that same environment.  $\textbf{Z}$ creates no cycle at all.  What does that difference cost a garbage collector, and does it change your answer to CTQ 9.1?
+> **CTQ 7.2** Tying the knot creates a cycle: an environment holds a closure whose captured environment is that same environment.  $\textbf{Z}$ creates no cycle at all.  What does that difference cost a garbage collector, and does it change your answer to CTQ 7.1?
 
-> **CTQ 9.3** A memoized function keeps a cache in a captured binding, so it mutates on every miss.  Could you memoize a $\textbf{Z}$-built function without introducing any mutation?  If not, say precisely what would have to change about the language.
+> **CTQ 7.3** A memoized function keeps a cache in a captured binding, so it mutates on every miss.  Could you memoize a $\textbf{Z}$-built function without introducing any mutation?  If not, say precisely what would have to change about the language.
 
 ---
 
@@ -813,7 +813,7 @@ Reproduce the loop-variable trap in your language (or Python), apply both fixes,
 
 ### Exercise 4: Scope Flip Experiment (20 min)
 
-Apply the one-token change from Model 3 (CTQ 3.1) to make your interpreter dynamically scoped.  Rerun the `show`/`demo` program from the *Binding and Scope* activity.  Report the output difference and explain with a diagram which environment chain the dynamically scoped version follows.
+Apply the one-line change from Model 3 (`base = fn.env` becomes `base = env`) to make your interpreter dynamically scoped.  Rerun the `show`/`demo` program (Model 2 of this activity, or its version in the *Binding and Scope* activity) in your language.  Report the output difference and explain with a diagram which environment chain the dynamically scoped version follows.
 
 ---
 

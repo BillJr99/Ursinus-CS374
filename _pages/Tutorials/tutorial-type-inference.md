@@ -31,7 +31,7 @@ By the end of this tutorial, you will have:
 - Implemented let-polymorphism (generalization and instantiation) so that a polymorphic identity function type-checks at multiple types in the same scope
 - Produced clear, position-tagged type error messages that name both conflicting types and the source location
 
-Hindley-Milner (HM) type inference deduces the type of every expression without any type annotations.  It powers Haskell, OCaml, and Rust's type inference.  This tutorial walks you step-by-step through building a complete HM inference engine over the Mini language abstract syntax tree (AST): types, unification with occurs check, Algorithm W, and let-polymorphism.  Each phase includes working Python code you can run and test before moving to the next.  **Prerequisites:** the Type Systems activity, the Curry-Howard activity, and your Mini interpreter assignment.
+Hindley-Milner (HM) type inference deduces the type of every expression without any type annotations.  It is the foundation of type inference in ML-family languages such as Haskell and OCaml (both extend it), and Rust's type checker builds on HM-style unification, extended for subtyping and lifetimes and used only within function bodies.  This tutorial walks you step-by-step through building a complete HM inference engine over the Mini language abstract syntax tree (AST): types, unification with occurs check, Algorithm W, and let-polymorphism.  Each phase includes working Python code you can run and test before moving to the next.  **Prerequisites:** the Type Systems activity, the Curry-Howard activity, and your Mini interpreter assignment.
 
 ---
 
@@ -787,7 +787,7 @@ Threading substitutions correctly is the #1 implementation challenge.  Every cal
 
 3.  **Generalizing too early.**  Generalize only in `let` bindings, not at every variable use.  Generalizing inside a function body produces unsound polymorphism.
 
-4.  **Missing occurs check.**  Without it, `id(id)` would produce a circular type `α = α -> α`, and `apply` would loop forever.
+4.  **Missing occurs check.**  Without it, self-application `λf. f f` (the test above) would bind `α` to `α -> β`, a circular type, and `apply` would loop forever.  (`id(id)` is fine: under let-polymorphism, each use of `id` gets its own fresh type variables.)
 
 5.  **Mutating the environment.**  The type environment should be immutable (use `{**env, name: scheme}` for extension); mutations cause inference to fail on later branches.
 

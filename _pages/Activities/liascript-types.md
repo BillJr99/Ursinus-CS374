@@ -116,7 +116,7 @@ Now work one expression across all four quadrants.  For each language, write dow
 |------------------|----------|--------------|
 | Haskell | static, strong | Compile error; the program never runs |
 | Python | dynamic, strong | `TypeError` at runtime, at that line |
-| C | static, weak | `'a' + 1` is `98`; a `char` is just a small integer |
+| C | static, weak | Compiles as pointer arithmetic, with no error: a pointer one past the `a`, which reads as the empty string.  (With single quotes, `'a' + 1` is `98`; a `char` is just a small integer.) |
 | JavaScript | dynamic, weak | `"a1"`; the number is coerced to a string |
 
 The *same* expression fails in two of these languages and succeeds, surprisingly, in the other two.  That is the point of the two axes: they predict behavior that "strongly typed" alone cannot.
@@ -781,7 +781,7 @@ for bad in (dict(op="%", line=3), dict(op="+", line=0)):
 
 This is the same check-before-you-compute gatekeeper as Model 2, applied at the *boundary* where untrusted data enters your program: a config file, a JSON request, a serialized AST, a parsed token stream.
 
-> **Watch out!**  Three different things look alike and guarantee different amounts.  Plain type *hints* are never enforced by CPython: `add("a", "b")` runs until `+` fails.  `@dataclass` gives you the same annotations and also does not validate them.  A static checker like `mypy` checks before running and does nothing at runtime.  pydantic enforces the annotation *when the data arrives*.  Know which of the three you actually have.
+> **Watch out!**  Four different things look alike and guarantee different amounts.  Plain type *hints* are never enforced by CPython: `add("a", "b")` runs until `+` fails.  `@dataclass` gives you the same annotations and also does not validate them.  A static checker like `mypy` checks before running and does nothing at runtime.  pydantic enforces the annotation *when the data arrives*.  Know which of the four you actually have.
 
 # Extension: Structural vs. Nominal Typing
 
@@ -977,12 +977,12 @@ Expected output: the int is `1092416963`, which is exactly what the real C progr
 
 ### Critical Thinking Questions
 
-8.  Trace the *lie* through the pipeline.  At each of the three stations from *Table-Driven and LR Parsing*, name what that station knew and what it had already forgotten.  At which station did the last piece of information that could have caught this disappear?
-9.  Part I placed C in the **static, weak** quadrant.  Does this bug belong to the *static* axis or the *weak* axis?  Defend your answer, then argue the opposite one; the disagreement is the useful part.
-10.  The `# Extension: Type Erasure` section above showed Java erasing generic type arguments before runtime.  This section shows C erasing *all* types before linking.  State what the two erasures have in common in one sentence, and then state the difference in what each one costs you.
-11.  C's actual answer is a shared header: put `extern float gravity;` in `gravity.h` and `#include` it from both files.  Explain precisely why that works, then explain precisely why it is a *convention* and not a *guarantee*.  What stops `report.c` from simply not including it?
-12.  Suppose the linker did carry a type on every symbol.  Name two costs of that design.  (Think about what has to agree between two files compiled by different compilers, or in different languages, years apart.)
-13.  Your project language will eventually have more than one source file.  Write the rule for `TYPES.md` in two sentences: when a name defined in one module is used in another, what checks that the two agree, and at what moment?
+15.  Trace the *lie* through the pipeline.  At each of the three stations from *Table-Driven and LR Parsing*, name what that station knew and what it had already forgotten.  At which station did the last piece of information that could have caught this disappear?
+16.  Part I placed C in the **static, weak** quadrant.  Does this bug belong to the *static* axis or the *weak* axis?  Defend your answer, then argue the opposite one; the disagreement is the useful part.
+17.  The `# Extension: Type Erasure` section above showed Java erasing generic type arguments before runtime.  This section shows C erasing *all* types before linking.  State what the two erasures have in common in one sentence, and then state the difference in what each one costs you.
+18.  C's actual answer is a shared header: put `extern float gravity;` in `gravity.h` and `#include` it from both files.  Explain precisely why that works, then explain precisely why it is a *convention* and not a *guarantee*.  What stops `report.c` from simply not including it?
+19.  Suppose the linker did carry a type on every symbol.  Name two costs of that design.  (Think about what has to agree between two files compiled by different compilers, or in different languages, years apart.)
+20.  Your project language will eventually have more than one source file.  Write the rule for `TYPES.md` in two sentences: when a name defined in one module is used in another, what checks that the two agree, and at what moment?
 
 ## What Other Languages Do About It
 

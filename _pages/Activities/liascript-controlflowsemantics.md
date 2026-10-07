@@ -156,7 +156,7 @@ print(f"0 -> else: {result3}")  # 2 (0 is falsy)
 ### Reading the Code
 
 - `Bomb` is a node whose evaluation always raises.  Putting one in a branch is how you prove the branch was skipped.  If the program prints an answer instead of exploding, the evaluator never went there.
-- The `If` case evaluates the condition, then evaluates exactly one of `then_` and `else_`.  Compare that with the `BinOp` case, which always evaluates both children.  That difference is the definition of non-strict.
+- The `Cond` case evaluates the condition, then evaluates exactly one of `then_` and `else_`.  Compare that with the `BinOp` case, which always evaluates both children.  That difference is the definition of non-strict.
 - This is why `if` cannot be a function in a strict language.  A function call evaluates its arguments first, so `my_if(cond, a, b)` would evaluate both `a` and `b` before `my_if` ever ran, and the Bomb would go off.
 
 ### Try It Yourself
@@ -221,7 +221,7 @@ $$
 
 (Note the Python-style refinement: returning the deciding operand rather than a normalized boolean is itself a design choice.  Java normalizes; Python does not.)
 
-> **Watch out!**  Short-circuit evaluation is not universal.  Some languages (notably older Fortran, and certain functional languages with call-by-value semantics) evaluate both operands of `and`/`or` before applying the operator.  If you port code that relies on short-circuiting as a guard, check the target language's specification.  You cannot assume the right operand is skipped.
+> **Watch out!**  Short-circuit evaluation is not universal.  Some languages do not promise it: standard Pascal and Fortran leave it to the compiler whether the second operand of `and`/`or` is evaluated, and Visual Basic's `And`/`Or` always evaluate both operands (VB.NET adds `AndAlso`/`OrElse` for short-circuiting).  If you port code that relies on short-circuiting as a guard, check the target language's specification.  You cannot assume the right operand is skipped.
 
 ---
 
@@ -466,17 +466,14 @@ def execute(stmt, env):
     else:
         raise TypeError(f"unknown stmt: {stmt!r}")
 
-# Find first multiple of 7 in 1..50:
-# n = 1; while n <= 50: if n%7 == 0: print n; break; n = n + 1
+# Print the first multiple of 7, then break out while n <= 50 is still true.
+# There is no If node yet, so the break is unconditional:
+# n = 7; while n <= 50: print n; n = n + 7; break
 env = {}
 program = Block([
-    Assign("n", Num(1)),
+    Assign("n", Num(7)),
     While(BinOp("<=", Var("n"), Num(50)),
         Block([
-            # if n % 7 == 0: print n; break
-            # Simplified: check if n is exactly 7 (first multiple)
-            Assign("rem", BinOp("-", Var("n"), BinOp("*", Num(7), Num(1)))),
-            # Actually just print multiples of 7 using continue for odds
             Print(Var("n")),
             Assign("n", BinOp("+", Var("n"), Num(7))),
             Break(),   # only print the first one
@@ -614,15 +611,11 @@ print(f"env after: {env}")     # n=0, total=15
 
 ### Critical Thinking Questions
 
-8.  Predict the output before running; then run.  If they differ, the bug hunt order is: lexer -> parser tree (use pretty-printer!) -> evaluator.  Why that order?
-9.  Print the environment after execution.  Should `n` still exist after the loop?  Defend your language's answer; both choices are defensible.
-10.  Add a `truthy(0.0)` call and a `truthy(None)` call to the test.  What do they return?  How does your `truthy` definition match Python's?  Where do they differ?
+14.  Predict the output before running; then run.  If they differ, the bug hunt order is: lexer -> parser tree (use pretty-printer!) -> evaluator.  Why that order?
+15.  Print the environment after execution.  Should `n` still exist after the loop?  Defend your language's answer; both choices are defensible.
+16.  Add a `truthy(0.0)` call and a `truthy(None)` call to the test.  What do they return?  How does your `truthy` definition match Python's?  Where do they differ?
 
 ---
-
-**Model 6 preview:** The REPL (Read-Eval-Print Loop) is what makes your language feel like a language.  It runs the whole pipeline (tokenize, parse, evaluate) inside a loop that keeps a single `env` across lines, so earlier assignments are visible in later ones.  This model uses a simulated REPL (a list of inputs instead of real keyboard input) so it can run here without interaction.  The structure is the same as what you would wire up with Python's `input()`.
-
-> **Watch out!**  Because the REPL's `env` dictionary persists across lines, a variable assigned on line 1 is still live on line 100.  So the order in which the user types lines matters, and re-running the REPL from scratch starts with an empty environment.  Students sometimes expect the REPL to behave like a script (isolated, top-to-bottom) rather than a stateful session.  They are different execution models.  State in your language documentation which one your REPL provides.
 
 ### Reading the Code
 
@@ -712,6 +705,10 @@ Expected output as written: the numbers 1 through 10.  Add a `Break` and, until 
 
 ## Model 6: The REPL
 
+The REPL (Read-Eval-Print Loop) is what makes your language feel like a language.  It runs the whole pipeline (tokenize, parse, evaluate) inside a loop that keeps a single `env` across lines, so earlier assignments are visible in later ones.  This model uses a simulated REPL (a list of inputs instead of real keyboard input) so it can run here without interaction.  The structure is the same as what you would wire up with Python's `input()`.
+
+> **Watch out!**  Because the REPL's `env` dictionary persists across lines, a variable assigned on line 1 is still live on line 100.  So the order in which the user types lines matters, and re-running the REPL from scratch starts with an empty environment.  Students sometimes expect the REPL to behave like a script (isolated, top-to-bottom) rather than a stateful session.  They are different execution models.  State in your language documentation which one your REPL provides.
+
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -793,8 +790,6 @@ for line in repl_input:
     try:
         result = evaluate(parse(line), env)
         print(f"  >>> {line}")
-        if not line.strip().startswith(tuple("abcdefghijklmnopqrstuvwxyz") + ("x","y","z")) or "=" in line:
-            pass
         print(f"  {result}")
     except Exception as e:
         print(f"  Error: {e}")
@@ -803,11 +798,17 @@ print(f"\nFinal environment: {env}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
+### Reading the Code
+
+- The REPL is a loop around the same three stages the whole session has been building: tokenize, parse, evaluate (here `evaluate` also handles `Assign`, so one function covers both expressions and assignments).  Nothing new is required to make a language interactive.  You stop reading from a file and start reading from the user.
+- `env` lives outside the loop, which is what makes the session stateful.  A variable defined on one line is visible on the next.  Move it inside the loop and every line would start from nothing.
+- Errors are caught per line rather than ending the session.  This is the `LangError` discipline from *Tree-Walking Interpretation* at work: a user's typo prints a message and the prompt comes back.
+
 ### Critical Thinking Questions
 
-11.  A real REPL must handle errors without dying: if the user types `1/0` or `undefined_var`, the REPL should print an error and continue.  Wrap the inner call in a `try/except` and identify the three error classes you must catch (one per stage: lex, parse, eval).
-12.  The REPL above has a persistent `env` dictionary.  If a user types `x = 10` and then `x = 20`, what should happen?  Should the language allow rebinding?
-13.  REPLs for functional languages (Haskell's `ghci`, Scheme's REPL) do not allow mutation.  How would you implement a purely functional REPL where each "assignment" introduces a new immutable binding rather than updating an old one?
+17.  A real REPL must handle errors without dying: if the user types `1/0` or `undefined_var`, the REPL should print an error and continue.  Wrap the inner call in a `try/except` and identify the three error classes you must catch (one per stage: lex, parse, eval).
+18.  The REPL above has a persistent `env` dictionary.  If a user types `x = 10` and then `x = 20`, what should happen?  Should the language allow rebinding?
+19.  REPLs for functional languages (Haskell's `ghci`, Scheme's REPL) do not allow mutation.  How would you implement a purely functional REPL where each "assignment" introduces a new immutable binding rather than updating an old one?
 
 ---
 
@@ -815,12 +816,6 @@ print(f"\nFinal environment: {env}")
 
 
 ---
-
-### Reading the Code
-
-- The REPL is a loop around the same three functions the whole session has been building: tokenize, parse, execute.  Nothing new is required to make a language interactive.  You stop reading from a file and start reading from the user.
-- `env` lives outside the loop, which is what makes the session stateful.  A variable defined on one line is visible on the next.  Move it inside the loop and every line would start from nothing.
-- Errors are caught per line rather than ending the session.  This is the `LangError` discipline from *Tree-Walking Interpretation* at work: a user's typo prints a message and the prompt comes back.
 
 Remember two things from Parts III and IV.  `while` re-checks its condition before every pass, and `break` and `continue` unwind to the loop by raising signal exceptions.  `execute` works by effect and threads one shared `env` through every call, and the REPL is that same pipeline wrapped in a loop that keeps `env` alive between lines.
 
@@ -870,11 +865,11 @@ In Python, `0 or "fallback"` evaluates to `"fallback"`. This shows that Python's
 3.  *Desugaring.*  Implement `for (let i = 0; i < n; i = i + 1) { ... }` purely in the parser, producing the AST of the equivalent block-plus-while with no new evaluator code.  Show the `pretty` output proving the rewrite.
 4.  *Truthiness differential.*  Write one program whose output differs under booleans-only versus Python-style truthiness, and confirm your interpreter follows your documented policy.
 5.  *Step limit.*  Add a `max_steps` parameter to your `While` executor that raises `RuntimeError` after N iterations.  This protects against infinite loops in student programs.  Test it with `while 1 > 0: print 1` and a limit of 100.
-1.  *Complete the executor.*  Implement `execute` for all your statement nodes with the exception pattern from class, define and document `truthy` for your language, and demonstrate the summation program plus an `if/else` program.
-2.  *The REPL.* Write the read-evaluate-print loop: prompt, read a line, tokenize, parse, execute against a persistent environment, repeat, catching and printing every error class without dying.  Your language now has an interactive shell; transcript required.
-3.  *Error taxonomy.*  Construct one program each that fails in the lexer, the parser, and the evaluator.  Verify each error message names its stage and location; improve the worst one.
-4.  *Semantics memo.*  Document three semantics decisions your team made today (truthiness, division by zero, loop variable persistence) in a `SEMANTICS.md` your project will grow all semester.
-5.  *Interpreter speedup.*  Modify the `While` executor to count the number of times the loop body executes.  Then add a "step limit" parameter that raises a `RuntimeError` if the loop exceeds 10,000 iterations.  This protects against infinite loops in student-written programs.  Show it triggering on `while 1 > 0: print 1`.
+6.  *Complete the executor.*  Implement `execute` for all your statement nodes with the exception pattern from class, define and document `truthy` for your language, and demonstrate the summation program plus an `if/else` program.
+7.  *The REPL.* Write the read-evaluate-print loop: prompt, read a line, tokenize, parse, execute against a persistent environment, repeat, catching and printing every error class without dying.  Your language now has an interactive shell; transcript required.
+8.  *Error taxonomy.*  Construct one program each that fails in the lexer, the parser, and the evaluator.  Verify each error message names its stage and location; improve the worst one.
+9.  *Semantics memo.*  Document three semantics decisions your team made today (truthiness, division by zero, loop variable persistence) in a `SEMANTICS.md` your project will grow all semester.
+10.  *Loop counter and step limit.*  Modify the `While` executor to count the number of times the loop body executes.  Then add a "step limit" parameter that raises a `RuntimeError` if the loop exceeds 10,000 iterations.  This protects against infinite loops in student-written programs.  Show it triggering on `while 1 > 0: print 1`.
 
 ---
 

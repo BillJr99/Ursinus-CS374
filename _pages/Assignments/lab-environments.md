@@ -49,7 +49,7 @@ tags:
 
 ---
 
-In this lab you build `Environment`, the class that makes scope real in your interpreter.  An environment is the data structure that maps variable names to their values.  Each block of code gets its own environment, and each environment points to the enclosing one, so a lookup can walk outward until it finds the name.  You leave with a tested `environment.py` that the Interpreter assignment's Step 2c imports unchanged, plus a paper trace that predicts what your class will do before you run it.  You do this lab with a partner.
+In this lab you build `Environment`, the class that makes scope real in your interpreter.  An environment is the data structure that maps variable names to their values.  Each block of code gets its own environment, and each environment points to the enclosing one, so a lookup can walk outward until it finds the name.  You leave with a tested `environment.py` that the Interpreter assignment's Step 2c imports unchanged, plus a paper trace that predicts what your class will do before you run it.  You may do this lab with a partner or on your own (see the pair policy below).
 
 **Pair policy.**  You may do this lab in pairs.  You each submit the same files, name each other in them, and earn the same grade.  You may also work alone.  The Interpreter assignment remains individual work: you may both carry this shared `Environment` into it, but the evaluator around it must be your own.
 
@@ -82,7 +82,7 @@ Python 3.11.9
 
 ## Part 0: Trace Binding and Scope on Paper
 
-Do this part on paper before you write the class; you may do it alone even though the rest of the lab is pair work.  Put your answers at the top of `trace.md` (a photo of the paper is fine).  Two terms first.  Under lexical scope, a name refers to the binding in the enclosing text of the program.  Under dynamic scope, a name refers to the most recent binding made by any caller that is still running.
+Do this part on paper before you write the class; you may do it alone even if you do the rest of the lab with a partner.  Put your answers at the top of `trace.md` (a photo of the paper is fine).  Two terms first.  Under lexical scope, a name refers to the binding in the enclosing text of the program.  Under dynamic scope, a name refers to the most recent binding made by any caller that is still running.
 
 ### Step 0.1: Trace the Shadowing Expression
 
@@ -342,7 +342,7 @@ Close `trace.md` with two theory questions from the Binding and Scope session.
 
 ## Deliverables
 
-Submit a ZIP containing the files below, with both partners named in `trace.md`.
+Submit a ZIP containing the files below, with your name (and your partner's, if you worked in a pair) in `trace.md`.
 
 | File or artifact | What it shows | Rubric row |
 |------------------|---------------|------------|
@@ -364,7 +364,7 @@ Submit a ZIP containing the files below, with both partners named in `trace.md`.
 - [ ] The shadowing program prints `51` then `2`, and the outer binding is unchanged after the block.
 - [ ] `trace.md` shows the environment chain at every step of the trace program, was written before the run, and notes any prediction that missed.
 - [ ] Both theory questions are answered, and question 1 quotes the exact line of the class.
-- [ ] Both partners are named in `trace.md`.
+- [ ] Your name, and your partner's if you worked in a pair, is in `trace.md`.
 
 ---
 

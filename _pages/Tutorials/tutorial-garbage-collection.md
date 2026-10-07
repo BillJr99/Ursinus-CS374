@@ -44,7 +44,7 @@ Three main strategies exist:
 
 | Strategy | When to collect | Cost | Handles cycles? |
 |---|---|---|---|
-| Reference counting | On every deallocation | Low (immediate) | No (cycles leak) |
+| Reference counting | On every reference change | Low (immediate) | No (cycles leak) |
 | Mark-and-sweep | When heap is full | Medium (pause) | Yes |
 | Copying (Cheney) | When semi-space fills | High (moving) | Yes |
 
@@ -308,6 +308,8 @@ except Exception as e:
     import traceback; traceback.print_exc()
 ```
 
+The `worklist` in `_mark` is the classic **tri-color** scheme in compact form.  Objects the mark phase has not reached yet are *white*.  Addresses waiting on the worklist are *gray*: reached, but their children not yet scanned.  An object whose `marked` flag is set has had its children pushed, so it is *black*.  When the worklist empties, there are no gray objects left, and anything still white is garbage.
+
 ---
 
 ## Part 4: Cheney's Copying Collector
@@ -477,15 +479,15 @@ except Exception as e:
 
 | | Reference Counting | Mark-and-Sweep | Cheney Copying |
 |---|---|---|---|
-| **Pause time** | None (incremental) | Stop-the-world | Stop-the-world |
+| **Pause time** | Usually short (incremental), but freeing a large structure can cascade into a long pause | Stop-the-world | Stop-the-world |
 | **Handles cycles** | No | Yes | Yes |
 | **Memory overhead** | 1 word per object (refcount) | 1 bit per object (mark) | 50% of heap |
 | **Heap fragmentation** | Yes (no compaction) | Yes (no compaction) | No (copies compact) |
 | **Cache performance** | Poor (live objects scattered) | Poor | Good (live objects dense) |
 | **Implementation complexity** | Low | Medium | Medium |
-| **Used by** | Swift, Python (CPython), Rust Arc | Java (old GC), Ruby | Lua, many JVMs (young gen) |
+| **Used by** | Swift, Python (CPython), Rust Arc | Java (old GC), Ruby, Lua (incremental) | OCaml (minor heap), many JVMs (young gen) |
 
-Modern production GCs (Java G1, Go's GC, V8) combine all three ideas: reference counting for quick cleanup, generational copying for young objects, and mark-and-sweep for long-lived objects.
+Modern production GCs combine these ideas.  Java's G1 and V8 are generational: they copy (evacuate) young objects and use mark-based collection for long-lived ones.  Go's GC takes a different route: a concurrent mark-and-sweep collector that neither copies objects nor splits them into generations.  None of these uses reference counting; CPython is the well-known runtime that pairs reference counting with a tracing collector for cycles.
 
 ---
 
@@ -506,8 +508,8 @@ If you choose the GC extension for your final project:
 
 ## Further Reading
 
-- Wilson, Paul R. "Uniprocessor Garbage Collection Techniques" (1992).  The definitive survey of all algorithms, readable and thorough.
-- Cheney, C.J. "A Nonrecursive List Compacting Algorithm" (1970, CACM).  The original two-page paper; one of the most elegant algorithms ever published.
+- Wilson, Paul R. "Uniprocessor Garbage Collection Techniques" (1992).  A widely cited survey of the classic algorithms, readable and thorough.
+- Cheney, C.J. "A Nonrecursive List Compacting Algorithm" (1970, CACM).  The original two-page paper, short and elegant enough to read in one sitting.
 - Jones, Richard et al. *The Garbage Collection Handbook* (CRC Press, 2011).  The standard modern reference.
 - Python's GC documentation: https://docs.python.org/3/library/gc.html: explains CPython's reference counting and its generational cycle collector.
 - Go GC guide: https://go.dev/doc/gc-guide: explains the tri-color mark-and-sweep used in Go's runtime.

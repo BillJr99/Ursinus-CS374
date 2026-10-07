@@ -1333,7 +1333,7 @@ except Exception as e:
 | Used for top-level functions | Used for nested functions and lambdas |
 | Operand: the inner `Chunk` | Operand: `(inner Chunk, upvalue_descriptors)` |
 
-In Lua's VM, `CLOSURE` is a single instruction that creates a closure object and immediately reads the following `UPVALUE` or `GETUPVAL` pseudo-instructions to populate the upvalue list.  CPython uses a different approach: it pre-compiles which variables are "cell variables" (captured by inner functions) vs "free variables" (captured from outer functions) and generates `MAKE_CELL`, `COPY_FREE_VARS` instructions.
+In Lua's VM, `CLOSURE` is a single instruction that creates a closure object and immediately reads the following pseudo-instructions to populate the upvalue list (in Lua 5.1, one `MOVE` per captured local of the enclosing function and one `GETUPVAL` per variable the enclosing function itself captured; later Lua versions store these descriptors in the function prototype instead).  CPython uses a different approach: it pre-compiles which variables are "cell variables" (captured by inner functions) vs "free variables" (captured from outer functions) and generates `MAKE_CELL`, `COPY_FREE_VARS` instructions.
 
 ---
 
@@ -1945,9 +1945,9 @@ Before submitting your bytecode VM implementation, verify all of the following:
 
 **Garbage Collector**: the VM currently never frees memory.  Add a mark-and-sweep garbage collector (GC): the GC roots are the value stack, all call frames, and the globals table.  Everything reachable from roots is live; everything else can be reclaimed.  See the Garbage Collection tutorial for a complete implementation over a simulated heap.
 
-**Just-in-Time Compilation**: modern VMs (V8, LuaJIT, PyPy) profile which bytecode sequences run most frequently ("hot paths") and compile those sequences to native machine code at runtime.  What makes this work is that the JIT can specialize on observed types: if `ADD` has only ever seen integers, the JIT emits a single native `ADD` instruction instead of a general dispatch.  Python 3.13's "copy-and-patch" JIT uses exactly this approach.
+**Just-in-Time Compilation**: modern VMs (V8, LuaJIT, PyPy) profile which bytecode sequences run most frequently ("hot paths") and compile those sequences to native machine code at runtime.  What makes this work is that the JIT can specialize on observed types: if `ADD` has only ever seen integers, the JIT emits a single native `ADD` instruction instead of a general dispatch.  CPython applies the same type-specialization idea inside its interpreter (the specializing adaptive interpreter, added in Python 3.11), and Python 3.13 added an experimental "copy-and-patch" JIT, off by default, that builds on those specialized instructions.
 
-**Register-Based VMs**: Lua 5.0 used a stack-based VM; Lua 5.1 switched to a **register-based** VM, which reduces instruction count by 20-30% by keeping intermediate values in named registers rather than pushing and popping them.  The CPython team is exploring a register-based bytecode for CPython 3.14+.
+**Register-Based VMs**: Lua 4.0 used a stack-based VM; Lua 5.0 switched to a **register-based** VM, which reduces instruction count by 20-30% by keeping intermediate values in named registers rather than pushing and popping them.  CPython, by contrast, still uses a stack-based bytecode.
 
 ---
 
@@ -1964,7 +1964,7 @@ You have now built every layer of a bytecode VM:
 | 4 | `Upvalue` and `MAKE_CLOSURE` | Closing over live stack slots |
 | 5 | `disassemble`, `compile_and_run`, performance timing | Tooling and integration |
 
-The architecture you built is not academic: it is the same design used by Lua, CPython (with a few thousand additional opcodes), and the JVM's early interpreter tier.  The primary difference between this tutorial's VM and a production VM is scale: more opcodes, optimized dispatch (computed `goto` in C, or a `switch` statement with branch prediction hints), a GC, and a JIT tier for hot loops.
+The architecture you built is not academic: it is the same design used by Lua, CPython (with a few hundred opcodes, counting its specialized variants), and the JVM's early interpreter tier.  The primary difference between this tutorial's VM and a production VM is scale: more opcodes, optimized dispatch (computed `goto` in C, or a `switch` statement with branch prediction hints), a GC, and a JIT tier for hot loops.
 
 ---
 
@@ -1972,7 +1972,7 @@ The architecture you built is not academic: it is the same design used by Lua, C
 
 This appendix supports the Team Language Project's **Bytecode Compiler and Stack VM** extension: once your compiler emits bytecode, these optimization passes are the natural next step for making the programs it produces run faster.
 
-Think of a compiler optimizer as an editor who rewrites a paragraph to say the same thing in fewer words: the meaning is preserved, but the form is tightened.  A compiler does the same thing to your program: it replaces slow, verbose machine instructions with fast, compact ones while guaranteeing that every possible input still produces the same output.  You will build five such "editors" (constant folding, dead-code elimination, common subexpression elimination (CSE), inlining, and tail-call optimization), each implemented as a tree rewrite over the AST you have been building throughout the course.
+Think of a compiler optimizer as an editor who rewrites a paragraph to say the same thing in fewer words: the meaning is preserved, but the form is tightened.  A compiler does the same thing to your program: it replaces slow, verbose code with fast, compact code while guaranteeing that every possible input still produces the same output.  You will build five such "editors" (constant folding, dead-code elimination, common subexpression elimination (CSE), inlining, and tail-call optimization), each implemented as a tree rewrite over the AST you have been building throughout the course.
 
 ### Learning Goals
 
@@ -2402,7 +2402,7 @@ print(f"Inlined: {pretty(inlined2)}")
 
 ### Model 5: Tail Call Optimization (TCO)
 
-**Intuition.**  Consider a recursive function where the very last thing it does before returning is call itself.  At the moment that recursive call happens, the current stack frame has no remaining work to do; it will just forward whatever the callee returns.  That frame is wasted space.  TCO exploits this: instead of pushing a new frame, the compiler converts the call into a backward jump that reuses the existing frame, effectively turning the recursion into a loop.  A tail-recursive function compiled with TCO uses *constant* stack space no matter how deep the recursion goes.  Functional languages like Scheme, Haskell, and Erlang mandate TCO; Python does not implement it natively, but you can simulate it with a trampoline.
+**Intuition.**  Consider a recursive function where the very last thing it does before returning is call itself.  At the moment that recursive call happens, the current stack frame has no remaining work to do; it will just forward whatever the callee returns.  That frame is wasted space.  TCO exploits this: instead of pushing a new frame, the compiler converts the call into a backward jump that reuses the existing frame, effectively turning the recursion into a loop.  A tail-recursive function compiled with TCO uses *constant* stack space no matter how deep the recursion goes.  Scheme's language standard requires proper tail calls, and Erlang and Haskell implementations (the BEAM VM and GHC) rely on them as well; Python does not implement it natively, but you can simulate it with a trampoline.
 
 A **tail call** is a function call that is the *last* action of a function.  Instead of creating a new stack frame, we can *reuse* the current frame.
 
