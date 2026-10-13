@@ -107,6 +107,44 @@ run_nfa(ENDS_IN_AB_NFA, "aab", trace=True)
 - Acceptance is a set-intersection test: accept if *any* reachable state is accepting.  "The machine may guess" means nothing more than that, made deterministic.
 - A missing entry in `delta` means that path dies.  Because we track a set, one dead path does not end the run; the others carry on.
 
+### One Step, Up Close
+
+Strip `run_nfa` down to its inner loop and one step is all that is left: for every state in the current set, collect its arrows on the symbol, and union the results.
+
+```python
+import traceback
+
+try:
+    # ends-in-ab NFA: q0 loops on a,b; q0 -a-> q1; q1 -b-> q2; q2 accepting
+    delta = {("q0","a"):{"q0","q1"}, ("q0","b"):{"q0"}, ("q1","b"):{"q2"}}
+    current = {"q0"}
+    for symbol in "aab":
+        nxt = set()
+        for q in current:                     # the union over EVERY state in the set
+            nxt |= delta.get((q, symbol), set())
+        current = nxt
+        print(f"read {symbol} -> {sorted(current)}")
+    print("accept" if "q2" in current else "reject")
+except Exception as e:
+    print(f"[automata:nfa_step] {e}")
+    traceback.print_exc()
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+You should see:
+
+```text
+read a -> ['q0', 'q1']
+read a -> ['q0', 'q1']
+read b -> ['q0', 'q2']
+accept
+```
+
+### Reading the Code
+
+- The inner `for q in current` loop is the whole idea.  The union over *every* state in the set is the step people skip, both here in `run_nfa` and in the subset-construction table, where each row's entry is the union of the arrows from every NFA state in that set, not just the first one you look at.
+- Follow only `q0` and you never see `q2`: on the final `b`, `q0` goes back to `{q0}` and only `q1` reaches `q2`.  Drop any state from the union and the machine rejects `aab`, a string it should accept.
+
 ### Try It Yourself
 
 Build an NFA of your own and watch the state set grow and shrink.
