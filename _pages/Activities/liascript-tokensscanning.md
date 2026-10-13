@@ -287,6 +287,45 @@ The lexer runs.  Now read it as a system and connect each design decision back t
 
 8.  The `MISMATCH` catch-all turns unknown characters into a `SyntaxError` with line and column.  Feed the lexer a `$` and verify the message.  Why is reporting *position* a kindness worth the bookkeeping?
 
+### Check Your Answer: Order Is Priority
+
+Answer CTQ 6 and CTQ 7 before you run this.  The cell below runs both experiments: the same input through two specs that differ only in order, and the same input through two keyword patterns that differ only in the `\b` anchors.
+
+```python
+import re
+import traceback
+
+try:
+    GOOD = re.compile(r"(?P<GE>>=)|(?P<GT>>)|(?P<EQ>=)|(?P<IDENT>[A-Za-z_]\w*)|(?P<INT>\d+)|(?P<SKIP>\s+)")
+    BAD  = re.compile(r"(?P<GT>>)|(?P<GE>>=)|(?P<EQ>=)|(?P<IDENT>[A-Za-z_]\w*)|(?P<INT>\d+)|(?P<SKIP>\s+)")
+    for name, pat in (("GE first", GOOD), ("GT first", BAD)):
+        print(name, [(m.lastgroup, m.group()) for m in pat.finditer("x >= 5") if m.lastgroup != "SKIP"])
+
+    NOB = re.compile(r"(?P<KEYWORD>if|else|while)|(?P<IDENT>[A-Za-z_]\w*)|(?P<SKIP>\s+)")
+    WB  = re.compile(r"(?P<KEYWORD>\b(?:if|else|while)\b)|(?P<IDENT>[A-Za-z_]\w*)|(?P<SKIP>\s+)")
+    for name, pat in (("no \\b", NOB), ("with \\b", WB)):
+        print(name, [(m.lastgroup, m.group()) for m in pat.finditer("iffy")])
+except Exception as e:
+    print(f"[tokens:order_priority] {e}")
+    traceback.print_exc()
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+You should see:
+
+```text
+GE first [('IDENT', 'x'), ('GE', '>='), ('INT', '5')]
+GT first [('IDENT', 'x'), ('GT', '>'), ('EQ', '='), ('INT', '5')]
+no \b [('KEYWORD', 'if'), ('IDENT', 'fy')]
+with \b [('IDENT', 'iffy')]
+```
+
+### Reading the Code
+
+- `GOOD` and `BAD` hold the same six patterns.  Only the order of `GE` and `GT` differs, and that alone splits `>=` into `GT` then `EQ`.  The engine tried `GT` first, it matched, and `GE` never got a turn.
+- Without `\b`, `KEYWORD` matches the first two letters of `iffy` and `IDENT` picks up the leftover `fy`.  The anchors demand a word boundary after the keyword, so the keyword alternative fails at position 0 and `IDENT` takes all four characters.
+- Each experiment holds everything fixed except the one thing under test.  That is the shape of a good answer to CTQ 6.
+
 ---
 
 ## Model 3: Peek/Advance Lexer Interface
@@ -451,10 +490,12 @@ def tokenize(source):
         else:
             yield Token(kind, lexeme, line, col)
 
+ESCAPES = {'"': '"', "\\": "\\", "n": "\n", "t": "\t"}
+
 def unescape(raw):
-    """Strip surrounding quotes and process escape sequences in a string lexeme."""
-    inner = raw[1:-1]
-    return inner.replace(r'\"', '"').replace(r'\\', '\\').replace(r'\n', '\n').replace(r'\t', '\t')
+    """Strip surrounding quotes and decode escapes in ONE left-to-right pass."""
+    body = raw[1:-1]
+    return re.sub(r"\\(.)", lambda m: ESCAPES.get(m.group(1), m.group(0)), body)
 
 program = r'''
 let greeting = "hello, world";
@@ -475,6 +516,16 @@ for tok in tokenize(program):
         print(f"  unescaped: {unescape(tok.lexeme)!r}")
 
 print()
+print("=== One pass versus chained replace on c:\\\\new ===")
+try:
+    path = r'"c:\\new"'
+    print("one pass:       ", repr(unescape(path)))
+    print("chained replace:", repr(path[1:-1].replace("\\\\", "\\").replace("\\n", "\n")))
+except Exception as e:
+    print(f"[tokens:unescape] {e}")
+    import traceback; traceback.print_exc()
+
+print()
 print("=== What happens with an unterminated string? ===")
 bad = 'let x = "oops;'
 try:
@@ -487,11 +538,54 @@ except SyntaxError as e:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
+You should see:
+
+```text
+=== All tokens ===
+Token(type='KEYWORD', lexeme='let', line=2, col=1)
+Token(type='IDENT', lexeme='greeting', line=2, col=5)
+Token(type='EQ', lexeme='=', line=2, col=14)
+Token(type='STRING', lexeme='"hello, world"', line=2, col=16)
+Token(type='SEMICOLON', lexeme=';', line=2, col=30)
+Token(type='KEYWORD', lexeme='let', line=3, col=1)
+Token(type='IDENT', lexeme='escaped', line=3, col=5)
+Token(type='EQ', lexeme='=', line=3, col=14)
+Token(type='STRING', lexeme='"say \\"hi\\" now"', line=3, col=16)
+Token(type='SEMICOLON', lexeme=';', line=3, col=32)
+Token(type='KEYWORD', lexeme='let', line=4, col=1)
+Token(type='IDENT', lexeme='newlines', line=4, col=5)
+Token(type='EQ', lexeme='=', line=4, col=14)
+Token(type='STRING', lexeme='"line1\\nline2"', line=4, col=16)
+Token(type='SEMICOLON', lexeme=';', line=4, col=30)
+Token(type='KEYWORD', lexeme='print', line=5, col=1)
+Token(type='IDENT', lexeme='greeting', line=5, col=7)
+Token(type='SEMICOLON', lexeme=';', line=5, col=15)
+
+=== String values after unescaping ===
+  raw:       "hello, world"
+  unescaped: 'hello, world'
+  raw:       "say \"hi\" now"
+  unescaped: 'say "hi" now'
+  raw:       "line1\nline2"
+  unescaped: 'line1\nline2'
+
+=== One pass versus chained replace on c:\\new ===
+one pass:        'c:\\new'
+chained replace: 'c:\new'
+
+=== What happens with an unterminated string? ===
+SyntaxError: line 1, col 9: unexpected '"'
+No STRING pattern matched, so the quote fell through to MISMATCH:
+the error names a stray character, not an unterminated string.
+```
+
+> **Watch out!**  The chained version is not wrong because of a typo.  Its first `replace` turns `\\` into one real backslash, and its second `replace` then reads that new backslash, plus the `n` after it, as the start of `\n`.  One replacement fed the next.  The one-pass `re.sub` consumes each backslash together with the character after it, so nothing it produces is ever scanned again.  When you read the output, remember that `repr` shows a real backslash doubled.  So `'c:\\new'` is `c`, `:`, one backslash, then `new`, which is correct, while `'c:\new'` holds a real newline character.
+
 ### Critical Thinking Questions
 
 12.  The STRING pattern is `"(?:[^"\\]|\\.)*"`.  The two alternatives inside the group are `[^"\\]` (any char except quote or backslash) and `\\.` (backslash followed by any char).  Explain in your own words why both alternatives are needed: what string would fail if only the first alternative existed?
 13.  Run the unterminated-string test.  The lexer does raise, but at the stray quote and with a generic message, because the quote fell through to `MISMATCH`.  Propose a pattern change or post-processing step that would detect an unterminated string and report it as one, with line and column.
-14. `unescape()` processes `\"`, `\\`, `\n`, and `\t`.  List two other escape sequences that a production language would need, and describe any ordering constraint that matters when applying multiple replacements.
+14. `unescape()` processes `\"`, `\\`, `\n`, and `\t`.  List two other escape sequences that a production language would need, and describe any ordering constraint that matters when applying multiple replacements.  A single `re.sub` pass, as in the cell above, avoids the ordering problem entirely.
 
 ---
 
