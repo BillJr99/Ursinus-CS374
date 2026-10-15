@@ -268,7 +268,7 @@ TOKEN_SPEC = [
 | Token Name | Example Lexemes | Notes |
 |------------|----------------|-------|
 | `COMMENT` | `# this is a comment` | Match to end of line; to be skipped |
-| `WHITESPACE` | ` `, `\t`, `\n` | Skip; track newlines for line counting |
+| `WHITESPACE` | a space (`' '`), `\t`, `\n` | Skip; track newlines for line counting |
 | `STRING` | `"hello"`, `"a\nb"` | Double-quoted; see Part 3 for escapes |
 | `FLOAT` | `3.14`, `0.5` | Must appear before INT |
 | `INT` | `42`, `0` | Non-negative; sign handled by unary minus |
