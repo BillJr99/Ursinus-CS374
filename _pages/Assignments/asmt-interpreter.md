@@ -527,7 +527,7 @@ Replace the `NotImplementedError` in each expression branch with the rule below.
 **You write:** `interpreter.py` - the error classes, `is_number`, `type_name`, three `BinOp` helpers (`NUMERIC_OPS`, `check_numbers`, and `values_equal`), and the `Num`, `Str`, `BoolLit`, `Var`, `UnaryOp("-")`, and `BinOp` branches
 **You run:** a one-line check after each sub-step, then the two `python3 -c` commands in Step 2a.6
 
-You write this step in six pieces, one rule at a time, and each piece has its own one-line check that builds nodes by hand, so no parser is involved until the end.  Here is the whole of the code this step fills in, so you can see where each piece goes.  The sub-steps below say which `# Step` comments each one covers.
+You write this step in six pieces, one rule at a time, and each piece has its own one-line check that builds nodes by hand, so no parser is involved until the end.  Here is the skeleton this step fills in, so you can see where each piece goes.  Step 2a.3 adds the `Environment` and `Let` pieces from Step 2c, and Step 2a.5 adds three `BinOp` helpers below `type_name`.  The sub-steps below say which `# Step` comments each one covers.
 
 ```python
 # --- Language-level errors: define them now; Step 5a audits every raise ---
@@ -626,6 +626,8 @@ python3 -c "from ast_nodes import *; from interpreter import Interpreter; i = In
 > `line 0, col 0` means the `Var` branch let the environment's position-less error escape instead of raising a new one with `node.line, node.col`.
 
 #### Step 2a.4: Unary minus (Steps 5 to 7)
+
+Step 7 needs no code: leave the `NotImplementedError("not")` line in place for Step 2b.
 
 | `# Step` | How to think about it |
 |---|---|

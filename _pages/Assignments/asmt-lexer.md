@@ -522,7 +522,7 @@ The class holds two things: the generator from Step 1c, and a one-token *buffer*
 1. If the buffer is empty, ask the generator for one token and store it in the buffer.
 2. If the buffer already holds a token, do nothing.  This is what makes `peek` idempotent.
 
-> **Do this.** Implement the two methods, then replace the body of `scratch.py` with this probe and run `python3 scratch.py`.  The probe reaches into `_buffer` only to watch it work; the parser never will.
+> **Do this.** Implement the two methods, then replace the body of `scratch.py` with this probe and run `python3 scratch.py`.  The probe reaches into `_buffer` only to watch it work; the parser never will.  If you named the buffer attribute something else, use your name in the probe.
 >
 > ```python
 > from lexer import Lexer
@@ -788,7 +788,7 @@ You build this in four pieces: the field, the rule, and the decoder each get wri
 
 > **Do this.**
 > 1. Add a fifth field to `Token` for the decoded value (the TODO you left in Step 1b).  Only `STRING` tokens set it.  Give it a default of `None`, so every other token is still built with four arguments.  A token stores both the raw lexeme (e.g., `"a\nb"` with a backslash-n) in `value` and the decoded value (with a real newline) in the new field.
-> 2. Run `python3 scratch.py` with your Step 1c token printer.  Every token now ends with the new field set to `None`, for example `decoded=None)`.
+> 2. Put the Step 1c token printer back in `scratch.py` (the Lexer probes replaced it) and run `python3 scratch.py`.  Every token now ends with the new field set to `None`, for example `decoded=None)`.
 
 > **If it fails.** `TypeError` about a missing argument when an `INT` or `IDENT` token is built: the new field has no default.
 

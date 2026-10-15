@@ -785,7 +785,7 @@ Steps 1, 3b, and 4 are the loop you already wrote in `dfa_core.py`.  Write them 
 python3 -c "import simulator as s; m = s.load_machine('machines/even_ones.json'); print(s.run_dfa(m, '0110'), s.run_dfa(m, '100'), s.run_dfa(m, ''))"
 ```
 
-> **You should see.** `True False True`: the same three verdicts `dfa_core.py` gave, now as return values instead of printed words.
+> **You should see.** `True False True`: the verdicts `dfa_core.py` gave for `0110`, `100`, and the empty string you predicted in Step 1.1, now as return values instead of printed words.
 
 #### Step 1.3.2: Reject an unknown symbol (Step 3a)
 
@@ -854,7 +854,7 @@ def check_start_and_accept  (Step 1.2.2)
 def check_dfa_delta         (Step 1.2.3)
 def check_nfa_delta         (Step 1.2.4)
 def load_machine            (Step 1.2.5)
-def run_dfa                 (Step 1.3)
+def run_dfa                 (Steps 1.3.1 to 1.3.3)
 def main                    (Step 1.3.4)
 if __name__ == "__main__"   (Step 1.3.4, always last)
 ```
@@ -1106,7 +1106,7 @@ python3 -c "import simulator as s; m = s.load_machine('machines/eps_cycle.json')
 > **If it fails.**
 > - The command never finishes: you push targets onto the frontier without checking whether they are already in the closure, so the cycle runs forever.  Press Ctrl+C to stop it.
 > - Only `['q0']`: you read `delta["q0,eps"]` once instead of following eps edges out of every newly added state.
-> - A `MachineError` that mentions `eps`: your loader from Step 1.2 rejects `eps` as an unknown symbol.  Allow it for NFAs.
+> - A `MachineError` that mentions `eps`: your loader from Step 1.2 (the `check_nfa_delta` helper of Step 1.2.4) rejects `eps` as an unknown symbol.  Allow it for NFAs.
 
 ### Step 2.3: Implement `run_nfa`
 

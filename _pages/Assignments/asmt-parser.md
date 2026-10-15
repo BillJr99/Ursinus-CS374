@@ -382,7 +382,7 @@ print(Purse(), Purse().coins is Purse().coins)
 >
 > **Predict** before you move on: what would `plain == dated` print if `year` were declared as plain `year: int = 0`?  Your node classes face the same question with their `line` field.
 
-You write `ast_nodes.py` in two pieces, the expression nodes and then the statement nodes, and check each piece before you go on.  Then `parser.py` grows one piece at a time: its two helpers, the worked `parse_muldiv`, and the first two parsing functions, which Step 2a.5 integrates behind the `parse` entry point.
+You write `ast_nodes.py` in two pieces, the expression nodes and then the statement nodes, and check each piece before you go on.  Then `parser.py` grows one piece at a time: its two helpers, the worked `parse_muldiv`, and the first two parsing functions, which Step 2a.5 checks together through `parse_muldiv` before adding the `parse` entry point (which starts working in Step 2c).
 
 Field order matters.  The tests build nodes positionally, as in `BinOp("+", Num(2), Num(3))`, so declare the fields in the order the comments list them.
 
@@ -605,7 +605,7 @@ Read it against the rule, one line at a time:
 
 Every tier in Step 2b that has a `( ... )*` in its rule follows these six lines.  Only the operator tokens and the tier below change.
 
-#### Step 2a.5: The first two parsing functions, then integrate behind `parse`
+#### Step 2a.5: The first two parsing functions, then integrate and check
 
 You write these two from their algorithms.  Each one is a short `if` chain over the peeked token.
 
