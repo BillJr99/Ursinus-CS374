@@ -551,7 +551,7 @@ A wrong machine file is the most common bug in this lab.  Your loader checks the
 **You run:** `python3 -c "import simulator; simulator.load_machine('machines/even_ones.json')"`, then the same command on a broken file.
 
 > **Do this.**
-> 1. Create a new file, `simulator.py`, next to `dfa_core.py`.  Type in the skeleton below, and then fill in the `# TODO` lines using the hints after it.
+> 1. Create a new file, `simulator.py`, next to `dfa_core.py`.  Type in the skeleton below.  Then write the body of each function, one `# Step` comment at a time, using the hints after it.
 > 2. `load_machine(path)` reads a JSON file and checks that the start state, the accept states, and every transition refer only to declared states and alphabet symbols.
 > 3. Collect every validation error in a list, then raise one `MachineError` that lists them, one per line.  Do not stop at the first error.
 > 4. Accept both `delta` shapes.  A DFA's `delta` is an object of objects.  An NFA's `delta` (Part 2) has `"state,symbol"` keys with list values, and the symbol half may be the special word `eps`.  Your check must let `eps` through for an NFA and reject every other symbol outside the alphabet.
@@ -566,45 +566,51 @@ class MachineError(Exception):
 
 
 def is_nfa(machine):
-    # An NFA's delta values are lists of states; a DFA's are objects (Part 2).
-    return any(isinstance(v, list) for v in machine["delta"].values())
+    """Return True if machine is an NFA and False if it is a DFA."""
+    # Step 1: Look at the values stored in machine["delta"].  A DFA's values
+    #         are dictionaries, one row per state.  An NFA's values are lists
+    #         of target states (Part 2).
+    # Step 2: Return True if at least one of those values is a list, and
+    #         False otherwise.
+    ...
 
 
 def load_machine(path):
-    with open(path) as f:
-        machine = json.load(f)
-    errors = []
-    states = set(machine["states"])
-    alphabet = set(machine["alphabet"])
+    """Read the JSON machine at path, check it, and return it as a dict.
 
-    # The start state must be declared.  This first check is done for you;
-    # every other check follows the same pattern.
-    if machine["start"] not in states:
-        errors.append(f"start state {machine['start']!r} is not a declared state")
-
-    # TODO: every accept state must be in states
-
-    if is_nfa(machine):
-        # TODO: NFA: every "state,symbol" key must split into a declared state and
-        #       either an alphabet symbol or "eps"; every target must be declared
-        pass
-    else:
-        # TODO: DFA: every (state, symbol) pair over the alphabet must appear, and
-        #       every delta[state][symbol] must name a declared state
-        pass
-
-    if errors:
-        raise MachineError("\n".join(errors))
-    return machine
+    Raise one MachineError that lists every problem, one per line.
+    """
+    # Step 1: Open the file at path and parse it into a dictionary, machine.
+    # Step 2: Start an empty list, errors.  Every check below appends to it.
+    # Step 3: Build a set of the declared states and a set of the alphabet
+    #         symbols, so each check is a quick membership test.
+    # Step 4: If the start state is not a declared state, append an error
+    #         that names it.
+    # Step 5: For each accept state that is not declared, append an error
+    #         that names it.
+    # Step 6: If is_nfa(machine) is true, check every "state,symbol" key.
+    #         Its state half must be declared.  Its symbol half must be in
+    #         the alphabet or be the word "eps".  Every target in its list
+    #         must be declared.
+    # Step 7: Otherwise the machine is a DFA.  For every declared state and
+    #         every alphabet symbol, the pair must appear in delta, and its
+    #         target must be a declared state.  A missing pair and an
+    #         undeclared target are two different errors.
+    # Step 8: If errors is not empty, raise one MachineError whose message is
+    #         every error joined into one string, one per line.  Otherwise,
+    #         return machine.
+    ...
 ```
 
-The worked start-state check shows the pattern for every other check.  Test one condition, and when it fails, append a sentence to `errors` that names the bad value.  `!r` prints the value with quotes around it, so a stray space or a misspelling is easy to see.  Fill in the remaining checks one at a time, and replace each `pass` once its branch has real code:
+Every check follows one pattern.  Test one condition, and when it fails, append a sentence to `errors` that names the bad value.  Nothing raises until Step 8, so one run reports every problem.  Word your messages like the expected output below, so you can compare yours line by line.  Write one `# Step` at a time:
 
-| `# TODO` | How to write it |
+| Step | How to think about it |
 |---|---|
-| accept states | Loop `for state in machine["accept"]:` and append an error for each `state` that is not in `states`. |
-| DFA pairs | Write two nested loops, `for state in machine["states"]:` and `for symbol in machine["alphabet"]:`.  Read the target with `target = machine["delta"].get(state, {}).get(symbol)`.  `.get` returns `None` instead of crashing, so `target is None` means the pair is missing; append an error that names both `state` and `symbol`.  Otherwise, if `target` is not in `states`, append an error that names the target. |
-| NFA keys | Loop `for key, targets in machine["delta"].items():`.  Split the key with `state, _, symbol = key.partition(",")`.  Append an error if `state` is not in `states`, if `symbol` is neither in `alphabet` nor equal to `"eps"`, or if any entry of `targets` is not in `states`. |
+| `is_nfa` | You only need to know whether some value is a list.  `isinstance(value, list)` answers that for one value, and `any(...)` asks it of all of them at once.  Part 2 is the first time it returns `True`. |
+| start and accept (Steps 4 and 5) | Membership in the set of declared states is the whole test.  Inside an f-string, `!r` prints a value with quotes around it, so a stray space or a misspelling is easy to see. |
+| DFA pairs (Step 7) | Loop over the declared states and the alphabet, not over the keys of `delta`.  A row that is missing from `delta` is exactly what you are looking for, and a loop over `delta` would never visit it.  `dict.get` with a default never crashes: a missing row can default to an empty dictionary, and a missing symbol then gives `None`.  `None` means the pair is missing, so name both the state and the symbol.  Otherwise, check that the target is declared. |
+| NFA keys (Step 6) | Visit each key together with its list of targets; `.items()` gives you both.  Each key is one string, so split it at the comma into its state half and its symbol half.  `str.partition` or `str.split` both work.  The symbol test has two ways to pass: in the alphabet, or the word `eps`. |
+| raise once (Step 8) | An empty list is false in an `if`.  `str.join` with a newline turns the list into one message with one problem per line. |
 
 You cannot test the NFA branch until Part 2 gives you an NFA file.  Write it now anyway, because Part 2 relies on it.
 
@@ -658,19 +664,22 @@ python3 -c "import simulator; simulator.load_machine('machines/broken.json')"
 >    - The empty string `""` is valid input.  It tests whether the start state accepts.
 >    - With `trace` on, print the current state after each symbol.
 > 2. Add a `main` that takes the machine path and the input string from the command line and honors a `--trace` flag.  `main` and the `if __name__ == "__main__":` lines go last in the file, so every function they call is defined above them.
-> 3. Type `main` exactly as shown; it is complete.  Fill in the three `# TODO` lines in `run_dfa`, then delete its `pass`.
+> 3. Type `main` exactly as shown; it is complete.  Write the body of `run_dfa` by following its `# Step` comments, then delete the `...`.
 
 ```python
 def run_dfa(machine, s, trace=False):
-    state = machine["start"]
-    if trace:
-        print(f"start: {state}")
-    for symbol in s:
-        # TODO: if symbol is not in the alphabet, print a reason and return False
-        # TODO: move to machine["delta"][state][symbol]
-        # TODO: if trace, print f"read {symbol} -> {state}"
-        pass
-    return state in machine["accept"]
+    """Run the DFA on the string s.  Return True to accept, False to reject."""
+    # Step 1: Put the machine in its start state.
+    # Step 2: If trace is on, print "start: " and that state, as in
+    #         "start: even".
+    # Step 3: Read s one symbol at a time.  For each symbol:
+    #   3a: If the symbol is not in the alphabet, print the reason, as in
+    #       "reject: symbol '2' is not in the alphabet", and return False.
+    #   3b: Follow one arrow to the next state.
+    #   3c: If trace is on, print the symbol and the new state, as in
+    #       "read 1 -> odd".
+    # Step 4: After the loop, return whether the final state accepts.
+    ...
 
 
 def main(argv):
@@ -687,13 +696,14 @@ if __name__ == "__main__":
     main(sys.argv[1:])
 ```
 
-Each `# TODO` in `run_dfa` is one or two lines:
+Steps 1, 3b, and 4 are the loop you already wrote in `dfa_core.py`.  The new parts are the check and the trace:
 
-| `# TODO` | How to write it |
+| Step | How to think about it |
 |---|---|
-| unknown symbol | `if symbol not in machine["alphabet"]:` then `print(f"reject: symbol {symbol!r} is not in the alphabet")` and `return False`. |
-| move | `state = machine["delta"][state][symbol]`, the same line as in `dfa_core.py`.  It is safe now, because the loader already proved that every pair exists.  *Before You Code: How a DFA Lives in Python* in Step 1.1 shows the two lookups. |
-| trace | `if trace:` then `print(f"read {symbol} -> {state}")`. |
+| unknown symbol (3a) | Check before you move, not after.  Moving on an unknown symbol is the `KeyError` that crashed `dfa_core.py`.  The reason has quotes around the symbol, which `!r` in an f-string gives you.  Return right away; `main` prints the final `reject`. |
+| move (3b) | Use the same two lookups as `dfa_core.py`: the row for the current state, then the arrow for the symbol.  Plain `[...]` is safe here, because the loader already proved that every pair exists.  *Before You Code: How a DFA Lives in Python* in Step 1.1 shows the two lookups. |
+| trace (3c) | Print after the move, so each line shows the state the symbol led to.  This line has no quotes around the symbol or the state. |
+| empty string | You need no special case.  The loop never runs, so Step 4 tests the start state. |
 
 `main` mentions `run_nfa`, which you do not write until Part 2.  The line still works for a DFA, because Python evaluates only the branch of `run_nfa if is_nfa(machine) else run_dfa` that it takes.  When you finish this step, `simulator.py` holds these pieces, from top to bottom:
 
@@ -857,15 +867,7 @@ key = f"{state},{symbol}"
 print(repr(key), "->", delta.get(key, []))      # two targets: the nondeterminism
 print(repr("q1,a"), "->", delta.get("q1,a", []))  # no arrow: an empty list
 
-active = {"q0", "q1"}        # the NFA could be in either state
-moved = set()                # not {}: that is an empty dict
-for state in sorted(active): # sorted only so the printout has a fixed order
-    targets = delta.get(f"{state},b", [])
-    print(f"  {state} on b -> {targets}")
-    moved.update(targets)
-print("moved:", sorted(moved))
-
-print(type({}).__name__, type(set()).__name__)
+print(type({}).__name__, type(set()).__name__)   # {} is a dict, set() is a set
 print({"q1", "q0"} == {"q0", "q1"})
 seen = {frozenset({"q0"}), frozenset({"q0", "q1"})}
 print(frozenset({"q1", "q0"}) in seen)
@@ -880,16 +882,27 @@ except TypeError as e:
 > ```text
 > 'q0,a' -> ['q0', 'q1']
 > 'q1,a' -> []
->   q0 on b -> ['q0']
->   q1 on b -> ['q2']
-> moved: ['q0', 'q2']
 > dict set
 > True
 > True
 > TypeError: unhashable type: 'set'
 > ```
+
+Now take one union by hand.  **Try it in the REPL:** run `python3` from inside `cs374-automata`, and type the `import`, `with`, and `delta` lines from the top of `explore_nfa.py`.  The REPL needs one blank line after the indented `json.load` line to finish the `with` block.  Then:
+
+1. Print the `b` moves of `q0`, using `.get` with an empty list as the default.
+2. Print the `b` moves of `q1` the same way.
+3. Turn each of those two lists into a `set`, take the union of the two sets with `|`, and print the result with `sorted(...)`.  A set prints in no fixed order, and `sorted` gives you one.
+
+> **You should see.**
 >
-> The `moved` line is the last row of the `aab` trace at the top of this page: the set `{q0, q1}` moves on `b` to $$\{q0\} \cup \{q2\} = \{q0, q2\}$$.  Your `run_nfa` in Step 2.3 does this once per symbol.
+> ```text
+> ['q0']
+> ['q2']
+> ['q0', 'q2']
+> ```
+>
+> The last line is the last row of the `aab` trace at the top of this page: the set `{q0, q1}` moves on `b` to $$\{q0\} \cup \{q2\} = \{q0, q2\}$$.  Here you typed one lookup per state.  Your `run_nfa` in Step 2.3 must do the same for every state in the active set, however many there are, once per symbol.
 
 *ε-moves, one pass at a time.*  The closure works from a to-do list called the *frontier*.  Here is the cycle machine of Step 2.2 (`q0 -ε-> q1`, `q1 -ε-> q2`, `q2 -ε-> q0`), closed by hand from `{q0}`, one pass of the loop per row:
 
@@ -910,29 +923,27 @@ The epsilon-closure of a set of states holds every state you can reach from the 
 **You run:** the one-line check command after the code.
 
 > **Do this.**
-> 1. Add `eps_closure(machine, states) -> frozenset` to `simulator.py` and fill in the `# TODO` lines.  It returns a `frozenset` so that a closure can sit inside another set later.
+> 1. Add `eps_closure` to `simulator.py`, below `run_dfa`, and write its body from the algorithm below.  It returns a `frozenset` so that a closure can sit inside another set later.
 > 2. Save the three-state cycle below as `machines/eps_cycle.json`.  It is a test machine, and you do not need to submit it.
 > 3. Run the check command.
 
-```python
-def eps_closure(machine, states):
-    """Every state reachable from `states` by eps moves alone, including `states`."""
-    closure = set(states)
-    frontier = list(states)   # states whose eps edges you have not followed yet
-    while frontier:
-        state = frontier.pop()
-        # TODO: look up machine["delta"].get(f"{state},eps", [])
-        # TODO: for each target not already in closure, add it and push it on frontier
-        pass
-    return frozenset(closure)
-```
+**The function.**  `def eps_closure(machine, states):` takes a loaded NFA and any collection of state names (a set, a list, or a frozenset).  It returns a `frozenset` of every state reachable from `states` by ε-moves alone, including the states in `states` themselves.
 
-The loop works from a to-do list.  `frontier` holds the states whose ε-arrows you have not followed yet.  Each pass takes one state off the list, follows its ε-arrows, and puts every newly found state on the list, so that its ε-arrows get followed too.  When the list is empty, nothing new can be reached.  Fill in the two `# TODO` lines, then delete the `pass`:
+**The algorithm.**  It is the frontier table from *Before You Code: How an NFA Lives in Python*, one pass per row:
 
-| `# TODO` | How to write it |
+1. Make a set, the closure, that holds every state in `states`.  Zero moves count, so each state is in its own closure.
+2. Make a list, the frontier, that holds the same states.  It is your to-do list: the states whose ε-arrows you have not followed yet.
+3. While the frontier is not empty:
+   1. Take one state off the frontier.
+   2. Look up its ε-targets under the key `"state,eps"` for that state.  A missing key means it has no ε-arrows.
+   3. For each target, ask whether it is already in the closure.  If it is, skip it.  If it is not, add it to the closure and put it on the frontier, so its own ε-arrows get followed later.
+4. When the frontier is empty, nothing new can be reached.  Return the closure as a `frozenset`.
+
+| Idea | How to think about it |
 |---|---|
-| look up | `targets = machine["delta"].get(f"{state},eps", [])`.  A state with no ε-arrows gets `[]`, so the next loop does nothing. |
-| add and push | `for target in targets:` then `if target not in closure:` then `closure.add(target)` and `frontier.append(target)`.  The `not in closure` test is the cycle check: a state you have already found is never pushed again. |
+| the cycle check | The question "is it already in the closure?" is the only thing that stops a cycle.  A state you have already found never goes back on the frontier, so each state is taken off at most once. |
+| no ε-arrows | Most states have none.  The lookup must quietly give you nothing to loop over, as in the Step 2.1 reading rule. |
+| order | It does not matter which state you take off the frontier first.  You reach the same closure either way. |
 
 ```json
 {
@@ -963,44 +974,41 @@ A DFA is in one state at a time; an NFA is in a set of states.  `run_nfa` tracks
 2.  For each symbol in `s`, take the union of the `delta["state,symbol"]` lists of all active states, then take the epsilon-closure of that union.
 3.  Accept if the final active set contains at least one accepting state.
 
-Step 2 is the "move, then ε-close" rule from *One step of an NFA* at the top of this page.  Students most often get the union wrong.  On each symbol, every active state contributes the targets of its own `"state,symbol"` key, and you must collect all of them.  In code, the union is a loop that grows one set:
+Step 2 is the "move, then ε-close" rule from *One step of an NFA* at the top of this page.  Students most often get the union wrong.  On each symbol, every active state contributes the targets of its own `"state,symbol"` key, and you must collect all of them.  The union grows one set, one active state at a time.  Here is the active set `{q0, q1}` reading `b`:
 
-| Active state | Lookup | `moved` so far |
+| Active state | Its key and targets | the moved set so far |
 |---|---|---|
-| q0 | `delta.get("q0,b", [])` gives `["q0"]` | {q0} |
-| q1 | `delta.get("q1,b", [])` gives `["q2"]` | {q0, q2} |
+| q0 | `"q0,b"` holds `["q0"]` | {q0} |
+| q1 | `"q1,b"` holds `["q2"]` | {q0, q2} |
 
-Then `active = eps_closure(machine, moved)`.
-
-Python's set union does this: `moved |= set(targets)`, or `moved.update(targets)`.  A state with no key adds nothing.  If no state adds anything, `moved` is empty, and it stays empty for the rest of the input.
+Then the new active set is the ε-closure of the moved set.  A state with no key adds nothing.  If no state adds anything, the moved set is empty, and the active set stays empty for the rest of the input.
 
 **You write:** `run_nfa` in `simulator.py`, below `eps_closure` and above `main`.
 **You run:** the `--trace` command on `machines/ends_in_ab_nfa.json`, then the two commands on `machines/eps_cycle.json`.
 
 > **Do this.**
-> 1. Add `run_nfa(machine, s, trace=False) -> bool` below `eps_closure` and fill in the `# TODO` lines.  `main` from Step 1.3 already calls `run_nfa` when `is_nfa` returns true.
+> 1. Add `run_nfa` below `eps_closure` and write its body from the algorithm below.  `main` from Step 1.3 already calls `run_nfa` when `is_nfa` returns true.
 > 2. With `trace` on, print the sorted active set after each symbol.  It replaces the single state that `run_dfa` prints.
 
-```python
-def run_nfa(machine, s, trace=False):
-    active = eps_closure(machine, {machine["start"]})
-    if trace:
-        print(f"start: {sorted(active)}")
-    for symbol in s:
-        # TODO: union machine["delta"].get(f"{state},{symbol}", []) over every state in active
-        # TODO: active = eps_closure(machine, that union)
-        # TODO: if trace, print f"read {symbol} -> {sorted(active)}"
-        pass
-    return any(state in machine["accept"] for state in active)
-```
+**The function.**  `def run_nfa(machine, s, trace=False):` takes a loaded NFA, the input string, and the trace flag.  It returns `True` to accept and `False` to reject, just like `run_dfa`.
 
-The three `# TODO` lines replace the `pass`:
+**The algorithm.**
 
-| `# TODO` | How to write it |
+1. Set the active set to the ε-closure of a set that holds only the start state.  Use your `eps_closure`.
+2. If trace is on, print `start: ` followed by the active set as a sorted list, as in `start: ['q0']`.
+3. For each symbol in `s`:
+   1. Start a new, empty moved set.
+   2. For each state in the active set, look up the key for that state and this symbol.  A missing key means no moves.  Add every target to the moved set.
+   3. Replace the active set with the ε-closure of the moved set.
+   4. If trace is on, print `read `, the symbol, ` -> `, and the sorted active set, as in `read a -> ['q0', 'q1']`.
+4. After the loop, return whether any state in the active set is an accepting state.
+
+| Idea | How to think about it |
 |---|---|
-| union | Start an empty set with `moved = set()`.  Then loop `for state in active:` and call `moved.update(machine["delta"].get(f"{state},{symbol}", []))`.  This loop is the table above, one row per active state, and it is the loop you ran by hand in `explore_nfa.py`. |
-| close | `active = eps_closure(machine, moved)`.  Leave this out and the `ab?` example at the top of this page rejects `a`. |
-| trace | `if trace:` then `print(f"read {symbol} -> {sorted(active)}")`. |
+| the union (3.2) | This is the table above, one row per active state, and the union you took by hand in the REPL.  The moved set must start empty once per symbol, before you visit the active states, and only grow while you visit them. |
+| the close (3.3) | Skip it and the `ab?` example at the top of this page rejects `a`.  The first active set needs a closure too, which is why step 1 closes the start state. |
+| the trace | Print the sorted active set, not the set itself.  A set prints in no fixed order, and the expected output below is sorted. |
+| empty string | The loop never runs, so step 4 tests the closure of the start state.  You need no special case. |
 
 `run_nfa` does not check for symbols outside the alphabet.  It does not need to, because no key mentions such a symbol, so `moved` comes out empty and the string is rejected.
 
@@ -1020,7 +1028,7 @@ python3 simulator.py machines/ends_in_ab_nfa.json aab --trace
 > accept
 > ```
 >
-> If the last set holds only one state, such as `['q2']` or `['q0']`, instead of `['q0', 'q2']`, your union kept only one active state's targets.  Create `moved` once per symbol, before the inner loop, and add to it inside the loop.
+> If the last set holds only one state, such as `['q2']` or `['q0']`, instead of `['q0', 'q2']`, your union kept only one active state's targets.  The moved set was started over, or replaced, inside the loop over active states, when it should only grow there.
 
 Then test it on the cycle machine from Step 2.2:
 
@@ -1046,7 +1054,7 @@ Worked example: `"baaab"` -> accept; `"ababab"` -> reject.  Hint: let the machin
 **You write:** `machines/contains_aa.json`, plus a heading for this machine in `writeup.md` with your test strings and one `--trace` output.  No Python changes; `simulator.py` already runs any NFA.
 **You run:** the two commands below, then your own eight test strings.
 
-You can start from this skeleton.  Three states are enough: one that has not yet guessed, one that has just read the first `a` of the guessed `aa`, and one that has seen `aa`.  Replace each `["TODO"]` with the list of target states for that key, and add or remove keys as your design needs.  Your loader reports any `"TODO"` you forget, because it is not a declared state:
+You can start from this skeleton.  Three states are enough: `q0` has not yet guessed, `q1` has just read the first `a` of the guessed `aa`, and `q2` has seen `aa`.  Draw the arrows on paper first.  Then replace the placeholder key with one `"state,symbol"` key for each state and symbol that has at least one arrow, and list its targets.  A pair with no arrow gets no key.  Your loader reports the placeholder if you forget to replace it, because `"TODO"` is not a declared state:
 
 ```json
 {
@@ -1055,11 +1063,7 @@ You can start from this skeleton.  Three states are enough: one that has not yet
   "start": "q0",
   "accept": ["q2"],
   "delta": {
-    "q0,a": ["TODO"],
-    "q0,b": ["TODO"],
-    "q1,a": ["TODO"],
-    "q2,a": ["TODO"],
-    "q2,b": ["TODO"]
+    "TODO,a": ["TODO"]
   }
 }
 ```

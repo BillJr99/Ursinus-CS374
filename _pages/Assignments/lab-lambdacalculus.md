@@ -251,9 +251,9 @@ The first term has the same shape as the term in the worked reduction, so lean o
 > 2. Then try $$(\lambda x.\, x\ x)\ (\lambda x.\, x\ x)$$: reduce it far enough to show why it never terminates, and explain what happens.
 
 > **If you get stuck.**
-> - Your first step contracted $$a\ b$$, or applied the lambda to $$b$$.  Application is left-associative, so write the parentheses in first, $$((\lambda x.\, \lambda y.\, x)\ a)\ b$$, and the first redex is the lambda applied to $$a$$.
+> - Your first step contracted $$a\ b$$, or applied the lambda to $$b$$.  Application is left-associative.  Write in the parentheses that convention implies before you pick a redex, as the worked reduction does in its Start line.
 > - You replaced only one $$x$$ in $$x\ x$$.  A beta-step replaces every occurrence of the bound variable in the body, all at once.
-> - You worried that the two binders named $$x$$ clash.  They are separate binders in separate lambdas, and neither copy has a free variable, so nothing can be captured and no alpha step is needed.
+> - You worried that the two binders named $$x$$ clash.  Two binders that share a name are still separate binders.  Capture needs a free variable in the argument, so list the argument's free variables before you decide whether an alpha step is needed.
 
 ### Step 0.4: Verify SUCC ZERO by Reduction
 
@@ -313,7 +313,7 @@ If you simplify the arithmetic, put it on its own line after the last beta-step 
 
 > **If you get stuck.**
 > - You underlined $$z + 1$$ or $$0 + 1$$ as a redex.  Only a lambda applied to an argument is a redex; $$+$$ is a constant.
-> - Your term lost its shape after you substituted $$(\lambda z.\, z + 1)$$ for $$f$$.  Keep the substituted lambda in parentheses everywhere it lands.  Without them, the lambda's body swallows everything to its right.
+> - Your term lost its shape after you substituted a lambda into a body.  Keep any substituted lambda in parentheses everywhere it lands.  Without them, the lambda's body swallows everything to its right.
 > - You see two redexes and are unsure which to pick.  Either choice reaches the same normal form on this term.  Contracting the leftmost outermost one first is a good habit, and it is the order Item 5 asks about.
 
 ### Step 1.4: The Capture Case
@@ -360,7 +360,7 @@ On paper, draw two columns with the same labels.
 > **If you get stuck.**
 > - You switched rules partway down a column.  Each column follows its own rule on every row.  Decide which redex the rule picks before you write the row.
 > - In the normal-order column you started inside the argument.  The leftmost outermost redex is the one that is not inside any other redex and whose $$\lambda$$ starts farthest to the left.
-> - You only see one redex in the starting term.  Look inside the argument too: the parenthesized argument is a redex of its own.
+> - You only see one redex in the starting term.  Check every parenthesized subterm, the argument included, and ask whether it is a lambda applied to something.
 
 ---
 

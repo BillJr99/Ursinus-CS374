@@ -80,7 +80,7 @@ This is one assignment with one deliverable and one rubric.  You build it in one
 
 | Direction | What you build | What you need | Pick this if |
 |-----------|----------------|---------------|--------------|
-| **Hand-rolled Python** (the core direction) | The `Lexer` yourself, in Python, on top of the `re` module, following Parts 1-3 step by step | Python 3.10 or newer and the standard library | You want the step-by-step scaffolding in Parts 1-3 to match your code line by line.  Most students take this direction. |
+| **Hand-rolled Python** (the core direction) | The `Lexer` yourself, in Python, on top of the `re` module, following Parts 1-3 step by step | Python 3.10 or newer and the standard library | You want step-by-step guidance through Parts 1-3: worked code at the start, then algorithms, then specifications you implement on your own.  Most students take this direction. |
 | **Generator toolchain** (Flex or PLY) | The same component from a generator specification: a Flex `.l` file (for C) or a PLY `tokens`/`t_*` module (for Python), wrapped behind the same `peek`/`advance`/`expect` contract | Flex with a C compiler and `make`, or the PLY package for Python | You want hands-on time with the tools that produce the scanners inside major compilers, and you are comfortable mapping Parts 1-3 onto a generator yourself. |
 
 The generator direction replaces the *vehicle* of Parts 1 and 2 (the `TOKEN_SPEC` list, the `tokenize` generator, and the hand-written class internals) with a generator specification.  The interface contract, Part 3's error, position, and test requirements, the deliverables, and the rubric apply the same way in both directions.  See **[The Generator-Toolchain Direction](#the-generator-toolchain-direction-flex-or-ply)** below for the full mapping.
@@ -256,13 +256,13 @@ TOKEN_SPEC = [
 ]
 ```
 
-| `# TODO` | How to write it |
+| `# TODO` | How to think about it |
 |---|---|
-| STRING | `("STRING", r'"[^"\n]*"')` for now: a quote, anything but a quote or newline, a quote.  Step 2c replaces the middle with an escape-aware body. |
-| FLOAT before INT | `("FLOAT", r"[0-9]+\.[0-9]+")`, then `("INT", r"[0-9]+")`.  The `\.` is a literal dot; a bare `.` would match any character. |
-| keywords | One tuple per keyword, such as `("IF", r"if(?!\w)")`.  `(?!\w)` means "not followed by a letter, digit, or underscore," so `iffy` fails this rule and falls through to `IDENT`. |
-| two-character operators | `("LE", r"<=")`, `("GE", r">=")`, `("EQEQ", r"==")`, `("NEQ", r"!=")`, `("ARROW", r"->")`, each placed above the one-character rule it starts with. |
-| single characters | Escape the ones that mean something in a regex: `r"\+"`, `r"\*"`, `r"\("`, `r"\)"`, `r"\{"`, `r"\}"`.  `;`, `:`, `,`, `/`, `=`, `<`, `>`, `!`, and `-` need no escape at this position. |
+| STRING | For now, a string is a double quote, then any run of characters that are neither a double quote nor a newline, then a closing double quote.  Step 2c replaces the middle with an escape-aware body. |
+| FLOAT before INT | A float is one or more digits, a literal dot, and one or more digits.  Escape the dot: a bare `.` in a regex matches any character.  `INT` is the digits alone, and it goes second so that `3.14` is not cut off at `3`. |
+| keywords | Worked example: `("IF", r"if(?!\w)")`.  `(?!\w)` means "not followed by a letter, digit, or underscore," so `iffy` fails this rule and falls through to `IDENT`.  Write the other ten keywords the same way. |
+| two-character operators | Worked example: `("LE", r"<=")`, placed above `LT`.  `GE`, `EQEQ`, `NEQ`, and `ARROW` follow the same shape, each above the one-character rule it starts with. |
+| single characters | Six of them mean something in a regex and need a backslash: `+`, `*`, `(`, `)`, `{`, and `}`.  `;`, `:`, `,`, `/`, `=`, `<`, `>`, `!`, and `-` need no escape at this position. |
 
 | Token Name | Example Lexemes | Notes |
 |------------|----------------|-------|
@@ -331,8 +331,8 @@ class Token:
 **You run:** `python3 scratch.py`, with `scratch.py` printing every token of `tokenize("let x = 42;")`.
 
 > **Do this.**
-> 1. Below `TOKEN_SPEC` in `lexer.py`, add the `LexError` class and the `tokenize(source: str) -> Iterator[Token]` generator below.  At the current position it tries the `TOKEN_SPEC` rules with `re.match`, skips WHITESPACE and COMMENT tokens, and advances the position by the match length.
-> 2. Fill in the `# TODO` lines: skipping, yielding, and the line and column bookkeeping are the whole job.  Each pattern is compiled once, up front, because a compiled pattern's `.match(source, pos)` starts matching at `pos` without copying the string.
+> 1. Below `TOKEN_SPEC` in `lexer.py`, add the `LexError` class, `COMPILED_SPEC`, and the `tokenize(source: str) -> Iterator[Token]` generator from the skeleton below.  At the current position it tries the `TOKEN_SPEC` rules with `.match`, skips WHITESPACE and COMMENT tokens, and advances the position by the match length.
+> 2. Write the body of each numbered step.  Skipping, yielding, and the line and column bookkeeping are the whole job.  Each pattern is compiled once, up front, because a compiled pattern's `.match(source, pos)` starts matching at `pos` without copying the string.
 > 3. Verify it against the provided test programs before you wrap it in a class.
 
 ```python
@@ -340,36 +340,33 @@ import re
 from typing import Iterator
 
 class LexError(Exception):
-    """A lexical error.  Part 3 adds line, col, and the offending text."""
-    pass
+    """A lexical error.  Part 3 adds line, col, and the offending text.  An empty body is enough for now."""
 
-COMPILED_SPEC = [(name, re.compile(pattern)) for name, pattern in TOKEN_SPEC]
+# COMPILED_SPEC: one (name, compiled pattern) pair per TOKEN_SPEC rule, in the same order.
 
 def tokenize(source: str) -> Iterator[Token]:
-    pos, line, col = 0, 1, 1
-    while pos < len(source):
-        for name, regex in COMPILED_SPEC:
-            m = regex.match(source, pos)
-            if m:
-                text = m.group()
-                # TODO: if name is WHITESPACE or COMMENT, do not yield a token
-                # TODO: otherwise yield Token(name, text, line, col)
-                # TODO: advance pos by len(text); count "\n" in text to update line, col restarts at 1
-                break
-        else:
-            raise LexError(f"unexpected character {source[pos]!r}")  # TODO (Part 3): add line and col
-    yield Token("EOF", "", line, col)
+    """Yield one Token per lexeme in source, skipping WHITESPACE and COMMENT, then one EOF token."""
+    # Step 1: start at position 0, on line 1, in column 1.
+    # Step 2: repeat while the position is still inside source.
+    # Step 3:   try each (name, compiled pattern) pair in COMPILED_SPEC, in order, at the current position.
+    # Step 4:   on the FIRST rule that matches, take its text.  Unless the rule is WHITESPACE or
+    #           COMMENT, yield a Token built from the rule name, the text, and the current line and col.
+    # Step 5:   move the position past the match, update line and col, and stop trying rules.
+    # Step 6:   if no rule matched, raise LexError naming the unexpected character.  (Part 3 adds line and col.)
+    # Step 7: after the loop, yield the EOF token at the current line and col.
+    ...
 ```
 
-The three `# TODO` lines are the main loop's work.  Each takes a line or two:
+Steps 4 and 5 are the main loop's work, and each takes a line or two.  The table covers the steps that need the most thought:
 
-| `# TODO` | How to write it |
+| Step | How to think about it |
 |---|---|
-| skip | `if name not in ("WHITESPACE", "COMMENT"):` and put the `yield` inside it.  Skipped text still moves `pos`, `line`, and `col` forward, so the next TODO runs for every match. |
-| yield | `yield Token(name, text, line, col)`.  `line` and `col` still describe where this token *starts*, because you have not advanced them yet. |
-| advance | `pos = m.end()`.  Then count newlines: `newlines = text.count("\n")`.  With none, `col += len(text)`.  With some, `line += newlines` and `col = len(text) - text.rfind("\n")`, the number of characters after the last newline, plus one. |
+| Step 3 and Step 6 | You need to know, after trying every rule, whether any of them matched.  A flag variable works.  So does Python's `for` ... `else`: the `else` block runs only when the loop finishes without a `break`. |
+| Step 4, skip | A membership test against the two skipped names decides whether to yield.  Skipped text still moves the position, line, and column forward, so Step 5 runs for every match. |
+| Step 4, yield | Yield *before* you advance.  At that moment `line` and `col` still describe where this token starts. |
+| Step 5, advance | The match object already knows where the next token begins (the `m.end()` you met in Before You Code).  Then look at the newlines in the matched text.  `str.count("\n")` tells you how many lines to add.  With no newline, the column grows by the length of the text.  With one or more, the column is the number of characters after the *last* newline, plus one, and `str.rfind("\n")` tells you where that last newline sits. |
 
-*The column formula, worked once.*  Suppose `text` is the whitespace `"\n  "`: a newline, then two spaces, three characters in all.  `text.rfind("\n")` is 0, so `col = 3 - 0 = 3`.  The next token sits in column 3 of the new line, after two spaces in columns 1 and 2.
+*The column rule, worked once.*  Suppose `text` is the whitespace `"\n  "`: a newline, then two spaces, three characters in all.  `text.rfind("\n")` is 0.  Two characters follow it, so the next token sits in column 3 of the new line, after the two spaces in columns 1 and 2.
 
 > **You should see.** For the source `"let x = 42;"`, one token per line.  `@dataclass` writes the `Token(type=..., ...)` format for you:
 >
@@ -385,9 +382,9 @@ The three `# TODO` lines are the main loop's work.  Each takes a line or two:
 > After Step 2c adds the decoded-value field, each line also ends with that field, for example `decoded=None)`.
 
 > **If it fails.**
-> - The loop never ends: `pos` does not move.  Check that `pos = m.end()` runs for skipped tokens too, not only inside the `if` that yields.
+> - The loop never ends: the position does not move.  Check that Step 5 runs for skipped tokens too, not only inside the branch that yields.
 > - `LET` reports `col=4` instead of `col=1`: you advanced `col` before you yielded, so each token reports where the *next* one starts.  Yield first, then advance.
-> - `x` on the second line of `"let\nx"` reports `col=5` instead of `col=1`: the newline branch kept adding to the old column.  After a newline, compute `col` fresh with the formula above.
+> - `x` on the second line of `"let\nx"` reports `col=5` instead of `col=1`: the newline branch kept adding to the old column.  After a newline, compute `col` fresh with the column rule above.
 
 ### Step 1d: Lexing Theory Questions (in your readme)
 
@@ -415,30 +412,11 @@ Answer three written questions from the Tokens and Scanning session.  They are g
 
 ```python
 class Lexer:
-    def __init__(self, source: str, config_path: str = None):
-        # TODO (Step 2d): if config_path is given, load and validate the JSON spec
-        self._tokens = tokenize(source)   # the generator from Step 1c
-        self._buffer = None               # holds at most one lookahead token
-
-    def _fill(self) -> None:
-        """Pull the next token into the buffer if the buffer is empty."""
-        # TODO: if self._buffer is None, take the next token from self._tokens
-        # TODO: once the generator is exhausted, keep the EOF token in the buffer for good
-
-    def peek(self) -> Token:
-        # TODO: fill the buffer if needed, then return its contents WITHOUT clearing it
-        raise NotImplementedError
-
-    def advance(self) -> Token:
-        # TODO: fill the buffer if needed, return its contents, and clear the buffer
-        #       (an EOF token stays put, so every later call returns EOF again)
-        raise NotImplementedError
-
-    def expect(self, token_type: str) -> Token:
-        # TODO: if peek().type == token_type, return advance()
-        # TODO: otherwise raise LexError naming the expected type, the found type,
-        #       and the found token's line and col
-        raise NotImplementedError
+    def __init__(self, source: str, config_path: str = None): ...
+    def _fill(self) -> None: ...
+    def peek(self) -> Token: ...
+    def advance(self) -> Token: ...
+    def expect(self, token_type: str) -> Token: ...
 ```
 
 ### Step 2a: Implement the Lexer Class
@@ -446,18 +424,36 @@ class Lexer:
 **You write:** `lexer.py` - the `Lexer` class, below `tokenize`.
 **You run:** `python3 scratch.py`, with the probe from item 2 below.
 
-The class holds two things: the generator from Step 1c, and a one-token *buffer*.  The buffer is the lookahead.  `peek` looks at it, `advance` hands it over and empties it, and an empty buffer is refilled with `next(self._tokens)`.
+The class holds two things: the generator from Step 1c, and a one-token *buffer*.  The buffer is the lookahead.  `peek` looks at it, `advance` hands it over and empties it, and an empty buffer is refilled by asking the generator for its next token.  Here is the algorithm for each method.  The attribute names `_tokens` and `_buffer` are suggestions.
 
-| `# TODO` | How to write it |
-|---|---|
-| `_fill` | `if self._buffer is None: self._buffer = next(self._tokens)`.  That one `if` is the whole method. |
-| keep EOF for good | Nothing extra goes in `_fill`.  The rule lives in `advance`: never clear the buffer when it holds the EOF token.  The generator yields EOF last, so an empty buffer after EOF would call `next` on a finished generator and raise `StopIteration`. |
-| `peek` | `self._fill()`, then `return self._buffer`.  Do not touch the buffer. |
-| `advance` | `self._fill()`, save `tok = self._buffer`, then `if tok.type != "EOF": self._buffer = None`, and `return tok`. |
-| `expect` | `tok = self.peek()`.  If `tok.type == token_type`, `return self.advance()`.  Otherwise `raise LexError(...)` with a message that names `token_type`, `tok.type`, `tok.line`, and `tok.col`. |
+**`__init__(source, config_path=None)`**
+1. Call `tokenize(source)` and keep the generator it returns in `_tokens`.  Nothing is lexed yet; the generator waits until it is asked.
+2. Set `_buffer` to `None`, which means "empty."
+3. Ignore `config_path` for now.  Step 2d uses it.
+
+**`_fill()`**
+1. If the buffer is empty, ask the generator for one token and store it in the buffer.
+2. If the buffer already holds a token, do nothing.  This is what makes `peek` idempotent.
+
+**`peek()`**
+1. Fill the buffer.
+2. Return the token in the buffer.  Leave the buffer alone.
+
+**`advance()`**
+1. Fill the buffer.
+2. Remember the token in the buffer.
+3. Empty the buffer, *unless* that token is EOF.
+4. Return the token you remembered.
+
+The EOF exception in step 3 is the edge case to get right.  The generator yields EOF last and then stops.  If you emptied the buffer after EOF, the next `_fill` would ask a finished generator for a token, and Python would raise `StopIteration`.  Keeping EOF in the buffer for good means every later call returns EOF again.
+
+**`expect(token_type)`**
+1. Peek at the next token.
+2. If its type equals `token_type`, advance and return that token.
+3. Otherwise raise `LexError` with a message that names the expected type, the found type, and the found token's line and column.
 
 > **Do this.**
-> 1. Add the skeleton above to `lexer.py`, below `tokenize`, and implement `_fill`, `peek`, `advance`, and `expect` in that order.  The buffer holds one token, the lookahead: `peek` fills it when empty and returns its contents without clearing it, `advance` does the same and then clears it, and `expect` is two lines once the other three work.
+> 1. Add the class to `lexer.py`, below `tokenize`, and implement `__init__`, `_fill`, `peek`, `advance`, and `expect` in that order, following the algorithms above.  `expect` is two short steps once the other three work.
 > 2. Replace the body of `scratch.py` with this probe and run `python3 scratch.py`:
 >
 > ```python
@@ -555,14 +551,16 @@ print("3. groups() with a capturing inner group:", m.groups())
 m = TOY_STRING.search(source)
 print("   groups() with (?:...) inside:         ", m.groups())
 
-# 4. Group references in re.sub, then a FUNCTION replacement for decoding escapes.
+# 4. Group references in re.sub, then a FUNCTION replacement.
 print("4. reference: ", re.sub(r"\\(.)", r"<\1>", r"it\'s a\sb"))
-TOY_ESCAPES = {"'": "'", "\\": "\\", "s": " "}
-def decode(body):
-    # One left-to-right pass: each backslash pairs with exactly ONE following character.
-    return re.sub(r"\\(.)", lambda m: TOY_ESCAPES.get(m.group(1), m.group(0)), body)
+def shout(m):
+    # re.sub calls this once per match and inserts whatever string it returns.
+    return m.group(1).upper()
+print("   function:  ", re.sub(r"\\(.)", shout, r"it\'s a\sb"))
 for m in TOY_STRING.finditer(source):
-    print(f"   raw {m.group(0):12} body {m.group(1):10} decoded |{decode(m.group(1))}|")
+    # One left-to-right pass: each backslash pairs with exactly ONE following character.
+    shouted = re.sub(r"\\(.)", shout, m.group(1))
+    print(f"   raw {m.group(0):12} body {m.group(1):10} shouted |{shouted}|")
 bad = r"c:\\new".replace("\\\\", "\\").replace("\\n", "\n")
 print("   two str.replace calls instead:", repr(bad), "<- the \\\\ became \\, and then that \\n became a newline")
 
@@ -577,7 +575,7 @@ while pos < len(source):
     pos = m.end()
 ```
 
-> **You should see.** 17 lines, numbered by section.  The decoded column in section 4 is wrapped in `|...|` so you can see the space that `\s` became.
+> **You should see.** 18 lines, numbered by section.  The shouted column in section 4 is wrapped in `|...|` so you can see exactly what each body became.
 
 ```text
 1. group(0): 'it\'s' | group(1): it\'s | span(0): (4, 11) | span(1): (5, 10)
@@ -587,9 +585,10 @@ while pos < len(source):
 3. groups() with a capturing inner group: ("it\\'s", 's')
    groups() with (?:...) inside:          ("it\\'s",)
 4. reference:  it<'>s a<s>b
-   raw 'it\'s'      body it\'s      decoded |it's|
-   raw 'a\sb'       body a\sb       decoded |a b|
-   raw 'c:\\new'    body c:\\new    decoded |c:\new|
+   function:   it's aSb
+   raw 'it\'s'      body it\'s      shouted |it's|
+   raw 'a\sb'       body a\sb       shouted |aSb|
+   raw 'c:\\new'    body c:\\new    shouted |c:\new|
    two str.replace calls instead: 'c:\new' <- the \\ became \, and then that \n became a newline
 5. IDENT say          at 0
 5. STR   'it\'s'      at 4
@@ -604,11 +603,11 @@ while pos < len(source):
 - **Section 1, numbering.**  Groups are numbered by the position of their *opening* parenthesis, counting from the left and starting at 1.  Group 0 is always the whole match, so for a string literal `group(0)` is the raw lexeme (the `value` field of your `Token`) and `group(1)` is the body between the quotes, the part you decode.  The two spans differ by one character at each end: the quotes.
 - **Section 2, alternation.**  `|` has the lowest precedence of any operator, so `if|else|while(?!\w)` means "`if`, *or* `else`, *or* `while` not followed by a word character."  The boundary check guards only the last branch, and `iffy` splits.  Wrap the alternatives in a group, `(?:if|else|while)(?!\w)`, and the check applies to all of them.  If you ever collapse your keyword rules into one pattern, this is the bug waiting for you.
 - **Section 3, non-capturing groups.**  The string body needs parentheses to repeat "an ordinary character *or* a backslash pair" as one unit, but it does not need to remember each repetition.  A capturing inner group adds a group 2 that holds only the *last* repetition (`'s'` here), which is useless and shifts the numbering of anything after it.  `(?:...)` groups without capturing.  That is why the `STRING` rule in Step 2d's JSON is written with `(?:...)`.
-- **Section 4, references and function replacements.**  In the replacement string of `re.sub`, `\1` means "whatever group 1 captured in this match," and the replacement must be a raw string, or Python turns `"\1"` into the control character `\x01` before `re` sees it.  A fixed template cannot look an escape up in a table, so `re.sub` also accepts a *function*: it calls the function once per match with the match object and inserts whatever string the function returns.  Because `\\(.)` consumes a backslash *and* the one character after it, a single left-to-right pass pairs every backslash correctly.  Two chained `str.replace` calls do not: the first turns `\\` into `\`, and the second then reads that new backslash as the start of `\n`.
+- **Section 4, references and function replacements.**  In the replacement string of `re.sub`, `\1` means "whatever group 1 captured in this match," and the replacement must be a raw string, or Python turns `"\1"` into the control character `\x01` before `re` sees it.  A fixed template cannot look an escape up in a table, so `re.sub` also accepts a *function*: it calls the function once per match with the match object and inserts whatever string the function returns.  `shout` only uppercases the character after the backslash, so `\s` became `S`, not a space.  Your decoder needs a function that turns each escape into the character it stands for.  Because `\\(.)` consumes a backslash *and* the one character after it, a single left-to-right pass pairs every backslash correctly.  Two chained `str.replace` calls do not: the first turns `\\` into `\`, and the second then reads that new backslash as the start of `\n`.
 - **Section 5, named groups and `lastgroup`.**  `(?P<name>...)` names a group.  Joining every rule as `(?P<NAME>pattern)` with `|` builds one master pattern that tries the rules in order (the same priority your `TOKEN_SPEC` loop gives), and `m.lastgroup` reports which named rule matched.  This is an optional alternative to Step 1c's loop over `COMPILED_SPEC`, and it is how the tokenizer example in the Python `re` documentation works.  If you adopt it, write any grouping inside a rule as `(?:...)`, so that only the rule names capture.
 
 > **Now try this.**
-> 1. In section 4, change `TOY_ESCAPES.get(m.group(1), m.group(0))` to `TOY_ESCAPES[m.group(1)]` and add `'bad\qescape'` to `source`.  Predict what happens before you run it.  Which behavior do you want for an unknown escape in your own lexer, and where does Part 3 want the error reported?
+> 1. Add `'bad\qescape'` to `source`.  Predict what section 4 prints for it before you run it.  The toy language has no `\q` escape.  Your decoder will look each escape up in a table of known ones.  Which behavior do you want for an unknown escape in your own lexer: keep it as written, or raise an error?  If you raise, where does Part 3 want the error reported?
 > 2. In section 5, move the `IDENT` rule above `STR` and run again.  Nothing changes.  Why not, and which pair of rules in your own `TOKEN_SPEC` *would* change if you swapped them?
 
 ### Step 2c: String Literals with Escapes
@@ -619,10 +618,13 @@ Extend the STRING pattern (or handle strings as a special case) to support four 
 **You run:** `python3 scratch.py`, with the self-test below.
 
 > **Do this.**
-> 1. Add the decoded-value field to `Token` (the TODO you left in Step 1b).  A token stores both the raw lexeme (e.g., `"a\nb"` with a backslash-n) in `value` and the decoded value (with a real newline) in the new field.
-> 2. Make the STRING rule match a backslash followed by any character as one unit, so `\"` does not end the string early.  Sections 1 and 3 of the walkthrough above show the shape.
-> 3. After matching, decode the four escapes into the new field with one `re.sub` and a function replacement (section 4 of the walkthrough).  Leave `value` as the raw lexeme.
-> 4. An unterminated string reaches end-of-line or end-of-file without a closing `"`.  Check for an opening quote explicitly and raise `LexError` at the *opening* quote's position, not at the end of input.  Otherwise the loop falls through to the "no rule matched" branch and reports the `"` as an unexpected character: the right position but the wrong message.
+> 1. **The field.**  Add a fifth field to `Token` for the decoded value (the TODO you left in Step 1b).  Only `STRING` tokens set it.  Give it a default of `None`, so every other token is still built with four arguments.  A token stores both the raw lexeme (e.g., `"a\nb"` with a backslash-n) in `value` and the decoded value (with a real newline) in the new field.
+> 2. **The rule.**  The `STRING` rule matches a whole double-quoted literal, quotes included, and a backslash together with the one character after it counts as a single unit.  So `\"` does not end the string early, and `"quote\"end"` is one token.
+> 3. **The decoder.**  Write `decode(body: str) -> str`.  It takes the raw text between the quotes and returns that text with each of the four escapes replaced by the character it stands for.  It works in one left-to-right pass, so `c:\\new` decodes to a backslash followed by the letter `n`, never to a newline.  The empty body decodes to the empty string.
+> 4. **The branch.**  When `tokenize` matches a `STRING`, it sets the new field to `decode` of the body and leaves `value` as the raw lexeme.
+> 5. **Unterminated strings.**  An unterminated string reaches end-of-line or end-of-file without a closing `"`.  Raise `LexError` at the *opening* quote's position, with a message that says the string is unterminated, not at the end of input.  Otherwise the loop falls through to the "no rule matched" branch and reports the `"` as an unexpected character: the right position but the wrong message.
+>
+> Sections 1, 3, and 4 of the walkthrough above show every regex move this step needs.
 
 > **You should see.** This worked example:
 
@@ -632,48 +634,6 @@ raw lexeme:    "hello\nworld"   (14 chars including quotes)
 decoded value: hello           (with a real newline between)
                world
 ```
-
-> **Building STRING in three moves.**  Work the string rule on its own with the self-test below before you move on to Step 2d.
-> 1. **Shape.**  Start from the toy `TOY_STRING` in the walkthrough: swap the single quotes for double quotes, and keep the body in one capture group so `group(0)` is the raw lexeme and `group(1)` is the body.  (If your `TOKEN_SPEC` loop only ever uses `m.group()`, you can drop the outer capture group and slice the quotes off instead.  Either way, decode only the body.)
-> 2. **Body.**  Inside the quotes, repeat "any character that is not `\"` or a backslash, *or* a backslash followed by any one character" as a single non-capturing group, exactly as section 3 does.  The second branch is what keeps `\"` from ending the string early.
-> 3. **Decode.**  Write a dictionary with your four escapes and decode the body with one `re.sub` call and a function replacement, as section 4 does.  Do not chain `str.replace` calls: the `"c:\\new"` case below is there to catch that.
->
-> Then store the raw lexeme in `value` and the decoded text in your new field.
-
-*Where each piece goes.*  Four small edits to `lexer.py` carry the whole step.  The names here (`decoded`, `ESCAPES`, `decode`) are suggestions; use your own if you prefer.
-
-```python
-@dataclass
-class Token:
-    type: str
-    value: str
-    line: int
-    col: int
-    decoded: str | None = None    # only STRING tokens set it
-
-ESCAPES = {}   # TODO: the four escapes, each mapping the letter after "\" to its character
-
-def decode(body: str) -> str:
-    # TODO: one re.sub over r"\\(.)" with a function replacement that looks up m.group(1)
-    raise NotImplementedError
-
-# Inside tokenize, where a token is about to be yielded:
-#     tok = Token(name, text, line, col)
-#     if name == "STRING":
-#         tok.decoded = decode(m.group(1))   # group 1 is the body between the quotes
-#     yield tok
-
-# Inside tokenize, in the "no rule matched" branch, before the LexError for a bad character:
-#     if source[pos] == '"':
-#         # TODO: raise LexError for an unterminated string at THIS line and col
-```
-
-| `# TODO` | How to write it |
-|---|---|
-| the field | Done above.  The `= None` default matters: every other token is still built with four arguments, `Token(name, text, line, col)`, so the new field must not be required. |
-| `ESCAPES` | `{'"': '"', "\\": "\\", "n": "\n", "t": "\t"}`.  Each key is the character after the backslash, and each value is what that escape stands for. |
-| `decode` | `return re.sub(r"\\(.)", lambda m: ESCAPES.get(m.group(1), m.group(0)), body)`.  The `.get` default leaves an unknown escape such as `\q` exactly as it was, which the walkthrough's "Now try this" asks you to think about. |
-| unterminated | Your `STRING` rule only matches a string that closes, so an unterminated one reaches the "no rule matched" branch with `source[pos]` equal to `"`.  Raise `LexError` there, with the current `line` and `col` (the opening quote's position) and a message that says "unterminated string." |
 
 Paste this self-test into `scratch.py`, set `DECODED_FIELD` to the name of your new field, and run `python3 scratch.py`.  Every line prints `ok` once the rule and the decoder are right.
 
@@ -701,8 +661,9 @@ for lexeme, expected in STRING_CASES:
 
 > **If it fails.**
 > - `MISMATCH` with type `IDENT` or a raw value that stops early (for example `"quote\"`), or a `LexError` on the escaped quote: the string ended at the escaped quote.  The backslash branch of the body is missing, or it comes *after* a branch that already accepts `\`.
-> - The `"c:\\new"` case decodes with a real newline: the decoder handled `\\` and `\n` in two separate passes.  Use one `re.sub` over `\\(.)`.
-> - `KeyError` inside the decoder: the dictionary is missing one of the four escapes, or the replacement function looked up `m.group(0)` (the backslash *and* the letter) instead of `m.group(1)` (the letter alone).
+> - The `"c:\\new"` case decodes with a real newline: the decoder handled `\\` and `\n` in two separate passes.  One pass that pairs each backslash with exactly one following character avoids this.
+> - `KeyError` inside the decoder: the table is missing one of the four escapes, or the lookup used the whole match (the backslash *and* the letter) instead of the letter alone.
+> - `TypeError` about a missing argument when an `INT` or `IDENT` token is built: the new field has no default.
 > - `decoded=None` on every line: `DECODED_FIELD` does not match the field name you added to `Token`.
 
 ### Step 2d: JSON Configuration
@@ -726,36 +687,13 @@ Move TOKEN_SPEC to a JSON file with this structure:
 
 > **Do this.**
 > 1. Create `token_spec.json` in `cs374-lexer` and copy every rule from your `TOKEN_SPEC` into it, in the same order.  JSON has its own escaping and no raw strings, so a regex backslash becomes two characters in the file: the pattern `\.` is written `"\\."`, and a regex backslash that must itself be escaped becomes `\\\\`.  The `STRING` line above shows the doubled form.
-> 2. In `Lexer.__init__`, when `config_path` is given, open it with `json.load`, compile every pattern inside a `try` block, and turn any `re.error` into a `LexError` that names the offending pattern.
-> 3. Create `token_spec_alt.json`: the same rules with `//` as the comment marker and `:=` as the assignment operator.
-> 4. In `scratch.py`, build `Lexer(program, "token_spec_alt.json")` on a short program written in that dialect and print its tokens.
+> 2. Write `load_spec(path: str) -> list`.  It reads the JSON file at `path` and returns a list of `(name, compiled pattern)` pairs, one per entry in `"tokens"`, in file order.  If a pattern does not compile, it raises a `LexError` that names the rule or the pattern, never a bare `re.error`.
+> 3. Give `tokenize` a second parameter, `spec`, that defaults to `COMPILED_SPEC`, and have it try the rules in `spec` instead of always reading the global.  Every call you already wrote still works unchanged.
+> 4. In `Lexer.__init__`, when `config_path` is given, lex with the rules from `load_spec(config_path)`.  Without it, use `COMPILED_SPEC`.
+> 5. Create `token_spec_alt.json`: the same rules with `//` as the comment marker and `:=` as the assignment operator.
+> 6. In `scratch.py`, build `Lexer(program, "token_spec_alt.json")` on a short program written in that dialect and print its tokens.
 
-*How the JSON reaches `tokenize`.*  Right now `tokenize` always reads the global `COMPILED_SPEC`.  Give it a parameter instead, so `Lexer` can hand it whichever rules it loaded:
-
-```python
-def load_spec(path: str) -> list:
-    """Read a JSON spec and return a list of (name, compiled pattern) pairs, in file order."""
-    # TODO: open the file and json.load it
-    # TODO: for each [name, pattern] in data["tokens"], compile the pattern;
-    #       turn an re.error into a LexError that names the rule and the pattern
-    raise NotImplementedError
-
-def tokenize(source: str, spec: list = COMPILED_SPEC) -> Iterator[Token]:
-    # the body from Step 1c, with "for name, regex in COMPILED_SPEC:"
-    # changed to                  "for name, regex in spec:"
-    ...
-
-# In Lexer.__init__:
-#     spec = load_spec(config_path) if config_path else COMPILED_SPEC
-#     self._tokens = tokenize(source, spec)
-```
-
-| `# TODO` | How to write it |
-|---|---|
-| load | `with open(path) as f: data = json.load(f)`.  `data["tokens"]` is then a list of two-item lists, such as `["INT", "[0-9]+"]`. |
-| compile | Start `spec = []`, loop `for name, pattern in data["tokens"]:`, and inside a `try:` append `(name, re.compile(pattern))`.  Write `except re.error as e:` and `raise LexError(...)` with `name`, `pattern`, and `e` in the message.  Return `spec`. |
-
-A JSON file has no rule order of its own beyond the order you write the lines in, and that order is still the priority.  In the alternate dialect this matters in one place: `:=` starts with `:`, so the `EQ` rule must now sit *above* `COLON`, or `:=` lexes as `COLON` followed by an `EQ` that no longer matches anything.
+A JSON file has no rule order of its own beyond the order you write the lines in, and that order is still the priority.  In the alternate dialect this matters in one place, so follow this rule: `:=` starts with `:`, so list the `EQ` rule (now `:=`) *above* `COLON` in `token_spec_alt.json`.  If `COLON` comes first, `:=` lexes as `COLON` followed by an `=` that no rule matches anymore.
 
 For example, this program in the alternate dialect:
 
@@ -803,24 +741,12 @@ while True:
 
 An exception is an ordinary class, so it can carry data the way `Token` does.  Store the three facts as attributes, then build the message from them.  Tests read the attributes, and people read the message.
 
-```python
-class LexError(Exception):
-    def __init__(self, message: str, line: int = 0, col: int = 0, text: str = ""):
-        # TODO: call super().__init__ with "LexError at line {line}, col {col}: {message}"
-        # TODO: store line, col, and text as attributes on self
-        pass
-```
-
-| `# TODO` | How to write it |
-|---|---|
-| message | `super().__init__(f"LexError at line {line}, col {col}: {message}")`.  `print(e)` and `str(e)` then show this text. |
-| attributes | `self.line = line`, `self.col = col`, `self.text = text`.  The defaults let Step 2d's bad-pattern error, which has no position, still use the same class. |
-| the `tokenize` branch | `raise LexError(f"unexpected character {source[pos]!r}", line, col, source[pos])` |
-
 > **Do this.**
-> 1. Every `LexError` must include the line number (1-indexed) and column number (1-indexed) of the offending character, and the offending text itself (the unrecognized character or the unterminated string lexeme).  Give `LexError` three attributes (`line`, `col`, `text`) set in its constructor, and build the message from them.  Tests in Step 3c assert on the attributes, not on the string.
-> 2. Fill in the `TODO (Part 3)` you left in `tokenize` so the "no rule matched" branch passes the current `line` and `col`.  Track the line by counting the `\n` characters you consume, and reset the column to 1 after each newline.
-> 3. In `scratch.py`, tokenize a three-line program with `@` on line 3 and confirm the message names line 3 and the right column.
+> 1. Every `LexError` must include the line number (1-indexed) and column number (1-indexed) of the offending character, and the offending text itself (the unrecognized character or the unterminated string lexeme).
+> 2. Give `LexError` the constructor `__init__(self, message: str, line: int = 0, col: int = 0, text: str = "")`.  It stores `line`, `col`, and `text` as attributes of the same names.  Tests in Step 3c assert on the attributes, not on the string.
+> 3. `str(e)` (and so `print(e)`) must read `LexError at line L, col C: message`, with the stored line and column in place of `L` and `C`.  The defaults let Step 2d's bad-pattern error, which has no position, use the same class.
+> 4. Fill in the `TODO (Part 3)` you left in `tokenize`, so the "no rule matched" branch passes the current line, the current column, and the offending character.  The unterminated-string error from Step 2c passes the opening quote's position the same way.
+> 5. In `scratch.py`, tokenize a three-line program with `@` on line 3 and confirm the message names line 3 and the right column.
 
 ```python
 from lexer import tokenize, LexError
@@ -842,7 +768,7 @@ except LexError as e:
 
 > **If it fails.**
 > - `line 1` on the third line: `line` never grew.  Whitespace is where newlines live, so the newline counting from Step 1c must run for skipped tokens too.
-> - `AttributeError: 'LexError' object has no attribute 'line'`: the constructor called `super().__init__` but never set `self.line`.
+> - `AttributeError: 'LexError' object has no attribute 'line'`: the constructor passed the message to `Exception` but never stored the line on the object.
 
 ### Step 3b: Two Error Modes
 
@@ -852,32 +778,11 @@ Implement two modes, chosen at construction time.  With `error_mode="fail_fast"`
 **You run:** `python3 scratch.py`, on `let @ = $;` in `collect_all` mode.
 
 > **Do this.**
-> 1. Add an `error_mode` keyword argument to `Lexer.__init__` and pass it through to `tokenize`.
-> 2. Define `LexErrorList` as an exception that carries a list of `LexError` objects.
-> 3. In `collect_all` mode, the "no rule matched" branch appends a `LexError`, advances `pos` and `col` by one, and keeps going.  Raise the `LexErrorList` only after the EOF token would have been produced.
-
-```python
-class LexErrorList(Exception):
-    def __init__(self, errors: list):
-        # TODO: call super().__init__ with a short summary such as "2 lexical errors"
-        # TODO: store the list as self.errors
-        pass
-
-# In tokenize: start with errors = [] next to pos, line, col.
-# In the "no rule matched" branch:
-#     err = LexError(...)                  # exactly as in Step 3a
-#     if error_mode == "fail_fast":
-#         raise err
-#     # TODO: collect_all: append err, then step past the bad character
-# After the while loop, before yielding EOF:
-#     # TODO: if any errors were collected, raise LexErrorList(errors)
-```
-
-| `# TODO` | How to write it |
-|---|---|
-| `LexErrorList` | `super().__init__(f"{len(errors)} lexical errors")`, then `self.errors = errors`. |
-| collect and step | `errors.append(err)`, then `pos += 1` and `col += 1`.  Without the step, the loop tries the same bad character forever. |
-| raise at the end | `if errors: raise LexErrorList(errors)`.  It goes after the loop, so every good token has already been yielded. |
+> 1. Add an `error_mode` keyword argument, defaulting to `"fail_fast"`, to both `tokenize` and `Lexer.__init__`.  `Lexer` passes its value through to `tokenize`.
+> 2. Define `LexErrorList(errors: list)`, an exception that keeps the list of `LexError` objects in an `errors` attribute.  Its message is a short summary such as `2 lexical errors`.
+> 3. In `fail_fast` mode, nothing changes from Step 3a.
+> 4. In `collect_all` mode, each unrecognized character produces one `LexError` with its own line and column, and is then skipped.  Lexing resumes at the very next character, and later columns stay correct.
+> 5. Every good token still comes out, in order.  The `LexErrorList` is raised at the point where the EOF token would have been yielded, and only if at least one error was recorded.  A clean source in `collect_all` mode ends with EOF as usual.
 
 Try it with this probe in `scratch.py`:
 
@@ -928,8 +833,8 @@ Build `test_lexer.py` with at least the test cases below.  Each test must assert
   5. A program with a valid token immediately after an error: verify recovery in collect-all mode
 
 > **Do this.**
-> 1. Create `test_lexer.py` in `cs374-lexer` from the skeleton below.  It uses `unittest` from the standard library, so there is nothing to install.
-> 2. Add one test method per case above, named after the case it covers (`test_munch_iffy`, `test_escape_tab`) so a failure tells you what broke.
+> 1. Create `test_lexer.py` in `cs374-lexer`, starting from the frame below.  It uses `unittest` from the standard library, so there is nothing to install.  The `types` helper and the one example test are given; every other test is yours.
+> 2. Add one test method per case above, grouped into test classes (for example `TestTokenTypes`, `TestMaximalMunch`, `TestStringEscapes`, and `TestErrors`), and name each method after the case it covers (`test_munch_iffy`, `test_escape_tab`) so a failure tells you what broke.
 > 3. Run `python3 test_lexer.py`.  When everything passes, save the output for your submission with `python3 test_lexer.py > test_output.txt 2>&1` (`unittest` writes its report to standard error, so you must redirect both streams).
 
 ```python
@@ -946,32 +851,12 @@ def types(source: str, **kwargs) -> list:   # token types for source, excluding 
 class TestTokenTypes(unittest.TestCase):
     def test_int(self):
         self.assertEqual(types("42"), ["INT"])
-    # TODO: one test per token type in the Step 1a table
-
-# TODO: TestMaximalMunch (iffy, whiles, <=, ==, !=) and TestStringEscapes
-#       (four cases; assert on the decoded value, not the raw lexeme)
-
-class TestErrors(unittest.TestCase):
-    def test_at_sign(self):
-        with self.assertRaises(LexError) as cm:
-            types("let x = @;")
-        # TODO: assert cm.exception.line == 1 and cm.exception.col == 9
-    # TODO: the other four deliberate error programs; the collect-all ones
-    #       expect LexErrorList and check len(cm.exception.errors)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
 ```
 
-Every test you need is built from one of these idioms.  Copy the one that fits, then change the source and the expected values:
-
-| You want to check | How to write it |
-|---|---|
-| the token types, in order | `self.assertEqual(types("a <= b"), ["IDENT", "LE", "IDENT"])` |
-| one token's value or position | `tok = Lexer("x\ny").advance()` gives the first token; call `advance()` again for the next.  Then `self.assertEqual((tok.line, tok.col), (2, 1))` |
-| a decoded string | `tok = Lexer(r'"tab\there"').advance()`, then `self.assertEqual(tok.decoded, "tab\there")`, with your field name in place of `decoded` |
-| an error and where it is | `with self.assertRaises(LexError) as cm:` around the code that should fail, then `self.assertEqual((cm.exception.line, cm.exception.col), (1, 9))` after the `with` block |
-| collect-all errors | the same shape with `LexErrorList` and `error_mode="collect_all"`, then `self.assertEqual(len(cm.exception.errors), 2)` |
+The error tests check *where* an error happened, so assert on the exception's `line` and `col` attributes, not on its message; `unittest`'s `assertRaises` documentation shows how to get the raised exception back.
 
 Write the `r` before a test's source string whenever it contains a backslash.  Without it, Python turns `"\t"` into a real tab before your lexer ever sees the backslash.
 

@@ -99,7 +99,7 @@ You need:
 > 2. Create the deliverable files up front so each part has a home: `interpreter.py` (evaluator, Environment, error hierarchy), `mylang.py` (file runner and REPL, Part 3), `typechecker.py` (Part 4), `SEMANTICS.md` (Part 5), and `test_interpreter.py`.  Rather than transcribing them, copy the [starter kit]({{ site.baseurl }}/files/starters/interpreter/) from `files/starters/interpreter/`: it holds those four Python files with every skeleton from this page already in place, and every `TODO` still yours to fill.  The seeded tests fail until you implement the branches they exercise, which is how you know they are running.
 Your file runner is `mylang.py` and your programs end in `.ml`; the reference pipeline ships a `mylang.py` and `samples/*.ml` so the commands in this assignment work unchanged against it.
 
-The starter kit matches this page: every skeleton below, including the error hierarchy, the signal classes, the `Environment`, and `mylang.py`'s `run_source`, is already in it, with every `TODO` still yours.
+The starter kit matches this page: every signature below, including the error hierarchy, the signal classes, the `Environment`, and `mylang.py`'s `run_source`, is already in it, with every `TODO` still yours.
 
 > 3. From inside the folder, confirm your Python version, install Hypothesis, and confirm the pipeline is connected:
 >
@@ -187,7 +187,7 @@ Get one statement through the whole pipeline on day one; the rest of Part 2 is f
 
 1. Copy the node dataclasses from Step 1a into `ast_nodes.py`, reconciling them with your parser's existing nodes.
 2. In `interpreter.py`, write the `Interpreter` class with an `eval_node` method that has one branch per node type (Step 1b), each raising `NotImplementedError` for now.
-3. Fill in only the `Num` branch (`return node.value`), the `Print` branch, and the `Program` branch (walk its statements).
+3. Fill in only three branches.  `Num` hands back the number the node already holds.  `Print` evaluates its expression and prints the result.  `Program` evaluates each of its statements in order.
 4. Run `print 42;` end to end:
 
 ```bash
@@ -429,7 +429,7 @@ The second section is a toy: a real `Environment` is a class, not a dict with a 
 
 #### Write the Dispatch
 
-Create `interpreter.py` with an `Interpreter` class and one `eval_node(node)` method that dispatches on node type using `isinstance`.  Paste the skeleton below and add one `elif` branch per remaining node type from Step 1a, each raising `NotImplementedError` naming the class; the `else` branch raises `InterpreterError("Unknown node type: ...")`.  The `env` parameter arrives in Step 2c; leave the default in place until then.  Before you write any evaluation logic, construct one instance of each class and confirm the `NotImplementedError` message names that class rather than reaching the `else`.
+Create `interpreter.py` with an `Interpreter` class and one `eval_node(node)` method that dispatches on node type using `isinstance`.  Start from the skeleton below (the starter kit's copy is the same) and add one `elif` branch per remaining node type from Step 1a, each raising `NotImplementedError` naming the class; the `else` branch raises `InterpreterError("Unknown node type: ...")`.  The `env` parameter arrives in Step 2c; leave the default in place until then.  Before you write any evaluation logic, construct one instance of each class and confirm the `NotImplementedError` message names that class rather than reaching the `else`.
 
 **You write:** `interpreter.py` - `InterpreterError` and `Interpreter.eval_node`, with one branch per node class
 **You run:** `python3 check_dispatch.py`
@@ -446,14 +446,18 @@ class Interpreter:
             raise NotImplementedError("Str")
         elif isinstance(node, Program):
             raise NotImplementedError("Program")
-        # TODO: one elif branch per remaining node type from Step 1a
+        # Step 1: add one elif branch for each of the thirteen classes not yet listed.
+        # Step 2: give each new branch the same body as the three above, with its own class name.
+        # Step 3: keep the else branch last, so only a non-node ever reaches it.
         else:
             raise InterpreterError(f"Unknown node type: {type(node).__name__}")
 ```
 
-| `# TODO` | How to write it |
+| `# TODO` | How to think about it |
 |---|---|
-| one `elif` branch per remaining node type | Copy the `Str` branch once per class, as in `elif isinstance(node, BoolLit): raise NotImplementedError("BoolLit")`.  The string is the class name, so the message tells you which branch you reached.  Thirteen classes are missing: `BoolLit`, `Var`, `BinOp`, `UnaryOp`, `LogicOp`, `Let`, `Assign`, `Print`, `Block`, `If`, `While`, `Break`, and `Continue`.  Keep the `else` last. |
+| Step 1: one branch per class | Thirteen classes are missing: `BoolLit`, `Var`, `BinOp`, `UnaryOp`, `LogicOp`, `Let`, `Assign`, `Print`, `Block`, `If`, `While`, `Break`, and `Continue`.  Work down the Step 1a list so you can tick each one off. |
+| Step 2: the same body, a new name | The message is the only thing that tells you which branch ran.  So the string must be the class name, spelled exactly as Step 1a spells it.  A copied branch with the old name is the bug the checker below catches. |
+| Step 3: `else` last | Python tries the tests top to bottom.  Anything you put after the `else` can never run. |
 
 Now check the dispatch.  Save this as `check_dispatch.py` (scratch, not submitted).  It builds one node of every class, plus one thing that is not a node at all, and reports which branch each one reached.
 
@@ -511,8 +515,8 @@ for node in samples:
 
 Replace the `NotImplementedError` in each expression branch with the rule below.  Return Python values: numbers as `float` or `int`, strings as `str`, booleans as `bool`.
 
-- `Num`, `Str`, `BoolLit`: return `node.value`.
-- `Var`: call `env.lookup(node.name)`, raising a `LangNameError` if the name is not found.  Include the variable name and source line in the error.
+- `Num`, `Str`, `BoolLit`: return the value the parser already stored on the node.
+- `Var`: look the name up in the environment, raising a `LangNameError` if the name is not found.  Include the variable name and source line in the error.
 - `UnaryOp("-")`: evaluate the operand.  If it is not a number, raise `LangTypeError("unary minus requires a number, got <type>")`.
 - `BinOp`: evaluate both operands, then apply the operator.  The **type rules** are:
   - `+`, `-`, `*`, `/` require both operands to be numbers (otherwise raise `LangTypeError` naming both types).
@@ -522,7 +526,7 @@ Replace the `NotImplementedError` in each expression branch with the rule below.
 
 The error classes (`LangNameError`, `LangTypeError`, `LangZeroDivisionError`) belong to the hierarchy that Step 5a audits, which is required in every Part 5 direction.  Define the whole hierarchy now, exactly as the skeleton below shows it, at the top of `interpreter.py`.  Step 5a does not replace these classes.  It checks that every `raise` in the file uses one of them with a good message and a position.  If you copied the starter kit, its `interpreter.py` already holds them; compare it with the skeleton, because the skeleton adds the `super().__init__` line.
 
-Two pieces of Step 2c are needed already.  `Var` reads from an environment, and the test program below uses `let`.  Paste the `Environment` class from Step 2c now (What You Already Have asks you to bring it on day one).  Then give `Interpreter` an `__init__` that sets `self.globals = Environment()`, start `eval_node` with `if env is None: env = self.globals`, and fill the `Let` branch as Step 2c's first bullet describes.  The rest of Step 2c can wait.
+Two pieces of Step 2c are needed already.  `Var` reads from an environment, and the test program below uses `let`.  Paste the `Environment` class from Step 2c now (What You Already Have asks you to bring it on day one).  Then give `Interpreter` an `__init__` that stores one global `Environment` as `self.globals`, and have `eval_node` fall back to `self.globals` when `env` is `None`.  The starter kit's `interpreter.py` already does both.  Fill the `Let` branch as Step 2c's first bullet describes.  The rest of Step 2c can wait.
 
 **You write:** `interpreter.py` - the error classes, `is_number`, `type_name`, and the `Num`, `Str`, `BoolLit`, `Var`, `UnaryOp("-")`, and `BinOp` branches
 **You run:** the two `python3 -c` commands below
@@ -553,37 +557,38 @@ def type_name(value):
 
 # Inside Interpreter.eval_node, replacing the expression branches from Step 1b:
         if isinstance(node, Num):
-            return node.value
-        # TODO: Str and BoolLit, the same way
+            # Step 1: hand back the literal's stored value.
+            raise NotImplementedError("Num")
+        # Step 2: give Str and BoolLit the same treatment as Num.
         elif isinstance(node, Var):
-            # TODO: return env.lookup(node.name); re-raise its LangNameError with this node's position
+            # Step 3: look the name up in env.
+            # Step 4: if the lookup fails, raise its LangNameError again, now with this node's line and col.
             raise NotImplementedError("Var")
         elif isinstance(node, UnaryOp):
-            value = self.eval_node(node.operand, env)
-            if node.op == "-":
-                # TODO: raise LangTypeError unless is_number(value); otherwise return -value
-                raise NotImplementedError("unary minus")
-            raise NotImplementedError("not")          # Step 2b fills this in
+            # Step 5: evaluate the operand in env.
+            # Step 6: for "-", raise LangTypeError unless the operand is a number; otherwise return its negation.
+            # Step 7: leave this last line for "not"; Step 2b replaces it.
+            raise NotImplementedError("not")
         elif isinstance(node, BinOp):
-            left = self.eval_node(node.left, env)
-            right = self.eval_node(node.right, env)
-            # TODO: "+" on two strings concatenates (if you allow it)
-            # TODO: + - * / < <= > >= need numbers on both sides, else LangTypeError naming both types
-            # TODO: "/" with a zero right operand raises LangZeroDivisionError
-            # TODO: == and != compare any pair; decide what a cross-type pair gives
+            # Step 8: evaluate the left operand, then the right, both in env.
+            # Step 9: if you allow it, "+" on two strings concatenates them.
+            # Step 10: for + - * / < <= > >=, raise LangTypeError naming both types unless both are numbers.
+            # Step 11: for "/", raise LangZeroDivisionError when the right operand is zero, before dividing.
+            # Step 12: apply the operator and return the result.
+            # Step 13: == and != compare any pair; decide what a cross-type pair gives.
             raise NotImplementedError("BinOp")
 ```
 
-| `# TODO` | How to write it |
+| `# TODO` | How to think about it |
 |---|---|
-| `is_number` | `isinstance` accepts a tuple of classes: `isinstance(value, (int, float))`.  Add a second test, `and not isinstance(value, bool)`.  Without it `true + 1` quietly returns `2`, because Python treats `True` as the integer `1`. |
-| `Str` and `BoolLit` | Two more branches that `return node.value`.  Or fold all three literals into one test, `isinstance(node, (Num, Str, BoolLit))`. |
-| `Var` | `env.lookup(node.name)` raises a `LangNameError` that has no position.  Put the lookup in `try:`, catch it with `except LangNameError as err:`, and `raise LangNameError(err.message, node.line, node.col) from None`.  The `from None` hides the first, position-less traceback. |
-| unary minus | Test `if not is_number(value):` and raise `LangTypeError` with the message from the bullet above, built with `type_name(value)`.  The last two arguments are always `node.line, node.col`. |
-| `+` on two strings | `isinstance(left, str) and isinstance(right, str)`, tested before the number rule, returning `left + right`. |
-| numbers on both sides | Test membership first, `if node.op in ("+", "-", "*", "/", "<", "<=", ">", ">="):`, then raise when `not (is_number(left) and is_number(right))`.  Build the message as `f"'{node.op}' requires numbers, got {type_name(left)} and {type_name(right)}"`.  To pick the operation, a dict from operator string to `lambda a, b: a + b` (and so on) is one lookup instead of eight `if`s. |
-| `/` by zero | Test `node.op == "/" and right == 0` before you divide, and raise `LangZeroDivisionError("division by zero", node.line, node.col)`.  Python's own `ZeroDivisionError` must never escape. |
-| `==` and `!=` | Python's `left == right` already compares any pair, but it says `true == 1` is `True`.  If you want that to be false, compare `type_name(left)` with `type_name(right)` first, and treat any two numbers as one kind with `is_number`.  `!=` is the negation of whatever `==` decides. |
+| `is_number` | `isinstance` accepts a tuple of classes, so one call can test for both `int` and `float`.  The trap is `bool`: Python treats `True` as the integer `1`, so `isinstance(True, int)` holds.  Without a second test that rules out `bool`, `true + 1` quietly returns `2`. |
+| Steps 1 and 2: literals | The parser already did the work, so there is nothing to compute.  You may write three branches, or fold all three classes into one `isinstance` test with a tuple. |
+| Steps 3 and 4: `Var` | `Environment.lookup` raises a `LangNameError`, but the environment has no idea where in the source you are, so its error says line 0.  Catch it here, where `node` is in hand, and raise a new one with the same message and this node's position.  Ending the `raise` with `from None` hides the first, position-less traceback. |
+| Steps 5 and 6: unary minus | Use `is_number` for the test and `type_name` to build the message from the bullet above.  Every `raise` in `eval_node` passes the node's line and col as its last two arguments. |
+| Step 9: two strings | Order matters.  Test for two strings before the number rule, or the number rule rejects them first. |
+| Step 10: numbers on both sides | Check membership in the operator group first, then check both operands.  The message names the operator and both type names, as in the `You should see` below.  To pick the operation in Step 12, a dict from operator string to a two-argument `lambda` is one lookup instead of eight `if`s. |
+| Step 11: division by zero | Test before you divide.  Python's own `ZeroDivisionError` must never escape, because it has no position and no stage. |
+| Step 13: `==` and `!=` | Python's `==` already compares any pair, but it says `True == 1`.  If you want `true == 1` to be false, compare the two type names first, and treat any two numbers as one kind.  `!=` is the opposite of whatever `==` decides, so write the rule once. |
 
 Now run `print 1 + 2;` through the pipeline the same way as in Your First 30 Minutes, followed by the two-statement program `let x = "hello"; let y = x + 1;`:
 
@@ -620,32 +625,28 @@ Truthiness policy (document it in SEMANTICS.md): which values count as false in 
 
 Put the policy in one method, `truthy`, and call it from every place that needs a yes-or-no answer.  `LogicOp`, `not`, `If`, and `While` all use it, so a change to your policy is a change to one method.
 
-```python
-    def truthy(self, value):
-        """Your truthiness policy from Part 0, in one place so it stays consistent."""
-        # TODO: a bool is itself; a number is true unless zero; a string is true unless empty
-        # TODO: anything else is true
-        raise NotImplementedError("truthy")
+You write three pieces here.
 
-# Inside eval_node:
-        elif isinstance(node, LogicOp):
-            left = self.eval_node(node.left, env)
-            # TODO: "and": if left is falsy, return left; otherwise evaluate and return the right
-            # TODO: "or": if left is truthy, return left; otherwise evaluate and return the right
-            raise NotImplementedError("LogicOp")
-# ...and in the UnaryOp branch, replacing raise NotImplementedError("not"):
-            if node.op == "not":
-                # TODO: the boolean complement of truthy(value)
-                raise NotImplementedError("not")
-```
+**`truthy(self, value)`**, a method on `Interpreter`, returns a Python `bool`.  The starter kit already declares it.
 
-| `# TODO` | How to write it |
+1. If `value` is a boolean, return it unchanged.  Test this case first, because a Python `bool` is also an `int`.
+2. If `value` is a number, it is true unless it equals zero.  `0` and `0.0` are both false.
+3. If `value` is a string, it is true unless it is empty.
+4. Anything else is true.  If your Part 0 policy differs from the minimum above, this method is the one place to change it.
+
+**The `LogicOp` branch** of `eval_node`:
+
+1. Evaluate the left operand in `env`.
+2. For `"and"`: if the left value is falsy, return the left value itself.  For `"or"`: if it is truthy, return it.
+3. Otherwise, and only now, evaluate the right operand in `env` and return its value.
+
+**The `not` case** of the `UnaryOp` branch replaces the line Step 2a left for it.  The operand is already evaluated by then.  Return the boolean opposite of its truthiness.
+
+| Piece | How to think about it |
 |---|---|
-| bool, number, string | Test `isinstance(value, bool)` first, because `True` is also an `int`.  Then `is_number(value)` leads to `value != 0`, and `isinstance(value, str)` leads to `value != ""`. |
-| anything else | `return True`.  If your Part 0 policy differs from the minimum above, this method is the one place to change it. |
-| `"and"` | Test `self.truthy(left)` and return `left` itself, not `True` or `False`.  Call `self.eval_node(node.right, env)` only on the path where the left did not decide the answer. |
-| `"or"` | The mirror image of `"and"`: return `left` when it is truthy. |
-| `not` | Python's own `not` applied to `self.truthy(value)`.  `not` always gives a real boolean, even though `and` and `or` give back an operand. |
+| `truthy` | Every `if`, `while`, `and`, `or`, and `not` asks this one method.  So a change to your policy is a change in one place, and the four constructs can never disagree. |
+| `"and"` and `"or"` | Return the *operand*, not `True` or `False`.  `0 or "x"` gives `"x"`.  The right operand is evaluated on one path only.  If any code path evaluates it before the truthiness test, the bomb test below catches you. |
+| `not` | `not` always gives a real boolean, even though `and` and `or` give back an operand.  That asymmetry is on purpose; theory question 2 below asks about it. |
 
 **Bomb test**: include the program `let safe = true or (1 / 0);` in your test suite and verify that it does not raise an error, since the right side must never be evaluated.  Create `test_interpreter.py` with the bomb test as its first test, then run `python3 -m pytest test_interpreter.py`:
 
@@ -704,68 +705,42 @@ class Environment:
             raise LangNameError(f"Cannot assign to undefined variable '{name}'")
 ```
 
-Give `Interpreter` a global environment (`self.globals = Environment()` in `__init__`), have `eval_node` use it when `env` is `None`, and pass `env` through every recursive call so blocks can hand their child environment down.  You did the first two in Step 2a.  Then implement the statements:
+Give `Interpreter` a global environment (`self.globals`, made in `__init__`), have `eval_node` use it when `env` is `None`, and pass `env` through every recursive call so blocks can hand their child environment down.  You did the first two in Step 2a.  Then implement the statements:
 
 - `Let`: evaluate the initializer, then call `env.define(node.name, value)`.
 - `Assign`: evaluate the value, then call `env.assign(node.name, value)`.  This updates the binding wherever it lives; it does *not* create a new one.
 - `Print`: evaluate the expression and print the result to stdout.  Booleans print as `true`/`false`, not `True`/`False`.
-- `Block`: create a child environment `child_env = Environment(parent=env)`, then evaluate each statement in the block using `child_env`.  When the block finishes, discard `child_env` (it goes out of scope naturally).
+- `Block`: create a child environment whose parent is `env`, then evaluate each statement in the block using the child.  When the block finishes, discard the child (it goes out of scope naturally).
 - `If`: evaluate the condition and convert it to a boolean with your truthiness rule.  Execute `then_branch` if truthy, and `else_branch` (if present) otherwise.
 - `While`: evaluate the condition and execute the body while it is truthy.  Document whether the loop body creates a per-iteration scope (both choices are valid; pick one and write it in SEMANTICS.md).  Catch `BreakSignal` to exit early; catch `ContinueSignal` to restart the loop.
 
-Here are those branches as a skeleton, with the `Let` branch you wrote in Step 2a for comparison.  The signals in the last bullet wait for Step 2d.
+Here is each piece as a signature or a branch name, with its algorithm.  The signals in the last bullet wait for Step 2d.
 
-```python
-def format_value(value):
-    """How print shows a value: true/false for booleans, str() for everything else."""
-    # TODO: a bool becomes "true" or "false"; every other value becomes str(value)
-    raise NotImplementedError("format_value")
+**`format_value(value)`**, a module-level function next to `type_name`, returns the string `print` shows.
 
-# Inside eval_node:
-        elif isinstance(node, Let):
-            env.define(node.name, self.eval_node(node.value, env))   # from Step 2a
-        elif isinstance(node, Assign):
-            # TODO: evaluate node.value, then env.assign; re-raise LangNameError with this node's position
-            raise NotImplementedError("Assign")
-        elif isinstance(node, Print):
-            # TODO: print the evaluated value through format_value
-            raise NotImplementedError("Print")
-        elif isinstance(node, Block):
-            child_env = Environment(parent=env)
-            # TODO: evaluate each statement in node.stmts with child_env
-            raise NotImplementedError("Block")
-        elif isinstance(node, If):
-            # TODO: truthy condition -> then_branch; otherwise else_branch, if it is not None
-            raise NotImplementedError("If")
-        elif isinstance(node, While):
-            # TODO: loop while the condition is truthy, evaluating the body (see the scope choice below)
-            raise NotImplementedError("While")
-```
+1. If `value` is a boolean, return `"true"` or `"false"`.  Test this first, for the same reason `truthy` does.
+2. Otherwise return Python's ordinary string form of the value.
 
-| `# TODO` | How to write it |
+**The statement branches** of `eval_node`, each returning nothing:
+
+- **`Assign`.**  (1) Evaluate the new value in `env`.  (2) Ask `env` to assign it to the name.  (3) If that raises `LangNameError`, raise it again with this node's line and col, the same way `Var` does in Step 2a.
+- **`Print`.**  (1) Evaluate the expression in `env`.  (2) Pass the value through `format_value`.  (3) Print the resulting string.
+- **`Block`.**  (1) Make one child `Environment` whose parent is `env`.  (2) Evaluate each statement of the block, in order, in the child.  The child is never stored anywhere, so it disappears when the branch returns.
+- **`If`.**  (1) Evaluate the condition in `env` and ask `truthy` about it.  (2) If true, evaluate the then branch.  (3) Otherwise, if the else branch is not `None`, evaluate it.
+- **`While`.**  (1) Evaluate the condition in `env` and ask `truthy` about it.  (2) If false, stop.  (3) Otherwise run the body, as your scope choice below says, and go back to (1).
+
+| Piece | How to think about it |
 |---|---|
-| `format_value` | Test `isinstance(value, bool)` first.  The conditional expression `"true" if value else "false"` picks the word. |
-| `Assign` | The same shape as `Var` in Step 2a.  Call `env.assign(node.name, value)` inside `try:`, and re-raise the `LangNameError` with `node.line, node.col`. |
-| `Print` | Wrap the evaluated value in `format_value(...)` before you hand it to Python's `print`.  The version from Your First 30 Minutes called `print` directly, so booleans came out as `True`. |
-| `Block` | A `for stmt in node.stmts:` loop that calls `self.eval_node(stmt, child_env)`.  Pass `child_env`, never `env`, and never store it in `self.globals`. |
-| `If` | `if self.truthy(self.eval_node(node.condition, env)):` evaluates the then branch.  Then use `elif node.else_branch is not None:`.  An `else_branch` that is itself an `If` needs no special case, because `eval_node` already handles `If`. |
-| `While` | `while self.truthy(self.eval_node(node.condition, env)):` evaluates the condition again on every pass.  The body line depends on your scope choice, shown next. |
+| `format_value` | Your First 30 Minutes printed values directly, so booleans came out as `True`.  Routing every `print` through one function fixes that in one place. |
+| `Assign` | `Let` and `Assign` look alike but do opposite things to the environment.  `Let` always makes a binding in the current scope.  `Assign` never makes one; it finds the nearest existing binding and changes it. |
+| `Block` | Pass the child down, never `env`, and never replace `self.globals` with it.  Either mistake makes an inner `let` leak out, and the shadowing program below prints the wrong thing. |
+| `If` | An `else_branch` that is itself an `If` (an `else if` chain) needs no special case.  Evaluating it reaches the `If` branch again. |
+| `While` | The condition is evaluated again on every pass, not once before the loop.  That is what lets the body change the answer. |
 
-The scope choice comes down to where the child environment is made.  Your `While` body is a `Block`, and Step 2c's `Block` branch makes a fresh child environment every time it runs.  So the plain recursive call gives you a per-iteration scope for free.  The alternative makes one child environment before the loop and runs the body's statements in it directly:
+The scope choice comes down to where the child environment is made.  Your `While` body is a `Block`, and Step 2c's `Block` branch makes a fresh child environment every time it runs.
 
-```python
-# Choice A: a per-iteration scope.  Each pass through the Block branch
-# makes a new child Environment, so a `let` in the body starts fresh.
-            while self.truthy(self.eval_node(node.condition, env)):
-                self.eval_node(node.body, env)
-
-# Choice B: one scope for the whole loop.  Make the child once, then run
-# the body's statements in it, skipping the Block branch.
-            loop_env = Environment(parent=env)
-            while self.truthy(self.eval_node(node.condition, env)):
-                for stmt in node.body.stmts:
-                    self.eval_node(stmt, loop_env)
-```
+- **Choice A, a per-iteration scope.**  Evaluate the body as an ordinary node in `env` on each pass.  The `Block` branch makes a new child every time, so a `let` in the body starts fresh on each pass.
+- **Choice B, one scope for the whole loop.**  Make one child environment before the loop starts.  On each pass, evaluate the body's statements directly in that child, skipping the `Block` branch.
 
 In both choices, a `let` inside the body does not survive the loop.  Differential program 4 in Step 5c probes this.  **Can you write a program whose output differs between Choice A and Choice B?**
 
@@ -826,24 +801,22 @@ class ContinueSignal(Exception):
     def __init__(self, line=0):
         super().__init__("continue")
         self.line = line
-
-# Inside eval_node:
-        elif isinstance(node, Break):
-            # TODO: raise the break signal, carrying this node's line
-            raise NotImplementedError("Break")
-        elif isinstance(node, Continue):
-            # TODO: raise the continue signal, carrying this node's line
-            raise NotImplementedError("Continue")
-        elif isinstance(node, While):
-            while self.truthy(self.eval_node(node.condition, env)):
-                # TODO: wrap the body in try; a BreakSignal leaves the loop, a ContinueSignal starts the next pass
-                self.eval_node(node.body, env)
 ```
 
-| `# TODO` | How to write it |
+Then three branches change:
+
+- **`Break`.**  Raise a `BreakSignal` that carries this node's line.  The branch never returns.
+- **`Continue`.**  The same, with a `ContinueSignal`.
+- **`While`.**  Keep your Step 2c loop, and change only how one pass runs the body:
+  1. Run the body exactly as Step 2c does, but guard that one action with a `try`.
+  2. If a `BreakSignal` arrives, leave the loop at once.  Nothing else in the loop runs.
+  3. If a `ContinueSignal` arrives, skip the rest of this pass and go straight back to the condition.
+  4. If the body finishes normally, go back to the condition as before.
+
+| Piece | How to think about it |
 |---|---|
-| raise the break or continue signal | `raise` the matching class, passing `node.line` as its argument.  The branch never returns. |
-| wrap the body in `try` | Put `try:` around the one body line, followed by `except BreakSignal:` with Python's `break` and `except ContinueSignal:` with Python's `continue`.  These work because the `except` clauses sit inside the Python `while`. |
+| `Break` and `Continue` | The signal may start many calls deep, inside an `If` inside a `Block` inside the body.  Every call in between unwinds on its own, the same way `deep(3)` did in the evaluator tour. |
+| where the `try` goes | The `try` must sit *inside* the Python loop, around the one body action.  Then catching `ContinueSignal` can start the next pass.  Put it around the whole loop and both signals end the loop. |
 
 A signal that escapes every `While` needs nothing here.  It travels up to `run_source` in Step 3a, which turns it into a staged `Runtime error`.
 
@@ -952,48 +925,47 @@ def test_determinism(tree):
     second = run(tree)
     assert first == second, f"same tree gave {first!r} then {second!r}"
 
-@given(e=exprs)
-def test_scope_restoration(e):
-    interp = Interpreter()
-    tree = Program([Block([Let("v", Num(0)), Print(e)])])
-    # TODO: evaluate tree with interp, hiding the printed output and ignoring a LangError
-    # TODO: assert that interp.globals.lookup("v") now raises LangNameError
-
 @dataclass
 class Probe:
     """Test-only node: the side-effecting built-in.  Records that it ran, then returns its value."""
     value: Any
-
-class ProbeInterpreter(Interpreter):
-    """An Interpreter that also understands Probe."""
-    def __init__(self):
-        super().__init__()
-        self.fired = []          # one entry per Probe evaluation
-    def eval_node(self, node, env=None):
-        if isinstance(node, Probe):
-            # TODO: record node.value in self.fired, then return it
-            raise NotImplementedError("Probe")
-        return super().eval_node(node, env)
-
-@given(left=exprs, op=st.sampled_from(["and", "or"]))
-def test_short_circuit_non_evaluation(left, op):
-    interp = ProbeInterpreter()
-    # TODO: evaluate left alone; discard this example if that raises a LangError
-    # TODO: discard it unless left decides op (falsy for "and", truthy for "or")
-    # TODO: evaluate LogicOp(op, left, Probe(1)) and assert interp.fired == []
-
-# TODO: at least one more invariant, e.g. test_arithmetic_agreement over + - * trees
 ```
 
-| `# TODO` | How to write it |
+The other three tests are yours.  Here is each one's signature and algorithm.
+
+**`test_scope_restoration(e)`**, decorated with `@given(e=exprs)`:
+
+1. Make one `Interpreter` and keep it in a variable, so you can inspect its globals afterward.
+2. Build the tree `Program([Block([Let("v", Num(0)), Print(e)])])`.  It binds `v` inside a block, then prints `e`.
+3. Evaluate the tree with that interpreter.  Hide what it prints, and treat a `LangError` as a legal outcome rather than a failure.
+4. Assert that looking up `"v"` in the interpreter's globals now raises `LangNameError`.  pytest's `raises` context manager asserts that a block raises.
+
+**`ProbeInterpreter`**, a subclass of `Interpreter` that also understands `Probe`:
+
+1. Its `__init__` runs the parent's `__init__`, then sets `self.fired` to an empty list.
+2. Its `eval_node(self, node, env=None)` checks for a `Probe` first.  For a `Probe`, it records the node's value in `self.fired` and returns that value.
+3. For every other node, it hands the work to the parent class's `eval_node`.
+
+**`test_short_circuit_non_evaluation(left, op)`**, decorated with `@given(left=exprs, op=st.sampled_from(["and", "or"]))`:
+
+1. Make one `ProbeInterpreter`.
+2. Evaluate `left` alone with it.  If that raises a `LangError`, discard this example with `assume(False)`.
+3. Decide whether `left` settles the answer by itself.  For `"or"` it does when its value is truthy; for `"and"`, when it is falsy.  Discard the example with `assume` if it does not.
+4. Evaluate `LogicOp(op, left, Probe(1))` with the same interpreter.
+5. Assert that `fired` is still empty.
+
+**One more invariant**, such as `test_arithmetic_agreement(tree)`:
+
+1. Write a second strategy, `int_exprs`, built like `exprs` but with only `Num` leaves and only `BinOp` over `"+"`, `"-"`, and `"*"`.
+2. Write a small recursive helper, `python_value(tree)`, that computes the same tree with Python's own arithmetic.
+3. Decorate the test with `@given(tree=int_exprs)` and assert that your evaluator and `python_value` agree.
+
+| Test | How to think about it |
 |---|---|
-| evaluate, hiding output and ignoring a `LangError` | `with redirect_stdout(io.StringIO()):` around `try: interp.eval_node(tree)` and `except LangError: pass`.  A generated `e` may divide by zero, and that is not a scope bug. |
-| assert the lookup raises | `with pytest.raises(LangNameError):` around `interp.globals.lookup("v")`.  The test fails if the lookup succeeds, which is exactly a leaked `let`. |
-| record and return the `Probe` | `self.fired.append(node.value)`, then `return node.value`.  Your `Interpreter` makes every recursive call through `self.eval_node`, so a `Probe` anywhere in a tree reaches this method. |
-| evaluate `left` alone | `try: left_value = interp.eval_node(left)` and `except LangError: assume(False)`.  `assume(False)` tells Hypothesis to throw this example away and draw another. |
-| `left` decides `op` | For `"or"` the left decides when `interp.truthy(left_value)` holds; for `"and"`, when it does not.  Store that in a variable and call `assume(...)` on it. |
-| evaluate and assert | `interp.eval_node(LogicOp(op, left, Probe(1)))`, then the `assert`.  Positions default to 0, so you can build nodes by hand. |
-| one more invariant | For arithmetic agreement, write a second strategy, `int_exprs`, with only `Num` leaves and `BinOp` over `["+", "-", "*"]`.  Then write a small recursive `python_value(tree)` that uses a dict from operator to `lambda a, b: ...`.  Assert `Interpreter().eval_node(tree) == python_value(tree)`. |
+| scope restoration | A generated `e` may divide by zero, and that is not a scope bug, so step 3 swallows it.  The test should fail only when the lookup *succeeds*, because that is exactly a leaked `let`. |
+| `ProbeInterpreter` | This works only because your `Interpreter` makes every recursive call through its own `eval_node` method.  So a `Probe` buried anywhere in a tree still reaches the subclass's version. |
+| short-circuit | Discarding an example tells Hypothesis to throw it away and draw another.  Steps 2 and 3 keep only the examples where the right side must stay unevaluated.  Positions default to 0, so you can build nodes by hand. |
+| arithmetic agreement | Python is the oracle here.  Restricting to `+ - *` on integers keeps away the cases where your language and Python disagree on purpose, such as division and booleans. |
 
 > **You should see.** After `python3 -m pytest -v test_interpreter.py`, each property test listed as passed, or a `Falsifying example` block showing the smallest program that breaks the invariant (Hypothesis shrinks a failure to the minimal offending program).  Recent Hypothesis versions label that block `Failing test case:` instead.  A passing run includes these four lines among your other tests, each followed by a percentage:
 >
@@ -1006,11 +978,11 @@ def test_short_circuit_non_evaluation(left, op):
 >
 > In your `readme.md`, report one invariant that caught a real bug, or a reasoned all-clear with your properties and the generator shown.
 
-To see a property bite once, break your `or` branch on purpose: move `self.eval_node(node.right, env)` above the truthiness test, run the suite, and put the line back.  The bomb test fails, and so does `test_short_circuit_non_evaluation`, with a shrunk example such as `left=Num(1), op='or'`.
+To see a property bite once, break your `or` branch on purpose: move the evaluation of the right operand above the truthiness test, run the suite, and put it back.  The bomb test fails, and so does `test_short_circuit_non_evaluation`, with a shrunk example such as `left=Num(1), op='or'`.
 
 > **If it fails.**
 > - `TypeError: 'RecursiveStrategy' object is not callable`: you wrote `exprs()`.  A strategy is used as `exprs`, without parentheses.
-> - `NotImplementedError: Probe`: the `Probe` branch of `ProbeInterpreter` is still the skeleton line.
+> - `InterpreterError: Unknown node type: Probe`: `ProbeInterpreter.eval_node` hands a `Probe` to the parent class instead of handling it first.
 > - `test_scope_restoration` fails with `Failed: DID NOT RAISE LangNameError`: your `Block` branch runs its statements in `env` instead of `child_env`, so `v` lands in the global scope.  This is the leak the invariant exists to catch.
 
 > **Why this matters.** The same invariants, generalized to your team's language, become the core of the Team Language Project's property-based test suite, so write them to be reusable.
@@ -1042,11 +1014,7 @@ from parser import parse, ParseError
 from interpreter import Interpreter, LangError, BreakSignal, ContinueSignal
 def run_source(source, interp):
     """Run one program through every stage.  Return None, or one staged error line."""
-    # TODO: tree = parse(source), catching LexError -> "Lexical error at line L, col C: ..."
-    #       and ParseError -> "Syntax error at line L, col C: ..."
-    # TODO: interp.eval_node(tree), catching LangError subclasses -> "Runtime error at line L: ..."
-    # TODO: a BreakSignal or ContinueSignal that escapes -> "Runtime error at line L: 'break' outside loop"
-    return None
+    ...                              # yours: the algorithm below
 def run_file(path):
     source = open(path).read()
     message = run_source(source, Interpreter())
@@ -1057,11 +1025,18 @@ if __name__ == "__main__":
     run_file(sys.argv[1]) if len(sys.argv) > 1 else repl()   # repl() arrives in Step 3b
 ```
 
-| `# TODO` | How to write it |
+`run_file` and the `__main__` line are done for you, as in the starter kit.  `run_source(source, interp)` is yours.  It takes the program text and the interpreter to run it in, and it returns `None` on success or one staged error line.
+
+1. **Parse stage.**  Parse `source` into a tree.  If that raises `LexError`, return `Lexical error at line L, col C: <message>`.  If it raises `ParseError`, return `Syntax error at line L, col C: <message>`.  Take `L`, `C`, and the message from the error object.
+2. **Run stage.**  Evaluate the tree with `interp`.  If that raises any `LangError`, return `Runtime error at line L: <message>`.
+3. **Stray signals.**  If evaluation lets a `BreakSignal` escape, return `Runtime error at line L: 'break' outside loop`, using the line the signal carries.  Do the same for a `ContinueSignal`, with `'continue'` in place of `'break'`.
+4. If every stage finished, return `None`.
+
+| Stage | How to think about it |
 |---|---|
-| parse, catching `LexError` and `ParseError` | One `try: tree = parse(source)` with two `except` clauses, `except LexError as err:` and `except ParseError as err:`.  Each one `return`s an f-string built from `err.line`, `err.col`, and `err.message`.  The reference lexer is lazy: it lexes while `parse` asks for tokens, so its `LexError` comes out of `parse`.  If your lexer runs first as its own call, give that call its own `try` above this one.  If your `ParseError` keeps `expected` and `found` instead of `message`, build the text as `f"expected {err.expected}, found {err.found}"`. |
-| evaluate, catching `LangError` | A second `try` around `interp.eval_node(tree)`, with `except LangError as err:` returning `f"Runtime error at line {err.line}: {err.message}"`.  One clause catches all four subclasses. |
-| a stray signal | Two more `except` clauses on the same `try`, `except BreakSignal as sig:` and `except ContinueSignal as sig:`, using the `sig.line` you stored in Step 2d. |
+| parse | The reference lexer is lazy: it lexes while `parse` asks for tokens, so its `LexError` comes out of the parse call.  That is why one guarded call covers both stages.  If your lexer runs first as its own call, give it its own guard above the parser's.  Some Parser assignments stored `expected` and `found` on `ParseError` instead of a `message`; build the text from those two fields. |
+| run | Every runtime class shares the parent `LangError`, so one handler covers all four.  Each stage returns as soon as it fails, so a program that fails to parse never reaches the Run stage. |
+| stray signals | The two signal classes are not `LangError`s, so they need their own handlers on the Run stage.  The line you stored in Step 2d is what lets this message say where the stray `break` was. |
 
 Save one program per stage, so each stage's message has been seen at least once.  Each error sits on line 2, after a `print 1;` that shows whether the program started running:
 
@@ -1091,7 +1066,7 @@ Save one program per stage, so each stage's message has been seen at least once.
 > **If it fails.**
 > - A Python traceback instead of a staged message: the exception escaped the `try` for its stage.  Check that each stage's `except` names the right class.
 > - `Runtime error` for a misspelled keyword: that is a lexical or syntax error and must be caught at its own stage, before evaluation begins.
-> - `AttributeError: 'ParseError' object has no attribute 'message'`: your Parser's error class stores `expected` and `found`.  Build the text from those, as the hint table shows.
+> - `AttributeError: 'ParseError' object has no attribute 'message'`: your Parser's error class stores `expected` and `found`.  Build the text from those, as the parse row of the table above says.
 > - `NameError: name 'repl' is not defined` when you run `python3 mylang.py` with no file: expected until Step 3b.
 
 ### Step 3b: Build the REPL
@@ -1108,23 +1083,20 @@ Save one program per stage, so each stage's message has been seen at least once.
 **You write:** `mylang.py` - `repl()`; `repl_transcript.txt` - the saved session
 **You run:** `python3 mylang.py`
 
-```python
-def repl():
-    """Step 3b: one persistent Environment, recovery after every error class."""
-    interp = Interpreter()           # ONE interpreter for the session, so ONE global Environment
-    while True:
-        # TODO: read a line with input(">> "); leave the loop on EOFError
-        # TODO: leave the loop on "quit" or "exit"
-        # TODO: run the line through run_source(line, interp); print any message and keep looping
-        raise NotImplementedError("repl")
-```
+`repl()` takes no arguments and returns when the session ends.  The starter kit holds its `def` line and docstring.
 
-| `# TODO` | How to write it |
+1. Make one `Interpreter` before the loop.  It is the only one the session ever uses.
+2. Loop forever.  On each pass, show the prompt `>> ` and read one line.
+3. If reading hits end of input (Ctrl-D raises `EOFError`), print an empty line and leave the loop.
+4. If the line, with spaces trimmed, is `quit` or `exit`, leave the loop.
+5. Otherwise hand the line and the one interpreter to `run_source`.  If it returns a message, print it.  Either way, go around again.
+
+| Step | How to think about it |
 |---|---|
-| read a line, leaving on `EOFError` | `try: line = input(">> ")` and `except EOFError:` with a bare `print()` and `break`.  The `print()` moves the shell's prompt onto a fresh line after Ctrl-D. |
-| `quit` or `exit` | `line.strip() in ("quit", "exit")`, then `break`. |
-| run the line | `message = run_source(line, interp)`, and `print(message)` when it is not `None`.  Because `run_source` returns instead of exiting, the loop simply goes around again. |
-| printing an expression's value (optional) | The grammar has no expression statements, so `x + 1` alone is a `ParseError`.  The reference parser also offers `parse_expression(source)`.  On a `ParseError`, try that and print `format_value(interp.eval_node(expr))`.  The transcript below does not need it. |
+| 1: one interpreter | The interpreter owns the global `Environment`.  Make a new one per line and `x` is forgotten after every input. |
+| 3: end of input | The empty line moves the shell's own prompt onto a fresh line after Ctrl-D. |
+| 5: run the line | Because `run_source` returns its message instead of exiting, recovery costs nothing.  The loop simply goes around again. |
+| printing an expression's value (optional) | The grammar has no expression statements, so `x + 1` alone is a `ParseError`.  The reference parser also offers `parse_expression(source)`.  On a `ParseError`, you may try that, evaluate the expression, and print it through `format_value`.  The transcript below does not need it. |
 
 > **Do this.**
 > 1. Fill in `repl()` in `mylang.py`: create one `Interpreter` before the loop, and inside the loop read a line with `input(">> ")`, run it through the same three stages as `run_file`, and print any error instead of exiting.
@@ -1169,17 +1141,12 @@ Your language's `let` declarations and function definitions carry (or are extend
 **You write:** your lexer - a `COLON` token; `ast_nodes.py` - the `type_ann` field on `Let`; `parser.py` - the annotation in `parse_let_stmt`
 **You run:** `python3 -c "from parser import parse; print(parse('let x: Num = 42;'))"`
 
-The change touches three files, one line or a few lines in each.  The skeleton shows the reference versions; yours may differ in names.
+The change touches three files, one line or a few lines in each.  Here is what each one must do afterward.
+
+- **The lexer** produces a `COLON` token for the character `:`.  The reference lexer reads its default table from `TOKEN_SPEC` in `lexer.py`, not from `token_spec.json` (that file is read only when you pass `config_path`), so the new entry goes in that list.  `:` is no other token's prefix, so its position in the list does not matter.
+- **`ast_nodes.py`**: `Let` gains one field, last and with a default, so every existing `Let(...)` call keeps working.  The starter kit's `typechecker.py` reads it by this name:
 
 ```python
-# Lexer: one new token.  The reference lexer reads its default table from
-# TOKEN_SPEC in lexer.py (token_spec.json is read only when you pass
-# config_path), so add the pair to that list.  ":" is no other token's
-# prefix, so its position in the list does not matter.
-    ("COLON",      r":"),
-
-# ast_nodes.py: one new field, last and with a default, so every
-# existing Let(...) call keeps working.
 @dataclass
 class Let:
     name: str             # variable name being defined
@@ -1187,22 +1154,9 @@ class Let:
     line: int = 0
     col: int = 0
     type_ann: Optional[str] = None   # "Num", "Str", "Bool", or None if unannotated
-
-# parser.py
-    def parse_let_stmt(self):
-        let_tok = self.expect("LET")
-        name = self.expect("IDENT")
-        type_ann = None
-        # TODO: if the next token is a COLON, consume it, then expect an IDENT and keep its value
-        self.expect("EQ")
-        value = self.parse_expr()
-        self.expect("SEMICOLON")
-        return Let(name.value, value, let_tok.line, let_tok.col, type_ann)
 ```
 
-| `# TODO` | How to write it |
-|---|---|
-| an optional `COLON` and type name | `if self.peek().type == "COLON":`, then `self.advance()`, then `type_ann = self.expect("IDENT").value`.  Type names such as `Num` lex as ordinary identifiers, so no new keyword is needed. |
+- **`parse_let_stmt`** accepts an optional `: TypeName` between the variable name and the `=`.  When the annotation is there, the type name's text lands in `type_ann`.  When it is absent, `type_ann` stays `None` and every program that parsed before still parses the same way.  Type names such as `Num` lex as ordinary identifiers, so no new keyword is needed.
 
 Confirm the annotation lands on the node:
 
@@ -1233,7 +1187,7 @@ The checker walks the AST once, maintaining a type environment that mirrors your
 Create `typechecker.py`, starting from your Type Checker Starter lab code, and shape it around this skeleton.  Then write one ill-typed program per bullet above (three files) and one well-typed program, and add each to `test_interpreter.py`.
 
 **You write:** `typechecker.py` - `TypeEnv.define`, `TypeEnv.lookup`, and one `check` branch per node class; three ill-typed programs, one well-typed program, and their tests in `test_interpreter.py`
-**You run:** the two `python3 -c` commands below the hint table
+**You run:** the two `python3 -c` commands below the typing rules
 
 Your lab's names may differ from the skeleton's: `TypeEnvironment` for `TypeEnv`, or separate `check_stmt` and `check_expr` functions.  Keep whichever you have, provided `mylang.py` can call one function on the whole tree.
 
@@ -1245,30 +1199,36 @@ class TypeEnv:
     def __init__(self, parent=None):
         self._types = {}
         self._parent = parent
-    # TODO: define(name, typ) and lookup(name), same shape as Environment
+    def define(self, name, typ): ...
+    def lookup(self, name): ...
 def check(node, tenv=None):
     """Return the type of an expression node; check a statement node and return None."""
-    if tenv is None:
-        tenv = TypeEnv()
-    if isinstance(node, Num):
-        return "Num"
-    # TODO: Str -> "Str", BoolLit -> "Bool", Var -> tenv.lookup(...)
-    # TODO: BinOp: arithmetic needs Num operands; comparisons yield Bool
-    # TODO: LogicOp and UnaryOp("not") need Bool
-    # TODO: Let: check the initializer against type_ann, then tenv.define
-    # TODO: Block: check statements in TypeEnv(parent=tenv)
-    # TODO: call sites: arity, argument types, declared return type
+    ...
 ```
 
-| `# TODO` | How to write it |
+**`TypeEnv`** has the same shape as `Environment`, with type names (`"Num"`, `"Str"`, `"Bool"`) in place of values.  `define(name, typ)` records a type in this scope.  `lookup(name)` searches this scope, then each parent, and returns `None` for a name that no scope declares.
+
+**`check(node, tenv=None)`** uses a fresh `TypeEnv` when `tenv` is `None`.  It returns the type name of an expression node, returns `None` for a statement node, and raises `LangTypeError` for an ill-typed node.  The typing rules:
+
+| Node | Its type, and what is rejected |
 |---|---|
-| `define` and `lookup` | Copy `Environment.define` and `Environment.lookup`, with `_types` in place of `_bindings`.  For a name that no scope declares, `lookup` returns `None`, an unknown type; the note below the table explains why. |
-| `Str`, `BoolLit`, `Var` | `return "Str"` and `return "Bool"`.  `Var` returns `tenv.lookup(node.name)`. |
-| `BinOp` | Check both sides first: `lt, rt = check(node.left, tenv), check(node.right, tenv)`.  For `+ - * /` and `< <= > >=`, raise when `(lt, rt) != ("Num", "Num")`, with a message naming both, such as `f"'{node.op}' requires Num operands, got {lt} and {rt}"`.  Arithmetic returns `"Num"` and comparisons return `"Bool"`.  `==` and `!=` need `lt == rt` and return `"Bool"`.  If your evaluator concatenates strings, let `+` accept two `"Str"` and return `"Str"`. |
-| `LogicOp` and `not` | Check each operand, and require `"Bool"` if you chose the strict rule above.  Return `"Bool"`.  While you are here, unary `-` needs `"Num"` and returns `"Num"`. |
-| `Let` | `actual = check(node.value, tenv)`.  If `node.type_ann` is set and differs from `actual`, raise naming both.  Then `tenv.define(node.name, node.type_ann or actual)`, so an unannotated `let` takes its initializer's type. |
-| `Block` | `inner = TypeEnv(parent=tenv)`, then a `for` loop calling `check(stmt, inner)`.  `Program` is the same loop, run in `tenv` itself.  The statements without a TODO line need branches too: `Assign` (the new value's type must equal the declared one), `Print` (check the expression), `If` and `While` (check the condition, then each branch or body), and `Break` and `Continue` (nothing to check).  Statements `return None`. |
-| call sites | Only if your language has functions.  The core grammar on this page has none, so say that in your readme and leave this TODO as a comment. |
+| `Num`, `Str`, `BoolLit` | `"Num"`, `"Str"`, and `"Bool"`. |
+| `Var` | Whatever the type environment holds for the name, or `None` if nothing declares it. |
+| `BinOp` with `+ - * /` | Both operands must be `"Num"`; the result is `"Num"`.  If your evaluator concatenates strings, `+` also accepts two `"Str"` and gives `"Str"`.  A rejection reads `'+' requires Num operands, got Num and Str`, naming the operator and both types. |
+| `BinOp` with `< <= > >=` | Both operands must be `"Num"`; the result is `"Bool"`. |
+| `BinOp` with `==` and `!=` | Both operands must have the same type; the result is `"Bool"`. |
+| `LogicOp`, `not` | The operands obey your strictness decision above; with the strict rule each must be `"Bool"`.  The result is `"Bool"`. |
+| unary `-` | The operand must be `"Num"`; the result is `"Num"`. |
+| `Let` | If `type_ann` is set and the initializer's type differs, reject, naming the variable and both types.  Then the name gets `type_ann`, or the initializer's type when there is no annotation. |
+| `Assign` | The new value's type must equal the name's declared type. |
+| `Print` | Its expression must check. |
+| `If`, `While` | The condition obeys your strictness decision; with the strict rule, a rejection reads `condition of 'while' must be Bool, got Num`.  Then each branch or body is checked. |
+| `Block` | Its statements are checked in order, in a new `TypeEnv` whose parent is `tenv`. |
+| `Program` | Its statements are checked in order, in `tenv` itself. |
+| `Break`, `Continue` | Nothing to check. |
+| call sites | Only if your language has functions.  The core grammar on this page has none, so say that in your readme and leave this rule as a comment. |
+
+Every rule skips its comparison when a side is `None`.  One way in: write the rules for the leaves first, then work up the table, testing each row with a one-line program.
 
 **A name with no declared type.**  An undeclared variable is a Run-stage error.  The checker treats a name that no scope declares as an *unknown* type: `lookup` returns `None`, and every rule skips its check when a side is `None`.  The evaluator then reports the name with `LangNameError`, as it does now, so Step 5a's `LangNameError` stays visible through `mylang.py`.  If you did the Type Checker lab, your checker already works this way.
 
@@ -1286,7 +1246,7 @@ python3 -c "from parser import parse; from typechecker import check; check(parse
 > **If it fails.**
 > - `NotImplementedError: no typing rule yet for Program`: `check` is handed the whole tree, so it needs a `Program` branch.
 > - A rule compares against `None`, such as `'+' requires Num operands, got Num and None`: a branch fell off the end without a `return`, or `lookup` returned `None` and the rule did not skip it.
-> - `let x: Num = 1; { let x: Str = "a"; } x = 2;` is rejected at the `x = 2`: your `Block` branch defines into `tenv` instead of `inner`, so the inner `Str` replaced the outer `Num`.
+> - `let x: Num = 1; { let x: Str = "a"; } x = 2;` is rejected at the `x = 2`: your `Block` branch defines into `tenv` instead of the block's own new `TypeEnv`, so the inner `Str` replaced the outer `Num`.
 
 ### Step 4c: Report Positioned Errors and Add the Stage
 
@@ -1295,23 +1255,10 @@ Report every rejection as `Type error at line L, col C: ...`, naming both confli
 **You write:** `typechecker.py` - `node.line, node.col` on every `raise`; `mylang.py` - the Type stage in `run_source`; `badtype.ml`
 **You run:** `python3 mylang.py badtype.ml`
 
-Both `run_file` and `repl` go through `run_source`, so the Type stage is one new `try` there, between the other two:
+Both `run_file` and `repl` go through `run_source`, so the Type stage goes there once.  `mylang.py` now also imports `check` from `typechecker` and `LangTypeError` from `interpreter`.  What the finished pieces must do:
 
-```python
-from interpreter import Interpreter, LangError, LangTypeError, BreakSignal, ContinueSignal
-from typechecker import check
-
-def run_source(source, interp):
-    """Run one program through every stage.  Return None, or one staged error line."""
-    # ... the parse stage from Step 3a ...
-    # TODO: check(tree), catching LangTypeError -> "Type error at line L, col C: ..."
-    # ... the evaluate stage from Step 3a ...
-```
-
-| `# TODO` | How to write it |
-|---|---|
-| the Type stage | Its own `try: check(tree)` with `except LangTypeError as err:` returning `f"Type error at line {err.line}, col {err.col}: {err.message}"`.  Place it after the parse `try` and before the evaluate `try`.  Because it returns, `eval_node` never runs on a rejected tree. |
-| positions on every `raise` | Expression nodes carry `line` and `col`, so pass `node.line, node.col`.  `If` and `While` carry only a `line`, so report a bad condition at the condition's own position, `node.condition.line, node.condition.col`. |
+- **The Type stage** runs `check` over the whole tree after the Parse stage succeeds and before the Run stage starts.  A `LangTypeError` makes `run_source` return `Type error at line L, col C: <message>`, and `eval_node` never runs on that tree.
+- **Every `raise` in `typechecker.py`** carries a position.  Expression nodes report their own `line` and `col`.  `If` and `While` carry only a `line`, so a bad condition is reported at the condition expression's own line and col.
 
 Save this as `badtype.ml`.  Its error is on the last line, after a `print` that would run if the check were interleaved with evaluation:
 
@@ -1322,7 +1269,7 @@ let label: Str = "items";
 print total + label;
 ```
 
-> **You should see.** One `Type error at line L, col C: ...` line naming both types, and no program output at all, since the Type stage fires before the Run stage.  Keep this staged output; the rubric asks for it.  If the program prints output and then a type error, the check is running interleaved with evaluation; it must finish over the whole tree before `eval_node` is called.  With the hints above, the one line is:
+> **You should see.** One `Type error at line L, col C: ...` line naming both types, and no program output at all, since the Type stage fires before the Run stage.  Keep this staged output; the rubric asks for it.  If the program prints output and then a type error, the check is running interleaved with evaluation; it must finish over the whole tree before `eval_node` is called.  With the rules above, the one line is:
 >
 > ```text
 > Type error at line 4, col 13: '+' requires Num operands, got Num and Str
@@ -1387,14 +1334,13 @@ def test_undefined_variable_names_the_variable():
     assert "missing" in info.value.message
     assert info.value.line == 1
 
-# TODO: one test each for LangTypeError, LangZeroDivisionError, and LangRuntimeError
 ```
 
-| `# TODO` | How to write it |
-|---|---|
-| `LangTypeError` | Evaluate `parse('print "a" - 1;')` inside `pytest.raises(LangTypeError)`, and assert that both `"str"` and `"int"` appear in `info.value.message`. |
-| `LangZeroDivisionError` | `print 1 / 0;`, with the same shape.  Assert on `info.value.line` as well. |
-| `LangRuntimeError` | Your evaluator never raises this one itself; a stray `break` becomes it in `run_source`.  So test the message instead: `assert run_source("break;", Interpreter()) == "Runtime error at line 1: 'break' outside loop"`. |
+The other three tests must check these things:
+
+- **`LangTypeError`.**  The program `print "a" - 1;` raises it, and its message names both `str` and `int`.
+- **`LangZeroDivisionError`.**  The program `print 1 / 0;` raises it, and its line is 1.
+- **`LangRuntimeError`.**  Your evaluator never raises this one itself; a stray `break` becomes it in `run_source`.  So this test checks the message: `run_source` on the program `break;` returns exactly `Runtime error at line 1: 'break' outside loop`.
 
 Then check the staged reporting end to end.  Step 3a's four error files, Step 4c's `badtype.ml`, and one new file cover every class.  Save `badname.ml` as the one line `print missing;`.
 
@@ -1508,9 +1454,7 @@ def test_differential_02_division_and_numbers():
 # TODO: the other four programs, each naming the SEMANTICS.md section it probes
 ```
 
-| `# TODO` | How to write it |
-|---|---|
-| the other four programs | Copy `test_differential_02_...` four times.  Change the file name, the section comment, and the expected list, pasting each list from your real run, never from this page. |
+The other four tests follow the same pattern, one per program.  Each names the `SEMANTICS.md` section it probes, and its expected list comes from your real run, never from this page.
 
 > **If it fails.**
 > - The expected list is missing only the error line: your `mylang.py` prints its errors to `sys.stderr`.  Read `result.stderr` as well, or print errors to standard output.
@@ -1528,11 +1472,11 @@ This direction replaces Steps 5b-5c.  You grow Part 4's annotation checker into 
 
 ### Step T.1: Type Terms, Substitution, and Unification (`hm_types.py`)
 
-Create `hm_types.py` in the project folder from the skeleton below.  Define frozen dataclasses `TVar(name)` and `TCon(name)` (and `TFun(param, ret)` if you cover functions), with `apply(subst, typ)` and `free_vars(typ)` helpers.  Implement `unify(t1, t2, subst) -> subst`:
+Create `hm_types.py` in the project folder from the skeleton below.  Define frozen dataclasses `TVar(name)` and `TCon(name)` (and `TFun(param, ret)` if you cover functions), with `apply(subst, typ)` and `free_vars(typ)` helpers, and implement `unify(t1, t2, subst) -> subst`.  A substitution is a dict from type-variable name to type.
 
-1.  Apply the current substitution to both types.  If they are now identical, return the substitution unchanged.
-2.  If one is a type variable `α` that does not occur in the other, extend the substitution with `{α: other}`.  The **occurs check** (refusing to bind `α` to a type containing `α`) is what prevents infinite types.  Raise a `LangTypeError` naming both types if it fires.
-3.  Recurse componentwise on matching constructors.  Otherwise raise a `LangTypeError` naming both conflicting types.
+- **`apply(subst, typ)`** returns `typ` with every type variable that `subst` binds replaced by its binding, all the way down, so the result mentions no bound variable.
+- **`free_vars(typ)`** returns the set of type-variable names that appear in `typ`.
+- **`unify(t1, t2, subst)`** returns the most general substitution, extending `subst`, under which `t1` and `t2` become the same type.  Two types that are already equal under `subst` leave it unchanged.  Two different constants, such as `Num` and `Bool`, raise a `LangTypeError` naming both types.  So does the **occurs check**: binding a variable `α` to a type that contains `α` would make an infinite type, so `unify` refuses and raises.  With `TFun`, two function types unify when their parameter types and their return types do.
 
 **You write:** `hm_types.py` - `TVar`, `TCon`, `apply`, `free_vars`, and `unify`, plus three tests in `test_interpreter.py`
 **You run:** `python3 -m pytest test_interpreter.py`
@@ -1549,15 +1493,9 @@ class TVar:
 class TCon:
     name: str             # a type constant: "Num", "Bool", or "Str"
 TNum, TBool, TStr = TCon("Num"), TCon("Bool"), TCon("Str")
-def apply(subst, typ):
-    # TODO: replace every TVar bound in subst, recursively
-    ...
-def free_vars(typ):
-    # TODO: the set of TVar names appearing in typ
-    ...
-def unify(t1, t2, subst):
-    # TODO: the three rules above; return the extended substitution
-    ...
+def apply(subst, typ): ...
+def free_vars(typ): ...
+def unify(t1, t2, subst): ...
 ```
 
 Add these tests to `test_interpreter.py`, at minimum: `unify(TVar("a"), TNum, {})` binds `a`; unifying `TNum` with `TBool` raises; and an occurs-check case raises.  If the occurs-check test hangs, you have found the infinite type it exists to prevent; add the check before the bind.
@@ -1585,34 +1523,20 @@ from interpreter import LangNameError, LangTypeError
 from hm_types import TVar, TCon, TNum, TBool, TStr, apply, unify
 from typechecker import TypeEnv          # reuse Part 4's scope chain
 
-_count = 0
 def fresh():
     """Return a type variable that no other part of the program uses."""
-    global _count
-    _count += 1
-    return TVar(f"t{_count}")
+    ...
 
 def infer(node, type_env, subst):
     """Return (subst, type) for an expression, or (subst, None) for a statement."""
-    if isinstance(node, Num):
-        return subst, TNum
-    # TODO: one isinstance branch per node type eval_node handles, threading subst
-    #       through every recursive call:  subst, t = infer(child, type_env, subst)
-    raise NotImplementedError(f"no inference rule yet for {type(node).__name__}")
+    ...
 ```
+
+`fresh()` returns a new `TVar` each call, and no two calls ever return the same name.  `infer` follows the rules in the list above.  Every recursive call takes the current substitution and hands back the updated one, and the next call starts from that updated one, so no solved variable is ever lost.
 
 Wire it into `mylang.py` as a stage: `python3 mylang.py --typed program.ml` (or make it the default; document your choice) lexes, parses, **type-checks**, and only then evaluates.  The stage label `Type error` keeps the staged-error format of Step 4c: `Type error at line L, col C: <message>`.  Run `python3 mylang.py --typed shadow.ml` and confirm it still prints `51` then `2`: a well-typed program must pass through the new stage unchanged.
 
-One way to read the flag, replacing the last two lines of `mylang.py`:
-
-```python
-if __name__ == "__main__":
-    args = sys.argv[1:]
-    typed = "--typed" in args                  # Step T.2: run infer before evaluation
-    paths = [a for a in args if a != "--typed"]
-    # TODO: pass typed into run_file and run_source, and call infer there when it is set
-    run_file(paths[0]) if paths else repl()
-```
+The flag changes the `__main__` block of `mylang.py`.  `--typed` may appear anywhere on the command line, and whatever argument is left is the program path.  With no path, the REPL starts, as before.  `run_file` and `run_source` learn whether the flag was given, and `run_source` runs `infer` over the whole tree, as its own stage, only when it was.
 
 ### Step T.3: Positioned Type Errors
 
@@ -1673,19 +1597,15 @@ Create `intcode.py` in the project folder from the skeleton below and implement 
 from interpreter import LangRuntimeError
 def run(program, inputs):
     """Execute an Intcode program; return the list of outputs."""
-    mem = program                # the program is its own memory; run in place
-    pc = 0                       # (copy it first if you prefer, and say so in INTCODE.md)
-    outputs = []
-    inputs = list(inputs)
-    while True:
-        instr = mem[pc]
-        opcode = instr % 100
-        # TODO: decode parameter modes from instr // 100
-        # TODO: dispatch on opcode (dict of handlers or match statement)
-        # TODO: opcode 99 -> return outputs
-        # TODO: unknown opcode -> raise LangRuntimeError(f"illegal opcode {opcode}", line=pc)
-        ...
+    ...
 ```
+
+What `run` must do:
+
+- It starts at `pc` 0 and executes one instruction at a time until opcode `99`, then returns the outputs in the order produced.
+- `inputs` is consumed front to back, one value per opcode `3`.
+- The program is its own memory, and the run changes `program` in place.  The Day 2 check below reads `p[0]` after the run, so it relies on this.  You may copy it first instead; say so in `INTCODE.md`, and make the copy reachable so the Day 2 check can read it.
+- An unknown opcode raises `LangRuntimeError` with a message such as `illegal opcode 42`, and with the `pc` at fault passed as its `line`.
 
 Run the Day 2 sample:
 

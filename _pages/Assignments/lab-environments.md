@@ -203,7 +203,7 @@ Look back at your Part 0 chains, such as `E1{x=2} -> E0{}`.  Each box is a table
 | the arrow to the enclosing scope | `self._parent`, another `Environment` | the outer scope's object |
 | the end of the chain (`E0` has no arrow) | `self._parent is None` | `None` |
 | "is `x` bound in this box?" | `name in self._bindings` | `True` or `False` |
-| "follow the arrow and ask again" | `self._parent.lookup(name)` | whatever the outer scope answers |
+| "follow the arrow and ask again" | the same method, called on the object in `self._parent` | whatever the outer scope answers |
 
 A lookup walks the chain one box at a time.  It checks the current box first and stops at the first box that has the name, which is exactly why an inner binding shadows an outer one.  If it reaches a box whose parent is `None` without finding the name, the name is unbound.
 
@@ -251,7 +251,7 @@ The skeleton below names every method and includes the two error classes, so the
 
 > **Do this.**
 > 1. Create `environment.py` in your `cs374-environments/` folder, paste in the skeleton below, and run `python3 environment.py` once.  A clean run prints nothing, and that is the point: a skeleton that runs and prints nothing has no syntax errors.  A `SyntaxError` or `IndentationError` means the paste went wrong.
-> 2. Replace each `raise NotImplementedError(...)` with the code the `# TODO` comments describe.  In `lookup` and `assign`, let the recursive call on `self._parent` do the walking; you do not need a loop.
+> 2. Replace each `raise NotImplementedError(...)` with the code the `# Step` comments describe.  In `lookup` and `assign`, let the recursive call on `self._parent` do the walking; you do not need a loop.
 > 3. Give each `LangNameError` a message that includes the variable name, such as `Undefined variable 'y'` for `lookup` and `Cannot assign to undefined variable 'y'` for `assign`.
 > 4. Run `python3 environment.py` again and confirm it still prints nothing.
 
@@ -279,42 +279,43 @@ class Environment:
         self._parent = parent   # the enclosing Environment, or None at top level
 
     def define(self, name, value):
-        # TODO: store the value in this scope's table.  Do not look at the parent.
+        # Step 1: store value under name in this scope's table.
+        #         Do not look at the parent.
         raise NotImplementedError("define")
 
     def lookup(self, name):
-        # TODO: if name is bound in this scope, return its value.
-        # TODO: otherwise, if there is a parent, ask the parent and return its answer.
-        # TODO: otherwise raise LangNameError with a message that names the variable.
+        # Step 1: if name is bound in this scope, return its value.
+        # Step 2: otherwise, if there is a parent, ask the parent and return its answer.
+        # Step 3: otherwise raise LangNameError with a message that names the variable.
         raise NotImplementedError("lookup")
 
     def assign(self, name, value):
-        # TODO: if name is bound in this scope, update it here.
-        # TODO: otherwise, if there is a parent, hand the assignment to the parent.
-        # TODO: otherwise raise LangNameError.  Never create a new binding here.
+        # Step 1: if name is bound in this scope, update it here and stop.
+        # Step 2: otherwise, if there is a parent, hand the assignment to the parent and stop.
+        # Step 3: otherwise raise LangNameError.  Never create a new binding here.
         raise NotImplementedError("assign")
 ```
 
-Fill in the comments one at a time.  This table gives the Python for each `# TODO`, in order:
+Fill in the steps one at a time.  This table explains the idea behind each `# Step` comment, in order:
 
-| `# TODO` | How to write it |
+| `# Step` | How to think about it |
 |---|---|
-| `define`: store the value | Index assignment on this scope's dictionary, `self._bindings[name] = ...`.  No `if`, and no mention of `self._parent`. |
-| `lookup`: bound in this scope | `if name in self._bindings:` then `return self._bindings[name]`.  Use `in`, not `.get`, so a name bound to `None` still counts as bound. |
-| `lookup`: ask the parent | `if self._parent is not None:` then `return self._parent.lookup(name)`.  Keep the `return`: without it, the parent's answer is thrown away and `lookup` returns `None`. |
-| `lookup`: raise | `raise LangNameError(f"Undefined variable '{name}'")`.  Leave `line` and `col` at their defaults. |
-| `assign`: bound in this scope | The same `in` test as `lookup`.  Update `self._bindings[name]`, then `return` so you do not fall through to the parent. |
-| `assign`: hand it to the parent | `if self._parent is not None:` then call `self._parent.assign(name, value)` and `return`.  The parent runs the same three checks on its own table. |
-| `assign`: raise | `raise LangNameError(f"Cannot assign to undefined variable '{name}'")`.  Never write `self._bindings[name] = value` on this path. |
+| `define`, Step 1 | One write into this scope's dictionary, indexed by the name.  No `if`, and no mention of the parent: `define` never cares what an outer scope holds. |
+| `lookup`, Step 1 | Use the `in` test from Before You Code, not `.get`, so a name bound to `None` still counts as bound.  If the name is here, this scope's value is the answer, and you are done. |
+| `lookup`, Step 2 | Check the parent with `is not None` before you touch it.  Then call the parent's own `lookup` with the same name.  Return whatever it gives back.  If you forget to return it, the parent's answer is thrown away and `lookup` returns `None`. |
+| `lookup`, Step 3 | You reach this only when the name is not here and there is no parent to ask.  Pass just the message to `LangNameError`, and leave `line` and `col` at their defaults. |
+| `assign`, Step 1 | The same membership test as `lookup`.  Overwrite the value in this scope's table, then return, so you do not also fall through to the parent. |
+| `assign`, Step 2 | Hand the whole job, name and value, to the parent's own `assign`.  The parent runs the same three steps on its own table, so the recursion does the walking for you. |
+| `assign`, Step 3 | Raise with the assign message.  This path must never write into this scope's table.  That one rule is the whole difference between `define` and `assign`. |
 
 > **You should see.**  Nothing.  `python3 environment.py` defines classes and exits, so a clean run prints no output at all, both on the skeleton and on your finished file.  Step 1.2 is where your methods first run.
 
 > **If it fails.**
 > - `IndentationError: expected an indented block after function definition`: you deleted a `raise NotImplementedError(...)` line before writing its replacement, so the method body holds only comments.  A comment is not a statement; write the code, or leave the `raise` in place until you do.
-> - `RecursionError: maximum recursion depth exceeded` (in Step 1.2 or 1.3): `lookup` or `assign` called itself, `self.lookup(name)`, instead of the parent's method, `self._parent.lookup(name)`.
+> - `RecursionError: maximum recursion depth exceeded` (in Step 1.2 or 1.3): `lookup` or `assign` called its own method on `self` instead of the same method on the parent, so it asks the same scope the same question forever.
 > - `AttributeError: 'NoneType' object has no attribute 'lookup'`: the method asks the parent without checking that there is one.  At the top level `self._parent` is `None`, so test `is not None` first and raise `LangNameError` when it is.
 
-> **Watch out.** `if self._parent:` tests the parent's truthiness, not whether a parent exists.  It happens to work for your class today, because Python treats any object as true by default.  If you later give `Environment` a `__len__` method (to count bindings, say), an empty scope becomes false, and lookups skip it with no error at all.  Compare against `None` explicitly: `if self._parent is not None:`.
+> **Watch out.** `if self._parent:` tests the parent's truthiness, not whether a parent exists.  It happens to work for your class today, because Python treats any object as true by default.  If you later give `Environment` a `__len__` method (to count bindings, say), an empty scope becomes false, and lookups skip it with no error at all.  Compare the parent against `None` explicitly, with `is not None`.
 
 > **Watch out.** The Interpreter assignment's Step 5a defines the same `LangError` hierarchy in `interpreter.py`.  Keep one definition: import `LangError` and `LangNameError` from `environment.py`, or move them into the interpreter's error module and import them back here.  With two copies of `LangNameError`, an `except LangNameError` in the evaluator can miss the one your `Environment` raises.
 
@@ -443,51 +444,28 @@ print y;                 # step 20
 
 You do not have an evaluator yet, so run the program the way Step 1.2 did: translate each step into a call on your class.  This is a preview of exactly what the Interpreter assignment's `Let`, `Assign`, `Block`, and `Var` cases will do.
 
-**You write:** `trace_run.py` - one line per remaining step of the trace program, steps 6 through 20.
+**You write:** `trace_run.py` - one line of Python per step of the trace program, steps 1 through 20, except the three "leave block" steps.
 **You run:** `python3 trace_run.py`, then `python3 test_environment.py --trace` once your comparison is written.
 
-Each block gets its own variable, named after the block: `a` for block A (already in the listing), `b` for block B, and `c` for block C.  Each line calls a method on the variable for the scope that step runs in, the innermost block you are in at that moment.
+Each scope gets its own variable, named after it: `top` for the top level, `a` for block A, `b` for block B, and `c` for block C.  Each line calls a method on the variable for the scope that step runs in, the innermost block you are in at that moment.  Your `try_env.py` from Step 1.2 already uses every kind of call you need.
 
 > **Do this.**
-> 1. Create `trace_run.py` next to `environment.py` and start it from the listing below.
-> 2. Replace each `# TODO` with one line of code.  Each `{` becomes `Environment(parent=<the scope you are in>)`, and each `print` becomes a Python `print` of a `lookup`.
-> 3. Leave the three "leave block" steps (13, 16, and 18) as the comments they already are.  Leaving a block takes no call: from that step on, your lines use the parent's variable instead.
-> 4. Run `python3 trace_run.py` and compare the six printed values with your predictions.  For any step where your prediction missed, write one sentence in `trace.md` naming the rule you misapplied (define versus assign, or which scope a lookup starts in).
+> 1. Create `trace_run.py` next to `environment.py`.  Import `Environment` the same way `try_env.py` does, and make `top`, the program's top-level scope, with no parent.
+> 2. Work down the listing one step at a time, starting at step 1.  For each step, decide which of the five kinds in the table below it is.
+> 3. Decide which scope the step runs in: the innermost block still open at that moment.  That scope's variable is the one you call the method on.
+> 4. Write the one line for that step.  End it with a comment holding the step number and the original line, so you can match your lines against the `--trace` output later.
+> 5. For the three "leave block" steps (13, 16, and 18), write only a comment.  Leaving a block takes no call: from that step on, your lines use the parent's variable instead.
+> 6. Run `python3 trace_run.py` and compare the six printed values with your predictions.  For any step where your prediction missed, write one sentence in `trace.md` naming the rule you misapplied (define versus assign, or which scope a lookup starts in).
 
-```python
-from environment import Environment
+Every step of the program is one of five kinds:
 
-top = Environment()                              # the program's top-level scope
-top.define("x", 1)                               # step 1:  let x = 1;
-top.define("y", 10)                              # step 2:  let y = 10;
-a = Environment(parent=top)                      # step 3:  enter block A
-a.define("x", 2)                                 # step 4:  let x = 2;
-a.assign("y", a.lookup("y") + a.lookup("x"))     # step 5:  y = y + x;
-# TODO (enter)   step 6:  enter block B, as a new variable b
-# TODO (assign)  step 7:  x = x * 10;
-# TODO (define)  step 8:  let z = y;
-# TODO (enter)   step 9:  enter block C, as a new variable c
-# TODO (define)  step 10: let y = 0;
-# TODO (assign)  step 11: z = z + x;
-# TODO (print)   step 12: print y;
-# step 13: leave block C.  No call; from here on, use b.
-# TODO (print)   step 14: print x;
-# TODO (print)   step 15: print z;
-# step 16: leave block B.  No call; from here on, use a.
-# TODO (print)   step 17: print x;
-# step 18: leave block A.  No call; from here on, use top.
-# TODO (print)   step 19: print x;
-# TODO (print)   step 20: print y;
-```
-
-Every `# TODO` is one of four kinds, and steps 3 through 5 already show each kind but `print`:
-
-| `# TODO` | How to write it |
+| Kind of step | How to think about it |
 |---|---|
-| `(enter)` | Copy the shape of step 3: `b = Environment(parent=...)`, where the parent is the variable for the block you are in now.  Step 9 is the same, one level deeper. |
-| `(define)` | Copy the shape of step 4: `<scope>.define("name", <value>)`.  If the value is another variable, as in `let z = y;`, read it with `<scope>.lookup("y")`. |
-| `(assign)` | Copy the shape of step 5: `<scope>.assign("name", <new value>)`, where the new value is built from `<scope>.lookup(...)` calls.  Call `assign` on the current scope, not on the scope you think holds the name; walking the chain is `assign`'s job. |
-| `(print)` | `print(<scope>.lookup("name"))`, where `<scope>` is the innermost block still open at that step. |
+| `{` (enter a block) | Make a new `Environment` whose parent is the variable of the block you are in now, and give it the new block's name.  Step 3 makes `a` inside `top`; step 6 makes `b` inside `a`; step 9 goes one level deeper. |
+| `let name = value;` (define) | A `let` is a `define` on the current scope, never on an outer one.  If the value is another variable, as in `let z = y;`, read that variable first with a `lookup` on the current scope. |
+| `name = expression;` (assign) | No `let` means `assign`.  Build the new value from `lookup` calls on the current scope, then call `assign` on the current scope too.  Do not call it on the scope you think holds the name; walking the chain is the job of `assign`. |
+| `print name;` | Print the result of a `lookup` on the innermost scope still open at that step. |
+| `}` (leave a block) | No call at all.  Switch to the parent's variable for every line after it. |
 
 > **You should see.** Six lines of output, one integer per line, one per `print`, in the order of steps 12, 14, 15, 17, 19, and 20.  This page does not list the values, because predicting them is the graded part.  After your comparison is written in `trace.md`, run `python3 test_environment.py --trace`.  It runs the five tests, then the same program step by step, and its last six lines must match your six.  The trace output starts like this, matching the model row of your table:
 >

@@ -141,7 +141,7 @@ This table shows which file each step writes, so you always know where new code 
 | Step | File you work in | What you do there |
 |---|---|---|
 | Part 0 | `readme.md` (or a scanned page) | the AST drawing, node types, and traced pseudocode |
-| Your First 30 Minutes | `ast_nodes.py`, `parser.py`, `try_primary.py` (scratch) | paste the dataclasses and `parse_primary`, then try one token |
+| Your First 30 Minutes | `ast_nodes.py`, `parser.py`, `try_primary.py` (scratch) | write the dataclasses, `ParseError`, `expect`, and the first two cases of `parse_primary`, then try one token |
 | 1a, 1b, 1c | `readme.md` | the grammar, the dangling-else policy, and the four theory answers |
 | 2a | `ast_nodes.py`, `parser.py`, `explore_nodes.py` (scratch) | the node dataclasses, `ParseError`, `expect`, `parse_primary`, `parse_unary`, `parse_muldiv` |
 | 2b | `parser.py`, `test_parser.py` | the rest of the expression ladder, up to `parse_expr`, and its tree-shape tests |
@@ -178,8 +178,8 @@ Token(type='LET', value='let', line=1, col=1, decoded=None)
 **You run:** `python3 try_primary.py`
 
 1. Draft the expression tiers of your grammar on paper (Part 1 gives you the ladder).
-2. Copy the whole dataclass block from Step 2a into `ast_nodes.py`, and add the two short `Assign` and `Print` classes its `# TODO` asks for.  Add them now, because `parser.py` imports them, and a missing name stops the import before any of your code runs.
-3. Copy the parser skeleton from Step 2a into `parser.py`.  The `INT` case is already written; add the `IDENT` case on the same pattern (the Step 2a hint table shows how).
+2. Fill in every dataclass in the Step 2a skeleton for `ast_nodes.py`, including the two short `Assign` and `Print` classes.  Write them all now, because `parser.py` imports them, and a missing name stops the import before any of your code runs.
+3. Start `parser.py` from the Step 2a skeleton.  Fill in `ParseError` and `expect`, then write just the `INT` and `IDENT` cases of `parse_primary` from its algorithm, plus the final `raise`.  The other cases can wait until you reach Step 2a.
 4. Create a scratch file `try_primary.py` in `cs374-parser/` with these three lines, then run `python3 try_primary.py`:
 
    ```python
@@ -382,9 +382,11 @@ print(Block(), Block().stmts is Block().stmts)
 > **Predict** before you move on: what would `typed == parsed` print if `line` were declared as plain `line: int = 0`?
 
 > **Do this.**
-> 1. Open `ast_nodes.py` and paste in the dataclasses below, then add `Assign` and `Print` on the `Let` pattern.
+> 1. Open `ast_nodes.py` and copy in the skeleton below.  Fill in each class's fields by following its `# Step` comments, including `Assign` and `Print`.
 > 2. Add `Str`, `BoolLit`, and `LogicOp` if your design uses them separately from `BinOp` and `UnaryOp`, and add `FunDef` and `Call` nodes for the `fun_stmt` and `call` productions, with fields you can justify.
-> 3. Open `parser.py` and paste in the skeleton that follows the dataclasses.  Every parsing function takes the lexer and returns one node, and `ParseError` carries the position of the token that went wrong (Step 3d makes that a requirement).
+> 3. Open `parser.py` and copy in the skeleton that follows the dataclasses.  Every parsing function takes the lexer and returns one node, and `ParseError` carries the position of the token that went wrong (Step 3d makes that a requirement).
+
+Field order matters.  The tests build nodes positionally, as in `BinOp("+", Num(2), Num(3))`, so declare the fields in the order the comments list them.
 
 ```python
 from dataclasses import dataclass, field
@@ -392,55 +394,82 @@ from typing import List, Any
 
 @dataclass
 class Num:
-    value: Any         # already a Python number: int for INT, float for FLOAT
-    line: int = field(default=0, compare=False)
+    """A number literal, from an INT or a FLOAT token."""
+    # Step 1: a field `value` of type Any, holding a real Python number (int for INT, float for FLOAT).
+    # Step 2: a field `line`, an int that defaults to 0 and that == skips.
+    ...
 
 @dataclass
 class Var:
-    name: str
-    line: int = field(default=0, compare=False)
+    """A variable reference, from an IDENT token."""
+    # Step 1: a field `name`, the variable's name as a str.
+    # Step 2: a `line` field, declared exactly like the one in Num.
+    ...
 
 @dataclass
 class BinOp:
-    op: str            # "+", "-", "*", "/", "<", "<=", etc.
-    left: Any
-    right: Any
+    """A binary operator applied to two operands."""
+    # Step 1: a field `op`, the operator text as a str: "+", "-", "*", "/", "<", "<=", "and", ...
+    # Step 2: a field `left` and then a field `right`, each holding a node.
+    ...
 
 @dataclass
 class UnaryOp:
-    op: str            # "-" or "not"
-    operand: Any
+    """A prefix operator applied to one operand."""
+    # Step 1: a field `op`, either "-" or "not".
+    # Step 2: a field `operand`, the node it applies to.
+    ...
 
 @dataclass
 class Let:
-    name: str
-    value: Any
+    """let NAME = value;"""
+    # Step 1: a field `name`, the new variable's name.
+    # Step 2: a field `value`, the expression node.
+    ...
 
-# TODO: Assign(name, value) and Print(value)
+@dataclass
+class Assign:
+    """NAME = value;"""
+    # Step 1: the same two fields as Let, in the same order.
+    ...
+
+@dataclass
+class Print:
+    """print value;"""
+    # Step 1: one field, `value`, the expression to print.
+    ...
 
 @dataclass
 class Block:
-    stmts: List[Any] = field(default_factory=list)
+    """{ stmt* }"""
+    # Step 1: a field `stmts`, a list of statement nodes that starts out empty
+    #         and is a fresh list for every Block.
+    ...
 
 @dataclass
 class If:
-    condition: Any
-    then_branch: Any   # always a Block
-    else_branch: Any   # Block, If, or None
+    """if condition block, with an optional else branch."""
+    # Step 1: a field `condition`, the expression node.
+    # Step 2: a field `then_branch`, always a Block.
+    # Step 3: a field `else_branch`: a Block, another If (for else-if), or None.
+    ...
 
 @dataclass
 class While:
-    condition: Any
-    body: Any          # always a Block
+    """while condition block"""
+    # Step 1: a field `condition`, then a field `body`, which is always a Block.
+    ...
 
 @dataclass
 class Program:
-    stmts: List[Any] = field(default_factory=list)
+    """The whole source file: a list of statements."""
+    # Step 1: a field `stmts`, declared the same way as Block's.
+    ...
 ```
 
 > **Watch out.** A dataclass compares every field in `==`, including `line`.  The tree-shape tests below write `Num(8)` with the default `line=0`, while a parsed node carries `line=1`.  That is why `Num` and `Var` declare the position field as `line: int = field(default=0, compare=False)`: equality ignores it, and the tests pass.  You will rely on this again for the Hypothesis test in Step 3e.  If you add a `line` field to any other node, declare it the same way.
 
-The `Assign` and `Print` classes follow the `Let` pattern, so each is three lines.  `Assign` has the same two fields as `Let`, because it also names a variable and gives it a value.  `Print` has one field, `value`, the expression to print.  The `You should see` blocks on this page use exactly these field names.
+The `Assign` and `Print` classes follow the `Let` pattern, so each is a few lines.  `Assign` has the same two fields as `Let`, because it also names a variable and gives it a value.  `Print` has one field, `value`, the expression to print.  The `You should see` blocks on this page use exactly these field names.
 
 | Optional node | A shape that works | Notes |
 |---|---|---|
@@ -450,6 +479,10 @@ The `Assign` and `Print` classes follow the `Let` pattern, so each is three line
 | `Call` | `Call(callee, args)` | `callee` is the expression before `(`, and `args` is a list of expressions |
 
 The `FunDef` and `Call` shapes are a starting point, not a requirement.  If your Part 0 design differs, keep yours and justify its fields.  In this page's examples, `and` and `or` build `BinOp` nodes; a separate `LogicOp` is equally fine.
+
+#### The parser's two helpers
+
+The start of `parser.py` holds two helpers that every parsing function leans on.  `ParseError` is the one exception type the parser raises.  `expect` is the parser's version of `Lexer.expect`: it raises a `ParseError` instead of the lexer's `LexError`, so every error the parser reports has one shape (Step 3d).  Call `expect(lexer, "RPAREN")` in your parsing functions, not `lexer.expect("RPAREN")`.  It still reads the stream only through `peek` and `advance`.
 
 ```python
 # parser.py
@@ -465,33 +498,38 @@ class ParseError(Exception):
     pattern-matching English.
     """
     def __init__(self, expected: str, found: str, line: int = 0, col: int = 0):
-        super().__init__(f"ParseError at line {line}, col {col}: expected {expected}, found {found}")
-        self.expected = expected
-        self.found = found
-        self.line = line
-        self.col = col
+        # Step 1: pass the one-line message to the Exception constructor, in exactly this form:
+        #         ParseError at line <line>, col <col>: expected <expected>, found <found>
+        # Step 2: store expected, found, line, and col as attributes with those same names.
+        ...
 
 def expect(lexer: Lexer, token_type: str):
     """Peek for `token_type`; consume and return it, or raise a positioned ParseError."""
-    tok = lexer.peek()
-    if tok.type != token_type:
-        raise ParseError(token_type, tok.type, tok.line, tok.col)
-    return lexer.advance()
+    # Step 1: peek at the next token, without consuming it.
+    # Step 2: if its type is not token_type, raise a ParseError: expected token_type,
+    #         found the peeked token's type, at the peeked token's line and col.
+    # Step 3: otherwise consume the token and return it.
+    ...
+```
 
-def parse_primary(lexer: Lexer):
-    """Peek at the next token, decide which literal form it starts, consume it, return a node."""
-    tok = lexer.peek()
-    if tok.type == "INT":
-        lexer.advance()
-        return Num(value=int(tok.value), line=tok.line)
-    # TODO: FLOAT, STRING, TRUE, FALSE, IDENT, and LPAREN (consume it, call parse_expr, expect RPAREN)
-    raise ParseError("an expression", tok.type, tok.line, tok.col)   # note: raise on the PEEKED token
+| `# Step` | How to think about it |
+|---|---|
+| the `ParseError` message | The first line of `__init__` is a call to the parent class's constructor, `super().__init__(...)`, with the message built as an f-string.  Python prints that message after `parser.ParseError:` in a traceback, which is the line every `You should see` block checks. |
+| the `ParseError` attributes | Four plain assignments to `self`.  A test reads them back as `err.line` and `err.col`, so the names must match the parameters. |
+| raising in `expect` | Raise on the token you *peeked*, not one you consumed.  The peeked token is the one that is wrong, so its line and column are the ones the student needs to see. |
+| returning from `expect` | `lexer.advance()` hands back the token it consumes.  Return that, because callers such as `parse_let_stmt` read the name out of the `IDENT` that `expect` consumed. |
 
-def parse_unary(lexer: Lexer):
-    """Peek for a prefix MINUS; consume it and recurse, else fall through to a primary."""
-    # TODO: if the next token is MINUS, consume it, recurse, and wrap the result in UnaryOp
-    return parse_primary(lexer)
+#### Worked example: from a grammar rule to a function
 
+Here is the one translation this page writes out for you in full.  The rule is
+
+```ebnf
+muldiv      ::= unary ( ( STAR | SLASH ) unary )*
+```
+
+and here is its function.  Type it into `parser.py` below `expect`:
+
+```python
 def parse_muldiv(lexer: Lexer):
     """Parse a unary, then fold left while the next token is STAR or SLASH."""
     left = parse_unary(lexer)
@@ -500,25 +538,57 @@ def parse_muldiv(lexer: Lexer):
         right = parse_unary(lexer)
         left = BinOp(op.value, left, right)   # the left-fold: left grows, right is one operand
     return left
+```
 
-# TODO: parse_addsub ... parse_expr (Step 2b), then the statement functions and parse_program (Step 2c)
+Read it against the rule, one line at a time:
 
+1. `left = parse_unary(lexer)` is the first `unary` in the rule.  A non-terminal on the right-hand side becomes a call to that non-terminal's function.
+2. `while lexer.peek().type in ("STAR", "SLASH"):` is the `( ... )*`.  "Zero or more" becomes a loop, and the loop's test is the *peek* beat: it looks at the next token without consuming it.  The *decide* beat is the `in`: keep going only if the token is one of this rule's operators.
+3. `op = lexer.advance()` is the *consume* beat for the `( STAR | SLASH )` terminal.  We keep the token because its `value`, `"*"` or `"/"`, becomes the node's `op`.
+4. `right = parse_unary(lexer)` is the second `unary` inside the group.  It calls the tier *below*, not `parse_muldiv` itself.  That is what keeps `*` tighter than anything above it.
+5. `left = BinOp(op.value, left, right)` folds.  The tree so far becomes the left child of a new node, so `8 / 4 / 2` builds `(8 / 4) / 2`.  That is left-associativity, and it comes from the loop, not from any special case.
+6. `return left` hands back the whole folded tree.  If the loop never ran, it is just the one `unary`.
+
+Every tier in Step 2b that has a `( ... )*` in its rule follows these six lines.  Only the operator tokens and the tier below change.
+
+#### The first two parsing functions
+
+You write these two from their algorithms.  Each one is a short `if` chain over the peeked token.
+
+`parse_primary(lexer)` returns one node for the tightest-binding forms in the grammar's `primary` rule.
+
+1. Peek at the next token and call it `tok`.  Do not consume it yet.
+2. If `tok` is an `INT`, consume it and return a `Num` whose `value` is the token's text converted to an `int`, and whose `line` is the token's line.
+3. If it is a `FLOAT`, do the same, converting to a `float`.  Both build a `Num`.
+4. If it is a `STRING`, consume it and return a `Str` of the decoded text.  On a reference token, `tok.value` still has its quotes and escapes, and `tok.decoded` has them resolved.
+5. If it is `TRUE` or `FALSE`, consume it and return a `BoolLit` holding the Python value `True` for `TRUE` and `False` for `FALSE`.  One case can cover both.
+6. If it is an `IDENT`, consume it and return a `Var` with the token's text as its `name` and the token's line.
+7. If it is an `LPAREN`, consume it, parse a whole expression with `parse_expr`, `expect` an `RPAREN`, and return the inner expression itself.  That is the pass-through choice described below.
+8. For any other token, raise a `ParseError` whose `expected` is the text `an expression`, built from the *peeked* token's type, line, and column.
+
+`parse_unary(lexer)` handles the prefix minus.
+
+1. Peek at the next token.
+2. If it is a `MINUS`, consume it, call `parse_unary` again for the operand, and return a `UnaryOp` with `op` `"-"` around that operand.
+3. Otherwise, return whatever `parse_primary` returns.
+
+| Function | How to think about it |
+|---|---|
+| `parse_primary`, `INT` and `FLOAT` | The lexer hands you text.  The AST holds real numbers, so the conversion happens here, once, and nothing later has to wonder whether `value` is a string. |
+| `parse_primary`, `STRING` | Use the decoded text, not the raw lexeme.  Otherwise the quotes end up inside your string value, and the unparser in Step 3b would add a second pair. |
+| `parse_primary`, `LPAREN` | This case calls back up to the loosest tier.  That is where the *recursive* in recursive descent shows up: inside parentheses, the whole ladder starts over. |
+| `parse_primary`, the error | Every earlier case returned, so reaching the last line means no case matched.  Nothing has been consumed, so the peeked token's position is the true position of the mistake. |
+| `parse_unary` | The operand of a minus can itself start with a minus, as in `--x`.  So the recursive call goes to `parse_unary`, not to `parse_primary`.  If only one `UnaryOp` ever appears, you called the wrong one. |
+
+Leave the rest of the ladder for Step 2b.  Below `parse_muldiv`, end `parser.py` with the entry point the tests and Part 3 use:
+
+```python
 def parse(source: str) -> Program:
     """Entry point used by the tests and by Part 3."""
     return parse_program(Lexer(source))
 ```
 
-The parser's own `expect` helper is complete as written.  It does what `Lexer.expect` does, but it raises a `ParseError` instead of the lexer's `LexError`, so every error the parser reports has one shape (Step 3d).  Call `expect(lexer, "RPAREN")` in your parsing functions, not `lexer.expect("RPAREN")`.  It still reads the stream only through `peek` and `advance`.
-
-| `# TODO` | How to write it |
-|---|---|
-| `Assign` and `Print` (in `ast_nodes.py`) | Copy the `Let` class twice.  Rename one `Assign`; rename the other `Print` and give it the single field `value: Any`. |
-| `FLOAT` | The `INT` case with `float(tok.value)` in place of `int(tok.value)`.  Both build a `Num`. |
-| `STRING` | `lexer.advance()`, then `return Str(tok.decoded)`.  `tok.value` is the raw lexeme with its quotes still on; `tok.decoded` has the escapes resolved. |
-| `TRUE`, `FALSE` | One case can handle both: `if tok.type in ("TRUE", "FALSE"):`, advance, and return `BoolLit(tok.type == "TRUE")`. |
-| `IDENT` | `lexer.advance()`, then `return Var(name=tok.value, line=tok.line)`. |
-| `LPAREN` | `lexer.advance()`, then `inner = parse_expr(lexer)`, then `expect(lexer, "RPAREN")`, then `return inner`.  This is the pass-through choice described below. |
-| `parse_unary` | `if lexer.peek().type == "MINUS":`, then `lexer.advance()` and `return UnaryOp("-", parse_unary(lexer))`.  Recurse into `parse_unary`, not `parse_primary`. |
+`parse_program` arrives in Step 2c.  Until then, `parse` fails if you call it, but the import succeeds, because Python looks up the name only when `parse` runs.
 
 `NOT` is not handled here.  It sits much higher in the ladder, in `parse_not` (Step 2b).  If your own lexer emits `BANG` for `!`, you may treat it in `parse_unary` the same way as `MINUS`; the reference lexer has no `BANG`.
 
@@ -546,53 +616,64 @@ Implement each function below in order.  Each tier parses the tier below it and 
 - `parse_or()`: left-fold `and` expressions over `OR`.  Verify `a or b and c` builds `BinOp("or", Var("a"), BinOp("and", Var("b"), Var("c")))`.
 - `parse_expr()`: delegates to `parse_or()`.
 
-Add these functions to `parser.py` between `parse_muldiv` and `parse`.  Each one gets the one-sentence docstring that the two rules at the end of Step 2a ask for; the ones here are filled in to show the shape.  Replace each `pass` once its function has real code.
+Add these functions to `parser.py` between `parse_muldiv` and `parse`.  Each one gets the one-sentence docstring that the two rules at the end of Step 2a ask for.  The docstrings below are written for you, to show the shape; the bodies are yours.
 
 ```python
 def parse_addsub(lexer: Lexer):
     """Parse a muldiv, then fold left while the next token is PLUS or MINUS."""
-    # TODO: the parse_muldiv loop, one rung up
-    pass
-
-COMPARISON_OPS = ("LT", "LE", "GT", "GE", "EQEQ", "NEQ")
 
 def parse_comparison(lexer: Lexer):
     """Parse an addsub; if a comparison operator follows, consume it and one more addsub."""
-    left = parse_addsub(lexer)
-    # TODO: if the next token is in COMPARISON_OPS, consume it, parse one more addsub,
-    #       and build a BinOp (an `if`, not a `while`: comparisons do not chain)
-    # TODO: if the token after that is ALSO in COMPARISON_OPS, raise a ParseError on it
-    return left
 
 def parse_not(lexer: Lexer):
     """Peek for NOT; consume it and recurse, else fall through to a comparison."""
-    # TODO: the parse_unary pattern, with NOT, UnaryOp("not", ...), and parse_comparison
-    pass
 
 def parse_and(lexer: Lexer):
     """Parse a not_expr, then fold left while the next token is AND."""
-    # TODO: the left-fold over AND, with parse_not as the tier below
-    pass
 
 def parse_or(lexer: Lexer):
     """Parse an and_expr, then fold left while the next token is OR."""
-    # TODO: the left-fold over OR, with parse_and as the tier below
-    pass
 
 def parse_expr(lexer: Lexer):
     """Delegate to the loosest tier, parse_or."""
-    return parse_or(lexer)
 ```
 
-| `# TODO` | How to write it |
-|---|---|
-| `parse_addsub` | Copy the body of `parse_muldiv`.  Change the call to `parse_muldiv(lexer)` (in both places) and the operator tuple to `("PLUS", "MINUS")`. |
-| first comparison `# TODO` | `if lexer.peek().type in COMPARISON_OPS:`, then `op = lexer.advance()`, `right = parse_addsub(lexer)`, and `left = BinOp(op.value, left, right)`.  The reference lexer's `value` for `LE` is the text `"<="`, which is exactly the `op` string you want. |
-| chained comparison | Still inside that `if`, `tok = lexer.peek()`; if `tok.type in COMPARISON_OPS`, raise `ParseError("no second comparison (comparisons do not chain)", tok.type, tok.line, tok.col)`.  Without this check, `a < b < c` stops quietly after `a < b` and the stray `<` surfaces later as a confusing error. |
-| `parse_not` | `if lexer.peek().type == "NOT":`, then `lexer.advance()` and `return UnaryOp("not", parse_not(lexer))`; otherwise `return parse_comparison(lexer)`. |
-| `parse_and`, `parse_or` | The `parse_muldiv` loop with `while lexer.peek().type == "AND":` (or `"OR"`).  The token's `value` is `"and"` (or `"or"`), so `BinOp(op.value, left, right)` builds `BinOp("and", ...)`. |
+A function whose body is only a docstring is legal Python, and it returns `None`.  So the file imports while you work, but a test of an unwritten tier fails rather than crashes.
 
-> **Test as you climb.**  The test harness imports `parse_expr`, so it must exist from the first run.  Until you have written `parse_or`, make `parse_expr` return the highest tier you have so far, for example `return parse_muldiv(lexer)`.  Move it up one rung each time you add a tier, and finish with `return parse_or(lexer)`.
+**`parse_addsub`** is the worked `parse_muldiv`, one rung up.
+
+1. Parse one operand with the tier below, `parse_muldiv`.
+2. While the next token is a `PLUS` or a `MINUS`: consume it, parse one more `parse_muldiv`, and fold the two into a `BinOp` that becomes the new left side.
+3. Return the left side.
+
+**`parse_comparison`** looks like a left-fold, but it is not one, because comparisons do not chain.
+
+1. Parse one `addsub`.
+2. Peek.  If the token is one of the six comparison types (`LT`, `LE`, `GT`, `GE`, `EQEQ`, `NEQ`), consume it, parse one more `addsub`, and build a `BinOp` from the three.  This is an `if`, not a loop.
+3. Still inside that case, peek once more.  If the token is *another* comparison operator, raise a `ParseError` on it.  Its `expected` text should say that comparisons do not chain.
+4. Return what you have.
+
+**`parse_not`** is the `parse_unary` pattern, moved up the ladder.
+
+1. Peek.  If the token is a `NOT`, consume it, call `parse_not` again for the operand, and return a `UnaryOp` with `op` `"not"`.
+2. Otherwise, return whatever `parse_comparison` returns.
+
+**`parse_and`** and **`parse_or`** are left-folds.
+
+1. `parse_and` folds `parse_not` operands over `AND` tokens.
+2. `parse_or` folds `parse_and` operands over `OR` tokens.
+
+**`parse_expr`** returns whatever `parse_or` returns.  It exists so the rest of the parser can say "an expression" without knowing which tier is the loosest.
+
+| Function | How to think about it |
+|---|---|
+| `parse_addsub` | Two things change from `parse_muldiv`: the operator types the loop tests for, and the function both operands come from.  If you change only one of them, the ladder skips a rung. |
+| `parse_comparison`, the `op` | Use the operator token's `value` as the `op` string, just as `parse_muldiv` does.  The reference lexer's `value` for `LE` is the text `<=`, which is exactly what the tree and the unparser want. |
+| `parse_comparison`, the chain check | Without step 3, `a < b < c` stops quietly after `a < b`.  The stray `<` then surfaces somewhere else, as an error that names the wrong problem.  Catching it here reports the real one, at the right column. |
+| `parse_not` | It sits above `comparison`, so `not a < b` means `not (a < b)`.  The recursive call is what lets `not not ok` nest, and consuming the `NOT` *before* that call is what keeps it from recursing forever. |
+| `parse_and`, `parse_or` | The token's `value` is `and` (or `or`), so the fold builds `BinOp("and", ...)` with no translation.  `or` is the loosest tier, which is why `a or b and c` puts the `and` underneath. |
+
+> **Test as you climb.**  The test harness imports `parse_expr`, so it must exist from the first run.  Until you have written `parse_or`, make `parse_expr` return the highest tier you have so far, starting with `parse_muldiv`.  Move it up one rung each time you add a tier, and finish at `parse_or`.
 
 Every test in this assignment is a **tree-shape test**: it asserts on node types and fields, never on printed output.  Comparing `str(node)` or `repr(node)` to a string feels quicker, but a repr changes the moment you add a field, so those tests break on edits that were entirely correct.  The shape of the tree is what your interpreter will walk in the [Interpreter assignment]({{ site.baseurl }}/Assignments/Interpreter), so the shape is what you assert on.
 
@@ -645,11 +726,11 @@ if __name__ == "__main__":
     print(f"{len(tests) - failed} passed, {failed} failed")
 ```
 
-| `# TODO` | How to write it |
+| `# TODO` | How to think about it |
 |---|---|
-| one test per tree shape | Copy `test_muldiv_left_associates`, rename it, and change the source string and the expected tree.  For example, `assert expr("2 + 3 * 4") == BinOp("+", Num(2), BinOp("*", Num(3), Num(4)))`. |
-| a test that must raise | Copy `test_bad_start_raises_positioned_error`.  Put `expr("a < b < c")` in the `try`, write `pass` under `except ParseError:` (or check `err.found == "LT"`), and keep the `else: assert False, ...`. |
-| names you need | Import every node class a test builds, for example `from ast_nodes import Num, Var, BinOp, UnaryOp`.  A missing import shows up as `FAIL ... -- name 'Str' is not defined`. |
+| one test per tree shape | Each bullet at the top of this step names a source string and the tree it must build.  Each of those is one test: parse the string with the `expr` helper, and compare the result to the tree with `==`.  `test_muldiv_left_associates` is the model. |
+| a test that must raise | A test passes only if the parse fails, so it needs three outcomes covered: the right error is fine, the wrong error is a failure, and no error at all is a failure.  `test_bad_start_raises_positioned_error` covers all three, so build `a < b < c` the same way. |
+| names you need | A test can build only the node classes it imports from `ast_nodes`.  A missing import shows up as `FAIL ... -- name 'Str' is not defined`. |
 
 > **You should see.** One `PASS` line per test and a final count.  With only the three tests above in the file, the run prints:
 >
@@ -685,64 +766,76 @@ Each statement begins with a token that tells you which rule to use.  `parse_stm
 
 *How `parse_stmt` can tell an assignment apart.*  The reference lexer's `peek()` shows you one token and has no offset argument, so you cannot look two tokens ahead to check for `IDENT EQ`.  You do not need to.  Look at the `stmt` rule in Part 1: no statement other than `assign_stmt` begins with `IDENT`, because the grammar has no expression statements.  So one token of lookahead decides it.  When `parse_stmt` peeks an `IDENT`, it calls `parse_assign_stmt`, which consumes the `IDENT` and then expects `EQ`.  If `EQ` is missing, `expect` reports it with a position.  Your readme note should say this in your own words.
 
+Every statement function reads its grammar rule from left to right, the way the worked `parse_muldiv` does.  A terminal in the rule becomes a call to `expect` with that token type.  A non-terminal becomes a call to its parsing function.  A `( ... )*` becomes a loop, and a `( ... )?` becomes an `if` on the peeked token.  Here are the signatures and docstrings; the bodies are yours.
+
 ```python
 def parse_let_stmt(lexer: Lexer):
     """Consume LET IDENT EQ, an expression, and SEMICOLON; return a Let."""
-    expect(lexer, "LET")
-    name = expect(lexer, "IDENT")
-    # TODO: expect EQ, parse the value with parse_expr, expect SEMICOLON
-    # TODO: return Let(name.value, value)
 
 def parse_assign_stmt(lexer: Lexer):
     """Consume IDENT EQ, an expression, and SEMICOLON; return an Assign."""
-    # TODO: the parse_let_stmt pattern without the LET
 
 def parse_print_stmt(lexer: Lexer):
     """Consume PRINT, an expression, and SEMICOLON; return a Print."""
-    # TODO
 
 def parse_block(lexer: Lexer):
     """Consume LBRACE, statements until RBRACE, then RBRACE; return a Block."""
-    expect(lexer, "LBRACE")
-    stmts = []
-    # TODO: loop while the next token is neither RBRACE nor EOF, appending parse_stmt(lexer)
-    expect(lexer, "RBRACE")
-    return Block(stmts)
 
 def parse_if_stmt(lexer: Lexer):
     """Consume IF, a condition, and a block; peek for ELSE, then an else-if or a block."""
-    # TODO: expect IF, parse the condition and the then-block
-    # TODO: else_branch = None; if the next token is ELSE, consume it, then peek:
-    #       IF means parse_if_stmt(lexer), anything else means parse_block(lexer)
-    # TODO: return If(condition, then_branch, else_branch)
 
 def parse_while_stmt(lexer: Lexer):
     """Consume WHILE, a condition, and a block; return a While."""
-    # TODO
 
 def parse_stmt(lexer: Lexer):
     """Peek at the first token of a statement and dispatch on its type."""
-    tok = lexer.peek()
-    if tok.type == "LET":
-        return parse_let_stmt(lexer)
-    # TODO: IDENT, PRINT, IF, WHILE, and LBRACE (a block is a statement too)
-    raise ParseError("a statement", tok.type, tok.line, tok.col)
 
 def parse_program(lexer: Lexer):
     """Parse statements until the next token is EOF; return a Program."""
-    # TODO: the parse_block loop, stopping only at EOF, then return Program(stmts)
 ```
 
-Each function whose body is only a `# TODO` needs a `pass` (or its real code) before Python will import the file.
+**`parse_let_stmt`**
 
-| `# TODO` | How to write it |
+1. `expect` a `LET`.
+2. `expect` an `IDENT`, and keep the token it returns.  Its `value` is the variable's name.
+3. `expect` an `EQ`.
+4. Parse the value with `parse_expr`.
+5. `expect` a `SEMICOLON`.
+6. Return a `Let` built from the name and the value.
+
+**`parse_assign_stmt`** is the same sequence without step 1, and it returns an `Assign`.  **`parse_print_stmt`** is `PRINT`, an expression, and `SEMICOLON`, and it returns a `Print`.  **`parse_while_stmt`** is `WHILE`, an expression for the condition, and a block from `parse_block`, and it returns a `While`.
+
+**`parse_block`**
+
+1. `expect` an `LBRACE`.
+2. Start an empty list of statements.
+3. While the next token is neither an `RBRACE` nor an `EOF`, parse one statement with `parse_stmt` and add it to the list.
+4. `expect` an `RBRACE`.
+5. Return a `Block` of the list.
+
+**`parse_if_stmt`**
+
+1. `expect` an `IF`, parse the condition with `parse_expr`, and parse the then-branch with `parse_block`.
+2. Start with no else branch (`None`).
+3. Peek.  If the token is an `ELSE`, consume it and peek again.  An `IF` there means an else-if, so the else branch is a recursive call to `parse_if_stmt`.  Anything else means the else branch is a `parse_block`.
+4. Return an `If` built from the condition, the then-branch, and the else branch.
+
+**`parse_stmt`**
+
+1. Peek at the first token.  Do not consume it: the function you dispatch to expects to see it.
+2. Dispatch on its type: `LET` to `parse_let_stmt`, `IDENT` to `parse_assign_stmt`, `PRINT` to `parse_print_stmt`, `IF` to `parse_if_stmt`, `WHILE` to `parse_while_stmt`, and `LBRACE` to `parse_block`, since a block is a statement too.  Return what that function returns.
+3. Until you write `parse_fun_stmt`, a `FUN` raises a `ParseError` whose `expected` text says that `fun` is not implemented yet.
+4. Any other token raises a `ParseError` whose `expected` is the text `a statement`, on the peeked token.
+
+**`parse_program`** is the `parse_block` loop with no braces: collect statements until the next token is `EOF`, then return a `Program` of the list.
+
+| Function | How to think about it |
 |---|---|
-| finish `parse_let_stmt` | `expect(lexer, "EQ")`, then `value = parse_expr(lexer)`, then `expect(lexer, "SEMICOLON")`.  `expect` returns the token it consumed, which is why `name.value` holds the variable's name. |
-| `parse_assign_stmt`, `parse_print_stmt`, `parse_while_stmt` | The same sequence of `expect` and `parse_...` calls, read straight off each grammar rule from left to right.  A terminal becomes `expect(lexer, "...")`; a non-terminal becomes a call. |
-| the `parse_block` loop | `while lexer.peek().type not in ("RBRACE", "EOF"):` then `stmts.append(parse_stmt(lexer))`.  Stopping at `EOF` too means an unclosed block reports `expected RBRACE, found EOF`, which names the real problem. |
-| `parse_if_stmt` | After the then-block, `if lexer.peek().type == "ELSE":`, then `lexer.advance()`, then an inner `if lexer.peek().type == "IF":` that chooses between the two calls. |
-| `parse_stmt` dispatch | One `if tok.type == "...": return parse_..._stmt(lexer)` per statement form, with `IDENT` going to `parse_assign_stmt` and `LBRACE` to `parse_block`.  Until you write `parse_fun_stmt`, add `if tok.type == "FUN":` that raises `ParseError("a statement (fun is not implemented yet)", tok.type, tok.line, tok.col)`. |
-| `parse_program` | `stmts = []`, then `while lexer.peek().type != "EOF": stmts.append(parse_stmt(lexer))`, then `return Program(stmts)`. |
+| `parse_let_stmt` | `expect` gives back the token it consumed.  That is how you get the name without peeking a second time. |
+| the `parse_block` loop | Stopping at `EOF` as well as `RBRACE` is what makes an unclosed block fail in the right place.  The loop ends, and the `expect` after it reports `expected RBRACE, found EOF`, which names the real problem. |
+| `parse_if_stmt` | The peek after `ELSE` is the only place in the statement grammar where one token picks between two productions that both follow the same keyword. |
+| `parse_stmt` | One token decides every case, because every statement form starts with a different token type.  That is the lookahead argument in the paragraph above, and your readme note. |
+| `parse_program` | `EOF` is a real token from the lexer, not the absence of one.  The loop tests for it the way the block loop tests for `RBRACE`. |
 
 > **Do this.**
 > 1. Add the statement functions and `parse_stmt()` to `parser.py`, in the order above.
@@ -867,32 +960,16 @@ Each node prints one header line at its own indent, then each child one level de
 | `Num`, `Var` | `Num(10)` or `Var(x)` | nothing |
 | `Str`, `BoolLit` | `Str('hi')` or `BoolLit(true)` | nothing |
 
-```python
-def pretty(node, indent=0):
-    """Return an indented view of the tree, two spaces per level of nesting."""
-    pad = "  " * indent
-    if isinstance(node, Program):
-        return "\n".join([pad + "Program"] + [pretty(s, indent + 1) for s in node.stmts])
-    if isinstance(node, Let):
-        return pad + f"Let {node.name}\n" + pretty(node.value, indent + 1)
-    if isinstance(node, BinOp):
-        return "\n".join([pad + f"BinOp({node.op})",
-                          pretty(node.left, indent + 1),
-                          pretty(node.right, indent + 1)])
-    if isinstance(node, Num):
-        return pad + f"Num({node.value})"
-    # TODO: Block, Assign, Print, While, If, UnaryOp, Var (and Str, BoolLit if you have them)
-    raise TypeError(f"pretty: no case for {type(node).__name__}")
-```
+The function is `pretty(node, indent=0) -> str`.  Its contract:
 
-| `# TODO` | How to write it |
-|---|---|
-| `Block` | The `Program` case with `"Block"` in the header. |
-| `Assign`, `Print` | The `Let` case.  `Print` has no name in its header, so its header is just `pad + "Print"`. |
-| `While`, `UnaryOp` | The `BinOp` shape: a list of the header and the children, joined with `"\n"`.  `UnaryOp` has one child, `node.operand`. |
-| `If` | Build `lines = [pad + "If", pretty(node.condition, indent + 1), pretty(node.then_branch, indent + 1)]`.  If `node.else_branch is not None`, append `pad + "  Else"` and `pretty(node.else_branch, indent + 2)`.  Return `"\n".join(lines)`. |
-| `Var` | `pad + f"Var({node.name})"`. |
-| the test | Store the expected text in a triple-quoted string that starts right after the quotes, `EXPECTED = """Program` on the first line, and ends with `Num(1)"""` with no newline after it.  Then `assert pretty(tree) == EXPECTED`. |
+- `indent` counts levels of nesting, and each level is two spaces in front of the header line.
+- The returned string has no newline at its start or its end.  Lines inside it are joined by single newlines.
+- A node class with no case raises a `TypeError` whose message names the class, in the form `pretty: no case for Var`.  That message tells you exactly which case is missing.
+- An empty `Program` or `Block` prints only its header line.
+
+The strategy is one recursive case per node class: print the header, then call `pretty` on each child one level deeper.
+
+For the test, store the expected text in a triple-quoted string that begins with `Program` right after the opening quotes and ends with `Num(1)` right before the closing quotes, so it has no stray newline at either end.
 
 > **You should see.** The `python3 -c` command prints exactly the fourteen lines above, from `Program` to the last `Num(1)`.
 
@@ -909,68 +986,40 @@ Write `unparse(node) -> str` in `ast_nodes.py`.  It regenerates valid source cod
 - `unparse(BinOp("*", Num(2), BinOp("+", Num(3), Num(4))))` -> `"2 * (3 + 4)"` (parentheses required).
 
 **You write:** `ast_nodes.py` - `PRECEDENCE`, `prec`, `unparse_child`, and `unparse`, below `pretty`; `test_parser.py` - `test_unparse_examples`.
-**You run:** `python3 test_parser.py`, and the `python3 -c` command after the hints.
+**You run:** `python3 test_parser.py`, and the `python3 -c` command below.
 
 > **Do this.**
 > 1. Write a precedence table (a dictionary from operator string to an integer) that mirrors the ladder in Part 1.
 > 2. Write `unparse()` so that the two examples above produce exactly the strings shown, and add both as tests.
 
-The precedence table is a plain `dict`.  A larger number binds tighter, so the numbers climb as you go down the Part 1 ladder from `or_expr` to `unary`.  The exact numbers do not matter; only their order does.  Here is the shape, with the first rows filled in:
+The four names this step defines, and what each must do:
 
-```python
-PRECEDENCE = {
-    "or": 1,
-    "and": 2,
-    "not": 3,
-    # TODO: the six comparison operators, all on one level
-    # TODO: "+" and "-" on one level, then "*" and "/" on the next
-}
-UNARY_MINUS = 7      # tighter than any binary operator
-ATOM = 100           # literals and variables never need parentheses
-COMPARISON = 4       # the comparison level, which does not chain
+| Name | Takes | Returns or holds |
+|---|---|---|
+| `PRECEDENCE` | (a module-level `dict`) | each binary operator string, plus `"not"`, mapped to an integer; a larger number binds tighter, so the numbers climb from `or` down the Part 1 ladder to `*` and `/` |
+| `prec(node)` | any expression node | how tightly the node binds: its operator's number for a `BinOp` or a `not`, a level above every binary operator for a unary minus, and a level no operator reaches for a literal or a variable |
+| `unparse_child(child, parent_prec, is_right)` | an operand, its parent's precedence, and whether it is the right operand | the operand's source text, wrapped in parentheses only when the tree needs them |
+| `unparse(node, indent=0)` | any node, and how many levels deep it sits | source code that parses back to the same tree |
 
+Only the order of the precedence numbers matters, not their values.  All six comparison operators share one level, `+` and `-` share the next, and `*` and `/` share the one after that.
 
-def prec(node):
-    """Return how tightly `node` binds, using PRECEDENCE."""
-    if isinstance(node, BinOp):
-        return PRECEDENCE[node.op]
-    if isinstance(node, UnaryOp):
-        return PRECEDENCE["not"] if node.op == "not" else UNARY_MINUS
-    return ATOM
+The parenthesization rule, in full:
 
+1. A child that binds *looser* than its parent always needs parentheses.
+2. A child at the *same* level needs them when it is the right operand, because every binary tier is left-associative.
+3. At the comparison level, a same-level child needs them on *either* side, because comparisons do not chain.  Without this case, `(a < b) < c` comes out as `a < b < c`, which does not parse.
+4. A unary operator's operand needs parentheses when it binds looser than the operator, as in `-(x + 1)`.
 
-def unparse_child(child, parent_prec, is_right):
-    """Unparse one operand, adding parentheses only when the tree needs them."""
-    text = unparse(child)
-    # TODO: decide `needs` from prec(child), parent_prec, and is_right
-    return f"({text})" if needs else text
+The text `unparse` produces for each statement:
 
+- `let x = <value>;`, `x = <value>;`, and `print <value>;`, each on one line, indented four spaces per level.
+- `-x` with no space, and `not x` with one.  The space matters: `notx` lexes as a single identifier.
+- A block opens with `{` at the end of the line that introduces it, puts each statement on its own line one level deeper, and closes with `}` back at the outer indent.
+- `while <condition> {` and `if <condition> {` start their block on the same line.  An else branch continues the closing line: `} else {`, or `} else if <condition> {`.
+- A `Program` is its statements, one per line.
+- A node class with no case raises a `TypeError` naming the class, as `pretty` does.
 
-def unparse(node, indent=0):
-    """Regenerate source code that parses back to the same tree."""
-    pad = "    " * indent
-    if isinstance(node, BinOp):
-        p = PRECEDENCE[node.op]
-        return f"{unparse_child(node.left, p, False)} {node.op} {unparse_child(node.right, p, True)}"
-    if isinstance(node, Num):
-        return str(node.value)
-    if isinstance(node, Let):
-        return f"{pad}let {node.name} = {unparse(node.value)};"
-    # TODO: Var, UnaryOp, Assign, Print, Block, If, While, Program (and Str, BoolLit)
-    raise TypeError(f"unparse: no case for {type(node).__name__}")
-```
-
-| `# TODO` | How to write it |
-|---|---|
-| comparison rows | `"<": 4, "<=": 4, ">": 4, ">=": 4, "==": 4, "!=": 4,` |
-| arithmetic rows | `"+": 5, "-": 5,` and `"*": 6, "/": 6,` |
-| `needs` | Start with `needs = prec(child) < parent_prec`.  Then, if `prec(child) == parent_prec`, set `needs = True` when `is_right` is true, or when `parent_prec == COMPARISON`.  That second case keeps `(a < b) < c` from coming out as `a < b < c`, which does not parse. |
-| `Var` | `return node.name`. |
-| `UnaryOp` | `operand = unparse(node.operand)`; wrap it in parentheses when `prec(node.operand) < prec(node)`.  Return `f"not {operand}"` or `f"-{operand}"`.  The space after `not` matters: `notx` lexes as an identifier. |
-| `Assign`, `Print` | The `Let` case, without `let` (for `Assign`) or with `print` and no name (for `Print`). |
-| `Block` | `inner = [unparse(s, indent + 1) for s in node.stmts]`, then `return "\n".join([pad + "{"] + inner + [pad + "}"])`. |
-| `While`, `If` | `f"{pad}while {unparse(node.condition)} " + unparse(node.body, indent).lstrip()`.  `If` is the same with `if`, plus `" else " + unparse(node.else_branch, indent).lstrip()` when there is an else branch.  `.lstrip()` removes the block's own indent, because the block starts on the same line. |
-| `Program` | `return "\n".join(unparse(s) for s in node.stmts)`. |
+Write one case per node class.  A `BinOp` case unparses its left and right children through `unparse_child` and joins them around the operator with single spaces.
 
 ```bash
 python3 -c "from parser import parse; from ast_nodes import unparse; print(unparse(parse(open('while_example.txt').read())))"
@@ -991,46 +1040,32 @@ python3 -c "from parser import parse; from ast_nodes import unparse; print(unpar
 > **If it fails.**
 > - `8 - (3 - 2)` comes out as `8 - 3 - 2`: you never set `needs` for a right child at the same level.
 > - `2 + 3 * 4` comes out as `2 + (3 * 4)`: you parenthesize every `BinOp` child.  Compare precedences instead.
-> - `NameError: name 'needs' is not defined`: the `needs = ...` line is still a `# TODO`.
+> - The tree for `(a < b) < c` unparses as `a < b < c`, which raises a `ParseError` when you parse it again: you treated the comparison level as left-associative.  Rule 3 asks for parentheses on the left child too.
+> - `not x` comes out as `notx`: the space after `not` is missing, so the lexer reads one identifier.
 
 ### Step 3c: Verify the Round Trip
 
-For every test program in your test suite, verify the round-trip property:
-
-```python
-tree1 = parse(source)
-source2 = unparse(tree1)
-tree2 = parse(source2)
-assert pretty(tree1) == pretty(tree2), f"Round-trip failed on: {source}"
-```
+For every test program in your test suite, verify the round-trip property.  Parse the source to get a first tree.  Unparse that tree to get new source.  Parse the new source to get a second tree.  The property holds when the two trees pretty-print to the same text.
 
 This checks that `unparse` produces valid code and that the code means the same thing as the original.  Put the check in your test runner so that every program you add to the suite, including the worked `while` example, is verified automatically by `python3 test_parser.py`.
 
 **You write:** `test_parser.py` - a `PROGRAMS` list and `test_round_trip_fixed`.
 **You run:** `python3 test_parser.py`
 
-One way to put it in the runner is a module-level list of source strings and one test that loops over it.  Add `pretty` and `unparse` to the imports from `ast_nodes`.
+What the two names must do:
 
-```python
-PROGRAMS = [
-    "let x = 1;",
-    "print 8 - (3 - 2);",
-    "if a { print 1; } else if b { print 2; } else { print -(x); }",
-    open("while_example.txt").read(),
-    # TODO: every program your other tests parse
-]
+- `PROGRAMS` is a module-level list of source strings.  It holds at least these four provided programs, plus the source of every program your other tests parse:
 
-def test_round_trip_fixed():
-    for source in PROGRAMS:
-        tree1 = parse(source)
-        source2 = unparse(tree1)
-        tree2 = parse(source2)
-        assert pretty(tree1) == pretty(tree2), f"Round-trip failed on: {source}"
-```
+  ```text
+  let x = 1;
+  print 8 - (3 - 2);
+  if a { print 1; } else if b { print 2; } else { print -(x); }
+  (the contents of while_example.txt)
+  ```
 
-| `# TODO` | How to write it |
-|---|---|
-| more programs | Copy the source string from each `parse(...)` test into the list.  An expression test such as `expr("2 + 3 * 4")` becomes the program `"print 2 + 3 * 4;"`, because `parse` reads whole programs. |
+- `test_round_trip_fixed()` checks the property on every program in the list.  When one fails, its assertion message is `Round-trip failed on: ` followed by that program's source, so the `FAIL` line names the program that broke.
+
+An expression test such as `expr("2 + 3 * 4")` goes into the list as a whole program, such as `print 2 + 3 * 4;`, because `parse` reads programs, not bare expressions.  Add `pretty` and `unparse` to the imports from `ast_nodes`.
 
 > **You should see.** A `PASS test_round_trip_fixed` line among the others, and a final line with `0 failed`.  On a failure, the message names the program that broke, for example `FAIL test_round_trip_fixed -- Round-trip failed on: print 8 - (3 - 2);`.
 
@@ -1075,9 +1110,7 @@ for source in BROKEN:
         print(err)
 ```
 
-| `# TODO` | How to write it |
-|---|---|
-| your five programs | One string each, aimed at a different rule: an unclosed `(`, a missing `{` after `if x`, a stray `else`, `a < b < c`, or a block missing its `}` in the middle of a longer program.  Use `"\n"` inside a string to put the error on line 2 or 3, so you can see the line number change. |
+Aim each of your five programs at a different rule: an unclosed `(`, a missing `{` after `if x`, a stray `else`, `a < b < c`, or a block missing its `}` in the middle of a longer program.  Put a `"\n"` inside a string to move the error to line 2 or 3, so you can watch the line number change.
 
 > **You should see.** One message per provided program, each with a position, the expected token, and the found token:
 >
@@ -1095,6 +1128,7 @@ for source in BROKEN:
 > - A `LexError` traceback stops the script: one of your programs contains a character the lexer rejects, such as `@`.  That is a lexing error, not a parse error, so choose a program the lexer accepts.
 > - `no error?!` for a program: the parser accepted it.  Check whether the program really is invalid under your grammar before you change the parser.
 > - The column is one token too far right: that parsing function consumed the bad token before it raised.
+
 ### Step 3e: Property-Based Testing with Hypothesis
 
 Your fixed test suite in Step 3c checks the round-trip law only on the programs *you thought to write*.  The interesting bugs live in the programs you did not think of: a unary minus applied to a parenthesized subtraction, an operator at exactly the precedence boundary, a deeply right-nested chain.  [Property-based testing](https://hypothesis.readthedocs.io/) finds those for you: instead of writing examples, you write a *generator* of random ASTs and assert that the law holds for all of them, and when it fails, Hypothesis **shrinks** the counterexample to the smallest tree that still breaks it.  This step is required, and the full walkthrough is in the [Property-Based Testing tutorial]({{ site.baseurl }}/Tutorials/PropertyBasedTesting).
@@ -1104,29 +1138,21 @@ Your fixed test suite in Step 3c checks the round-trip law only on the programs 
 
 > **Do this.**
 > 1. Install Hypothesis with `uv add hypothesis` (or `pip install hypothesis`), and install pytest with `pip install pytest` if `pytest --version` reports that the command is not found.
-> 2. Write an AST generator using `hypothesis.strategies.recursive`, so that trees can nest to arbitrary depth.  Add the sketch below to `test_parser.py`.
+> 2. Write an AST generator using `hypothesis.strategies.recursive`, so that trees can nest to arbitrary depth.  Add it to `test_parser.py`, following the specification below.
 > 3. Run it with `python3 -m pytest -v test_parser.py` (pytest discovers `@given` tests automatically, and `-v` prints one line per test).  When it fails, and on a first parser it usually will, Hypothesis prints the minimal failing tree.  Fix the bug (commonly a missing parenthesization rule in `unparse`, or a precedence/associativity error in `parse`), and re-run until it passes.
 > 4. Report one shrunk counterexample you fixed in your `readme.md`: the minimal tree Hypothesis found, the one-sentence root cause, and the fix.  This is the deliverable: evidence that the property found a real bug your fixed tests missed (or a reasoned statement of why your parser was already correct, with the generator shown).
 
-```python
-from hypothesis import given, strategies as st
+The three names this step adds to `test_parser.py`, and what each must be:
 
-leaves = st.one_of(
-    st.integers(min_value=0, max_value=999).map(Num),
-    st.sampled_from(["x", "y", "z"]).map(Var),
-)
-exprs = st.recursive(
-    leaves,
-    lambda kids: st.builds(BinOp, st.sampled_from(["+", "-", "*", "/"]), kids, kids),
-    max_leaves=25,
-)
+| Name | What it is |
+|---|---|
+| `leaves` | a Hypothesis strategy that produces either a `Num` holding an integer from 0 to 999, or a `Var` named `x`, `y`, or `z` |
+| `exprs` | a strategy built with `st.recursive` from `leaves`, where each recursive step builds a `BinOp` whose operator is one of `+`, `-`, `*`, `/` and whose two operands are smaller trees; cap the size at about 25 leaves |
+| `test_round_trip(tree)` | a test that Hypothesis feeds with `exprs` through `@given`; it asserts that parsing `unparse(tree)` gives back a tree equal to `tree` |
 
-@given(exprs)
-def test_round_trip(tree):
-    assert expr(unparse(tree)) == tree   # structural equality on your AST
-```
+Import `given` and `strategies` from `hypothesis` at the top of the file.  The tutorial linked above builds a strategy of exactly this shape step by step.
 
-The generated trees are expressions, not programs, so the test re-parses them with the `expr` helper from Step 2b.  `parse` would not work here: it expects whole statements, and `x + 1` on its own is not one.  Put the sketch below the imports, and add `pretty` and `unparse` to the `from ast_nodes import ...` line if Step 3c did not already.
+The generated trees are expressions, not programs, so the test re-parses them with the `expr` helper from Step 2b.  `parse` would not work here: it expects whole statements, and `x + 1` on its own is not one.  Put the strategies below the imports, and add `pretty` and `unparse` to the `from ast_nodes import ...` line if Step 3c did not already.
 
 > **You should see.** On a passing run, one `PASSED` line per test, ending with the Hypothesis test and a summary.  With the tests from this page's examples in the file, the end of the run looks like this.  Your test names, count, and time will differ:
 >
@@ -1237,15 +1263,9 @@ print(sorted({"+", ")", "$"}))
 >
 > **Predict** before you move on: which item tuple stands for `E -> T .`, and is it a completed item?
 
-> **Do this.** Write a helper that renders an item the way the activity does, so that every checkpoint below is something you can read rather than squint at.
+> **Do this.** Write a helper, `show_item(item)`, that renders an item the way the activity does, so that every checkpoint below is something you can read rather than squint at.
 
-```python
-def show_item(item):
-    """Render (prod, dot) as 'E -> E . + T', matching the activity's notation."""
-    lhs, rhs = PRODUCTIONS[item[0]]
-    body = rhs[:item[1]] + ["."] + rhs[item[1]:]
-    return "%s -> %s" % (lhs, " ".join(body))
-```
+`show_item` takes an item `(production_index, dot)` and returns one string: the production's left-hand side, then ` -> `, then the right-hand side's symbols with a `.` inserted at the dot position, all separated by single spaces.  So `show_item((1, 1))` returns `E -> E . + T`, `show_item((0, 0))` returns `E' -> . E`, and `show_item((5, 1))` returns `F -> num .`.
 
 ### Step 4a: Implement `closure`
 
@@ -1254,35 +1274,7 @@ The rule is one sentence: if the dot sits immediately before a non-terminal, add
 **You write:** `lr.py` - `closure`, and a `main` function that grows one block per step.
 **You run:** `python3 lr.py`
 
-```python
-def closure(items):
-    """Close a set of items under the dot-before-a-nonterminal rule.
-
-    Fixed point: keep adding until one full pass adds nothing, because an item
-    added on this pass can itself put the dot before another non-terminal.
-    """
-    result = set(items)
-    changed = True
-    while changed:
-        changed = False
-        for prod_index, dot in list(result):
-            lhs, rhs = PRODUCTIONS[prod_index]
-            if dot >= len(rhs):
-                continue                      # completed item, nothing after the dot
-            symbol = rhs[dot]
-            if symbol not in NONTERMINALS:
-                continue                      # dot before a terminal, closure adds nothing
-            # TODO: for every production whose left-hand side is `symbol`,
-            #       add (that production's index, 0). Set changed = True when
-            #       you actually add something new.
-    return frozenset(result)
-```
-
-| `# TODO` | How to write it |
-|---|---|
-| add the productions for `symbol` | `for j, (other_lhs, _) in enumerate(PRODUCTIONS):`, then `if other_lhs == symbol and (j, 0) not in result:`, then `result.add((j, 0))` and `changed = True`.  Checking membership first is what keeps `changed` honest. |
-
-The loop walks `list(result)`, a copy, because Python refuses to let a loop add to the very set it is walking.
+`closure(items)` takes any collection of items and returns a `frozenset`: the input items plus every item the rule adds, directly or through items it added earlier.  Items whose dot is at the end, or before a terminal, add nothing.  It must never add an item twice, and it must stop.  The strategy is a fixed-point loop: keep passing over the set until a whole pass adds nothing new.
 
 > **Do this.** Close the single item `E' -> . E` and print the result.  Put the printing in a `main` function at the bottom of `lr.py`.  Each later step adds one block to `main`, and at the end one run of `python3 lr.py` prints everything `lr_output.txt` needs.
 
@@ -1314,25 +1306,17 @@ if __name__ == "__main__":
 
 > **If it fails.**
 > - Four items instead of seven: your loop is a single pass.  `E -> . T` puts the dot before `T`, which only then pulls in the two `T` productions, which only then pull in the two `F` productions.  Keep looping until a full pass adds nothing.
-> - An infinite loop: you are setting `changed = True` on every iteration instead of only when the set actually grew.  Compare sizes, or check membership before adding.
+> - An infinite loop: your loop decides that something changed on every pass, instead of only when the set actually grew.  Compare sizes, or check membership before adding.
+> - `RuntimeError: Set changed size during iteration`: you add to the same set your `for` loop is walking.  Walk a copy of it instead.
 
 ### Step 4b: Implement `goto`
 
 `goto(state, X)` advances the dot past `X` in every item that has the dot before `X`, then takes the closure of the result.
 
-**You write:** `lr.py` - `goto` (complete below), and the Step 4b block in `main`.
+**You write:** `lr.py` - `goto`, and the Step 4b block in `main`.
 **You run:** `python3 lr.py`
 
-```python
-def goto(state, symbol):
-    """Advance the dot past `symbol` in every item that has the dot before it."""
-    moved = set()
-    for prod_index, dot in state:
-        lhs, rhs = PRODUCTIONS[prod_index]
-        if dot < len(rhs) and rhs[dot] == symbol:
-            moved.add((prod_index, dot + 1))
-    return closure(moved) if moved else frozenset()
-```
+`goto(state, symbol)` takes a state and one grammar symbol, terminal or non-terminal.  It returns the closure of the moved items as a `frozenset`.  When no item in the state has the dot before `symbol`, it returns an empty `frozenset`, which Step 4c reads as "no edge on this symbol".
 
 > **Do this.** Compute `goto(I0, "T")` and print it.  Add this block to the end of `main`:
 
@@ -1361,42 +1345,19 @@ Now enumerate every reachable state.  Start from `I0`, and for every state and e
 **You write:** `lr.py` - `build_states`, the `show_state` helper below it, and the Step 4c block in `main`.
 **You run:** `python3 lr.py`
 
-```python
-def build_states():
-    """Return (states, transitions): the canonical collection and the goto edges.
+`build_states()` takes no arguments and returns a pair `(states, transitions)`:
 
-    states[i] is a frozenset of items. transitions[(i, symbol)] = j.
-    Discovery order fixes the numbering, so walk symbols in a stable order.
-    """
-    start = closure({(0, 0)})
-    states = [start]
-    index = {start: 0}
-    transitions = {}
-    symbols = ["E", "T", "F", "num", "(", "+", "*", ")"]   # this order numbers states 0-7 as the activity does
-    worklist = [0]
-    while worklist:
-        i = worklist.pop(0)
-        for symbol in symbols:
-            target = goto(states[i], symbol)
-            if not target:
-                continue
-            # TODO: if `target` is new, append it to states, record its index,
-            #       and add that index to the worklist. Then record
-            #       transitions[(i, symbol)] = index[target].
-    return states, transitions
+- `states` is a list of `frozenset`s.  `states[0]` is `closure({(0, 0)})`, and each state's index in the list is its number.
+- `transitions` is a `dict` that maps `(i, symbol)` to `j` whenever `goto(states[i], symbol)` is state `j`.  It holds an edge for every non-empty `goto`, whether the target was new or already known.
 
+The numbering has to match the activity's, so two choices are fixed for you:
 
-def show_state(state):
-    """Render a state as its items on one line, sorted, separated by ' , '."""
-    return " , ".join(sorted(show_item(item) for item in state))
-```
+- Process states first-in, first-out.  A new state goes on the back of a worklist, and you always take the next state from the front.
+- For each state, try the symbols in exactly this order: `["E", "T", "F", "num", "(", "+", "*", ")"]`.  This order numbers states 0 to 7 as the activity does.
 
-| `# TODO` | How to write it |
-|---|---|
-| a new state | `if target not in index:`, then `index[target] = len(states)`, `states.append(target)`, and `worklist.append(index[target])`.  Set the index before you append, so the new state's number is the old length of the list. |
-| the edge | After that `if`, and for old and new states alike: `transitions[(i, symbol)] = index[target]`. |
+A new state gets the next unused number, which is the length of the list just before you add it.  Keep a `dict` from state to number, so you can tell in one lookup whether a `goto` result is new.
 
-`worklist.pop(0)` takes the oldest state first, so states are processed in the order they were found.  That order, together with the order of `symbols`, fixes every state number.
+Also write `show_state(state)`.  It returns the state's items, each rendered by `show_item`, sorted as strings, and joined with ` , ` (a space, a comma, a space).
 
 > **Do this.** Print how many states you found, then print the item set of every state.  Add this block to the end of `main`:
 
@@ -1445,43 +1406,14 @@ Compute FIRST first, then FOLLOW, both as fixed-point loops.  Seed `FOLLOW(E')` 
 
 Both functions return a `dict` from each non-terminal to a `set` of terminals.  `FIRST(A)` is the set of terminals that can begin a string derived from `A`.  `FOLLOW(A)` is the set of terminals, plus `$`, that can come right after `A`.  No production in this grammar has an empty right-hand side, so you never need ε here.  The FIRST of a sequence of symbols is just the FIRST of its first symbol, and the FIRST of a terminal is the terminal itself.
 
-```python
-def first_sets():
-    """Return {nonterminal: set of terminals that can begin it}."""
-    first = {nt: set() for nt in NONTERMINALS}
-    changed = True
-    while changed:
-        changed = False
-        for lhs, rhs in PRODUCTIONS:
-            head = rhs[0]
-            # TODO: new = first[head] if head is a non-terminal, else {head}
-            # TODO: if new holds anything not yet in first[lhs], add it and set changed
-    return first
+`first_sets()` takes no arguments.  `follow_sets(first)` takes the `dict` that `first_sets` returns.  Both read `PRODUCTIONS` and `NONTERMINALS`, and both return a `dict` with one entry per non-terminal, each starting as an empty set.
 
+The rules each one applies, over and over, until a whole pass over the productions changes nothing:
 
-def follow_sets(first):
-    """Return {nonterminal: set of terminals that can follow it}, seeded with $."""
-    follow = {nt: set() for nt in NONTERMINALS}
-    follow["E'"].add("$")
-    changed = True
-    while changed:
-        changed = False
-        for lhs, rhs in PRODUCTIONS:
-            for k, symbol in enumerate(rhs):
-                if symbol not in NONTERMINALS:
-                    continue
-                # TODO: if a symbol comes after position k, new is its FIRST
-                #       (a terminal's FIRST is itself); otherwise new is follow[lhs]
-                # TODO: if new holds anything not yet in follow[symbol], add it and set changed
-    return follow
-```
+- **FIRST.** For every production `A -> X ...`, everything in the FIRST of `X` belongs in `FIRST(A)`.
+- **FOLLOW.** Start with `$` in `FOLLOW(E')`.  For every production, and every non-terminal `B` in its right-hand side: if a symbol `Y` comes right after `B`, the FIRST of `Y` belongs in `FOLLOW(B)`.  If `B` is the last symbol, everything in the FOLLOW of the production's left-hand side belongs in `FOLLOW(B)`.
 
-| `# TODO` | How to write it |
-|---|---|
-| `new` in `first_sets` | `new = first[head] if head in NONTERMINALS else {head}`. |
-| growing a set | `if not new <= first[lhs]:` (the `<=` operator asks "is a subset of"), then `first[lhs] \|= new` and `changed = True`.  `\|=` adds every member of `new` in place. |
-| `new` in `follow_sets` | `if k + 1 < len(rhs):`, then `nxt = rhs[k + 1]` and `new = first[nxt] if nxt in NONTERMINALS else {nxt}`.  Otherwise `symbol` is last in the production, so `new = follow[lhs]`. |
-| growing `follow[symbol]` | The same subset test and `\|=` as in `first_sets`. |
+Each set only ever grows, and it can hold only terminals, so the loop must stop.  Python's subset test on sets, `<=`, tells you in one step whether a pass actually added something.
 
 > **Do this.** Print `FOLLOW(E)`, `FOLLOW(T)`, and `FOLLOW(F)`.  Add this block to the end of `main`.  It also sets up the two orders that every table printout below uses:
 
@@ -1525,51 +1457,17 @@ That fourth rule is the point of this step.  A generator that silently picks one
 **You write:** `lr.py` - `build_tables`, the `show_action` helper, and the Step 4e block in `main`.
 **You run:** `python3 lr.py`
 
-```python
-def build_tables(states, transitions, follow):
-    """Return (action, goto_table, conflicts).
+`build_tables(states, transitions, follow)` returns a triple `(action, goto_table, conflicts)`:
 
-    action[i][terminal] = ("s", j) | ("r", p) | ("acc",)
-    goto_table[i][nonterminal] = j
-    conflicts is a list of (state, token, existing_action, proposed_action).
-    """
-    action, goto_table, conflicts = {}, {}, []
-
-    def put(i, terminal, act):
-        """Write act into action[i][terminal], or record a conflict (rule 4)."""
-        row = action.setdefault(i, {})
-        # TODO: rule 4 - if `terminal` is already in `row` with a different action,
-        #       append (i, terminal, row[terminal], act) to conflicts; otherwise store act
-
-    for i, state in enumerate(states):
-        for prod_index, dot in sorted(state):
-            lhs, rhs = PRODUCTIONS[prod_index]
-            if dot < len(rhs):
-                # TODO: rule 1 - if rhs[dot] is a terminal, put a shift to transitions[(i, rhs[dot])]
-                pass
-            elif prod_index == 0:
-                # TODO: rule 3 - put ("acc",) on "$"
-                pass
-            else:
-                # TODO: rule 2 - put ("r", prod_index) on every terminal in follow[lhs]
-                pass
-        for nt in NONTERMINAL_ORDER:
-            if (i, nt) in transitions:
-                goto_table.setdefault(i, {})[nt] = transitions[(i, nt)]
-    return action, goto_table, conflicts
-
-
-def show_action(act):
-    """Render ("s", 7) as 's7', ("r", 2) as 'r2', and ("acc",) as 'acc'."""
-    return act[0] if act[0] == "acc" else f"{act[0]}{act[1]}"
-```
-
-| `# TODO` | How to write it |
+| Name | Shape |
 |---|---|
-| rule 4, inside `put` | `if terminal in row and row[terminal] != act:` then `conflicts.append((i, terminal, row[terminal], act))`; `else:` then `row[terminal] = act`.  Writing the same action twice is not a conflict, which is why the test compares the two actions. |
-| rule 1 | `symbol = rhs[dot]`; `if symbol in TERMINALS:` then `put(i, symbol, ("s", transitions[(i, symbol)]))`.  A dot before a non-terminal adds nothing to ACTION; the GOTO loop below the item loop handles it. |
-| rule 3 | `put(i, "$", ("acc",))`.  The comma inside `("acc",)` makes it a one-element tuple. |
-| rule 2 | `for terminal in sorted(follow[lhs]):` then `put(i, terminal, ("r", prod_index))`.  `sorted` only fixes the order in which conflicts are found. |
+| `action` | a `dict` of `dict`s: `action[i][terminal]` is `("s", j)` for a shift, `("r", p)` for a reduce by production `p`, or `("acc",)` for accept |
+| `goto_table` | a `dict` of `dict`s: `goto_table[i][nonterminal]` is `j` for every edge in `transitions` whose symbol is a non-terminal |
+| `conflicts` | a list of 4-tuples `(state, token, existing_action, proposed_action)`, one per cell where rule 4 fired |
+
+A state with no actions or no gotos may simply have no row.  The printing code below reads rows with `.get(i, {})` for that reason.  Writing the *same* action into a cell twice is not a conflict, so record a conflict only when the two actions differ.
+
+Also write `show_action(act)`.  It renders `("s", 7)` as `s7`, `("r", 2)` as `r2`, and `("acc",)` as `acc`.
 
 > **Do this.** Build the tables and print `conflicts`, then print your ACTION and GOTO rows.  Add this block to the end of `main`:
 
@@ -1626,47 +1524,18 @@ Keep a stack of state numbers alongside a stack of symbols, and read one token o
 **You write:** `lr.py` - `drive`, the `show_production` helper, and the Step 4f block in `main`.
 **You run:** `python3 lr.py`, then `python3 lr.py > lr_output.txt` to save the run you submit.
 
-The driver's input is a list of token names, not source text, and it ends with the end marker `$`.  For `num + num * num`, that list is `"num + num * num $".split()`, which is `['num', '+', 'num', '*', 'num', '$']`.  The three `print` lines in the skeleton are complete, so every row of your trace has the same layout as the one below.
+The driver's input is a list of token names, not source text, and it ends with the end marker `$`.  For `num + num * num`, that list is `"num + num * num $".split()`, which is `['num', '+', 'num', '*', 'num', '$']`.
 
-```python
-def show_production(p):
-    """Render production p as 'T -> T * F'."""
-    lhs, rhs = PRODUCTIONS[p]
-    return f"{lhs} -> {' '.join(rhs)}"
+`drive(tokens, action, goto_table)` takes that list of token names and the two tables, and parses the tokens, printing one row per step.  Its contract:
 
+- It keeps two stacks: one of state numbers, which starts as `[0]`, and one of grammar symbols, which starts empty.  The top of the state stack is the current state.  The token at the current position is the lookahead.
+- On a reduce, it looks up the GOTO target from the state that the pops exposed, not from the state it was in before.
+- Each row prints three columns: the symbol stack joined by single spaces and left-justified in 14 characters, then `| `, then the remaining tokens (lookahead included) joined by spaces and left-justified in 18 characters, then `| `, then the action.  Print the row *before* you change the stacks.
+- The action text is `shift`, `reduce` followed by a space and the production, `accept`, or `error`.
+- On accept, it prints the row and returns `True`.
+- When the table has no entry, it prints an `error` row and raises a `SyntaxError` whose message names the state and the token.
 
-def drive(tokens, action, goto_table):
-    """Shift-reduce parse a list of token names ending in "$", printing one row per step."""
-    states = [0]       # the state stack; its top is the current state
-    symbols = []       # the symbol stack, printed in the Stack column
-    pos = 0            # tokens[pos] is the lookahead
-    while True:
-        state = states[-1]
-        token = tokens[pos]
-        act = action.get(state, {}).get(token)
-        stack_text = " ".join(symbols)
-        input_text = " ".join(tokens[pos:])
-        if act is None:
-            print(f"{stack_text:<14}| {input_text:<18}| error")
-            raise SyntaxError(f"no action in state {state} on token {token!r}")
-        if act[0] == "s":
-            print(f"{stack_text:<14}| {input_text:<18}| shift")
-            # TODO: push act[1] and token onto the two stacks, and move pos forward
-        elif act[0] == "r":
-            lhs, rhs = PRODUCTIONS[act[1]]
-            print(f"{stack_text:<14}| {input_text:<18}| reduce {show_production(act[1])}")
-            # TODO: pop len(rhs) entries from both stacks, then push lhs and
-            #       its GOTO target from the newly exposed state
-        else:
-            print(f"{stack_text:<14}| {input_text:<18}| accept")
-            return True
-```
-
-| `# TODO` | How to write it |
-|---|---|
-| shift | `states.append(act[1])`, `symbols.append(token)`, and `pos += 1`. |
-| reduce, the pop | `del states[len(states) - len(rhs):]` and the same for `symbols`.  The slice removes the last `len(rhs)` entries.  Every right-hand side here has at least one symbol, so the slice never removes everything by accident. |
-| reduce, the push | `states.append(goto_table[states[-1]][lhs])` and `symbols.append(lhs)`.  Read `states[-1]` after the pop: that is the newly exposed state. |
+Also write `show_production(p)`.  It renders production `p` as its left-hand side, ` -> `, and its right-hand side joined by single spaces, as in `T -> T * F`.
 
 > **Do this.** Parse `num + num * num` and print the stack-input-action table as you go, one row per step.  Add this block to the end of `main`:
 
@@ -1743,7 +1612,7 @@ for state, token, old, new in conflicts:
 > **You should see.** A shift-reduce conflict from the first edit and a reduce-reduce conflict from the second.  These are the same two conflict types you explained on paper in Step 1c; now your own table generator finds them.
 
 > **If it fails.**
-> - `conflicts: 0` with more than twelve states: `put` stores the new action over the old one.  Check rule 4 in Step 4e.
+> - `conflicts: 0` with more than twelve states: your table builder stores the new action over the old one.  Check rule 4 in Step 4e.
 > - `states: 12  conflicts: 0`: the grammar did not change.  Check that the `added production` line printed, and that you ran `try_conflicts.py`, not `lr.py`.
 > - `IndexError: list index out of range` on `sys.argv[1]`: you left off the `1` or `2` after the file name.
 
