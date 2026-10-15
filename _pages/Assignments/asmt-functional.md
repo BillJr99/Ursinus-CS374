@@ -1360,12 +1360,15 @@ One file, `pipeline.py`, plus your corpus: a word-count MapReduce over a real bo
 The Google MapReduce paper (Dean and Ghemawat, 2004) opens with one observation: when you write a computation as a pure map over independent inputs followed by an associative reduce over the results, the framework can parallelize it for you, with no threads to coordinate and no locks to write.  (A reduce is associative when grouping does not matter: merging `a` with `b` and then with `c` gives the same result as merging `a` with the merge of `b` and `c`.)  This direction tests the paradigm's central promise, *purity buys parallelism*, on a 21,000-line corpus with timings you take yourself, and confronts the practical limit (Amdahl's Law) that constrains distributed systems.  It is also the Functional stop on the [music and live-coding path]({{ site.baseurl }}/Projects/TeamLanguage#the-music-and-live-coding-path): the same pure-map, associative-reduce discipline is how pattern engines like Strudel evaluate independent events, so students on that path may analyze a corpus of timed-event listings as their dataset instead.  The pipeline requirements are identical.  You need:
 
 - `pipeline.py` in your `cs374-functional` folder, and tests in `test_functional.py`.  The standard library: `multiprocessing`, `functools.reduce`, and `timeit`.
-- **Dataset:** the Project Gutenberg plain-text *Moby Dick* (approximately 21,000 lines), split into lines; each line is one "document."  Save it in the project folder and read it from there.
+- **Dataset:** the Project Gutenberg plain-text *Moby Dick* (approximately 21,000 lines), split into lines; each line is one "document."  Save it in the project folder and read it from there.  It is Project Gutenberg eBook #2701, at [gutenberg.org/ebooks/2701](https://www.gutenberg.org/ebooks/2701); download the "Plain Text UTF-8" file and save it as `moby_dick.txt`.  Gutenberg's license header and footer are part of that file, and including them is fine, as long as you say so in your readme.
 - A machine with more than one core, and its CPU model and core count written down before you start; every number you report depends on them.
 
 ### E.1: The sequential baseline
 
 `word_frequencies(line) -> dict[str, int]` is your map function; argue in writing that it is pure (no global reads, no shared mutation, and the same output for the same input every time).  `merge_counts(a, b) -> dict` is your reduce function; argue that it is pure *and associative*, and say why associativity matters for parallelism.  `top_n(counts, n)` returns the most frequent words.  Implement the three from the skeleton, test each on two or three short hand-made lines in `test_functional.py`, then run `python3 pipeline.py` on the full corpus and record total words, unique words, the top 20, and the runtime.  Put the code that starts a `Pool` under `if __name__ == "__main__":`; on macOS and Windows, worker processes re-import your module, and without that guard each worker starts its own pool and the program never finishes.  The map function must be defined at module level so that Python can pickle it (serialize it to send to another process).
+
+**You write:** `pipeline.py` - `word_frequencies`, `merge_counts`, `top_n`, and the sequential run under `if __name__ == "__main__":`; `test_functional.py` - two or three hand-made lines per function.
+**You run:** `python3 test_functional.py`, then `python3 pipeline.py`.
 
 ```python
 # pipeline.py
@@ -1389,15 +1392,50 @@ if __name__ == "__main__":
          # version; assert the two results are equal before you time anything
 ```
 
+| `# TODO` | How to write it |
+|---|---|
+| `word_frequencies` | Lowercase the line and split it into words; one simple choice is `re.findall(r"[a-z']+", line.lower())`.  Count them into a dictionary created inside the function, with `counts.get(word, 0) + 1`, or with `collections.Counter`.  Document your word rule in the readme. |
+| `merge_counts` | Start from a copy, `merged = dict(a)`.  Loop over `b.items()` and add each count with `merged.get(word, 0) + count`.  Return `merged`; `a` and `b` stay unchanged. |
+| `top_n` | `sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[:n]`.  Sorting ties by word makes the output the same on every run. |
+| the main block | Read the lines with `open("moby_dick.txt", encoding="utf-8").read().splitlines()`.  The sequential result is `reduce(merge_counts, map(word_frequencies, lines), {})`. |
+
 ### E.2: The parallel map
 
 Replace `map(word_frequencies, lines)` with `multiprocessing.Pool.map` and assert that the parallel result equals the sequential result.  Then measure wall-clock time (`timeit`, five runs per configuration, report the mean) across worker counts 1, 2, 4, and the maximum available, and across chunk sizes (default, 10, 100, 1000) at maximum workers.  Tabulate time, speedup, and efficiency ($$= \text{speedup} / \text{workers}$$) for every configuration.  At what worker count does efficiency drop below 0.8, and why?  What effect does chunk size have, and why?
+
+**You write:** `pipeline.py` - `parallel_counts` and `time_config`, and the timing table in the main block.
+**You run:** `python3 pipeline.py`
+
+A timing harness keeps every configuration measured the same way.  This skeleton is one way to write it:
+
+```python
+import os
+import timeit
+
+# parallel_counts: (list[str], int, int | None) -> dict
+def parallel_counts(lines, workers, chunksize=None):
+    ...  # TODO: with Pool(workers) as pool: map word_frequencies over lines with
+         # pool.map(..., chunksize=chunksize), then reduce the results with merge_counts
+
+# time_config: (list[str], int, int | None, int) -> float
+# Mean wall-clock seconds over `runs` runs of parallel_counts.
+def time_config(lines, workers, chunksize=None, runs=5):
+    ...  # TODO: timeit.repeat(lambda: parallel_counts(lines, workers, chunksize),
+         # number=1, repeat=runs) returns a list of times; return their mean
+
+# In the main block, os.cpu_count() gives "the maximum available" worker count.
+```
 
 > **You should see.** The equality assertion passes on the first try if `word_frequencies` is pure; if it fails, look for a global or a mutable default argument.  With one worker the parallel version is usually slower than the sequential baseline (process start-up and pickling are pure overhead there), and speedup grows, then flattens, as workers increase.
 
 ### E.3: Tree-reduce
 
 The sequential `reduce(merge_counts, results, {})` performs $$O(n)$$ merges one after another.  Implement `tree_reduce(merge_fn, results)`: pair up adjacent elements, merge the pairs in parallel via `Pool.map`, and repeat until one element remains (carry an odd element forward).  Verify that it matches the sequential reduce, then measure and compare both on the full corpus.  In your writeup, draw the dependency graph of a tree-reduce over 8 elements: how many rounds are there, what is the maximum speedup regardless of core count, and how does the synchronization between rounds relate to the serial fraction below?
+
+**You write:** `pipeline.py` - `tree_reduce`; `test_functional.py` - the empty, single-document, and odd-length cases.
+**You run:** `python3 test_functional.py`, then `python3 pipeline.py`.
+
+`Pool.map` passes one argument to its function, so merge each pair through a module-level helper such as `merge_pair(pair)` that returns `merge_counts(*pair)`.  `zip(results[0::2], results[1::2])` gives the adjacent pairs, and when the length is odd, `results[-1]` is the element to carry forward.
 
 ### E.4: Amdahl's Law analysis
 
@@ -1406,6 +1444,8 @@ If a fraction $$f$$ of the computation is serial, the maximum speedup with $$n$$
 $$
 S(n) = \frac{1}{f + \frac{1-f}{n}} \;\xrightarrow{\,n \to \infty\,}\; \frac{1}{f}
 $$
+
+**You write (in `readme.md` under a `## E.4: Amdahl's Law` heading):** the estimate of $$f$$, the theoretical bound, the comparison, and the 100-worker projection.  No new code.
 
 From your measured data, estimate $$f$$ (using $$f \approx \frac{1/S_{\text{max}} - 1/n_{\text{max}}}{1 - 1/n_{\text{max}}}$$), compute the theoretical maximum speedup, and compare it to what you measured.  Explain the discrepancies (process spawn cost, pickling for inter-process communication, the final sort, OS scheduling).  What speedup would 100 workers give, and what does that imply about this pipeline at datacenter scale?
 
@@ -1433,6 +1473,9 @@ Every other direction is a story about *evaluation*: you write an expression, an
 
 Warm up with a family knowledge base: `parent/2` facts, then `grandparent/2`, `sibling/2`, and `ancestor/2` rules.  In `logic_session.md`, show at least one query with a single answer, one query that yields *multiple* answers on backtracking, and one recursive rule (`ancestor/2`) with a query that requires several backtracking steps.  Explain in one or two sentences what "the engine searches for a proof" means here versus "the evaluator computes a value" in your interpreter.
 
+**You write:** `logic.pl` - the `parent/2` facts and the `grandparent/2`, `sibling/2`, and `ancestor/2` rules; `logic_session.md` - each query and its answers.
+**You run:** each query in the SWISH query pane, pressing `;` until it reports `false`.
+
 > **Do this.**
 > 1. Open SWISH, paste the starter below into the program pane, and run `?- grandparent(tom, Who).`, `?- parent(bob, Child).`, and `?- ancestor(tom, X).` in the query pane one at a time.
 > 2. After each query, press `;` (or the Next button) until SWISH reports `false`, so you see every answer backtracking finds.
@@ -1454,6 +1497,9 @@ grandparent(X, Z) :- parent(X, Y), parent(Y, Z).
 
 Solve the following six problems from the classic [Ninety-Nine Prolog Problems](https://www.metalevel.at/prolog/99) list.  I chose them to span list recursion, structural recursion, arithmetic, logic, and constraint search:
 
+**You write:** `logic.pl` - the clauses for all six problems; `logic_session.md` - one query per problem with its answers, and the P90 solution count.
+**You run:** each query in SWISH; for P90, `?- aggregate_all(count, queens(Qs), N).` counts the solutions for you, once you have seen a few of them one at a time with `;`.
+
 1.  **P01 `my_last(X, List)`**: the last element of a list (basic list recursion).
 2.  **P05 `rev(List, Reversed)`**: reverse a list (accumulator recursion).
 3.  **P07 `my_flatten(List, Flat)`**: flatten a nested list structure (recursion over term structure).
@@ -1467,9 +1513,14 @@ For each problem, include the clause(s) in `logic.pl` and, in `logic_session.md`
 
 Pick one relation you wrote (or `append/3`) and demonstrate it in at least two modes: for example, `append([1,2],[3],Xs)` (concatenate) *and* `append(Xs, Ys, [1,2,3])` (enumerate every split).  Explain in your writeup why a Python function *cannot* be run backwards like this, and what property of Prolog (unification over logic variables, not evaluation of expressions) makes it possible.  This is the single most important idea in the direction.
 
+**You write:** `logic_session.md` - both modes with their answers; `readme.md` - the explanation, under a `## F.3: Running Backwards` heading.
+**You run:** the relation in SWISH in at least two modes, such as `?- append([1,2],[3],Xs).` and `?- append(Xs, Ys, [1,2,3]).`
+
 ### F.4: Unification and backtracking vs. your interpreter's environments
 
 Close with a short written comparison; it is required, and it ties the direction back to the pipeline.  Your interpreter's `Environment` maps names to *values* by assignment, in one direction only, and evaluation never "undoes" a binding.  Prolog's unification binds logic variables to *terms* in both directions, and backtracking un-binds them when a branch fails.  In one paragraph, contrast (a) binding-by-assignment vs. binding-by-unification, and (b) your evaluator's single forward pass vs. Prolog's search-with-backtracking.  If you took the type-checking direction of the Interpreter, connect this explicitly to the unification in your type inferencer; it is the *same* algorithm doing a different job.
+
+**You write (in `readme.md` under a `## F.4: Unification vs. Environments` heading):** the one-paragraph comparison.  No code.
 
 ### Direction F depth checklist
 
@@ -1504,17 +1555,29 @@ Something else you care about is negotiable; bring it to the scope-approval conv
 
 Find your target: a triaged open issue, a gap in the documentation, a missing test, or a small feature request with maintainer interest.  In `contribution.md`, record the issue or gap (with links), why it is *functional-paradigm* work (which core ideas from Parts 1 and 2 it exercises), and your one-sentence minimum viable scope (the smallest version of the change that would still be worth submitting).  Bring this to me for approval within 3 days of hand-out; the approval exists to protect you from scope that cannot land in the assignment window, and it is a five-minute conversation if those three things are written down.
 
+**You write:** `contribution.md` - the issue or gap with links, its functional-paradigm substance, and the one-sentence minimum viable scope.
+**You run:** nothing yet; bring `contribution.md` to the scope-approval conversation.
+
 ### G.2: Specification first
 
 Before you write the fix, write the specification the way this course always does: a failing test that demonstrates the issue.  For documentation work, the specification is the worked example that does not yet exist and the checklist it must satisfy.  Commit it, or record it in its original form in `contribution.md`.  If the project's own test suite has conventions, follow them; reading a mature project's test conventions is part of the learning here.
+
+**You write:** the failing test (or the documentation checklist), in the upstream project's own test layout, and a dated copy in `contribution.md`.
+**You run:** the upstream project's test command, as its `CONTRIBUTING` file or README names it, and confirm that your new test fails.
 
 ### G.3: The contribution
 
 Do the work on a fork, and follow the upstream project's `CONTRIBUTING` guidelines to the letter (branch naming, commit style, changelog entries, whatever they ask).  Your pull request must include tests and documentation for what it changes.  Keep the diff as small as the fix allows; maintainers review diffs, and a disciplined diff is a professional courtesy they notice.
 
+**You write:** the fix, its tests, and its documentation, on a branch of your fork.
+**You run:** the upstream test command again, and confirm that your test now passes and nothing else broke.
+
 ### G.4: The exchange
 
 Submit the pull request and engage with what comes back: respond to review comments, make requested changes, and record the exchange in `contribution.md`.  A merge is ideal but not required.  Maintainer response times are outside your control, and the graded work is yours, not theirs.  If no maintainer responds within a week of submission, document the attempt and perform a written self-review against the project's own contributing standards: what would a maintainer flag, and why?
+
+**You write:** `contribution.md` - the pull request link and a dated log of the exchange (or the self-review).
+**You run:** whatever the reviewers' requested changes need, and the upstream test command after each change.
 
 ### Direction G depth checklist
 
