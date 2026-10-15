@@ -99,6 +99,8 @@ You need:
 > 2. Create the deliverable files up front so each part has a home: `interpreter.py` (evaluator, Environment, error hierarchy), `mylang.py` (file runner and REPL, Part 3), `typechecker.py` (Part 4), `SEMANTICS.md` (Part 5), and `test_interpreter.py`.  Rather than transcribing them, copy the [starter kit]({{ site.baseurl }}/files/starters/interpreter/) from `files/starters/interpreter/`: it holds those four Python files with every skeleton from this page already in place, and every `TODO` still yours to fill.  The seeded tests fail until you implement the branches they exercise, which is how you know they are running.
 Your file runner is `mylang.py` and your programs end in `.ml`; the reference pipeline ships a `mylang.py` and `samples/*.ml` so the commands in this assignment work unchanged against it.
 
+The starter kit differs from this page in four small places, and where they differ, follow this page: `Environment` tests its parent with `is not None` (Step 2c), `LangError` calls `super().__init__` (Step 2a), the signal classes carry a `line` (Step 2d), and `mylang.py` gains a `run_source` helper (Step 3a).
+
 > 3. From inside the folder, confirm your Python version, install Hypothesis, and confirm the pipeline is connected:
 >
 > ```bash
@@ -1701,7 +1703,6 @@ Intcode is self-validating: the puzzle inputs come with known answers.  Include 
 **You run:** `python3 -m pytest test_interpreter.py`
 
 The checkpoints:
-
 
 - The Day 2 sample programs (e.g., `1,9,10,3,2,3,11,0,99,30,40,50` halts with `3500` in position 0).
 - A Day 5 program exercising input, output, immediate mode, and a jump/comparison (e.g., "is the input equal to 8?").
