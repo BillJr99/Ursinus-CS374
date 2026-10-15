@@ -161,60 +161,80 @@ def _chain(env, names):
         return "(chain not shown: this script reads the skeleton's _bindings and _parent attributes)"
 
 
+# The Part 2 program, one source line per numbered step, exactly as the lab page lists it.
+PROGRAM = [
+    "let x = 1;", "let y = 10;",
+    "{", "let x = 2;", "y = y + x;",
+    "{", "x = x * 10;", "let z = y;",
+    "{", "let y = 0;", "z = z + x;", "print y;", "}",
+    "print x;", "print z;", "}",
+    "print x;", "}",
+    "print x;", "print y;",
+]
+
+
+def _value(env, text):
+    """Evaluate a tiny expression: operands (names or integers) separated by + - * ."""
+    parts = text.split()
+    total = _operand(env, parts[0])
+    for op, rhs in zip(parts[1::2], parts[2::2]):
+        right = _operand(env, rhs)
+        total = total + right if op == "+" else total - right if op == "-" else total * right
+    return total
+
+
+def _operand(env, word):
+    return int(word) if word.lstrip("-").isdigit() else env.lookup(word)
+
+
 def run_trace():
-    """Run the Part 2 program step by step and print the chain and result at each step."""
-    names = {}
+    """Run PROGRAM through your Environment class, printing the chain and result at each step.
 
-    def show(step, line, env, result):
-        print(f"step {step:>2}  {line:<14} {_chain(env, names):<48} {result}")
-
+    This is a small general-purpose line interpreter, not a step-by-step answer: it reads each
+    source line and decides what it means.  Your trace_run.py does the same job by hand."""
+    names, owner = {}, {}            # owner records which scope defined each name, per scope
+    block_names = iter("ABCDEFGH")
     print("Part 2 trace program (steps numbered as on the lab page):")
     print(f"{'':8}  {'line':<14} {'environment chain':<48} result")
+    env = Environment()
+    names[id(env)] = "top"
+    owner[id(env)] = set()
+    printed = []
 
-    top = Environment()                                   # the program's top-level scope
-    names[id(top)] = "top"
-    top.define("x", 1)                                    # step 1:  let x = 1;
-    show(1, "let x = 1;", top, "x=1 created in top")
-    top.define("y", 10)                                   # step 2:  let y = 10;
-    show(2, "let y = 10;", top, "y=10 created in top")
 
-    a = Environment(parent=top)                           # step 3:  enter block A
-    names[id(a)] = "A"
-    show(3, "{", a, "enter A")
-    a.define("x", 2)                                      # step 4:  let x = 2;
-    show(4, "let x = 2;", a, "x=2 created in A (shadows top's x)")
-    a.assign("y", a.lookup("y") + a.lookup("x"))          # step 5:  y = y + x;
-    show(5, "y = y + x;", a, f"y={a.lookup('y')} assigned (nearest y is in top)")
+    chain = [env]                    # innermost scope last
+    for step, line in enumerate(PROGRAM, start=1):
+        text = line.rstrip(";").strip()
+        if text == "{":
+            child = Environment(parent=chain[-1])
+            names[id(child)] = next(block_names)
+            owner[id(child)] = set()
+            chain.append(child)
+            result = f"enter {names[id(child)]}"
+        elif text == "}":
+            left = chain.pop()
+            result = f"leave {names[id(left)]} (back to {names[id(chain[-1])]})"
+        elif text.startswith("print "):
+            value = chain[-1].lookup(text[6:].strip())
+            printed.append(value)
+            result = f"prints {value}"
+        else:
+            target, expr = (part.strip() for part in text.split("=", 1))
+            value = _value(chain[-1], expr)
+            if target.startswith("let "):
+                name = target[4:].strip()
+                outer = next((names[id(e)] for e in reversed(chain[:-1]) if name in owner[id(e)]), None)
+                chain[-1].define(name, value)
+                owner[id(chain[-1])].add(name)
+                result = f"{name}={value} created in {names[id(chain[-1])]}"
+                if outer:
+                    result += f" (shadows {outer}'s {name})"
+            else:
+                chain[-1].assign(target, value)
+                nearest = next(names[id(e)] for e in reversed(chain) if target in owner[id(e)])
+                result = f"{target}={value} assigned (nearest {target} is in {nearest})"
+        print(f"step {step:>2}  {line:<14} {_chain(chain[-1], names):<48} {result}")
 
-    b = Environment(parent=a)                             # step 6:  enter block B
-    names[id(b)] = "B"
-    show(6, "{", b, "enter B")
-    b.assign("x", b.lookup("x") * 10)                     # step 7:  x = x * 10;
-    show(7, "x = x * 10;", b, f"x={b.lookup('x')} assigned (nearest x is in A)")
-    b.define("z", b.lookup("y"))                          # step 8:  let z = y;
-    show(8, "let z = y;", b, f"z={b.lookup('z')} created in B")
-
-    c = Environment(parent=b)                             # step 9:  enter block C
-    names[id(c)] = "C"
-    show(9, "{", c, "enter C")
-    c.define("y", 0)                                      # step 10: let y = 0;
-    show(10, "let y = 0;", c, "y=0 created in C (shadows top's y)")
-    c.assign("z", c.lookup("z") + c.lookup("x"))          # step 11: z = z + x;
-    show(11, "z = z + x;", c, f"z={c.lookup('z')} assigned (nearest z is in B)")
-    show(12, "print y;", c, f"prints {c.lookup('y')}")    # step 12: print y;
-    show(13, "}", b, "leave C (back to B)")               # step 13: leave block C
-
-    show(14, "print x;", b, f"prints {b.lookup('x')}")    # step 14: print x;
-    show(15, "print z;", b, f"prints {b.lookup('z')}")    # step 15: print z;
-    show(16, "}", a, "leave B (back to A)")               # step 16: leave block B
-
-    show(17, "print x;", a, f"prints {a.lookup('x')}")    # step 17: print x;
-    show(18, "}", top, "leave A (back to top)")           # step 18: leave block A
-
-    show(19, "print x;", top, f"prints {top.lookup('x')}")   # step 19: print x;
-    show(20, "print y;", top, f"prints {top.lookup('y')}")   # step 20: print y;
-
-    printed = [c.lookup("y"), b.lookup("x"), b.lookup("z"), a.lookup("x"), top.lookup("x"), top.lookup("y")]
     print()
     print("The six printed values, in order (steps 12, 14, 15, 17, 19, 20):")
     for value in printed:

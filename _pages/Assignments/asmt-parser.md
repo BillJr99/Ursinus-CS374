@@ -324,13 +324,13 @@ Every node in your tree is a small object with named fields, and a `@dataclass` 
 
 | You write | Python gives you | Where you use it |
 |---|---|---|
-| `@dataclass` above `class Num:` with `value: Any` | `Num(8)` or `Num(value=8)` builds a node | every parsing function returns one |
-| (nothing extra) | `print(node)` shows `Num(value=8, line=0)` | reading a failing test's tree |
+| `@dataclass` above `class Coin:` with `amount: Any` | `Coin(8)` or `Coin(amount=8)` builds an object | every parsing function returns one node built this way |
+| (nothing extra) | `print(c)` shows `Coin(amount=8, year=0)` | reading a failing test's tree |
 | (nothing extra) | `a == b` compares every field, nested nodes included | tree-shape tests |
-| `line: int = field(default=0, compare=False)` | a field that prints but that `==` skips | a test writes `Num(8)`; the parser builds `Num(8, line=1)`; they still compare equal |
-| `stmts: List[Any] = field(default_factory=list)` | a fresh empty list for each node | `Block` and `Program`.  A plain `= []` is refused with a `ValueError`, because every node would share one list |
-| `isinstance(node, BinOp)` | `True` when `node` is a `BinOp` | `pretty` and `unparse` in Part 3 |
-| `node.left.value` | the field of a field | walking the tree |
+| `year: int = field(default=0, compare=False)` | a field that prints but that `==` skips | your `line` field: a test builds a node with no position, the parser builds one with a position, and they must still compare equal |
+| `coins: List[Any] = field(default_factory=list)` | a fresh empty list for each object | `Block` and `Program`.  A plain `= []` is refused with a `ValueError`, because every object would share one list |
+| `isinstance(pair, Pair)` | `True` when `pair` is a `Pair` | `pretty` and `unparse` in Part 3 |
+| `pair.second.amount` | the field of a field | walking the tree |
 
 Save the lines below as `explore_nodes.py`, a scratch file you do not submit, and run `python3 explore_nodes.py`:
 
@@ -338,48 +338,49 @@ Save the lines below as `explore_nodes.py`, a scratch file you do not submit, an
 from dataclasses import dataclass, field
 from typing import Any, List
 
+# Practice classes with no connection to the AST, so the real node classes stay yours to write.
 @dataclass
-class Num:
-    value: Any
-    line: int = field(default=0, compare=False)
+class Coin:
+    amount: Any
+    year: int = field(default=0, compare=False)
 
 @dataclass
-class BinOp:
-    op: str
-    left: Any
-    right: Any
+class Pair:
+    label: str
+    first: Any
+    second: Any
 
 @dataclass
-class Block:
-    stmts: List[Any] = field(default_factory=list)
+class Purse:
+    coins: List[Any] = field(default_factory=list)
 
-typed = Num(8)               # what a test writes
-parsed = Num(8, line=3)      # what the parser builds
-print(typed)
-print(parsed)
-print(typed == parsed)       # line is ignored by ==
-print(Num(8) == Num(9))      # value is not
-tree = BinOp("+", Num(2), Num(3))
-print(tree)
-print(tree.op, tree.right.value)
-print(isinstance(tree, BinOp), isinstance(tree, Num))
-print(Block(), Block().stmts is Block().stmts)
+plain = Coin(8)              # like the node a test writes
+dated = Coin(8, year=3)      # like the node the parser builds, with a position
+print(plain)
+print(dated)
+print(plain == dated)        # year is ignored by ==
+print(Coin(8) == Coin(9))    # amount is not
+pair = Pair("+", Coin(2), Coin(3))
+print(pair)
+print(pair.label, pair.second.amount)
+print(isinstance(pair, Pair), isinstance(pair, Coin))
+print(Purse(), Purse().coins is Purse().coins)
 ```
 
 > **You should see.**
 >
 > ```text
-> Num(value=8, line=0)
-> Num(value=8, line=3)
+> Coin(amount=8, year=0)
+> Coin(amount=8, year=3)
 > True
 > False
-> BinOp(op='+', left=Num(value=2, line=0), right=Num(value=3, line=0))
+> Pair(label='+', first=Coin(amount=2, year=0), second=Coin(amount=3, year=0))
 > + 3
 > True False
-> Block(stmts=[]) False
+> Purse(coins=[]) False
 > ```
 >
-> **Predict** before you move on: what would `typed == parsed` print if `line` were declared as plain `line: int = 0`?
+> **Predict** before you move on: what would `plain == dated` print if `year` were declared as plain `year: int = 0`?  Your node classes face the same question with their `line` field.
 
 > **Do this.**
 > 1. Open `ast_nodes.py` and copy in the skeleton below.  Fill in each class's fields by following its `# Step` comments, including `Assign` and `Print`.

@@ -19,11 +19,12 @@ def run_source(source, interp):
     Both run_file and repl go through this helper, so each stage's try is
     written exactly once (Step 3a).
     """
-    # TODO: tree = parse(source), catching LexError -> "Lexical error at line L, col C: ..."
-    #       and ParseError -> "Syntax error at line L, col C: ..."
-    # TODO (Step 4c): check(tree), catching LangTypeError -> "Type error at line L, col C: ..."
-    # TODO: interp.eval_node(tree), catching LangError subclasses -> "Runtime error at line L: ..."
-    # TODO: a BreakSignal or ContinueSignal that escapes -> "Runtime error at line L: 'break' outside loop"
+    # TODO: Lex stage: turn the source into a tree; a LexError becomes "Lexical error at line L, col C: ..."
+    #       and a ParseError becomes "Syntax error at line L, col C: ..."
+    # TODO (Step 4c): Type stage: check the whole tree; a LangTypeError becomes "Type error at line L, col C: ..."
+    # TODO: Run stage: evaluate the tree; any LangError becomes "Runtime error at line L: ..."
+    # TODO: a BreakSignal that escapes -> "Runtime error at line L: 'break' outside loop";
+    #       a ContinueSignal that escapes -> the same, with 'continue' in place of 'break'
     return None
 
 

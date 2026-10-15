@@ -19,8 +19,8 @@ class TypeEnv:
         self._types = {}
         self._parent = parent
 
-    # TODO: define(name, typ) and lookup(name), same shape as Environment,
-    #       except that lookup returns None for a name no scope declares
+    # TODO: define(name, typ) and lookup(name).  They behave like Environment's, with one
+    #       difference: a name no scope declares has the unknown type None, not an error.
 
 
 def check(node, tenv=None):
@@ -30,11 +30,11 @@ def check(node, tenv=None):
 
     if isinstance(node, Num):
         return "Num"
-    # TODO: Str -> "Str", BoolLit -> "Bool", Var -> tenv.lookup(...), None for an
-    #       undeclared name (the Run stage reports it); every rule skips None
-    # TODO: BinOp: arithmetic needs Num operands; comparisons yield Bool
-    # TODO: LogicOp and UnaryOp("not") need Bool
-    # TODO: Let: check the initializer against type_ann, then tenv.define
-    # TODO: Block: check statements in TypeEnv(parent=tenv)
-    # TODO: call sites: arity, argument types, declared return type
+    # TODO: one rule per node type, following the typing-rules table in Part 4 of the
+    #       assignment page.  The Num rule above is the model.
+    #   - the other literals, and variable references (an undeclared name is unknown, None;
+    #     the Run stage reports it, and every rule skips its check when a side is None)
+    #   - binary, logical, and unary operators: what each requires and what it produces
+    #   - let with a type annotation, and blocks (a block opens a new scope for its body)
+    #   - call sites: arity, argument types, and the declared return type
     raise NotImplementedError(f"no typing rule yet for {type(node).__name__}")

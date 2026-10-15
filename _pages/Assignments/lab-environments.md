@@ -481,7 +481,7 @@ Every step of the program is one of five kinds:
 > **If it fails.**
 > - `NameError: name 'b' is not defined` (or `'c'`): a line uses a block's variable before the `(enter)` line that creates it.  Check that steps 6 and 9 come first and use the names `b` and `c`.
 > - `LangNameError: line 0, col 0: Undefined variable 'z'`: a line after step 13 used a scope outside block B, where `z` lives.  Recheck which block is innermost at that step.
-> - Your run and the `--trace` output disagree on a value: one of your lines used `define` where the program has no `let`, or called a method on the wrong block's variable.  Compare your line for that step with the matching line of `run_trace` in `test_environment.py`.
+> - Your run and the `--trace` output disagree on a value: one of your lines used `define` where the program has no `let`, or called a method on the wrong block's variable.  Find the first step where your values differ from the `--trace` row.  Its chain column shows which scope holds each name, so check whether your line for that step should have created a binding or updated one.
 
 ### Step 2.3: Answer the Two Theory Questions
 

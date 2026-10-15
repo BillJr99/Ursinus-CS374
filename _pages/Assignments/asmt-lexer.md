@@ -567,15 +567,12 @@ print("   two str.replace calls instead:", repr(bad), "<- the \\\\ became \\, an
 # 5. Named groups and lastgroup: every rule in ONE pattern, and the match names its own rule.
 SPEC = [("STR", r"'(?:[^'\\]|\\.)*'"), ("IDENT", r"[A-Za-z_]\w*"), ("WS", r"\s+")]
 MASTER = re.compile("|".join(f"(?P<{name}>{pattern})" for name, pattern in SPEC))
-pos = 0
-while pos < len(source):
-    m = MASTER.match(source, pos)
-    if m.lastgroup != "WS":
-        print(f"5. {m.lastgroup:5} {m.group():12} at {m.start()}")
-    pos = m.end()
+for pos in (0, 3, 4):
+    m = MASTER.match(source, pos)       # try every rule, in order, at one position
+    print(f"5. at {pos}: {m.lastgroup:5} |{m.group()}| ends at {m.end()}")
 ```
 
-> **You should see.** 18 lines, numbered by section.  The shouted column in section 4 is wrapped in `|...|` so you can see exactly what each body became.
+> **You should see.** 15 lines, numbered by section.  The shouted column in section 4, and each lexeme in section 5, is wrapped in `|...|` so you can see exactly where it starts and ends.
 
 ```text
 1. group(0): 'it\'s' | group(1): it\'s | span(0): (4, 11) | span(1): (5, 10)
@@ -590,12 +587,9 @@ while pos < len(source):
    raw 'a\sb'       body a\sb       shouted |aSb|
    raw 'c:\\new'    body c:\\new    shouted |c:\new|
    two str.replace calls instead: 'c:\new' <- the \\ became \, and then that \n became a newline
-5. IDENT say          at 0
-5. STR   'it\'s'      at 4
-5. IDENT then         at 12
-5. STR   'a\sb'       at 17
-5. IDENT then         at 24
-5. STR   'c:\\new'    at 29
+5. at 0: IDENT |say| ends at 3
+5. at 3: WS    | | ends at 4
+5. at 4: STR   |'it\'s'| ends at 11
 ```
 
 **Reading the code.**
@@ -604,7 +598,7 @@ while pos < len(source):
 - **Section 2, alternation.**  `|` has the lowest precedence of any operator, so `if|else|while(?!\w)` means "`if`, *or* `else`, *or* `while` not followed by a word character."  The boundary check guards only the last branch, and `iffy` splits.  Wrap the alternatives in a group, `(?:if|else|while)(?!\w)`, and the check applies to all of them.  If you ever collapse your keyword rules into one pattern, this is the bug waiting for you.
 - **Section 3, non-capturing groups.**  The string body needs parentheses to repeat "an ordinary character *or* a backslash pair" as one unit, but it does not need to remember each repetition.  A capturing inner group adds a group 2 that holds only the *last* repetition (`'s'` here), which is useless and shifts the numbering of anything after it.  `(?:...)` groups without capturing.  That is why the `STRING` rule in Step 2d's JSON is written with `(?:...)`.
 - **Section 4, references and function replacements.**  In the replacement string of `re.sub`, `\1` means "whatever group 1 captured in this match," and the replacement must be a raw string, or Python turns `"\1"` into the control character `\x01` before `re` sees it.  A fixed template cannot look an escape up in a table, so `re.sub` also accepts a *function*: it calls the function once per match with the match object and inserts whatever string the function returns.  `shout` only uppercases the character after the backslash, so `\s` became `S`, not a space.  Your decoder needs a function that turns each escape into the character it stands for.  Because `\\(.)` consumes a backslash *and* the one character after it, a single left-to-right pass pairs every backslash correctly.  Two chained `str.replace` calls do not: the first turns `\\` into `\`, and the second then reads that new backslash as the start of `\n`.
-- **Section 5, named groups and `lastgroup`.**  `(?P<name>...)` names a group.  Joining every rule as `(?P<NAME>pattern)` with `|` builds one master pattern that tries the rules in order (the same priority your `TOKEN_SPEC` loop gives), and `m.lastgroup` reports which named rule matched.  This is an optional alternative to Step 1c's loop over `COMPILED_SPEC`, and it is how the tokenizer example in the Python `re` documentation works.  If you adopt it, write any grouping inside a rule as `(?:...)`, so that only the rule names capture.
+- **Section 5, named groups and `lastgroup`.**  `(?P<name>...)` names a group.  Joining every rule as `(?P<NAME>pattern)` with `|` builds one master pattern that tries the rules in order (the same priority your `TOKEN_SPEC` loop gives), and `m.lastgroup` reports which named rule matched.  The demo matches at three fixed positions: position 3 is the space after `say`, so `WS` wins there.  It never moves forward on its own.  A tokenizer built this way still needs the loop you write in Step 1c: start at 0, match, skip whitespace and comments, record the rest, and continue from where the match ended.  This is an optional alternative to Step 1c's loop over `COMPILED_SPEC`, and it is how the tokenizer example in the Python `re` documentation works.  If you adopt it, write any grouping inside a rule as `(?:...)`, so that only the rule names capture.
 
 > **Now try this.**
 > 1. Add `'bad\qescape'` to `source`.  Predict what section 4 prints for it before you run it.  The toy language has no `\q` escape.  Your decoder will look each escape up in a table of known ones.  Which behavior do you want for an unknown escape in your own lexer: keep it as written, or raise an error?  If you raise, where does Part 3 want the error reported?
