@@ -168,7 +168,7 @@ Token(type='LET', value='let', line=1, col=1, decoded=None)
 
 > **Watch out: the `not` keyword.**  Part 2 asks you to build `parse_not()`, which means your lexer has to emit a distinct `NOT` token.  The Lexer assignment's minimum token table does not include one, so if you are using your own lexer, check for it now and add a `NOT` rule ahead of `IDENT` if it is missing.  Without it, `not ok` lexes as two identifiers and `parse_not()` never fires, which shows up much later as a mystifying parse error.  The reference lexer already has `NOT`.
 
-> **Watch out: four tokens the reference lexer does not have.**  The grammar's `fun_stmt`, `call`, and `( COLON type )?` productions use `FUN`, `COLON`, `ARROW`, and `COMMA`, and `unary` mentions `BANG`.  The reference lexer emits none of these.  `fun` lexes as an `IDENT`, and `:` or `,` stops the lexer with a `LexError`.  Part 1 lets you implement those productions last, so this does not block anything until then.  When you reach them, add the missing rules to the lexer (`FUN` before `IDENT`, and `ARROW` for `->` before `MINUS`), and note the change in your readme as a lexer fix.  The Interpreter assignment's Step 4a makes the same kind of change for `COLON`.
+> **Watch out: four tokens the reference lexer does not have.**  The grammar's `fun_stmt`, `call`, and `( COLON type )?` productions use `FUN`, `COLON`, `ARROW`, and `COMMA`, and `unary` mentions `BANG`.  The reference lexer emits none of these.  `fun` lexes as an `IDENT`, and `:` or `,` stops the lexer with a `LexError`.  Part 1 lets you implement those productions last, so this does not block anything until then.  When you reach them, add the missing rules to the lexer: `FUN` before `IDENT`, and `ARROW` for `->` before `MINUS`.  Note the change in your readme as a lexer fix.  The Interpreter assignment's Step 4a makes the same kind of change for `COLON`.
 
 > **Time budget.** Part 0 takes about forty minutes with pencil and paper.  The rest is the most substantial assignment of the semester and has one of the longest windows.  You arrive holding the grammar you wrote in the Grammar and Derivations Workshop, which is most of Part 1 already done, so Part 1 here is refinement and justification rather than a blank page.  Direction B budgets roughly 25-35 hours end to end; the core direction is smaller but still fills the window, so start Part 1 the week the assignment goes out.  Part 4 adds about four to six hours on top of whichever direction you took, and it is the one part you can work on in parallel, because it depends on the class activity rather than on your own parser.
 
@@ -739,7 +739,7 @@ Each function whose body is only a `# TODO` needs a `pass` (or its real code) be
 |---|---|
 | finish `parse_let_stmt` | `expect(lexer, "EQ")`, then `value = parse_expr(lexer)`, then `expect(lexer, "SEMICOLON")`.  `expect` returns the token it consumed, which is why `name.value` holds the variable's name. |
 | `parse_assign_stmt`, `parse_print_stmt`, `parse_while_stmt` | The same sequence of `expect` and `parse_...` calls, read straight off each grammar rule from left to right.  A terminal becomes `expect(lexer, "...")`; a non-terminal becomes a call. |
-| the `parse_block` loop | `while lexer.peek().type not in ("RBRACE", "EOF"):` then `stmts.append(parse_stmt(lexer))`.  Stopping at `EOF` too means an unclosed block reports `expected RBRACE, found EOF`, which is the honest message. |
+| the `parse_block` loop | `while lexer.peek().type not in ("RBRACE", "EOF"):` then `stmts.append(parse_stmt(lexer))`.  Stopping at `EOF` too means an unclosed block reports `expected RBRACE, found EOF`, which names the real problem. |
 | `parse_if_stmt` | After the then-block, `if lexer.peek().type == "ELSE":`, then `lexer.advance()`, then an inner `if lexer.peek().type == "IF":` that chooses between the two calls. |
 | `parse_stmt` dispatch | One `if tok.type == "...": return parse_..._stmt(lexer)` per statement form, with `IDENT` going to `parse_assign_stmt` and `LBRACE` to `parse_block`.  Until you write `parse_fun_stmt`, add `if tok.type == "FUN":` that raises `ParseError("a statement (fun is not implemented yet)", tok.type, tok.line, tok.col)`. |
 | `parse_program` | `stmts = []`, then `while lexer.peek().type != "EOF": stmts.append(parse_stmt(lexer))`, then `return Program(stmts)`. |
@@ -1038,7 +1038,7 @@ def test_round_trip_fixed():
 
 Every `ParseError` must state what token type was expected, what token type was found, and the line and column of the offending token, for example `ParseError at line 3, col 12: expected SEMICOLON, found RBRACE`.  Those four facts stay available as the `expected`, `found`, `line` and `col` attributes of the exception, as in the Step 2a skeleton, so that a test can assert on the position without pattern-matching the English.
 
-> **Watch out.** If your Lexer's `expect()` raises the lexer's own error type, catch it in a small helper in `parser.py` and re-raise it as a `ParseError` with the same line and column, so that every error the parser reports has one shape.  The `expect` helper in the Step 2a skeleton already does this job a simpler way: it checks the peeked token itself and raises a `ParseError`, so the lexer's `expect` never runs.
+> **Watch out.** If your Lexer's `expect()` raises the lexer's own error type, catch it in a small helper in `parser.py` and re-raise it as a `ParseError` with the same line and column, so that every error the parser reports has one shape.  The `expect` helper in the Step 2a skeleton does this job a simpler way.  It checks the peeked token itself and raises a `ParseError`, so the lexer's `expect` never runs.
 
 **You write:** a scratch file, `try_errors.py`, and the ten messages in `readme.md`.
 **You run:** `python3 try_errors.py`
@@ -1350,13 +1350,16 @@ def goto(state, symbol):
 > T -> T . * F
 > ```
 >
->   This is the activity's `I2`, and it is the whole precedence story in one state.  It holds a completed item, which says reduce, and an item expecting more input, which says shift the `*`.  The lookahead token decides which fires.
+> This is the activity's `I2`, and it is the whole precedence story in one state.  It holds a completed item, which says reduce, and an item expecting more input, which says shift the `*`.  The lookahead token decides which fires.
 
 > **If it fails.** Three or more items means you took the closure of items whose dot now sits before a terminal.  Closure adds nothing in that case, so the extra items came from a bug in Step 4a.
 
 ### Step 4c: Build the canonical collection
 
 Now enumerate every reachable state.  Start from `I0`, and for every state and every grammar symbol, compute `goto`; each new set becomes a new state.  Keep going until no new states appear.  Number states in discovery order so that your numbering matches the activity's.
+
+**You write:** `lr.py` - `build_states`, the `show_state` helper below it, and the Step 4c block in `main`.
+**You run:** `python3 lr.py`
 
 ```python
 def build_states():
@@ -1369,7 +1372,7 @@ def build_states():
     states = [start]
     index = {start: 0}
     transitions = {}
-    symbols = ["num", "+", "*", "(", ")", "E", "T", "F"]
+    symbols = ["E", "T", "F", "num", "(", "+", "*", ")"]   # this order numbers states 0-7 as the activity does
     worklist = [0]
     while worklist:
         i = worklist.pop(0)
@@ -1381,11 +1384,50 @@ def build_states():
             #       and add that index to the worklist. Then record
             #       transitions[(i, symbol)] = index[target].
     return states, transitions
+
+
+def show_state(state):
+    """Render a state as its items on one line, sorted, separated by ' , '."""
+    return " , ".join(sorted(show_item(item) for item in state))
 ```
 
-> **Do this.** Print how many states you found, then print the item sets for states 0 through 4 and 6 through 9.
+| `# TODO` | How to write it |
+|---|---|
+| a new state | `if target not in index:`, then `index[target] = len(states)`, `states.append(target)`, and `worklist.append(index[target])`.  Set the index before you append, so the new state's number is the old length of the list. |
+| the edge | After that `if`, and for old and new states alike: `transitions[(i, symbol)] = index[target]`. |
 
-> **You should see.** Twelve states.  States 0, 1, 2, 3, 4, 6, 7, 8, and 9 must match the activity's item-set table item for item.  Your state 5 and up may be numbered differently from the activity if you walk symbols in a different order; if so, say which of your states corresponds to each of the activity's in your readme rather than renumbering by hand.
+`worklist.pop(0)` takes the oldest state first, so states are processed in the order they were found.  That order, together with the order of `symbols`, fixes every state number.
+
+> **Do this.** Print how many states you found, then print the item set of every state.  Add this block to the end of `main`:
+
+```python
+    print("\n== Step 4c: canonical collection ==")
+    states, transitions = build_states()
+    print(len(states), "states")
+    for i, state in enumerate(states):
+        print(f"I{i}: {show_state(state)}")
+```
+
+> **You should see.** Twelve states:
+>
+> ```text
+> == Step 4c: canonical collection ==
+> 12 states
+> I0: E -> . E + T , E -> . T , E' -> . E , F -> . ( E ) , F -> . num , T -> . F , T -> . T * F
+> I1: E -> E . + T , E' -> E .
+> I2: E -> T . , T -> T . * F
+> I3: T -> F .
+> I4: F -> num .
+> I5: E -> . E + T , E -> . T , F -> ( . E ) , F -> . ( E ) , F -> . num , T -> . F , T -> . T * F
+> I6: E -> E + . T , F -> . ( E ) , F -> . num , T -> . F , T -> . T * F
+> I7: F -> . ( E ) , F -> . num , T -> T * . F
+> I8: E -> E . + T , F -> ( E . )
+> I9: E -> E + T . , T -> T . * F
+> I10: T -> T * F .
+> I11: F -> ( E ) .
+> ```
+>
+> States 0 through 7 match the activity's item-set table item for item.  From state 8 on, the numbering differs.  No order of `symbols` with this worklist reproduces the activity's numbers for all of its states, so expect to document a mapping.  Your `I9` holds the activity's `I8` items, and your `I10` holds the activity's `I9` items.  Your `I8` and `I11` are the two parenthesis states, which the activity's table does not print.  Write that correspondence in your readme rather than renumbering by hand.  If you walk the symbols in a different order, your numbers change again.  The rule stays the same: match each of your states to the activity's by its items.
 
 > **If it fails.**
 > - Fewer than twelve states: you are probably comparing states with `==` on a `set` rather than keying a `dict` by `frozenset`, so equal states are being treated as distinct or as duplicates.
@@ -1398,9 +1440,74 @@ An SLR (Simple LR) parser reduces by a completed item on exactly the tokens that
 
 Compute FIRST first, then FOLLOW, both as fixed-point loops.  Seed `FOLLOW(E')` with `$`.
 
-> **Do this.** Print `FOLLOW(E)`, `FOLLOW(T)`, and `FOLLOW(F)`.
+**You write:** `lr.py` - `first_sets` and `follow_sets`, and the Step 4d block in `main`.
+**You run:** `python3 lr.py`
 
-> **You should see.** `FOLLOW(E) = { + ) $ }` and `FOLLOW(T) = FOLLOW(F) = { * + ) $ }`, which is what the activity prints.
+Both functions return a `dict` from each non-terminal to a `set` of terminals.  `FIRST(A)` is the set of terminals that can begin a string derived from `A`.  `FOLLOW(A)` is the set of terminals, plus `$`, that can come right after `A`.  No production in this grammar has an empty right-hand side, so you never need ε here.  The FIRST of a sequence of symbols is just the FIRST of its first symbol, and the FIRST of a terminal is the terminal itself.
+
+```python
+def first_sets():
+    """Return {nonterminal: set of terminals that can begin it}."""
+    first = {nt: set() for nt in NONTERMINALS}
+    changed = True
+    while changed:
+        changed = False
+        for lhs, rhs in PRODUCTIONS:
+            head = rhs[0]
+            # TODO: new = first[head] if head is a non-terminal, else {head}
+            # TODO: if new holds anything not yet in first[lhs], add it and set changed
+    return first
+
+
+def follow_sets(first):
+    """Return {nonterminal: set of terminals that can follow it}, seeded with $."""
+    follow = {nt: set() for nt in NONTERMINALS}
+    follow["E'"].add("$")
+    changed = True
+    while changed:
+        changed = False
+        for lhs, rhs in PRODUCTIONS:
+            for k, symbol in enumerate(rhs):
+                if symbol not in NONTERMINALS:
+                    continue
+                # TODO: if a symbol comes after position k, new is its FIRST
+                #       (a terminal's FIRST is itself); otherwise new is follow[lhs]
+                # TODO: if new holds anything not yet in follow[symbol], add it and set changed
+    return follow
+```
+
+| `# TODO` | How to write it |
+|---|---|
+| `new` in `first_sets` | `new = first[head] if head in NONTERMINALS else {head}`. |
+| growing a set | `if not new <= first[lhs]:` (the `<=` operator asks "is a subset of"), then `first[lhs] \|= new` and `changed = True`.  `\|=` adds every member of `new` in place. |
+| `new` in `follow_sets` | `if k + 1 < len(rhs):`, then `nxt = rhs[k + 1]` and `new = first[nxt] if nxt in NONTERMINALS else {nxt}`.  Otherwise `symbol` is last in the production, so `new = follow[lhs]`. |
+| growing `follow[symbol]` | The same subset test and `\|=` as in `first_sets`. |
+
+> **Do this.** Print `FOLLOW(E)`, `FOLLOW(T)`, and `FOLLOW(F)`.  Add this block to the end of `main`.  It also sets up the two orders that every table printout below uses:
+
+```python
+    print("\n== Step 4d: FOLLOW ==")
+    follow = follow_sets(first_sets())
+    for nt in NONTERMINAL_ORDER:
+        members = [t for t in TERMINAL_ORDER if t in follow[nt]]
+        print("FOLLOW(" + nt + ") = { " + " ".join(members) + " }")
+```
+
+Put these two lists near the top of `lr.py`, under `TERMINALS`:
+
+```python
+TERMINAL_ORDER = ["num", "*", "+", "(", ")", "$"]   # the activity's column order
+NONTERMINAL_ORDER = ["E", "T", "F"]
+```
+
+> **You should see.** `FOLLOW(E) = { + ) $ }` and `FOLLOW(T) = FOLLOW(F) = { * + ) $ }`, which is what the activity prints:
+>
+> ```text
+> == Step 4d: FOLLOW ==
+> FOLLOW(E) = { + ) $ }
+> FOLLOW(T) = { * + ) $ }
+> FOLLOW(F) = { * + ) $ }
+> ```
 
 > **If it fails.** A missing `)` in all three sets means you never processed production 6, `F -> ( E )`, whose right-hand side is what puts `)` after `E`.  A missing `*` in `FOLLOW(T)` means you did not handle `T -> T . * F`, where `T` is followed directly by a terminal.
 
@@ -1415,6 +1522,9 @@ Read the table straight off the states, using three rules and one refusal.
 
 That fourth rule is the point of this step.  A generator that silently picks one action is hiding the grammar's ambiguity from you, and Step 4g makes you look at what it would have hidden.
 
+**You write:** `lr.py` - `build_tables`, the `show_action` helper, and the Step 4e block in `main`.
+**You run:** `python3 lr.py`
+
 ```python
 def build_tables(states, transitions, follow):
     """Return (action, goto_table, conflicts).
@@ -1424,14 +1534,81 @@ def build_tables(states, transitions, follow):
     conflicts is a list of (state, token, existing_action, proposed_action).
     """
     action, goto_table, conflicts = {}, {}, []
-    # TODO: implement rules 1 through 4 above. When rule 4 fires, append to
-    #       conflicts and leave the existing entry in place.
+
+    def put(i, terminal, act):
+        """Write act into action[i][terminal], or record a conflict (rule 4)."""
+        row = action.setdefault(i, {})
+        # TODO: rule 4 - if `terminal` is already in `row` with a different action,
+        #       append (i, terminal, row[terminal], act) to conflicts; otherwise store act
+
+    for i, state in enumerate(states):
+        for prod_index, dot in sorted(state):
+            lhs, rhs = PRODUCTIONS[prod_index]
+            if dot < len(rhs):
+                # TODO: rule 1 - if rhs[dot] is a terminal, put a shift to transitions[(i, rhs[dot])]
+                pass
+            elif prod_index == 0:
+                # TODO: rule 3 - put ("acc",) on "$"
+                pass
+            else:
+                # TODO: rule 2 - put ("r", prod_index) on every terminal in follow[lhs]
+                pass
+        for nt in NONTERMINAL_ORDER:
+            if (i, nt) in transitions:
+                goto_table.setdefault(i, {})[nt] = transitions[(i, nt)]
     return action, goto_table, conflicts
+
+
+def show_action(act):
+    """Render ("s", 7) as 's7', ("r", 2) as 'r2', and ("acc",) as 'acc'."""
+    return act[0] if act[0] == "acc" else f"{act[0]}{act[1]}"
 ```
 
-> **Do this.** Build the tables and print `conflicts`, then print your ACTION and GOTO rows for states 0, 1, 2, 3, 4, 6, 7, 8, and 9.
+| `# TODO` | How to write it |
+|---|---|
+| rule 4, inside `put` | `if terminal in row and row[terminal] != act:` then `conflicts.append((i, terminal, row[terminal], act))`; `else:` then `row[terminal] = act`.  Writing the same action twice is not a conflict, which is why the test compares the two actions. |
+| rule 1 | `symbol = rhs[dot]`; `if symbol in TERMINALS:` then `put(i, symbol, ("s", transitions[(i, symbol)]))`.  A dot before a non-terminal adds nothing to ACTION; the GOTO loop below the item loop handles it. |
+| rule 3 | `put(i, "$", ("acc",))`.  The comma inside `("acc",)` makes it a one-element tuple. |
+| rule 2 | `for terminal in sorted(follow[lhs]):` then `put(i, terminal, ("r", prod_index))`.  `sorted` only fixes the order in which conflicts are found. |
 
-> **You should see.** An empty conflict list, and rows that match the activity's ACTION/GOTO table cell for cell.  Row 2 is the one to read twice: `s7` on `*`, `r2` on `+` and on `$`.  That single row is where `*` binds tighter than `+`, and nothing decided it at parse time.  It fell out of the item set.
+> **Do this.** Build the tables and print `conflicts`, then print your ACTION and GOTO rows.  Add this block to the end of `main`:
+
+```python
+    print("\n== Step 4e: ACTION and GOTO ==")
+    action, goto_table, conflicts = build_tables(states, transitions, follow)
+    print("conflicts:", conflicts)
+    print("state | " + " ".join(f"{t:>4}" for t in TERMINAL_ORDER)
+          + " | " + " ".join(f"{n:>3}" for n in NONTERMINAL_ORDER))
+    for i in range(len(states)):
+        row, gotos = action.get(i, {}), goto_table.get(i, {})
+        cells = [show_action(row[t]) if t in row else "" for t in TERMINAL_ORDER]
+        targets = [str(gotos[n]) if n in gotos else "" for n in NONTERMINAL_ORDER]
+        line = (f"{i:>5} | " + " ".join(f"{c:>4}" for c in cells)
+                + " | " + " ".join(f"{g:>3}" for g in targets))
+        print(line.rstrip())
+```
+
+> **You should see.** An empty conflict list, and rows that match the activity's ACTION/GOTO table cell for cell, once you apply the Step 4c state mapping:
+>
+> ```text
+> == Step 4e: ACTION and GOTO ==
+> conflicts: []
+> state |  num    *    +    (    )    $ |   E   T   F
+>     0 |   s4             s5           |   1   2   3
+>     1 |             s6            acc |
+>     2 |        s7   r2        r2   r2 |
+>     3 |        r4   r4        r4   r4 |
+>     4 |        r5   r5        r5   r5 |
+>     5 |   s4             s5           |   8   2   3
+>     6 |   s4             s5           |       9   3
+>     7 |   s4             s5           |          10
+>     8 |             s6       s11      |
+>     9 |        s7   r1        r1   r1 |
+>    10 |        r3   r3        r3   r3 |
+>    11 |        r6   r6        r6   r6 |
+> ```
+>
+> The activity's table shows only the `num`, `*`, `+`, and `$` columns, and only its states 0 to 4 and 6 to 9.  Your rows 0 to 7 match it directly.  Your row 9 is its row 8, and your row 10 is its row 9.  The GOTO targets in your rows 6 and 7 read `9` and `10` where the activity's read `8` and `9`, for the same reason.  Row 2 is the one to read twice: `s7` on `*`, `r2` on `+` and on `$`.  That single row is where `*` binds tighter than `+`, and nothing decided it at parse time.  It fell out of the item set.
 
 > **If it fails.** Reduce actions appearing on every terminal rather than only on FOLLOW tokens means you skipped Step 4d and are reducing unconditionally.  That produces a table that parses valid input correctly and accepts nonsense too.
 
@@ -1446,18 +1623,116 @@ Keep a stack of state numbers alongside a stack of symbols, and read one token o
 - **Accept** ends the loop.
 - Anything else is a syntax error.  Name the state and the token in the message.
 
-> **Do this.** Parse `num + num * num` and print the stack-input-action table as you go, one row per step.
+**You write:** `lr.py` - `drive`, the `show_production` helper, and the Step 4f block in `main`.
+**You run:** `python3 lr.py`, then `python3 lr.py > lr_output.txt` to save the run you submit.
 
-> **You should see.** A trace whose shape matches the activity's worked `2 + 3` table, extended.  Confirm two things in it: `num` is reduced through `F -> num` and `T -> F` before the `+` is shifted, and the reduction `T -> T * F` fires **before** `E -> E + T`, which is precedence happening in front of you.
+The driver's input is a list of token names, not source text, and it ends with the end marker `$`.  For `num + num * num`, that list is `"num + num * num $".split()`, which is `['num', '+', 'num', '*', 'num', '$']`.  The three `print` lines in the skeleton are complete, so every row of your trace has the same layout as the one below.
+
+```python
+def show_production(p):
+    """Render production p as 'T -> T * F'."""
+    lhs, rhs = PRODUCTIONS[p]
+    return f"{lhs} -> {' '.join(rhs)}"
+
+
+def drive(tokens, action, goto_table):
+    """Shift-reduce parse a list of token names ending in "$", printing one row per step."""
+    states = [0]       # the state stack; its top is the current state
+    symbols = []       # the symbol stack, printed in the Stack column
+    pos = 0            # tokens[pos] is the lookahead
+    while True:
+        state = states[-1]
+        token = tokens[pos]
+        act = action.get(state, {}).get(token)
+        stack_text = " ".join(symbols)
+        input_text = " ".join(tokens[pos:])
+        if act is None:
+            print(f"{stack_text:<14}| {input_text:<18}| error")
+            raise SyntaxError(f"no action in state {state} on token {token!r}")
+        if act[0] == "s":
+            print(f"{stack_text:<14}| {input_text:<18}| shift")
+            # TODO: push act[1] and token onto the two stacks, and move pos forward
+        elif act[0] == "r":
+            lhs, rhs = PRODUCTIONS[act[1]]
+            print(f"{stack_text:<14}| {input_text:<18}| reduce {show_production(act[1])}")
+            # TODO: pop len(rhs) entries from both stacks, then push lhs and
+            #       its GOTO target from the newly exposed state
+        else:
+            print(f"{stack_text:<14}| {input_text:<18}| accept")
+            return True
+```
+
+| `# TODO` | How to write it |
+|---|---|
+| shift | `states.append(act[1])`, `symbols.append(token)`, and `pos += 1`. |
+| reduce, the pop | `del states[len(states) - len(rhs):]` and the same for `symbols`.  The slice removes the last `len(rhs)` entries.  Every right-hand side here has at least one symbol, so the slice never removes everything by accident. |
+| reduce, the push | `states.append(goto_table[states[-1]][lhs])` and `symbols.append(lhs)`.  Read `states[-1]` after the pop: that is the newly exposed state. |
+
+> **Do this.** Parse `num + num * num` and print the stack-input-action table as you go, one row per step.  Add this block to the end of `main`:
+
+```python
+    print("\n== Step 4f: parse num + num * num ==")
+    drive("num + num * num $".split(), action, goto_table)
+```
+
+> **You should see.** A trace whose shape matches the activity's worked `2 + 3` table, extended:
+>
+> ```text
+> == Step 4f: parse num + num * num ==
+>               | num + num * num $ | shift
+> num           | + num * num $     | reduce F -> num
+> F             | + num * num $     | reduce T -> F
+> T             | + num * num $     | reduce E -> T
+> E             | + num * num $     | shift
+> E +           | num * num $       | shift
+> E + num       | * num $           | reduce F -> num
+> E + F         | * num $           | reduce T -> F
+> E + T         | * num $           | shift
+> E + T *       | num $             | shift
+> E + T * num   | $                 | reduce F -> num
+> E + T * F     | $                 | reduce T -> T * F
+> E + T         | $                 | reduce E -> E + T
+> E             | $                 | accept
+> ```
+>
+> Confirm two things in it: `num` is reduced through `F -> num` and `T -> F` before the `+` is shifted, and the reduction `T -> T * F` fires **before** `E -> E + T`, which is precedence happening in front of you.
 
 > **If it fails.**
 > - An immediate error in state 0: your lookahead is the raw character `'n'` rather than the token `num`.  This driver consumes token names, not text.
 > - A reduce that pops the wrong number of symbols: use `len(rhs)` of the production being reduced, not the dot position.
-> - An `IndexError` on the state stack after a reduce: you popped before reading the exposed state.  Pop first, then look at the new top, then apply GOTO.
+> - A `KeyError` from `goto_table` after a reduce: you read the exposed state before you popped.  Pop first, then look at the new top, then apply GOTO.
+
+Once the trace is right, save the whole run with `python3 lr.py > lr_output.txt`.  Nothing prints to the screen, because `>` sends the output to the file.  Open `lr_output.txt` and check that it holds the six blocks from Steps 4a to 4f, in order.  That file is the `lr_output.txt` deliverable, so make it from the unmodified grammar, before Step 4g.
 
 ### Step 4g: Make it report a conflict
 
 Now break the grammar on purpose and watch your own code diagnose it.
+
+**You write:** a scratch file, `try_conflicts.py`, and the conflict report in the Part 4 section of `readme.md`.
+**You run:** `python3 try_conflicts.py 1`, then `python3 try_conflicts.py 2`.
+
+You can make each edit to `PRODUCTIONS` in `lr.py` by hand and undo it afterward.  This scratch file makes the same edit for one run only, so `lr.py` and `lr_output.txt` stay as they are.  It works because `build_states`, `follow_sets`, and `build_tables` all read the module's `PRODUCTIONS` list each time they run:
+
+```python
+import sys
+import lr
+
+EXTRA = {"1": ("E", ["E", "*", "T"]), "2": ("T", ["num"])}
+lr.PRODUCTIONS.append(EXTRA[sys.argv[1]])      # change the grammar for this run only
+print("added production", len(lr.PRODUCTIONS) - 1, ":", lr.show_production(len(lr.PRODUCTIONS) - 1))
+
+states, transitions = lr.build_states()
+follow = lr.follow_sets(lr.first_sets())
+action, goto_table, conflicts = lr.build_tables(states, transitions, follow)
+print("states:", len(states), " conflicts:", len(conflicts))
+for state, token, old, new in conflicts:
+    kind = "reduce-reduce" if old[0] == new[0] == "r" else "shift-reduce"
+    print(f"  state {state}, token {token!r}: {kind} ({lr.show_action(old)} vs {lr.show_action(new)})")
+    for item in sorted(states[state], key=lr.show_item):
+        print("      " + lr.show_item(item))
+```
+
+> **You should see.** A first line naming the added production, for example `added production 7 : E -> E * T`, then a count line, then one line per conflict in the form `state N, token 'X': kind (action vs action)`, each followed by the items of that state.  The list may name more than one state, and one state may conflict on several tokens.  Read the items under each line: they are the two items your readme names.
 
 > **Do this.**
 > 1. Add the production `("E", ["E", "*", "T"])` to `PRODUCTIONS`, rebuild the states and tables, and print the conflict list.
@@ -1466,6 +1741,11 @@ Now break the grammar on purpose and watch your own code diagnose it.
 > 4. Say in one sentence which of the two conflicts a precedence declaration could resolve, and which one needs the grammar rewritten.
 
 > **You should see.** A shift-reduce conflict from the first edit and a reduce-reduce conflict from the second.  These are the same two conflict types you explained on paper in Step 1c; now your own table generator finds them.
+
+> **If it fails.**
+> - `conflicts: 0` with more than twelve states: `put` stores the new action over the old one.  Check rule 4 in Step 4e.
+> - `states: 12  conflicts: 0`: the grammar did not change.  Check that the `added production` line printed, and that you ran `try_conflicts.py`, not `lr.py`.
+> - `IndexError: list index out of range` on `sys.argv[1]`: you left off the `1` or `2` after the file name.
 
 > **Compare.** If you took Direction A, run `bison -v` on the equivalent grammar and open the `.output` file.  Your conflict and the state Bison names should be the same conflict in the same item set.  Say so in your readme, with the state number from each.
 
@@ -1494,13 +1774,22 @@ In this direction the LALR machinery of Bison (C) or PLY (Python) replaces the h
 
 Write `parser.y` (Bison) or the PLY grammar module for the full language of Part 1.  Declare a `%union` (Bison) with fields for numeric values, strings, and your AST node pointer, and type your tokens accordingly (`%token <dval> NUMBER`, `%token <sval> IDENT STRING`, and so on).  Declare operator associativity and precedence with `%left`, `%right`, and `%nonassoc`; comparisons are `%nonassoc`, which enforces the same no-chaining rule the core direction's grammar encodes structurally.
 
+**You write:** `parser.y` (Bison) or your PLY grammar module - the `%union`, the token declarations, and the `%left`/`%right`/`%nonassoc` lines.
+**You run:** `bison -v -d parser.y` (Bison), or one run of your PLY module, so that `yacc.yacc()` writes `parser.out`.
+
 ### Step A.2: Write Conflict-Free Productions
 
 Write the productions bottom-up, tightest binding first: `primary` -> `unary` -> `muldiv` -> `addsub` -> `comparison` -> `and` -> `or`, plus the statement, block, and program rules.  Your precedence declarations must resolve every shift-reduce conflict: run `bison -v` (or inspect PLY's `parser.out`) and confirm zero unresolved conflicts.  The dangling-else resolution of Step 1b still applies.  Document how the generator resolves it (the default shift is exactly "else binds to the nearest if") and cite the relevant state in the `.output`/`parser.out` automaton in your readme.
 
+**You write:** the productions in `parser.y` or your PLY module.
+**You run:** `bison -v -d parser.y`, then `grep -i conflict parser.output` (PLY: `grep -i conflict parser.out`).  No output from `grep` means no conflicts.
+
 ### Step A.3: Write the AST-Building Actions and Verify the Trees
 
 Each production's semantic action builds exactly one AST node and nothing more; do not evaluate anything inside the parser.  In Python/PLY, build the same dataclass nodes from Step 2a; in C, use a tagged-union node struct with one constructor function per node type.  The syntax/semantics boundary is part of the grade.  The same tree-shape tests apply: `2 + 3 * 4` must build the multiplication under the addition, `8 / 4 / 2` must left-associate, and the worked `while` example of Step 2d must produce the same abbreviated tree.  Part 3 (pretty-printer, unparser, round-trip verification, and positioned `ParseError`s using the token's line/column from your lexer) applies unchanged.
+
+**You write:** one semantic action per production, plus the same tree-shape tests as the core direction.
+**You run:** your tree-shape tests (`python3 test_parser.py` for PLY, or your `make test` target for Bison).
 
 ---
 
@@ -1518,9 +1807,15 @@ In this direction you parse a language in real production use: the **mini-notati
 
 Write the complete EBNF grammar for your extended mini-notation (sequences, rests, groups, `*`, `/`, `?`, plus the constructs below), with one sentence per non-terminal explaining its placement.  Your readme cites specific states from the `.output` automaton to show where each new construct lives.
 
+**You write (in `readme.md` under a `## Grammar` heading):** the EBNF grammar for your extended mini-notation, one sentence per non-terminal.
+**You run:** `bison -v mininote.y` in your copy of `files/examples/mininote/`, which writes `mininote.output`.
+
 ### Step B.2: Complete the Scaffolded Cases
 
 The starter's evaluator leaves `SLOW` and `DEGRADE` unimplemented.  `slow n` stretches its child across $$n$$ cycles, which forces a design change: the evaluator signature carries no cycle number, so extend it (or derive the cycle from the span) and document your choice.  Gate `DEGRADE` on `rand() < RAND_MAX / 2` with `srand(42)` called exactly once, so grading is reproducible.
+
+**You write:** the `N_SLOW` and `N_DEGRADE` cases in `eval.c`, and the one `srand(42)` call.
+**You run:** `make`, then `echo "bd/2 sn" | ./mininote` and `echo "hh*8?" | ./mininote` (three times).
 
 > **Paste into your submission.** A transcript of `bd/2 sn` on cycles 0 and 1, with a sentence explaining why they differ, and three identical consecutive runs of `hh*8?`.
 
@@ -1534,6 +1829,9 @@ $$
 
 Add `LANGLE`/`RANGLE` tokens, an `atom` production, an `N_ALT` node, and the evaluator case.  If you introduce a conflict along the way, keep the broken `.output` excerpt and describe in your readme how you diagnosed it.
 
+**You write:** `LANGLE`/`RANGLE` in `mininote.l`, the `atom` production in `mininote.y`, `N_ALT` in `ast.h` and `ast.c`, and its case in `eval.c`.
+**You run:** `make`, then `echo "bd <sn cp hh>" | ./mininote`.
+
 > **Paste into your submission.** A transcript of `bd <sn cp hh>` across cycles 0-3, demonstrating rotation and wraparound.
 
 ### Step B.4: Add Euclidean Rhythms
@@ -1546,17 +1844,26 @@ $$
 
 Verify the rule by hand for $$E(3,8)$$ (steps 0, 3, 6 -> `x..x..x.`) and one other $$(k, n)$$ pair before implementing, and include the hand-verification in your readme with a two-or-three-sentence argument for why the rule yields exactly $$k$$ onsets.  Syntactically, Euclid is a postfix modifier among the `term` productions: `term LPAREN NUMBER COMMA NUMBER RPAREN`.
 
+**You write:** the hand-verification in `readme.md`, then the Euclid `term` production and its evaluator case.
+**You run:** `make`, then `echo "bd(3,8)" | ./mininote` and `echo "bd(5,8)" | ./mininote`.
+
 > **Paste into your submission.** Transcripts of `bd(3,8)` and `bd(5,8)`, each matching its hand-computed onset set.
 
 ### Step B.5: Add Polymeter
 
 `{a b, c d e}` runs its subsequences simultaneously at a common step rate, so different lengths drift and realign; `{a b, c d e}%4` fixes four steps per cycle.  Specify the semantics yourself, precisely, in displayed-equation style before writing code.  The specification is a graded artifact, and discovering that your first draft was ambiguous is an intended outcome.  Use strudel.cc to interrogate the corner cases (what happens on cycle 1? which subsequence sets the default step count?).  Add the brace/comma/percent tokens, the productions, an `N_POLY` node, and your specification's evaluator case.
 
+**You write:** the polymeter specification in `readme.md` first, then the tokens, productions, `N_POLY` node, and evaluator case.
+**You run:** `make`, then `echo "{bd sn, hh hh hh}" | ./mininote`.
+
 > **Paste into your submission.** A transcript of `{bd sn, hh hh hh}` across cycles 0-2, annotated to show drift and realignment.
 
 ### Step B.6: Validate Against the Reference (Part 3 equivalent)
 
 In place of the unparser and round-trip verification, deliver a tree printer (the pretty-printer requirement, unchanged), location-prefixed parse errors, and a validation table of at least eight patterns that together exercise every feature, including at least two that nest new constructs inside one another (`<bd(3,8) sn>`, `{bd <sn cp>, hh*2}`).  For each pattern, record your evaluator's event list against the spans Strudel highlights at strudel.cc, and investigate every discrepancy to a conclusion: grammar difference, semantic difference, or bug (yours or, occasionally and delightfully, theirs).  The Hypothesis generator of Step 3e, applied to your pattern AST, completes this part.
+
+**You write (in `readme.md` under a `## Validation` heading):** the validation table of at least eight patterns.
+**You run:** `make test`, plus each table pattern at strudel.cc.
 
 Deliverables for this direction use the same ZIP-and-readme shape as the core direction: complete source (`.l`, `.y`, `.c`, `.h`, `Makefile`, or the PLY equivalents), the generated `.output`/`parser.out` automaton, a test transcript regenerable via `make test`, and a readme containing the EBNF grammar, the hand-derivations, the polymeter specification, and the validation table.  Fix random seeds and list toolchain versions (`flex --version`, `bison --version`, `gcc --version`) for reproducibility.  Two useful resources: Levine's *flex & bison* (O'Reilly, 2009), particularly the conflict-diagnosis chapters, and Toussaint's "The Euclidean Algorithm Generates Traditional Musical Rhythms" (*BRIDGES* 2005).
 
