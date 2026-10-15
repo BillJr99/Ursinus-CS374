@@ -161,7 +161,11 @@ For example, `$$\underline{(\lambda x.\, x)\ y} \to_\beta y$$` renders as $$\und
 
 ---
 
-## Notation and a Worked Reduction
+## Refresher on the Lambda Calculus
+
+This section collects the notation, the line format, and the Church encodings that every part of the lab uses.  Read it before Part 0, and come back to it whenever a later step points here.
+
+### Notation and a Worked Reduction
 
 Two conventions from the readings do most of the work.  Application associates to the left, so $$f\ a\ b$$ means $$(f\ a)\ b$$.  The body of a lambda extends as far right as it can, so $$\lambda x.\, x\ y$$ means $$\lambda x.\, (x\ y)$$.  Here is a term that reduces to normal form in three steps, with the contracted redex underlined and a justification after each line.  This is the format I want to see in your work.
 

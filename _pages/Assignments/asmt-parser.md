@@ -382,12 +382,15 @@ print(Purse(), Purse().coins is Purse().coins)
 >
 > **Predict** before you move on: what would `plain == dated` print if `year` were declared as plain `year: int = 0`?  Your node classes face the same question with their `line` field.
 
-> **Do this.**
-> 1. Open `ast_nodes.py` and copy in the skeleton below.  Fill in each class's fields by following its `# Step` comments, including `Assign` and `Print`.
-> 2. Add `Str`, `BoolLit`, and `LogicOp` if your design uses them separately from `BinOp` and `UnaryOp`, and add `FunDef` and `Call` nodes for the `fun_stmt` and `call` productions, with fields you can justify.
-> 3. Open `parser.py` and copy in the skeleton that follows the dataclasses.  Every parsing function takes the lexer and returns one node, and `ParseError` carries the position of the token that went wrong (Step 3d makes that a requirement).
+You write `ast_nodes.py` in two pieces, the expression nodes and then the statement nodes, and check each piece before you go on.  Then `parser.py` grows one piece at a time: its two helpers, the worked `parse_muldiv`, and the first two parsing functions, which Step 2a.5 checks together through `parse_muldiv` before adding the `parse` entry point (which starts working in Step 2c).
 
 Field order matters.  The tests build nodes positionally, as in `BinOp("+", Num(2), Num(3))`, so declare the fields in the order the comments list them.
+
+#### Step 2a.1: The expression nodes
+
+> **Do this.**
+> 1. Open `ast_nodes.py` and copy in the skeleton below: the imports and the four expression nodes.  Fill in each class's fields by following its `# Step` comments.
+> 2. Run the check that follows it.
 
 ```python
 from dataclasses import dataclass, field
@@ -420,7 +423,31 @@ class UnaryOp:
     # Step 1: a field `op`, either "-" or "not".
     # Step 2: a field `operand`, the node it applies to.
     ...
+```
 
+> **Watch out.** A dataclass compares every field in `==`, including `line`.  The tree-shape tests below write `Num(8)` with the default `line=0`, while a parsed node carries `line=1`.  That is why `Num` and `Var` declare the position field as `line: int = field(default=0, compare=False)`: equality ignores it, and the tests pass.  You will rely on this again for the Hypothesis test in Step 3e.  If you add a `line` field to any other node, declare it the same way.
+
+```bash
+python3 -c "from ast_nodes import *; print(BinOp('-', Num(8), UnaryOp('-', Var('x')))); print(Num(8) == Num(8, line=1), Num(8) == Num(9))"
+```
+
+> **You should see.** A nested tree, printed field by field, and then `True False`: the `line` field prints, but `==` skips it, while `value` still counts.
+>
+> ```text
+> BinOp(op='-', left=Num(value=8, line=0), right=UnaryOp(op='-', operand=Var(name='x', line=0)))
+> True False
+> ```
+>
+> If the second line starts with `False`, `line` was declared as a plain `line: int = 0`, so `==` compares it.
+
+#### Step 2a.2: The statement nodes
+
+> **Do this.**
+> 1. Below the expression nodes in `ast_nodes.py`, copy in the statement nodes and fill in their fields, including `Assign` and `Print`.
+> 2. Add `Str`, `BoolLit`, and `LogicOp` if your design uses them separately from `BinOp` and `UnaryOp`, and add `FunDef` and `Call` nodes for the `fun_stmt` and `call` productions, with fields you can justify.
+> 3. Run the check after the table below.
+
+```python
 @dataclass
 class Let:
     """let NAME = value;"""
@@ -468,8 +495,6 @@ class Program:
     ...
 ```
 
-> **Watch out.** A dataclass compares every field in `==`, including `line`.  The tree-shape tests below write `Num(8)` with the default `line=0`, while a parsed node carries `line=1`.  That is why `Num` and `Var` declare the position field as `line: int = field(default=0, compare=False)`: equality ignores it, and the tests pass.  You will rely on this again for the Hypothesis test in Step 3e.  If you add a `line` field to any other node, declare it the same way.
-
 The `Assign` and `Print` classes follow the `Let` pattern, so each is a few lines.  `Assign` has the same two fields as `Let`, because it also names a variable and gives it a value.  `Print` has one field, `value`, the expression to print.  The `You should see` blocks on this page use exactly these field names.
 
 | Optional node | A shape that works | Notes |
@@ -481,9 +506,27 @@ The `Assign` and `Print` classes follow the `Let` pattern, so each is a few line
 
 The `FunDef` and `Call` shapes are a starting point, not a requirement.  If your Part 0 design differs, keep yours and justify its fields.  In this page's examples, `and` and `or` build `BinOp` nodes; a separate `LogicOp` is equally fine.
 
-#### The parser's two helpers
+```bash
+python3 -c "from ast_nodes import *; p = Program([Let('x', Num(1)), While(Var('x'), Block([Assign('x', Num(0)), Print(Var('x'))]))]); print(p); print(If(Var('x'), Block(), None)); print(Block().stmts is Block().stmts)"
+```
+
+> **You should see.** Each statement prints with the field names the rest of this page uses, and the last line is `False`, because every `Block` gets its own fresh list.  If you gave other nodes a `line` field of their own, they print it too.
+>
+> ```text
+> Program(stmts=[Let(name='x', value=Num(value=1, line=0)), While(condition=Var(name='x', line=0), body=Block(stmts=[Assign(name='x', value=Num(value=0, line=0)), Print(value=Var(name='x', line=0))]))])
+> If(condition=Var(name='x', line=0), then_branch=Block(stmts=[]), else_branch=None)
+> False
+> ```
+>
+> A `ValueError` that mentions a mutable default means `stmts` was declared with a plain `= []`; use `field(default_factory=list)`.
+
+#### Step 2a.3: The parser's two helpers (`ParseError` and `expect`)
 
 The start of `parser.py` holds two helpers that every parsing function leans on.  `ParseError` is the one exception type the parser raises.  `expect` is the parser's version of `Lexer.expect`: it raises a `ParseError` instead of the lexer's `LexError`, so every error the parser reports has one shape (Step 3d).  Call `expect(lexer, "RPAREN")` in your parsing functions, not `lexer.expect("RPAREN")`.  It still reads the stream only through `peek` and `advance`.
+
+> **Do this.**
+> 1. Open `parser.py` and copy in the skeleton below.  Every parsing function you write after it takes the lexer and returns one node, and `ParseError` carries the position of the token that went wrong (Step 3d makes that a requirement).
+> 2. Fill in `ParseError` and `expect` from their `# Step` comments, then run the check after the table.
 
 ```python
 # parser.py
@@ -520,7 +563,17 @@ def expect(lexer: Lexer, token_type: str):
 | raising in `expect` | Raise on the token you *peeked*, not one you consumed.  The peeked token is the one that is wrong, so its line and column are the ones the student needs to see. |
 | returning from `expect` | `lexer.advance()` hands back the token it consumes.  Return that, because callers such as `parse_let_stmt` read the name out of the `IDENT` that `expect` consumed. |
 
-#### Worked example: from a grammar rule to a function
+```bash
+python3 -c "from lexer import Lexer; from parser import expect; lx = Lexer('let )'); print(expect(lx, 'LET').type); expect(lx, 'IDENT')"
+```
+
+> **You should see.** `LET`, the token `expect` consumed and returned, then a traceback whose last line is the positioned error, pointing at the `)` that was peeked:
+>
+> ```text
+> parser.ParseError: ParseError at line 1, col 5: expected IDENT, found RPAREN
+> ```
+
+#### Step 2a.4: Worked example: from a grammar rule to a function
 
 Here is the one translation this page writes out for you in full.  The rule is
 
@@ -552,7 +605,7 @@ Read it against the rule, one line at a time:
 
 Every tier in Step 2b that has a `( ... )*` in its rule follows these six lines.  Only the operator tokens and the tier below change.
 
-#### The first two parsing functions
+#### Step 2a.5: The first two parsing functions, then integrate and check
 
 You write these two from their algorithms.  Each one is a short `if` chain over the peeked token.
 
@@ -592,6 +645,22 @@ def parse(source: str) -> Program:
 `parse_program` arrives in Step 2c.  Until then, `parse` fails if you call it, but the import succeeds, because Python looks up the name only when `parse` runs.
 
 `NOT` is not handled here.  It sits much higher in the ladder, in `parse_not` (Step 2b).  If your own lexer emits `BANG` for `!`, you may treat it in `parse_unary` the same way as `MINUS`; the reference lexer has no `BANG`.
+
+*Integrate and check.*  `parse_muldiv` now sits on top of the two functions you just wrote, so one call exercises all three, and the error case exercises `parse_primary`'s last line.  Run `python3 try_primary.py` again, then:
+
+```bash
+python3 -c "from lexer import Lexer; from parser import parse_muldiv; print(parse_muldiv(Lexer('8 / 4 / 2'))); print(parse_muldiv(Lexer('--x * 3')))"
+python3 -c "from lexer import Lexer; from parser import parse_muldiv; parse_muldiv(Lexer('2 * ;'))"
+```
+
+> **You should see.** The left-folded division, then the doubly nested minus under `*`:
+>
+> ```text
+> BinOp(op='/', left=BinOp(op='/', left=Num(value=8, line=1), right=Num(value=4, line=1)), right=Num(value=2, line=1))
+> BinOp(op='*', left=UnaryOp(op='-', operand=UnaryOp(op='-', operand=Var(name='x', line=1))), right=Num(value=3, line=1))
+> ```
+>
+> The second command ends in `parser.ParseError: ParseError at line 1, col 5: expected an expression, found SEMICOLON`, pointing at the `;` that `parse_primary` peeked.
 
 > **Two rules that hold for every function in this part.**
 >
