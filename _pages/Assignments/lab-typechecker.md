@@ -48,7 +48,7 @@ tags:
 
 ---
 
-This **lab** builds the core of the Interpreter assignment's Part 4: a small static type checker that runs between parsing and evaluation.  A static type checker reads the abstract syntax tree (AST) of a program and decides whether each operation makes sense before any of the program runs.  Working alone or with a partner (see the pair policy below), you get the checker working on its three simplest cases: literals, variables, and operators.  You leave with a `typechecker.py` that accepts six well-typed programs and rejects six ill-typed ones, a run log that shows it doing so, and a `RULES.md` that states each typing rule you implemented.  The Interpreter assignment then has you extend the checker on your own to call sites and return types.  Plan on one working session.
+This **lab** builds the core of the Interpreter assignment's Part 4: a small static type checker that runs between parsing and evaluation.  A static type checker reads the abstract syntax tree (AST) of a program and decides whether each operation makes sense before any of the program runs.  Working alone or with a partner (see the pair policy below), you get the checker working on its three simplest cases: literals, variables, and operators.  You leave with a `typechecker.py` that accepts seven of the twelve provided programs and rejects the five ill-typed ones, a run log that shows it doing so, and a `RULES.md` that states each typing rule you implemented.  The Interpreter assignment then has you extend the checker on your own to call sites and return types.  Plan on one working session.
 
 **Pair policy.**  You may do this lab in pairs.  Submit the same files, name both partners in them, and you will both earn the same grade.  Working alone is also allowed.  The Interpreter assignment remains individual work: both partners may carry this shared checker core into it, but the extension to calls and returns must be your own.
 
@@ -485,7 +485,7 @@ Your checker enforces these rules:
 
 - **Literals:** numbers are `Num`, strings are `Str`, booleans are `Bool`.
 - **Declarations:** `let x: Num = expr;` checks that `expr`'s type equals the annotation, then binds `x : Num` in the current scope.  A mismatch is an error naming both types.
-- **Variables:** a use of `x` looks up its declared type; an undeclared use is a positioned error.
+- **Variables:** a use of `x` looks up its declared type.  An undeclared name has no type the checker can know, so its type is *unknown*: the checker skips every check that involves it, and the evaluator reports the undefined name when the program runs.
 - **Operators:** `+ - * /` require `Num` operands and yield `Num`; `< <= > >=` require `Num` and yield `Bool`; `== !=` require both sides to have the same type and yield `Bool`; `and`/`or`/`not` require `Bool`.  Every violation is reported as `Type error at line L, col C: ...` naming **both** conflicting types.
 
 The five steps below build the checker in the order that keeps it testable at every stage.  Run the provided programs after each step and keep the output as your run log.
@@ -507,7 +507,7 @@ That makes the type environment simpler than your `Environment` class.  Every pi
 | a nested block | a new, empty scope that remembers its parent | `TypeEnvironment(parent=env)` |
 | declare a name | store a key in this scope's dict only | `self.bindings[name] = typ` |
 | look up a name | this scope's dict first, then the parent's, and so on | `"x" in self.bindings`, then `self.parent` |
-| a name no scope has | a `KeyError`, which the checker turns into a positioned error | `raise KeyError(name)` |
+| a name no scope has | `None`, meaning "unknown type"; the checker skips it, and the evaluator reports the name at run time | `return None` |
 | a type error | an `Exception` subclass that carries a line and a column | `LangTypeError(message, line, col)` |
 
 Two details in that table matter later.  First, shadowing is free: the inner block writes `x` into its *own* dict, so the outer dict still says `Num`, and when the block ends you simply stop using the inner dict.  Second, `LangTypeError` subclasses `Exception`, not Python's built-in `TypeError`.  That is deliberate.  If your checker has a bug, such as adding `None + 1`, Python raises its own `TypeError`.  You want that bug to crash loudly with a traceback, not to be caught by the driver and printed as if it were a type error in the program you are checking.
@@ -520,11 +520,7 @@ outer = {"x": "Num"}        # one scope: a dict from each name to its type name
 inner = {}                  # a nested block starts with an empty dict of its own
 inner["x"] = "Str"          # an inner let x: Str shadows the outer x
 print(outer["x"], inner["x"])
-print("y" in outer, outer.get("y"))
-try:
-    outer["y"]
-except KeyError as err:
-    print("KeyError:", err)
+print("y" in outer, outer.get("y"))   # a name no scope has: None, meaning unknown
 print(inner.get("z", outer.get("z", "not found")))
 
 class PositionedError(Exception):
@@ -547,7 +543,6 @@ except PositionedError as err:
 > ```text
 > Num Str
 > False None
-> KeyError: 'y'
 > not found
 > Type error at line 1, col 16: '+' requires Num operands, got Num and Bool
 > 1 16 '+' requires Num operands, got Num and Bool
@@ -599,9 +594,9 @@ class TypeEnvironment:
         #       `let x: Str` shadows an outer `let x: Num`
         pass
 
-    def lookup(self, name: str) -> str:
+    def lookup(self, name: str) -> str | None:
         # TODO (Step 1.1): this scope's binding, else ask the parent;
-        #       raise KeyError(name) when no scope in the chain has it
+        #       return None when no scope in the chain has it (an unknown type)
         pass
 
 def check(program: Program) -> None:
@@ -633,11 +628,11 @@ def check_stmt(node, env: TypeEnvironment) -> None:
         raise NotImplementedError(f"no typing rule yet for {type(node).__name__}")
 
 def check_expr(node, env: TypeEnvironment) -> str:
-    """Return the type of an expression, or raise LangTypeError."""
+    """Return the type of an expression (None if unknown), or raise LangTypeError."""
     if isinstance(node, Num):
         return NUM
     # TODO (Step 1.2): Str and BoolLit
-    # TODO (Step 1.3): Var, via env.lookup; an undeclared name is a positioned error
+    # TODO (Step 1.3): Var, via env.lookup; an undeclared name's type is None (unknown)
     # TODO (Step 1.4): BinOp, LogicOp, UnaryOp, one operator family at a time
     raise NotImplementedError(f"no typing rule yet for {type(node).__name__}")
 
@@ -656,7 +651,7 @@ The driver also catches `ParseError` and `LexError`, so a program that does not 
 | `# TODO` | How to write it |
 |---|---|
 | `define` | One line: store `typ` under the key `name` in `self.bindings`.  Do not look at `self.parent`; a declaration always lands in the current scope. |
-| `lookup` | Three cases, in order.  If `name in self.bindings`, return that entry.  Otherwise, if `self.parent is not None`, return `self.parent.lookup(name)`, which lets the parent repeat the same three cases.  Otherwise `raise KeyError(name)`.  A loop that walks `scope = scope.parent` works just as well as recursion. |
+| `lookup` | Three cases, in order.  If `name in self.bindings`, return that entry.  Otherwise, if `self.parent is not None`, return `self.parent.lookup(name)`, which lets the parent repeat the same three cases.  Otherwise `return None`: no scope declares the name, so its type is unknown.  A loop that walks `scope = scope.parent` works just as well as recursion. |
 
 > **You should see.**  One line, `Num`: the child scope found a name bound in its parent.
 
@@ -664,8 +659,7 @@ The driver also catches `ParseError` and `LexError`, so a program that does not 
 > - `ModuleNotFoundError: No module named 'ast_nodes'` (or `parser`, or `tokens`): the AST, parser, and lexer files are not in the same folder as `typechecker.py`, or their names differ from the `import` lines.
 > - `ImportError: cannot import name 'Str'` (or `BoolLit`, `LogicOp`): the Parser assignment made these classes optional, and your AST represents those constructs another way (for example, `and`/`or` as a `BinOp`).  Delete the missing names from the `import` line, and handle those constructs in the branch for the node class your parser actually produces.
 > - `ImportError: cannot import name 'ParseError'` (or `LexError`): your own parser or lexer names its error class differently.  Import the name it actually uses, and put that name in the driver's `except` tuple.
-> - `None` prints instead of `Num`: `lookup` still ends in `pass`, or it finds the parent's answer but forgets to `return` it.
-> - `KeyError: 'x'`: `lookup` checks this scope but never asks `self.parent`.
+> - `None` prints instead of `Num`: `lookup` still ends in `pass`, it checks this scope but never asks `self.parent`, or it finds the parent's answer but forgets to `return` it.
 
 Once `TypeEnvironment` can define a name in one scope and find it from a child scope, the rest of Part 1 is filling in the `TODO` branches one node type at a time.
 
@@ -768,22 +762,19 @@ Right now `let x: Num = 42;` does not even get past the lexer, because the refer
 
 > **Do this.**
 > 1. Fill the `Let` branch of `check_stmt`: type the initializer, compare it with the annotation, raise `LangTypeError` naming both types on a mismatch, and otherwise `define` the name with its annotated type.
-> 2. Fill the `Var` branch of `check_expr`: return `env.lookup(node.name)`.  Catch the `KeyError` and re-raise it as a `LangTypeError` at the variable's line and column, so an undeclared use is a positioned error.
+> 2. Fill the `Var` branch of `check_expr`: return `env.lookup(node.name)`.  An undeclared name comes back as `None`, an unknown type.  The checker does not report it; the evaluator does, with `LangNameError`, when the program runs.
 > 3. Fill the `Block` branch of `check_stmt`: create `TypeEnvironment(parent=env)` and check each statement with it.  Do not bind anything from the block into the outer environment.
 > 4. Add `Assign` to `check_stmt`: the new value's type must equal the variable's declared type, looked up through the chain.
 > 5. Test with a well-typed declaration and an undeclared-variable program of your own.  The provided shadowing program and `let x: Num = 1 + true;` come after Step 1.4.
 
-The `Var` branch is the one new Python pattern in this step: you catch one kind of exception and raise another in its place.  It goes in `check_expr`, above the final `raise`:
+The `Var` branch is one line.  It goes in `check_expr`, above the final `raise`:
 
 ```python
     if isinstance(node, Var):
-        try:
-            return env.lookup(node.name)
-        except KeyError:
-            # TODO (Step 1.3): raise LangTypeError(<message naming the variable>,
-            #       node.line, node.col)
-            pass
+        return env.lookup(node.name)    # None for a name no scope declares
 ```
+
+An unknown type travels upward like any other.  Every rule that compares two types must let `None` through without reporting it, and the hint tables in this step and the next show the one-line test that does it.  This is a decision about *which stage* reports an undefined name: the checker reports only what it can prove about types, and the evaluator reports names it cannot find.
 
 The `Let` and `Assign` branches replace their `pass` lines in `check_stmt`:
 
@@ -799,22 +790,22 @@ The `Let` and `Assign` branches replace their `pass` lines in `check_stmt`:
         # TODO: inner = TypeEnvironment(parent=env); check each statement in inner
         pass
     elif isinstance(node, Assign):
-        # TODO: look up the declared type (an undeclared name is an error here too)
+        # TODO: look up the declared type (None for an undeclared name: skip the check)
         # TODO: type the new value; a mismatch names BOTH types
         pass
 ```
 
 | `# TODO` | How to write it |
 |---|---|
-| `Var` | Replace `pass` with `raise LangTypeError(f"undeclared variable '{node.name}'", node.line, node.col)`.  The `try` returns the type when the lookup works, so the `except` runs only for a missing name.  Adding `from None` to the end of the `raise` hides the original `KeyError` in tracebacks; that is optional, because the driver prints only the message. |
+| unknown types | Before you compare two types, let `None` through.  In `Let`, raise only `if actual is not None and actual != declared:`.  In `Assign`, raise only when both `declared` and `actual` are not `None` and they differ.  `None` means a name nobody declared, and the evaluator reports that name when the program runs. |
 | `Let`, unannotated | Every provided program annotates its `let`s, so `None` never reaches you here.  If your parser allows `let x = 1;`, the simplest choice is to use the initializer's type: `declared = actual`. |
-| `Let`, mismatch | `if actual != declared:` then raise with a message that contains both strings, for example `f"'{node.name}' declared {declared}, but its initializer has type {actual}"`.  The position is the `Let` node's own `node.line, node.col`. |
+| `Let`, mismatch | `if actual is not None and actual != declared:` then raise with a message that contains both strings, for example `f"'{node.name}' declared {declared}, but its initializer has type {actual}"`.  The position is the `Let` node's own `node.line, node.col`. |
 | `Let`, define | `env.define(node.name, declared)`.  Use the *declared* type, not `actual`; after the mismatch check they are equal, but the rule says the annotation is what binds. |
 | `Block` | `inner = TypeEnvironment(parent=env)`, then `for stmt in node.stmts:` and `check_stmt(stmt, inner)`.  Nothing is copied back; when the loop ends, `inner` is simply forgotten.  That one line is the whole scoping rule. |
-| `Assign`, lookup | The same `try`/`except KeyError` shape as `Var`, around `declared = env.lookup(node.name)`, raising at `node.line, node.col`. |
-| `Assign`, mismatch | `actual = check_expr(node.value, env)`; if it differs from `declared`, raise naming both, for example `f"'{node.name}' declared {declared}, but assigned a value of type {actual}"`. |
+| `Assign`, lookup | `declared = env.lookup(node.name)`.  If it is `None`, the variable was never declared, so skip the type check; the evaluator reports the name. |
+| `Assign`, mismatch | `actual = check_expr(node.value, env)`; if neither is `None` and they differ, raise naming both, for example `f"'{node.name}' declared {declared}, but assigned a value of type {actual}"`. |
 
-Save the three test programs below in `mytests/`.  `declare.ml` is well typed and uses a nested block; `undeclared.ml` uses a `y` that no `let` declares; `mismatch.ml` gives a `Num` declaration a `Str`.
+Save the three test programs below in `mytests/`.  `declare.ml` is well typed and uses a nested block; `undeclared.ml` uses a `y` that no `let` declares, which the checker leaves to the evaluator; `mismatch.ml` gives a `Num` declaration a `Str`.
 
 `mytests/declare.ml`:
 
@@ -841,16 +832,15 @@ print y;
 let x: Num = "five";
 ```
 
-> **You should see.**  Silence for the well-typed declaration.  For a use of an undeclared `y` on line 2, one line such as `Type error at line 2, col 7: undeclared variable 'y'`, with the column wherever your parser recorded the `Var` node.  With the reference parser and the example messages from the hint table, the three runs print exactly this, the first one printing nothing:
+> **You should see.**  Silence for `declare.ml` and for `undeclared.ml`, and one line for `mismatch.ml`.  The checker cannot type `y`, so it says nothing about it; when the program runs, the evaluator reports `Undefined variable 'y'`, which is the Interpreter assignment's Run stage.  With the reference parser and the example message from the hint table, the three runs print exactly this:
 >
 > ```text
-> Type error at line 2, col 7: undeclared variable 'y'
 > Type error at line 1, col 1: 'x' declared Num, but its initializer has type Str
 > ```
 
 > **If it fails.**
-> - `KeyError: 'y'` with a traceback, instead of a `Type error` line: the `Var` branch calls `env.lookup` without the `try`/`except`, or it catches the error but never raises `LangTypeError`.
-> - `declare.ml` prints `Type error at line 2, col 1: undeclared variable 'x'`: the `Let` branch checks the initializer but never calls `env.define`, so the assignment on line 2 finds nothing.
+> - `undeclared.ml` prints a `Type error` naming `y`: the `Var` branch still reports a missing name.  Return `lookup`'s `None` instead; the evaluator reports undefined names.
+> - `declare.ml` and `mismatch.ml` pass, but a later program such as `08` or `12` misses its error: the `Let` branch never calls `env.define`, so every later lookup returns `None` and every check is skipped.
 > - `mismatch.ml` prints nothing: the comparison uses the wrong pair (for example `declared != declared`), or `node.annotation` is `None` because the parser did not store it.  Re-run the parse check above.
 > - `NotImplementedError: no typing rule yet for BinOp`: one of your test lines uses an operator.  That is Step 1.4's job; keep this step's tests operator free.
 
@@ -904,12 +894,13 @@ The `If`/`While` branch replaces its `pass` in `check_stmt`:
 
 | `# TODO` | How to write it |
 |---|---|
+| unknown operand | First, `if left is None or right is None:` return the result type without checking: `NUM` for arithmetic, `BOOL` for comparison and equality.  An unknown operand comes from an undeclared name, which the evaluator reports. |
 | arithmetic | `if left != NUM or right != NUM:` then `raise LangTypeError(f"'{node.op}' requires Num operands, got {left} and {right}", node.line, node.col)`.  After the `if`, `return NUM`.  The message prints `left` and `right`, the two types you actually found, so it names both even when only one is wrong. |
 | comparison | The same test and message as arithmetic, but `return BOOL`. |
 | equality | `if left != right:` then raise naming both, for example `f"'{node.op}' requires operands of the same type, got {left} and {right}"`.  Then `return BOOL`.  Two `Str`s pass here, though they fail at `<`. |
-| `LogicOp` | Type `node.left` and `node.right` the same way as `BinOp`, then `if left != BOOL or right != BOOL:` raise naming both, and `return BOOL`. |
-| `UnaryOp` | `operand = check_expr(node.operand, env)`, then `wanted = BOOL if node.op == "not" else NUM`.  If `operand != wanted`, raise naming the operator, `wanted`, and `operand`.  Return `wanted`.  A unary operator has only one operand, so "both types" here means the expected one and the actual one. |
-| condition | `cond = check_expr(node.condition, env)`.  If you require `Bool`, raise when `cond != BOOL`.  The reference `If` and `While` nodes store only a `line`, so raise at `node.condition.line, node.condition.col`, which every expression node has. |
+| `LogicOp` | Type `node.left` and `node.right` the same way as `BinOp`, then `if left is not None and right is not None and (left != BOOL or right != BOOL):` raise naming both, and `return BOOL`. |
+| `UnaryOp` | `operand = check_expr(node.operand, env)`, then `wanted = BOOL if node.op == "not" else NUM`.  If `operand is not None and operand != wanted`, raise naming the operator, `wanted`, and `operand`.  Return `wanted`.  A unary operator has only one operand, so "both types" here means the expected one and the actual one. |
+| condition | `cond = check_expr(node.condition, env)`.  If you require `Bool`, raise when `cond is not None and cond != BOOL`.  The reference `If` and `While` nodes store only a `line`, so raise at `node.condition.line, node.condition.col`, which every expression node has. |
 | branches and body | `check_stmt(node.then_branch, env)`, and the same for `node.else_branch` when it is not `None`; for `While`, `check_stmt(node.body, env)`.  Each one is a `Block`, so your `Block` branch makes the child scope for you.  An `else if` chain arrives as an `If` in `else_branch`, which `check_stmt` already handles. |
 
 Run the provided programs as each family lands.  Each row lists what works once you have finished that item of the **Do this** list and every item above it:
@@ -938,22 +929,22 @@ Run the provided programs as each family lands.  Each row lists what works once 
 
 ### Step 1.5: Run the twelve provided programs and keep the log
 
-Verify your checker against the [twelve provided programs]({{ site.baseurl }}/files/starters/typechecker/programs/), which live in `files/starters/typechecker/programs/` in the course site repository.  Six well-typed programs must pass silently.  Six ill-typed programs must each produce a positioned error; these include the classic `let x: Num = 1 + true;` (the error must appear *before* anything runs) and a shadowing case where an inner `let x: Str` legitimately changes the type of `x` for the inner scope only.
+Verify your checker against the [twelve provided programs]({{ site.baseurl }}/files/starters/typechecker/programs/), which live in `files/starters/typechecker/programs/` in the course site repository.  Seven programs must pass silently.  One of them, `11-undeclared-variable.ml`, uses a name nothing declares; the checker leaves it to the evaluator.  Five ill-typed programs must each produce a positioned error; these include the classic `let x: Num = 1 + true;` (the error must appear *before* anything runs) and a shadowing case where an inner `let x: Str` legitimately changes the type of `x` for the inner scope only.
 
 **You write:** `runlog.txt`, produced by the command below.  No code changes, unless a program shows you a bug.
 **You run:** `for f in programs/*.ml; do echo "== $f"; python3 typechecker.py "$f"; done | tee runlog.txt`
 
 > **Do this.**
-> 1. If you have not already, copy all twelve provided programs into `programs/`.  They are named `01-` through `12-`, and the six whose names contain `bad-` are the ill-typed ones.  Keep your own test files in `mytests/`, so this loop sees only the twelve.
+> 1. If you have not already, copy all twelve provided programs into `programs/`.  They are named `01-` through `12-`, and the five whose names contain `bad-` are the ill-typed ones.  Keep your own test files in `mytests/`, so this loop sees only the twelve.
 > 2. Run the driver over every one of them and save the output.  The `for` loop runs the checker once per file, `echo` labels each run with its file name, and `tee` prints the output and writes it to `runlog.txt` at the same time.  If the provided programs use a different file extension, change `*.ml` to match.
 >
 >    ```bash
 >    for f in programs/*.ml; do echo "== $f"; python3 typechecker.py "$f"; done | tee runlog.txt
 >    ```
 >
-> 3. Read `runlog.txt` once, top to bottom, and confirm each well-typed program shows only its label and each ill-typed program shows its label and one `Type error` line.  Each of the six ill-typed programs breaks a *different* rule, so six identical messages means a branch is catching something it should not.
+> 3. Read `runlog.txt` once, top to bottom, and confirm each well-typed program shows only its label and each ill-typed program shows its label and one `Type error` line.  Each of the five ill-typed programs breaks a *different* rule, so five identical messages means a branch is catching something it should not.
 
-> **You should see.**  Twelve labels.  Six are followed directly by the next label (silent acceptance).  Six are followed by exactly one `Type error at line L, col C: ...` line.  Five of those name two types; the undeclared-variable one names the variable, since an undeclared name has no type to name.  With the reference parser and the example messages from the hint tables, the whole log is exactly this.  Your positions must match; your wording after each colon may differ.
+> **You should see.**  Twelve labels.  Seven are followed directly by the next label (silent acceptance).  Five are followed by exactly one `Type error at line L, col C: ...` line, and each of those names two types.  With the reference parser and the example messages from the hint tables, the whole log is exactly this.  Your positions must match; your wording after each colon may differ.
 >
 > ```text
 > == programs/01-literals.ml
@@ -970,8 +961,7 @@ Verify your checker against the [twelve provided programs]({{ site.baseurl }}/fi
 > Type error at line 5, col 13: '<' requires Num operands, got Str and Str
 > == programs/10-bad-equality-mixed-types.ml
 > Type error at line 6, col 13: '==' requires operands of the same type, got Num and Str
-> == programs/11-bad-undeclared-variable.ml
-> Type error at line 4, col 18: undeclared variable 'total'
+> == programs/11-undeclared-variable.ml
 > == programs/12-bad-shadow-escapes.ml
 > Type error at line 8, col 1: 'x' declared Num, but assigned a value of type Str
 > ```
@@ -1027,13 +1017,13 @@ Submit a ZIP containing the files below, with your name (and your partner's, if 
 |------------------|---------------|------------|
 | Part 0 write-up (at the top of `RULES.md`, or a photo of your page) | The annotated program, the rejected expression with your defended preference, and the guarantee and forbidden program | Part 0: Before You Start - Type Systems |
 | `typechecker.py` | The type environment, `check()`, and the literal, variable, declaration, and operator rules | The Checker Core |
-| `runlog.txt` | The checker's output over the twelve provided programs: six silent, six positioned errors | The Checker Core |
+| `runlog.txt` | The checker's output over the twelve provided programs: seven silent, five positioned errors | The Checker Core |
 | `RULES.md` | One rule per construct with its implementing function cited, and the two theory questions | Typing Rules on Paper |
 
 ## Self-Check Before You Submit
 
-- [ ] Every one of the six well-typed programs produces no output.
-- [ ] Every one of the six ill-typed programs produces exactly one `Type error at line L, col C: ...` line, and that line names both conflicting types.
+- [ ] Every one of the seven programs the checker accepts (the six well-typed ones and `11-undeclared-variable.ml`) produces no output.
+- [ ] Every one of the five ill-typed programs produces exactly one `Type error at line L, col C: ...` line, and that line names both conflicting types.
 - [ ] `let x: Num = 1 + true;` is rejected before anything runs, and the shadowing program's inner `let x: Str` is accepted for the inner scope only.
 - [ ] The checker calls no evaluator and prints nothing except the error.
 - [ ] `RULES.md` has one rule per construct the checker covers, each with its premises stated and its implementing function cited.
