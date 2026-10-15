@@ -1177,6 +1177,66 @@ TERMINALS = {"num", "+", "*", "(", ")", "$"}
 
 An **item** is a production with a dot somewhere in its right-hand side.  Represent it as the pair `(production_index, dot_position)`, and a state as a `frozenset` of items.  That lets states go into a `dict` and be compared for equality.
 
+**You write:** a new file, `lr.py`, starting with `PRODUCTIONS`, `NONTERMINALS`, `TERMINALS`, and `show_item`.
+**You run:** `python3 explore_items.py` (scratch).
+
+#### Before You Code: How Items and States Live in Python
+
+Every function in Part 4 passes around the same four kinds of value.  Here they are with one example each:
+
+| Idea | Python value | Example | What it means |
+|---|---|---|---|
+| production | a pair `(lhs, rhs)` in the `PRODUCTIONS` list | `PRODUCTIONS[1] == ("E", ["E", "+", "T"])` | production 1 is `E -> E + T` |
+| item | a tuple `(production_index, dot)` | `(1, 1)` | `E -> E . + T`: the dot sits before `rhs[1]`, which is `+` |
+| completed item | an item whose `dot == len(rhs)` | `(1, 3)` | `E -> E + T .`: nothing is left after the dot |
+| state | a `frozenset` of items | `frozenset({(0, 1), (1, 1)})` | `I1` in the activity |
+| state numbers | a `dict` from state to number | `index[state] == 1` | works only because a `frozenset` can be a key |
+| table | a `dict` of `dict`s | `action[2]["*"] == ("s", 7)` | in state 2, on `*`, shift and go to state 7 |
+
+A `frozenset` is a `set` that cannot change after you build it.  Two frozensets with the same items are equal in any order, and Python can use one as a `dict` key.  A plain `set` can do neither of the second.  That is why `closure` collects items in a `set` while it works, and returns `frozenset(result)` at the end.
+
+Save the lines below as `explore_items.py`, a scratch file you do not submit, and run `python3 explore_items.py`:
+
+```python
+PRODUCTIONS = [("E'", ["E"]), ("E", ["E", "+", "T"]), ("E", ["T"])]
+
+item = (1, 1)                        # E -> E . + T
+lhs, rhs = PRODUCTIONS[item[0]]
+print(lhs, rhs, rhs[item[1]])        # the symbol just after the dot
+print(item[1] == len(rhs))           # is the dot at the end?
+
+a = frozenset({(0, 0), (1, 0)})
+b = frozenset({(1, 0), (0, 0)})      # the same items, written in another order
+print(a == b)
+index = {a: 0}                       # a frozenset can be a dict key
+print(index[b], b in index)
+try:
+    index[{(0, 0)}] = 1              # a plain set cannot
+except TypeError as err:
+    print("TypeError:", err)
+
+action = {}
+action.setdefault(2, {})["*"] = ("s", 7)
+print(action, action[2].get("+"))
+print(sorted({"+", ")", "$"}))
+```
+
+> **You should see.**
+>
+> ```text
+> E ['E', '+', 'T'] +
+> False
+> True
+> 0 True
+> TypeError: unhashable type: 'set'
+> {2: {'*': ('s', 7)}} None
+> ['$', ')', '+']
+> ```
+>
+> The last line is why the printing code below lists terminals in a fixed order of its own instead of calling `sorted`: sorting puts `$` first, while the activity writes it last.  The line before it shows the `setdefault` idiom, which creates a row the first time you write to it.
+>
+> **Predict** before you move on: which item tuple stands for `E -> T .`, and is it a completed item?
+
 > **Do this.** Write a helper that renders an item the way the activity does, so that every checkpoint below is something you can read rather than squint at.
 
 ```python
@@ -1190,6 +1250,9 @@ def show_item(item):
 ### Step 4a: Implement `closure`
 
 The rule is one sentence: if the dot sits immediately before a non-terminal, add every production for that non-terminal with the dot at the front, and repeat until nothing new appears.  That last clause is why this is a fixed-point loop rather than a single pass.
+
+**You write:** `lr.py` - `closure`, and a `main` function that grows one block per step.
+**You run:** `python3 lr.py`
 
 ```python
 def closure(items):
@@ -1215,16 +1278,39 @@ def closure(items):
     return frozenset(result)
 ```
 
-> **Do this.** Close the single item `E' -> . E` and print the result.
+| `# TODO` | How to write it |
+|---|---|
+| add the productions for `symbol` | `for j, (other_lhs, _) in enumerate(PRODUCTIONS):`, then `if other_lhs == symbol and (j, 0) not in result:`, then `result.add((j, 0))` and `changed = True`.  Checking membership first is what keeps `changed` honest. |
+
+The loop walks `list(result)`, a copy, because Python refuses to let a loop add to the very set it is walking.
+
+> **Do this.** Close the single item `E' -> . E` and print the result.  Put the printing in a `main` function at the bottom of `lr.py`.  Each later step adds one block to `main`, and at the end one run of `python3 lr.py` prints everything `lr_output.txt` needs.
 
 ```python
-if __name__ == "__main__":
+def main():
+    print("== Step 4a: closure of E' -> . E ==")
     i0 = closure({(0, 0)})
     for item in sorted(i0, key=show_item):
         print(show_item(item))
+    # Steps 4b to 4f each add a block here
+
+
+if __name__ == "__main__":
+    main()
 ```
 
-> **You should see.** Seven items, exactly the seven in the activity's Step 1 table: `E' -> . E`, `E -> . E + T`, `E -> . T`, `T -> . T * F`, `T -> . F`, `F -> . num`, and `F -> . ( E )`.  That set is state `I0`.
+> **You should see.** Seven items, exactly the seven in the activity's Step 1 table: `E' -> . E`, `E -> . E + T`, `E -> . T`, `T -> . T * F`, `T -> . F`, `F -> . num`, and `F -> . ( E )`.  That set is state `I0`.  Sorting by the printed text puts them in this order:
+>
+> ```text
+> == Step 4a: closure of E' -> . E ==
+> E -> . E + T
+> E -> . T
+> E' -> . E
+> F -> . ( E )
+> F -> . num
+> T -> . F
+> T -> . T * F
+> ```
 
 > **If it fails.**
 > - Four items instead of seven: your loop is a single pass.  `E -> . T` puts the dot before `T`, which only then pulls in the two `T` productions, which only then pull in the two `F` productions.  Keep looping until a full pass adds nothing.
@@ -1233,6 +1319,9 @@ if __name__ == "__main__":
 ### Step 4b: Implement `goto`
 
 `goto(state, X)` advances the dot past `X` in every item that has the dot before `X`, then takes the closure of the result.
+
+**You write:** `lr.py` - `goto` (complete below), and the Step 4b block in `main`.
+**You run:** `python3 lr.py`
 
 ```python
 def goto(state, symbol):
@@ -1245,9 +1334,23 @@ def goto(state, symbol):
     return closure(moved) if moved else frozenset()
 ```
 
-> **Do this.** Compute `goto(I0, "T")` and print it.
+> **Do this.** Compute `goto(I0, "T")` and print it.  Add this block to the end of `main`:
 
-> **You should see.** Two items: `E -> T .` and `T -> T . * F`.  This is the activity's `I2`, and it is the whole precedence story in one state.  It holds a completed item, which says reduce, and an item expecting more input, which says shift the `*`.  The lookahead token decides which fires.
+```python
+    print("\n== Step 4b: goto(I0, T) ==")
+    for item in sorted(goto(i0, "T"), key=show_item):
+        print(show_item(item))
+```
+
+> **You should see.** Two items: `E -> T .` and `T -> T . * F`.  The new part of the output is:
+>
+> ```text
+> == Step 4b: goto(I0, T) ==
+> E -> T .
+> T -> T . * F
+> ```
+>
+>   This is the activity's `I2`, and it is the whole precedence story in one state.  It holds a completed item, which says reduce, and an item expecting more input, which says shift the `*`.  The lookahead token decides which fires.
 
 > **If it fails.** Three or more items means you took the closure of items whose dot now sits before a terminal.  Closure adds nothing in that case, so the extra items came from a bug in Step 4a.
 
