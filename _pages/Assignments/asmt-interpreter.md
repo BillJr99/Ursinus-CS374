@@ -155,7 +155,7 @@ Every step below names the file it changes, but it helps to see the whole map on
 | 1a | `ast_nodes.py` | define or reconcile the node dataclasses |
 | 1b | `interpreter.py` | write `Interpreter.eval_node` with one branch per node class |
 | 1b | `evaluator_tour.py`, `check_dispatch.py` (scratch) | try dispatch, environments, and signals in miniature; confirm every class reaches its own branch |
-| 2a | `interpreter.py` | add the error classes and two helpers, then fill the expression branches |
+| 2a.1 to 2a.6 | `interpreter.py` | add the error classes and two type helpers, fill the literal, `Var`, and unary-minus branches one at a time, write the three `BinOp` helpers, then integrate them into the `BinOp` branch |
 | 2b | `interpreter.py`, `test_interpreter.py` | fill `truthy`, `LogicOp`, and `not`; add the bomb test |
 | 2c | `interpreter.py`, `shadow.ml`, `test_interpreter.py` | paste `Environment`, fill the statement branches, and test the shadowing program |
 | 2d | your lexer and `parser.py` (only if they lack `break`), `interpreter.py`, `break.ml`, `continue.ml`, `test_interpreter.py` | add the signal classes and the `Break`, `Continue`, and `While` handling |
@@ -524,12 +524,10 @@ Replace the `NotImplementedError` in each expression branch with the rule below.
   - `/` by zero raises `LangZeroDivisionError` with the position.
   - `<`, `<=`, `>`, `>=` require numbers; `==`, `!=` compare any same-type pair (cross-type raises or returns False; document which and why).
 
-The error classes (`LangNameError`, `LangTypeError`, `LangZeroDivisionError`) belong to the hierarchy that Step 5a audits, which is required in every Part 5 direction.  Define the whole hierarchy now, exactly as the skeleton below shows it, at the top of `interpreter.py`.  Step 5a does not replace these classes.  It checks that every `raise` in the file uses one of them with a good message and a position.  If you copied the starter kit, its `interpreter.py` already holds them; compare it with the skeleton, because the skeleton adds the `super().__init__` line.
+**You write:** `interpreter.py` - the error classes, `is_number`, `type_name`, three `BinOp` helpers (`NUMERIC_OPS`, `check_numbers`, and `values_equal`), and the `Num`, `Str`, `BoolLit`, `Var`, `UnaryOp("-")`, and `BinOp` branches
+**You run:** a one-line check after each sub-step, then the two `python3 -c` commands in Step 2a.6
 
-Two pieces of Step 2c are needed already.  `Var` reads from an environment, and the test program below uses `let`.  Paste the `Environment` class from Step 2c now (What You Already Have asks you to bring it on day one).  Then give `Interpreter` an `__init__` that stores one global `Environment` as `self.globals`, and have `eval_node` fall back to `self.globals` when `env` is `None`.  The starter kit's `interpreter.py` already does both.  Fill the `Let` branch as Step 2c's first bullet describes.  The rest of Step 2c can wait.
-
-**You write:** `interpreter.py` - the error classes, `is_number`, `type_name`, and the `Num`, `Str`, `BoolLit`, `Var`, `UnaryOp("-")`, and `BinOp` branches
-**You run:** the two `python3 -c` commands below
+You write this step in six pieces, one rule at a time, and each piece has its own one-line check that builds nodes by hand, so no parser is involved until the end.  Here is the whole of the code this step fills in, so you can see where each piece goes.  The sub-steps below say which `# Step` comments each one covers.
 
 ```python
 # --- Language-level errors: define them now; Step 5a audits every raise ---
@@ -579,16 +577,127 @@ def type_name(value):
             raise NotImplementedError("BinOp")
 ```
 
+#### Step 2a.1: The error classes and the two type helpers
+
+The error classes (`LangNameError`, `LangTypeError`, `LangZeroDivisionError`) belong to the hierarchy that Step 5a audits, which is required in every Part 5 direction.  Define the whole hierarchy now, exactly as the skeleton above shows it, at the top of `interpreter.py`.  Step 5a does not replace these classes.  It checks that every `raise` in the file uses one of them with a good message and a position.  If you copied the starter kit, its `interpreter.py` already holds them; compare it with the skeleton, because the skeleton adds the `super().__init__` line.
+
+> **Do this.** Add the error classes, `is_number`, and `type_name` at the top of `interpreter.py`, write the body of `is_number`, and run the check.
+
 | `# TODO` | How to think about it |
 |---|---|
 | `is_number` | `isinstance` accepts a tuple of classes, so one call can test for both `int` and `float`.  The trap is `bool`: Python treats `True` as the integer `1`, so `isinstance(True, int)` holds.  Without a second test that rules out `bool`, `true + 1` quietly returns `2`. |
+
+```bash
+python3 -c "from interpreter import is_number as n; print(n(1), n(2.5), n(True), n('1'))"
+```
+
+> **You should see.** `True True False False`.  A third `True` means `is_number` does not rule out `bool`.
+
+#### Step 2a.2: The literals (Steps 1 and 2)
+
+| `# Step` | How to think about it |
+|---|---|
 | Steps 1 and 2: literals | The parser already did the work, so there is nothing to compute.  You may write three branches, or fold all three classes into one `isinstance` test with a tuple. |
+
+```bash
+python3 -c "from ast_nodes import *; from interpreter import Interpreter; i = Interpreter(); print(i.eval_node(Num(7)), i.eval_node(Str('hi')), i.eval_node(BoolLit(True)))"
+```
+
+> **You should see.** `7 hi True`.  If you see `AttributeError: 'Interpreter' object has no attribute 'globals'`, do the first part of Step 2a.3 now; the starter kit's `eval_node` already falls back to `self.globals`.
+
+#### Step 2a.3: Variables (Steps 3 and 4)
+
+Two pieces of Step 2c are needed already.  `Var` reads from an environment, and the test program in Step 2a.6 uses `let`.  Paste the `Environment` class from Step 2c now (What You Already Have asks you to bring it on day one).  Then give `Interpreter` an `__init__` that stores one global `Environment` as `self.globals`, and have `eval_node` fall back to `self.globals` when `env` is `None`.  The starter kit's `interpreter.py` already does both.  Fill the `Let` branch as Step 2c's first bullet describes.  The rest of Step 2c can wait.
+
+| `# Step` | How to think about it |
+|---|---|
 | Steps 3 and 4: `Var` | `Environment.lookup` raises a `LangNameError`, but the environment has no idea where in the source you are, so its error says line 0.  Catch it here, where `node` is in hand, and raise a new one with the same message and this node's position.  Ending the `raise` with `from None` hides the first, position-less traceback. |
+
+```bash
+python3 -c "from ast_nodes import *; from interpreter import Interpreter; i = Interpreter(); i.eval_node(Let('x', Num(5))); print(i.eval_node(Var('x'))); i.eval_node(Var('y', 3, 5))"
+```
+
+> **You should see.** `5`, then a traceback whose last line carries the `Var` node's position, line 3, col 5:
+>
+> ```text
+> interpreter.LangNameError: line 3, col 5: Undefined variable 'y'
+> ```
+>
+> `line 0, col 0` means the `Var` branch let the environment's position-less error escape instead of raising a new one with `node.line, node.col`.
+
+#### Step 2a.4: Unary minus (Steps 5 to 7)
+
+| `# Step` | How to think about it |
+|---|---|
 | Steps 5 and 6: unary minus | Use `is_number` for the test and `type_name` to build the message from the bullet above.  Every `raise` in `eval_node` passes the node's line and col as its last two arguments. |
+
+```bash
+python3 -c "from ast_nodes import *; from interpreter import Interpreter; i = Interpreter(); print(i.eval_node(UnaryOp('-', Num(4)))); i.eval_node(UnaryOp('-', Str('a'), 1, 9))"
+```
+
+> **You should see.** `-4`, then a traceback ending in:
+>
+> ```text
+> interpreter.LangTypeError: line 1, col 9: unary minus requires a number, got str
+> ```
+
+#### Step 2a.5: The three `BinOp` helpers (the rules behind Steps 10, 12, and 13)
+
+`BinOp` holds the most rules, so pull each one out as a small module-level helper, below `type_name`, and check it on its own before Step 2a.6 wires them together.
+
+```python
+NUMERIC_OPS = {
+    # TODO: map each of "+", "-", "*", "/", "<", "<=", ">", ">=" to a two-argument lambda
+}
+
+def check_numbers(op, left, right, line=0, col=0):
+    """Raise LangTypeError naming op and both type names unless both operands are numbers."""
+    # TODO: the Step 10 rule
+    raise NotImplementedError("check_numbers")
+
+def values_equal(left, right):
+    """Your == rule for any pair of values; != is its opposite."""
+    # TODO: the Step 13 rule
+    raise NotImplementedError("values_equal")
+```
+
+| Helper | How to think about it |
+|---|---|
+| `NUMERIC_OPS` (Step 12) | To pick the operation in Step 12, a dict from operator string to a two-argument `lambda` is one lookup instead of eight `if`s.  Its keys are also the operator group Step 10 checks membership in. |
+| `check_numbers` (Step 10) | The message names the operator and both type names, as in the `You should see` below.  Use `is_number` for the test and `type_name` for the message, and pass `line` and `col` through to the error. |
+| `values_equal` (Step 13) | Python's `==` already compares any pair, but it says `True == 1`.  If you want `true == 1` to be false, compare the two type names first, and treat any two numbers as one kind.  `!=` is the opposite of whatever `==` decides, so write the rule once. |
+
+```bash
+python3 -c "from interpreter import NUMERIC_OPS as T, check_numbers, values_equal; print(T['+'](2, 3), T['<='](2, 3), sorted(T)); check_numbers('*', 2, 3.5); print(values_equal(1, 1.0), values_equal(True, 1), values_equal('a', 'a')); check_numbers('*', 'a', True, 2, 4)"
+```
+
+> **You should see.** The table works, `check_numbers` is silent on two numbers, the three equality cases print, and the last call raises:
+>
+> ```text
+> 5 True ['*', '+', '-', '/', '<', '<=', '>', '>=']
+> True False True
+> ```
+>
+> followed by a traceback ending in `interpreter.LangTypeError: line 2, col 4: '*' requires numbers, got str and bool`.  The middle value on the second line is your Step 13 decision: `False` if `true == 1` is false in your language, `True` if you let Python's rule stand.  Either is acceptable once you document it.
+
+#### Step 2a.6: Integrate the helpers into the `BinOp` branch (Steps 8 to 13)
+
+> **Do this.** Fill in the `BinOp` branch from its `# Step` comments.  Each rule is now a line or two, because the helpers from Step 2a.5 hold the logic.
+
+| `# Step` | How to think about it |
+|---|---|
 | Step 9: two strings | Order matters.  Test for two strings before the number rule, or the number rule rejects them first. |
-| Step 10: numbers on both sides | Check membership in the operator group first, then check both operands.  The message names the operator and both type names, as in the `You should see` below.  To pick the operation in Step 12, a dict from operator string to a two-argument `lambda` is one lookup instead of eight `if`s. |
+| Step 10: numbers on both sides | Check membership in the operator group first (the keys of `NUMERIC_OPS`), then call `check_numbers` with the node's position. |
 | Step 11: division by zero | Test before you divide.  Python's own `ZeroDivisionError` must never escape, because it has no position and no stage. |
-| Step 13: `==` and `!=` | Python's `==` already compares any pair, but it says `True == 1`.  If you want `true == 1` to be false, compare the two type names first, and treat any two numbers as one kind.  `!=` is the opposite of whatever `==` decides, so write the rule once. |
+| Steps 12 and 13 | One lookup in `NUMERIC_OPS` applies the operator.  `==` returns `values_equal`, and `!=` returns its opposite. |
+
+First check the branch on hand-built nodes:
+
+```bash
+python3 -c "from ast_nodes import *; from interpreter import Interpreter; i = Interpreter(); print(i.eval_node(BinOp('+', Num(1), Num(2))), i.eval_node(BinOp('+', Str('a'), Str('b'))), i.eval_node(BinOp('==', BoolLit(True), Num(1)))); i.eval_node(BinOp('/', Num(1), Num(0), 1, 3))"
+```
+
+> **You should see.** `3 ab False` (the last value is your Step 13 decision again, and the middle one assumes you allow string `+`), then a traceback ending in a `LangZeroDivisionError` at line 1, col 3, never a Python `ZeroDivisionError`.
 
 Now run `print 1 + 2;` through the pipeline the same way as in Your First 30 Minutes, followed by the two-statement program `let x = "hello"; let y = x + 1;`:
 
@@ -606,7 +715,7 @@ python3 -c "from parser import parse; from interpreter import Interpreter; Inter
 > The whole program sits on one line inside the `-c` string, so the `+` is at line 1, col 28.  Saved as a two-line file, the same error would say line 2, col 11.  Your wording after the colon may differ, as long as both types appear.
 
 > **If it fails.**
-> - `NotImplementedError: Let`, or `AttributeError: 'Interpreter' object has no attribute 'globals'`: you skipped the two Step 2c pieces described above.
+> - `NotImplementedError: Let`, or `AttributeError: 'Interpreter' object has no attribute 'globals'`: you skipped the two Step 2c pieces described in Step 2a.3.
 > - `TypeError: can only concatenate str (not "int") to str`, a Python error rather than a `LangTypeError`: your `BinOp` branch applied `+` before it checked the operand types.
 > - The message says `line 0, col 0`: a `raise` is missing `node.line, node.col`, or your parser does not fill in positions.
 

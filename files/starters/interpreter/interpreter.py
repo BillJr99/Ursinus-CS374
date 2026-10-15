@@ -46,6 +46,25 @@ def type_name(value):
     return type(value).__name__
 
 
+# --- Step 2a.5: the three BinOp helpers ------------------------------------
+
+NUMERIC_OPS = {
+    # TODO: map each of "+", "-", "*", "/", "<", "<=", ">", ">=" to a two-argument lambda
+}
+
+
+def check_numbers(op, left, right, line=0, col=0):
+    """Raise LangTypeError naming op and both type names unless both operands are numbers."""
+    # TODO: the Step 10 rule
+    raise NotImplementedError("check_numbers")
+
+
+def values_equal(left, right):
+    """Your == rule for any pair of values; != is its opposite."""
+    # TODO: the Step 13 rule
+    raise NotImplementedError("values_equal")
+
+
 class InterpreterError(Exception):
     """Raised when the evaluator meets a node class it has no branch for."""
     pass
