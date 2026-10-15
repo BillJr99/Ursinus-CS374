@@ -143,6 +143,32 @@ print x;
 
 ## Getting Started
 
+### Where Each Step's Code Goes
+
+Every step below names the file it changes, but it helps to see the whole map once before you start.  Files marked *scratch* are for checking your understanding; you run them and do not submit them.
+
+| Step | File you work in | What you do there |
+|---|---|---|
+| 0 | paper | trace the program, decide truthiness, and state two invariants |
+| 1a | `ast_nodes.py` | define or reconcile the node dataclasses |
+| 1b | `interpreter.py` | write `Interpreter.eval_node` with one branch per node class |
+| 1b | `evaluator_tour.py`, `check_dispatch.py` (scratch) | try dispatch, environments, and signals in miniature; confirm every class reaches its own branch |
+| 2a | `interpreter.py` | add the error classes and two helpers, then fill the expression branches |
+| 2b | `interpreter.py`, `test_interpreter.py` | fill `truthy`, `LogicOp`, and `not`; add the bomb test |
+| 2c | `interpreter.py`, `shadow.ml`, `test_interpreter.py` | paste `Environment`, fill the statement branches, and test the shadowing program |
+| 2d | your lexer and `parser.py` (only if they lack `break`), `interpreter.py`, `break.ml`, `continue.ml`, `test_interpreter.py` | add the signal classes and the `Break`, `Continue`, and `While` handling |
+| 2e | `test_interpreter.py` | write the generator and at least four Hypothesis invariants |
+| 3a | `mylang.py` | write `run_source` and `run_file` with staged errors |
+| 3b | `mylang.py`, `repl_transcript.txt` | write `repl()` and save the session |
+| 4a | your lexer, `parser.py`, `ast_nodes.py` | add the `COLON` token, read the annotation in `parse_let_stmt`, and add `type_ann` to `Let` |
+| 4b | `typechecker.py`, `test_interpreter.py` | fill `TypeEnv` and `check`, and add the checker test programs |
+| 4c | `typechecker.py`, `mylang.py`, `badtype.ml` | give every type error a position, and add the Type stage to `run_source` |
+| 5a | `interpreter.py`, `test_interpreter.py` | audit every `raise`, and add one test per error class |
+| 5b | `SEMANTICS.md` | write seven sections, each with a rule, an example, and its real output |
+| 5c | `differential/`, `test_interpreter.py` | run the five provided programs and pin their outputs in tests |
+| T.1 to T.4 (typing direction) | `types.py` (see the warning in T.1), `typecheck.py`, `mylang.py`, `TYPES.md` | in place of 5b and 5c |
+| I.1 to I.4 (Intcode direction) | `INTCODE.md`, `intcode.py`, `test_interpreter.py` | in place of 5b and 5c |
+
 ### What You Already Have
 
 Three pieces of this assignment exist before you start, and the schedule put them there deliberately.  Find them first, because the window is too short to rebuild any of them.
@@ -205,6 +231,11 @@ Please tell me early rather than late if this window is not working for you.  Th
 
 A Python `dataclass` writes `__init__`, `__repr__`, and `__eq__` for you, so a failing test prints the exact tree it was handed.  Define the node types below as `@dataclass` classes in `ast_nodes.py`.  Every field must have a type annotation and a one-line comment explaining its meaning.  Store source positions (line, col) on nodes where they aid error reporting, at minimum on `Var`, `BinOp`, `UnaryOp`, `Let`, and `Assign`.  Three design decisions are built into the list: `Var` carries a line because an undefined name is the first runtime error you report with a position; `LogicOp` is separate from `BinOp` because `and` and `or` must short-circuit (Step 2b); and `Let` and `Assign` are separate because defining a name and updating one are different operations on the environment (Step 2c).  If your parser already defines these nodes, compare each one against the definitions below and reconcile field names, since the evaluator dispatches on exactly these classes.
 
+**You write:** `ast_nodes.py` - the sixteen node dataclasses below
+**You run:** `python3 -c "from ast_nodes import Num, BinOp; print(BinOp('+', Num(1), Num(2)))"`
+
+The skeleton gives every leaf and expression node a `line` and a `col`, and does the same for `Let` and `Assign`.  `Print`, `Block`, `If`, `While`, `Break`, and `Continue` carry a `line` only.  Later steps need the column: Step 2a's type errors and Step 4c's `Type error at line L, col C` both print one.  These are the same fields, in the same order, as the reference `ast_nodes.py`, so the reference parser can build these classes without changes.  If your Parser assignment declared positions as `field(default=0, compare=False)`, keep that form.  It changes how `==` treats positions, not what the node prints.
+
 ```python
 from dataclasses import dataclass, field
 from typing import Any, List, Optional
@@ -212,72 +243,85 @@ from typing import Any, List, Optional
 @dataclass
 class Num:
     value: float          # the numeric value (already parsed)
-    line: int = 0
+    line: int = 0         # 1-indexed source line (0 if built by hand)
+    col: int = 0          # 1-indexed source column (0 if built by hand)
 @dataclass
 class Str:
     value: str            # decoded string value (escapes resolved)
     line: int = 0
+    col: int = 0
 @dataclass
 class BoolLit:
     value: bool           # True or False
     line: int = 0
+    col: int = 0
 @dataclass
 class Var:
     name: str             # variable name as it appears in source
     line: int = 0
+    col: int = 0
 # --- Expressions: nodes that combine values ---
 @dataclass
 class BinOp:
     op: str               # one of: + - * / < <= > >= == !=
-    left: Any
-    right: Any
-    line: int = 0
+    left: Any             # left operand expression
+    right: Any            # right operand expression
+    line: int = 0         # position of the operator token
+    col: int = 0
 @dataclass
 class UnaryOp:
     op: str               # one of: - not
-    operand: Any
+    operand: Any          # the operand expression
     line: int = 0
+    col: int = 0
 @dataclass
 class LogicOp:
     op: str               # "and" or "or"; separate from BinOp for short-circuit
-    left: Any
-    right: Any
+    left: Any             # left operand expression
+    right: Any            # right operand (may never be evaluated)
     line: int = 0
+    col: int = 0
 # --- Statements: run for their effect, return no value ---
 @dataclass
 class Let:
     name: str             # variable name being defined
     value: Any            # initializer expression
     line: int = 0
+    col: int = 0
 @dataclass
 class Assign:
     name: str             # variable name being updated (must already exist)
-    value: Any
+    value: Any            # new value expression
     line: int = 0
+    col: int = 0
 @dataclass
 class Print:
     value: Any            # expression to evaluate and print
+    line: int = 0
 @dataclass
 class Block:
-    stmts: List[Any] = field(default_factory=list)
+    stmts: List[Any] = field(default_factory=list)  # statements, in order
+    line: int = 0
 @dataclass
 class If:
-    condition: Any
+    condition: Any        # test expression
     then_branch: Any      # always a Block
     else_branch: Any      # Block, If, or None
+    line: int = 0
 @dataclass
 class While:
-    condition: Any
+    condition: Any        # test expression, re-evaluated each iteration
     body: Any             # always a Block
+    line: int = 0
 @dataclass
 class Break:
-    line: int = 0
+    line: int = 0         # source line, for "break outside loop" errors
 @dataclass
 class Continue:
     line: int = 0
 @dataclass
 class Program:            # the root your file runner hands to the evaluator
-    stmts: List[Any] = field(default_factory=list)
+    stmts: List[Any] = field(default_factory=list)  # top-level statements
 ```
 
 Check that the file loads and that `__repr__` is doing its job:
@@ -286,11 +330,107 @@ Check that the file loads and that `__repr__` is doing its job:
 python3 -c "from ast_nodes import Num, BinOp; print(BinOp('+', Num(1), Num(2)))"
 ```
 
-> **You should see.** `BinOp(op='+', left=Num(value=1, line=0), right=Num(value=2, line=0), line=0)`.  An `AttributeError` or a `TypeError` about positional arguments means a field is missing or out of order.
+> **You should see.**
+>
+> ```text
+> BinOp(op='+', left=Num(value=1, line=0, col=0), right=Num(value=2, line=0, col=0), line=0, col=0)
+> ```
+
+> **If it fails.**
+> - `TypeError: BinOp.__init__() missing 1 required positional argument`: a field without a default is missing, or the fields are out of order.  `op`, `left`, and `right` come first; the defaulted positions come last.
+> - `TypeError: non-default argument 'value' follows default argument`: a field with a default sits above one without.  Move `line` and `col` to the end of the class.
+> - The output has no `col=0`: you kept your Parser's nodes without adding the column.  Add it now, because Steps 2a and 4c print it.
 
 ### Step 1b: Build the Visitor Dispatch
 
+#### Before You Code: How the Evaluator Lives in Python
+
+An evaluator is built from three Python patterns that you may not have combined before.  Here is each one in miniature, so the full evaluator becomes a bigger version of code you have already run.
+
+| Idea | Python form | Where you use it |
+|---|---|---|
+| Dispatch on node type | an `isinstance` chain (`if isinstance(node, Num): ... elif isinstance(node, BinOp): ...`), or a dict from class to handler (`HANDLERS[type(node)](node)`) | `eval_node` in this step; `check` in Part 4 |
+| An environment chain | an object holding a dict of bindings plus a `_parent` link; a lookup checks its own dict, then follows the link outward until it finds the name or the link is `None` | `Environment` in Step 2c; `TypeEnv` in Part 4 |
+| A signal | an exception class raised deep inside the walk and caught by one `try`/`except` higher up; every call in between unwinds on its own | `BreakSignal` and `ContinueSignal` in Step 2d |
+
+This page uses the `isinstance` chain, because it reads top to bottom and a missing branch falls through to a clear `else`.  A dict of handlers is just as acceptable, and the rubric accepts either.  Whichever you pick, every node class has exactly one place where its meaning is written down.
+
+Save this as `evaluator_tour.py`.  It is scratch, so you do not submit it.  Before you run it, predict how many of the calls to `deep` return normally.
+
+```python
+from dataclasses import dataclass
+
+# 1. Dispatch: pick the code to run from the node's class.
+@dataclass
+class Num:
+    value: int
+@dataclass
+class Add:
+    left: object
+    right: object
+
+def eval_chain(node):                     # style 1: an isinstance chain
+    if isinstance(node, Num):
+        return node.value
+    elif isinstance(node, Add):
+        return eval_chain(node.left) + eval_chain(node.right)
+    else:
+        raise TypeError(f"Unknown node type: {type(node).__name__}")
+
+HANDLERS = {                              # style 2: a dict from class to function
+    Num: lambda node: node.value,
+    Add: lambda node: eval_dict(node.left) + eval_dict(node.right),
+}
+def eval_dict(node):
+    return HANDLERS[type(node)](node)
+
+tree = Add(Num(1), Add(Num(2), Num(3)))
+print("chain:", eval_chain(tree))
+print("dict: ", eval_dict(tree))
+
+# 2. Environments: each scope is a dict plus a link to its parent.
+outer = {"x": 2}
+inner = {"x": 51, "__parent__": outer}
+def find(scope, name):
+    while scope is not None:
+        if name in scope:
+            return scope[name]
+        scope = scope.get("__parent__")
+    raise KeyError(name)
+print("inner x:", find(inner, "x"), " outer x:", find(outer, "x"))
+
+# 3. Signals: an exception unwinds through every call between raise and except.
+class StopSignal(Exception):
+    pass
+def deep(n):
+    if n == 0:
+        raise StopSignal()
+    return deep(n - 1)
+try:
+    deep(3)
+except StopSignal:
+    print("caught StopSignal from 3 calls down")
+```
+
+Run it with `python3 evaluator_tour.py`.
+
+> **You should see.**
+>
+> ```text
+> chain: 6
+> dict:  6
+> inner x: 51  outer x: 2
+> caught StopSignal from 3 calls down
+> ```
+
+The second section is a toy: a real `Environment` is a class, not a dict with a `"__parent__"` key.  The shape is the same, though.  Look in this scope first, then walk outward.  Step 2c gives you the real class.
+
+#### Write the Dispatch
+
 Create `interpreter.py` with an `Interpreter` class and one `eval_node(node)` method that dispatches on node type using `isinstance`.  Paste the skeleton below and add one `elif` branch per remaining node type from Step 1a, each raising `NotImplementedError` naming the class; the `else` branch raises `InterpreterError("Unknown node type: ...")`.  The `env` parameter arrives in Step 2c; leave the default in place until then.  Before you write any evaluation logic, construct one instance of each class and confirm the `NotImplementedError` message names that class rather than reaching the `else`.
+
+**You write:** `interpreter.py` - `InterpreterError` and `Interpreter.eval_node`, with one branch per node class
+**You run:** `python3 check_dispatch.py`
 
 ```python
 from ast_nodes import *
@@ -308,6 +448,58 @@ class Interpreter:
         else:
             raise InterpreterError(f"Unknown node type: {type(node).__name__}")
 ```
+
+| `# TODO` | How to write it |
+|---|---|
+| one `elif` branch per remaining node type | Copy the `Str` branch once per class, as in `elif isinstance(node, BoolLit): raise NotImplementedError("BoolLit")`.  The string is the class name, so the message tells you which branch you reached.  Thirteen classes are missing: `BoolLit`, `Var`, `BinOp`, `UnaryOp`, `LogicOp`, `Let`, `Assign`, `Print`, `Block`, `If`, `While`, `Break`, and `Continue`.  Keep the `else` last. |
+
+Now check the dispatch.  Save this as `check_dispatch.py` (scratch, not submitted).  It builds one node of every class, plus one thing that is not a node at all, and reports which branch each one reached.
+
+```python
+from ast_nodes import *
+from interpreter import Interpreter
+
+samples = [Num(1), Str("s"), BoolLit(True), Var("x"),
+           BinOp("+", Num(1), Num(2)), UnaryOp("-", Num(1)),
+           LogicOp("and", BoolLit(True), BoolLit(False)),
+           Let("x", Num(1)), Assign("x", Num(2)), Print(Num(1)), Block(),
+           If(BoolLit(True), Block(), None), While(BoolLit(False), Block()),
+           Break(), Continue(), Program(), "not a node"]
+for node in samples:
+    try:
+        Interpreter().eval_node(node)
+    except NotImplementedError as err:
+        print("reached", err)
+    except Exception as err:
+        print(type(err).__name__ + ":", err)
+```
+
+> **You should see.**
+>
+> ```text
+> reached Num
+> reached Str
+> reached BoolLit
+> reached Var
+> reached BinOp
+> reached UnaryOp
+> reached LogicOp
+> reached Let
+> reached Assign
+> reached Print
+> reached Block
+> reached If
+> reached While
+> reached Break
+> reached Continue
+> reached Program
+> InterpreterError: Unknown node type: str
+> ```
+
+> **If it fails.**
+> - `InterpreterError: Unknown node type: Let` (or another class): that class has no `elif` yet.
+> - Two lines name the same class, such as `reached Str` twice: you copied a branch and did not change the class in its `isinstance` test.
+> - `NameError: name 'BoolLit' is not defined`: `ast_nodes.py` does not define that class, or `interpreter.py` lacks `from ast_nodes import *`.
 
 ---
 

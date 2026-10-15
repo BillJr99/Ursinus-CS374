@@ -794,9 +794,33 @@ Program(stmts=[
 ])
 ```
 
+**You write:** `while_example.txt` (the program above), a `test_while_example` test in `test_parser.py`, and the call trace in `readme.md`.
+**You run:** `python3 -c "from parser import parse; print(parse(open('while_example.txt').read()))"`, then `python3 test_parser.py`.
+
 > **Do this.**
 > 1. Save the program as `while_example.txt` in `cs374-parser/` and add a test that parses it and asserts the shape above (with `line` fields wherever your nodes carry them).
 > 2. Trace the parser's calls on this program in your writeup: list each `parse_...` function in the order it is entered, and what it returns.  Your trace should begin `parse_program`, `parse_stmt`, `parse_let_stmt`, `parse_expr`, and descend the ladder to `parse_primary` for `10` before returning.
+
+> **You should see.** The `python3 -c` command prints the full tree on one line.  It is the abbreviated tree above with every field name and every `line` written out:
+>
+> ```text
+> Program(stmts=[Let(name='x', value=Num(value=10, line=1)), While(condition=BinOp(op='>', left=Var(name='x', line=2), right=Num(value=0, line=2)), body=Block(stmts=[Print(value=Var(name='x', line=3)), Assign(name='x', value=BinOp(op='-', left=Var(name='x', line=4), right=Num(value=1, line=4)))]))])
+> ```
+
+The test can write the tree without any `line` values, because `==` ignores them:
+
+```python
+def test_while_example():
+    with open("while_example.txt") as f:
+        tree = parse(f.read())
+    assert tree == Program([
+        Let("x", Num(10)),
+        While(BinOp(">", Var("x"), Num(0)),
+              Block([Print(Var("x")), Assign("x", BinOp("-", Var("x"), Num(1)))])),
+    ])
+```
+
+Add `Program`, `Let`, `While`, `Block`, `Print`, and `Assign` to the `from ast_nodes import ...` line at the top of `test_parser.py`.  Run the test from `cs374-parser/`, so that `open("while_example.txt")` finds the file.
 
 ---
 
@@ -823,9 +847,59 @@ Program
           Num(1)
 ```
 
+**You write:** `ast_nodes.py` - `pretty`, below the dataclasses; `test_parser.py` - `test_pretty_while_example`.
+**You run:** `python3 -c "from parser import parse; from ast_nodes import pretty; print(pretty(parse(open('while_example.txt').read())))"`, then `python3 test_parser.py`.
+
 > **Do this.**
 > 1. Write `pretty()` with one case per node class.  A `match`/`case` over the node type or a chain of `isinstance` checks both work.
 > 2. Add a test that asserts `pretty(parse(source))` for the worked example equals the text above.
+
+Each node prints one header line at its own indent, then each child one level deeper.  The header formats below are the ones the worked example uses, plus the nodes it does not show:
+
+| Node | Header line | Then, one level deeper |
+|---|---|---|
+| `Program`, `Block` | `Program` or `Block` | each statement |
+| `Let`, `Assign` | `Let x` or `Assign x` | the value |
+| `Print` | `Print` | the value |
+| `While` | `While` | the condition, then the body |
+| `If` | `If` | the condition, the then-block, then (if there is one) an `Else` line one level deeper, with the else branch one level below that |
+| `BinOp`, `UnaryOp` | `BinOp(+)` or `UnaryOp(-)` | the operands, left first |
+| `Num`, `Var` | `Num(10)` or `Var(x)` | nothing |
+| `Str`, `BoolLit` | `Str('hi')` or `BoolLit(true)` | nothing |
+
+```python
+def pretty(node, indent=0):
+    """Return an indented view of the tree, two spaces per level of nesting."""
+    pad = "  " * indent
+    if isinstance(node, Program):
+        return "\n".join([pad + "Program"] + [pretty(s, indent + 1) for s in node.stmts])
+    if isinstance(node, Let):
+        return pad + f"Let {node.name}\n" + pretty(node.value, indent + 1)
+    if isinstance(node, BinOp):
+        return "\n".join([pad + f"BinOp({node.op})",
+                          pretty(node.left, indent + 1),
+                          pretty(node.right, indent + 1)])
+    if isinstance(node, Num):
+        return pad + f"Num({node.value})"
+    # TODO: Block, Assign, Print, While, If, UnaryOp, Var (and Str, BoolLit if you have them)
+    raise TypeError(f"pretty: no case for {type(node).__name__}")
+```
+
+| `# TODO` | How to write it |
+|---|---|
+| `Block` | The `Program` case with `"Block"` in the header. |
+| `Assign`, `Print` | The `Let` case.  `Print` has no name in its header, so its header is just `pad + "Print"`. |
+| `While`, `UnaryOp` | The `BinOp` shape: a list of the header and the children, joined with `"\n"`.  `UnaryOp` has one child, `node.operand`. |
+| `If` | Build `lines = [pad + "If", pretty(node.condition, indent + 1), pretty(node.then_branch, indent + 1)]`.  If `node.else_branch is not None`, append `pad + "  Else"` and `pretty(node.else_branch, indent + 2)`.  Return `"\n".join(lines)`. |
+| `Var` | `pad + f"Var({node.name})"`. |
+| the test | Store the expected text in a triple-quoted string that starts right after the quotes, `EXPECTED = """Program` on the first line, and ends with `Num(1)"""` with no newline after it.  Then `assert pretty(tree) == EXPECTED`. |
+
+> **You should see.** The `python3 -c` command prints exactly the fourteen lines above, from `Program` to the last `Num(1)`.
+
+> **If it fails.**
+> - `TypeError: pretty: no case for Var`: a node class has no case yet.  The message names it.
+> - The children line up with their parent: you passed `indent` to the recursive call instead of `indent + 1`.
+> - The test fails although the output looks right: the expected string has an extra newline at its start or end.  Print `repr(pretty(tree))` and `repr(EXPECTED)` to see the difference.
 
 ### Step 3b: Write the Unparser
 
@@ -834,9 +908,90 @@ Write `unparse(node) -> str` in `ast_nodes.py`.  It regenerates valid source cod
 - `unparse(BinOp("+", Num(2), BinOp("*", Num(3), Num(4))))` -> `"2 + 3 * 4"` (no parentheses needed).
 - `unparse(BinOp("*", Num(2), BinOp("+", Num(3), Num(4))))` -> `"2 * (3 + 4)"` (parentheses required).
 
+**You write:** `ast_nodes.py` - `PRECEDENCE`, `prec`, `unparse_child`, and `unparse`, below `pretty`; `test_parser.py` - `test_unparse_examples`.
+**You run:** `python3 test_parser.py`, and the `python3 -c` command after the hints.
+
 > **Do this.**
 > 1. Write a precedence table (a dictionary from operator string to an integer) that mirrors the ladder in Part 1.
 > 2. Write `unparse()` so that the two examples above produce exactly the strings shown, and add both as tests.
+
+The precedence table is a plain `dict`.  A larger number binds tighter, so the numbers climb as you go down the Part 1 ladder from `or_expr` to `unary`.  The exact numbers do not matter; only their order does.  Here is the shape, with the first rows filled in:
+
+```python
+PRECEDENCE = {
+    "or": 1,
+    "and": 2,
+    "not": 3,
+    # TODO: the six comparison operators, all on one level
+    # TODO: "+" and "-" on one level, then "*" and "/" on the next
+}
+UNARY_MINUS = 7      # tighter than any binary operator
+ATOM = 100           # literals and variables never need parentheses
+COMPARISON = 4       # the comparison level, which does not chain
+
+
+def prec(node):
+    """Return how tightly `node` binds, using PRECEDENCE."""
+    if isinstance(node, BinOp):
+        return PRECEDENCE[node.op]
+    if isinstance(node, UnaryOp):
+        return PRECEDENCE["not"] if node.op == "not" else UNARY_MINUS
+    return ATOM
+
+
+def unparse_child(child, parent_prec, is_right):
+    """Unparse one operand, adding parentheses only when the tree needs them."""
+    text = unparse(child)
+    # TODO: decide `needs` from prec(child), parent_prec, and is_right
+    return f"({text})" if needs else text
+
+
+def unparse(node, indent=0):
+    """Regenerate source code that parses back to the same tree."""
+    pad = "    " * indent
+    if isinstance(node, BinOp):
+        p = PRECEDENCE[node.op]
+        return f"{unparse_child(node.left, p, False)} {node.op} {unparse_child(node.right, p, True)}"
+    if isinstance(node, Num):
+        return str(node.value)
+    if isinstance(node, Let):
+        return f"{pad}let {node.name} = {unparse(node.value)};"
+    # TODO: Var, UnaryOp, Assign, Print, Block, If, While, Program (and Str, BoolLit)
+    raise TypeError(f"unparse: no case for {type(node).__name__}")
+```
+
+| `# TODO` | How to write it |
+|---|---|
+| comparison rows | `"<": 4, "<=": 4, ">": 4, ">=": 4, "==": 4, "!=": 4,` |
+| arithmetic rows | `"+": 5, "-": 5,` and `"*": 6, "/": 6,` |
+| `needs` | Start with `needs = prec(child) < parent_prec`.  Then, if `prec(child) == parent_prec`, set `needs = True` when `is_right` is true, or when `parent_prec == COMPARISON`.  That second case keeps `(a < b) < c` from coming out as `a < b < c`, which does not parse. |
+| `Var` | `return node.name`. |
+| `UnaryOp` | `operand = unparse(node.operand)`; wrap it in parentheses when `prec(node.operand) < prec(node)`.  Return `f"not {operand}"` or `f"-{operand}"`.  The space after `not` matters: `notx` lexes as an identifier. |
+| `Assign`, `Print` | The `Let` case, without `let` (for `Assign`) or with `print` and no name (for `Print`). |
+| `Block` | `inner = [unparse(s, indent + 1) for s in node.stmts]`, then `return "\n".join([pad + "{"] + inner + [pad + "}"])`. |
+| `While`, `If` | `f"{pad}while {unparse(node.condition)} " + unparse(node.body, indent).lstrip()`.  `If` is the same with `if`, plus `" else " + unparse(node.else_branch, indent).lstrip()` when there is an else branch.  `.lstrip()` removes the block's own indent, because the block starts on the same line. |
+| `Program` | `return "\n".join(unparse(s) for s in node.stmts)`. |
+
+```bash
+python3 -c "from parser import parse; from ast_nodes import unparse; print(unparse(parse(open('while_example.txt').read())))"
+```
+
+> **You should see.** The worked example, regenerated with four-space indents:
+>
+> ```text
+> let x = 10;
+> while x > 0 {
+>     print x;
+>     x = x - 1;
+> }
+> ```
+>
+> **Predict** before you run it: what does `unparse(BinOp("-", BinOp("-", Num(8), Num(3)), Num(2)))` print, and which rule in `unparse_child` decides it?
+
+> **If it fails.**
+> - `8 - (3 - 2)` comes out as `8 - 3 - 2`: you never set `needs` for a right child at the same level.
+> - `2 + 3 * 4` comes out as `2 + (3 * 4)`: you parenthesize every `BinOp` child.  Compare precedences instead.
+> - `NameError: name 'needs' is not defined`: the `needs = ...` line is still a `# TODO`.
 
 ### Step 3c: Verify the Round Trip
 
@@ -851,14 +1006,45 @@ assert pretty(tree1) == pretty(tree2), f"Round-trip failed on: {source}"
 
 This checks that `unparse` produces valid code and that the code means the same thing as the original.  Put the check in your test runner so that every program you add to the suite, including the worked `while` example, is verified automatically by `python3 test_parser.py`.
 
+**You write:** `test_parser.py` - a `PROGRAMS` list and `test_round_trip_fixed`.
+**You run:** `python3 test_parser.py`
+
+One way to put it in the runner is a module-level list of source strings and one test that loops over it.  Add `pretty` and `unparse` to the imports from `ast_nodes`.
+
+```python
+PROGRAMS = [
+    "let x = 1;",
+    "print 8 - (3 - 2);",
+    "if a { print 1; } else if b { print 2; } else { print -(x); }",
+    open("while_example.txt").read(),
+    # TODO: every program your other tests parse
+]
+
+def test_round_trip_fixed():
+    for source in PROGRAMS:
+        tree1 = parse(source)
+        source2 = unparse(tree1)
+        tree2 = parse(source2)
+        assert pretty(tree1) == pretty(tree2), f"Round-trip failed on: {source}"
+```
+
+| `# TODO` | How to write it |
+|---|---|
+| more programs | Copy the source string from each `parse(...)` test into the list.  An expression test such as `expr("2 + 3 * 4")` becomes the program `"print 2 + 3 * 4;"`, because `parse` reads whole programs. |
+
+> **You should see.** A `PASS test_round_trip_fixed` line among the others, and a final line with `0 failed`.  On a failure, the message names the program that broke, for example `FAIL test_round_trip_fixed -- Round-trip failed on: print 8 - (3 - 2);`.
+
 ### Step 3d: Report Errors with Positions
 
 Every `ParseError` must state what token type was expected, what token type was found, and the line and column of the offending token, for example `ParseError at line 3, col 12: expected SEMICOLON, found RBRACE`.  Those four facts stay available as the `expected`, `found`, `line` and `col` attributes of the exception, as in the Step 2a skeleton, so that a test can assert on the position without pattern-matching the English.
 
-> **Watch out.** If your Lexer's `expect()` raises the lexer's own error type, catch it in a small helper in `parser.py` and re-raise it as a `ParseError` with the same line and column, so that every error the parser reports has one shape.
+> **Watch out.** If your Lexer's `expect()` raises the lexer's own error type, catch it in a small helper in `parser.py` and re-raise it as a `ParseError` with the same line and column, so that every error the parser reports has one shape.  The `expect` helper in the Step 2a skeleton already does this job a simpler way: it checks the peeked token itself and raises a `ParseError`, so the lexer's `expect` never runs.
+
+**You write:** a scratch file, `try_errors.py`, and the ten messages in `readme.md`.
+**You run:** `python3 try_errors.py`
 
 > **Do this.**
-> 1. Run the five provided broken programs and five programs you write yourself through the parser:
+> 1. Run the five provided broken programs (the five listed below) and five programs you write yourself through the parser:
 >    - Missing semicolon: `let x = 5`
 >    - Unclosed block: `while true { print x;`
 >    - Bad operator: `let x = 5 + * 3;`
@@ -867,14 +1053,59 @@ Every `ParseError` must state what token type was expected, what token type was 
 > 2. Record the error message for each in your readme.
 > 3. In your writeup, show the before and after of the one error message you improved most during development.
 
+Save this as `try_errors.py` in `cs374-parser/`.  It parses each program and prints the error it raises, so one run gives you every message:
+
+```python
+from parser import parse, ParseError
+
+BROKEN = [
+    "let x = 5",
+    "while true { print x;",
+    "let x = 5 + * 3;",
+    "print (1 + 2;",
+    "= 5;",
+    # TODO: your five broken programs
+]
+
+for source in BROKEN:
+    try:
+        parse(source)
+        print("no error?!", source)
+    except ParseError as err:
+        print(err)
+```
+
+| `# TODO` | How to write it |
+|---|---|
+| your five programs | One string each, aimed at a different rule: an unclosed `(`, a missing `{` after `if x`, a stray `else`, `a < b < c`, or a block missing its `}` in the middle of a longer program.  Use `"\n"` inside a string to put the error on line 2 or 3, so you can see the line number change. |
+
+> **You should see.** One message per provided program, each with a position, the expected token, and the found token:
+>
+> ```text
+> ParseError at line 1, col 10: expected SEMICOLON, found EOF
+> ParseError at line 1, col 22: expected RBRACE, found EOF
+> ParseError at line 1, col 13: expected an expression, found STAR
+> ParseError at line 1, col 13: expected RPAREN, found SEMICOLON
+> ParseError at line 1, col 1: expected a statement, found EQ
+> ```
+>
+> Your wording after `expected` may differ for the third and fifth lines, but the positions and the found tokens must match.
+
+> **If it fails.**
+> - A `LexError` traceback stops the script: one of your programs contains a character the lexer rejects, such as `@`.  That is a lexing error, not a parse error, so choose a program the lexer accepts.
+> - `no error?!` for a program: the parser accepted it.  Check whether the program really is invalid under your grammar before you change the parser.
+> - The column is one token too far right: that parsing function consumed the bad token before it raised.
 ### Step 3e: Property-Based Testing with Hypothesis
 
 Your fixed test suite in Step 3c checks the round-trip law only on the programs *you thought to write*.  The interesting bugs live in the programs you did not think of: a unary minus applied to a parenthesized subtraction, an operator at exactly the precedence boundary, a deeply right-nested chain.  [Property-based testing](https://hypothesis.readthedocs.io/) finds those for you: instead of writing examples, you write a *generator* of random ASTs and assert that the law holds for all of them, and when it fails, Hypothesis **shrinks** the counterexample to the smallest tree that still breaks it.  This step is required, and the full walkthrough is in the [Property-Based Testing tutorial]({{ site.baseurl }}/Tutorials/PropertyBasedTesting).
 
+**You write:** `test_parser.py` - the `leaves` and `exprs` strategies and `test_round_trip`; `readme.md` - your shrunk counterexample.
+**You run:** `python3 -m pytest -v test_parser.py`, then `python3 -m pytest -v test_parser.py > test_output.txt` to save the passing run.
+
 > **Do this.**
 > 1. Install Hypothesis with `uv add hypothesis` (or `pip install hypothesis`), and install pytest with `pip install pytest` if `pytest --version` reports that the command is not found.
 > 2. Write an AST generator using `hypothesis.strategies.recursive`, so that trees can nest to arbitrary depth.  Add the sketch below to `test_parser.py`.
-> 3. Run it with `pytest test_parser.py` (pytest discovers `@given` tests automatically).  When it fails, and on a first parser it usually will, Hypothesis prints the minimal failing tree.  Fix the bug (commonly a missing parenthesization rule in `unparse`, or a precedence/associativity error in `parse`), and re-run until it passes.
+> 3. Run it with `python3 -m pytest -v test_parser.py` (pytest discovers `@given` tests automatically, and `-v` prints one line per test).  When it fails, and on a first parser it usually will, Hypothesis prints the minimal failing tree.  Fix the bug (commonly a missing parenthesization rule in `unparse`, or a precedence/associativity error in `parse`), and re-run until it passes.
 > 4. Report one shrunk counterexample you fixed in your `readme.md`: the minimal tree Hypothesis found, the one-sentence root cause, and the fix.  This is the deliverable: evidence that the property found a real bug your fixed tests missed (or a reasoned statement of why your parser was already correct, with the generator shown).
 
 ```python
@@ -892,10 +1123,27 @@ exprs = st.recursive(
 
 @given(exprs)
 def test_round_trip(tree):
-    assert parse(unparse(tree)) == tree   # structural equality on your AST
+    assert expr(unparse(tree)) == tree   # structural equality on your AST
 ```
 
-> **You should see.** On a passing run, pytest reports `test_round_trip PASSED` among your other tests.  On a failing run, Hypothesis prints `Falsifying example:` followed by the smallest tree that breaks the law; copy that tree into your readme before you fix it.
+The generated trees are expressions, not programs, so the test re-parses them with the `expr` helper from Step 2b.  `parse` would not work here: it expects whole statements, and `x + 1` on its own is not one.  Put the sketch below the imports, and add `pretty` and `unparse` to the `from ast_nodes import ...` line if Step 3c did not already.
+
+> **You should see.** On a passing run, one `PASSED` line per test, ending with the Hypothesis test and a summary.  With the tests from this page's examples in the file, the end of the run looks like this.  Your test names, count, and time will differ:
+>
+> ```text
+> test_parser.py::test_unparse_examples PASSED                             [ 77%]
+> test_parser.py::test_round_trip_fixed PASSED                             [ 88%]
+> test_parser.py::test_round_trip PASSED                                   [100%]
+>
+> ============================== 9 passed in 0.94s ===============================
+> ```
+>
+> On a failing run, pytest prints the smallest tree that breaks the law under a heading such as `Falsifying example:` (recent Hypothesis versions write `Failing test case:` instead).  Copy that tree into your readme before you fix it.  The plain `python3 test_parser.py` runner also runs this test, but it prints only `FAIL test_round_trip --` with no tree, so use pytest to see the counterexample.
+
+> **If it fails.**
+> - `ParseError ... expected a statement` inside `test_round_trip`: the test calls `parse` instead of `expr`.
+> - Every generated tree fails on equality even though the source looks right: your `line` field takes part in `==`.  Declare it with `field(default=0, compare=False)` (Step 2a).
+> - `ModuleNotFoundError: No module named 'hypothesis'`: install it into the same Python that runs your tests, with `python3 -m pip install hypothesis`.
 
 > **What this direction requires.** Direction B (Mini-Notation): apply the same idea to your pattern AST.  Generate random nestings of sequences, alternations, and Euclidean rhythms, and assert that your tree printer round-trips (or that re-parsing your printed form yields the same event list).  The reference-validation table stands in for the fixed-example half; the Hypothesis generator stands in for this half.
 
