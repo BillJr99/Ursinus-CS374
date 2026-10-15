@@ -1262,7 +1262,7 @@ def check(node, tenv=None):
 
 | `# TODO` | How to write it |
 |---|---|
-| `define` and `lookup` | Copy `Environment.define` and `Environment.lookup`, with `_types` in place of `_bindings`.  Decide what `lookup` returns for a name that no scope declares; the note below the table explains the choice. |
+| `define` and `lookup` | Copy `Environment.define` and `Environment.lookup`, with `_types` in place of `_bindings`.  For a name that no scope declares, `lookup` returns `None`, an unknown type; the note below the table explains why. |
 | `Str`, `BoolLit`, `Var` | `return "Str"` and `return "Bool"`.  `Var` returns `tenv.lookup(node.name)`. |
 | `BinOp` | Check both sides first: `lt, rt = check(node.left, tenv), check(node.right, tenv)`.  For `+ - * /` and `< <= > >=`, raise when `(lt, rt) != ("Num", "Num")`, with a message naming both, such as `f"'{node.op}' requires Num operands, got {lt} and {rt}"`.  Arithmetic returns `"Num"` and comparisons return `"Bool"`.  `==` and `!=` need `lt == rt` and return `"Bool"`.  If your evaluator concatenates strings, let `+` accept two `"Str"` and return `"Str"`. |
 | `LogicOp` and `not` | Check each operand, and require `"Bool"` if you chose the strict rule above.  Return `"Bool"`.  While you are here, unary `-` needs `"Num"` and returns `"Num"`. |
@@ -1270,7 +1270,7 @@ def check(node, tenv=None):
 | `Block` | `inner = TypeEnv(parent=tenv)`, then a `for` loop calling `check(stmt, inner)`.  `Program` is the same loop, run in `tenv` itself.  The statements without a TODO line need branches too: `Assign` (the new value's type must equal the declared one), `Print` (check the expression), `If` and `While` (check the condition, then each branch or body), and `Break` and `Continue` (nothing to check).  Statements `return None`. |
 | call sites | Only if your language has functions.  The core grammar on this page has none, so say that in your readme and leave this TODO as a comment. |
 
-**A name with no declared type.**  Your lab's `lookup` raised an error for a name no scope declares, and reported it as a Type error.  That is defensible.  Once the Type stage runs first, though, an undefined name never reaches the evaluator, so Step 5a's `LangNameError` can no longer be shown through `mylang.py`.  The alternative is for `lookup` to return `None`, meaning "unknown," for every rule to skip its check when a side is `None`, and for the Run stage to report the undefined name as it does now.  The outputs in Steps 4c and 5c use the second choice.  Either is acceptable; record yours in your readme, as Part 4's opening asks for any gap.
+**A name with no declared type.**  An undeclared variable is a Run-stage error.  The checker treats a name that no scope declares as an *unknown* type: `lookup` returns `None`, and every rule skips its check when a side is `None`.  The evaluator then reports the name with `LangNameError`, as it does now, so Step 5a's `LangNameError` stays visible through `mylang.py`.  If you did the Type Checker lab, your checker already works this way.
 
 ```bash
 python3 -c "from parser import parse; from typechecker import check; check(parse('let x: Num = 42;')); print('ok')"
@@ -1333,7 +1333,7 @@ print total + label;
 > **If it fails.**
 > - `10` prints before the Type error: `check` runs inside or after evaluation.  It must finish before `eval_node` starts.
 > - `Type error at line 0, col 0`: a `raise` in `typechecker.py` is missing the node's position.
-> - The REPL transcript from Step 3b changes: an undefined name now stops at the Type stage.  That follows from the first choice in the Step 4b note; with the second choice, the transcript stays exactly as Step 3b shows it.
+> - The REPL transcript from Step 3b changes, and an undefined name now stops at the Type stage: your `TypeEnv.lookup` still raises for a missing name.  Return `None` instead, as the Step 4b note says, and the transcript stays exactly as Step 3b shows it.
 
 ---
 
@@ -1407,7 +1407,7 @@ Then check the staged reporting end to end.  Step 3a's four error files, Step 4c
 > Runtime error at line 1: Undefined variable 'missing'
 > ```
 >
-> The other four files print exactly what Step 3a showed.  If `badname.ml` stops at the Type stage instead, you took the first choice in the Step 4b note.  That is fine, but your `SEMANTICS.md` example for the name error must then show the Type line.
+> The other four files print exactly what Step 3a showed.  If `badname.ml` stops at the Type stage instead, your `TypeEnv.lookup` still raises for a missing name; return `None`, as the Step 4b note says.
 
 > **If it fails.**
 > - An `except LangNameError` does not catch the error your `Environment` raises: there are two copies of the class, one from the lab's `environment.py` and one in `interpreter.py`.  Delete one and import the other.

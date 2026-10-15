@@ -19,7 +19,8 @@ class TypeEnv:
         self._types = {}
         self._parent = parent
 
-    # TODO: define(name, typ) and lookup(name), same shape as Environment
+    # TODO: define(name, typ) and lookup(name), same shape as Environment,
+    #       except that lookup returns None for a name no scope declares
 
 
 def check(node, tenv=None):
@@ -29,7 +30,8 @@ def check(node, tenv=None):
 
     if isinstance(node, Num):
         return "Num"
-    # TODO: Str -> "Str", BoolLit -> "Bool", Var -> tenv.lookup(...)
+    # TODO: Str -> "Str", BoolLit -> "Bool", Var -> tenv.lookup(...), None for an
+    #       undeclared name (the Run stage reports it); every rule skips None
     # TODO: BinOp: arithmetic needs Num operands; comparisons yield Bool
     # TODO: LogicOp and UnaryOp("not") need Bool
     # TODO: Let: check the initializer against type_ann, then tenv.define
