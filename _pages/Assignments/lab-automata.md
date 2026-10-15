@@ -411,7 +411,7 @@ Each arrow in the diagram is one entry in `delta`.  The `1` arrow from `even` to
 
 #### Before You Code: How a DFA Lives in Python
 
-Every program in this lab works on the same Python objects, so it is worth meeting them once before you write any of it.  When `json.load` reads the file above, each JSON object becomes a Python dictionary (`dict`) and each JSON list becomes a Python `list`.  The machine is therefore one dictionary with five keys, and the moves sit in `machine["delta"]`, which is a dictionary of dictionaries.
+Every program in this lab works on the same Python objects, so meet them here, before you write any of it.  When `json.load` reads the file above, each JSON object becomes a Python dictionary (`dict`) and each JSON list becomes a Python `list`.  The machine is therefore one dictionary with five keys, and the moves sit in `machine["delta"]`, which is a dictionary of dictionaries.
 
 Finding the next state takes two lookups, one per level.  The first picks the row for the current state, and the second picks the arrow for the symbol:
 
@@ -459,7 +459,7 @@ print("even" in machine["accept"], "2" in machine["alphabet"])
 >
 > **Predict** before you move on: what does `delta["odd"]["1"]` print, and which arrow in the diagram is it?
 
-Start with this one machine, not with the full simulator.  The smallest program that runs it is about ten lines long, and you write it now in its own file, `dfa_core.py`.  Every later step builds on the same idea, so it pays to see it work in its plainest form first.
+Start with this one machine, not with the full simulator.  The smallest program that runs it is about ten lines long, and you write it now in its own file, `dfa_core.py`.  Every later step builds on the same idea, so you see it work in its simplest form first.
 
 **You write:** `machines/even_ones.json` (above) and a new file, `dfa_core.py`.
 **You run:** `python3 dfa_core.py 0110` and `python3 dfa_core.py 100`.
@@ -492,7 +492,7 @@ Start with this one machine, not with the full simulator.  The smallest program 
    for symbol in sys.argv[1]:
    ```
 
-5. Inside the loop, follow one arrow.  `machine["delta"][state]` is the row for the current state, and `[symbol]` picks the arrow for this symbol.  This line is the transition function $$\delta(q, a)$$ written in Python, and it is the whole simulation.
+5. Inside the loop, follow one arrow.  `machine["delta"][state]` is the row for the current state, and `[symbol]` picks the arrow for this symbol.  This line is the transition function $$\delta(q, a)$$ written in Python.  The rest of the file loads the machine and reports the result.
 
    ```python
        state = machine["delta"][state][symbol]
@@ -828,7 +828,7 @@ An NFA changes two things about the Python objects you used for the DFA.  Its mo
 
 *Moves, keyed by a string pair.*  You build the key from a state and a symbol with an f-string, `f"{state},{symbol}"`, so `q0` on `a` becomes the key `"q0,a"`.  The value is a list, because one label can lead to several states.  A pair with no arrow has no key at all, so you read moves with `delta.get(key, [])`.  A missing key then reads as "no moves," an empty list, and the loop that uses it simply does nothing.
 
-*ε-moves are just another key.*  An ε-arrow from `q1` is stored under `"q1,eps"`, and you read it with `delta.get(f"{state},eps", [])`, exactly like any other move.  `eps` never goes in `alphabet`, because the alphabet lists the symbols a string can contain, and no input string ever contains an ε.
+*ε-moves use the same kind of key.*  An ε-arrow from `q1` is stored under `"q1,eps"`, and you read it with `delta.get(f"{state},eps", [])`, exactly like any other move.  `eps` never goes in `alphabet`, because the alphabet lists the symbols a string can contain, and no input string ever contains an ε.
 
 *Several states at once: a Python set.*  The active set is a Python `set`, and each property of a set matches something the NFA needs:
 
@@ -839,7 +839,7 @@ An NFA changes two things about the Python objects you used for the DFA.  Its mo
 | the union of every active state's moves | `update` adds a whole list at once | `moved.update(targets)` |
 | "is any accepting state active?" | fast membership | `"q2" in active` |
 
-Watch one trap.  `{}` is an empty *dictionary*, not an empty set.  Write an empty set as `set()`.
+One pitfall: `{}` is an empty *dictionary*, not an empty set.  Write an empty set as `set()`.
 
 *Why `eps_closure` returns a `frozenset`.*  A `set` can change after you build it, so Python will not let you put one inside another set or use one as a dictionary key.  A `frozenset` holds the same states and cannot change, so it can go in both places.  You need that in Part 3, where each row of the subset-construction table is a set of NFA states, and you have to ask "have I seen this set before?"  Python compares frozensets by their contents, so the order you wrote the states in never matters.
 
@@ -931,7 +931,7 @@ The loop works from a to-do list.  `frontier` holds the states whose ε-arrows y
 
 | `# TODO` | How to write it |
 |---|---|
-| look up | `targets = machine["delta"].get(f"{state},eps", [])`.  A state with no ε-arrows gets `[]`, so the next loop simply does nothing. |
+| look up | `targets = machine["delta"].get(f"{state},eps", [])`.  A state with no ε-arrows gets `[]`, so the next loop does nothing. |
 | add and push | `for target in targets:` then `if target not in closure:` then `closure.add(target)` and `frontier.append(target)`.  The `not in closure` test is the cycle check: a state you have already found is never pushed again. |
 
 ```json
