@@ -405,10 +405,6 @@ schedule:
     dlink: "Assignments/Regex"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-regex.md"
-  - dtitle: "Programming Assignment: Build a Lexer Handed Out"
-    dlink: "Assignments/Lexer"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-lexer.md"
   readings:
   - rtitle: "For the Parser assignment (Step 3e): Property-Based Testing with Hypothesis, covering the round-trip property and how to shrink a failing case"
     rlink: "Tutorials/PropertyBasedTesting"
@@ -417,6 +413,11 @@ schedule:
   title: "Table-Driven and LR Parsing"
   link: "Activities/liascript-parsertable.md"
   liapage: true
+  deliverables:
+  - dtitle: "Programming Assignment: Build a Lexer Handed Out"
+    dlink: "Assignments/Lexer"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-lexer.md"
   readings:
   - rtitle: "Building an LR Parser from the Grammar Up, the companion to Part 4 of the Parser assignment, which walks the same construction on a smaller grammar with runnable code"
     rlink: "Tutorials/LRConstruction"
@@ -445,11 +446,6 @@ schedule:
   title: "Control Flow and Statement Semantics (Interpretation, Day 2)"
   link: "Activities/liascript-controlflowsemantics.md"
   liapage: true
-  deliverables:
-  - dtitle: "Programming Assignment: Parser and AST Handed Out"
-    dlink: "Assignments/Parser"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-parser.md"
   readings:
   - rtitle: "This session is Day 2 of tree-walking interpretation: statements change state, where expressions returned values."
     rlink: false
@@ -465,6 +461,10 @@ schedule:
   link: "Activities/liascript-bindingscope.md"
   liapage: true
   deliverables:
+  - dtitle: "Programming Assignment: Parser and AST Handed Out"
+    dlink: "Assignments/Parser"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-parser.md"
   - dtitle: "Lab: Environments and Scope Handed Out"
     dlink: "Assignments/EnvironmentsLab"
     points: "15"
