@@ -99,7 +99,7 @@ You need:
 > 2. Create the deliverable files up front so each part has a home: `interpreter.py` (evaluator, Environment, error hierarchy), `mylang.py` (file runner and REPL, Part 3), `typechecker.py` (Part 4), `SEMANTICS.md` (Part 5), and `test_interpreter.py`.  Rather than transcribing them, copy the [starter kit]({{ site.baseurl }}/files/starters/interpreter/) from `files/starters/interpreter/`: it holds those four Python files with every skeleton from this page already in place, and every `TODO` still yours to fill.  The seeded tests fail until you implement the branches they exercise, which is how you know they are running.
 Your file runner is `mylang.py` and your programs end in `.ml`; the reference pipeline ships a `mylang.py` and `samples/*.ml` so the commands in this assignment work unchanged against it.
 
-The starter kit differs from this page in four small places, and where they differ, follow this page: `Environment` tests its parent with `is not None` (Step 2c), `LangError` calls `super().__init__` (Step 2a), the signal classes carry a `line` (Step 2d), and `mylang.py` gains a `run_source` helper (Step 3a).
+The starter kit matches this page: every skeleton below, including the error hierarchy, the signal classes, the `Environment`, and `mylang.py`'s `run_source`, is already in it, with every `TODO` still yours.
 
 > 3. From inside the folder, confirm your Python version, install Hypothesis, and confirm the pipeline is connected:
 >
@@ -677,7 +677,7 @@ An environment is the table that maps variable names to their current values.  E
 **You write:** `interpreter.py` - `Environment` (from your lab), `format_value`, and the `Assign`, `Print`, `Block`, `If`, and `While` branches
 **You run:** `python3 -c "from parser import parse; from interpreter import Interpreter; Interpreter().eval_node(parse(open('shadow.ml').read()))"`
 
-Paste the class, not the lab's `LangError` and `LangNameError`.  Step 2a already defined those in this file, and the lab's warning applies here: with two copies of `LangNameError`, an `except LangNameError` can miss the one your `Environment` raises.  The parent tests below read `is not None`, as the lab recommends.  The starter kit's copy still says `if self._parent:`; change it to match.
+Paste the class, not the lab's `LangError` and `LangNameError`.  Step 2a already defined those in this file, and the lab's warning applies here: with two copies of `LangNameError`, an `except LangNameError` can miss the one your `Environment` raises.  The parent tests below read `is not None`, as the lab recommends.  The starter kit's copy already does.
 
 ```python
 class Environment:
@@ -813,7 +813,7 @@ python3 -c "from parser import parse; print(parse('while true { break; }'))"
 >
 > A `ParseError` on `break;` (often `expected EQ, found SEMICOLON`) means the lexer read `break` as an `IDENT`, so `parse_stmt` treated it as the start of an assignment.
 
-Now the evaluator.  The starter kit declares each signal in one line; give each a `line`, so Step 3a can say where a stray `break` was:
+Now the evaluator.  Each signal carries a `line`, so Step 3a can say where a stray `break` was.  The starter kit already declares both classes this way:
 
 ```python
 class BreakSignal(Exception):
