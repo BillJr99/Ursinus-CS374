@@ -409,6 +409,56 @@ Each arrow in the diagram is one entry in `delta`.  The `1` arrow from `even` to
 | `0110` | even → even → odd → even → even | accept |
 | `100` | even → odd → odd → odd | reject |
 
+#### Before You Code: How a DFA Lives in Python
+
+Every program in this lab works on the same Python objects, so it is worth meeting them once before you write any of it.  When `json.load` reads the file above, each JSON object becomes a Python dictionary (`dict`) and each JSON list becomes a Python `list`.  The machine is therefore one dictionary with five keys, and the moves sit in `machine["delta"]`, which is a dictionary of dictionaries.
+
+Finding the next state takes two lookups, one per level.  The first picks the row for the current state, and the second picks the arrow for the symbol:
+
+| In the diagram | In the JSON | In Python | Value |
+|---|---|---|---|
+| the row of arrows out of `even` | `"even": {"0": "even", "1": "odd"}` | `delta["even"]` | `{'0': 'even', '1': 'odd'}` |
+| the arrow out of `even` on `1` | `"1": "odd"` inside `"even"` | `delta["even"]["1"]` | `'odd'` |
+| the next state, in general | | `delta[state][symbol]` | $$\delta(q, a)$$ |
+
+Two more operations cover the rest of the DFA work:
+
+- **Looking up a key that may be missing.**  `delta["happy"]` raises a `KeyError`, because there is no state named `happy`.  `delta.get("happy")` returns `None` instead, and `delta.get("happy", {})` returns the default you supply, here an empty dictionary.  You use `.get` in the loader (Step 1.2), whose job is to find missing pairs and report them.  You use plain `[...]` in `run_dfa` (Step 1.3), because by then the loader has proved that every pair exists.
+- **Testing membership.**  `state in machine["accept"]` asks whether a state accepts, and `symbol in machine["alphabet"]` asks whether a symbol is legal.  Both are lists, which is fine for machines this small.  Turning them into sets with `set(...)` makes the test faster on large machines, and that change is optional.
+
+To see all of this before you rely on it, save the lines below as `explore_dfa.py`, a scratch file you do not submit, and run `python3 explore_dfa.py` from inside `cs374-automata`:
+
+```python
+import json
+
+with open("machines/even_ones.json") as f:
+    machine = json.load(f)
+delta = machine["delta"]
+
+print(type(machine).__name__, sorted(machine))  # a dict, and its five keys
+print(delta["even"])                            # the row for state even
+print(delta["even"]["1"])                       # one arrow: even on 1
+row = delta["even"]
+print(row["0"])                                 # the same idea, in two steps
+print(delta.get("happy"))                       # no such state: None, not a crash
+print(delta.get("happy", {}).get("1"))          # missing row, then missing arrow
+print("even" in machine["accept"], "2" in machine["alphabet"])
+```
+
+> **You should see.**
+>
+> ```text
+> dict ['accept', 'alphabet', 'delta', 'start', 'states']
+> {'0': 'even', '1': 'odd'}
+> odd
+> even
+> None
+> None
+> True False
+> ```
+>
+> **Predict** before you move on: what does `delta["odd"]["1"]` print, and which arrow in the diagram is it?
+
 Start with this one machine, not with the full simulator.  The smallest program that runs it is about ten lines long, and you write it now in its own file, `dfa_core.py`.  Every later step builds on the same idea, so it pays to see it work in its plainest form first.
 
 **You write:** `machines/even_ones.json` (above) and a new file, `dfa_core.py`.
@@ -642,7 +692,7 @@ Each `# TODO` in `run_dfa` is one or two lines:
 | `# TODO` | How to write it |
 |---|---|
 | unknown symbol | `if symbol not in machine["alphabet"]:` then `print(f"reject: symbol {symbol!r} is not in the alphabet")` and `return False`. |
-| move | `state = machine["delta"][state][symbol]`, the same line as in `dfa_core.py`.  It is safe now, because the loader already proved that every pair exists. |
+| move | `state = machine["delta"][state][symbol]`, the same line as in `dfa_core.py`.  It is safe now, because the loader already proved that every pair exists.  *Before You Code: How a DFA Lives in Python* in Step 1.1 shows the two lookups. |
 | trace | `if trace:` then `print(f"read {symbol} -> {state}")`. |
 
 `main` mentions `run_nfa`, which you do not write until Part 2.  The line still works for a DFA, because Python evaluates only the branch of `run_nfa if is_nfa(machine) else run_dfa` that it takes.  When you finish this step, `simulator.py` holds these pieces, from top to bottom:
@@ -772,6 +822,86 @@ Before you write any NFA code, encode an NFA whose behavior you already know, so
 
 > **If it fails.**  A `MachineError` about a symbol such as `'a"'` or `' b'` usually means a stray quote or space inside a key.  Each key is exactly a state, a comma, and a symbol, with no spaces.  When you finish, the file has three keys.
 
+#### Before You Code: How an NFA Lives in Python
+
+An NFA changes two things about the Python objects you used for the DFA.  Its moves are looked up by one string key instead of two nested keys, and the machine is in a *set* of states instead of one state.
+
+*Moves, keyed by a string pair.*  You build the key from a state and a symbol with an f-string, `f"{state},{symbol}"`, so `q0` on `a` becomes the key `"q0,a"`.  The value is a list, because one label can lead to several states.  A pair with no arrow has no key at all, so you read moves with `delta.get(key, [])`.  A missing key then reads as "no moves," an empty list, and the loop that uses it simply does nothing.
+
+*ε-moves are just another key.*  An ε-arrow from `q1` is stored under `"q1,eps"`, and you read it with `delta.get(f"{state},eps", [])`, exactly like any other move.  `eps` never goes in `alphabet`, because the alphabet lists the symbols a string can contain, and no input string ever contains an ε.
+
+*Several states at once: a Python set.*  The active set is a Python `set`, and each property of a set matches something the NFA needs:
+
+| The NFA needs | A Python `set` gives | In code |
+|---|---|---|
+| each state listed once, even if two arrows reach it | no duplicates | `{"q2", "q2"} == {"q2"}` |
+| `{q0, q1}` and `{q1, q0}` to be the same set | order does not matter | `{"q1", "q0"} == {"q0", "q1"}` |
+| the union of every active state's moves | `update` adds a whole list at once | `moved.update(targets)` |
+| "is any accepting state active?" | fast membership | `"q2" in active` |
+
+Watch one trap.  `{}` is an empty *dictionary*, not an empty set.  Write an empty set as `set()`.
+
+*Why `eps_closure` returns a `frozenset`.*  A `set` can change after you build it, so Python will not let you put one inside another set or use one as a dictionary key.  A `frozenset` holds the same states and cannot change, so it can go in both places.  You need that in Part 3, where each row of the subset-construction table is a set of NFA states, and you have to ask "have I seen this set before?"  Python compares frozensets by their contents, so the order you wrote the states in never matters.
+
+To see these pieces work on the "ends in `ab`" NFA from Step 2.1, save the lines below as `explore_nfa.py`, another scratch file you do not submit, and run `python3 explore_nfa.py`:
+
+```python
+import json
+
+with open("machines/ends_in_ab_nfa.json") as f:
+    nfa = json.load(f)
+delta = nfa["delta"]
+
+state, symbol = "q0", "a"
+key = f"{state},{symbol}"
+print(repr(key), "->", delta.get(key, []))      # two targets: the nondeterminism
+print(repr("q1,a"), "->", delta.get("q1,a", []))  # no arrow: an empty list
+
+active = {"q0", "q1"}        # the NFA could be in either state
+moved = set()                # not {}: that is an empty dict
+for state in sorted(active): # sorted only so the printout has a fixed order
+    targets = delta.get(f"{state},b", [])
+    print(f"  {state} on b -> {targets}")
+    moved.update(targets)
+print("moved:", sorted(moved))
+
+print(type({}).__name__, type(set()).__name__)
+print({"q1", "q0"} == {"q0", "q1"})
+seen = {frozenset({"q0"}), frozenset({"q0", "q1"})}
+print(frozenset({"q1", "q0"}) in seen)
+try:
+    { {"q0"} }   # a set inside a set
+except TypeError as e:
+    print("TypeError:", e)
+```
+
+> **You should see.**
+>
+> ```text
+> 'q0,a' -> ['q0', 'q1']
+> 'q1,a' -> []
+>   q0 on b -> ['q0']
+>   q1 on b -> ['q2']
+> moved: ['q0', 'q2']
+> dict set
+> True
+> True
+> TypeError: unhashable type: 'set'
+> ```
+>
+> The `moved` line is the last row of the `aab` trace at the top of this page: the set `{q0, q1}` moves on `b` to $$\{q0\} \cup \{q2\} = \{q0, q2\}$$.  Your `run_nfa` in Step 2.3 does this once per symbol.
+
+*ε-moves, one pass at a time.*  The closure works from a to-do list called the *frontier*.  Here is the cycle machine of Step 2.2 (`q0 -ε-> q1`, `q1 -ε-> q2`, `q2 -ε-> q0`), closed by hand from `{q0}`, one pass of the loop per row:
+
+| Pass | Take off the frontier | Its ε-targets | New ones added | `closure` after | `frontier` after |
+|---|---|---|---|---|---|
+| start | | | | {q0} | [q0] |
+| 1 | q0 | [q1] | q1 | {q0, q1} | [q1] |
+| 2 | q1 | [q2] | q2 | {q0, q1, q2} | [q2] |
+| 3 | q2 | [q0] | none, since q0 is already in `closure` | {q0, q1, q2} | [] |
+
+The frontier is empty after pass 3, so the loop stops, even though the arrows form a cycle.  Step 2.2 turns this table into code.
+
 ### Step 2.2: Implement the Epsilon-Closure
 
 The epsilon-closure of a set of states holds every state you can reach from the set by following only `"eps"` transitions, plus the starting states themselves.  To compute it, start with the given set and follow every `"eps"` transition out of it, adding each target.  Repeat until no new state appears.  An ε-arrow may lead back to the same state or to an earlier one, and your loop must still stop.  One check handles every cycle: is this target already in the closure?  For example, if `q0 -ε-> q1`, `q1 -ε-> q2`, and `q2 -ε-> q0`, then `eps_closure(m, {"q0"}) = {"q0", "q1", "q2"}`.
@@ -868,7 +998,7 @@ The three `# TODO` lines replace the `pass`:
 
 | `# TODO` | How to write it |
 |---|---|
-| union | Start an empty set with `moved = set()`.  Then loop `for state in active:` and call `moved.update(machine["delta"].get(f"{state},{symbol}", []))`.  This loop is the table above, one row per active state. |
+| union | Start an empty set with `moved = set()`.  Then loop `for state in active:` and call `moved.update(machine["delta"].get(f"{state},{symbol}", []))`.  This loop is the table above, one row per active state, and it is the loop you ran by hand in `explore_nfa.py`. |
 | close | `active = eps_closure(machine, moved)`.  Leave this out and the `ab?` example at the top of this page rejects `a`. |
 | trace | `if trace:` then `print(f"read {symbol} -> {sorted(active)}")`. |
 
