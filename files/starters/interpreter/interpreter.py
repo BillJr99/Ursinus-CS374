@@ -21,6 +21,7 @@ class LangError(Exception):
         self.message = message
         self.line = line
         self.col = col
+        super().__init__(str(self))
 
     def __str__(self):
         return f"line {self.line}, col {self.col}: {self.message}"
@@ -32,6 +33,19 @@ class LangZeroDivisionError(LangError): pass
 class LangRuntimeError(LangError): pass
 
 
+# --- Step 2a: helpers for type checks and error messages -------------------
+
+def is_number(value):
+    """True for int and float.  bool is a subclass of int in Python, so exclude it."""
+    # TODO: an isinstance test for int or float that also rules out bool
+    raise NotImplementedError("is_number")
+
+
+def type_name(value):
+    """The type name your error messages print: bool, int, float, or str."""
+    return type(value).__name__
+
+
 class InterpreterError(Exception):
     """Raised when the evaluator meets a node class it has no branch for."""
     pass
@@ -41,8 +55,18 @@ class InterpreterError(Exception):
 # Exceptions, because break and continue have to unwind out of however many
 # nested evaluation calls the loop body happens to be deep in.
 
-class BreakSignal(Exception): pass
-class ContinueSignal(Exception): pass
+class BreakSignal(Exception):
+    """Raised by a Break node; caught by the nearest enclosing While."""
+    def __init__(self, line=0):
+        super().__init__("break")
+        self.line = line          # where the break was, for "break outside loop"
+
+
+class ContinueSignal(Exception):
+    """Raised by a Continue node; caught by the nearest enclosing While."""
+    def __init__(self, line=0):
+        super().__init__("continue")
+        self.line = line
 
 
 # --- Step 2c: the Environment ----------------------------------------------
@@ -63,7 +87,7 @@ class Environment:
         """Search this scope then parent scopes; raise LangNameError if not found."""
         if name in self._bindings:
             return self._bindings[name]
-        if self._parent:
+        if self._parent is not None:
             return self._parent.lookup(name)
         raise LangNameError(f"Undefined variable '{name}'")
 
@@ -71,7 +95,7 @@ class Environment:
         """Update an existing binding wherever it lives; raise LangNameError if not found."""
         if name in self._bindings:
             self._bindings[name] = value
-        elif self._parent:
+        elif self._parent is not None:
             self._parent.assign(name, value)
         else:
             raise LangNameError(f"Cannot assign to undefined variable '{name}'")

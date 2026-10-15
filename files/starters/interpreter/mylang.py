@@ -10,25 +10,39 @@ import traceback
 
 from lexer import LexError            # TODO: match your lexer's error class name
 from parser import parse, ParseError
-from interpreter import Interpreter, LangError
+from interpreter import Interpreter, LangError, BreakSignal, ContinueSignal
+
+
+def run_source(source, interp):
+    """Run one program through every stage.  Return None, or one staged error line.
+
+    Both run_file and repl go through this helper, so each stage's try is
+    written exactly once (Step 3a).
+    """
+    # TODO: tree = parse(source), catching LexError -> "Lexical error at line L, col C: ..."
+    #       and ParseError -> "Syntax error at line L, col C: ..."
+    # TODO (Step 4c): check(tree), catching LangTypeError -> "Type error at line L, col C: ..."
+    # TODO: interp.eval_node(tree), catching LangError subclasses -> "Runtime error at line L: ..."
+    # TODO: a BreakSignal or ContinueSignal that escapes -> "Runtime error at line L: 'break' outside loop"
+    return None
 
 
 def run_file(path):
     source = open(path).read()
-    # TODO: lex, catching LexError -> "Lexical error at line L, col C: ..."
-    # TODO: parse, catching ParseError -> "Syntax error at line L, col C: ..."
-    # TODO: typecheck (Part 4), catching LangTypeError -> "Type error at line L, col C: ..."
-    # TODO: evaluate, catching LangError subclasses -> "Runtime error at line L: ..."
-    # exit after printing any error
-    raise NotImplementedError("run_file")
+    message = run_source(source, Interpreter())
+    if message is not None:
+        print(message)
+        sys.exit(1)                  # exit after printing any error
 
 
 def repl():
     """Step 3b: one persistent Environment, recovery after every error class."""
-    # TODO: read a line, run it, print the value or a staged error, and loop.
-    #       The environment must SURVIVE an error, so the session continues.
-    #       Exit cleanly on 'quit' and on EOF (Ctrl-D).
-    raise NotImplementedError("repl")
+    interp = Interpreter()           # ONE interpreter for the session, so ONE global Environment
+    while True:
+        # TODO: read a line with input(">> "); leave the loop on EOFError
+        # TODO: leave the loop on "quit" or "exit"
+        # TODO: run the line through run_source(line, interp); print any message and keep looping
+        raise NotImplementedError("repl")
 
 
 if __name__ == "__main__":
