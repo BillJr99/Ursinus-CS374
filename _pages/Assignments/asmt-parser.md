@@ -133,7 +133,26 @@ cs374-parser/
   ast_nodes.py     # node dataclasses, pretty-printer, unparser
   test_parser.py   # the test suite
   readme.md        # grammar, theory answers, and write-up
+  lr.py            # Part 4: the LR machinery for the fixed ladder grammar
 ```
+
+This table shows which file each step writes, so you always know where new code goes.  Files marked *scratch* are for trying things out; you do not submit them.
+
+| Step | File you work in | What you do there |
+|---|---|---|
+| Part 0 | `readme.md` (or a scanned page) | the AST drawing, node types, and traced pseudocode |
+| Your First 30 Minutes | `ast_nodes.py`, `parser.py`, `try_primary.py` (scratch) | paste the dataclasses and `parse_primary`, then try one token |
+| 1a, 1b, 1c | `readme.md` | the grammar, the dangling-else policy, and the four theory answers |
+| 2a | `ast_nodes.py`, `parser.py`, `explore_nodes.py` (scratch) | the node dataclasses, `ParseError`, `expect`, `parse_primary`, `parse_unary`, `parse_muldiv` |
+| 2b | `parser.py`, `test_parser.py` | the rest of the expression ladder, up to `parse_expr`, and its tree-shape tests |
+| 2c | `parser.py`, `test_parser.py`, `readme.md` | the statement functions, `parse_stmt`, `parse_program`, and your lookahead note |
+| 2d | `while_example.txt`, `test_parser.py`, `readme.md` | the worked program, its test, and your call trace |
+| 3a, 3b | `ast_nodes.py`, `test_parser.py` | `pretty`, the precedence table, `unparse`, and their tests |
+| 3c | `test_parser.py` | the fixed-example round-trip test |
+| 3d | `try_errors.py` (scratch), `readme.md` | run ten broken programs and record their messages |
+| 3e | `test_parser.py`, `test_output.txt`, `readme.md` | the Hypothesis test, the saved test run, and your shrunk counterexample |
+| 4a to 4f | `lr.py`, `lr_output.txt` | `closure`, `goto`, `build_states`, `first_sets`, `follow_sets`, `build_tables`, `drive`, and the saved run |
+| 4g | `try_conflicts.py` (scratch), `readme.md` | break the grammar two ways and report each conflict |
 
 Copy `lexer.py` and `token_spec.json` from your Lexer project and import the Lexer unchanged.  If you find a lexer bug while parsing, fix it and note the fix in your readme.  Confirm the import works before you write any parser code.  From inside `cs374-parser/`, run:
 
@@ -149,15 +168,48 @@ Token(type='LET', value='let', line=1, col=1, decoded=None)
 
 > **Watch out: the `not` keyword.**  Part 2 asks you to build `parse_not()`, which means your lexer has to emit a distinct `NOT` token.  The Lexer assignment's minimum token table does not include one, so if you are using your own lexer, check for it now and add a `NOT` rule ahead of `IDENT` if it is missing.  Without it, `not ok` lexes as two identifiers and `parse_not()` never fires, which shows up much later as a mystifying parse error.  The reference lexer already has `NOT`.
 
+> **Watch out: four tokens the reference lexer does not have.**  The grammar's `fun_stmt`, `call`, and `( COLON type )?` productions use `FUN`, `COLON`, `ARROW`, and `COMMA`, and `unary` mentions `BANG`.  The reference lexer emits none of these.  `fun` lexes as an `IDENT`, and `:` or `,` stops the lexer with a `LexError`.  Part 1 lets you implement those productions last, so this does not block anything until then.  When you reach them, add the missing rules to the lexer (`FUN` before `IDENT`, and `ARROW` for `->` before `MINUS`), and note the change in your readme as a lexer fix.  The Interpreter assignment's Step 4a makes the same kind of change for `COLON`.
+
 > **Time budget.** Part 0 takes about forty minutes with pencil and paper.  The rest is the most substantial assignment of the semester and has one of the longest windows.  You arrive holding the grammar you wrote in the Grammar and Derivations Workshop, which is most of Part 1 already done, so Part 1 here is refinement and justification rather than a blank page.  Direction B budgets roughly 25-35 hours end to end; the core direction is smaller but still fills the window, so start Part 1 the week the assignment goes out.  Part 4 adds about four to six hours on top of whichever direction you took, and it is the one part you can work on in parallel, because it depends on the class activity rather than on your own parser.
 
 ### Your First 30 Minutes
 
+**You write:** `ast_nodes.py` and `parser.py` from the Step 2a skeletons, and a scratch file, `try_primary.py`.
+**You run:** `python3 try_primary.py`
+
 1. Draft the expression tiers of your grammar on paper (Part 1 gives you the ladder).
-2. Copy the `Num` and `Var` dataclasses from Step 2a into `ast_nodes.py`.
-3. Copy the `ParseError` class and the `parse_primary()` skeleton from Step 2a into `parser.py`, and fill in the `INT` and `IDENT` cases.
-4. Create a scratch file `try_primary.py` in `cs374-parser/` containing `from lexer import Lexer`, `from parser import parse_primary`, and `print(parse_primary(Lexer("42")))`, then run `python3 try_primary.py`.  You should see `Num(value=42, line=1)`.
-5. Change `"42"` to `"x"` and you should see a `Var`; change it to `";"` and you should see a `ParseError` reading `expected an expression, found SEMICOLON` at line 1, col 1.  If the column is wrong, you consumed the bad token before raising; raise on the peeked token instead.  That is the pattern every other tier repeats: look at `lexer.peek()`, decide, consume with `lexer.advance()` or `lexer.expect()`, and return a node.
+2. Copy the whole dataclass block from Step 2a into `ast_nodes.py`, and add the two short `Assign` and `Print` classes its `# TODO` asks for.  Add them now, because `parser.py` imports them, and a missing name stops the import before any of your code runs.
+3. Copy the parser skeleton from Step 2a into `parser.py`.  The `INT` case is already written; add the `IDENT` case on the same pattern (the Step 2a hint table shows how).
+4. Create a scratch file `try_primary.py` in `cs374-parser/` with these three lines, then run `python3 try_primary.py`:
+
+   ```python
+   from lexer import Lexer
+   from parser import parse_primary
+   print(parse_primary(Lexer("42")))
+   ```
+
+5. Change `"42"` to `"x"` and run it again; then change it to `";"` and run it a third time.
+
+> **You should see.** One line per run.  The third run ends in a traceback whose last line is the error:
+>
+> ```text
+> Num(value=42, line=1)
+> ```
+>
+> ```text
+> Var(name='x', line=1)
+> ```
+>
+> ```text
+> parser.ParseError: ParseError at line 1, col 1: expected an expression, found SEMICOLON
+> ```
+
+If the column is wrong, you consumed the bad token before raising; raise on the peeked token instead.  That is the pattern every other tier repeats: look at `lexer.peek()`, decide, consume with `lexer.advance()` or `expect()`, and return a node.
+
+> **If it fails.**
+> - `ImportError: cannot import name 'Assign'`: `parser.py` imports a node you have not defined yet.  Add `Assign` and `Print` to `ast_nodes.py`.
+> - `ModuleNotFoundError: No module named 'tokens'`: you copied the reference `lexer.py` without `tokens.py`.
+> - `Num(value=42, line=0)`: you built the node without passing `line=tok.line`.
 
 ### Suggested Pacing
 
@@ -217,13 +269,20 @@ primary     ::= INT | FLOAT | STRING | TRUE | FALSE | IDENT
 
 ### Step 1a: Document the Grammar
 
+**You write (in `readme.md` under a `## Grammar` heading):** the complete EBNF grammar, with one sentence under each non-terminal.  No code.
+**You run (optional):** the grammar through the [BNF/EBNF Tester]({{ site.baseurl }}/Tools/BNFTester), as described above.
+
 > **Do this.**
 > 1. Open `readme.md` and write the complete grammar under a heading of its own.
 > 2. Under each non-terminal, add one sentence that says what it represents and why it sits where it does in the precedence ladder.  For example: `addsub` handles `+` and `-`, which bind less tightly than multiplication and division, and its `( ... )*` loop enforces left-associativity, so `8 - 3 - 2` builds `(8-3)-2 = 3`, not `8-(3-2) = 7`.
 
+> **You are done when** every non-terminal in your grammar has its sentence, every non-terminal used on a right-hand side is defined somewhere, and each precedence level from `or_expr` down to `primary` is its own rule.  If you used the tester, it reports no undefined or unreachable rules.
+
 ### Step 1b: Resolve the Dangling Else
 
 A dangling `else` is an `else` that could attach to more than one `if`.  Given `if a if b print 1; else print 2;`, does the `else` belong to the inner `if` or the outer?  Most languages attach it to the nearest `if`.
+
+**You write (in `readme.md` under a `## Dangling Else` heading):** your rule and how the grammar and parser enforce it.  No code.
 
 > **Do this.**
 > 1. State explicitly in your readme which `if` the `else` attaches to.
@@ -233,12 +292,20 @@ A dangling `else` is an `else` that could attach to more than one `if`.  Given `
 
 These questions exercise the Table-Driven and LR Parsing session's material on the grammar you just wrote, and they are graded within Part 1's rubric row.  Your recursive descent parser is top-down: it starts from `program` and works down to tokens.  An LR parser is bottom-up: it keeps a stack, *shifts* the next token onto the stack, and *reduces* the top of the stack to a non-terminal when a right-hand side is complete.
 
+**You write (in `readme.md` under a `## Parsing Theory` heading):** answers to the four questions below, including one stack-input-action table.  No code.
+
 > **Do this.** Answer all four questions in your readme, under a heading of their own.
 
 1.  The dangling else, bottom-up.  An LR parser generator reports a shift-reduce conflict at the token `ELSE` for a grammar like yours.  Explain, in terms of the parser's stack and the two available actions, what the conflict *is*: what does shifting choose, and what does reducing choose?  Then give the two standard resolutions (a precedence/`%prec`-style declaration favoring shift, or grammar surgery into `matched`/`unmatched` productions) and state which one your grammar's Step 1b convention corresponds to.
 2.  Manufacture a reduce-reduce conflict.  Consider adding this pair of productions to your grammar: `const_stmt ::= LET IDENT EQ INT SEMICOLON` alongside the existing `let_stmt ::= LET IDENT EQ expr SEMICOLON`.  Explain why an LR parser hits a reduce-reduce conflict on input like `let x = 42;` (which completed right-hand side matches the stack?), and restructure the productions to eliminate the conflict while keeping both language features.
 3.  One shift-reduce trace.  Using the toy grammar `E ::= E + T | T` and `T ::= INT`, execute the shift-reduce parse of `1 + 2 + 3` as a stack-input-action table (the format from the Table-Driven and LR Parsing session; expect about ten rows).  Note the step where the parser reduces `E + T` to `E` *before* shifting the second `+`, and state which associativity that choice enforces.
 4.  Left recursion, both worlds.  The toy grammar above is left-recursive.  State in one sentence each: why that grammar would send your recursive descent parser into an infinite loop, and why the LR parser handles it without complaint.
+
+> **You are done when** all four answers are in the readme, and question 3's table has the three columns from the class session, starts with an empty stack, and ends in `accept`.  Its first row looks like this:
+>
+> | Stack | Input | Action |
+> |---|---|---|
+> | | `1 + 2 + 3 $` | shift |
 
 ---
 
@@ -247,6 +314,72 @@ These questions exercise the Table-Driven and LR Parsing session's material on t
 ### Step 2a: Define the AST Nodes and Start the Parser
 
 Define the node classes before you write any parsing functions.  Python `dataclasses.dataclass` writes `__init__` and `__repr__` for you.
+
+**You write:** `ast_nodes.py` - the node dataclasses; `parser.py` - `ParseError`, `expect`, `parse_primary`, `parse_unary`, `parse_muldiv`, and `parse`.
+**You run:** `python3 explore_nodes.py` (scratch), then `python3 try_primary.py` from Your First 30 Minutes.
+
+#### Before You Code: How an AST Node Lives in Python
+
+Every node in your tree is a small object with named fields, and a `@dataclass` writes the boring parts of that class for you.  It writes a constructor, a `repr` that prints every field, and an `==` that compares fields one by one.  That `==` is what every tree-shape test in this assignment relies on.
+
+| You write | Python gives you | Where you use it |
+|---|---|---|
+| `@dataclass` above `class Num:` with `value: Any` | `Num(8)` or `Num(value=8)` builds a node | every parsing function returns one |
+| (nothing extra) | `print(node)` shows `Num(value=8, line=0)` | reading a failing test's tree |
+| (nothing extra) | `a == b` compares every field, nested nodes included | tree-shape tests |
+| `line: int = field(default=0, compare=False)` | a field that prints but that `==` skips | a test writes `Num(8)`; the parser builds `Num(8, line=1)`; they still compare equal |
+| `stmts: List[Any] = field(default_factory=list)` | a fresh empty list for each node | `Block` and `Program`.  A plain `= []` is refused with a `ValueError`, because every node would share one list |
+| `isinstance(node, BinOp)` | `True` when `node` is a `BinOp` | `pretty` and `unparse` in Part 3 |
+| `node.left.value` | the field of a field | walking the tree |
+
+Save the lines below as `explore_nodes.py`, a scratch file you do not submit, and run `python3 explore_nodes.py`:
+
+```python
+from dataclasses import dataclass, field
+from typing import Any, List
+
+@dataclass
+class Num:
+    value: Any
+    line: int = field(default=0, compare=False)
+
+@dataclass
+class BinOp:
+    op: str
+    left: Any
+    right: Any
+
+@dataclass
+class Block:
+    stmts: List[Any] = field(default_factory=list)
+
+typed = Num(8)               # what a test writes
+parsed = Num(8, line=3)      # what the parser builds
+print(typed)
+print(parsed)
+print(typed == parsed)       # line is ignored by ==
+print(Num(8) == Num(9))      # value is not
+tree = BinOp("+", Num(2), Num(3))
+print(tree)
+print(tree.op, tree.right.value)
+print(isinstance(tree, BinOp), isinstance(tree, Num))
+print(Block(), Block().stmts is Block().stmts)
+```
+
+> **You should see.**
+>
+> ```text
+> Num(value=8, line=0)
+> Num(value=8, line=3)
+> True
+> False
+> BinOp(op='+', left=Num(value=2, line=0), right=Num(value=3, line=0))
+> + 3
+> True False
+> Block(stmts=[]) False
+> ```
+>
+> **Predict** before you move on: what would `typed == parsed` print if `line` were declared as plain `line: int = 0`?
 
 > **Do this.**
 > 1. Open `ast_nodes.py` and paste in the dataclasses below, then add `Assign` and `Print` on the `Let` pattern.
@@ -259,13 +392,13 @@ from typing import List, Any
 
 @dataclass
 class Num:
-    value: float       # already parsed to a Python number
-    line: int = 0
+    value: Any         # already a Python number: int for INT, float for FLOAT
+    line: int = field(default=0, compare=False)
 
 @dataclass
 class Var:
     name: str
-    line: int = 0
+    line: int = field(default=0, compare=False)
 
 @dataclass
 class BinOp:
@@ -305,13 +438,24 @@ class Program:
     stmts: List[Any] = field(default_factory=list)
 ```
 
-> **Watch out.** A dataclass compares every field in `==`, including `line`.  The tree-shape tests below write `Num(8)` with the default `line=0`, while a parsed node carries `line=1`.  To make those comparisons pass (you will want this again for the Hypothesis test in Step 3e), declare the position field as `line: int = field(default=0, compare=False)` so equality ignores it.
+> **Watch out.** A dataclass compares every field in `==`, including `line`.  The tree-shape tests below write `Num(8)` with the default `line=0`, while a parsed node carries `line=1`.  That is why `Num` and `Var` declare the position field as `line: int = field(default=0, compare=False)`: equality ignores it, and the tests pass.  You will rely on this again for the Hypothesis test in Step 3e.  If you add a `line` field to any other node, declare it the same way.
+
+The `Assign` and `Print` classes follow the `Let` pattern, so each is three lines.  `Assign` has the same two fields as `Let`, because it also names a variable and gives it a value.  `Print` has one field, `value`, the expression to print.  The `You should see` blocks on this page use exactly these field names.
+
+| Optional node | A shape that works | Notes |
+|---|---|---|
+| `Str` | `Str(value)` | `value` is the decoded string, `tok.decoded` on a reference `STRING` token |
+| `BoolLit` | `BoolLit(value)` | `value` is `True` or `False` |
+| `FunDef` | `FunDef(name, params, return_type, body)` | `params` is a list of `(name, type)` pairs, `return_type` is a type name or `None`, and `body` is a `Block` |
+| `Call` | `Call(callee, args)` | `callee` is the expression before `(`, and `args` is a list of expressions |
+
+The `FunDef` and `Call` shapes are a starting point, not a requirement.  If your Part 0 design differs, keep yours and justify its fields.  In this page's examples, `and` and `or` build `BinOp` nodes; a separate `LogicOp` is equally fine.
 
 ```python
 # parser.py
 from lexer import Lexer
 from ast_nodes import (Num, Var, BinOp, UnaryOp, Let, Assign, Print,
-                       Block, If, While, Program)
+                       Block, If, While, Program)   # add Str, BoolLit, ... as you define them
 
 class ParseError(Exception):
     """Raised on a syntax error, carrying everything a good message needs.
@@ -327,6 +471,13 @@ class ParseError(Exception):
         self.line = line
         self.col = col
 
+def expect(lexer: Lexer, token_type: str):
+    """Peek for `token_type`; consume and return it, or raise a positioned ParseError."""
+    tok = lexer.peek()
+    if tok.type != token_type:
+        raise ParseError(token_type, tok.type, tok.line, tok.col)
+    return lexer.advance()
+
 def parse_primary(lexer: Lexer):
     """Peek at the next token, decide which literal form it starts, consume it, return a node."""
     tok = lexer.peek()
@@ -337,11 +488,12 @@ def parse_primary(lexer: Lexer):
     raise ParseError("an expression", tok.type, tok.line, tok.col)   # note: raise on the PEEKED token
 
 def parse_unary(lexer: Lexer):
-    """Peek for a prefix operator; consume it and recurse, else fall through to a primary."""
-    # TODO: if the next token is MINUS (or NOT), consume it, recurse, and wrap the result in UnaryOp
+    """Peek for a prefix MINUS; consume it and recurse, else fall through to a primary."""
+    # TODO: if the next token is MINUS, consume it, recurse, and wrap the result in UnaryOp
     return parse_primary(lexer)
 
 def parse_muldiv(lexer: Lexer):
+    """Parse a unary, then fold left while the next token is STAR or SLASH."""
     left = parse_unary(lexer)
     while lexer.peek().type in ("STAR", "SLASH"):
         op = lexer.advance()
@@ -356,6 +508,20 @@ def parse(source: str) -> Program:
     return parse_program(Lexer(source))
 ```
 
+The parser's own `expect` helper is complete as written.  It does what `Lexer.expect` does, but it raises a `ParseError` instead of the lexer's `LexError`, so every error the parser reports has one shape (Step 3d).  Call `expect(lexer, "RPAREN")` in your parsing functions, not `lexer.expect("RPAREN")`.  It still reads the stream only through `peek` and `advance`.
+
+| `# TODO` | How to write it |
+|---|---|
+| `Assign` and `Print` (in `ast_nodes.py`) | Copy the `Let` class twice.  Rename one `Assign`; rename the other `Print` and give it the single field `value: Any`. |
+| `FLOAT` | The `INT` case with `float(tok.value)` in place of `int(tok.value)`.  Both build a `Num`. |
+| `STRING` | `lexer.advance()`, then `return Str(tok.decoded)`.  `tok.value` is the raw lexeme with its quotes still on; `tok.decoded` has the escapes resolved. |
+| `TRUE`, `FALSE` | One case can handle both: `if tok.type in ("TRUE", "FALSE"):`, advance, and return `BoolLit(tok.type == "TRUE")`. |
+| `IDENT` | `lexer.advance()`, then `return Var(name=tok.value, line=tok.line)`. |
+| `LPAREN` | `lexer.advance()`, then `inner = parse_expr(lexer)`, then `expect(lexer, "RPAREN")`, then `return inner`.  This is the pass-through choice described below. |
+| `parse_unary` | `if lexer.peek().type == "MINUS":`, then `lexer.advance()` and `return UnaryOp("-", parse_unary(lexer))`.  Recurse into `parse_unary`, not `parse_primary`. |
+
+`NOT` is not handled here.  It sits much higher in the ladder, in `parse_not` (Step 2b).  If your own lexer emits `BANG` for `!`, you may treat it in `parse_unary` the same way as `MINUS`; the reference lexer has no `BANG`.
+
 > **Two rules that hold for every function in this part.**
 >
 > 1. **Go through the Lexer's interface.**  A parsing function reads the token stream only through `peek`, `advance`, and `expect`.  If one function reaches into the token list directly, every tier above it breaks the next time the lexer changes, and that break surfaces far from its cause.
@@ -367,6 +533,9 @@ def parse(source: str) -> Program:
 
 Implement each function below in order.  Each tier parses the tier below it and then handles its own operators, and most tiers use the *left-fold* pattern of `parse_muldiv`: parse one operand, then loop while the next token is one of this tier's operators, consuming the operator, parsing one more operand, and replacing the left side with `BinOp(op, left, right)`.  The loop is what makes the operator left-associative.
 
+**You write:** `parser.py` - `parse_addsub`, `parse_comparison`, `parse_not`, `parse_and`, `parse_or`, and `parse_expr`; `test_parser.py` - the harness below and at least three tests per tier.
+**You run:** `python3 test_parser.py` after every tier.
+
 - `parse_primary()`: returns a `Num`, `Var`, `Str`, `BoolLit`, or the result of a parenthesized `parse_expr()`.  Raise `ParseError` on any other token.
 - `parse_unary()`: if the next token is `MINUS`, consume it and recursively call `parse_unary()`, wrapping the result in `UnaryOp("-", ...)`.  Verify that `--x` builds `UnaryOp("-", UnaryOp("-", Var("x")))`, and that `-(x)` parses with a parenthesized expression as the operand.  Recursing into `parse_unary()` rather than `parse_primary()` is what makes the nesting work; if only one level of `UnaryOp` ever appears, that is the call you got wrong.
 - `parse_muldiv()`: left-fold `unary` expressions over `STAR` and `SLASH`.  Verify `8 / 4 / 2` builds `BinOp("/", BinOp("/", Num(8), Num(4)), Num(2))`.
@@ -376,6 +545,54 @@ Implement each function below in order.  Each tier parses the tier below it and 
 - `parse_and()`: left-fold `not` expressions over `AND`.
 - `parse_or()`: left-fold `and` expressions over `OR`.  Verify `a or b and c` builds `BinOp("or", Var("a"), BinOp("and", Var("b"), Var("c")))`.
 - `parse_expr()`: delegates to `parse_or()`.
+
+Add these functions to `parser.py` between `parse_muldiv` and `parse`.  Each one gets the one-sentence docstring that the two rules at the end of Step 2a ask for; the ones here are filled in to show the shape.  Replace each `pass` once its function has real code.
+
+```python
+def parse_addsub(lexer: Lexer):
+    """Parse a muldiv, then fold left while the next token is PLUS or MINUS."""
+    # TODO: the parse_muldiv loop, one rung up
+    pass
+
+COMPARISON_OPS = ("LT", "LE", "GT", "GE", "EQEQ", "NEQ")
+
+def parse_comparison(lexer: Lexer):
+    """Parse an addsub; if a comparison operator follows, consume it and one more addsub."""
+    left = parse_addsub(lexer)
+    # TODO: if the next token is in COMPARISON_OPS, consume it, parse one more addsub,
+    #       and build a BinOp (an `if`, not a `while`: comparisons do not chain)
+    # TODO: if the token after that is ALSO in COMPARISON_OPS, raise a ParseError on it
+    return left
+
+def parse_not(lexer: Lexer):
+    """Peek for NOT; consume it and recurse, else fall through to a comparison."""
+    # TODO: the parse_unary pattern, with NOT, UnaryOp("not", ...), and parse_comparison
+    pass
+
+def parse_and(lexer: Lexer):
+    """Parse a not_expr, then fold left while the next token is AND."""
+    # TODO: the left-fold over AND, with parse_not as the tier below
+    pass
+
+def parse_or(lexer: Lexer):
+    """Parse an and_expr, then fold left while the next token is OR."""
+    # TODO: the left-fold over OR, with parse_and as the tier below
+    pass
+
+def parse_expr(lexer: Lexer):
+    """Delegate to the loosest tier, parse_or."""
+    return parse_or(lexer)
+```
+
+| `# TODO` | How to write it |
+|---|---|
+| `parse_addsub` | Copy the body of `parse_muldiv`.  Change the call to `parse_muldiv(lexer)` (in both places) and the operator tuple to `("PLUS", "MINUS")`. |
+| first comparison `# TODO` | `if lexer.peek().type in COMPARISON_OPS:`, then `op = lexer.advance()`, `right = parse_addsub(lexer)`, and `left = BinOp(op.value, left, right)`.  The reference lexer's `value` for `LE` is the text `"<="`, which is exactly the `op` string you want. |
+| chained comparison | Still inside that `if`, `tok = lexer.peek()`; if `tok.type in COMPARISON_OPS`, raise `ParseError("no second comparison (comparisons do not chain)", tok.type, tok.line, tok.col)`.  Without this check, `a < b < c` stops quietly after `a < b` and the stray `<` surfaces later as a confusing error. |
+| `parse_not` | `if lexer.peek().type == "NOT":`, then `lexer.advance()` and `return UnaryOp("not", parse_not(lexer))`; otherwise `return parse_comparison(lexer)`. |
+| `parse_and`, `parse_or` | The `parse_muldiv` loop with `while lexer.peek().type == "AND":` (or `"OR"`).  The token's `value` is `"and"` (or `"or"`), so `BinOp(op.value, left, right)` builds `BinOp("and", ...)`. |
+
+> **Test as you climb.**  The test harness imports `parse_expr`, so it must exist from the first run.  Until you have written `parse_or`, make `parse_expr` return the highest tier you have so far, for example `return parse_muldiv(lexer)`.  Move it up one rung each time you add a tier, and finish with `return parse_or(lexer)`.
 
 Every test in this assignment is a **tree-shape test**: it asserts on node types and fields, never on printed output.  Comparing `str(node)` or `repr(node)` to a string feels quicker, but a repr changes the moment you add a field, so those tests break on edits that were entirely correct.  The shape of the tree is what your interpreter will walk in the [Interpreter assignment]({{ site.baseurl }}/Assignments/Interpreter), so the shape is what you assert on.
 
@@ -428,7 +645,22 @@ if __name__ == "__main__":
     print(f"{len(tests) - failed} passed, {failed} failed")
 ```
 
-> **You should see.** One `PASS` line per test and a final count, for example `PASS test_muldiv_left_associates` and `1 passed, 0 failed`.  A failing assertion does not stop the run: the harness catches it, prints a `FAIL` line with the test name and the assertion message, and moves on to the next test.  The same file also runs under `python3 -m pytest test_parser.py` once you install pytest in Step 3e.
+| `# TODO` | How to write it |
+|---|---|
+| one test per tree shape | Copy `test_muldiv_left_associates`, rename it, and change the source string and the expected tree.  For example, `assert expr("2 + 3 * 4") == BinOp("+", Num(2), BinOp("*", Num(3), Num(4)))`. |
+| a test that must raise | Copy `test_bad_start_raises_positioned_error`.  Put `expr("a < b < c")` in the `try`, write `pass` under `except ParseError:` (or check `err.found == "LT"`), and keep the `else: assert False, ...`. |
+| names you need | Import every node class a test builds, for example `from ast_nodes import Num, Var, BinOp, UnaryOp`.  A missing import shows up as `FAIL ... -- name 'Str' is not defined`. |
+
+> **You should see.** One `PASS` line per test and a final count.  With only the three tests above in the file, the run prints:
+>
+> ```text
+> PASS test_muldiv_left_associates
+> PASS test_double_negation_nests
+> PASS test_bad_start_raises_positioned_error
+> 3 passed, 0 failed
+> ```
+>
+> A failing assertion does not stop the run: the harness catches it, prints a `FAIL` line with the test name and the assertion message, and moves on to the next test.  The same file also runs under `python3 -m pytest test_parser.py` once you install pytest in Step 3e.
 
 > **If it fails.**
 > - `8 / 4 / 2` right-associates: your loop parses the *right* side with the same tier instead of the tier below it, which recurses instead of folding.
@@ -439,7 +671,7 @@ if __name__ == "__main__":
 
 Each statement begins with a token that tells you which rule to use.  `parse_stmt()` looks at that first token and dispatches to one of these:
 
-- `parse_let_stmt()`: consumes `LET`, then expects `IDENT`, `EQ`, an expression, and `SEMICOLON` using `lexer.expect()`.  Returns a `Let` node.
+- `parse_let_stmt()`: consumes `LET`, then expects `IDENT`, `EQ`, an expression, and `SEMICOLON` using the `expect()` helper from Step 2a.  Returns a `Let` node.
 - `parse_assign_stmt()`: consumes `IDENT` and `EQ`, then an expression and `SEMICOLON`.  Returns an `Assign` node.  (How will you distinguish assignment from an expression statement that starts with an identifier?  Document your lookahead strategy.)
 - `parse_print_stmt()`: `PRINT`, expression, `SEMICOLON`.  Returns `Print`.
 - `parse_block()`: `LBRACE`, then zero or more statements dispatched through `parse_stmt()`, then `RBRACE`.  Returns `Block`.
@@ -448,12 +680,94 @@ Each statement begins with a token that tells you which rule to use.  `parse_stm
 - `parse_fun_stmt()`: `FUN`, `IDENT`, `LPAREN`, an optional comma-separated list of `IDENT COLON type` parameters, `RPAREN`, an optional `ARROW` and return type, then a block.  Returns `FunDef`.  This is one of the productions Part 1 lets you implement last; until you do, have `parse_stmt()` raise a `ParseError` on `FUN` that says so.
 - `parse_program()`: parse statements until `EOF`.  Returns `Program`.
 
+**You write:** `parser.py` - `parse_let_stmt`, `parse_assign_stmt`, `parse_print_stmt`, `parse_block`, `parse_if_stmt`, `parse_while_stmt`, `parse_stmt`, and `parse_program` (and `parse_fun_stmt` last, if you implement it); `test_parser.py` - one test per statement form; `readme.md` - your lookahead note.
+**You run:** `python3 test_parser.py`, and the two `python3 -c` commands below.
+
+*How `parse_stmt` can tell an assignment apart.*  The reference lexer's `peek()` shows you one token and has no offset argument, so you cannot look two tokens ahead to check for `IDENT EQ`.  You do not need to.  Look at the `stmt` rule in Part 1: no statement other than `assign_stmt` begins with `IDENT`, because the grammar has no expression statements.  So one token of lookahead decides it.  When `parse_stmt` peeks an `IDENT`, it calls `parse_assign_stmt`, which consumes the `IDENT` and then expects `EQ`.  If `EQ` is missing, `expect` reports it with a position.  Your readme note should say this in your own words.
+
+```python
+def parse_let_stmt(lexer: Lexer):
+    """Consume LET IDENT EQ, an expression, and SEMICOLON; return a Let."""
+    expect(lexer, "LET")
+    name = expect(lexer, "IDENT")
+    # TODO: expect EQ, parse the value with parse_expr, expect SEMICOLON
+    # TODO: return Let(name.value, value)
+
+def parse_assign_stmt(lexer: Lexer):
+    """Consume IDENT EQ, an expression, and SEMICOLON; return an Assign."""
+    # TODO: the parse_let_stmt pattern without the LET
+
+def parse_print_stmt(lexer: Lexer):
+    """Consume PRINT, an expression, and SEMICOLON; return a Print."""
+    # TODO
+
+def parse_block(lexer: Lexer):
+    """Consume LBRACE, statements until RBRACE, then RBRACE; return a Block."""
+    expect(lexer, "LBRACE")
+    stmts = []
+    # TODO: loop while the next token is neither RBRACE nor EOF, appending parse_stmt(lexer)
+    expect(lexer, "RBRACE")
+    return Block(stmts)
+
+def parse_if_stmt(lexer: Lexer):
+    """Consume IF, a condition, and a block; peek for ELSE, then an else-if or a block."""
+    # TODO: expect IF, parse the condition and the then-block
+    # TODO: else_branch = None; if the next token is ELSE, consume it, then peek:
+    #       IF means parse_if_stmt(lexer), anything else means parse_block(lexer)
+    # TODO: return If(condition, then_branch, else_branch)
+
+def parse_while_stmt(lexer: Lexer):
+    """Consume WHILE, a condition, and a block; return a While."""
+    # TODO
+
+def parse_stmt(lexer: Lexer):
+    """Peek at the first token of a statement and dispatch on its type."""
+    tok = lexer.peek()
+    if tok.type == "LET":
+        return parse_let_stmt(lexer)
+    # TODO: IDENT, PRINT, IF, WHILE, and LBRACE (a block is a statement too)
+    raise ParseError("a statement", tok.type, tok.line, tok.col)
+
+def parse_program(lexer: Lexer):
+    """Parse statements until the next token is EOF; return a Program."""
+    # TODO: the parse_block loop, stopping only at EOF, then return Program(stmts)
+```
+
+Each function whose body is only a `# TODO` needs a `pass` (or its real code) before Python will import the file.
+
+| `# TODO` | How to write it |
+|---|---|
+| finish `parse_let_stmt` | `expect(lexer, "EQ")`, then `value = parse_expr(lexer)`, then `expect(lexer, "SEMICOLON")`.  `expect` returns the token it consumed, which is why `name.value` holds the variable's name. |
+| `parse_assign_stmt`, `parse_print_stmt`, `parse_while_stmt` | The same sequence of `expect` and `parse_...` calls, read straight off each grammar rule from left to right.  A terminal becomes `expect(lexer, "...")`; a non-terminal becomes a call. |
+| the `parse_block` loop | `while lexer.peek().type not in ("RBRACE", "EOF"):` then `stmts.append(parse_stmt(lexer))`.  Stopping at `EOF` too means an unclosed block reports `expected RBRACE, found EOF`, which is the honest message. |
+| `parse_if_stmt` | After the then-block, `if lexer.peek().type == "ELSE":`, then `lexer.advance()`, then an inner `if lexer.peek().type == "IF":` that chooses between the two calls. |
+| `parse_stmt` dispatch | One `if tok.type == "...": return parse_..._stmt(lexer)` per statement form, with `IDENT` going to `parse_assign_stmt` and `LBRACE` to `parse_block`.  Until you write `parse_fun_stmt`, add `if tok.type == "FUN":` that raises `ParseError("a statement (fun is not implemented yet)", tok.type, tok.line, tok.col)`. |
+| `parse_program` | `stmts = []`, then `while lexer.peek().type != "EOF": stmts.append(parse_stmt(lexer))`, then `return Program(stmts)`. |
+
 > **Do this.**
 > 1. Add the statement functions and `parse_stmt()` to `parser.py`, in the order above.
 > 2. Add tests to `test_parser.py` that call `parse(...)` on one-statement programs and assert the node returned, and run `python3 test_parser.py` after each function.
 > 3. Write down, in your readme, how `parse_stmt()` tells an assignment from any other statement that starts with `IDENT`.
 
-> **You should see.** `parse("let x = 1;")` returns `Program(stmts=[Let(name='x', value=Num(value=1, line=1))])`, and `parse("let x = 1")` raises `ParseError` naming `SEMICOLON` as the expected token.
+```bash
+python3 -c "from parser import parse; print(parse('let x = 1;'))"
+python3 -c "from parser import parse; print(parse('let x = 1'))"
+```
+
+> **You should see.** The first command prints the tree.  The second ends in a traceback whose last line names `SEMICOLON` as the expected token, at the position just past the `1`:
+>
+> ```text
+> Program(stmts=[Let(name='x', value=Num(value=1, line=1))])
+> ```
+>
+> ```text
+> parser.ParseError: ParseError at line 1, col 10: expected SEMICOLON, found EOF
+> ```
+
+> **If it fails.**
+> - `LexError` instead of `ParseError`: you called `lexer.expect(...)`.  Call the parser's `expect(lexer, ...)` helper instead.
+> - `expected a statement, found EOF` on `while true { print x;`: your block loop stops only at `RBRACE`.  Stop at `EOF` as well, and let `expect(lexer, "RBRACE")` report the problem.
+> - `else if` raises `expected LBRACE, found IF`: you called `parse_block` after `ELSE` without peeking for `IF` first.
 
 ### Step 2d: Trace the Worked Parse Example
 
