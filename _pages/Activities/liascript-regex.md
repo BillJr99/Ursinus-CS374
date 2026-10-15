@@ -25,6 +25,7 @@ By the end of *today*, you will be able to:
 - Show that each convenience in practical regex syntax (`+`, `?`, `[a-z]`, `{n,m}`) is shorthand, by rewriting a pattern in the three primitives and checking that both versions describe the same language
 - Write the regular expression for a programming language token type (identifier, integer literal, floating-point literal) that a lexer specification could use
 - Extract data with capture groups and rewrite text with `re.sub`, using group references (`\1`, `\g<name>`) and replacement functions to change one part of a match while keeping the rest
+- Turn a match into a record with named groups and `groupdict()`, and use `lastgroup` to tell which named alternative matched
 - Search a source tree with `grep`, choosing the right flags and avoiding the BRE-versus-ERE trap
 
 Day 2 puts these into practice: Python's `re` in five verbs, how the engine backtracks, greed, and the point where regular expressions run out of power.
@@ -517,7 +518,117 @@ for desc, rule, given, want in TASKS:
 
 Expected output once all three are written: every line reads `ok`.  The card number is the instructive one, because only the last four digits need a group; the first twelve are matched and thrown away.
 
-To remember from Part III: parentheses capture, groups are numbered by their opening parenthesis, and `re.sub` replaces the whole match.  To change part of a match, capture what you keep, write it back with `\1` or `\g<name>`, and write the new text literally; when the new text must be computed, pass a function.
+## Model 5: Named Groups, From a Line to a Record
+
+Models 3 and 4 used named groups once each.  This model gives them a whole page, because a name is what turns a match into data your program can use.  `group(3)` makes the reader count parentheses, but `group("level")` says what it holds.  A name also survives an edit: if you add a group near the front of the pattern, every number after it shifts, but the names stay put.
+
+| Write | To | Example |
+|-------|----|---------|
+| `(?P<name>...)` | capture under a name (it still gets a number too) | `(?P<level>[A-Z]+)` |
+| `m.group("name")` or `m["name"]` | read one named group in code | `m["level"]` |
+| `m.groupdict()` | read every named group as a dictionary | `{'date': ..., 'level': ..., 'msg': ...}` |
+| `\g<name>` | paste a named group into a replacement string | `r"\g<first> \g<last>"` |
+| `(?P=name)` | match the same text again, inside the pattern | `(?P<q>["']).*?(?P=q)` |
+| `m.lastgroup` | the name of the last group that matched | `'NUM'` |
+
+Predict with your team before you run it:
+
+| Line | Question | Your prediction |
+|------|----------|-----------------|
+| (b) | The second address has no port.  What does `groupdict()` hold for `port`? | ? |
+| (d) | Which of the three string literals match? | ? |
+| (f) | What does `lastgroup` say for `=`? | ? |
+
+```python
+import re
+
+# (a) One line becomes a record: each name is a field.
+LOG = re.compile(r"(?P<date>\d{4}-\d{2}-\d{2}) (?P<level>[A-Z]+) (?P<msg>.*)")
+m = LOG.match("2026-10-15 ERROR disk full on /dev/sda1")
+print("a.", m.groupdict())
+print("  ", m["level"], "|", m.group("date"))
+
+# (b) An optional named group that did not take part gives None, unless you pick a default.
+ADDR = re.compile(r"(?P<host>[\w.]+)(?::(?P<port>\d+))?")
+print("b.", ADDR.fullmatch("db.example.com:5432").groupdict())
+print("  ", ADDR.fullmatch("localhost").groupdict())
+print("  ", ADDR.fullmatch("localhost").groupdict(default="80"))
+
+# (c) finditer over many lines: a list of records, the shape of a log parser.
+text = """2026-10-14 INFO started
+2026-10-15 WARN low memory
+2026-10-15 ERROR disk full"""
+records = [m.groupdict() for m in LOG.finditer(text)]
+print("c.", [r["level"] for r in records], "|", records[2]["msg"])
+
+# (d) (?P=q) means "the same text group q matched," so the closing quote must equal the opening one.
+STRING = re.compile(r"(?P<q>[\"']).*?(?P=q)")
+for s in ['"hello"', "'hi'", "\"mixed'"]:
+    print("d.", f"{s:9}", "->", bool(STRING.fullmatch(s)))
+
+# (e) A replacement function reads groups by name, not by position.
+names = "Hopper, Grace; Lovelace, Ada"
+print("e.", re.sub(r"(?P<last>\w+), (?P<first>\w+)",
+                   lambda m: f"{m['first']} {m['last'].upper()}", names))
+
+# (f) Named alternatives: lastgroup reports which alternative matched.
+TOKEN = re.compile(r"(?P<NUM>\d+)|(?P<ID>[A-Za-z_]\w*)|(?P<OP>[+*=])|(?P<WS>\s+)")
+for m in TOKEN.finditer("total = x1 + 42"):
+    if m.lastgroup != "WS":
+        print("f.", f"{m.lastgroup:3}", repr(m.group()))
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- **(a), a line becomes a record.**  `groupdict()` returns a dictionary whose keys are the group names, so one `match` call turns a line of text into a record with named fields.  `m["level"]` is a short form of `m.group("level")`.
+- **(b), optional groups.**  The port sits inside `(?:...)?`, so it may be absent.  A group that took no part in the match reads as `None`, and `groupdict(default="80")` fills in your own value instead.  Check for `None` before you call `int(...)` on an optional group.
+- **(c), many records.**  `finditer` yields one match object per line, so a list comprehension over `groupdict()` builds a list of records.  The Regular Expressions assignment's log parser has exactly this shape.
+- **(d), a named backreference.**  `(?P=q)` matches the same *text* that the group named `q` matched, not the same pattern.  The closing quote must therefore equal the opening one, so `"mixed'` fails.  This is the `\1` of Part II with a name, and it is still the feature that takes a pattern beyond the regular languages.
+- **(e), names in a replacement function.**  The function reads `m['first']` and `m['last']` by name, so reordering the groups in the pattern cannot break it.
+- **(f), named alternatives.**  Only one alternative of `|` can match at each position, so `lastgroup` names the one that did.  This is how a lexer learns a token's *type* from one pattern: give every token class its own named group and join them with `|`.  The Tokens and Scanning activity builds a full lexer on this idea, and the Lexer assignment's Groups and Group References walkthrough uses it too.  If a token pattern needs parentheses of its own, write them as `(?:...)`, so that only the token names capture.
+
+### Critical Thinking Questions
+
+13. In (b), why is the port written as `(?::(?P<port>\d+))?` and not `(?P<port>:\d+)?`?  What would `groupdict()` hold for `db.example.com:5432` in the second version?
+14. In (f), `ID` comes after `NUM` in the pattern.  What would `lastgroup` report for `x1` if `NUM` were written `\w+` instead of `\d+`?  Why does the order of the alternatives matter?
+15. A teammate adds a new group at the front of `LOG` to capture a time.  Which lines of (a) and (c) still work unchanged, and which would break if they had used `group(2)` instead of `group("level")`?
+
+### Try It Yourself
+
+Write one pattern with named groups for each task.  The harness reads your groups by name, so the names must match the ones listed.
+
+```python
+import re
+
+# TODO: replace each None with a pattern that uses the named groups listed.
+TASKS = [
+    ("an assignment 'name = number': groups 'name' and 'value'",
+     None,
+     "count = 42",          {"name": "count", "value": "42"}),
+    ("a version 'MAJOR.MINOR' with optional '.PATCH': groups 'major', 'minor', 'patch'",
+     None,
+     "3.11",                {"major": "3", "minor": "11", "patch": None}),
+    ("an HTML-style tag pair that must close with the same name: group 'tag' and 'body'",
+     None,
+     "<b>bold</b>",         {"tag": "b", "body": "bold"}),
+]
+
+for desc, pattern, given, want in TASKS:
+    print(f"\n{desc}")
+    if pattern is None:
+        print("  (not written yet)")
+        continue
+    m = re.fullmatch(pattern, given)
+    got = m.groupdict() if m else None
+    print(f"  got:  {got}")
+    print(f"  want: {want}  -> {'ok' if got == want else 'FAILED'}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output once all three are written: every line reads `ok`.  The version number needs an optional group, so `patch` must come back as `None` when it is absent.  The tag pair needs `(?P=tag)` in the closing tag.  A pattern that matches `<b>bold</i>` has not used it.
+
+To remember from Part III: parentheses capture, groups are numbered by their opening parenthesis, and `re.sub` replaces the whole match.  To change part of a match, capture what you keep, write it back with `\1` or `\g<name>`, and write the new text literally; when the new text must be computed, pass a function.  Name a group with `(?P<name>...)` whenever its meaning matters, read every named group at once with `groupdict()`, and use `lastgroup` to learn which named alternative matched.
 
 ---
 
