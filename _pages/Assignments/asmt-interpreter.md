@@ -168,7 +168,7 @@ Every step below names the file it changes, but it helps to see the whole map on
 | 5a | `interpreter.py`, `test_interpreter.py` | audit every `raise`, and add one test per error class |
 | 5b | `SEMANTICS.md` | write seven sections, each with a rule, an example, and its real output |
 | 5c | `differential/`, `test_interpreter.py` | run the five provided programs and pin their outputs in tests |
-| T.1 to T.4 (typing direction) | `types.py` (see the warning in T.1), `typecheck.py`, `mylang.py`, `TYPES.md` | in place of 5b and 5c |
+| T.1 to T.4 (typing direction) | `hm_types.py`, `typecheck.py`, `mylang.py`, `TYPES.md` | in place of 5b and 5c |
 | I.1 to I.4 (Intcode direction) | `INTCODE.md`, `intcode.py`, `test_interpreter.py` | in place of 5b and 5c |
 
 ### What You Already Have
@@ -1524,20 +1524,20 @@ def test_differential_02_division_and_numbers():
 
 This direction replaces Steps 5b-5c.  You grow Part 4's annotation checker into whole-program *inference*: still its own pipeline stage after parsing and before evaluation, but now deducing types where no annotations exist at all, with the same unification and Algorithm-W-style machinery that lets Haskell, OCaml, and Rust do it.  Part 4's type environment, staged error reporting, and operator rules all carry forward.  What changes is that unknown types become type *variables* to be solved rather than gaps to be documented.  A **type** is one of three things: a type variable `α, β, ...` (unknown, to be solved), a type constant (`Num`, `Bool`, `Str`), or, if your checker covers functions, a function type `τ₁ -> τ₂`.  A substitution maps type variables to types.  Unification of two types finds the most general substitution that makes them equal, or fails, and that failure *is* the type error.  The inference algorithm walks the AST, generates fresh type variables constrained by each node's structure, and unifies to solve them.
 
-> **What this direction requires.** `types.py` (T.1), `typecheck.py` (T.2), positioned type errors (T.3), and `TYPES.md` with its accepted and rejected test programs (T.4), in place of `SEMANTICS.md` and the differential programs.  Step 5a is still required.
+> **What this direction requires.** `hm_types.py` (T.1), `typecheck.py` (T.2), positioned type errors (T.3), and `TYPES.md` with its accepted and rejected test programs (T.4), in place of `SEMANTICS.md` and the differential programs.  Step 5a is still required.
 
-### Step T.1: Type Terms, Substitution, and Unification (`types.py`)
+### Step T.1: Type Terms, Substitution, and Unification (`hm_types.py`)
 
-Create `types.py` in the project folder from the skeleton below.  Define frozen dataclasses `TVar(name)` and `TCon(name)` (and `TFun(param, ret)` if you cover functions), with `apply(subst, typ)` and `free_vars(typ)` helpers.  Implement `unify(t1, t2, subst) -> subst`:
+Create `hm_types.py` in the project folder from the skeleton below.  Define frozen dataclasses `TVar(name)` and `TCon(name)` (and `TFun(param, ret)` if you cover functions), with `apply(subst, typ)` and `free_vars(typ)` helpers.  Implement `unify(t1, t2, subst) -> subst`:
 
 1.  Apply the current substitution to both types.  If they are now identical, return the substitution unchanged.
 2.  If one is a type variable `α` that does not occur in the other, extend the substitution with `{α: other}`.  The **occurs check** (refusing to bind `α` to a type containing `α`) is what prevents infinite types.  Raise a `LangTypeError` naming both types if it fires.
 3.  Recurse componentwise on matching constructors.  Otherwise raise a `LangTypeError` naming both conflicting types.
 
-**You write:** `types.py` (see the warning below) - `TVar`, `TCon`, `apply`, `free_vars`, and `unify`, plus three tests in `test_interpreter.py`
+**You write:** `hm_types.py` - `TVar`, `TCon`, `apply`, `free_vars`, and `unify`, plus three tests in `test_interpreter.py`
 **You run:** `python3 -m pytest test_interpreter.py`
 
-> **Watch out.** Python's standard library already has a module named `types`, and `dataclasses` imports it.  A file named `types.py` in your project folder hides the real one, so `from dataclasses import dataclass` fails with `ImportError: cannot import name 'MappingProxyType' from 'types'`, and pytest fails to start.  Name the file `hm_types.py` instead, import from `hm_types`, and say in your readme that it is the `types.py` deliverable.
+> **Watch out.** Python's standard library already has a module named `types`, and `dataclasses` imports it.  That is why this file is named `hm_types.py`.  A file named `types.py` in your project folder would hide the real one, so `from dataclasses import dataclass` would fail with `ImportError: cannot import name 'MappingProxyType' from 'types'`, and pytest would fail to start.
 
 ```python
 from dataclasses import dataclass
@@ -1756,7 +1756,7 @@ Submit a ZIP containing:
 | `repl_transcript.txt` | The REPL session showing each error class and recovery | Part 3 |
 | `readme.md` | Approximately one page connecting the interpreter to the pipeline and the team project; the control-flow theory questions; the Step 2e report; any reference-component declaration; your Python version | Parts 2, 5 |
 
-**Typing direction:** substitute `types.py`, `typecheck.py`, and `TYPES.md` (with its accepted/rejected test programs) for `SEMANTICS.md` and the differential programs.  Everything else on the list is unchanged, and the REPL transcript also demonstrates one positioned type error.
+**Typing direction:** substitute `hm_types.py`, `typecheck.py`, and `TYPES.md` (with its accepted/rejected test programs) for `SEMANTICS.md` and the differential programs.  Everything else on the list is unchanged, and the REPL transcript also demonstrates one positioned type error.
 
 **Intcode direction:** substitute `intcode.py` and `INTCODE.md` (with the per-opcode transition rules) for `SEMANTICS.md` and the differential programs.  Add the AoC checkpoint outputs and the tree-walker-vs-VM differential test to `test_interpreter.py`.  Everything else on the list is unchanged.
 
@@ -1772,7 +1772,7 @@ Every direction includes the required Step 2e Hypothesis invariant tests in `tes
 - [ ] At least four Hypothesis invariants (determinism, scope restoration, short-circuit non-evaluation, and at least one more) are in `test_interpreter.py`, and the readme reports a shrunk counterexample or a reasoned all-clear.
 - [ ] The REPL keeps its environment across an error, and `repl_transcript.txt` shows every error class and recovery.
 - [ ] The file runner prints a stage label (`Lexical`, `Syntax`, `Type`, `Runtime`) in every error message, and the Type stage fires before any code runs.
-- [ ] The Part 5 deliverable for your direction is complete (`SEMANTICS.md` and the differential programs, or `types.py` + `typecheck.py` + `TYPES.md`, or `intcode.py` + `INTCODE.md` with the AoC checkpoints and the differential test), and the control-flow theory questions are answered in the readme.
+- [ ] The Part 5 deliverable for your direction is complete (`SEMANTICS.md` and the differential programs, or `hm_types.py` + `typecheck.py` + `TYPES.md`, or `intcode.py` + `INTCODE.md` with the AoC checkpoints and the differential test), and the control-flow theory questions are answered in the readme.
 - [ ] The readme lists your Python version and any reference component you used.
 
 ---
