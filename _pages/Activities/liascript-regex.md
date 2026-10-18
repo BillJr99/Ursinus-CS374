@@ -304,9 +304,9 @@ for s in ["42", "\u096a\u0968"]:          # the second string is Devanagari four
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-### A Real Pattern, Piece by Piece
+### Practical Examples: Is This URL Local?
 
-Everything above composes into patterns you will meet in working code.  This function decides whether a configured base URL points at the local machine (a local Ollama server, for example, needs no API key):
+Let's read a pattern from working code.  This function decides whether a configured base URL points at the local machine.  A local Ollama server, for example, needs no API key, so the program can skip that check:
 
 ```python
 import re
@@ -321,19 +321,21 @@ for u in ["http://localhost:11434", "localhost", "127.0.0.1:8080/v1",
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Read the pattern left to right, one piece per operator:
+Each piece of the pattern is one of the tools from this part:
 
 | Piece | Reads as |
 |-------|----------|
-| `^` | anchor: the match must begin at the start of the string |
-| `(https?://)?` | an optional scheme: `http` or `https` (the `?` after `s` makes the `s` optional), then `://`; the outer `?` makes the whole group optional, so a bare `localhost` still passes |
-| `(localhost\|127\.0\.0\.1)` | alternation: the host is one of these two spellings; the dots are escaped because an unescaped `.` matches any character |
+| `^` | anchor: the match starts at the beginning of the string |
+| `(https?://)?` | an optional scheme.  `https?` is `http` or `https`, then `://`.  The outer `?` makes the whole group optional, so a bare `localhost` still passes |
+| `(localhost\|127\.0\.0\.1)` | alternation: the host is one of these two spellings.  The dots are escaped because an unescaped `.` matches any character |
 | `(:\d+)?` | an optional port: a colon and one or more digits |
 | `(/\|$)` | the host must be followed by a path (`/`) or the end of the string |
 
-The last piece does the security work.  Without it, `http://localhost.evil.com` would match, because `re.match` would stop after `localhost` and ignore the rest.  Requiring `/` or `$` right after the optional port forces the host to end where the pattern says it ends.  The `.strip()` removes stray whitespace first, so a pasted URL with a trailing newline still works.
+The last piece is the one that keeps the check honest.  Without it, `http://localhost.evil.com` would match, because `re.match` stops after `localhost` and ignores the rest.  Requiring `/` or the end of the string right after the optional port forces the host to end where the pattern says it ends.  The `.strip()` removes stray whitespace first, so a pasted URL with a trailing newline still works.
 
-Note the verb, too.  `re.match` anchors at the start of the string on its own, so the leading `^` is redundant (harmless, and it documents intent).  It does *not* anchor at the end, which is why the `$` inside the last group matters.  `re.fullmatch` would anchor both ends, but it could not express "followed by a path of any length," so the explicit `(/|$)` is the right tool here.
+**Predict:** `re.match` already anchors at the start of the string, so is the leading `^` needed?  What would change if the pattern ended after `(:\d+)?`?
+
+`re.match` anchors the start only.  The `^` is redundant, but it states the intent.  The end is not anchored, which is why the `$` inside the last group matters.  `re.fullmatch` would anchor both ends, but it cannot express "followed by a path of any length," so the explicit `(/|$)` is the right tool here.
 
 ### Critical Thinking Questions
 
@@ -460,9 +462,9 @@ print("findall, 2 groups:", re.findall(r"(R)(\d)", line))
 - `groupdict()` turns named groups into a dictionary, which is the step from "a line of text" to "a structured record."
 - `findall` changes shape with the number of groups: whole matches with none, just the group with one, tuples with two or more.  That shape change surprises everyone once, so let it surprise you here.
 
-### Groups in Practice: Pulling a Number Out of a Name
+### Practical Examples: Pulling a Level Out of a Course Name
 
-A capture group is how you pull one piece out of a match.  This function reads a course level from identifiers like `CS173-NAME`, `CS-173-NAME`, or `MATH210-NAME`:
+A capture group pulls one piece out of a match.  This function reads a course level from names like `CS173-NAME`, `CS-173-NAME`, and `MATH210-NAME`:
 
 ```python
 import re
@@ -482,11 +484,11 @@ for s in ["CS173-NAME", "CS-173-NAME", "MATH210-NAME", "CS374", "Intro", "", Non
 
 - `^\s*` skips any leading whitespace.
 - `[A-Za-z]+` matches the department letters (`CS`, `MATH`), and `-?` allows an optional hyphen after them.
-- `(\d)` is the **only capture group**, so it is group 1: the first digit of the course number.  The next piece, `\d{2}`, matches the remaining two digits but is *not* in parentheses, so it is matched and thrown away.  That is what we want: `173` has three digits, and only the `1` carries the level.
-- `m.group(1)` reads that captured digit back as the string `"1"`, and `int("1") * 100` turns it into `100`.  For `MATH210`, group 1 is `"2"`, giving `200`.
-- `re.match` returns `None` when the pattern does not match (`Intro` has no digits), so the function checks `if m` before calling `.group()`.  The early `if not level_str` handles `None` and the empty string before the regex runs.
+- `(\d)` is the only capture group, so it is group 1: the first digit of the course number.  `\d{2}` matches the other two digits but sits outside the parentheses, so the match uses them and keeps nothing.  That is what we want.  In `173`, only the `1` carries the level.
+- `m.group(1)` returns the captured digit as the string `"1"`, and `int("1") * 100` turns it into `100`.  For `MATH210`, group 1 is `"2"`, which gives `200`.
+- `re.match` returns `None` when the pattern fails, as it does for `Intro`, so the function tests `if m` before calling `.group()`.  The early `if not level_str` handles `None` and the empty string before the regex runs.
 
-The design choice worth noticing is *which* digits to capture.  Capturing all three (`(\d{3})`) would give `173` and force you to compute `173 // 100 * 100`.  Capturing just the leading digit gives the answer directly, so the group sits around exactly the text the code needs.
+**Predict:** what would change if the pattern captured all three digits with `(\d{3})`?  Capturing `173` would force the function to compute `173 // 100 * 100`.  Capturing only the leading digit gives the answer directly, so the group belongs around exactly the text the code needs.
 
 ## Model 4: Rewriting with Group References
 
