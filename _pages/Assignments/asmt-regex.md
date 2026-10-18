@@ -421,7 +421,7 @@ PASS COURSE_CODE (3 positive, 2 negative)
 - No match: `@example.com`, `user@`, `user@com`, `user @example.com`
 
 **P6 `US_PHONE`:** A US phone number in the format `(NXX) NXX-XXXX`, where N is a digit from 2 to 9.
-- Match: `(215) 555-1234`, `(800) 123-4567`
+- Match: `(215) 555-1234`, `(800) 223-4567`
 - No match: `215-555-1234`, `(015) 555-1234`, `(215)555-1234`
 
 **P7 `ISO_DATE`:** An ISO 8601 date, `YYYY-MM-DD`.  Month is 01-12 and day is 01-31.  A regex cannot check how many days a particular month has, so validate only the format and these ranges.
