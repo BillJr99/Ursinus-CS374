@@ -304,6 +304,37 @@ for s in ["42", "\u096a\u0968"]:          # the second string is Devanagari four
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
+### A Real Pattern, Piece by Piece
+
+Everything above composes into patterns you will meet in working code.  This function decides whether a configured base URL points at the local machine (a local Ollama server, for example, needs no API key):
+
+```python
+import re
+
+def is_local_url(base_url: str) -> bool:
+    """True for a localhost/127.0.0.1 base URL (e.g. a local Ollama, which needs no API key)."""
+    return bool(re.match(r"^(https?://)?(localhost|127\.0\.0\.1)(:\d+)?(/|$)", base_url.strip()))
+
+for u in ["http://localhost:11434", "localhost", "127.0.0.1:8080/v1",
+          "https://api.openai.com", "http://localhost.evil.com"]:
+    print(f"{u!r:30} {is_local_url(u)}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Read the pattern left to right, one piece per operator:
+
+| Piece | Reads as |
+|-------|----------|
+| `^` | anchor: the match must begin at the start of the string |
+| `(https?://)?` | an optional scheme: `http` or `https` (the `?` after `s` makes the `s` optional), then `://`; the outer `?` makes the whole group optional, so a bare `localhost` still passes |
+| `(localhost\|127\.0\.0\.1)` | alternation: the host is one of these two spellings; the dots are escaped because an unescaped `.` matches any character |
+| `(:\d+)?` | an optional port: a colon and one or more digits |
+| `(/\|$)` | the host must be followed by a path (`/`) or the end of the string |
+
+The last piece does the security work.  Without it, `http://localhost.evil.com` would match, because `re.match` would stop after `localhost` and ignore the rest.  Requiring `/` or `$` right after the optional port forces the host to end where the pattern says it ends.  The `.strip()` removes stray whitespace first, so a pasted URL with a trailing newline still works.
+
+Note the verb, too.  `re.match` anchors at the start of the string on its own, so the leading `^` is redundant (harmless, and it documents intent).  It does *not* anchor at the end, which is why the `$` inside the last group matters.  `re.fullmatch` would anchor both ends, but it could not express "followed by a path of any length," so the explicit `(/|$)` is the right tool here.
+
 ### Critical Thinking Questions
 
 5.  `re.fullmatch(r"[0-9]+", "007")` matches.  Is that correct for an *integer literal* in your project language?  If you want to forbid leading zeros, write the pattern.  What did it cost in complexity?
@@ -428,6 +459,34 @@ print("findall, 2 groups:", re.findall(r"(R)(\d)", line))
 - `group(n)` is one capture, `groups()` is all of them as a tuple, and `span(n)` is where group `n` sits in the original string, so `line[m.start(3):m.end(3)]` recovers the same text.  A lexer uses exactly this to report the column of a bad token.
 - `groupdict()` turns named groups into a dictionary, which is the step from "a line of text" to "a structured record."
 - `findall` changes shape with the number of groups: whole matches with none, just the group with one, tuples with two or more.  That shape change surprises everyone once, so let it surprise you here.
+
+### Groups in Practice: Pulling a Number Out of a Name
+
+A capture group is how you pull one piece out of a match.  This function reads a course level from identifiers like `CS173-NAME`, `CS-173-NAME`, or `MATH210-NAME`:
+
+```python
+import re
+from typing import Optional
+
+def parse_course_level(level_str: Optional[str]) -> Optional[int]:
+    """Return 100/200/300/400... from 'CS173-NAME', 'CS-173-NAME', 'MATH210-NAME', etc., else None."""
+    if not level_str:
+        return None
+    m = re.match(r"^\s*[A-Za-z]+-?(\d)\d{2}", str(level_str))
+    return int(m.group(1)) * 100 if m else None
+
+for s in ["CS173-NAME", "CS-173-NAME", "MATH210-NAME", "CS374", "Intro", "", None]:
+    print(f"{s!r:16} {parse_course_level(s)}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+- `^\s*` skips any leading whitespace.
+- `[A-Za-z]+` matches the department letters (`CS`, `MATH`), and `-?` allows an optional hyphen after them.
+- `(\d)` is the **only capture group**, so it is group 1: the first digit of the course number.  The next piece, `\d{2}`, matches the remaining two digits but is *not* in parentheses, so it is matched and thrown away.  That is what we want: `173` has three digits, and only the `1` carries the level.
+- `m.group(1)` reads that captured digit back as the string `"1"`, and `int("1") * 100` turns it into `100`.  For `MATH210`, group 1 is `"2"`, giving `200`.
+- `re.match` returns `None` when the pattern does not match (`Intro` has no digits), so the function checks `if m` before calling `.group()`.  The early `if not level_str` handles `None` and the empty string before the regex runs.
+
+The design choice worth noticing is *which* digits to capture.  Capturing all three (`(\d{3})`) would give `173` and force you to compute `173 // 100 * 100`.  Capturing just the leading digit gives the answer directly, so the group sits around exactly the text the code needs.
 
 ## Model 4: Rewriting with Group References
 
