@@ -89,7 +89,7 @@ expr
             `- primary -> NUM(3)
 ```
 
-The parse tree has 10+ nodes, most of them grammar scaffolding.
+The parse tree has 14 nodes (counting each primary and its NUM separately), most of them grammar scaffolding.
 
 Step 3, the AST (scaffolding collapsed, precedence now encoded in the tree shape):
 
