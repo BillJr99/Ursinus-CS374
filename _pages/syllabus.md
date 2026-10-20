@@ -420,18 +420,6 @@ schedule:
   readings:
   - rtitle: "PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer and Parser assignments)"
     rlink: "Tutorials/PLYLexerAndParser"
-- week: "9"
-  date: "0"
-  title: "No Class: Instructor Away"
-  readings:
-  - rtitle: "No class meeting today.  Use the time for the Finite Automata Simulators lab (due Tuesday, November 3) and the Build a Lexer assignment (due Thursday, November 5)."
-    rlink: false
-- week: "9"
-  date: "1"
-  title: "No Class: Instructor Away"
-  readings:
-  - rtitle: "No class meeting today.  Read ahead for Tuesday: Allison, Ch. 5 (Pushdown Automata), listed there, is the background for Tuesday's LR parsing."
-    rlink: false
 - week: "10"
   date: "0"
   title: "Parsing Expressions and Table-Driven Parsing: Left Factoring, Precedence, and LR"
