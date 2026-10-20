@@ -33,7 +33,7 @@ By the end of this tutorial, you will be able to:
 - Explain how `async`/`await` desugars to a state machine and identify where suspension points occur
 - Extend a simple interpreter to support generator objects with `yield` and `send` semantics
 
-> **Prerequisites:** Python functions and closures (the *Closures and First-Class Functions* activity); the idea of a **continuation**, "the rest of the computation"
+> **Prerequisites:** Python functions and closures (the closures half of the *Lambda Calculus II and Closures* activity); the idea of a **continuation**, "the rest of the computation"
 > **Goal:** Understand generators as semi-coroutines, how `yield` captures a continuation, how `async/await` desugars to state machines, and how to add generator support to a simple interpreter.
 
 ---

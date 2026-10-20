@@ -50,14 +50,11 @@ info:
       progressing: "The canonical collection is built and mostly matches the activity's twelve item sets, but the ACTION/GOTO table diverges from the printed one in at least one cell, or reduce actions are emitted on every terminal rather than only on FOLLOW tokens, or the driver runs without producing the stack-input-action trace, or conflicts are silently overwritten rather than recorded"
       proficient: "`closure` reaches its fixed point and reproduces the seven-item start state; `goto` closes correctly and `goto(I0, T)` yields exactly the two-item state that carries the precedence decision; the canonical collection finds twelve states matching the activity's item sets, with any renumbering documented rather than hand-corrected; FOLLOW is computed programmatically and matches the printed sets; the generated ACTION and GOTO tables agree with the activity's table cell for cell, including row 2's shift on `*` and reduce on `+`; the driver parses `num + num * num` and emits a stack-input-action trace in which `T -> T * F` reduces before `E -> E + T`; and both deliberate ambiguities are detected rather than overwritten, with the conflict type, the state, and the two disagreeing items named, and with one sentence distinguishing the conflict a precedence declaration resolves from the one needing grammar surgery"
   readings:
-    - rtitle: "Table-Driven and LR Parsing Activity (its printed closure, item sets, FOLLOW sets, and ACTION/GOTO table are the answer key for Part 4)"
-      rlink: "Activities/liascript-parsertable.md"
+    - rtitle: "Parsing Expressions and Table-Driven Parsing Activity (the expression ladder behind Part 2; its printed closure, item sets, FOLLOW sets, and ACTION/GOTO table are the answer key for Part 4)"
+      rlink: "Activities/liascript-parsingexpressions.md"
       liapage: true
     - rtitle: "Recursive Descent Activity"
       rlink: "Activities/liascript-recursivedescent.md"
-      liapage: true
-    - rtitle: "Parsing Expressions Activity"
-      rlink: "Activities/liascript-parsingexpressions.md"
       liapage: true
     - rtitle: "Abstract Syntax Trees Activity"
       rlink: "Activities/liascript-ast.md"
@@ -290,7 +287,7 @@ A dangling `else` is an `else` that could attach to more than one `if`.  Given `
 
 ### Step 1c: Answer the Parsing Theory Questions
 
-These questions exercise the Table-Driven and LR Parsing session's material on the grammar you just wrote, and they are graded within Part 1's rubric row.  Your recursive descent parser is top-down: it starts from `program` and works down to tokens.  An LR parser is bottom-up: it keeps a stack, *shifts* the next token onto the stack, and *reduces* the top of the stack to a non-terminal when a right-hand side is complete.
+These questions exercise the table-driven material of the Parsing Expressions and Table-Driven Parsing session on the grammar you just wrote, and they are graded within Part 1's rubric row.  Your recursive descent parser is top-down: it starts from `program` and works down to tokens.  An LR parser is bottom-up: it keeps a stack, *shifts* the next token onto the stack, and *reduces* the top of the stack to a non-terminal when a right-hand side is complete.
 
 **You write (in `readme.md` under a `## Parsing Theory` heading):** answers to the four questions below, including one stack-input-action table.  No code.
 
@@ -298,7 +295,7 @@ These questions exercise the Table-Driven and LR Parsing session's material on t
 
 1.  The dangling else, bottom-up.  An LR parser generator reports a shift-reduce conflict at the token `ELSE` for a grammar like yours.  Explain, in terms of the parser's stack and the two available actions, what the conflict *is*: what does shifting choose, and what does reducing choose?  Then give the two standard resolutions (a precedence/`%prec`-style declaration favoring shift, or grammar surgery into `matched`/`unmatched` productions) and state which one your grammar's Step 1b convention corresponds to.
 2.  Manufacture a reduce-reduce conflict.  Consider adding this pair of productions to your grammar: `const_stmt ::= LET IDENT EQ INT SEMICOLON` alongside the existing `let_stmt ::= LET IDENT EQ expr SEMICOLON`.  Explain why an LR parser hits a reduce-reduce conflict on input like `let x = 42;` (which completed right-hand side matches the stack?), and restructure the productions to eliminate the conflict while keeping both language features.
-3.  One shift-reduce trace.  Using the toy grammar `E ::= E + T | T` and `T ::= INT`, execute the shift-reduce parse of `1 + 2 + 3` as a stack-input-action table (the format from the Table-Driven and LR Parsing session; expect about ten rows).  Note the step where the parser reduces `E + T` to `E` *before* shifting the second `+`, and state which associativity that choice enforces.
+3.  One shift-reduce trace.  Using the toy grammar `E ::= E + T | T` and `T ::= INT`, execute the shift-reduce parse of `1 + 2 + 3` as a stack-input-action table (the format from the Parsing Expressions and Table-Driven Parsing session; expect about ten rows).  Note the step where the parser reduces `E + T` to `E` *before* shifting the second `+`, and state which associativity that choice enforces.
 4.  Left recursion, both worlds.  The toy grammar above is left-recursive.  State in one sentence each: why that grammar would send your recursive descent parser into an infinite loop, and why the LR parser handles it without complaint.
 
 > **You are done when** all four answers are in the readme, and question 3's table has the three columns from the class session, starts with an empty stack, and ends in `accept`.  Its first row looks like this:
@@ -1249,7 +1246,7 @@ The generated trees are expressions, not programs, so the test re-parses them wi
 
 You have now written a top-down parser by hand.  In this part you build the bottom-up machine that a generator would have built for you.  Direction A's `bison -v` output then stops being a black box.  Everyone does this part, whichever direction you took for Part 2.
 
-You build it for **one fixed grammar, not your own**.  That is deliberate.  The ladder grammar below is the one the [Table-Driven and LR Parsing]({{ site.baseurl }}/Activities/liascript-parsertable) session builds by hand.  That activity prints the correct closure, the twelve item sets, the FOLLOW sets, and the complete ACTION/GOTO table.  Those printed tables are your answer key: your code must reproduce them exactly.  You will know you are right without asking me.
+You build it for **one fixed grammar, not your own**.  That is deliberate.  The ladder grammar below is the one the [Parsing Expressions and Table-Driven Parsing]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsingexpressions.md) session builds by hand.  That activity prints the correct closure, the twelve item sets, the FOLLOW sets, and the complete ACTION/GOTO table.  Those printed tables are your answer key: your code must reproduce them exactly.  You will know you are right without asking me.
 
 If you want the mechanism explained before you build it, the [Building an LR Parser from the Grammar Up]({{ site.baseurl }}/Tutorials/LRConstruction) tutorial walks through every step below on a smaller grammar, with runnable code and worked conflicts.  It is a companion, not a shortcut: its grammar has neither precedence nor parentheses, so the work here is still yours.
 

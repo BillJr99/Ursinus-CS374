@@ -774,7 +774,7 @@ match xs with
 
 # Advanced: A Metacircular Scheme Evaluator, Scheme in Python
 
-This advanced section goes deeper into the same lexer -> parser -> environment -> evaluator architecture you built for Mini above, and it backs Direction G of the Functional assignment (contributing to mal: Make-a-Lisp) for students heading that way.
+This advanced section goes deeper into the same lexer -> parser -> environment -> evaluator architecture you built for Mini above, and it backs the Team Language Project's mal (Make-a-Lisp) scaffold option and its [Contribute Upstream extension]({{ site.baseurl }}/Projects/TeamLanguage#contribute-upstream-an-open-source-contribution) for teams heading that way.
 
 An interpreter written in the very language it interprets sounds like a paradox, but it is actually one of the most clarifying ideas in computer science: it shows that the language is expressive enough to describe its own evaluation rules, and it makes those rules precise enough to run.  Think of it like a dictionary that defines every word using other words in the same dictionary: the circularity is the point here, because nothing outside the language is needed to explain it.  Building this evaluator in Python forces every semantic choice to become explicit code, revealing the machinery that the Mini interpreter you just built already contains.
 
@@ -1867,7 +1867,7 @@ Answer these questions in your course notebook after completing this section.
 
 # From the Closures Activity: Closures in Your Interpreter
 
-Twenty lines that give your interpreter first-class functions, plus why closures are what make recursion work.  Previously part of the Closures class session.
+Twenty lines that give your interpreter first-class functions, plus why closures are what make recursion work.  It extends Parts V and VI of the *Lambda Calculus II and Closures* activity.
 
 Building an interpreter that supports closures requires translating the abstract idea ("a function carries its birth environment") into concrete data structures.  Think of it like building a passport system: when a function is created, you stamp its passport with the environment it was born in; when it is called later, you open a new room that is connected back to that stamped environment, not to wherever the function happens to be called from.  This section shows exactly how `Environment`, `Closure`, and `eval_call` work together to implement that passport stamp.
 

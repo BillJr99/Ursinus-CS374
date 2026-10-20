@@ -68,6 +68,8 @@ tags:
 
 ---
 
+> **Not assigned in Fall 2026.**  This assignment is not part of the Fall 2026 schedule, and nothing on this page is graded this term.  Its directions remain available as reference material: continuations, Church encodings, logic programming, and open-source contribution each appear as optional extensions in the [Team Language Project's Extensions Menu]({{ site.baseurl }}/Projects/TeamLanguage#extensions-menu).
+
 This assignment trains you to write Python in the functional style.  Everyone completes the same two-part core: Part 1 is pure functions with higher-order combinators, and Part 2 is recursive data structures with a generic fold.  Then you choose **one direction** and carry it to depth.  You leave with a working toolkit (`map`, `filter`, `reduce`, a generic fold, and whatever your direction adds), a test file that proves it, and a one-page writeup your team can use when it weighs this paradigm as a design option for its own language.
 
 The constraints are the content.  Where a part says no loops and no assignment statements inside the solution logic, that rule is what retrains you from imperative thinking (change a variable, step by step) to functional thinking (describe the result as a chain of transformations).  Two terms recur throughout.  A pure function is one whose output depends only on its inputs and which changes nothing outside itself.  A higher-order function is one that takes a function as an argument or returns one.

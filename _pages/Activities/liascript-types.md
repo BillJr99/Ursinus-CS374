@@ -34,7 +34,7 @@ By the end of this activity, you will be able to:
 - Explain why gradual type systems are deliberately unsound, and what that buys
 - Specify the typing rules for your team's language and justify them against the evaluation criteria
 
-Your interpreter now has the environments from *Environments and Variable Storage*, so it knows what to do with `5 / 0`.  But what should it do with
+Your interpreter now has the environments from *Binding, Scope, and Environments*, so it knows what to do with `5 / 0`.  But what should it do with
 
 ```
 "hello" * true
@@ -979,7 +979,7 @@ Expected output: the int is `1092416963`, which is exactly what the real C progr
 
 ### Critical Thinking Questions
 
-15.  Trace the *lie* through the pipeline.  At each of the three stations from *Table-Driven and LR Parsing*, name what that station knew and what it had already forgotten.  At which station did the last piece of information that could have caught this disappear?
+15.  Trace the *lie* through the pipeline.  At each of the three stations (compile, link, load) from the compile-link-load extension of *Parsing Expressions and Table-Driven Parsing*, name what that station knew and what it had already forgotten.  At which station did the last piece of information that could have caught this disappear?
 16.  Part I placed C in the **static, weak** quadrant.  Does this bug belong to the *static* axis or the *weak* axis?  Defend your answer, then argue the opposite one; the disagreement is the useful part.
 17.  The `# Extension: Type Erasure` section above showed Java erasing generic type arguments before runtime.  This section shows C erasing *all* types before linking.  State what the two erasures have in common in one sentence, and then state the difference in what each one costs you.
 18.  C's actual answer is a shared header: put `extern float gravity;` in `gravity.h` and `#include` it from both files.  Explain precisely why that works, then explain precisely why it is a *convention* and not a *guarantee*.  What stops `report.c` from simply not including it?

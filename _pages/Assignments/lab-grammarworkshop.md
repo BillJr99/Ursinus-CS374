@@ -43,7 +43,7 @@ info:
     - rtitle: "Recursive Descent Parsing Activity"
       rlink: "Activities/liascript-recursivedescent.md"
       liapage: true
-    - rtitle: "Parsing Expressions Activity"
+    - rtitle: "Parsing Expressions and Table-Driven Parsing Activity"
       rlink: "Activities/liascript-parsingexpressions.md"
       liapage: true
     - rtitle: "BNF/EBNF Tester (the course's own grammar tester: check a string against your grammar and see its parse tree and leftmost derivation)"

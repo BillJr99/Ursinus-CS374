@@ -291,7 +291,7 @@ There are two functions here.  The outer one is named; the inner one is created,
 
 `counter1` and `counter2` each captured their *own* `count`, which is why they count independently.  This is also the one place in this tutorial where `set!` earns its keep: the whole point is state that persists between calls.
 
-A closure is a small object with exactly one method.  An object is a closure with a dispatch table.  Which of those framings you find more natural says a good deal about which paradigm you grew up in, and the question comes back in November when the course builds environments and first-class functions for real.
+A closure is a small object with exactly one method.  An object is a closure with a dispatch table.  Which of those framings you find more natural says a good deal about which paradigm you grew up in, and the question comes back in November and December, when the course builds environments and then first-class functions for real.
 
 ---
 

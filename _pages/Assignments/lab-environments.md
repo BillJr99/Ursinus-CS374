@@ -34,11 +34,8 @@ info:
       progressing: The trace shows environment states per step with one prediction error against the actual run
       proficient: The trace shows the environment chain at every step, every prediction matches the actual run, and the lexical-vs-dynamic question is answered by pointing to the exact line of the class that decides it
   readings:
-    - rtitle: "Binding and Scope Activity"
+    - rtitle: "Binding, Scope, and Environments Activity"
       rlink: "Activities/liascript-bindingscope.md"
-      liapage: true
-    - rtitle: "Environments Activity"
-      rlink: "Activities/liascript-environments.md"
       liapage: true
 
 tags:
@@ -62,7 +59,7 @@ You need:
 - Python 3.10 or newer.  The class uses only the standard library.
 - Any editor that saves plain `.py` files, and a terminal you can run `python3` from.  If the terminal is new to you, read the [Dev Environment tutorial]({{ site.baseurl }}/Tutorials/DevEnvironment) and the [Shell for Language Development primer]({{ site.baseurl }}/Tutorials/ShellForLanguageDev) first; both are short.
 - The provided behavior script [test_environment.py]({{ site.baseurl }}/files/starters/environments/test_environment.py).
-- The two readings listed above (the Binding and Scope activity and the Environments activity).  Part 0 uses their vocabulary.
+- The reading listed above (the *Binding, Scope, and Environments* activity).  Part 0 uses its vocabulary.
 
 Make a folder for this lab and confirm your Python version from inside it (any `3.10` or higher is fine; on Windows, if `python3` is not found, use `python` wherever this page says `python3`):
 
@@ -180,7 +177,7 @@ caller();
 > 2. For each program, write your prediction of what it prints under each rule: one line for lexical, one line for dynamic.
 > 3. If both predictions for a probe match, it cannot tell the rules apart, so change it.
 
-> **Bring to class.** Both probe programs and all four predictions.  You will run them against the mystery interpreter in the Binding and Scope session.
+> **Have ready.** Both probe programs and all four predictions.  Run them against the Mystery Scoping Language interpreter in Part II of the *Binding, Scope, and Environments* activity.
 
 ---
 
@@ -485,7 +482,7 @@ Every step of the program is one of five kinds:
 
 ### Step 2.3: Answer the Two Theory Questions
 
-Close `trace.md` with two theory questions from the Binding and Scope session.
+Close `trace.md` with two theory questions from the *Binding, Scope, and Environments* session.
 
 **You write (in `trace.md` under the `### Step 2.3` heading):** one answer per question.  No code.
 

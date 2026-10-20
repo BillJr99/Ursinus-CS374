@@ -31,7 +31,7 @@ tags:
 
 # Prolog in the Browser with SWISH
 
-This tutorial is the companion to **Direction F (Declarative Logic Programming in Prolog)** of the Functional Programming assignment.  Everything here runs in the browser at [SWISH](https://swish.swi-prolog.org/), so there is nothing to install.  For depth beyond this tutorial, read the opening chapters of [The Power of Prolog](https://www.metalevel.at/prolog).
+This tutorial is the companion to the optional **[Logic Programming extension]({{ site.baseurl }}/Projects/TeamLanguage#logic-programming-a-declarative-sublanguage)** of the Team Language Project, and it stands on its own as a tour of the declarative paradigm.  Everything here runs in the browser at [SWISH](https://swish.swi-prolog.org/), so there is nothing to install.  For depth beyond this tutorial, read the opening chapters of [The Power of Prolog](https://www.metalevel.at/prolog).
 
 Logic programming is the widest paradigm contrast in the course.  Every other assignment is about **evaluation**: you write an expression and a machine reduces it to a value.  Prolog is about **relations**; you state what is true, pose a query, and a search engine finds every way to make it true.
 
@@ -87,7 +87,7 @@ Query `?- rev([1,2,3], R).` gives `R = [3,2,1]`.  Note there is no "return": `re
 
 ## Section 3: The curated Ninety-Nine problems
 
-Direction F asks for a deliberately small, representative slice of the classic [Ninety-Nine Prolog Problems](https://www.metalevel.at/prolog/99), chosen to span the paradigm:
+This section works a deliberately small, representative slice of the classic [Ninety-Nine Prolog Problems](https://www.metalevel.at/prolog/99), chosen to span the paradigm:
 
 | Problem | Relation | What it exercises |
 |---------|----------|-------------------|
@@ -98,15 +98,15 @@ Direction F asks for a deliberately small, representative slice of the classic [
 | P46 | `table(A, B, Expr)` | logic connectives as relations |
 | P90 | `queens(Qs)` | backtracking search; eight non-attacking queens |
 
-Work each in SWISH, and record the query and its answer(s) in your `logic_session.md`.  For P90, press `;` repeatedly (or use `findall/3`) to enumerate and **count** the solutions; the declarative style pays off when the same clauses that *describe* a valid board also *search* for one.
+Work each in SWISH, and record the query and its answer(s) as you go.  For P90, press `;` repeatedly (or use `findall/3`) to enumerate and **count** the solutions; the declarative style pays off when the same clauses that *describe* a valid board also *search* for one.
 
-A note on P31 and negation: `\+ Goal` succeeds when `Goal` cannot be proven ("negation as failure").  Explain in your writeup why this is subtly different from logical "not".
+A note on P31 and negation: `\+ Goal` succeeds when `Goal` cannot be proven ("negation as failure").  Be ready to explain why this is subtly different from logical "not".
 
 ---
 
 ## Section 4: Running a relation backwards
 
-This is the single most important idea in the direction. `append/3` is built in, but consider what it *is*: a relation between two lists and their concatenation.  That means it runs in every direction:
+This is the single most important idea in logic programming. `append/3` is built in, but consider what it *is*: a relation between two lists and their concatenation.  That means it runs in every direction:
 
 ```prolog
 ?- append([1,2], [3], Xs).       % concatenate:  Xs = [1,2,3]
@@ -117,13 +117,13 @@ This is the single most important idea in the direction. `append/3` is built in,
                                  %   Xs = [1,2,3], Ys = []
 ```
 
-A Python function `append(a, b)` can only run one way; you cannot ask it "what two lists concatenate to `[1,2,3]`?"  Prolog can, because `append/3` binds **logic variables** by unification rather than evaluating expressions.  Demonstrate one of your own relations used in at least two modes and explain this in your writeup.
+A Python function `append(a, b)` can only run one way; you cannot ask it "what two lists concatenate to `[1,2,3]`?"  Prolog can, because `append/3` binds **logic variables** by unification rather than evaluating expressions.  Write one relation of your own and use it in at least two modes; a team taking the Logic Programming extension demonstrates exactly this in its own language.
 
 ---
 
-## Section 5: Unification and backtracking vs. your interpreter (the required comparison)
+## Section 5: Unification and backtracking vs. your interpreter
 
-Close Direction F by connecting it back to the pipeline:
+Close by connecting logic programming back to the pipeline:
 
 - **Binding.**  Your interpreter's `Environment` maps a name to a *value* by assignment, one direction, permanently (until reassigned).  Prolog **unifies** a logic variable with a *term*, two-directionally, and **un-binds** it on backtracking.
 - **Control.**  Your evaluator makes a single forward pass.  Prolog searches a proof tree, trying alternatives and backtracking on failure.

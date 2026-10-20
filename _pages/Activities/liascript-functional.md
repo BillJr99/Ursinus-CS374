@@ -47,7 +47,7 @@ Everything in this deck is Python except Part V, which returns to the Scheme you
 
 Work in your POGIL team with your rotated roles (Manager, Recorder, Presenter, Reflector).  Think each model and question through on your own first, then talk it over with your group.  The Recorder posts your answers to the Class Activity Questions discussion board.  The Presenter reports out wherever you disagreed or found another approach.
 
-> **How today runs.**  Parts I through IV are the core.  Part V (code as data) is the goal we want to reach together, so watch the clock.  If the period runs short, read Part IV's recursive rewrites of `map`, `filter`, and `reduce` at home; Exercise 3 has you write them anyway.  Everything after *Check Your Understanding* is homework.  The Scheme extension at the end is for whoever takes the Scheme direction on the Functional assignment.
+> **How today runs.**  Parts I through IV are the core.  Part V (code as data) is the goal we want to reach together, so watch the clock.  If the period runs short, read Part IV's recursive rewrites of `map`, `filter`, and `reduce` at home; Exercise 3 has you write them anyway.  Everything after *Check Your Understanding* is homework.  The Scheme extension at the end is for whoever wants more Scheme than the Scheme assignment asks for.
 
 ---
 
@@ -1271,7 +1271,7 @@ words = ["to", "be", "or", "not", "to", "be", "that", "is", "the", "question"]
 
 # Extension: Going Further with Scheme
 
-> Past the 75 minutes.  Nothing in class assumes any of it.  Read it if the Scheme assignment left you wanting more, or later in the term if you take the Scheme direction on the Functional assignment.  The Scheme cells want a real REPL; the Python cells run in the page as usual.
+> Past the 75 minutes.  Nothing in class assumes any of it.  Read it if the Scheme assignment left you wanting more, or later in the term if your team's language takes a Lisp-shaped direction.  The Scheme cells want a real REPL; the Python cells run in the page as usual.
 
 ## 9.  Where This Picks Up
 
@@ -1633,17 +1633,17 @@ Purity forbids a function from leaving traces on the world.  That makes it trust
 - **"Structure and Interpretation of Computer Programs"**: online at https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pubs/6515/sicp.pdf
 - [Haskell Essentials](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/HaskellEssentials): the Haskell behind this unit, covering functions, pattern matching, algebraic data types, and higher-order style.
 - [Parser Combinators: Parsers as First-Class Values](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ParserCombinators): parsers themselves as composable higher-order functions.
-- Monads (Maybe, List, IO), the monad laws, do-notation, thunks, and infinite streams: not covered in the course materials.  Direction A of the Functional assignment covers lazy sequences and generators in Python.
+- Monads (Maybe, List, IO), the monad laws, do-notation, thunks, and infinite streams: not covered in the course materials.  The [Coroutines and Generators tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CoroutinesAndGenerators) covers lazy, pausable computation with generators in Python.
 - Abelson and Sussman.  *Structure and Interpretation of Computer Programs*, Chapter 1 (free online).
 - The Racket Guide, chapters 1 through 4: https://docs.racket-lang.org/guide/
 - Paul Graham.  "The Roots of Lisp" (online essay): eval in a page.
 - [Build a Complete Interpreter in Python](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BuildAnInterpreter): its metacircular Scheme evaluator section covers s-expression parsing, environment chains, the evaluator core, the global environment, and tail-call optimization via trampoline.  The Interpreter assignment has you build the same architecture for the Mini language.
 
 ---
-- Continuation-passing style and MapReduce live where they are assessed: Directions B and E of the [Functional assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Functional).  Read those directions before choosing them.
+- Continuation-passing style returns as the optional [continuations extension](https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage#continuations-and-first-class-control) of the Team Language Project.
 
 ---
 
 Up next: *Syntax and BNF/EBNF*, where we stop writing programs and start writing down, precisely, what a program is allowed to look like.  That is the machinery Scheme almost does without, and the machinery your own language will need.
 
-Everything in these three sessions, purity through code as data, comes back twice: in the **Functional Programming with Scheme** assignment handed out today, and in the Functional Programming assignment in November.
+Everything in these three sessions, purity through code as data, comes back twice: in the **Functional Programming with Scheme** assignment handed out today, and in the lambda calculus sessions at the end of the term, where functions turn out to be all a language needs.

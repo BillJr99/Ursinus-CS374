@@ -834,9 +834,9 @@ In your notebook: Church built this system in 1936 to study what "computable" me
 - Henk Barendregt and Erik Barendsen.  "Introduction to Lambda Calculus" (online notes), for the formal substitution definition.
 - Gabriel Lebec.  "Lambda as JS, or A Flock of Functions" (talk and slides), which Part 2 follows: https://speakerdeck.com/glebec/lambda-as-js-or-a-flock-of-functions-combinators-lambda-calculus-and-church-encodings-in-javascript
 - **Lambda-Py / pycombinator**: combinators and Church encodings in Python.  Run the calculus interactively in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html, and try the reductions from today's module without installing anything.
-- [Implementing a Lambda Calculus Reducer](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LambdaCalculusReducer): combinatory logic and the SKI calculus (S, K, I, B, C, W), deriving B and C from S and K, bracket abstraction, and point-free programming.  Direction D of the Functional assignment builds on this.
+- [Implementing a Lambda Calculus Reducer](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LambdaCalculusReducer): combinatory logic and the SKI calculus (S, K, I, B, C, W), deriving B and C from S and K, bracket abstraction, and point-free programming.  The Team Language Project's optional [lambda-calculus core extension](https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage#extensions-menu) builds on this.
 - [Typing Disciplines](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypingDisciplines): product and sum types.  Pattern matching on nested structures is in the Modern Language Features material; safe lookups, Maybe-style values, and symbolic differentiation over an expression tree make good self-study exercises.
 
 ---
 
-Up next: *The Lambda Calculus, Part 2* builds booleans, numbers, and arithmetic from nothing but these functions.  Those Church encodings are the heart of the Functional assignment's Direction C.
+Up next: *Lambda Calculus II and Closures* builds booleans, numbers, and arithmetic from nothing but these functions, then shows what a capturing lambda costs at run time.  Those Church encodings are the ones the Lambda Calculus lab asks you to reduce by hand.

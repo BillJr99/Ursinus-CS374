@@ -61,7 +61,7 @@ Before you write the evaluator, place it on the map.  There are two ways to make
 | Cost model | Pays a small translation tax on every execution of every node | Pays translation once, then runs at full speed |
 | Change the source? | Run it again | Recompile first |
 
-The pipeline you have built so far (lexer -> parser -> AST) is the same for both.  They part ways only at this step.  A compiler for your class language would take the very same AST your parser produces and emit instructions instead of values.  (The *Table-Driven and LR Parsing* session's compile-link-load model and the *Build a Bytecode VM* tutorial walk that path.)  Everything you learn today about evaluation order and environments (the store of variable values) applies to both.
+The pipeline you have built so far (lexer -> parser -> AST) is the same for both.  They part ways only at this step.  A compiler for your class language would take the very same AST your parser produces and emit instructions instead of values.  (The compile-link-load extension of *Parsing Expressions and Table-Driven Parsing* and the *Build a Bytecode VM* tutorial walk that path.)  Everything you learn today about evaluation order and environments (the store of variable values) applies to both.
 
 Quick check: a tree-walking interpreter and a compiler for the same language both receive the AST for `x * (y + 1)`.  What does each produce from it?
 
@@ -391,7 +391,7 @@ There are three separate questions, and they are easy to run together:
 - When is it detected?  Your evaluator finds these *while running*, which is the dynamic checking of the *Type Systems* session.  A static checker would find the unbound variable before the program started.
 - What does the user see?  An error that says `KeyError: 'prise'` is a bug report about your interpreter.  An error that says `undefined variable 'prise' at line 3, column 12` is a bug report about the user's program.  Only the second is useful, and the difference is entirely in what you chose to carry through the recursion.
 
-The practical consequence: error handling is not an afterthought bolted onto a finished evaluator.  It changes what every branch returns.  Deciding it now is much cheaper than retrofitting it in week 12.
+The practical consequence: error handling is not an afterthought bolted onto a finished evaluator.  It changes what every branch returns.  Deciding it now is much cheaper than retrofitting it during the project sprints.
 
 ## Examples: Three Failures, by Hand
 
@@ -736,4 +736,4 @@ In your notebook: you have now run a program in a language whose every component
 
 ---
 
-Up next: the *Control Flow and Statement Semantics* activity finishes the evaluator by pinning down which code runs and in what order.  *Binding and Scope* follows it and confronts the first crack in this design, the single flat dictionary of variables.  Together the three anchor the Interpreter assignment.
+Up next: the *Control Flow and Statement Semantics* activity finishes the evaluator by pinning down which code runs and in what order.  *Binding, Scope, and Environments* follows it and confronts the first crack in this design, the single flat dictionary of variables.  Together the three anchor the Interpreter assignment.

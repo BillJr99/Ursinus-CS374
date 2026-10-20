@@ -43,7 +43,7 @@ This tutorial builds a complete bytecode VM for Mini in six phases:
 5.  **Phase 4**: Functions and closures: upvalues (the Lua trick)
 6.  **Phase 5**: Integration, disassembler, and performance comparison
 
-**Prerequisites:** the Mini interpreter assignment, the Closures activity, and the Environments lecture.  You do not need to understand the JVM or CPython internals; we build everything from scratch.
+**Prerequisites:** the Mini interpreter assignment and the *Binding, Scope, and Environments* and *Lambda Calculus II and Closures* activities.  You do not need to understand the JVM or CPython internals; we build everything from scratch.
 
 ---
 
