@@ -888,5 +888,5 @@ In your notebook: short-circuiting means the language promises not to look at so
 
 ---
 
-Up next: the *Binding and Scope* activity asks where a name's value actually lives once functions can nest.  Today's semantics decisions complete the Interpreter assignment's core.
+Up next: the *Binding, Scope, and Environments* activity asks where a name's value actually lives once functions can nest, and builds the environment chain that answers it.  Today's semantics decisions complete the Interpreter assignment's core.
 

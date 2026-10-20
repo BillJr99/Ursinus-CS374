@@ -615,7 +615,7 @@ In your notebook: recall the language feature that most confused you as a beginn
 - Tony Hoare.  "Null References: The Billion Dollar Mistake" (talk, 2009, online).
 - Python PEP 20, "The Zen of Python": `import this` in any Python interpreter.
 - Gary Bernhardt.  "Wat" (talk, 2012, online): four minutes of coercion comedy with a serious lesson.
-- [Prolog in the Browser with SWISH](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/Prolog): logic programming, covering family-tree facts and rules, Robinson unification, SLD resolution and backtracking, bidirectional list predicates, a complete mini-Prolog interpreter in Python, and the miniKanren connection.  Backs Direction F of the Functional assignment.
+- [Prolog in the Browser with SWISH](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/Prolog): logic programming, covering family-tree facts and rules, Robinson unification, SLD resolution and backtracking, bidirectional list predicates, a complete mini-Prolog interpreter in Python, and the miniKanren connection.  Backs the Team Language Project's optional Logic Programming extension.
 
 ---
 

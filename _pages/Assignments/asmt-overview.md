@@ -135,7 +135,7 @@ A route decides *where* the three steps of this part run.  The steps are the sam
 
 **You do not have to decide yet.**  Step 1 is identical on both routes: if `python3 --version` on your own machine says 3.10 or later, Route B already works.
 
-Route A is still the one I recommend, because the container carries the entire semester's toolchain (Python 3.11, pytest, hypothesis, PLY, `uv`, a Scheme for the functional programming assignment, and flex/bison/gcc/make for the generator-toolchain directions) and every later assignment assumes it.
+Route A is still the one I recommend, because the container carries the entire semester's toolchain (Python 3.11, pytest, hypothesis, PLY, `uv`, a Scheme for the Functional Programming with Scheme assignment, and flex/bison/gcc/make for the generator-toolchain directions) and every later assignment assumes it.
 
 Decide at Step 2: if Docker Desktop installs and the tutorial's `docker run hello-world` succeeds, run Step 2 inside the container; if Docker will not run on your machine, run it natively and say so in your transcript.
 

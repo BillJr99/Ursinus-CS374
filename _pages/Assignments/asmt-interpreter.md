@@ -59,8 +59,8 @@ info:
     - rtitle: "Tree-Walking Interpretation Activity"
       rlink: "Activities/liascript-interpretation.md"
       liapage: true
-    - rtitle: "Environments Activity"
-      rlink: "Activities/liascript-environments.md"
+    - rtitle: "Binding, Scope, and Environments Activity"
+      rlink: "Activities/liascript-bindingscope.md"
       liapage: true
     - rtitle: "Control Flow Semantics Activity"
       rlink: "Activities/liascript-controlflowsemantics.md"

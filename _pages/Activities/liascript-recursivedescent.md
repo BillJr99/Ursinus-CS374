@@ -202,7 +202,7 @@ Precedence happened at the two `peek()='+'` lines.  The first one is inside `par
 
 That is the whole mechanism: `term` sees every operator first, and it accepts only the tight ones.  The `*` node is finished and returned before the `+` node is built, so `*` sits deeper in the tree, and deeper means evaluated first.  Nothing in the code says "multiplication has higher precedence."  The grammar's layering says it, and the call stack carries it out.
 
-Compare this with the LR table you will build in the *Table-Driven and LR Parsing* activity.  There, the same decision lives in one cell of a table (shift on `*`, reduce on `+`).  Here it lives in which function's loop is willing to consume which token.  Same precedence, two different places to look for it.
+Compare this with the LR table you will build in the *Parsing Expressions and Table-Driven Parsing* activity.  There, the same decision lives in one cell of a table (shift on `*`, reduce on `+`).  Here it lives in which function's loop is willing to consume which token.  Same precedence, two different places to look for it.
 
 Remember two things from this section.  Each nonterminal is one function, and precedence comes from which function's loop consumes which operator.
 
@@ -1141,4 +1141,4 @@ In your notebook: recursive descent works because the code's shape *is* the gram
 
 ---
 
-**Up next:** the *Parsing Expressions* activity turns this same machinery loose on the full operator-precedence ladder; together, the statement parser from today and the expression parser you build there form the core of the Parser assignment.
+**Up next:** the *Parsing Expressions and Table-Driven Parsing* activity turns this same machinery loose on the full operator-precedence ladder, then drives the same grammar bottom-up from an LR table; together, the statement parser from today and the expression parser you build there form the core of the Parser assignment.

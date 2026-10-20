@@ -342,7 +342,7 @@ Once the blueprints are drawn, the materials are certified, and the inspector ha
 
 ## Model 4: The Interpreter, Running a Language You Designed
 
-An interpreter evaluates an AST directly.  The one below handles variables, arithmetic, conditionals, lambda functions, function application, and let-bindings, the core of a real functional language.  The key insight is **closures**: when a function is created, it captures the environment at the point of creation, not the environment at the point of call.  This is the destination of the interpretation unit (*Tree-Walking Interpretation* through *Closures and First-Class Functions*) and of the Interpreter assignment.
+An interpreter evaluates an AST directly.  The one below handles variables, arithmetic, conditionals, lambda functions, function application, and let-bindings, the core of a real functional language.  The key insight is **closures**: when a function is created, it captures the environment at the point of creation, not the environment at the point of call.  This is the destination of the interpretation unit (*Tree-Walking Interpretation* through *Lambda Calculus II and Closures*) and of the Interpreter assignment.
 
 ```python
 from dataclasses import dataclass, field

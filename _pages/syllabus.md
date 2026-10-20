@@ -278,7 +278,7 @@ schedule:
   readings:
   - rtitle: "Scheme Essentials for the Programming Languages Course"
     rlink: "Tutorials/SchemeEssentials"
-  - rtitle: "In-class taste: the declarative paradigm in Prolog, a 15-minute SWISH warm-up (facts, rules, a query that backtracks).  Previews the Functional assignment's Logic Programming direction"
+  - rtitle: "In-class taste: the declarative paradigm in Prolog, a 15-minute SWISH warm-up (facts, rules, a query that backtracks).  Previews the Team Language Project's optional logic-programming extension"
     rlink: "https://swish.swi-prolog.org/"
   - rtitle: "The Power of Prolog (Markus Triska)"
     rlink: "https://www.metalevel.at/prolog"
@@ -397,8 +397,8 @@ schedule:
     rlink: "Tutorials/ParserCombinators"
 - week: "8"
   date: "0"
-  title: "Parsing Expressions: Left Factoring, Precedence, and Chained Comparisons"
-  link: "Activities/liascript-parsingexpressions.md"
+  title: "Abstract Syntax Trees, Continued: From Parse Trees to ASTs"
+  link: "Activities/liascript-ast.md"
   liapage: true
   deliverables:
   - dtitle: "Programming Assignment: Regular Expressions Due"
@@ -406,12 +406,11 @@ schedule:
     points: "100"
     rubricpath: "_pages/Assignments/asmt-regex.md"
   readings:
-  - rtitle: "For the Parser assignment (Step 3e): Property-Based Testing with Hypothesis, covering the round-trip property and how to shrink a failing case"
-    rlink: "Tutorials/PropertyBasedTesting"
+  - rtitle: "Allison, Ch. 6 §6.1-6.2: Context-Free Grammars, Derivation Trees, and Expression Trees"
 - week: "8"
   date: "1"
-  title: "Table-Driven and LR Parsing"
-  link: "Activities/liascript-parsertable.md"
+  title: "Recursive Descent Parsing: From Grammar to Code"
+  link: "Activities/liascript-recursivedescent.md"
   liapage: true
   deliverables:
   - dtitle: "Programming Assignment: Build a Lexer Handed Out"
@@ -419,30 +418,60 @@ schedule:
     points: "100"
     rubricpath: "_pages/Assignments/asmt-lexer.md"
   readings:
-  - rtitle: "Building an LR Parser from the Grammar Up, the companion to Part 4 of the Parser assignment, which walks the same construction on a smaller grammar with runnable code"
-    rlink: "Tutorials/LRConstruction"
-  - rtitle: "Allison, Ch. 5: Pushdown Automata, Adding a Stack to Finite Automata"
-  - rtitle: "Allison, Ch. 6 §6.3: Equivalence of PDAs and Context-Free Grammars"
+  - rtitle: "PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer and Parser assignments)"
+    rlink: "Tutorials/PLYLexerAndParser"
 - week: "9"
   date: "0"
-  title: "Tree-Walking Interpretation (Day 1 of 2): Evaluating the AST"
-  link: "Activities/liascript-interpretation.md"
+  title: "No Class: Instructor Away"
+  readings:
+  - rtitle: "No class meeting today.  Use the time for the Finite Automata Simulators lab (due Tuesday, November 3) and the Build a Lexer assignment (due Thursday, November 5)."
+    rlink: false
+- week: "9"
+  date: "1"
+  title: "No Class: Instructor Away"
+  readings:
+  - rtitle: "No class meeting today.  Read ahead for Tuesday: Allison, Ch. 5 (Pushdown Automata), listed there, is the background for Tuesday's LR parsing."
+    rlink: false
+- week: "10"
+  date: "0"
+  title: "Parsing Expressions and Table-Driven Parsing: Left Factoring, Precedence, and LR"
+  link: "Activities/liascript-parsingexpressions.md"
   liapage: true
   deliverables:
-  - dtitle: "Team Language Project Handed Out"
-    dlink: "Projects/TeamLanguage"
-    points: "100"
-    rubricpath: "_pages/Projects/proj-teamlanguage.md"
   - dtitle: "Lab: Finite Automata Simulators Due"
     dlink: "Assignments/Automata"
     points: "15"
     rubricpath: "_pages/Assignments/lab-automata.md"
+  - dtitle: "Team Language Project Handed Out"
+    dlink: "Projects/TeamLanguage"
+    points: "100"
+    rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
-  - rtitle: "Allison, Ch. 6 §6.1-6.2: Context-Free Grammars, Derivation Trees, and Expression Trees"
-  - rtitle: "PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer and Parser assignments)"
-    rlink: "Tutorials/PLYLexerAndParser"
-- week: "9"
+  - rtitle: "Allison, Ch. 5: Pushdown Automata, Adding a Stack to Finite Automata"
+  - rtitle: "Allison, Ch. 6 §6.3: Equivalence of PDAs and Context-Free Grammars"
+  - rtitle: "Building an LR Parser from the Grammar Up, the companion to Part 4 of the Parser assignment, which walks the same construction on a smaller grammar with runnable code"
+    rlink: "Tutorials/LRConstruction"
+- week: "10"
   date: "1"
+  title: "Tree-Walking Interpretation (Day 1 of 2): Evaluating the AST"
+  link: "Activities/liascript-interpretation.md"
+  liapage: true
+  deliverables:
+  - dtitle: "Programming Assignment: Build a Lexer Due"
+    dlink: "Assignments/Lexer"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-lexer.md"
+  - dtitle: "Programming Assignment: Parser and AST Handed Out"
+    dlink: "Assignments/Parser"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-parser.md"
+  readings:
+  - rtitle: "For the Parser assignment (Step 3e): Property-Based Testing with Hypothesis, covering the round-trip property and how to shrink a failing case"
+    rlink: "Tutorials/PropertyBasedTesting"
+  - rtitle: "Parser Combinators (Parsers as First-Class Values), an alternative route through the Parser assignment"
+    rlink: "Tutorials/ParserCombinators"
+- week: "11"
+  date: "0"
   title: "Control Flow and Statement Semantics (Interpretation, Day 2)"
   link: "Activities/liascript-controlflowsemantics.md"
   liapage: true
@@ -455,38 +484,24 @@ schedule:
     rlink: "Tutorials/PropertyBasedTesting"
   - rtitle: "CI and TDD for Interpreters"
     rlink: "Tutorials/CITDDForInterpreters"
-- week: "10"
-  date: "0"
-  title: "Binding and Scope"
+- week: "11"
+  date: "1"
+  title: "Binding, Scope, and Environments"
   link: "Activities/liascript-bindingscope.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Parser and AST Handed Out"
-    dlink: "Assignments/Parser"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-parser.md"
   - dtitle: "Lab: Environments and Scope Handed Out"
     dlink: "Assignments/EnvironmentsLab"
     points: "15"
     rubricpath: "_pages/Assignments/lab-environments.md"
-  - dtitle: "Programming Assignment: Build a Lexer Due"
-    dlink: "Assignments/Lexer"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-lexer.md"
   readings:
   - rtitle: "Krishnamurthi, PLAI (3rd ed.): the Stacker and SMoL Tutor, which we step through in class, and the chapters on functions, scope, and environments"
     rlink: "https://www.plai.org/"
-- week: "10"
-  date: "1"
-  title: "Environments and Variable Storage"
-  link: "Activities/liascript-environments.md"
-  liapage: true
-  readings:
   - rtitle: "Build an Interpreter (start-to-finish companion for the upcoming assignment)"
     rlink: "Tutorials/BuildAnInterpreter"
   - rtitle: "Garbage Collection (Implementing Memory Management)"
     rlink: "Tutorials/GarbageCollection"
-- week: "11"
+- week: "12"
   date: "0"
   title: "Type Systems"
   link: "Activities/liascript-types.md"
@@ -512,7 +527,7 @@ schedule:
   - rtitle: "Allison, Ch. 10 §10.1: The Halting Problem (Why Some Questions About Programs Are Undecidable)"
   - rtitle: "Type Inference (Implementing Hindley-Milner)"
     rlink: "Tutorials/TypeInference"
-- week: "11"
+- week: "12"
   date: "1"
   title: "Language Design Workshop: Project Kickoff (Sprint 0)"
   link: "Activities/liascript-languagedesign.md"
@@ -533,7 +548,7 @@ schedule:
   readings:
   - rtitle: "Build a Bytecode VM"
     rlink: "Tutorials/BytecodeVM"
-- week: "12"
+- week: "13"
   date: "0"
   title: "Lambda Calculus I: Syntax and Beta Reduction"
   link: "Activities/liascript-lambdacalculus1.md"
@@ -553,50 +568,32 @@ schedule:
     rlink: "https://www.youtube.com/watch?v=3VQ382QG-y4"
   - rtitle: "Build a Lambda Calculus Reducer"
     rlink: "Tutorials/LambdaCalculusReducer"
-- week: "12"
-  date: "1"
-  title: "Lambda Calculus II: Church Encodings and Combinators"
-  link: "Activities/liascript-lambdacalculus2.md"
-  liapage: true
-  readings:
-  - rtitle: "Church encodings: numerals, booleans, and the arithmetic you reduce by hand in the Lambda Calculus lab (today's activity, Models 2-3)"
-  - rtitle: "A Flock of Functions: Combinators, Lambda Calculus, & Church Encodings in JS - Part II (Gabriel Lebec)"
-    rlink: "https://www.youtube.com/watch?v=pAnLQ9jwN-E"
-  - rtitle: "Build a Lambda Calculus Reducer: the Y combinator built up one step at a time in Python, for Part V of today's activity"
-    rlink: "Tutorials/LambdaCalculusReducer"
-- week: "13"
+- week: "14"
   date: "0"
-  title: "Closures and First-Class Functions"
-  link: "Activities/liascript-closures.md"
+  title: "Lambda Calculus II and Closures: Church Encodings, Combinators, and First-Class Functions"
+  link: "Activities/liascript-lambdacalculus2.md"
   liapage: true
   deliverables:
   - dtitle: "Team Language Project: Sprint 1 Increment Checkpoint Due"
     dlink: "Projects/TeamLanguage"
     points: "3"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
-  - dtitle: "Programming Assignment: Tree-Walking Interpreter Due"
-    dlink: "Assignments/Interpreter"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-interpreter.md"
-  - dtitle: "Programming Assignment: Functional Programming Handed Out"
-    dlink: "Assignments/Functional"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-functional.md"
   readings:
-  - rtitle: "Prolog and the declarative paradigm, background for the Functional assignment's Logic Programming direction (Direction F), alongside The Power of Prolog"
-    rlink: "Tutorials/Prolog"
-  - rtitle: "The open-source contribution direction (Direction G) of the Functional assignment: mal, Strudel/TidalCycles, tree-sitter, or the SWI-Prolog docs, with scope approval needed in the first week"
-    rlink: "Assignments/Functional"
+  - rtitle: "Church encodings: numerals, booleans, and the arithmetic you reduce by hand in the Lambda Calculus lab (today's activity, Models 2-3)"
+  - rtitle: "A Flock of Functions: Combinators, Lambda Calculus, & Church Encodings in JS - Part II (Gabriel Lebec)"
+    rlink: "https://www.youtube.com/watch?v=pAnLQ9jwN-E"
+  - rtitle: "Build a Lambda Calculus Reducer: the Y combinator built up one step at a time in Python, for today's activity"
+    rlink: "Tutorials/LambdaCalculusReducer"
 - week: "14"
-  date: "0"
+  date: "1"
   title: "Sprint Studio: Sprints 1-2 and Gallery Walk"
   link: "Activities/liascript-sprintstudio.md"
   liapage: true
   deliverables:
-  - dtitle: "Lab: Lambda Calculus Due"
-    dlink: "Assignments/LambdaCalculusLab"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
+  - dtitle: "Programming Assignment: Tree-Walking Interpreter Due"
+    dlink: "Assignments/Interpreter"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-interpreter.md"
   - dtitle: "Team Language Project: Sprint 2 Gallery Walk (Strength/Question/Risk cards + triage) Due"
     dlink: "Projects/TeamLanguage"
     points: "3"
@@ -606,16 +603,18 @@ schedule:
     rlink: "Tutorials/ProjectLanguageGuide"
   - rtitle: "Shell Skills for Language Development"
     rlink: "Tutorials/ShellForLanguageDev"
-- week: "14"
-  date: "1"
-  title: "Sprint Studio: Sprint 3 and Release Hardening"
+  - rtitle: "Prolog and the declarative paradigm, optional background for a team language that takes a logic-programming direction, alongside The Power of Prolog"
+    rlink: "Tutorials/Prolog"
+- week: "15"
+  date: "0"
+  title: "Sprint Studio: Sprint 3 and Release Hardening (Class Switch Day: follows a Thursday schedule)"
   link: "Activities/liascript-sprintstudio.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Functional Programming Due"
-    dlink: "Assignments/Functional"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-functional.md"
+  - dtitle: "Lab: Lambda Calculus Due"
+    dlink: "Assignments/LambdaCalculusLab"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   - dtitle: "Team Language Project: ShipIt Release Checklist Due"
     dlink: "Projects/TeamLanguage"
     points: "3"
@@ -625,9 +624,8 @@ schedule:
     rlink: "Tutorials/PublishingYourLanguage"
   - rtitle: "Advanced C++ for Language Implementers"
     rlink: "Tutorials/AdvancedCpp"
-- week: "15"
-  date: "0"
-  title: "Demo Day: Team Language Presentations (Class Switch Day: follows a Thursday schedule)"
+- cdate: "2026/12/14"
+  title: "Demo Day: Team Language Presentations (Final Exam Period, 11:15 AM-2:15 PM, Pfahler 012)"
   deliverables:
   - dtitle: "Team Language Project: Demo Day Presentations Due"
     dlink: "Projects/TeamLanguage"
@@ -642,8 +640,8 @@ This semester is a build.  By December, your team will have designed and impleme
 I have built this course on the principle that there is more than one good path through it, and that you should have real say over yours.  The choices here are in the spirit of Universal Design for Learning, which asks for multiple ways to engage with the material and multiple ways to demonstrate what you have learned.  None of these paths is the "remedial" one.
 
 - **A capstone you shape.**  The Team Language Project is yours to design.  A compelling original language is always welcome, and the final project's extension menu lets you go deep wherever your interest lies instead of following one fixed spec.
-- **The Music and Live-Coding Directions.**  If you would rather build toward making music than a general-purpose language, several assignments (the Parser and Functional Programming among them) and the Team Language Project each offer a music direction inside the same required deliverable.  The [Music and Live-Coding guide](Projects/TeamLanguage#the-music-and-live-coding-path) maps the whole path, including a text-events-only route that never requires audio.  Choose direction by direction as each assignment arrives; teams commit to a project direction at the kickoff.
-- **Depth inside every assignment, and supplemental depth everywhere.**  Each programming assignment offers **directions** you choose inside it (a generator-toolchain lexer, a music-notation parser, a type checker for your interpreter, continuations or Church encodings in the functional assignment), so nothing on the schedule is optional, but every deliverable has room for your interests.  Beyond the assignments, the schedule carries supplemental activities and tutorials on parser combinators, garbage collection, bytecode VMs, and more, and you can browse them on the [Tutorials shelf](Tutorials/).  These are invitations rather than obligations.  Please tell me when one of them becomes the thing you want to go further with.
+- **The Music and Live-Coding Directions.**  If you would rather build toward making music than a general-purpose language, the Parser assignment and the Team Language Project each offer a music direction inside the same required deliverable.  The [Music and Live-Coding guide](Projects/TeamLanguage#the-music-and-live-coding-path) maps the whole path, including a text-events-only route that never requires audio.  Choose direction by direction as each assignment arrives; teams commit to a project direction at the kickoff.
+- **Depth inside every assignment, and supplemental depth everywhere.**  Each programming assignment offers **directions** you choose inside it (a generator-toolchain lexer, a music-notation parser, a type checker for your interpreter), so nothing on the schedule is optional, but every deliverable has room for your interests.  The Team Language Project's [Extensions Menu](Projects/TeamLanguage#extensions-menu) carries the same idea into the capstone, with optional extensions in continuations, Church encodings, logic programming, and open-source contribution.  Beyond the assignments, the schedule carries supplemental activities and tutorials on parser combinators, garbage collection, bytecode VMs, and more, and you can browse them on the [Tutorials shelf](Tutorials/).  These are invitations rather than obligations.  Please tell me when one of them becomes the thing you want to go further with.
 
 If a path you want is not on the menu, please propose it.  The choices are here so you can build the language, and the fluency, that you actually care about.
 
@@ -657,7 +655,7 @@ I write every assignment in this course to be transparent about three things, so
 
 When you open an assignment, please read the Purpose first.  It tells you what the assignment is really for, and that is the fastest way to make good decisions when the task gets ambiguous.  Every assignment also closes by asking you to reflect on what you did, what fought you, how long it took, and what grade you would give yourself against the criteria.  I count that reflection as part of the work.
 
-A note on grade categories: the **Overview** (100 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the five programming assignments (Regular Expressions, Lexer, Parser, Interpreter, and Functional Programming) make up the **Programming Assignments** category.  The **Labs** category comprises six short labs (BNF Workshop, Grammar and Derivations Workshop, Finite Automata Simulators, Environments and Scope, Type Checker Starter, and Lambda Calculus), each scoped to roughly two to three hours.  Labs may be completed **in pairs** (both partners submit, naming each other; both earn the same grade); the programming assignments remain individual work.  Every lab feeds the assignment it scaffolds rather than adding to your load.  Most fall mid-assignment and complete a piece of it in place: the Finite Automata Simulators lab for the Lexer, and the Type Checker Starter lab for the Interpreter's type checker.  The Environments and Scope lab is the one that closes just before its assignment goes out, so you reach the Interpreter already holding the `Environment` file it imports.  The Grammar and Derivations Workshop stands apart from both patterns: it closes out the grammars and derivations unit while that material is fresh, and the grammar you write there is the one your parser implements later in the term.  **There is no midterm or final exam**: Demo Day on the last class meeting (Tuesday, December 8) is the course's terminal event, and no work is accepted after it.  Seven teams present for nine minutes each within our class meeting; external guests visiting both this Demo Day and CS357's (same day) are welcome to stay for both.
+A note on grade categories: the **Overview** (100 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the five programming assignments (Functional Programming with Scheme, Regular Expressions, Lexer, Parser, and Interpreter) make up the **Programming Assignments** category.  The **Labs** category comprises six short labs (BNF Workshop, Grammar and Derivations Workshop, Finite Automata Simulators, Environments and Scope, Type Checker Starter, and Lambda Calculus), each scoped to roughly two to three hours.  Labs may be completed **in pairs** (both partners submit, naming each other; both earn the same grade); the programming assignments remain individual work.  Every lab feeds the assignment it scaffolds rather than adding to your load.  Most fall mid-assignment and complete a piece of it in place: the Finite Automata Simulators lab for the Lexer, and the Type Checker Starter lab for the Interpreter's type checker.  The Environments and Scope lab is the one that closes just before its assignment goes out, so you reach the Interpreter already holding the `Environment` file it imports.  The Grammar and Derivations Workshop stands apart from both patterns: it closes out the grammars and derivations unit while that material is fresh, and the grammar you write there is the one your parser implements later in the term.  **There is no midterm or written final exam**: Demo Day, held in the final exam period (Monday, December 14, 11:15 AM-2:15 PM, Pfahler 012), is the course's terminal event, and no work is accepted after it.  Seven teams present for nine minutes each within that period, and external guests are welcome.
 
 ## Generative AI Policy
 
@@ -666,7 +664,7 @@ Generative AI tools are part of the professional landscape you are graduating in
 - **Permitted uses.**  You may use AI tools to explain concepts you are stuck on, to debug your own code, and to explore alternative approaches to a problem you have already engaged with.  Used this way, they are a tutor on call, and a good complement to the reading routine described below.
 - **Required disclosure.**  Each assignment's reflection asks what AI tools you used and how.  Please answer it plainly every time.  "None" is always an acceptable answer, and I never penalize disclosure.
 - **Primary authorship.**  You must be the primary author of the code and prose you submit, and you must be able to explain any line of your submission when I ask.  If a tool wrote something you cannot explain, it isn't ready to submit.  The gap will show the moment we discuss your work, because the reflection and the conversation are both part of the assessment.
-- **Public work.**  Work that leaves the classroom carries an extra obligation.  For Functional Direction G pull requests and team-project open-source extensions, you must disclose AI-assisted contributions to maintainers according to that project's own policy, and you are accountable for their correctness.  Please do not spend an upstream maintainer's trust casually.
+- **Public work.**  Work that leaves the classroom carries an extra obligation.  For pull requests under the Team Language Project's Contribute Upstream extension, and for any other open-source contribution you make as part of this course, you must disclose AI-assisted contributions to maintainers according to that project's own policy, and you are accountable for their correctness.  Please do not spend an upstream maintainer's trust casually.
 
 Every assignment here is aimed at the fluency you build rather than the artifact you hand in.  Use these tools in ways that leave you knowing more than you did before, and you will be on the right side of this policy.
 

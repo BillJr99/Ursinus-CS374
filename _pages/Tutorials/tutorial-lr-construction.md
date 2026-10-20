@@ -37,7 +37,7 @@ This tutorial is the companion to **Part 4 of the Parser assignment**, where you
 
 You already know recursive descent from Part 2.  This tutorial takes you from "I wrote one function per non-terminal" to "I built the table a generator emits, and I know why each cell holds what it holds."
 
-Two companions sit beside it.  The [Table-Driven and LR Parsing activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsertable.md) builds the assignment's larger grammar by hand and prints the correct closure, item sets, FOLLOW sets, and table, which makes it the answer key for Part 4.  The [Flex and Bison tutorial]({{ site.baseurl }}/Tutorials/FlexAndBison) goes the other way, generating a parser with real tools, and its appendix reads an actual `bison -v` automaton.
+Two companions sit beside it.  The [Parsing Expressions and Table-Driven Parsing activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsingexpressions.md) builds the assignment's larger grammar by hand and prints the correct closure, item sets, FOLLOW sets, and table, which makes it the answer key for Part 4.  The [Flex and Bison tutorial]({{ site.baseurl }}/Tutorials/FlexAndBison) goes the other way, generating a parser with real tools, and its appendix reads an actual `bison -v` automaton.
 
 Throughout, the grammar is:
 
@@ -322,7 +322,7 @@ Part 4 uses the ladder grammar, which adds three things this tutorial's grammar 
 
 Three pieces of advice, in order of how much time they save.
 
-Check every step against the [class activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsertable.md) before moving to the next one.  The activity prints the correct closure, the twelve item sets, the FOLLOW sets, and the full ACTION and GOTO table, so you never have to wonder whether a bug is upstream or downstream.
+Check every step against the [class activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsingexpressions.md) before moving to the next one.  The activity prints the correct closure, the twelve item sets, the FOLLOW sets, and the full ACTION and GOTO table, so you never have to wonder whether a bug is upstream or downstream.
 
 If your numbering diverges from the activity's, document the mapping rather than renaming states by hand.  Renumbering by hand is how you introduce an error into code that was correct.
 

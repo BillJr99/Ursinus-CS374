@@ -100,9 +100,9 @@ The project is worth **100 points**, earned at two graded milestones: the propos
 | Sprint 1 increment checkpoint | One integrated pipeline running the class language; the charter re-read; the confidential peer pulse (assessed within Class Activities and Participation) | Environments and the evaluator.  This is the build phase; the reference interpreter is released here | 3 |
 | Sprint 2 studio (gallery walk) | Grammar differences and the distinctive feature's skeleton; host and walk the gallery; triage every card | The whole pipeline, extended at each stage the feature touches | - |
 | Sprint 3 studio (release hardening) | The completed feature, hardened errors, the finished sample suite, and the ShipIt self-check | The whole pipeline plus the test suite | - |
-| **Demo Day (last class meeting)** | **The presentation and the final submission** | Everything above | **75** |
+| **Demo Day (final exam period)** | **The presentation and the final submission** | Everything above | **75** |
 
-Demo Day is the last class meeting.  There is no final exam, and I accept no work after the last class.
+Demo Day takes place in the course's final exam period: Monday, December 14, 11:15 AM-2:15 PM, in Pfahler 012.  There is no written final exam; Demo Day is the course's terminal event, and I accept no work after it.
 
 ---
 
@@ -125,7 +125,7 @@ It ships with a REPL, a file-runner, at least five sample programs (one that sho
 
 Teams are three members each, formed in the design phase from your standing POGIL groups.  The project uses four roles: Coordinator (sprint planning and scope), Builder (implementation), Evaluator (testing and sample programs), and Scribe (documentation and the decision log).  Roles rotate at every sprint boundary so that every member holds every role.  Your report's contribution statements must show the rotation.
 
-**Your team over the project's seven weeks.**  Teams reliably pass through recognizable stages (Tuckman, 1965; the fifth stage, *adjourning*, was added by Tuckman and Jensen, 1977), and I placed this project's milestones on that map on purpose:
+**Your team over the project's six weeks.**  Teams reliably pass through recognizable stages (Tuckman, 1965; the fifth stage, *adjourning*, was added by Tuckman and Jensen, 1977), and I placed this project's milestones on that map on purpose:
 
 - *Forming* is the team charter, drafted at the design-phase check and signed with the proposal.  You do it before the stakes get high.
 - *Storming* is the design phase.  The argument over which niche to serve and what the design scorecard says is productive conflict, so have it out loud in your own team meeting instead of quietly in a group chat.
@@ -161,7 +161,7 @@ Python 3.11.2
 
 Any version 3.10 or newer is fine.  If the command is not found, follow the dev environment page before continuing.
 
-> **Time budget.**  The project runs about seven weeks from the hand-out to Demo Day.  The design phase has no studio session, so budget one team meeting of your own between the hand-out and the design-phase check.  Budget about 4 hours in Sprint 3 for the ShipIt checks (cold clone-to-run, packaging, README).  The sprint studios are working sessions; arrive with a pipeline that runs.
+> **Time budget.**  The project runs about six weeks from the hand-out to Demo Day.  The design phase has no studio session, so budget one team meeting of your own between the hand-out and the design-phase check.  Budget about 4 hours in Sprint 3 for the ShipIt checks (cold clone-to-run, packaging, README).  The sprint studios are working sessions; arrive with a pipeline that runs.
 
 ---
 
@@ -247,6 +247,18 @@ Make your language a good citizen of the shell: a file-runner that composes in p
 ### Editor Support: Syntax Highlighting (and an Optional Diagnostic)
 
 Give your language editor support so an audience *sees* it is a language.  Build either a [tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammar for your syntax (its precedence annotations mirror the ladder you already wrote) plus a `highlights.scm` query, or, the lower-friction route, a TextMate grammar wrapped in a minimal VS Code extension.  Scope this small: keyword, number, operator, and string coloring is a complete extension.  The "wow" upgrade is one live diagnostic: pipe your interpreter's positioned error output (`line L, col C: message`, which your pipeline already emits) into VS Code's diagnostics API so a bad program shows a red squiggle at the right spot.  Demonstrate on a sample program at Demo Day, and include a README line showing how a grader installs the extension.  The [Syntax Highlighter tutorial]({{ site.baseurl }}/Tutorials/SyntaxHighlighter) is the step-by-step companion.
+
+### Continuations and First-Class Control
+
+Make "the rest of the computation" a value in your language.  Transform your evaluator, or a small core of it, into continuation-passing style, so that no evaluation step ever returns and each step instead hands its result to an explicit continuation; add a trampoline so that deep programs do not exhaust the host stack; then expose `call/cc`, or an equivalent escape form, to programs written in your language.  Demonstrate at least one control structure rebuilt from it, such as an early `break` out of a loop or an exception handler with `raise`, and state in `SEMANTICS.md` what a captured continuation holds and how long it remains valid.  The `call/cc` reading in the *Lambda Calculus II and Closures* activity and the [Coroutines and Generators tutorial]({{ site.baseurl }}/Tutorials/CoroutinesAndGenerators) are the starting points.
+
+### A Lambda-Calculus Core: Church Encodings and Combinators
+
+Give your language a pure functional core and show that other features can be built on it.  Implement capture-avoiding substitution and normal-order reduction for the untyped lambda calculus inside your project (as a mode of your language, or as its core), and encode booleans, numerals, and pairs as pure behavior, with a decoder that turns each encoding back into an ordinary value of your language.  A combinatory variant removes variables entirely: a reducer for S, K, and I, with bracket abstraction from lambda terms.  Test every encoding against hand reductions of the kind the Lambda Calculus lab asks for, and document the evaluation order your reducer uses.  The [Build a Lambda Calculus Reducer tutorial]({{ site.baseurl }}/Tutorials/LambdaCalculusReducer) is the step-by-step companion.
+
+### Logic Programming: A Declarative Sublanguage
+
+Add relations that hold, rather than functions that return: facts, rules, and queries answered by unification plus backtracking, either as the core of a logic-flavored niche language or as a query sublanguage inside a general-purpose one.  Demonstrate at least one relation run "backwards" (a list-append relation that splits a list as well as joining two is the classic case), and document the search order and what a query with no solution produces.  The [Prolog in the Browser with SWISH tutorial]({{ site.baseurl }}/Tutorials/Prolog) works the paradigm in SWI-Prolog with nothing to install, and is the reference for the behavior your sublanguage should reproduce.
 
 ### Contribute Upstream: An Open-Source Contribution
 
@@ -461,7 +473,7 @@ Sprint 3 completes the feature, hardens errors, and finishes the sample suite.  
 
 ## Milestone 7: Demo Day and Final Submission (75 points)
 
-All teams present in a single class session on the last class meeting, and the final submission is due the same day.  There is no final exam, and I accept no work after the last class.  Demo Day is external-facing: alumni, industry guests, and faculty from other departments may join the audience and Q&A, as available.  Your grade never depends on who attends.  Prepare with the [Demo Day Guide]({{ site.baseurl }}/Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice).
+All teams present during the final exam period (Monday, December 14, 11:15 AM-2:15 PM, Pfahler 012), and the final submission is due the same day.  There is no written final exam, and I accept no work after Demo Day.  Demo Day is external-facing: alumni, industry guests, and faculty from other departments may join the audience and Q&A, as available.  Your grade never depends on who attends.  Prepare with the [Demo Day Guide]({{ site.baseurl }}/Projects/TeamLanguage#demo-day-external-guests-and-technical-interview-practice).
 
 ### The Presentation (9 minutes)
 
@@ -519,13 +531,13 @@ Answer individually in your contribution statement:
 ### Goals
 
 - Understand that the music and live-coding path runs through the same required assignments as every other path, as directions chosen within them, one assignment at a time
-- Know which assignments offer a music direction (Parser, Functional, and the Team Language Project) and what each direction entails
+- Know which assignments offer a music direction (the Parser assignment and the Team Language Project) and what each direction entails
 - Know that every music direction supports a text-events-only route, so no audio production or playback is ever required
 
 ### Background Reading and References
 
 - [Music Languages and Live Coding Activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-languagedesign.md)
-- [Table-Driven and LR Parsing Activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsertable.md)
+- [Parsing Expressions and Table-Driven Parsing Activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsingexpressions.md)
 - [Flex and Bison from Zero to a Working Language (Tutorial)]({{ site.baseurl }}/Tutorials/FlexAndBison)
 
 This section is a guide, not a graded assignment.  It describes the music and live-coding path through the course: the same required assignments everyone completes, taken through the music directions built into them.  There is no separate set of deliverables and nothing to sign up for.  Each direction is a choice you make *inside* its assignment, when that assignment is handed out, one at a time.
@@ -543,22 +555,20 @@ In the spirit of Universal Design for Learning, the music path is a deliberate c
 The music path follows the course's own arc: the same required assignments, in the same order, with the music direction chosen where one is offered:
 
 1. **[Music Languages and Live Coding]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-languagedesign.md)** (activity): meet TidalCycles and Strudel as *language designs*: embedded versus external DSLs, a formal model of patterns, and the timed-event semantics the rest of the path builds on.
-2. **[Table-Driven and LR Parsing]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsertable.md)** (activity): meet the bottom-up, table-driven side of parsing, which is what a generator emits and what the mini-notation starter is built on.  The flex/yacc pipeline itself lives in two places you can work through on your own.  The [Flex and Bison tutorial]({{ site.baseurl }}/Tutorials/FlexAndBison) builds one end to end, and the mini-notation starter under `files/examples/mininote/` in this repository is the subset Direction B grows.  Relatedly, the [Lexer assignment]({{ site.baseurl }}/Assignments/Lexer)'s generator-toolchain direction is a natural on-ramp: choosing Flex or PLY there puts those tools in your hands early.  It pairs well with what follows, but it is not required for it.
+2. **[Parsing Expressions and Table-Driven Parsing]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsingexpressions.md)** (activity): meet the bottom-up, table-driven side of parsing, which is what a generator emits and what the mini-notation starter is built on.  The flex/yacc pipeline itself lives in two places you can work through on your own.  The [Flex and Bison tutorial]({{ site.baseurl }}/Tutorials/FlexAndBison) builds one end to end, and the mini-notation starter under `files/examples/mininote/` in this repository is the subset Direction B grows.  Relatedly, the [Lexer assignment]({{ site.baseurl }}/Assignments/Lexer)'s generator-toolchain direction is a natural on-ramp: choosing Flex or PLY there puts those tools in your hands early.  It pairs well with what follows, but it is not required for it.
 3. **[The Parser and AST]({{ site.baseurl }}/Assignments/Parser) -> the Mini-Notation direction**: grow the mini-notation starter in this repository toward the real language: alternation, Euclidean rhythms, and polymeter, parsed into an AST, evaluated to timed events, and validated against the Strudel reference implementation (or against printed event lists alone).
-4. **[Functional Programming]({{ site.baseurl }}/Assignments/Functional) -> the Parallel Functional direction**: purity buys parallelism.  You complete the same core parts as everyone (pure functions, higher-order combinators, recursive structures with fold), then a complete MapReduce pipeline measured and analyzed against Amdahl's Law: the same pure-map/associative-reduce discipline that pattern engines like Strudel run on.
-5. **[Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) -> the Music and Live-Coding direction** (capstone): design, specify, build, and demonstrate a small live-coding language with your team.  The closing demonstration may be a live edit-and-rerun session over printed event output; rendered sound is optional here as everywhere on the path.
+4. **[Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) -> the Music and Live-Coding direction** (capstone): design, specify, build, and demonstrate a small live-coding language with your team.  The closing demonstration may be a live edit-and-rerun session over printed event output; rendered sound is optional here as everywhere on the path.  The project's optional [Contribute Upstream extension](#contribute-upstream-an-open-source-contribution) adds an open-source stop: a pattern or transformation function contributed to Strudel/TidalCycles.
 
-Assignments without a music direction listed here (Warmup, Regex, the Automata lab, Lexer, Interpreter, and the rest) are taken as they stand; they build the skills every direction draws on.  The choices are independent: you can take the Mini-Notation direction in the Parser assignment and any direction you like in Functional, or vice versa.  The path above is the coherent musical route, not a package deal.
+Assignments without a music direction listed here (Warmup, Regex, the Automata lab, Lexer, Interpreter, and the rest) are taken as they stand; they build the skills every direction draws on.  The choices are independent: you can take the Mini-Notation direction in the Parser assignment and a general-purpose direction for your team's language, or the reverse.  The path above is the coherent musical route, not a package deal.
 
 ### The Mapping at a Glance
 
 | Required assignment | Its music direction |
 |---|---|
 | [The Parser and AST]({{ site.baseurl }}/Assignments/Parser) | Direction B: The Mini-Notation Music Parser |
-| [Functional Programming]({{ site.baseurl }}/Assignments/Functional) | Direction E: Parallel Functional Programming |
 | [Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) | The Music and Live-Coding direction (text-events-only route available) |
 
-The two activities above (Music Languages and Live Coding; Table-Driven and LR Parsing) and the Flex and Bison tutorial are preparation rather than deliverables.  They play the same role the optional readings do elsewhere in the schedule.
+The two activities above (Music Languages and Live Coding; Parsing Expressions and Table-Driven Parsing) and the Flex and Bison tutorial are preparation rather than deliverables.  They play the same role the optional readings do elsewhere in the schedule.
 
 ### When to Decide
 
@@ -702,7 +712,7 @@ Demo Day is not a private class ritual.  Alumni, industry guests, and faculty fr
 
 ### Demo Day Format and Schedule
 
-All teams present within a single class session.  Each team has a hard cap of **9 minutes**, followed by a 1-minute transition while the next team plugs in.  Nine minutes rewards a rehearsed demo, so time your run-through and cut material rather than rushing it.  The order of presentation is set by lot: teams draw lots in the release-hardening studio, so you know your slot before the day.
+All teams present within the final exam period (Monday, December 14, 11:15 AM-2:15 PM, Pfahler 012).  Each team has a hard cap of **9 minutes**, followed by a 1-minute transition while the next team plugs in.  Nine minutes rewards a rehearsed demo, so time your run-through and cut material rather than rushing it.  The order of presentation is set by lot: teams draw lots in the release-hardening studio, so you know your slot before the day.
 
 ### What Strong Demo Day Work Looks Like
 

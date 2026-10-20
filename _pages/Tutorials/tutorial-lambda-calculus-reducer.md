@@ -947,7 +947,7 @@ The Y combinator makes a striking philosophical point: self-reference (the abili
 
 # Advanced: Combinatory Logic and the SKI Calculus
 
-**Direction D of the Functional assignment builds on this material**; if you are considering that direction, this section is your foundation.
+**The Team Language Project's optional [lambda-calculus core extension]({{ site.baseurl }}/Projects/TeamLanguage#a-lambda-calculus-core-church-encodings-and-combinators) builds on this material**; if your team is considering its combinatory variant, this section is your foundation.
 
 Think of combinators as **LEGO bricks for computation**.  Each brick does exactly one simple, self-contained thing: snap the identity brick onto the constant brick, snap that onto the compose brick, and from a handful of primitive pieces you can build any computation that any computer can perform.  No names, no variables, no environment.  Just bricks clicking together.
 

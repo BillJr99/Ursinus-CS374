@@ -340,8 +340,9 @@ lr = find_left_recursive(MY_GRAMMAR)
 if lr:
     print(f"LEFT-RECURSIVE: {sorted(lr)}")
     print("Rewrite these before you start the Parser assignment, or")
-    print("commit to a parsing method that tolerates them (see Table-Driven")
-    print("and LR Parsing, which handles left recursion natively).")
+    print("commit to a parsing method that tolerates them (see the LR half")
+    print("of Parsing Expressions and Table-Driven Parsing, which handles")
+    print("left recursion natively).")
 else:
     print("No direct left recursion. Recursive descent can handle this.")
     print("Now check for INDIRECT left recursion by hand; the detector cannot.")
@@ -409,7 +410,7 @@ The ideas in this activity lead directly into the next several topics in this co
 In this course (coming soon):
 
 - *Recursive descent parsing* (`recursivedescent` activity): You will implement `parseE()`, `parseT()`, and `parseF()` as mutually recursive functions, one per nonterminal in `grammar_rr`.  Every rule you wrote in Model 2 becomes a function.
-- *Parser tables* (`parsertable` activity): LL(1) and LR(0/1) tables are built mechanically from a grammar.  The `FIRST` and `FOLLOW` sets you will compute come directly from the production rules you practiced here.
+- *Parser tables* (the `parsingexpressions` activity, *Parsing Expressions and Table-Driven Parsing*): LL(1) and LR(0/1) tables are built mechanically from a grammar.  The `FIRST` and `FOLLOW` sets you will compute come directly from the production rules you practiced here.
 
 Grammars in the wild:
 

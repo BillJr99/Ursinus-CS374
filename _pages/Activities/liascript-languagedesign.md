@@ -1226,4 +1226,4 @@ In your notebook: you have criticized languages all semester, and today you beca
 
 ---
 
-Up next: *Lambda Calculus I* goes to the theory floor beneath the functional programming you did in September, and *Closures and First-Class Functions* later supplies the last mechanism your evaluator needs.  From here, the Team Language Project's sprints carry you to Demo Day.  At the end of each sprint, come back to the feature menu and ask one question: which features do you have time to implement well?
+Up next: *Lambda Calculus I* goes to the theory floor beneath the functional programming you did in September, and *Lambda Calculus II and Closures* later supplies the last mechanism your evaluator needs.  From here, the Team Language Project's sprints carry you to Demo Day.  At the end of each sprint, come back to the feature menu and ask one question: which features do you have time to implement well?
