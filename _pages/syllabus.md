@@ -253,7 +253,7 @@ schedule:
     dlink: "Assignments/Warmup"
     points: "10"
   readings:
-  - rtitle: "Continues Part 1.  Please have Scheme running before class, either installed locally or open in a browser tab at try.scheme.org, and bring the expression that would not evaluate."
+  - rtitle: "Continues Part 1.  Please have Scheme running before class, either installed locally or open in a browser tab at try.scheme.org, and have ready the expression that would not evaluate."
     rlink: false
   - rtitle: "Scheme Essentials for the Programming Languages Course"
     rlink: "Tutorials/SchemeEssentials"
@@ -278,7 +278,7 @@ schedule:
   readings:
   - rtitle: "Scheme Essentials for the Programming Languages Course"
     rlink: "Tutorials/SchemeEssentials"
-  - rtitle: "In-class taste: the declarative paradigm in Prolog, a 15-minute SWISH warm-up (facts, rules, a query that backtracks).  Previews the Team Language Project's optional logic-programming extension"
+  - rtitle: "The declarative paradigm in Prolog: a short SWISH exercise in class (facts, rules, and a query that backtracks), background for the Team Language Project's optional logic-programming extension"
     rlink: "https://swish.swi-prolog.org/"
   - rtitle: "The Power of Prolog (Markus Triska)"
     rlink: "https://www.metalevel.at/prolog"
@@ -305,7 +305,7 @@ schedule:
   link: "Activities/liascript-grammars-day2.md"
   liapage: true
   readings:
-  - rtitle: "Continues Day 1.  Bring the grammar you drafted; we build on it."
+  - rtitle: "Continues Day 1.  Have the grammar you drafted ready; we build on it."
     rlink: false
 - week: "3"
   date: "1"
@@ -361,7 +361,7 @@ schedule:
     points: "100"
     rubricpath: "_pages/Assignments/asmt-regex.md"
   readings:
-  - rtitle: "Continues Day 1.  Bring your hand-traced DFA from last session."
+  - rtitle: "Continues Day 1.  Have your hand-traced DFA from last session ready."
     rlink: false
 - week: "5"
   date: "1"
@@ -510,7 +510,7 @@ schedule:
   readings:
   - rtitle: "Typing Disciplines, going past today's quadrant into structural vs. nominal typing, type erasure, and algebraic data types"
     rlink: "Tutorials/TypingDisciplines"
-  - rtitle: "In-class compare: the same buggy snippet under mypy (Python) and TypeScript, gradual typing as an object of study"
+  - rtitle: "The same buggy snippet under mypy (Python) and TypeScript, compared in class: gradual typing as an object of study"
     rlink: "https://www.typescriptlang.org/play"
   - rtitle: "Allison, Ch. 10 §10.1: The Halting Problem (Why Some Questions About Programs Are Undecidable)"
   - rtitle: "Type Inference (Implementing Hindley-Milner)"
