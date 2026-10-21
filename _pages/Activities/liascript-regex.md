@@ -868,4 +868,4 @@ Write a paragraph about another finite description of an infinite set that you r
 
 ---
 
-> **Where the practice went.**  Part III gave you a first look at groups and replacement.  Everything else that used to be a second day of this activity (Python's `re` in five verbs and watching the engine backtrack) opens the [Regular Expressions assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Regex), which goes out at the next meeting.  Parts 1 and 2 are written as a walkthrough: run every cell, then vary it.
+> **Where to practice next.**  Part III gave you a first look at groups and replacement.  The rest of the practice (Python's `re` in five verbs and watching the engine backtrack) opens the [Regular Expressions assignment](https://www.billmongan.com/Ursinus-CS374-Fall2026/Assignments/Regex), which goes out at the next meeting.  Parts 1 and 2 are written as a walkthrough: run every cell, then vary it.
