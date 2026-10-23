@@ -639,10 +639,10 @@ A second contact: [EMAIL], deadline 2026-12-15.
 
 ### Step 3.2: Log Parser
 
-In `log_parser.py`, write a `parse_log(log_path: str, config_path: str)` function for the provided server log, [server.log]({{ site.baseurl }}/files/starters/regex/server.log).  Each line looks like `2026-09-18 08:10:22 WARN disk usage 91% on /dev/sda1`.  The function must:
+In `log_parser.py`, write a `parse_log(log_path: str, config_path: str)` function for the provided server log, [server.log]({{ site.baseurl }}/files/starters/regex/server.log).  Each line looks like `2026-09-04 08:10:22 WARN disk usage 91% on /dev/sda1`.  The function must:
 
 1.  Use one `re.finditer` pattern with named groups to extract `date`, `time`, `level`, and `message` from each log line.
-2.  Report counts by level (how many INFO, WARN, and ERROR lines).
+2.  Report counts by level (how many INFO, WARN, and ERROR lines).  `DEBUG` lines are well-formed but are not counted.
 3.  Report the earliest and latest timestamps, as strings in `YYYY-MM-DD HH:MM:SS` format.
 4.  Extract every percentage value (`\d+%`) mentioned in WARN lines and report the maximum.
 5.  Write all ERROR lines, each prefixed with its original line number, to `errors.txt`.
@@ -679,12 +679,12 @@ if __name__ == "__main__":
     parse_log(cfg["log_path"], "config.json")
 ```
 
-> **You should see.** Five report lines in this shape, and a new `errors.txt` in `cs374-regex/`.  The numbers come from the provided log, so match the shape, not these exact values.  Open `errors.txt` and confirm each line begins with its line number from the original log.
+> **You should see.** Five report lines in this shape, and a new `errors.txt` in `cs374-regex/`.  With the provided log, a parser that treats `DEBUG` lines as well-formed but uncounted, and skips (and reports) malformed lines, prints exactly these values.  If your counts differ, check how you handle the malformed lines before changing your pattern.  Open `errors.txt` and confirm each line begins with its line number from the original log.
 
 ```text
-Counts: INFO=42, WARN=8, ERROR=3
+Counts: INFO=37, WARN=10, ERROR=4
 Earliest: 2026-09-01 00:01:14
-Latest:   2026-09-18 23:59:59
+Latest:   2026-09-04 23:59:59
 Max WARN percentage: 91%
 ERROR lines written to errors.txt
 ```
