@@ -198,7 +198,7 @@ python3 -c "from parser import parse; from interpreter import Interpreter; Inter
 
 ### Suggested Pacing
 
-See the course schedule for the assigned and due dates.  One lab (which you may do with a partner) does real work for you here, and it helps to know where it sits.  The **Environments and Type Checking lab** opens with this assignment.  Its Part 1 builds the `Environment` machinery of Step 2c, and its Part 2 builds the core of Part 4's checker.  It is due partway through this window.  It is not a detour; it hands you the code this assignment then imports.  Part 2 is the steepest section, so climb it in the small steps below rather than in one sitting.
+See the course schedule for the assigned and due dates.  One lab (which you may do with a partner) does real work for you here, and it helps to know where it sits.  The **Environments and Type Checking lab** opens one class before this assignment.  Its Part 1 builds the `Environment` machinery of Step 2c, and its Part 2 builds the core of Part 4's checker.  It is due partway through this window.  It is not a detour; it hands you the code this assignment then imports.  Part 2 is the steepest section, so climb it in the small steps below rather than in one sitting.
 
 | Checkpoint | You should have |
 |------------|----------------|
