@@ -812,6 +812,8 @@ To remember: `unparse` walks the tree and passes each node the precedence of its
 
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
 
+> **Build your own parser at home.**  Part VI below starts a step-by-step build of the parser, AST, and pretty-printer for the Parser assignment.  It continues in the *Recursive Descent* and *Parsing Expressions* activities, and it ends in Part VII.
+
 # Check Your Understanding
 
 A parse tree and an abstract syntax tree differ in that the AST:
@@ -850,28 +852,28 @@ Adding a new consumer of the AST (a type checker, a pretty printer, an optimizer
 
 ---
 
-## Exercises (Homework, ~90 minutes total)
+## Exercises (Homework)
 
-### Exercise 1: Parser Upgrade (20 min)
+### Exercise 1: Parser Upgrade
 
 Convert your expression parser from tuples to the node classes, and extend it to cover your statement forms (`Assign`/`Let`, `Print`, `While`, `Block`, `If`).  Demonstrate `pretty` on a three-statement program.
 
-### Exercise 2: Round-Trip (20 min)
+### Exercise 2: Round-Trip
 
 Write `unparse(node)`, which produces valid source text from an AST.  Verify that `parse(unparse(parse(s)))` yields an identical tree for five inputs.  This round-trip test will live in your project test suite forever.
 
-### Exercise 3: Tree Statistics (15 min)
+### Exercise 3: Tree Statistics
 
 Write `count_nodes` and `depth` as tree walks.  Report both for three programs: a simple expression, a while loop, and a recursive function.  Which feature drives depth highest?
 
-### Exercise 4: Constant Folding (20 min)
+### Exercise 4: Constant Folding
 
 Extend the `fold` function from Model 4 to handle:
 - Boolean constant folding: `true and false -> false`, `true or x -> true`
 - Dead code elimination: `if true { body1 } else { body2 }` -> `body1`
 Test on at least 5 cases, including one where folding is NOT safe (a function call with side effects).
 
-### Exercise 5: Python's ast Module (15 min)
+### Exercise 5: Python's ast Module
 
 Run `import ast; print(ast.dump(ast.parse("2 + 3 * 4")))` in Python.  Compare Python's AST structure to what you built.  What nodes does Python use?  How does it handle operator precedence?
 
@@ -1035,4 +1037,1005 @@ The AST is the third representation of the same program (characters -> tokens ->
 
 ---
 
+# Part VI: Build It, Stage 1 (at home)
+
+## The Build: Your Own Parser, Typed One Step at a Time
+
+Part VI starts a build that runs across three activities.  When it ends, your `cs374-parser/` folder holds a complete parser, AST, pretty-printer, and unparser that you typed yourself.  The build continues the models you have already run: each step takes one idea from a model and turns it into a few lines of a permanent file.
+
+| Stage | Activity | Build Steps | What you have at the end |
+|---|---|---|---|
+| 1 | *Abstract Syntax Trees*, Part VI (here) | 1 to 9 | every node class and `pretty` in `ast_nodes.py` |
+| 2 | [Recursive Descent](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-recursivedescent.md), Part IV | 10 to 22 | `ParseError`, `expect`, and every statement in `parser.py`, plus `test_parser.py` |
+| 3 | [Parsing Expressions](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-parsingexpressions.md), Part V | 23 to 32 | the whole expression ladder |
+| 4 | *Abstract Syntax Trees*, Part VII (this page) | 33 to 40 | `unparse`, the round-trip tests, and a finished suite |
+
+Each step is one slide with one small addition, one check, and one question or small piece for you to write.  Type each fragment rather than pasting it, because the point of the build is to notice what each line does.  A fragment's first comment names its step, its file, and where the lines go.
+
+- `____A1____` marks a blank for you to fill in.  The blanks and your written pieces are answered in the **Answer Key** at the end of the activity that holds the step.
+- Run every check from inside `cs374-parser/` on your own machine, not in the browser, because the checks import your `lexer.py`.
+- If you add a step's lines and the check's output differs from what the slide shows, fix that before you go on.  Each later step assumes the earlier ones work.
+
+Model 1 above kept its node classes short.  Your permanent classes use the field names that the Parser and Interpreter assignments use, because your evaluator will dispatch on exactly these classes.  They also carry both a `line` and a `col`.  The Parser assignment's printed examples show only `line`, so your output has more fields than those; the Interpreter assignment needs the column, and `==` ignores both:
+
+| Model 1 | Your `ast_nodes.py` |
+|---|---|
+| `Bool(value)` | `BoolLit(value)` |
+| `Assign(name, expr)` | `Assign(name, value)` |
+| `Print(expr)` | `Print(value)` |
+| `Block(statements)` | `Block(stmts)` |
+| `If(cond, then_, otherwise)` | `If(condition, then_branch, else_branch)` |
+| `While(cond, body)` | `While(condition, body)` |
+
+---
+
+## Build Step 1: Confirm Your Lexer
+
+The parser imports the lexer you built in the *Tokens and Scanning* activity and the Lexer assignment, and it uses only three methods: `peek()`, `advance()`, and `expect()`.  Before you add anything, make sure the contract holds.  If your lexer is not finished, the at-home part of *Tokens and Scanning* builds one; its step numbers are separate from these.  Create `cs374-parser/` and copy `lexer.py`, `token_spec.json`, and `token_spec_alt.json` into it, along with `tokens.py` if your lexer has one.  Every token carries `type`, `value`, `line`, and `col`, and a `STRING` token also carries `decoded`.
+
+Run this check:
+
+```bash
+python3 -c "from lexer import Lexer; lx = Lexer('let x'); print(lx.peek()); print(lx.peek().value, lx.advance().value, lx.peek().value)"
+```
+
+You should see this.  Your own `Token` may print its fields differently, but its type must be `LET`:
+
+```text
+Token(type='LET', value='let', line=1, col=1, decoded=None)
+let let x
+```
+
+> **CTQ B1** The second line prints `let let x`, although `peek` ran twice before anything moved.  Which single call in that line consumed a token, and why does a parser need `peek` to be free of side effects?
+
+---
+
+## Build Step 2: Leaves with Positions That `==` Skips
+
+The leaves of the tree come first because they have no children, so you can test them alone.  Each one records where it came from, so that errors can name a line and column.  A test, however, writes `Num(8)` with no position while the parser builds `Num(8, 1, 7)`, and the two must still compare equal.  A helper declares the position fields so that they print but `==` skips them.
+
+```python
+# Step 2, ast_nodes.py
+from dataclasses import dataclass, field
+from typing import Any, List
+
+
+def _pos():
+    """Declare a source-position field: it prints, but == skips it."""
+    return field(default=0, ____A1____)
+
+
+@dataclass
+class Num:
+    value: Any            # the numeric value, already parsed (int or float)
+    line: int = _pos()    # 1-indexed source line (0 if built by hand)
+    col: int = _pos()     # 1-indexed source column (0 if built by hand)
+```
+
+**You write:** three more classes on the same pattern.  `Var` holds `name`, the variable's name.  `Str` holds `value`, the decoded string.  `BoolLit` holds `value`, `True` or `False`.  Give each one a `line` and a `col`.
+
+Run this check:
+
+```bash
+python3 -c "from ast_nodes import *; print(Num(8)); print(Num(8) == Num(8, 3, 5), Num(8) == Num(9)); print(Var('x'), Str('hi'), BoolLit(True))"
+```
+
+You should see:
+
+```text
+Num(value=8, line=0, col=0)
+True False
+Var(name='x', line=0, col=0) Str(value='hi', line=0, col=0) BoolLit(value=True, line=0, col=0)
+```
+
+> **CTQ B2** What would `Num(8) == Num(8, 3, 5)` print if `line` were declared as plain `line: int = 0`?  Name one kind of test that would then fail on a correct parser.
+
+---
+
+## Build Step 3: Operator Nodes
+
+Three nodes combine values.  `BinOp` and `UnaryOp` match the classes in Model 1 and add positions: a type error later needs to point at the operator.  The third, `LogicOp`, looks like `BinOp`, but it holds only `and` and `or`.
+
+```python
+# Step 3, ast_nodes.py
+@dataclass
+class BinOp:
+    op: str               # one of: + - * / < <= > >= == !=
+    left: Any             # left operand expression
+    right: Any            # right operand expression
+    line: int = _pos()
+    col: int = _pos()
+
+
+@dataclass
+class UnaryOp:
+    op: str               # "-" or "not"
+    operand: Any          # the operand expression
+    line: int = _pos()
+    col: int = _pos()
+```
+
+**You write:** `LogicOp`, with the same five fields as `BinOp`.  Its comment on `right` should say that this operand may never be evaluated.
+
+Run this check:
+
+```bash
+python3 -c "from ast_nodes import *; print(BinOp('-', Num(8), UnaryOp('-', Var('x')))); print(LogicOp('or', Var('a'), Var('b')) == LogicOp('or', Var('a'), Var('b'), 4, 2))"
+```
+
+You should see:
+
+```text
+BinOp(op='-', left=Num(value=8, line=0, col=0), right=UnaryOp(op='-', operand=Var(name='x', line=0, col=0), line=0, col=0), line=0, col=0)
+True
+```
+
+> **CTQ B3** `LogicOp` has the same fields as `BinOp`, so why give it a class of its own?  Think about what an evaluator must do with the right operand of `true or (1 / 0)`.
+
+---
+
+## Build Step 4: Statements That Name a Value
+
+Statements run for their effect.  `Let` defines a new name, `Print` evaluates and prints, and `Break` carries only its line, so that a later error can say where a stray `break` was.  `Print`, `Break`, and `Continue` keep a `line` and no `col`, which matches the node list in Step 1a of the Interpreter assignment.
+
+```python
+# Step 4, ast_nodes.py
+@dataclass
+class Let:
+    name: str             # variable name being defined (new binding)
+    value: Any            # initializer expression
+    line: int = _pos()
+    col: int = _pos()
+
+
+@dataclass
+class Print:
+    value: Any            # expression to evaluate and print
+    line: int = _pos()
+
+
+@dataclass
+class Break:
+    line: int = _pos()    # source line, for "break outside loop" errors
+```
+
+**You write:** `Assign`, with the same four fields as `Let`, and `Continue`, with the one field that `Break` has.
+
+Run this check:
+
+```bash
+python3 -c "from ast_nodes import *; print(Let('x', Num(1))); print(Assign('x', Num(2))); print(Print(Var('x')), Break(), Continue())"
+```
+
+You should see:
+
+```text
+Let(name='x', value=Num(value=1, line=0, col=0), line=0, col=0)
+Assign(name='x', value=Num(value=2, line=0, col=0), line=0, col=0)
+Print(value=Var(name='x', line=0, col=0), line=0) Break(line=0) Continue(line=0)
+```
+
+> **CTQ B4** `Let` and `Assign` have identical fields.  What is the difference between `let x = 1;` and `x = 1;` that justifies two classes?  What should each one do if `x` does not exist yet?
+
+---
+
+## Build Step 5: Nodes That Hold Other Statements
+
+`Block` and `Program` hold lists, and `If` and `While` hold blocks.  Python refuses a plain `= []` as a dataclass default, because every object would share one list, so `stmts` asks for a fresh list per object.  `else_branch` is `None` when there is no `else`, a `Block` for a plain `else`, and another `If` for an `else if`.
+
+```python
+# Step 5, ast_nodes.py
+@dataclass
+class Block:
+    stmts: List[Any] = field(____A2____)  # statements, in order
+    line: int = _pos()
+
+
+@dataclass
+class If:
+    condition: Any           # test expression
+    then_branch: Any         # always a Block
+    else_branch: Any = None  # Block, If (else-if chain), or None
+    line: int = _pos()
+
+
+@dataclass
+class While:
+    condition: Any        # test expression, re-evaluated each iteration
+    body: Any = None      # always a Block
+    line: int = _pos()
+```
+
+**You write:** `Program`, the root of the tree, with one field, `stmts`, declared the way `Block` declares it.  It needs no position.
+
+Run this check:
+
+```bash
+python3 -c "from ast_nodes import *; print(Program([While(Var('x'), Block([Break()]))])); print(If(Var('x'), Block())); print(Block().stmts is Block().stmts)"
+```
+
+You should see:
+
+```text
+Program(stmts=[While(condition=Var(name='x', line=0, col=0), body=Block(stmts=[Break(line=0)], line=0), line=0)])
+If(condition=Var(name='x', line=0, col=0), then_branch=Block(stmts=[], line=0), else_branch=None, line=0)
+False
+```
+
+> **CTQ B5** The last line prints `False`.  What goes wrong in a parser if it prints `True`?  Describe what two separate blocks would then hold.
+
+---
+
+## Build Step 6: `pretty` Starts with the Leaves
+
+Model 1's `pretty` printed as it walked.  Yours returns a string, because a test can compare a string and a printout can only be read.  The walk is the same one: one case per node class, and a recursive call per child.  The last line also differs on purpose.  Model 1 fell through to `Unknown:`, and *Try It Yourself* showed a whole subtree vanishing that way.  This one raises an error that names the missing class.
+
+```python
+# Step 6, ast_nodes.py
+def _bool_text(value: bool) -> str:
+    return "true" if value else "false"
+
+
+def pretty(node, indent: int = 0) -> str:
+    """Return an indented view of the tree, two spaces per level."""
+    pad = "  " * indent
+    nxt = indent + 1
+    if isinstance(node, Num):
+        return pad + f"Num({node.value})"
+    if isinstance(node, Var):
+        return pad + f"Var({node.name})"
+    raise TypeError(f"pretty: no case for {type(node).__name__}")
+```
+
+**You write:** the two remaining leaf cases, above the `raise`.  `Str` prints as `Str('hi')`, which is what `!r` gives you inside an f-string.  `BoolLit` prints as `BoolLit(true)`, in lowercase, using `_bool_text`.
+
+Run this check:
+
+```bash
+python3 -c "from ast_nodes import *; print(pretty(Num(10))); print(pretty(Var('x'), 2)); print(pretty(Str('hi'))); print(pretty(BoolLit(True)))"
+```
+
+You should see:
+
+```text
+Num(10)
+    Var(x)
+Str('hi')
+BoolLit(true)
+```
+
+> **CTQ B6** Call `pretty(Break())` now.  What happens, and how is that better than Model 1's `Unknown:` line while you are still adding cases?
+
+---
+
+## Build Step 7: `pretty` for Operators
+
+An operator prints a header line at its own indent, then each operand one level deeper.  Each recursive call returns a finished block of text, so joining the pieces with newlines is all the parent has to do.  That is why the contract says the string has no newline at its start or end.
+
+```python
+# Step 7, ast_nodes.py: add above the final raise in pretty
+    if isinstance(node, BinOp):
+        return "\n".join([pad + f"BinOp({node.op})",
+                          ____A3____, pretty(node.right, nxt)])
+    if isinstance(node, UnaryOp):
+        return "\n".join([pad + f"UnaryOp({node.op})",
+                          pretty(node.operand, nxt)])
+```
+
+**You write:** the `LogicOp` case, which prints `LogicOp(or)` and then both operands.
+
+Run this check:
+
+```bash
+python3 -c "from ast_nodes import *; print(pretty(BinOp('+', Num(2), BinOp('*', Num(3), UnaryOp('-', Var('x')))))); print(pretty(LogicOp('or', Var('a'), Var('b'))))"
+```
+
+You should see:
+
+```text
+BinOp(+)
+  Num(2)
+  BinOp(*)
+    Num(3)
+    UnaryOp(-)
+      Var(x)
+LogicOp(or)
+  Var(a)
+  Var(b)
+```
+
+> **CTQ B7** Every recursive call here passes `nxt`.  If one passed `indent` instead, what would you see in the first tree, and how would that mislead you about its shape?
+
+---
+
+## Build Step 8: `pretty` for Simple Statements
+
+`Let` and `Assign` put the name on the header line and the value below it.  `Print` has no name to show.  `Break` and `Continue` have no children, so each is one line.
+
+```python
+# Step 8, ast_nodes.py: add above the final raise in pretty
+    if isinstance(node, Let):
+        return "\n".join([pad + f"Let {node.name}", pretty(node.value, nxt)])
+    if isinstance(node, Print):
+        return "\n".join([pad + "Print", pretty(node.value, nxt)])
+    if isinstance(node, Break):
+        return pad + "Break"
+```
+
+**You write:** the `Assign` case, which prints `Assign x` and then the value, and the `Continue` case.
+
+Run this check:
+
+```bash
+python3 -c "from ast_nodes import *; print(pretty(Let('x', Num(1)))); print(pretty(Assign('x', Num(2)))); print(pretty(Print(Var('x')))); print(pretty(Continue()))"
+```
+
+You should see:
+
+```text
+Let x
+  Num(1)
+Assign x
+  Num(2)
+Print
+  Var(x)
+Continue
+```
+
+> **CTQ B8** `Let` and `Assign` print differently although they hold the same fields.  Suppose you printed both as `Bind x`.  Which bug in a parser could you then no longer see in the output?
+
+---
+
+## Build Step 9: `pretty` for Blocks and Control Flow
+
+This step finishes the printer.  `Program` and `Block` print the same way, so one case handles both, and `type(node).__name__` supplies the header.  An `else` branch gets an `Else` line one level below the `If`, and the branch goes one level below that.  `Else` is not a node; it is only a label, so that a reader can tell the else branch from the then-branch.
+
+```python
+# Step 9, ast_nodes.py: add above the final raise in pretty
+    if isinstance(node, (Program, Block)):
+        lines = [pad + type(node).__name__]
+        lines += [pretty(s, nxt) for s in node.stmts]
+        return "\n".join(lines)
+    if isinstance(node, While):
+        return "\n".join([pad + "While", pretty(node.condition, nxt),
+                          pretty(node.body, nxt)])
+    if isinstance(node, If):
+        lines = [pad + "If", pretty(node.condition, nxt),
+                 pretty(node.then_branch, nxt)]
+        if node.else_branch is not None:
+            lines.append(pad + "  Else")
+            lines.append(pretty(node.else_branch, ____A4____))
+        return "\n".join(lines)
+```
+
+This check builds the tree for the Parser assignment's worked `while` program by hand, because you have no parser yet.
+
+Run this check:
+
+```bash
+python3 -c "from ast_nodes import *; print(pretty(Program([Let('x', Num(10)), While(BinOp('>', Var('x'), Num(0)), Block([Print(Var('x')), Assign('x', BinOp('-', Var('x'), Num(1)))]))])))"
+```
+
+You should see:
+
+```text
+Program
+  Let x
+    Num(10)
+  While
+    BinOp(>)
+      Var(x)
+      Num(0)
+    Block
+      Print
+        Var(x)
+      Assign x
+        BinOp(-)
+          Var(x)
+          Num(1)
+```
+
+> **CTQ B9** On paper, write the output of `pretty` for `If(Var('a'), Block(), Block())`.  Then run it and compare.  Which line in the `If` case produces the only line that has no node behind it?
+
+**Stage 1 is done.**  You can now represent and print every construct, but only for trees you build by hand.  Stage 2 makes the parser build them: go on to Part IV of [Recursive Descent](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-recursivedescent.md), Build Step 10.  Come back to Part VII below after Stage 3.
+
+---
+
+# Part VII: Build It, Stage 4 (at home)
+
+## Build Stage 4: From the Tree Back to Source
+
+Come here after [Parsing Expressions](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-parsingexpressions.md), Part V.  Your parser now reads every construct, so the last stage goes the other way, as Part IV's `unparse` did, and then checks both directions against each other.
+
+Part IV's cell handled four node types and passed a precedence number down the tree.  Your version handles every node and puts the decision in one helper, `unparse_child`, where the two extra rules this language needs are easy to find: comparisons do not chain, and `not` is a word.  It goes in `ast_nodes.py`, below `pretty`, under the names that Step 3b of the Parser assignment uses.
+
+---
+
+## Build Step 33: A Number for Every Operator
+
+Parentheses disappeared when the parser built the tree, so `unparse` must decide where to put them back, and that decision compares how tightly two nodes bind.  The table mirrors the ladder from Parsing Expressions: a larger number binds tighter.  Only the order of the numbers matters.
+
+```python
+# Step 33, ast_nodes.py
+PRECEDENCE = {"or": 1, "and": 2, "not": 3,
+              "<": 4, "<=": 4, ">": 4, ">=": 4, "==": 4, "!=": 4,
+              "+": 5, "-": 5, "*": ____A5____, "/": ____A5____}
+COMPARISON_PREC = 4
+UNARY_MINUS_PREC = 7      # above every binary operator
+ATOM_PREC = 100           # a literal or a variable never needs parentheses
+
+
+def prec(node) -> int:
+    """Return how tightly a node binds; a larger number binds tighter."""
+    if isinstance(node, (BinOp, LogicOp)):
+        return PRECEDENCE[node.op]
+    if isinstance(node, UnaryOp):
+        return PRECEDENCE["not"] if node.op == "not" else UNARY_MINUS_PREC
+    return ATOM_PREC
+```
+
+Run this check:
+
+```bash
+python3 -c "from ast_nodes import *; print(prec(LogicOp('or', Var('a'), Var('b'))), prec(UnaryOp('not', Var('a'))), prec(BinOp('<', Var('a'), Var('b'))), prec(BinOp('*', Var('a'), Var('b'))), prec(UnaryOp('-', Var('a'))), prec(Var('a')))"
+```
+
+You should see:
+
+```text
+1 3 4 6 7 100
+```
+
+> **CTQ B33** `not` has a smaller number than `<`, while unary minus has a larger one than `*`.  Using `not a < b` and `-a * b`, say what tree each source line builds and how the table records it.
+
+---
+
+## Build Step 34: `unparse` Starts with the Leaves
+
+A number comes back through `repr`, so `3` stays `3` and `3.14` stays `3.14`.  A string needs its quotes and its escapes back, because the parser stored the decoded text.  The signature takes an `indent`, which only statements use, in units of four spaces, as the assignment asks.
+
+```python
+# Step 34, ast_nodes.py
+def escape(value: str) -> str:
+    """Turn decoded text back into source text, with its escapes."""
+    return (value.replace("\\", "\\\\").replace('"', '\\"')
+                 .replace("\n", "\\n").replace("\t", "\\t"))
+
+
+def unparse(node, indent: int = 0) -> str:
+    """Regenerate source text that parses back to the same tree."""
+    pad = "    " * indent
+    if isinstance(node, Num):
+        return repr(node.value)
+    if isinstance(node, Str):
+        return f'"{escape(node.value)}"'
+    raise TypeError(f"unparse: no case for {type(node).__name__}")
+```
+
+```python
+# Step 34, test_parser.py: add above the main block
+def test_unparse_string_escapes():
+    assert unparse(Str('quote " tab \t nl \n')) == r'"quote \" tab \t nl \n"'
+```
+
+**You write:** the `BoolLit` case, which returns `true` or `false` through `_bool_text`, and the `Var` case, above the `raise`.
+
+Run this check:
+
+```bash
+python3 -c "from ast_nodes import *; print(unparse(Num(3)), unparse(Num(3.14)), unparse(Var('x')), unparse(BoolLit(False))); print(unparse(Str('a\tb')))"
+```
+
+You should see:
+
+```text
+3 3.14 x false
+"a\tb"
+```
+
+> **CTQ B34** `escape` replaces the backslash first.  Work through the text `a"b`, doing the backslash replacement last instead.  What comes out, and what would it parse back to?
+
+---
+
+## Build Step 35: Parentheses Only Where the Tree Needs Them
+
+A child needs parentheses in three cases.  It binds looser than its parent.  Or it sits at the parent's level and is the right operand, because every binary tier folds left.  Or it sits at the comparison level on either side, because comparisons do not chain.  `(a < b) < c` without its parentheses does not parse at all.
+
+```python
+# Step 35, ast_nodes.py
+def unparse_child(child, parent_prec: int, is_right: bool) -> str:
+    """Unparse an operand, adding parentheses only when the tree needs them."""
+    text = unparse(child)
+    child_prec = prec(child)
+    needs = ____A6____                     # the child binds looser
+    if child_prec == parent_prec:
+        if parent_prec == COMPARISON_PREC:
+            needs = True                   # comparisons never chain bare
+        elif ____A7____:
+            needs = True                   # right child of a left-fold
+    return f"({text})" if needs else text
+```
+
+```python
+# Step 35, ast_nodes.py: add above the final raise in unparse
+    if isinstance(node, (BinOp, LogicOp)):
+        p = PRECEDENCE[node.op]
+        left = unparse_child(node.left, p, False)
+        return f"{left} {node.op} {unparse_child(node.right, p, True)}"
+```
+
+**You write:** three tests, above the main block of `test_parser.py`, one for each of the first three lines this check prints.  Each one asserts that `unparse` of a hand-built tree equals the string.  The third one also asserts that `parse_expression` of the string gives the tree back.
+
+Run this check:
+
+```bash
+python3 -c "from ast_nodes import *; a, b, c = Var('a'), Var('b'), Var('c'); print(unparse(BinOp('+', Num(2), BinOp('*', Num(3), Num(4))))); print(unparse(BinOp('*', Num(2), BinOp('+', Num(3), Num(4))))); print(unparse(BinOp('-', Num(8), BinOp('-', Num(3), Num(2))))); print(unparse(BinOp('<', BinOp('<', a, b), c))); print(unparse(LogicOp('or', a, LogicOp('and', b, c))))"
+```
+
+You should see:
+
+```text
+2 + 3 * 4
+2 * (3 + 4)
+8 - (3 - 2)
+(a < b) < c
+a or b and c
+```
+
+> **CTQ B35** Predict what `unparse(BinOp("-", BinOp("-", Num(8), Num(3)), Num(2)))` prints.  Which line of `unparse_child` decides it, and how does that line treat the same tree with the subtraction on the right?
+
+---
+
+## Build Step 36: Unary Operators
+
+A unary operator has one operand and no left or right to weigh, so it needs only the first rule.  The output differs between the two operators: `-x` has no space, and `not x` must have one, because `notx` lexes as a single identifier.
+
+```python
+# Step 36, ast_nodes.py: add above the final raise in unparse
+    if isinstance(node, UnaryOp):
+        operand = unparse(node.operand)
+        if prec(node.operand) < prec(node):
+            operand = f"({operand})"
+        return ____A8____ if node.op == "not" else f"-{operand}"
+```
+
+Run this check:
+
+```bash
+python3 -c "from ast_nodes import *; a, b = Var('a'), Var('b'); print(unparse(UnaryOp('-', BinOp('+', a, Num(1))))); print(unparse(UnaryOp('-', UnaryOp('-', a)))); print(unparse(UnaryOp('not', BinOp('<', a, b)))); print(unparse(UnaryOp('not', LogicOp('and', a, b))))"
+```
+
+You should see:
+
+```text
+-(a + 1)
+--a
+not a < b
+not (a and b)
+```
+
+> **CTQ B36** The third line has no parentheses and the fourth does.  Parse each printed line in your head, and say why removing the fourth line's parentheses would change the tree.
+
+---
+
+## Build Step 37: Simple Statements
+
+A statement starts with `pad`, its indent, and ends with its own semicolon.  The expressions inside it never receive `indent`, because an expression does not start a line.
+
+```python
+# Step 37, ast_nodes.py: add above the final raise in unparse
+    if isinstance(node, Let):
+        return f"{pad}let {node.name} = {unparse(node.value)};"
+    if isinstance(node, Print):
+        return f"{pad}print {unparse(node.value)};"
+    if isinstance(node, Break):
+        return f"{pad}break;"
+```
+
+**You write:** the `Assign` case, which gives `x = 2;`, and the `Continue` case.
+
+Run this check:
+
+```bash
+python3 -c "from ast_nodes import *; print(unparse(Let('x', BinOp('+', Num(1), Num(2))))); print(unparse(Assign('x', Num(2)), 1)); print(unparse(Print(Var('x')), 2)); print(unparse(Continue()))"
+```
+
+You should see:
+
+```text
+let x = 1 + 2;
+    x = 2;
+        print x;
+continue;
+```
+
+> **CTQ B37** Compare the second and third lines of the output.  The next step's `Block` will call `unparse(s, indent + 1)` on each statement inside it.  What would a block's statements look like if it called `unparse(s, indent)` instead?
+
+---
+
+## Build Step 38: Blocks and Control Flow
+
+A block opens at the end of the line that introduces it, so `while` and `if` strip the block's leading indent with `lstrip`.  Each statement inside a block goes one level deeper, and the closing brace returns to the outer indent.  This step completes `unparse`.
+
+```python
+# Step 38, ast_nodes.py: add above the final raise in unparse
+    if isinstance(node, Block):
+        inner = "".join(unparse(s, indent + 1) + "\n" for s in node.stmts)
+        return f"{pad}{{\n{inner}{pad}}}"
+    if isinstance(node, While):
+        body = unparse(node.body, indent).lstrip()
+        return f"{pad}while {unparse(node.condition)} {body}"
+    if isinstance(node, If):
+        then = unparse(node.then_branch, indent).lstrip()
+        head = f"{pad}if {unparse(node.condition)} {then}"
+        if node.else_branch is None:
+            return head
+        return f"{head} else " + ____A9____
+    if isinstance(node, Program):
+        return "\n".join(unparse(s) for s in node.stmts)
+```
+
+Run this check:
+
+```bash
+python3 -c "from parser import parse; from ast_nodes import unparse; print(unparse(parse('let x = 10; while x > 0 { print x; x = x - 1; }'))); print(unparse(parse('if a { print 1; } else if b { } else { print 3; }')))"
+```
+
+You should see:
+
+```text
+let x = 10;
+while x > 0 {
+    print x;
+    x = x - 1;
+}
+if a {
+    print 1;
+} else if b {
+} else {
+    print 3;
+}
+```
+
+> **CTQ B38** An `else if` prints as `} else if b {`, although the tree holds an `If` inside `else_branch`.  Which call produces that `if`, and why does `lstrip` make it land on the same line as the closing brace?
+
+---
+
+## Build Step 39: The Round Trip on Fixed Programs
+
+Part IV named the law: parse a program, unparse the tree, parse the text again, and the two trees must match.  `==` can test that directly, because Build Step 2 made positions invisible to it, and the unparsed text puts nodes in different columns.  Each program in the list tests the parser and the unparser against each other.
+
+```python
+# Step 39, test_parser.py: add above the main block
+PROGRAMS = [
+    "let x = 1;", "print 8 - (3 - 2);", "print --x;",
+    "if a { print 1; } else if b { print 2; } else { print -(x); }",
+    "let x = 10;\nwhile x > 0 {\n    print x;\n    x = x - 1;\n}",
+    "print not a and b or c;", "print not (a and b);",
+    "print -x * 3;", "print true or 1 / 0;",
+    "print a < b;\nprint c == true;",
+    'let s = "tab\\there \\"quoted\\" back\\\\slash";\nprint s + "!";',
+]
+
+
+def test_round_trip_fixed():
+    for source in PROGRAMS:
+        tree = parse(source)
+        assert parse(unparse(tree)) == tree, f"Round-trip failed on: {source}"
+```
+
+**You write:** seven more programs for the list, one each for: precedence with `2 + 3 * 4 - 1`, parentheses with `(2 + 3) * 4`, left association with `8 / 4 / 2`, a block that shadows a name, a `while` holding an `if` with `break` and `continue`, an `if` whose condition uses `>=`, and a float.  Also add a line to the loop that asserts the two trees pretty-print to the same text.
+
+Run this check:
+
+```bash
+python3 -c "import test_parser as t; t.test_round_trip_fixed(); print(len(t.PROGRAMS), 'programs round-trip')"
+```
+
+You should see:
+
+```text
+18 programs round-trip
+```
+
+> **CTQ B39** Delete the `is_right` case from `unparse_child` for a moment and rerun the check.  Which program fails first, and what does the assertion message show?  Put the case back.
+
+---
+
+## Build Step 40: Random Trees and the Whole Suite
+
+Your fixed list checks only the programs you thought of.  A generator makes trees you did not think of, with operators nested in combinations no one would write by hand.  This version uses the standard library so that it runs anywhere, and a fixed seed so that every run is the same.  Comparison children are allowed here on purpose: `unparse` has to add the parentheses that make them legal.
+
+```python
+# Step 40, test_parser.py: add above the main block
+def random_expr(rng, depth):
+    """Build one random expression tree at most depth levels deep."""
+    if depth == 0 or rng.random() < 0.3:
+        return rng.choice([Num(rng.randint(0, 99)), Var(rng.choice("xyz")),
+                           Num(round(rng.uniform(0, 9), 2)),
+                           BoolLit(rng.random() < 0.5)])
+    kind, left = rng.random(), random_expr(rng, depth - 1)
+    if kind < 0.1:
+        return UnaryOp(rng.choice(["-", "not"]), left)
+    right = random_expr(rng, depth - 1)
+    if kind < 0.3:
+        return LogicOp(rng.choice(["and", "or"]), left, right)
+    ops = ["+", "-", "*", "/", "<", "<=", ">", ">=", "==", "!="]
+    return BinOp(rng.choice(ops), left, right)
+```
+
+```python
+# Step 40, test_parser.py: add above the main block
+def test_random_expression_round_trip():
+    rng = random.Random(374)
+    for _ in range(300):
+        tree = random_expr(rng, 4)
+        text = unparse(tree)
+        assert parse_expression(text) == tree, f"round-trip failed: {text!r}"
+```
+
+```python
+# Step 40, test_parser.py: add at the top
+import random
+```
+
+Now run the whole suite and read every name in the output.  This is the file you started in Build Step 17.
+
+Run this check:
+
+```bash
+python3 test_parser.py
+```
+
+You should see this.  If you added tests of your own, your list is longer and the last line counts them:
+
+```text
+PASS test_let_shape
+PASS test_missing_semicolon
+PASS test_bare_equals
+PASS test_nested_blocks_shape
+PASS test_else_if_chain
+PASS test_dangling_else_attaches_to_nearest_if
+PASS test_break_continue
+PASS test_unclosed_block
+PASS test_error_position_on_later_line
+PASS test_literals
+PASS test_unary_minus_nests
+PASS test_left_associativity_division
+PASS test_precedence_mul_over_add
+PASS test_left_associativity_subtraction
+PASS test_parentheses_override_precedence
+PASS test_comparison_does_not_chain
+PASS test_not_binds_looser_than_comparison
+PASS test_or_over_and
+PASS test_worked_while_example
+PASS test_positions_recorded
+PASS test_pretty_worked_example
+PASS test_bad_operator
+PASS test_mismatched_paren
+PASS test_unparse_string_escapes
+PASS test_unparse_no_needless_parens
+PASS test_unparse_required_parens
+PASS test_unparse_right_child_same_precedence
+PASS test_round_trip_fixed
+PASS test_random_expression_round_trip
+29 passed, 0 failed
+```
+
+> **CTQ B40** A fixed seed makes this test repeat exactly.  What does that cost you compared with a fresh seed on every run, and which tool in Step 3e of the Parser assignment deals with that cost and also makes a failing tree small?
+
+**The build is complete.**  You typed `ast_nodes.py`, `parser.py`, and `test_parser.py`, and each one matches the names that the Parser and Interpreter assignments use.  The Parser assignment still asks for things this build does not give you: the Part 0 sketches, the grammar and the theory answers in your readme, your lookahead and dangling-else notes, the call trace in Step 2d, your ten error messages in Step 3d, the Hypothesis test and your shrunk counterexample in Step 3e, the `fun_stmt`, `call`, and type-annotation productions from Part 1, and all of Part 4.
+
+---
+
 Up next: the *Recursive Descent Parsing* activity builds the machine that constructs these trees from tokens; together they are the core of the Parser assignment.
+
+# Answer Key
+
+Try each blank and each piece marked **You write** before you read these.  Reading an answer first turns the step into transcription.  The checks on the slides tell you whether your own version works, so a different version that passes is fine.
+
+### Stage 1, Build Steps 1 to 9: Blanks and Pieces You Write
+
+- **A1** (Step 2): `compare=False`
+- **A2** (Step 5): `default_factory=list`
+- **A3** (Step 7): `pretty(node.left, nxt)`
+- **A4** (Step 9): `indent + 2`
+
+**Step 2.**
+
+```python
+# Step 2 answer, ast_nodes.py
+@dataclass
+class Var:
+    name: str             # variable name as it appears in source
+    line: int = _pos()
+    col: int = _pos()
+
+@dataclass
+class Str:
+    value: str            # decoded string value (escapes resolved)
+    line: int = _pos()
+    col: int = _pos()
+
+@dataclass
+class BoolLit:
+    value: bool           # True or False
+    line: int = _pos()
+    col: int = _pos()
+```
+
+**Step 3.**
+
+```python
+# Step 3 answer, ast_nodes.py
+@dataclass
+class LogicOp:
+    op: str               # "and" or "or", separate from BinOp for short-circuit
+    left: Any             # left operand expression
+    right: Any            # right operand expression (may never be evaluated)
+    line: int = _pos()
+    col: int = _pos()
+```
+
+**Step 4.**
+
+```python
+# Step 4 answer, ast_nodes.py
+@dataclass
+class Assign:
+    name: str             # variable name being updated (must already exist)
+    value: Any            # new value expression
+    line: int = _pos()
+    col: int = _pos()
+
+
+@dataclass
+class Continue:
+    line: int = _pos()
+```
+
+**Step 5.**
+
+```python
+# Step 5 answer, ast_nodes.py
+@dataclass
+class Program:
+    stmts: List[Any] = field(default_factory=list)  # top-level statements
+```
+
+**Step 6.**
+
+```python
+# Step 6 answer, ast_nodes.py: add above the final raise in pretty
+    if isinstance(node, Str):
+        return pad + f"Str({node.value!r})"
+    if isinstance(node, BoolLit):
+        return pad + f"BoolLit({_bool_text(node.value)})"
+```
+
+**Step 7.**
+
+```python
+# Step 7 answer, ast_nodes.py: add above the final raise in pretty
+    if isinstance(node, LogicOp):
+        return "\n".join([pad + f"LogicOp({node.op})",
+                          pretty(node.left, nxt), pretty(node.right, nxt)])
+```
+
+**Step 8.**
+
+```python
+# Step 8 answer, ast_nodes.py: add above the final raise in pretty
+    if isinstance(node, Assign):
+        return "\n".join([pad + f"Assign {node.name}", pretty(node.value, nxt)])
+    if isinstance(node, Continue):
+        return pad + "Continue"
+```
+
+### Stage 1: The Questions
+
+**CTQ B1.**  `advance()` is the only call that consumes.  A parser peeks to decide which rule applies, and the rule it picks must still find that token waiting, so a peek must change nothing.
+
+**CTQ B2.**  It would print `False`.  Every tree-shape test would then fail on a correct parser, because the test writes nodes with no position and the parser fills positions in.
+
+**CTQ B3.**  An evaluator must not evaluate the right operand of `true or (1 / 0)`.  A `BinOp` evaluates both operands before it applies the operator, so a separate class gives the evaluator one place to skip the right one.
+
+**CTQ B4.**  `let` creates a new name and `=` updates one that already exists.  With no `x` defined, `let x = 1;` is fine and `x = 1;` is an error, so the evaluator must be able to tell them apart.
+
+**CTQ B5.**  Every block would hold the same list.  A statement added to one block would appear in every other block, and in `Program` too if it shared the declaration.
+
+**CTQ B6.**  It raises `TypeError: pretty: no case for Break`.  The failure stops the run and names the class you still have to write, where `Unknown:` keeps going and hides the subtree.
+
+**CTQ B7.**  The children would line up with their parent, so the output would look like a flat list and the nesting would be invisible.
+
+**CTQ B8.**  A parser that built an `Assign` for `let x = 1;`, or a `Let` for `x = 1;`, would look correct in the output.
+
+**CTQ B9.**  The output has `If`, `  Var(a)`, `  Block`, `  Else`, and `    Block`.  The line `lines.append(pad + "  Else")` produces the one label with no node behind it.
+
+### Stage 4, Build Steps 33 to 40: Blanks and Pieces You Write
+
+- **A5** (Step 33): `6`
+- **A6** (Step 35): `child_prec < parent_prec`
+- **A7** (Step 35): `is_right`
+- **A8** (Step 36): `f"not {operand}"`
+- **A9** (Step 38): `unparse(node.else_branch, indent).lstrip()`
+
+**Step 34.**
+
+```python
+# Step 34 answer, ast_nodes.py: add above the final raise in unparse
+    if isinstance(node, BoolLit):
+        return _bool_text(node.value)
+    if isinstance(node, Var):
+        return node.name
+```
+
+**Step 35.**
+
+```python
+# Step 35 answer, test_parser.py: add above the main block
+def test_unparse_no_needless_parens():
+    tree = BinOp("+", Num(2), BinOp("*", Num(3), Num(4)))
+    assert unparse(tree) == "2 + 3 * 4"
+
+
+def test_unparse_required_parens():
+    tree = BinOp("*", Num(2), BinOp("+", Num(3), Num(4)))
+    assert unparse(tree) == "2 * (3 + 4)"
+
+
+def test_unparse_right_child_same_precedence():
+    tree = BinOp("-", Num(8), BinOp("-", Num(3), Num(2)))
+    assert unparse(tree) == "8 - (3 - 2)"
+    assert parse_expression(unparse(tree)) == tree
+```
+
+**Step 37.**
+
+```python
+# Step 37 answer, ast_nodes.py: add above the final raise in unparse
+    if isinstance(node, Assign):
+        return f"{pad}{node.name} = {unparse(node.value)};"
+    if isinstance(node, Continue):
+        return f"{pad}continue;"
+```
+
+**Step 39.**  You may instead type these programs inside the list.
+
+```python
+# Step 39 answer, test_parser.py: add above the main block
+PROGRAMS += [
+    "let x = 2 + 3 * 4 - 1;", "print (2 + 3) * 4;", "print 8 / 4 / 2;",
+    "let x = 2;\n{\n    let x = 51;\n    print x;\n}\nprint x;",
+    "while x > 0 {\n    x = x - 1;\n    if x == 2 { break; } else { continue; }\n}",
+    "if x >= 10 { print x * (x + 1); }", "print 3.14 * r * r;",
+]
+```
+
+```python
+# Step 39 answer, test_parser.py: replace test_round_trip_fixed
+def test_round_trip_fixed():
+    for source in PROGRAMS:
+        tree = parse(source)
+        again = parse(unparse(tree))
+        assert again == tree, f"Round-trip failed on: {source}"
+        assert pretty(again) == pretty(tree), f"Round-trip failed on: {source}"
+```
+
+### Stage 4: The Questions
+
+**CTQ B33.**  `not a < b` builds `not (a < b)`, so `not` sits above the comparison and has the smaller number.  `-a * b` builds `(-a) * b`, so the minus sits below the `*` and has the larger number.
+
+**CTQ B34.**  `a"b` becomes `a\"b` after the quote step, and a backslash step done last doubles that new backslash, giving `a\\"b`.  That text reads as a backslash and then a closing quote, so the string ends too early.
+
+**CTQ B35.**  It prints `8 - 3 - 2`.  The `elif is_right` line decides it: the child is on the left, so it gets no parentheses.  With the same subtraction on the right, the same line adds them, giving `8 - (3 - 2)`.
+
+**CTQ B36.**  The third line parses as `not (a < b)` with or without parentheses, because `not` sits above comparison.  Without its parentheses the fourth line parses as `(not a) and b`, a different tree.
+
+**CTQ B37.**  The statements inside a block would line up with its braces instead of sitting one level deeper.  The program would still parse, because the indent means nothing to the lexer, but the text would not match the format that Step 3b asks for.
+
+**CTQ B38.**  `unparse(node.else_branch, indent)` produces the inner `if`, with the indent in front of it.  `lstrip` removes that indent, so the text continues the line that holds `} else `.
+
+**CTQ B39.**  `print 8 - (3 - 2);` fails first, with the message `Round-trip failed on: print 8 - (3 - 2);`.  Unparsed without parentheses, it comes back as `(8 - 3) - 2`.
+
+**CTQ B40.**  A fixed seed tests the same 300 trees forever, so it never finds a new bug.  Hypothesis, in Step 3e, varies its inputs and shrinks a failing tree to a small one.  That test, its strategies, and the counterexample you report are yours to write.

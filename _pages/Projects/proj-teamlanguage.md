@@ -96,7 +96,7 @@ The project is worth **100 points**, earned at two graded milestones: the propos
 |---|---|---|---|
 | Project hand-out | Nothing is submitted.  The design phase opens: form a team of three, pick a niche, start the design scorecard and the team charter | Your lexer, and the parser and AST you are finishing | - |
 | **Proposal: submitted, then presented at the Sprint 0 kickoff** | **The proposal, opening with the team roster, the niche, the design scorecard, and the signed team charter.  You submit it before the kickoff and present it at the kickoff** | Lexer, parser, and AST: grammar v0 and the node inventory describe them | **28** |
-| Sprint 1 increment check | Shown at the start of class: one running increment, what is next, and what is blocking (assessed within Class Activities and Participation) | Environments and the evaluator.  This is the build phase; the reference interpreter is released here | 3 |
+| Sprint 1 increment check | Shown at the start of class: one running increment, what is next, and what is blocking (assessed within Class Activities and Participation) | Environments and the evaluator.  This is the build phase | 3 |
 | Release and Review (Sprint Studio) | One submission: the Sprint 2 gallery walk cards and your triage, and the Sprint 3 ShipIt Release Checklist (assessed within Class Activities and Participation) | The whole pipeline, extended at each stage the feature touches, plus the test suite | 6 |
 | **Demo Day Presentations: submitted on the last class day, then presented at Demo Day (final exam period)** | **The final submission, due on the last class day, and the presentation at Demo Day** | Everything above | **72** |
 
@@ -133,7 +133,7 @@ Teams are three members each, formed in the design phase from your standing POGI
 
 If the design phase feels contentious, the map is working.  Run the charter's conflict-repair process and keep going.
 
-**Reference implementation policy.**  Your team may build on the released reference lexer, parser, and interpreter instead of your own semester components, or merge the two, as long as you declare it in the project README.  I grade the language you design and build on top, and I do not care whose components you started from.  Spend your sprint time on the design, the distinctive feature, and the integration.
+**Whose components.**  Your team may start from any member's semester components, or merge them, as long as the project README says which.  I grade the language you design and build on top, and I do not care whose components you started from.  Spend your sprint time on the design, the distinctive feature, and the integration.
 
 ---
 
@@ -141,8 +141,8 @@ If the design phase feels contentious, the map is working.  Run the charter's co
 
 You need:
 
-- Your Lexer and Parser assignment code (or the reference lexer and parser), and by Sprint 1, your Tree-Walking Interpreter (or the reference interpreter).
-- Python 3.10 or newer.  The reference components use the standard library only, so there is nothing to install for the pipeline itself.
+- Your Lexer and Parser assignment code, and by Sprint 1, your Tree-Walking Interpreter.
+- Python 3.10 or newer.  The pipeline can use the standard library only, so there need be nothing to install for it.
 - A shared git repository for the team.  It may stay private until release hardening; it must be public by Demo Day.
 - A working terminal.  If the shell is still new to you, read the [dev environment page]({{ site.baseurl }}/Tutorials/DevEnvironment) and the [shell primer for language development]({{ site.baseurl }}/Tutorials/ShellForLanguageDev) once before Sprint 1.
 - The [Project Language Guide]({{ site.baseurl }}/Tutorials/ProjectLanguageGuide), a complete worked path through this project, which the schedule lists as reading for the sprint studios.
@@ -302,7 +302,7 @@ Submit the proposal through Canvas on Thursday, November 19, and present it in c
 > 7. Build the node inventory table from your parser's AST: every node, its fields, the rule that produces it, the rule that consumes it.
 > 8. Start `SEMANTICS.md` v0 by importing the decisions you recorded during the Interpreter assignment, then add the niche feature's semantics.  Direction B: the denotational equations, the algebraic law, and the embedded/external rationale go here.
 > 9. Specify the distinctive feature: its syntax, its semantics, and which pipeline stages it touches (lexer, parser, AST, environment, evaluator).  Scope any Extensions Menu adoptions against the sprint plan; one that ships beats two that do not.
-> 10. Write the merge plan: whose lexer, parser, and evaluator seed the integration, and in what order you merge.  Reference components count; say so.
+> 10. Write the merge plan: whose lexer, parser, and evaluator seed the integration, and in what order you merge.
 > 11. Run the risk pre-mortem: name the most likely derailment and the smallest experiment that retires it.
 > 12. Write the sprint plan with the role rotation schedule, and check that it matches the charter's rotation plan.
 > 13. Submit the proposal through Canvas on Thursday, November 19.
@@ -344,11 +344,9 @@ All members sign the charter (typed names suffice) in the proposal.  One charter
 
 Sprint 1 is the build phase.  You integrate members' components into one pipeline that runs the class language (Direction B: the front end printing ASTs).  Build in sprints between the checks on the course schedule, following the sprint studio protocol: stand-ups with numbers, failing tests as specifications, current documents, and role rotation at boundaries.
 
-The reference interpreter is released with this phase at [{{ site.baseurl }}/files/reference/reference-interpreter.zip]({{ site.baseurl }}/files/reference/reference-interpreter.zip); it is self-contained (it includes the reference lexer and parser).  Usage policy: if your submission builds on a reference component, declare it in one line in your README, and there is no penalty and no change to your original assignment grades.
-
 > **Do this.**
 > 1. Agree on one repository layout before anyone merges.  One layout that works is shown below.
-> 2. Merge in the order your merge plan states.  If you start from the reference interpreter, unzip it, run its own tests from inside the `interpreter/` folder it creates, and only then move the pieces into `src/`.
+> 2. Merge in the order your merge plan states, running each component's own tests before you move it into `src/`.
 > 3. Get the REPL and the file-runner working on the class language, from the top of the repository, with the commands below.
 > 4. Write the first failing test for the distinctive feature.  A failing test is your specification; it tells the next sprint what to build.
 > 5. Re-read the charter as a team and ask "does it still describe this team?"  File one revision if not.
@@ -368,14 +366,6 @@ yourlang/
   config/                # every configuration file, in JSON
 ```
 
-Checking the reference interpreter before you build on it:
-
-```bash
-unzip reference-interpreter.zip
-cd interpreter
-python3 test_interp.py
-```
-
 Running your own pipeline from the top of the repository:
 
 ```bash
@@ -387,9 +377,9 @@ python3 -m pytest tests/               # runs the test suite
 > **You should see.**  The REPL prompt, then a value echoed back for an expression you type; the file-runner printing the sample program's output; and the test suite reporting how many tests passed, with the distinctive-feature test failing on purpose.
 
 > **If it fails.**
-> - An import error after merging usually means two components disagree on a name (`Token` versus `Tok`, `parse` versus `parse_program`).  Fix the contract in one place; the assignment interfaces (`peek`/`advance`/`expect`; the AST node dataclasses) are the contract the reference components follow.
+> - An import error after merging usually means two components disagree on a name (`Token` versus `Tok`, `parse` versus `parse_program`).  Fix the contract in one place; the assignment interfaces (`peek`/`advance`/`expect`; the AST node dataclasses) are the contract every component follows.
 > - A program that lexes and parses but crashes in the evaluator is a stage-boundary bug.  Write it down; it is a bug story for Demo Day.
-> - If one component is too broken to merge, swap in the reference component and keep moving.  Declare it in the README.
+> - If one component is too broken to merge, use a teammate's and keep moving.  Say so in the README.
 
 **The check.**  At the start of class on Tuesday, December 1, each team gets a short turn.  One member shows one running increment of your pipeline, live.  Then the team says, in a sentence each, what is next and what is blocking.  The check is shown or not yet, and there is no written submission.  A team that gets "not yet" on Tuesday, December 1, can show the increment at the start of class on Thursday, December 3, for half credit.
 
@@ -397,7 +387,7 @@ python3 -m pytest tests/               # runs the test suite
 
 - [ ] One running increment shown in class, with what is next and what is blocking said aloud.
 - [ ] One integrated pipeline running the class language (Direction B: the front end parsing every specification example and printing ASTs with location-prefixed errors).
-- [ ] The README line declaring any reference component you built on.
+- [ ] The README line naming whose components you started from.
 - [ ] A failing test for the distinctive feature, committed.
 - [ ] The charter re-read, with a revision filed if it no longer describes the team.
 - [ ] Roles rotated for Sprint 2, recorded in the decision log.

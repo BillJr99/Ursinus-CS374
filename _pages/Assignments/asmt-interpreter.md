@@ -92,12 +92,31 @@ You need:
 - The [Hypothesis]({{ site.baseurl }}/Tutorials/PropertyBasedTesting) library for Step 2e.
 - A terminal and an editor.  If either is new to you, read the [dev environment page]({{ site.baseurl }}/Tutorials/DevEnvironment) and the [shell primer]({{ site.baseurl }}/Tutorials/ShellForLanguageDev) first.
 
-**Reference parser and AST.**  The [reference parser and AST]({{ site.baseurl }}/files/reference/reference-parser.zip) are released with this assignment, and the zip also contains the reference lexer, so unzipping it gives you a complete pipeline up to parsing.  You may build on the reference parser or lexer instead of your own by declaring it in one line in your readme ("This submission uses the reference parser"); there is no penalty, and your Parser assignment grade stands unchanged.  The point of this assignment is the evaluator, and everyone deserves a solid tree to walk.  If you use the reference `ast_nodes.py`, its nodes already carry `line` and `col`; reconcile Step 1a against it and keep one set of node classes, because the evaluator dispatches on the exact classes the parser produces.  One thing the reference does *not* hand you is type annotations: Part 4a has you add them yourself, to the reference parser or your own, whichever you are building on.
+**If your parser is not finished.**  Finish it first, because this assignment's evaluator walks the tree it produces.  The at-home parts of the *Abstract Syntax Trees*, *Recursive Descent Parsing*, and *Parsing Expressions* activities build a complete AST and parser one step at a time, and your Parser assignment grade stands unchanged whatever you fix now.  Your nodes carry `line` and `col`; reconcile Step 1a against your `ast_nodes.py` and keep one set of node classes, because the evaluator dispatches on the exact classes the parser produces.  Part 4a has you add type annotations to your parser.  This scaffold is the interface this assignment calls:
+
+```python
+# The interface this assignment calls.  Fill in each TODO, or compare with your Parser.
+class ParseError(Exception):
+    def __init__(self, expected, found, line=0, col=0):
+        ...  # TODO: keep all four, and build a message from them
+
+def parse_expr(lexer):
+    ...  # TODO: the top of the expression ladder
+
+def parse_stmt(lexer):
+    ...  # TODO: one token of lookahead picks the statement
+
+def parse_program(lexer):
+    ...  # TODO: statements up to EOF, returned in a Program
+
+def parse(source):
+    ...  # TODO: build a Lexer and return parse_program's Program
+```
 
 > **Do this.**
-> 1. Create a project folder named `cs374-interpreter` and copy `lexer.py`, `parser.py`, `ast_nodes.py`, and `token_spec.json` into it (or unzip the reference parser there).
+> 1. Create a project folder named `cs374-interpreter` and copy `lexer.py`, `parser.py`, `ast_nodes.py`, and `token_spec.json` into it.
 > 2. Create the deliverable files up front so each part has a home: `interpreter.py` (evaluator, Environment, error hierarchy), `mylang.py` (file runner and REPL, Part 3), `typechecker.py` (Part 4), `SEMANTICS.md` (Part 5), and `test_interpreter.py`.  Rather than transcribing them, copy the [starter kit]({{ site.baseurl }}/files/starters/interpreter/) from `files/starters/interpreter/`: it holds those four Python files with every signature from this page already in place, and every `TODO` still yours to fill.  The seeded tests fail until you implement the branches they exercise, which is how you know they are running.
-Your file runner is `mylang.py` and your programs end in `.ml`; the reference pipeline ships a `mylang.py` and `samples/*.ml` so the commands in this assignment work unchanged against it.
+Your file runner is `mylang.py` and your programs end in `.ml`.
 
 The starter kit matches this page: every signature below, including the error hierarchy, the signal classes, the `Environment`, and `mylang.py`'s `run_source`, is already in it, with every `TODO` still yours.
 
@@ -109,12 +128,12 @@ The starter kit matches this page: every signature below, including the error hi
 > python3 -c "from parser import parse; print(parse('print 1 + 2;'))"
 > ```
 
-> **You should see.** One line that is a `Program` tree: with the reference parser, `Program(stmts=[Print(value=BinOp(op='+', left=Num(value=1, line=1, col=7), right=Num(value=2, line=1, col=11), line=1, col=9), line=1)])`.  Your own parser's field names may differ slightly.
+> **You should see.** One line that is a `Program` tree, such as `Program(stmts=[Print(value=BinOp(op='+', left=Num(value=1, line=1, col=7), right=Num(value=2, line=1, col=11), line=1, col=9), line=1)])`.  Your own parser's field names may differ slightly.
 
 > **If it fails.**
 > - `ModuleNotFoundError: No module named 'parser'`: you are not running from inside the project folder, or `parser.py` is not there.
 > - `ImportError: cannot import name 'parse'`: your parser's entry point has a different name.  Use that name here and in `mylang.py`.
-> - A `LexError` or `ParseError` on this one-line program: fix that stage first, or swap in the reference component.
+> - A `LexError` or `ParseError` on this one-line program: fix that stage first.
 
 > **Time budget.** Part 0 takes about thirty minutes with pencil and paper.  The rest has five parts that each depend on the one before, so it rewards steady work and punishes a final-week push harder than anything else this term.  Its window is the tightest of any programming assignment this term (see the schedule in the [syllabus]({{ site.baseurl }}/) for its dates).  One lab of about three hours, which you may do with a partner, carries pieces of it for you.  The Environments and Type Checking lab opens with this assignment: its Part 1 writes most of Step 2c, and its Part 2 builds the core of Part 4.  Start Part 1 the day the assignment goes out, and read What You Already Have below before you write anything.
 
@@ -236,7 +255,7 @@ A Python `dataclass` writes `__init__`, `__repr__`, and `__eq__` for you, so a f
 **You write:** `ast_nodes.py` - the sixteen node dataclasses below
 **You run:** `python3 -c "from ast_nodes import Num, BinOp; print(BinOp('+', Num(1), Num(2)))"`
 
-The skeleton gives every leaf and expression node a `line` and a `col`, and does the same for `Let` and `Assign`.  `Print`, `Block`, `If`, `While`, `Break`, and `Continue` carry a `line` only.  Later steps need the column: Step 2a's type errors and Step 4c's `Type error at line L, col C` both print one.  These are the same fields, in the same order, as the reference `ast_nodes.py`, so the reference parser can build these classes without changes.  If your Parser assignment declared positions as `field(default=0, compare=False)`, keep that form.  It changes how `==` treats positions, not what the node prints.
+The skeleton gives every leaf and expression node a `line` and a `col`, and does the same for `Let` and `Assign`.  `Print`, `Block`, `If`, `While`, `Break`, and `Continue` carry a `line` only.  Later steps need the column: Step 2a's type errors and Step 4c's `Type error at line L, col C` both print one.  These are the same fields, in the same order, as the AST the activities build, so that parser can build these classes without changes.  If your Parser assignment declared positions as `field(default=0, compare=False)`, keep that form.  It changes how `==` treats positions, not what the node prints.
 
 ```python
 from dataclasses import dataclass, field
@@ -880,7 +899,7 @@ Implement `break` and `continue` with signal exception classes: the `Break` and 
 **You write:** `interpreter.py` - `BreakSignal`, `ContinueSignal`, the `Break` and `Continue` branches, and the `try` in `While`; `break.ml`, `continue.ml`, and `test_break_at_five` in `test_interpreter.py`
 **You run:** `python3 -c "from parser import parse; from interpreter import Interpreter; Interpreter().eval_node(parse(open('break.ml').read()))"`
 
-**First, check that your parser can produce these nodes.**  The reference lexer and parser already read `break;` and `continue;`.  The Parser assignment did not ask for them, so if you built your own, add them now:
+**First, check that your parser can produce these nodes.**  The Parser assignment did not ask for `break;` and `continue;`, so add them now:
 
 1. Two keyword tokens, `BREAK` with the pattern `break\b` and `CONTINUE` with `continue\b`.  Put them before `IDENT`, like every other keyword, or `break` lexes as an identifier.
 2. Two cases in `parse_stmt`.  Each one consumes its keyword with `expect`, then a `SEMICOLON`, and returns `Break(tok.line)` or `Continue(tok.line)`, where `tok` is the keyword token.
@@ -1145,7 +1164,7 @@ if __name__ == "__main__":
 
 | Stage | How to think about it |
 |---|---|
-| parse | The reference lexer is lazy: it lexes while `parse` asks for tokens, so its `LexError` comes out of the parse call.  That is why one guarded call covers both stages.  If your lexer runs first as its own call, give it its own guard above the parser's.  Some Parser assignments stored `expected` and `found` on `ParseError` instead of a `message`; build the text from those two fields. |
+| parse | A lazy lexer lexes while `parse` asks for tokens, so its `LexError` comes out of the parse call, and one guarded call covers both stages.  If your lexer runs first as its own call, give it its own guard above the parser's.  Some Parser assignments stored `expected` and `found` on `ParseError` instead of a `message`; build the text from those two fields. |
 | run | Every runtime class shares the parent `LangError`, so one handler covers all four.  Each stage returns as soon as it fails, so a program that fails to parse never reaches the Run stage. |
 | stray signals | The two signal classes are not `LangError`s, so they need their own handlers on the Run stage.  The line you stored in Step 2d is what lets this message say where the stray `break` was. |
 
@@ -1158,7 +1177,7 @@ Save one program per stage, so each stage's message has been seen at least once.
 | `divzero.ml` | `let y = 1 / 0;` (one line) |
 | `strays.ml` | `print 1;` then `break;` |
 
-> **You should see.** `51` then `2`, with no traceback.  For a file containing `let y = 1 / 0;`, exactly one line: `Runtime error at line 1: division by zero` (your wording may differ; the stage label and line may not).  With the reference lexer and parser, the four files print:
+> **You should see.** `51` then `2`, with no traceback.  For a file containing `let y = 1 / 0;`, exactly one line: `Runtime error at line 1: division by zero` (your wording may differ; the stage label and line may not).  With the lexer and parser the activities build, the four files print:
 >
 > ```text
 > $ python3 mylang.py badlex.ml
@@ -1207,7 +1226,7 @@ Save one program per stage, so each stage's message has been seen at least once.
 | 1: one interpreter | The interpreter owns the global `Environment`.  Make a new one per line and `x` is forgotten after every input. |
 | 3: end of input | The empty line moves the shell's own prompt onto a fresh line after Ctrl-D. |
 | 5: run the line | Because `run_source` returns its message instead of exiting, recovery costs nothing.  The loop simply goes around again. |
-| printing an expression's value (optional) | The grammar has no expression statements, so `x + 1` alone is a `ParseError`.  The reference parser also offers `parse_expression(source)`.  On a `ParseError`, you may try that, evaluate the expression, and print it through `format_value`.  The transcript below does not need it. |
+| printing an expression's value (optional) | The grammar has no expression statements, so `x + 1` alone is a `ParseError`.  Your parser may also offer `parse_expression(source)`.  If it does, on a `ParseError` you may try that, evaluate the expression, and print it through `format_value`.  The transcript below does not need it. |
 
 > **Do this.**
 > 1. Fill in `repl()` in `mylang.py`: create one `Interpreter` before the loop, and inside the loop read a line with `input(">> ")`, run it through the same three stages as `run_file`, and print any error instead of exiting.
@@ -1247,14 +1266,14 @@ Your evaluator enforces types *dynamically*: a type error surfaces only when the
 
 Your language's `let` declarations and function definitions carry (or are extended to carry) type annotations: `let x: Num = 42;`, `fun f(a: Num, b: Str) -> Bool { ... }`.  The checker can only verify what the parser hands it, so the annotation has to survive lexing and parsing and land on the AST node.  Extend your lexer and parser so `let` accepts an optional `: Type` after the name (and so function definitions carry parameter and return annotations, if your language has functions), then add the annotation to the node.
 
-> **This step is yours even if you are using the reference parser.**  The reference lexer has no `COLON` token and the reference `Let` node has no annotation field, so `let x: Num = 1;` does not lex, let alone parse, against it out of the box.  That is deliberate: reading a new token, threading it through one production, and landing it on a node is the smallest end-to-end change you can make to a language pipeline, and Part 4 is the right moment to make it.  Extension E of the Environments and Type Checking lab walks the same change and budgets about ten minutes for it.  Do it in whichever lexer and parser you are building on, and note in your readme which one that was.  One way is an optional field on `Let`, `type_ann: Optional[str] = None`, holding `"Num"`, `"Str"`, `"Bool"`, or `None`.  If you did the lab's Extension E and already added this field under the name `annotation`, keep that name, and read `annotation` wherever this page says `type_ann`.
+> **This step is yours.**  If your lexer has no `COLON` rule or your `Let` node has no annotation field, `let x: Num = 1;` does not parse yet.  That is deliberate: reading a new token, threading it through one production, and landing it on a node is the smallest end-to-end change you can make to a language pipeline, and Part 4 is the right moment to make it.  Extension E of the Environments and Type Checking lab walks the same change and budgets about ten minutes for it.  One way is an optional field on `Let`, `type_ann: Optional[str] = None`, holding `"Num"`, `"Str"`, `"Bool"`, or `None`.  If you did the lab's Extension E and already added this field under the name `annotation`, keep that name, and read `annotation` wherever this page says `type_ann`.
 
 **You write:** your lexer - a `COLON` token; `ast_nodes.py` - the `type_ann` field on `Let`; `parser.py` - the annotation in `parse_let_stmt`
 **You run:** `python3 -c "from parser import parse; print(parse('let x: Num = 42;'))"`
 
 The change touches three files, one line or a few lines in each.  Here is what each one must do afterward.
 
-- **The lexer** produces a `COLON` token for the character `:`.  The reference lexer reads its default table from `TOKEN_SPEC` in `lexer.py`, not from `token_spec.json` (that file is read only when you pass `config_path`), so the new entry goes in that list.  `:` is no other token's prefix, so its position in the list does not matter.
+- **The lexer** produces a `COLON` token for the character `:`.  If your lexer does not have it yet, add the entry to the token table it reads by default.  `:` is no other token's prefix, so its position in the list does not matter.
 - **`ast_nodes.py`**: `Let` gains one field, last and with a default, so every existing `Let(...)` call keeps working.  The starter kit's `typechecker.py` reads it by this name:
 
 ```python
@@ -1275,7 +1294,7 @@ Confirm the annotation lands on the node:
 python3 -c "from parser import parse; print(parse('let x: Num = 42;'))"
 ```
 
-> **You should see.** A `Program` whose `Let` node shows `type_ann='Num'`.  A `ParseError` means the parser is not consuming the colon and type name yet.  With the reference parser and the skeleton above, the line is:
+> **You should see.** A `Program` whose `Let` node shows `type_ann='Num'`.  A `ParseError` means the parser is not consuming the colon and type name yet.  With the skeleton above, the line looks like this:
 >
 > ```text
 > Program(stmts=[Let(name='x', value=Num(value=42, line=1, col=14), line=1, col=1, type_ann='Num')])
@@ -1785,7 +1804,7 @@ Submit a ZIP containing:
 | `SEMANTICS.md` | The language semantics document | Part 5 |
 | `test_interpreter.py` | Test suite with the shadowing program, the bomb test, all error-class tests, the differential programs, and the required Step 2e Hypothesis invariant tests | Parts 2, 4, 5 |
 | `repl_transcript.txt` | The REPL session showing each error class and recovery | Part 3 |
-| `readme.md` | Approximately one page connecting the interpreter to the pipeline and the team project; the control-flow theory questions; the Step 2e report; any reference-component declaration; your Python version | Parts 2, 5 |
+| `readme.md` | Approximately one page connecting the interpreter to the pipeline and the team project; the control-flow theory questions; the Step 2e report; your Python version | Parts 2, 5 |
 
 **Typing direction:** substitute `hm_types.py`, `typecheck.py`, and `TYPES.md` (with its accepted/rejected test programs) for `SEMANTICS.md` and the differential programs.  Everything else on the list is unchanged, and the REPL transcript also demonstrates one positioned type error.
 
@@ -1804,7 +1823,7 @@ Every direction includes the required Step 2e Hypothesis invariant tests in `tes
 - [ ] The REPL keeps its environment across an error, and `repl_transcript.txt` shows every error class and recovery.
 - [ ] The file runner prints a stage label (`Lexical`, `Syntax`, `Type`, `Runtime`) in every error message, and the Type stage fires before any code runs.
 - [ ] The Part 5 deliverable for your direction is complete (`SEMANTICS.md` and the differential programs, or `hm_types.py` + `typecheck.py` + `TYPES.md`, or `intcode.py` + `INTCODE.md` with the AoC checkpoints and the differential test), and the control-flow theory questions are answered in the readme.
-- [ ] The readme lists your Python version and any reference component you used.
+- [ ] The readme lists your Python version.
 
 ---
 

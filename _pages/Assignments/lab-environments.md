@@ -264,7 +264,7 @@ A type checker needs to know, at each point in the program, what type each name 
 The starter already has most of the checker:
 
 - `LangTypeError`, whose message reads `Type error at line L, col C: ...`.
-- A small copy of the class AST, with the same node and field names as the reference `ast_nodes.py`.  `Let` has an extra field, `annotation`, that holds the declared type name.
+- A small copy of the class AST, with the same node and field names as the `ast_nodes.py` the activities build.  `Let` has an extra field, `annotation`, that holds the declared type name.
 - `check(program)`, which makes the top-level table and checks each statement.
 - `check_stmt`, already complete.  It checks a `let` against its annotation and defines the name's type in the current table.  It opens a new child table for each block.  It sends each `if` and `while` condition to `check_condition`.
 
@@ -954,7 +954,7 @@ A unary operator has only one operand, so "both types" in its message means the 
 
 ### Extension E: Run the Checker on Real Source Files
 
-Part 2 checked trees built by hand.  This extension connects the checker to your own lexer and parser, so it can read a program from a file.  Copy your AST, parser, and lexer files (or the [reference parser and AST]({{ site.baseurl }}/files/reference/reference-parser.zip)) into `cs374-scopes`.  Then replace the AST section of `scope_lab.py` with `from ast_nodes import *`, so the checker sees your parser's node classes.  Finish Extension D first, because two of the twelve programs use `Assign` and unary minus.
+Part 2 checked trees built by hand.  This extension connects the checker to your own lexer and parser, so it can read a program from a file.  Copy your AST, parser, and lexer files into `cs374-scopes`.  Then replace the AST section of `scope_lab.py` with `from ast_nodes import *`, so the checker sees your parser's node classes.  Finish Extension D first, because two of the twelve programs use `Assign` and unary minus.
 
 Add this file driver to the bottom of `scope_lab.py`, adjusting the import names if your parser's differ:
 
@@ -973,17 +973,17 @@ if __name__ == "__main__":
 
 #### Carry the annotation from the source to the `Let` node
 
-Right now `let x: Num = 42;` does not even get past the lexer, because the reference lexer has no token for `:`.  The annotation has to survive three stages to reach the checker: the lexer must produce a `COLON` token, the parser must read `COLON` and a type name inside `parse_let_stmt`, and the `Let` node must have a field to hold the name.  If your own lexer and parser already do all three, skip to the twelve programs below, and read `node.annotation` as whatever your field is called.
+Right now `let x: Num = 42;` may not get past the lexer yet, if yours has no token for `:`.  The annotation has to survive three stages to reach the checker: the lexer must produce a `COLON` token, the parser must read `COLON` and a type name inside `parse_let_stmt`, and the `Let` node must have a field to hold the name.  If your lexer and parser already do all three, skip to the twelve programs below, and read `node.annotation` as whatever your field is called.
 
 **You write:** `lexer.py` - one new `COLON` entry in `TOKEN_SPEC`; `ast_nodes.py` - one new field on `Let`; `parser.py` - the annotation in `parse_let_stmt`.
 **You run:** `python3 -c "from parser import parse; print(parse('let x: Num = 42;'))"`
 
 > **Do this.**
 > 1. In `lexer.py`, add a `TOKEN_SPEC` entry named `COLON` whose pattern matches a single `:`.  Copy the shape of the `SEMICOLON` entry, and put the new one on the line after it.  No other token starts with `:`, so its position in the list does not matter.  The driver uses the default `TOKEN_SPEC`; if you also load `token_spec.json` somewhere, add the same entry there too.
-> 2. In `ast_nodes.py`, give `Let` a new field named `annotation`.  It holds a type name (`"Num"`, `"Str"`, or `"Bool"`) or nothing, so its type is `Optional[str]` with a default of `None`.  `Optional` is already imported at the top of the reference file.  Make it the *last* field, after `col`, so every existing `Let(name, value, line, col)` call keeps working.
+> 2. In `ast_nodes.py`, give `Let` a new field named `annotation`.  It holds a type name (`"Num"`, `"Str"`, or `"Bool"`) or nothing, so its type is `Optional[str]` with a default of `None`.  Import `Optional` from `typing` at the top of the file if it is not there.  Make it the *last* field, after `col`, so every existing `Let(name, value, line, col)` call keeps working.
 > 3. In `parser.py`, change `parse_let_stmt` to read an optional `: Type`.  The algorithm is below.
 
-`parse_let_stmt(self)` takes no arguments besides the parser and returns a `Let` node.  The reference version already does steps 1, 2, 4, and 5; step 3 is new.
+`parse_let_stmt(self)` takes no arguments besides the parser and returns a `Let` node.  The usual version already does steps 1, 2, 4, and 5; step 3 is new.
 
 1. Expect a `LET` token.  Keep the token, because the `Let` node takes its line and column.
 2. Expect an `IDENT` token for the variable's name.
@@ -1026,7 +1026,7 @@ Verify your checker against the [twelve provided programs]({{ site.baseurl }}/fi
 >
 > 3. Read `runlog.txt` once, top to bottom, and confirm each well-typed program shows only its label and each ill-typed program shows its label and one `Type error` line.  Each of the five ill-typed programs breaks a *different* rule, so five identical messages means a branch is catching something it should not.
 
-> **You should see.**  Twelve labels.  Seven are followed directly by the next label (silent acceptance).  Five are followed by exactly one `Type error at line L, col C: ...` line, and each of those names two types.  With the reference parser and the message forms from Steps 1.3 and 1.4, the whole log is exactly this.  Your positions must match; your wording after each colon may differ.
+> **You should see.**  Twelve labels.  Seven are followed directly by the next label (silent acceptance).  Five are followed by exactly one `Type error at line L, col C: ...` line, and each of those names two types.  With the parser the activities build and the message forms from Steps 1.3 and 1.4, the whole log is exactly this.  Your positions must match; your wording after each colon may differ.
 >
 > ```text
 > == programs/01-literals.ml

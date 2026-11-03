@@ -1132,6 +1132,8 @@ print("meaning * is evaluated first -- this is how precedence is encoded in the 
 
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
 
+> **Build your own parser at home.**  Part IV at the end of this page is Stage 2 of a step-by-step build that starts in Part VI of the *Abstract Syntax Trees* activity.  It turns the models above into your own `parser.py`, one statement form at a time.
+
 
 ## 4.  Further Reading
 
@@ -1149,4 +1151,724 @@ In your notebook: recursive descent works because the code's shape *is* the gram
 
 ---
 
+# Part IV: Build It, Stage 2 (at home)
+
+## Build Stage 2: From Models to `parser.py`
+
+This part continues the build that started in Part VI of [Abstract Syntax Trees](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-ast.md).  Finish Build Steps 1 to 9 there first, because `parser.py` imports your `ast_nodes.py`.  When you finish Build Step 22 here, go on to Part V of [Parsing Expressions](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-parsingexpressions.md).
+
+As in Stage 1, each step is one slide, you type the fragment, `____R1____` is a blank answered in the **Answer Key** at the end of this page, and you run each check from inside `cs374-parser/`.
+
+Your permanent parser keeps the shape of Models 2 and 3 and changes three things, so that it matches Part 2 of the Parser assignment:
+
+| In the models above | In your `parser.py` |
+|---|---|
+| methods on a `Parser` class, using `self` | functions that take the lexer: `parse_let_stmt(lexer)` |
+| a small `Token` with `.lexeme` | your lexer's `Token` with `.value` |
+| tuples such as `("let", name, value)` | your node classes, with positions: `Let(name, value, line, col)` |
+
+The grammar for this stage has no parentheses around conditions, and it has a `block` in every `if` and `while`:
+
+```text
+program       ::= stmt* EOF
+stmt          ::= let_stmt | assign_stmt | print_stmt | if_stmt
+                | while_stmt | break_stmt | continue_stmt | block
+let_stmt      ::= LET IDENT EQ expr SEMICOLON
+assign_stmt   ::= IDENT EQ expr SEMICOLON
+print_stmt    ::= PRINT expr SEMICOLON
+if_stmt       ::= IF expr block ( ELSE ( if_stmt | block ) )?
+while_stmt    ::= WHILE expr block
+break_stmt    ::= BREAK SEMICOLON
+continue_stmt ::= CONTINUE SEMICOLON
+block         ::= LBRACE stmt* RBRACE
+```
+
+---
+
+## Build Step 10: The Error Every Function Shares
+
+Start `parser.py` with the one exception it raises.  CTQ 1.2 asked for the error message you would want at 2 AM: what was expected, what was found, and where.  `ParseError` keeps those as attributes as well as in the text, so a test can ask for the column without pattern-matching English.  A small scratch file, `check.py`, lets later checks show an error as one clean line rather than a traceback.
+
+```python
+# Step 10, parser.py
+from typing import Optional
+
+from lexer import Lexer
+from ast_nodes import (Assign, BinOp, Block, BoolLit, Break, Continue, If, Let,
+                       LogicOp, Num, Print, Program, Str, UnaryOp, Var, While)
+
+
+class ParseError(Exception):
+    """A syntax error that keeps expected, found, line, and col as attributes."""
+
+    def __init__(self, expected: str, found: str, line: int = 0, col: int = 0):
+        self.expected, self.found = expected, found
+        self.line, self.col = line, col
+        self.message = ____R1____
+        super().__init__(f"ParseError at line {line}, col {col}: {self.message}")
+```
+
+```python
+# Step 10, check.py
+from parser import ParseError
+
+
+def show_error(fn, *args):
+    """Call fn, then print the ParseError it raises, or say that none came."""
+    try:
+        print("no error:", fn(*args))
+    except ParseError as err:
+        print(err)
+```
+
+Run this check:
+
+```bash
+python3 -c "from parser import ParseError; err = ParseError('SEMICOLON', 'RBRACE', 3, 12); print(err); print(err.found, err.line, err.col)"
+```
+
+You should see:
+
+```text
+ParseError at line 3, col 12: expected SEMICOLON, found RBRACE
+RBRACE 3 12
+```
+
+> **CTQ B10** Model 2 raises Python's `SyntaxError` with a message string.  Suppose you want a test to confirm that an error lands on column 12.  What would that test have to do with Model 2's error, and what can it do with this one?
+
+---
+
+## Build Step 11: `expect`
+
+Every terminal in a production becomes a call to `expect`, the same rule as the translation table in Part I.  Model 2's version lived on the class.  This one takes the lexer, and it reads the token stream only through `peek` and `advance`.  It raises on the token it peeked, so the error's position is the position of the actual mistake.
+
+```python
+# Step 11, parser.py
+def expect(lexer: Lexer, token_type: str):
+    """Peek for token_type; consume and return it, or raise a positioned ParseError."""
+    tok = lexer.peek()
+    if tok.type != ____R2____:
+        raise ParseError(token_type, tok.type, tok.line, tok.col)
+    return ____R3____
+```
+
+Run this check:
+
+```bash
+python3 -c "from lexer import Lexer; from parser import expect; from check import show_error; lx = Lexer('let )'); print(expect(lx, 'LET').type); show_error(expect, lx, 'IDENT')"
+```
+
+You should see:
+
+```text
+LET
+ParseError at line 1, col 5: expected IDENT, found RPAREN
+```
+
+> **CTQ B11** Your lexer already has an `expect` method.  What does it raise when the type is wrong, and why would calling it from the parser give your program two kinds of syntax error?
+
+---
+
+## Build Step 12: A Stand-In for Expressions
+
+Statements need expressions, but the expression ladder belongs to Stage 3.  Model 2 solved this with a stub, and you do the same: for now an expression is one primary, and a primary is one token.  Stage 3 fills in `parse_primary` and moves `parse_expr` up the ladder, and no statement function will change when that happens.
+
+```python
+# Step 12, parser.py
+def parse_primary(lexer: Lexer):
+    """Peek one token; consume a literal or a name and return its node."""
+    tok = lexer.peek()
+    if tok.type == "INT":
+        lexer.advance()
+        return Num(int(tok.value), tok.line, tok.col)
+    raise ParseError("an expression", tok.type, tok.line, tok.col)
+
+
+def parse_expr(lexer: Lexer):
+    """Stand in for the whole ladder until Stage 3: one primary."""
+    return parse_primary(lexer)
+```
+
+**You write:** the `IDENT` case of `parse_primary`, above the `raise`.  It consumes the token and returns a `Var` with the token's text, line, and column.
+
+Run this check:
+
+```bash
+python3 -c "from lexer import Lexer; from parser import parse_expr; from check import show_error; print(parse_expr(Lexer('42'))); print(parse_expr(Lexer('x'))); show_error(parse_expr, Lexer(';'))"
+```
+
+You should see:
+
+```text
+Num(value=42, line=1, col=1)
+Var(name='x', line=1, col=1)
+ParseError at line 1, col 1: expected an expression, found SEMICOLON
+```
+
+> **CTQ B12** The error reports column 1.  What would it report on the input `; ;` if `parse_primary` called `advance` before its `peek`?  Try it, then undo the change.
+
+---
+
+## Build Step 13: `let`
+
+This is Model 2's `parse_letstmt` with the three changes above.  Each terminal becomes `expect`, the nonterminal becomes a call, and the order comes straight from `let_stmt ::= LET IDENT EQ expr SEMICOLON`.  `expect` returns the token it consumed, which is how you get the name, and the `LET` token gives the node its position.
+
+```python
+# Step 13, parser.py
+def parse_let_stmt(lexer: Lexer):
+    """Consume LET IDENT EQ, an expression, and SEMICOLON; return a Let."""
+    let_tok = expect(lexer, "LET")
+    name = expect(lexer, "IDENT")
+    expect(lexer, "EQ")
+    value = ____R4____
+    expect(lexer, "SEMICOLON")
+    return Let(name.value, value, let_tok.line, let_tok.col)
+```
+
+Run this check:
+
+```bash
+python3 -c "from lexer import Lexer; from parser import parse_let_stmt; from check import show_error; print(parse_let_stmt(Lexer('let x = 1;'))); show_error(parse_let_stmt, Lexer('let x 1;'))"
+```
+
+You should see:
+
+```text
+Let(name='x', value=Num(value=1, line=1, col=9), line=1, col=1)
+ParseError at line 1, col 7: expected EQ, found INT
+```
+
+> **CTQ B13** CTQ 2.6 asked which `expect` fired for `let x 7;` in Model 2.  Compare its message with the one you see here.  Which of the three facts on your 2 AM list did Model 2 already have, and which is new?
+
+---
+
+## Build Step 14: `print` and Assignment
+
+`print` follows the same pattern with fewer terminals.  A `Print` node keeps only a line, as you declared it in Build Step 4.
+
+```python
+# Step 14, parser.py
+def parse_print_stmt(lexer: Lexer):
+    """Consume PRINT, an expression, and SEMICOLON; return a Print."""
+    print_tok = expect(lexer, "PRINT")
+    value = parse_expr(lexer)
+    expect(lexer, "SEMICOLON")
+    return Print(value, print_tok.line)
+```
+
+**You write:** `parse_assign_stmt`, from `assign_stmt ::= IDENT EQ expr SEMICOLON`.  It is `parse_let_stmt` without its first line, and its position comes from the name token.
+
+Run this check:
+
+```bash
+python3 -c "from lexer import Lexer; from parser import parse_print_stmt, parse_assign_stmt; print(parse_print_stmt(Lexer('print x;'))); print(parse_assign_stmt(Lexer('x = 2;')))"
+```
+
+You should see:
+
+```text
+Print(value=Var(name='x', line=1, col=7), line=1)
+Assign(name='x', value=Num(value=2, line=1, col=5), line=1, col=1)
+```
+
+> **CTQ B14** Both functions end by consuming a `SEMICOLON`.  Could you move that call out into whatever calls them?  What would that do to the rule that one function holds one production?
+
+---
+
+## Build Step 15: Dispatch on One Token
+
+`parse_stmt` is the alternation in the grammar: one `if` per alternative, chosen by peeking.  It does not consume the token, because the function it picks starts by expecting that same token.  The rest of the statement forms join this chain as you build them, above the `raise`.
+
+```python
+# Step 15, parser.py
+def parse_stmt(lexer: Lexer):
+    """Peek at a statement's first token and dispatch on its type."""
+    tok = lexer.peek()
+    if tok.type == "LET":
+        return parse_let_stmt(lexer)
+    if tok.type == "IDENT":
+        return parse_assign_stmt(lexer)
+    if tok.type == "PRINT":
+        return parse_print_stmt(lexer)
+    raise ParseError("a statement", tok.type, tok.line, tok.col)
+```
+
+Run this check:
+
+```bash
+python3 -c "from lexer import Lexer; from parser import parse_stmt; from check import show_error; print(parse_stmt(Lexer('x = 1;'))); show_error(parse_stmt, Lexer('= 5;')); show_error(parse_stmt, Lexer('x 1;'))"
+```
+
+You should see:
+
+```text
+Assign(name='x', value=Num(value=1, line=1, col=5), line=1, col=1)
+ParseError at line 1, col 1: expected a statement, found EQ
+ParseError at line 1, col 3: expected EQ, found INT
+```
+
+> **CTQ B15** The last two errors come from different functions.  Which function raised each one, and what did `parse_stmt` know when it chose?  Step 2c of the Parser assignment asks you to explain your lookahead in your readme; this check gives you the evidence, and the explanation is yours, so the Answer Key leaves that part out.
+
+---
+
+## Build Step 16: A Whole Program
+
+A program is `stmt* EOF`, and the translation table turns `stmt*` into a `while`.  `EOF` is a real token from your lexer, so the loop tests for it the way any other loop tests for a token.  `parse` is the entry point everything else uses.  It accepts an optional token specification, which it hands straight to the lexer, because the parser never looks at characters.
+
+```python
+# Step 16, parser.py
+def parse_program(lexer: Lexer):
+    """Parse statements until the next token is EOF; return a Program."""
+    stmts = []
+    while lexer.peek().type != ____R5____:
+        stmts.append(parse_stmt(lexer))
+    return Program(stmts)
+
+
+def parse(source: str, config_path: Optional[str] = None) -> Program:
+    """Parse a full program from source text."""
+    return parse_program(Lexer(source, config_path=config_path))
+```
+
+Run this check:
+
+```bash
+python3 -c "from parser import parse; print(parse('let x = 1; print x;')); print(parse('')); print(parse('x := 1;', 'token_spec_alt.json'))"
+```
+
+You should see:
+
+```text
+Program(stmts=[Let(name='x', value=Num(value=1, line=1, col=9), line=1, col=1), Print(value=Var(name='x', line=1, col=18), line=1)])
+Program(stmts=[])
+Program(stmts=[Assign(name='x', value=Num(value=1, line=1, col=6), line=1, col=1)])
+```
+
+> **CTQ B16** The third line uses the other dialect's `:=` and builds the same `Assign`.  Which file changed what `=` looks like, and which functions in `parser.py` had to know about it?
+
+---
+
+## Build Step 17: A Test File That Grows with You
+
+Every step from here on can add a test, and each test stays in the file for good.  This is the same harness as Step 2b of the Parser assignment, plus a helper for tests that must fail.  Each test asserts on nodes and fields, and it can write `Num(1)` with no position, because Build Step 2 made `==` skip positions.
+
+```python
+# Step 17, test_parser.py
+from lexer import Lexer
+from parser import parse, parse_expr, ParseError
+from ast_nodes import *
+
+
+if __name__ == "__main__":
+    tests = [f for name, f in dict(globals()).items() if name.startswith("test_")]
+    failed = 0
+    for t in tests:
+        try:
+            t()
+            print("PASS", t.__name__)
+        except Exception as err:      # keep going, so one break does not hide the rest
+            failed += 1
+            print("FAIL", t.__name__, "--", err)
+    print(f"{len(tests) - failed} passed, {failed} failed")
+```
+
+```python
+# Step 17, test_parser.py: add above the main block
+def expr(source):
+    return parse_expr(Lexer(source))
+
+
+def parse_error(source):
+    """Parse source, which must fail, and return the ParseError."""
+    try:
+        parse(source)
+    except ParseError as err:
+        return err
+    raise AssertionError(f"no ParseError for {source!r}")
+
+
+def test_let_shape():
+    assert parse("let x = 1;") == Program([Let("x", Num(1))])
+```
+
+**You write:** two more tests above the main block.  `test_missing_semicolon` asserts that `let x = 5` fails with `expected SEMICOLON, found EOF` in its `message`, at line 1, column 10.  `test_bare_equals` asserts that `= 5;` fails with `expected a statement, found EQ`, at line 1, column 1.
+
+Run this check:
+
+```bash
+python3 test_parser.py
+```
+
+You should see:
+
+```text
+PASS test_let_shape
+PASS test_missing_semicolon
+PASS test_bare_equals
+3 passed, 0 failed
+```
+
+> **CTQ B17** Why does the harness catch `Exception` and keep going, rather than stopping at the first failure?  What would you lose in a run where three tiers are broken?
+
+---
+
+## Build Step 18: Blocks
+
+A block is the same loop as `parse_program`, with braces around it, and it is a statement, so it joins the dispatch chain.  The loop stops at `EOF` as well as at `RBRACE`.  That detail is what makes an unclosed block fail in the right place.
+
+```python
+# Step 18, parser.py
+def parse_block(lexer: Lexer):
+    """Consume LBRACE, statements until RBRACE, then RBRACE; return a Block."""
+    lb = expect(lexer, "LBRACE")
+    stmts = []
+    while lexer.peek().type not in ____R6____:
+        stmts.append(parse_stmt(lexer))
+    expect(lexer, "RBRACE")
+    return Block(stmts, lb.line)
+```
+
+```python
+# Step 18, parser.py: add above the final raise in parse_stmt
+    if tok.type == "LBRACE":
+        return parse_block(lexer)
+```
+
+```python
+# Step 18, test_parser.py: add above the main block
+def test_nested_blocks_shape():
+    tree = parse("let x = 2; { let x = 51; print x; } print x;")
+    assert len(tree.stmts) == 3 and isinstance(tree.stmts[1], Block)
+    assert len(tree.stmts[1].stmts) == 2
+```
+
+Run this check:
+
+```bash
+python3 -c "from parser import parse; from ast_nodes import pretty; from check import show_error; print(pretty(parse('let x = 2; { print x; } print x;'))); show_error(parse, '{ print x;')"
+```
+
+You should see:
+
+```text
+Program
+  Let x
+    Num(2)
+  Block
+    Print
+      Var(x)
+  Print
+    Var(x)
+ParseError at line 1, col 11: expected RBRACE, found EOF
+```
+
+> **CTQ B18** CTQ 3.12 asked what Model 3's `parse_block` does on a missing `}`.  Its loop stops only at `RBRACE`.  Which message does that loop give, and why does `expected RBRACE, found EOF` serve a programmer better?
+
+---
+
+## Build Step 19: `while`
+
+CTQ 1.3 added a `while` with parentheses around its condition.  This grammar has none: `while_stmt ::= WHILE expr block`.  The block's opening brace is what tells the parser the condition has ended.
+
+```python
+# Step 19, parser.py
+def parse_while_stmt(lexer: Lexer):
+    """Consume WHILE, a condition, and a block; return a While."""
+    while_tok = expect(lexer, "WHILE")
+    condition = ____R7____
+    body = ____R8____
+    return While(condition, body, while_tok.line)
+```
+
+**You write:** the dispatch for `WHILE` in `parse_stmt`, above the `raise`.
+
+Run this check:
+
+```bash
+python3 -c "from parser import parse; from ast_nodes import pretty; from check import show_error; print(pretty(parse('while x { print x; x = 1; }'))); show_error(parse, 'while (x) { }')"
+```
+
+You should see:
+
+```text
+Program
+  While
+    Var(x)
+    Block
+      Print
+        Var(x)
+      Assign x
+        Num(1)
+ParseError at line 1, col 7: expected an expression, found LPAREN
+```
+
+> **CTQ B19** `while (x) { }` fails now, with your stand-in for expressions.  Predict what it does after Stage 3 gives `parse_primary` its parenthesis case, without any change to `parse_while_stmt`.
+
+---
+
+## Build Step 20: `if`, `else`, and `else if`
+
+This is the one place in the statement grammar where a token after a keyword chooses between two productions: after `ELSE`, one more peek tells an `else if` from a plain `else`.  An `else if` is not a new node.  It is an `If` sitting in the outer `If`'s `else_branch`, so the recursion handles a chain of any length.
+
+```python
+# Step 20, parser.py
+def parse_if_stmt(lexer: Lexer):
+    """Consume IF, a condition, and a block; peek for ELSE, then an else-if or a block."""
+    if_tok = expect(lexer, "IF")
+    condition = parse_expr(lexer)
+    then_branch = parse_block(lexer)
+    else_branch = None
+    if lexer.peek().type == "ELSE":
+        lexer.advance()
+        if lexer.peek().type == "IF":
+            else_branch = ____R9____
+        else:
+            else_branch = parse_block(lexer)
+    return If(condition, then_branch, else_branch, if_tok.line)
+```
+
+```python
+# Step 20, parser.py: add above the final raise in parse_stmt
+    if tok.type == "IF":
+        return parse_if_stmt(lexer)
+```
+
+```python
+# Step 20, test_parser.py: add above the main block
+def test_else_if_chain():
+    outer = parse("if a { print 1; } else if b { print 2; } else { print 3; }").stmts[0]
+    assert isinstance(outer.else_branch, If)
+    assert isinstance(outer.else_branch.else_branch, Block)
+
+
+def test_dangling_else_attaches_to_nearest_if():
+    outer = parse("if a { if b { print 1; } else { print 2; } }").stmts[0]
+    assert outer.else_branch is None
+    assert isinstance(outer.then_branch.stmts[0].else_branch, Block)
+```
+
+Run this check:
+
+```bash
+python3 -c "from parser import parse; from ast_nodes import pretty; print(pretty(parse('if a { print 1; } else if b { } else { print 3; }')))"
+```
+
+You should see:
+
+```text
+Program
+  If
+    Var(a)
+    Block
+      Print
+        Num(1)
+    Else
+      If
+        Var(b)
+        Block
+        Else
+          Block
+            Print
+              Num(3)
+```
+
+> **CTQ B20** Trace `parse_if_stmt` on the program in `test_dangling_else_attaches_to_nearest_if`, and write down which call is running when the parser reaches `else`.  Step 1b of the Parser assignment asks you to state your rule and how the parser enforces it, so turn this trace into your own readme entry.  The Answer Key leaves this one out.
+
+---
+
+## Build Step 21: `break` and `continue`
+
+The Parser assignment's grammar has no `break` or `continue`, but the Interpreter assignment's tree has `Break` and `Continue` nodes, so adding them now saves you from reopening the parser later.  Your lexer needs `BREAK` and `CONTINUE` tokens, listed before `IDENT` like every other keyword.  Without them, `break` lexes as a name and `parse_stmt` treats it as the start of an assignment.
+
+```python
+# Step 21, parser.py
+def parse_break_stmt(lexer: Lexer):
+    """Consume BREAK and SEMICOLON; return a Break."""
+    tok = expect(lexer, "BREAK")
+    expect(lexer, "SEMICOLON")
+    return Break(tok.line)
+```
+
+```python
+# Step 21, parser.py: add above the final raise in parse_stmt
+    if tok.type == "BREAK":
+        return parse_break_stmt(lexer)
+```
+
+```python
+# Step 21, test_parser.py: add above the main block
+def test_break_continue():
+    body = parse("while x { break; continue; }").stmts[0].body.stmts
+    assert len(body) == 2 and isinstance(body[0], Break)
+    assert isinstance(body[1], Continue)
+```
+
+**You write:** `parse_continue_stmt` and its dispatch.
+
+Run this check:
+
+```bash
+python3 -c "from parser import parse; print(parse('while x { break; continue; }'))"
+```
+
+You should see:
+
+```text
+Program(stmts=[While(condition=Var(name='x', line=1, col=7), body=Block(stmts=[Break(line=1), Continue(line=1)], line=1), line=1)])
+```
+
+> **CTQ B21** The parser accepts `break;` outside any loop.  Is that a syntax error or a meaning error?  Which phase should report it, and what field on `Break` will it use?
+
+---
+
+## Build Step 22: Errors Across the Whole Statement Grammar
+
+Stage 2 ends with no new parser code.  These tests pin down the error behavior you have built, including a line number other than 1, which exercises your lexer's line counting too.  The worked `while` program has to wait for Stage 3, because its condition uses `>`.
+
+```python
+# Step 22, test_parser.py: add above the main block
+def test_unclosed_block():
+    assert "expected RBRACE, found EOF" in parse_error("while x { print x;").message
+
+
+def test_error_position_on_later_line():
+    err = parse_error("let x = 1;\nlet y = ;")
+    assert (err.line, err.col) == (2, 9)
+    assert err.found == "SEMICOLON"
+```
+
+**You write:** two broken programs of your own.  Run each through `show_error(parse, ...)` and decide whether its message passes your 2 AM standard.  Step 3d of the Parser assignment collects ten such messages in your readme.
+
+Run this check:
+
+```bash
+python3 test_parser.py
+```
+
+You should see this.  If you added tests of your own, your list is longer:
+
+```text
+PASS test_let_shape
+PASS test_missing_semicolon
+PASS test_bare_equals
+PASS test_nested_blocks_shape
+PASS test_else_if_chain
+PASS test_dangling_else_attaches_to_nearest_if
+PASS test_break_continue
+PASS test_unclosed_block
+PASS test_error_position_on_later_line
+9 passed, 0 failed
+```
+
+> **CTQ B22** `let y = ;` reports the semicolon, on line 2, column 9.  No line of `parse_let_stmt` mentions an expression error.  Follow the calls from `parse_let_stmt` down, and name the line that raised it.
+
+**Stage 2 is done.**  Your parser reads every statement form, as long as every expression is one number or one name.  Stage 3 replaces the stand-in: go on to Part V of [Parsing Expressions](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-parsingexpressions.md), Build Step 23.
+
+---
+
 **Up next:** the *Parsing Expressions and Table-Driven Parsing* activity turns this same machinery loose on the full operator-precedence ladder, then drives the same grammar bottom-up from an LR table; together, the statement parser from today and the expression parser you build there form the core of the Parser assignment.
+
+# Answer Key
+
+Try each blank and each piece marked **You write** before you read these.  Reading an answer first turns the step into transcription.  The checks on the slides tell you whether your own version works, so a different version that passes is fine.
+
+### Stage 2, Build Steps 10 to 22: Blanks and Pieces You Write
+
+- **R1** (Step 10): `f"expected {expected}, found {found}"`
+- **R2** (Step 11): `token_type`
+- **R3** (Step 11): `lexer.advance()`
+- **R4** (Step 13): `parse_expr(lexer)`
+- **R5** (Step 16): `"EOF"`
+- **R6** (Step 18): `("RBRACE", "EOF")`
+- **R7** (Step 19): `parse_expr(lexer)`
+- **R8** (Step 19): `parse_block(lexer)`
+- **R9** (Step 20): `parse_if_stmt(lexer)`
+
+**Step 12.**
+
+```python
+# Step 12 answer, parser.py: add above the final raise in parse_primary
+    if tok.type == "IDENT":
+        lexer.advance()
+        return Var(tok.value, tok.line, tok.col)
+```
+
+**Step 14.**
+
+```python
+# Step 14 answer, parser.py
+def parse_assign_stmt(lexer: Lexer):
+    """Consume IDENT EQ, an expression, and SEMICOLON; return an Assign."""
+    name = expect(lexer, "IDENT")
+    expect(lexer, "EQ")
+    value = parse_expr(lexer)
+    expect(lexer, "SEMICOLON")
+    return Assign(name.value, value, name.line, name.col)
+```
+
+**Step 17.**
+
+```python
+# Step 17 answer, test_parser.py: add above the main block
+def test_missing_semicolon():
+    err = parse_error("let x = 5")
+    assert "expected SEMICOLON, found EOF" in err.message
+    assert (err.line, err.col) == (1, 10)
+
+
+def test_bare_equals():
+    err = parse_error("= 5;")
+    assert "expected a statement, found EQ" in err.message
+    assert (err.line, err.col) == (1, 1)
+```
+
+**Step 19.**
+
+```python
+# Step 19 answer, parser.py: add above the final raise in parse_stmt
+    if tok.type == "WHILE":
+        return parse_while_stmt(lexer)
+```
+
+**Step 21.**
+
+```python
+# Step 21 answer, parser.py
+def parse_continue_stmt(lexer: Lexer):
+    """Consume CONTINUE and SEMICOLON; return a Continue."""
+    tok = expect(lexer, "CONTINUE")
+    expect(lexer, "SEMICOLON")
+    return Continue(tok.line)
+```
+
+```python
+# Step 21 answer, parser.py: add above the final raise in parse_stmt
+    if tok.type == "CONTINUE":
+        return parse_continue_stmt(lexer)
+```
+
+### Stage 2: The Questions
+
+**CTQ B10.**  With Model 2's error, a test has to search the message text for the number, which breaks as soon as the wording changes.  With `ParseError`, it reads `err.col`.
+
+**CTQ B11.**  It raises `LexError`.  The parser would then report some syntax errors as `LexError` and others as `ParseError`, and a caller would have to catch both, even though a wrong token is a parsing problem and not a lexing one.
+
+**CTQ B12.**  Column 3.  The first `;` is the mistake, but it is already gone, so the error describes the token after it.
+
+**CTQ B13.**  Model 2 names what it expected, what it found, and the line.  The column is new.
+
+**CTQ B14.**  Moving it would work only if every caller remembered to do it, and `if` and `while` take no semicolon, so the caller would have to know which form it called.  One function per production keeps that knowledge beside the rule it belongs to.
+
+**CTQ B15.**  `parse_stmt` raised the error for `= 5;`, because no alternative starts with `EQ`.  `expect` raised the error for `x 1;`, from inside `parse_assign_stmt`, after `parse_stmt` had already chosen.
+
+**CTQ B16.**  Only the token specification changed.  It maps the characters `:=` to the same token type, `EQ`, so no function in `parser.py` had to know.
+
+**CTQ B17.**  One failure would hide every test after it, so you would fix one problem per run and never see the whole picture of what is broken.
+
+**CTQ B18.**  It treats `EOF` as the start of another statement, so `parse_stmt` reports `expected a statement, got EOF('')`.  That names a symptom.  `expected RBRACE, found EOF` names what the programmer forgot.
+
+**CTQ B19.**  It parses.  The parentheses become a parenthesized primary inside the condition, and the tree holds only `Var(x)`, so the program is the same as `while x { }`.
+
+**CTQ B21.**  It is a meaning error: the sentence is well formed, and only its context is wrong.  The evaluator or a later check reports it, using `Break.line`.
+
+**CTQ B22.**  `parse_let_stmt` calls `parse_expr`, which calls `parse_primary`, and the final `raise` in `parse_primary` raises it.

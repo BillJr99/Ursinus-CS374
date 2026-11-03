@@ -858,6 +858,8 @@ Your project grammar contains the left-recursive list rule `args -> args "," exp
 
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the Parser assignment, whose Part 1 theory questions and Part 4 LR construction build directly on Parts III and IV.
 
+> **Build your own parser at home.**  Part V, after the Further Reading, is Stage 3 of a step-by-step build that starts in Part VI of the *Abstract Syntax Trees* activity.  It turns the Code Cell in Part I into your own expression ladder, one tier at a time.
+
 ---
 
 # Check Your Understanding
@@ -1023,6 +1025,528 @@ In your notebook, answer both prompts.  First: the hardest conceptual move in th
 - [Flex and Bison from Zero to a Working Language](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/FlexAndBison): installing Flex and Bison, a complete `.l`/`.y` walkthrough of a calculator language with variables, and an appendix on LR(0) item-set construction and how Yacc builds and resolves its parse tables.  The ready-to-build mini-notation scaffold is in the course examples at [files/examples/mininote/](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/examples/mininote/).
 - [Building a Bytecode VM for Mini](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BytecodeVM): compiling expressions to bytecode and executing them on a stack machine.
 - [From Source to Executable: Compiling, Linking, and the ELF Format](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CompilingAndLinking): object files, symbol tables, static and dynamic linking, loaders, and the path from source to executable.
+
+---
+
+# Part V: Build It, Stage 3 (at home)
+
+## Build Stage 3: The Ladder in `parser.py`
+
+This part continues the build from Part VI of [Abstract Syntax Trees](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-ast.md) and Part IV of [Recursive Descent](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-recursivedescent.md).  Finish Build Steps 1 to 22 there first.  When you finish Build Step 32 here, go back to Part VII of Abstract Syntax Trees for the last stage.
+
+As before, each step is one slide, you type the fragment, `____P1____` is a blank answered in the **Answer Key** at the end of this page, and you run each check from inside `cs374-parser/`.
+
+The Code Cell in Part I already has `parse_addsub`, `parse_muldiv`, `parse_unary`, and `parse_primary`.  Your permanent versions keep its logic and its left fold, and they change what Stage 2 changed: functions that take `lexer`, `tok.value` in place of `tok.lexeme`, and nodes with positions in place of tuples.  They also add three tiers above `addsub`, because the language has comparisons and logic:
+
+```text
+expr        ::= or_expr
+or_expr     ::= and_expr ( OR and_expr )*                     left-fold, LogicOp
+and_expr    ::= not_expr ( AND not_expr )*                    left-fold, LogicOp
+not_expr    ::= NOT not_expr | comparison                     prefix, UnaryOp
+comparison  ::= addsub ( ( LT|LE|GT|GE|EQEQ|NEQ ) addsub )?   does not chain
+addsub      ::= muldiv ( ( PLUS | MINUS ) muldiv )*           left-fold, BinOp
+muldiv      ::= unary ( ( STAR | SLASH ) unary )*             left-fold, BinOp
+unary       ::= MINUS unary | primary
+primary     ::= INT | FLOAT | STRING | TRUE | FALSE | IDENT
+              | LPAREN expr RPAREN
+```
+
+You climb from the bottom, and `parse_expr` moves up one rung each time, so every check runs on a working parser.  Step 2b of the Parser assignment works the same way.
+
+---
+
+## Build Step 23: The Rest of the Literals
+
+Stage 2's `parse_primary` knows integers and names.  The remaining literals are short cases, added above the `raise`.  Each one converts the token's text once, here, so that nothing later has to wonder whether `value` is still a string.
+
+```python
+# Step 23, parser.py: add above the final raise in parse_primary
+    if tok.type == "FLOAT":
+        lexer.advance()
+        return Num(float(tok.value), tok.line, tok.col)
+    if tok.type == "STRING":
+        lexer.advance()
+        return Str(____P1____, tok.line, tok.col)
+    if tok.type in ("TRUE", "FALSE"):
+        lexer.advance()
+        return BoolLit(____P2____, tok.line, tok.col)
+```
+
+This check has quotes and a backslash in its input, so it is easier as a scratch file than as a command line.
+
+```python
+# Step 23, try_literals.py
+from lexer import Lexer
+from parser import parse_expr
+
+for source in ['3.14', r'"a\nb"', 'true', 'false']:
+    print(parse_expr(Lexer(source)))
+```
+
+**You write:** a test, `test_literals`, above the main block of `test_parser.py`, that asserts the first three of these trees with `==`.  Remember that `r'"a\nb"'` must give `Str("a\nb")`, with a real newline in the value.
+
+Run this check:
+
+```bash
+python3 try_literals.py
+```
+
+You should see:
+
+```text
+Num(value=3.14, line=1, col=1)
+Str(value='a\nb', line=1, col=1)
+BoolLit(value=True, line=1, col=1)
+BoolLit(value=False, line=1, col=1)
+```
+
+> **CTQ B23** Your `STRING` token holds both a raw `value` and a `decoded` one.  What would go wrong in `unparse`, in Stage 4, if the node stored the raw one?
+
+---
+
+## Build Step 24: Parentheses and Unary Minus
+
+A parenthesis calls back up to the loosest tier, which is where the *recursive* in recursive descent shows up: inside parentheses, the whole ladder starts over.  The parser returns the inner expression itself and builds no node for the parentheses, because the tree's shape already records the grouping.  Step 2a of the Parser assignment asks you to record that choice in your readme.
+
+```python
+# Step 24, parser.py: add above the final raise in parse_primary
+    if tok.type == "LPAREN":
+        lexer.advance()
+        inner = ____P3____
+        expect(lexer, "RPAREN")
+        return inner
+```
+
+```python
+# Step 24, parser.py
+def parse_unary(lexer: Lexer):
+    """Peek for MINUS; consume it and recurse, else fall through to a primary."""
+    tok = lexer.peek()
+    if tok.type == "MINUS":
+        lexer.advance()
+        return UnaryOp("-", ____P4____, tok.line, tok.col)
+    return parse_primary(lexer)
+```
+
+```python
+# Step 24, parser.py: replace parse_expr
+def parse_expr(lexer: Lexer):
+    """Delegate to the highest tier built so far."""
+    return parse_unary(lexer)
+```
+
+```python
+# Step 24, test_parser.py: add above the main block
+def test_unary_minus_nests():
+    assert expr("--x") == UnaryOp("-", UnaryOp("-", Var("x")))
+```
+
+Run this check:
+
+```bash
+python3 -c "from parser import parse; print(parse('print --x;').stmts[0].value); print(parse('while (x) { }').stmts[0].condition)"
+```
+
+You should see:
+
+```text
+UnaryOp(op='-', operand=UnaryOp(op='-', operand=Var(name='x', line=1, col=9), line=1, col=8), line=1, col=7)
+Var(name='x', line=1, col=8)
+```
+
+> **CTQ B24** CTQ 0.2 asked why `factor -> "-" factor` does not loop forever although it is recursive.  Point to the line in `parse_unary` that answers it.  What does the second line of this output tell you about your prediction in CTQ B19?
+
+---
+
+## Build Step 25: The First Fold
+
+Model 1 traced this loop by hand on `7 - 2 - 1`.  Here it builds real nodes, and each node's position is its operator's position, so a later type error can point at the `/` itself.  Step 2a.4 of the Parser assignment walks through the same function line by line against its grammar rule.
+
+```python
+# Step 25, parser.py
+def parse_muldiv(lexer: Lexer):
+    """Parse a unary, then fold left while the next token is STAR or SLASH."""
+    left = parse_unary(lexer)
+    while lexer.peek().type in ("STAR", "SLASH"):
+        op = lexer.advance()
+        right = parse_unary(lexer)
+        left = ____P5____
+    return left
+```
+
+```python
+# Step 25, test_parser.py: add above the main block
+def test_left_associativity_division():
+    assert expr("8 / 4 / 2") == BinOp("/", BinOp("/", Num(8), Num(4)), Num(2))
+```
+
+**You write:** move `parse_expr` up one rung, so it returns what `parse_muldiv` returns.
+
+Run this check:
+
+```bash
+python3 -c "from lexer import Lexer; from parser import parse_expr; print(parse_expr(Lexer('8 / 4 / 2'))); print(parse_expr(Lexer('--x * 3')))"
+```
+
+You should see:
+
+```text
+BinOp(op='/', left=BinOp(op='/', left=Num(value=8, line=1, col=1), right=Num(value=4, line=1, col=5), line=1, col=3), right=Num(value=2, line=1, col=9), line=1, col=7)
+BinOp(op='*', left=UnaryOp(op='-', operand=UnaryOp(op='-', operand=Var(name='x', line=1, col=3), line=1, col=2), line=1, col=1), right=Num(value=3, line=1, col=7), line=1, col=5)
+```
+
+> **CTQ B25** Read the positions in the first line of output.  Which `/` has column 7, and which node holds it?  What does that tell you about which operator became the root?
+
+---
+
+## Build Step 26: `addsub`, One Rung Up
+
+The next tier differs from `parse_muldiv` in two things: the operators its loop tests for, and the function its operands come from.  Change only one of them and the ladder skips a rung.
+
+```python
+# Step 26, parser.py
+def parse_addsub(lexer: Lexer):
+    """Parse a muldiv, then fold left while the next token is PLUS or MINUS."""
+    left = ____P6____
+    while lexer.peek().type in ____P7____:
+        op = lexer.advance()
+        right = parse_muldiv(lexer)
+        left = BinOp(op.value, left, right, op.line, op.col)
+    return left
+```
+
+**You write:** move `parse_expr` up to `parse_addsub`, and add three tree-shape tests: `2 + 3 * 4` puts the `*` under the `+`, `8 - 3 - 2` nests on the left, and `(2 + 3) * 4` puts the `+` under the `*`.
+
+Run this check:
+
+```bash
+python3 -c "from parser import parse; from ast_nodes import pretty; print(pretty(parse('print 2 + 3 * 4;'))); print(pretty(parse('print (2 + 3) * 4;')))"
+```
+
+You should see:
+
+```text
+Program
+  Print
+    BinOp(+)
+      Num(2)
+      BinOp(*)
+        Num(3)
+        Num(4)
+Program
+  Print
+    BinOp(*)
+      BinOp(+)
+        Num(2)
+        Num(3)
+      Num(4)
+```
+
+> **CTQ B26** Suppose `parse_addsub` called `parse_unary` instead of `parse_muldiv` for its operands.  What tree would `2 + 3 * 4` give, and what would the parser do at the `*`?
+
+---
+
+## Build Step 27: Comparisons Do Not Chain
+
+A comparison looks like a fold and is not one.  Exercise 2 and the TODO under Model 2 pointed out that Python and C give `a < b < c` different meanings.  This language makes it a syntax error.  Without the second check, the parser stops quietly after `a < b`, and the stray `<` surfaces later as an error that names the wrong problem.
+
+```python
+# Step 27, parser.py
+COMPARISON_OPS = ("LT", "LE", "GT", "GE", "EQEQ", "NEQ")
+
+
+def parse_comparison(lexer: Lexer):
+    """Parse an addsub; if a comparison operator follows, consume it and one more addsub."""
+    left = parse_addsub(lexer)
+    ____P8____ lexer.peek().type in COMPARISON_OPS:
+        op = lexer.advance()
+        left = BinOp(op.value, left, parse_addsub(lexer), op.line, op.col)
+        tok = lexer.peek()
+        if tok.type in COMPARISON_OPS:
+            raise ParseError("one comparison (comparisons do not chain; use parentheses)",
+                             tok.type, tok.line, tok.col)
+    return left
+```
+
+```python
+# Step 27, test_parser.py: add above the main block
+def test_comparison_does_not_chain():
+    err = parse_error("print a < b < c;")
+    assert "do not chain" in err.message and err.found == "LT"
+```
+
+**You write:** move `parse_expr` up to `parse_comparison`.
+
+Run this check:
+
+```bash
+python3 -c "from parser import parse; from check import show_error; print(parse('print a + 1 <= b;').stmts[0].value.op); show_error(parse, 'print a < b < c;'); show_error(parse, 'print (a < b) < c;')"
+```
+
+You should see:
+
+```text
+<=
+ParseError at line 1, col 13: expected one comparison (comparisons do not chain; use parentheses), found LT
+no error: Program(stmts=[Print(value=BinOp(op='<', left=BinOp(op='<', left=Var(name='a', line=1, col=8), right=Var(name='b', line=1, col=12), line=1, col=10), right=Var(name='c', line=1, col=17), line=1, col=15), line=1)])
+```
+
+> **CTQ B27** The last line says `no error`, although it has the same three names and two `<` tokens.  What is different about the tree it builds?  What must `unparse` do, in Stage 4, to bring that program back?
+
+---
+
+## Build Step 28: `not`
+
+`not` is `parse_unary`'s pattern, moved up the ladder.  It sits above comparison, so `not a < b` means `not (a < b)`, unlike the unary minus, which binds tighter than anything else.  Consuming the `NOT` before the recursive call is what keeps the recursion from running forever.
+
+```python
+# Step 28, parser.py
+def parse_not(lexer: Lexer):
+    """Peek for NOT; consume it and recurse, else fall through to a comparison."""
+    tok = lexer.peek()
+    if tok.type == "NOT":
+        lexer.advance()
+        return UnaryOp("not", ____P9____, tok.line, tok.col)
+    return ____P10____
+```
+
+```python
+# Step 28, test_parser.py: add above the main block
+def test_not_binds_looser_than_comparison():
+    assert expr("not a < b") == UnaryOp("not", BinOp("<", Var("a"), Var("b")))
+```
+
+**You write:** move `parse_expr` up to `parse_not`.
+
+Run this check:
+
+```bash
+python3 -c "from parser import parse; from ast_nodes import pretty; print(pretty(parse('print not not ok;'))); print(pretty(parse('print not a < b;')))"
+```
+
+You should see:
+
+```text
+Program
+  Print
+    UnaryOp(not)
+      UnaryOp(not)
+        Var(ok)
+Program
+  Print
+    UnaryOp(not)
+      BinOp(<)
+        Var(a)
+        Var(b)
+```
+
+> **CTQ B28** A `RecursionError` on `not not ok` means one specific line is in the wrong order.  Which line, and why does that error match what the *Recursive Descent* activity said about left recursion?
+
+---
+
+## Build Step 29: `and`, `or`, and the Top of the Ladder
+
+The last two tiers are left folds again, and they build `LogicOp` rather than `BinOp`.  The Parser assignment accepts either, but the Interpreter assignment requires `LogicOp`, because `and` and `or` must short-circuit.  `or` is the loosest tier, so this is where `parse_expr` finally stops moving.
+
+```python
+# Step 29, parser.py
+def parse_and(lexer: Lexer):
+    """Parse a not_expr, then fold left while the next token is AND."""
+    left = parse_not(lexer)
+    while lexer.peek().type == "AND":
+        op = lexer.advance()
+        left = LogicOp("and", left, parse_not(lexer), op.line, op.col)
+    return left
+```
+
+```python
+# Step 29, parser.py: replace parse_expr
+def parse_expr(lexer: Lexer):
+    """Delegate to the loosest tier, parse_or."""
+    return parse_or(lexer)
+```
+
+```python
+# Step 29, test_parser.py: add above the main block
+def test_or_over_and():
+    want = LogicOp("or", Var("a"), LogicOp("and", Var("b"), Var("c")))
+    assert expr("a or b and c") == want
+```
+
+**You write:** `parse_or`, which folds `parse_and` operands over `OR` tokens.
+
+Run this check:
+
+```bash
+python3 -c "from parser import parse; from ast_nodes import pretty; print(pretty(parse('print a or b and not c;')))"
+```
+
+You should see:
+
+```text
+Program
+  Print
+    LogicOp(or)
+      Var(a)
+      LogicOp(and)
+        Var(b)
+        UnaryOp(not)
+          Var(c)
+```
+
+> **CTQ B29** Count the calls from `parse_expr` down to `parse_primary` for the single token `42`.  How many functions run, and how many of them build a node?  Connect your answer to the single-child chains that the *Abstract Syntax Trees* activity says an AST collapses.
+
+---
+
+## Build Step 30: An Entry Point for One Expression
+
+`parse` reads programs, and a bare `x + 1` is not one.  A tool such as a REPL may want to read one expression, so `parse_expression` provides that.  It has a job `parse_expr` does not: `parse_expr` stops when its tier runs out of operators and leaves the rest of the input alone, so this function must check that nothing is left over.
+
+```python
+# Step 30, parser.py
+def parse_expression(source: str):
+    """Parse one bare expression; any token left over is a ParseError."""
+    lexer = Lexer(source)
+    tree = parse_expr(lexer)
+    tok = lexer.peek()
+    if tok.type != ____P11____:
+        raise ParseError("EOF after expression", tok.type, tok.line, tok.col)
+    return tree
+```
+
+```python
+# Step 30, test_parser.py: add at the top
+from parser import parse_expression
+```
+
+Run this check:
+
+```bash
+python3 -c "from lexer import Lexer; from parser import parse_expr, parse_expression; from check import show_error; print(parse_expression('1')); print(parse_expr(Lexer('1 2'))); show_error(parse_expression, '1 2')"
+```
+
+You should see:
+
+```text
+Num(value=1, line=1, col=1)
+Num(value=1, line=1, col=1)
+ParseError at line 1, col 3: expected EOF after expression, found INT
+```
+
+> **CTQ B30** The second line parsed `1 2` with no complaint.  Why is that correct behavior for `parse_expr` when a `let` statement calls it, and wrong for a REPL?
+
+---
+
+## Build Step 31: The Worked Program
+
+Every piece of the Parser assignment's worked program now exists, so this check uses all three stages.  The nodes and `pretty` came from Stage 1, the statements from Stage 2, and the condition's `>` from this stage.  Compare the output with Build Step 9: you built that tree by hand, and the parser now builds it from text.
+
+```python
+# Step 31, test_parser.py: add above the main block
+WHILE_SOURCE = "let x = 10;\nwhile x > 0 {\n    print x;\n    x = x - 1;\n}"
+
+
+def test_worked_while_example():
+    assert parse(WHILE_SOURCE) == Program([
+        Let("x", Num(10)),
+        While(BinOp(">", Var("x"), Num(0)),
+              Block([Print(Var("x")), Assign("x", BinOp("-", Var("x"), Num(1)))])),
+    ])
+
+
+def test_positions_recorded():
+    tree = parse("let x = 1;\nprint x + 2;")
+    assert (tree.stmts[0].line, tree.stmts[0].col) == (1, 1)
+    assert (tree.stmts[1].value.line, tree.stmts[1].value.col) == (2, 9)
+```
+
+**You write:** `test_pretty_worked_example`, which asserts that `pretty(parse(WHILE_SOURCE))` equals the fourteen lines this check prints, joined with newlines.
+
+Run this check:
+
+```bash
+python3 -c "from parser import parse; from ast_nodes import pretty; print(pretty(parse('let x = 10; while x > 0 { print x; x = x - 1; }')))"
+```
+
+You should see:
+
+```text
+Program
+  Let x
+    Num(10)
+  While
+    BinOp(>)
+      Var(x)
+      Num(0)
+    Block
+      Print
+        Var(x)
+      Assign x
+        BinOp(-)
+          Var(x)
+          Num(1)
+```
+
+> **CTQ B31** Step 2d of the Parser assignment asks for this program's call trace in your readme, starting `parse_program`, `parse_stmt`, `parse_let_stmt`, `parse_expr`.  Write that trace now, while the ladder is fresh.  It is your own write-up, so the Answer Key leaves it out.
+
+---
+
+## Build Step 32: The Suite So Far
+
+The ladder is complete, so the last two broken programs from Step 3d of the Parser assignment can finally give the right errors.  Stage 2 could not reach them, because they fail inside an expression.
+
+```python
+# Step 32, test_parser.py: add above the main block
+def test_bad_operator():
+    err = parse_error("let x = 5 + * 3;")
+    assert "expected an expression, found STAR" in err.message
+    assert (err.line, err.col) == (1, 13)
+
+
+def test_mismatched_paren():
+    assert "expected RPAREN, found SEMICOLON" in parse_error("print (1 + 2;").message
+```
+
+**You write:** one test of your own.  Pick an expression that mixes at least three tiers, draw its tree on paper, and assert that shape.
+
+Run this check:
+
+```bash
+python3 test_parser.py
+```
+
+You should see this.  If you added tests of your own, your list is longer:
+
+```text
+PASS test_let_shape
+PASS test_missing_semicolon
+PASS test_bare_equals
+PASS test_nested_blocks_shape
+PASS test_else_if_chain
+PASS test_dangling_else_attaches_to_nearest_if
+PASS test_break_continue
+PASS test_unclosed_block
+PASS test_error_position_on_later_line
+PASS test_literals
+PASS test_unary_minus_nests
+PASS test_left_associativity_division
+PASS test_precedence_mul_over_add
+PASS test_left_associativity_subtraction
+PASS test_parentheses_override_precedence
+PASS test_comparison_does_not_chain
+PASS test_not_binds_looser_than_comparison
+PASS test_or_over_and
+PASS test_worked_while_example
+PASS test_positions_recorded
+PASS test_pretty_worked_example
+PASS test_bad_operator
+PASS test_mismatched_paren
+23 passed, 0 failed
+```
+
+> **CTQ B32** Part III's LR table decides that `*` binds tighter than `+` in one cell.  Find the place in your `parser.py` where the same decision lives.  Is it a line, or something about how the functions call each other?
+
+**Stage 3 is done.**  You have a complete parser.  Go back to Part VII of [Abstract Syntax Trees](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-ast.md), Build Step 33, for the unparser and the round trip that test the whole thing.
 
 ---
 
@@ -1919,3 +2443,124 @@ Attempt this as a team **before** you read it.  Fourteen rows, using the ACTION/
 **Contrast with row 4.**  At `0 T(2)` with `*` next, the parser shifts instead of reducing `E -> T`.  Had it reduced, `2` would have become a complete `E` and the parser would have landed in state 1 with `*` next.  Row 1 has no entry under `*`, because this grammar never lets `*` follow an `E`, so the parse would have died with an error.  Shifting keeps `2` waiting as a `T` so that `2 * 3` can become one `T` first.  Precedence is decided in exactly one table cell.
 
 ---
+
+### Stage 3, Build Steps 23 to 32: Blanks and Pieces You Write
+
+Try each blank and each piece marked **You write** before you read these.  The checks on the slides tell you whether your own version works, so a different version that passes is fine.
+
+- **P1** (Step 23): `tok.decoded`
+- **P2** (Step 23): `tok.type == "TRUE"`
+- **P3** (Step 24): `parse_expr(lexer)`
+- **P4** (Step 24): `parse_unary(lexer)`
+- **P5** (Step 25): `BinOp(op.value, left, right, op.line, op.col)`
+- **P6** (Step 26): `parse_muldiv(lexer)`
+- **P7** (Step 26): `("PLUS", "MINUS")`
+- **P8** (Step 27): `if`
+- **P9** (Step 28): `parse_not(lexer)`
+- **P10** (Step 28): `parse_comparison(lexer)`
+- **P11** (Step 30): `"EOF"`
+
+**Step 23.**
+
+```python
+# Step 23 answer, test_parser.py: add above the main block
+def test_literals():
+    assert expr("3.14") == Num(3.14)
+    assert expr(r'"a\nb"') == Str("a\nb")
+    assert expr("true") == BoolLit(True)
+```
+
+**Step 25.**
+
+```python
+# Step 25 answer, parser.py: replace parse_expr
+def parse_expr(lexer: Lexer):
+    """Delegate to the highest tier built so far."""
+    return parse_muldiv(lexer)
+```
+
+**Step 26.**
+
+```python
+# Step 26 answer, parser.py: replace parse_expr
+def parse_expr(lexer: Lexer):
+    """Delegate to the highest tier built so far."""
+    return parse_addsub(lexer)
+```
+
+```python
+# Step 26 answer, test_parser.py: add above the main block
+def test_precedence_mul_over_add():
+    assert expr("2 + 3 * 4") == BinOp("+", Num(2), BinOp("*", Num(3), Num(4)))
+
+
+def test_left_associativity_subtraction():
+    assert expr("8 - 3 - 2") == BinOp("-", BinOp("-", Num(8), Num(3)), Num(2))
+
+
+def test_parentheses_override_precedence():
+    assert expr("(2 + 3) * 4") == BinOp("*", BinOp("+", Num(2), Num(3)), Num(4))
+```
+
+**Step 27.**
+
+```python
+# Step 27 answer, parser.py: replace parse_expr
+def parse_expr(lexer: Lexer):
+    """Delegate to the highest tier built so far."""
+    return parse_comparison(lexer)
+```
+
+**Step 28.**
+
+```python
+# Step 28 answer, parser.py: replace parse_expr
+def parse_expr(lexer: Lexer):
+    """Delegate to the highest tier built so far."""
+    return parse_not(lexer)
+```
+
+**Step 29.**
+
+```python
+# Step 29 answer, parser.py
+def parse_or(lexer: Lexer):
+    """Parse an and_expr, then fold left while the next token is OR."""
+    left = parse_and(lexer)
+    while lexer.peek().type == "OR":
+        op = lexer.advance()
+        left = LogicOp("or", left, parse_and(lexer), op.line, op.col)
+    return left
+```
+
+**Step 31.**
+
+```python
+# Step 31 answer, test_parser.py: add above the main block
+def test_pretty_worked_example():
+    want = ["Program", "  Let x", "    Num(10)", "  While", "    BinOp(>)",
+            "      Var(x)", "      Num(0)", "    Block", "      Print",
+            "        Var(x)", "      Assign x", "        BinOp(-)",
+            "          Var(x)", "          Num(1)"]
+    assert pretty(parse(WHILE_SOURCE)) == "\n".join(want)
+```
+
+### Stage 3: The Questions
+
+**CTQ B23.**  The raw lexeme keeps its quotes and escapes, so `unparse` would add a second pair of quotes around text that already has them, and escape what was already escaped.
+
+**CTQ B24.**  `lexer.advance()` runs before the recursive call, so each call starts one token further on and the input runs out.  The second line shows `Var(name='x', line=1, col=8)`: the parentheses left no trace, so `while (x) { }` now parses.
+
+**CTQ B25.**  The second `/` is at column 7, and the outer node holds it.  The last operator of the run became the root, which is what a left fold produces, and it is why the first `/` is evaluated first.
+
+**CTQ B26.**  The operands of `+` would be `2` and `3`, and the `*` would be left over, so the program fails at the `*`, with `expected SEMICOLON, found STAR` in a `print` statement.  The ladder skipped a rung.
+
+**CTQ B27.**  Its left operand is the parenthesized comparison, so the source shows the tree's shape and nothing chains.  `unparse` must keep the parentheses on the left side as well, which is the rule for the comparison level.
+
+**CTQ B28.**  The `lexer.advance()` line.  If the recursive call came first, it would run on the same `NOT` token forever: a call that consumes nothing can never terminate, the same failure as a left-recursive rule.
+
+**CTQ B29.**  Nine functions run: `parse_expr`, `parse_or`, `parse_and`, `parse_not`, `parse_comparison`, `parse_addsub`, `parse_muldiv`, `parse_unary`, and `parse_primary`.  Only `parse_primary` builds a node.  The chain of calls is the parse tree's single-child chain, and it leaves nothing behind in the AST.
+
+**CTQ B30.**  A `let` statement needs `parse_expr` to stop at the first token that cannot continue the expression, because that token is the `;` it expects next.  A REPL has nobody after it, so a leftover token means the user's input was wrong.
+
+**CTQ B32.**  It is not a line.  It lives in how the functions call each other: `parse_addsub` takes its operands from `parse_muldiv`, so a `*` is consumed and folded before `parse_addsub` ever sees it.

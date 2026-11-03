@@ -109,7 +109,7 @@ This is one assignment with one deliverable shape: a formal EBNF grammar (Extend
 
 | Direction | What you build | What you need | Pick this if |
 |-----------|----------------|---------------|--------------|
-| **Core: hand-rolled recursive descent** | One parsing function per grammar tier, written by hand on top of your Lexer, as Parts 1-3 scaffold it | Python 3.10+ and your `lexer.py` (or the reference lexer) | You want the path the step-by-step instructions assume, and the parser the Interpreter assignment imports unchanged |
+| **Core: hand-rolled recursive descent** | One parsing function per grammar tier, written by hand on top of your Lexer, as Parts 1-3 scaffold it | Python 3.10+ and your `lexer.py` | You want the path the step-by-step instructions assume, and the parser the Interpreter assignment imports unchanged |
 | **Direction A: generator toolchain (Bison or PLY)** | The same grammar as a Bison `.y` file or a PLY `yacc` module, with semantic actions that build the AST; the LALR machinery replaces the hand-written ladder | Bison and a C compiler, or PLY in Python | You want to declare precedence instead of encoding it in structure, and to read the automaton the generator produces |
 | **Direction B: Mini-Notation music parser** | A parser for the mini-notation shared by TidalCycles and Strudel, an evaluator that turns patterns into timed events, and a validation table against the production reference at strudel.cc | flex, bison, and gcc (or PLY), plus the starter in `files/examples/mininote/` | You plan the music direction of the team project and can budget 25-35 hours |
 
@@ -119,13 +119,13 @@ Direction A is described in [its own section](#direction-a-generator-toolchain-b
 
 ## Before You Start
 
-You need Python 3.10 or newer (run `python3 --version` to confirm), your completed Lexer (`lexer.py` and `token_spec.json`) or the reference lexer described below, a project folder named `cs374-parser/` where all of this assignment's work lives, and an editor such as VS Code.  If the terminal is new to you, read the [dev environment page]({{ site.baseurl }}/Tutorials/DevEnvironment) and the [shell primer]({{ site.baseurl }}/Tutorials/ShellForLanguageDev) first.  Create the deliverable files up front so each part has a home:
+You need Python 3.10 or newer (run `python3 --version` to confirm), your completed Lexer (`lexer.py` and `token_spec.json`), a project folder named `cs374-parser/` where all of this assignment's work lives, and an editor such as VS Code.  If the terminal is new to you, read the [dev environment page]({{ site.baseurl }}/Tutorials/DevEnvironment) and the [shell primer]({{ site.baseurl }}/Tutorials/ShellForLanguageDev) first.  Create the deliverable files up front so each part has a home:
 
 ```text
 cs374-parser/
   lexer.py         # from the Lexer assignment, unchanged
   token_spec.json  # from the Lexer assignment
-  tokens.py        # only if your lexer has one; the reference lexer does
+  tokens.py        # only if your lexer has one
   parser.py        # the recursive descent parser
   ast_nodes.py     # node dataclasses, pretty-printer, unparser
   test_parser.py   # the test suite
@@ -161,11 +161,28 @@ python3 -c "from lexer import Lexer; print(Lexer('let x = 1;').peek())"
 Token(type='LET', value='let', line=1, col=1, decoded=None)
 ```
 
-**Reference lexer.**  That line is the reference lexer's output; your own `Token` may print with different field names, but its type must be `LET`.  (If Python reports `ModuleNotFoundError: No module named 'lexer'`, you are not running from the folder that holds `lexer.py`.)  The [reference lexer]({{ site.baseurl }}/files/reference/reference-lexer.zip) is released the day this assignment goes out, and you may unzip it into `cs374-parser/` in place of your own `lexer.py`.  Copy `tokens.py` across with it; the reference `lexer.py` imports that module, and leaving it behind is the usual cause of a `ModuleNotFoundError` on an otherwise correct setup.  If you use it, declare it in one line in your readme ("This submission uses the reference lexer"); it carries no penalty, and your Lexer assignment grade stands on its own.
+Your own `Token` may print with different field names, but its type must be `LET`.  (If Python reports `ModuleNotFoundError: No module named 'lexer'`, you are not running from the folder that holds `lexer.py`.)
 
-> **Watch out: the `not` keyword.**  Part 2 asks you to build `parse_not()`, which means your lexer has to emit a distinct `NOT` token.  The Lexer assignment's minimum token table does not include one, so if you are using your own lexer, check for it now and add a `NOT` rule ahead of `IDENT` if it is missing.  Without it, `not ok` lexes as two identifiers and `parse_not()` never fires, which shows up much later as a mystifying parse error.  The reference lexer already has `NOT`.
+**If your Lexer is not finished.**  Finish it before you go further, because this parser reads its tokens.  The at-home part of the *Tokens and Scanning* activity builds a complete lexer one step at a time.  This scaffold is the interface your parser calls:
 
-> **Watch out: four tokens the reference lexer does not have.**  The grammar's `fun_stmt`, `call`, and `( COLON type )?` productions use `FUN`, `COLON`, `ARROW`, and `COMMA`, and `unary` mentions `BANG`.  The reference lexer emits none of these.  `fun` lexes as an `IDENT`, and `:` or `,` stops the lexer with a `LexError`.  Part 1 lets you implement those productions last, so this does not block anything until then.  When you reach them, add the missing rules to the lexer: `FUN` before `IDENT`, and `ARROW` for `->` before `MINUS`.  Note the change in your readme as a lexer fix.  The Interpreter assignment's Step 4a makes the same kind of change for `COLON`.
+```python
+# The interface your parser calls.  Fill in each TODO, or compare with your Lexer.
+class Lexer:
+    def __init__(self, source, config_path=None):
+        ...  # TODO: load the token table and start reading source
+
+    def peek(self):
+        ...  # TODO: return the next Token without consuming it
+
+    def advance(self):
+        ...  # TODO: return the next Token and consume it
+
+    def expect(self, token_type):
+        ...  # TODO: consume and return a token of this type, or raise a located LexError
+```
+
+> **Watch out: check your token table.**  `parse_not()` needs a `NOT` token, `and` and `or` need `AND` and `OR`, the `fun_stmt`, `call`, and `( COLON type )?` productions use `FUN`, `COLON`, `ARROW`, and `COMMA`, and `unary` mentions `BANG`.  All of these are in the Lexer assignment's token table.  If one is missing, add its rule now: keywords before `IDENT`, and `ARROW` for `->` before `MINUS`.  Without `NOT`, `not ok` lexes as two identifiers and `parse_not()` never fires, which shows up much later as a mystifying parse error.  Note each change in your readme as a lexer fix.
+
 
 > **Time budget.** Part 0 takes about forty minutes with pencil and paper.  The rest is the most substantial assignment of the semester and has one of the longest windows.  You arrive holding the grammar you wrote in the Grammar and Derivations Workshop, which is most of Part 1 already done, so Part 1 here is refinement and justification rather than a blank page.  Direction B budgets roughly 25-35 hours end to end; the core direction is smaller but still fills the window, so start Part 1 the week the assignment goes out.  Part 4 adds about four to six hours on top of whichever direction you took, and it is the one part you can work on in parallel, because it depends on the class activity rather than on your own parser.
 
@@ -205,7 +222,7 @@ If the column is wrong, you consumed the bad token before raising; raise on the 
 
 > **If it fails.**
 > - `ImportError: cannot import name 'Assign'`: `parser.py` imports a node you have not defined yet.  Add `Assign` and `Print` to `ast_nodes.py`.
-> - `ModuleNotFoundError: No module named 'tokens'`: you copied the reference `lexer.py` without `tokens.py`.
+> - `ModuleNotFoundError: No module named 'tokens'`: your `lexer.py` imports `tokens`, and `tokens.py` is not in this folder.
 > - `Num(value=42, line=0)`: you built the node without passing `line=tok.line`.
 
 ### Suggested Pacing
@@ -496,7 +513,7 @@ The `Assign` and `Print` classes follow the `Let` pattern, so each is a few line
 
 | Optional node | A shape that works | Notes |
 |---|---|---|
-| `Str` | `Str(value)` | `value` is the decoded string, `tok.decoded` on a reference `STRING` token |
+| `Str` | `Str(value)` | `value` is the decoded string, `tok.decoded` on a `STRING` token |
 | `BoolLit` | `BoolLit(value)` | `value` is `True` or `False` |
 | `FunDef` | `FunDef(name, params, return_type, body)` | `params` is a list of `(name, type)` pairs, `return_type` is a type name or `None`, and `body` is a `Block` |
 | `Call` | `Call(callee, args)` | `callee` is the expression before `(`, and `args` is a list of expressions |
@@ -611,7 +628,7 @@ You write these two from their algorithms.  Each one is a short `if` chain over 
 1. Peek at the next token and call it `tok`.  Do not consume it yet.
 2. If `tok` is an `INT`, consume it and return a `Num` whose `value` is the token's text converted to an `int`, and whose `line` is the token's line.
 3. If it is a `FLOAT`, do the same, converting to a `float`.  Both build a `Num`.
-4. If it is a `STRING`, consume it and return a `Str` of the decoded text.  On a reference token, `tok.value` still has its quotes and escapes, and `tok.decoded` has them resolved.
+4. If it is a `STRING`, consume it and return a `Str` of the decoded text.  On a token from your Lexer, `tok.value` still has its quotes and escapes, and `tok.decoded` has them resolved.
 5. If it is `TRUE` or `FALSE`, consume it and return a `BoolLit` holding the Python value `True` for `TRUE` and `False` for `FALSE`.  One case can cover both.
 6. If it is an `IDENT`, consume it and return a `Var` with the token's text as its `name` and the token's line.
 7. If it is an `LPAREN`, consume it, parse a whole expression with `parse_expr`, `expect` an `RPAREN`, and return the inner expression itself.  That is the pass-through choice described below.
@@ -641,7 +658,7 @@ def parse(source: str) -> Program:
 
 `parse_program` arrives in Step 2c.  Until then, `parse` fails if you call it, but the import succeeds, because Python looks up the name only when `parse` runs.
 
-`NOT` is not handled here.  It sits much higher in the ladder, in `parse_not` (Step 2b).  If your own lexer emits `BANG` for `!`, you may treat it in `parse_unary` the same way as `MINUS`; the reference lexer has no `BANG`.
+`NOT` is not handled here.  It sits much higher in the ladder, in `parse_not` (Step 2b).  If your own lexer emits `BANG` for `!`, you may treat it in `parse_unary` the same way as `MINUS`.
 
 *Integrate and check.*  `parse_muldiv` now sits on top of the two functions you just wrote, so one call exercises all three, and the error case exercises `parse_primary`'s last line.  Run `python3 try_primary.py` again, then:
 
@@ -735,7 +752,7 @@ A function whose body is only a docstring is legal Python, and it returns `None`
 | Function | How to think about it |
 |---|---|
 | `parse_addsub` | Two things change from `parse_muldiv`: the operator types the loop tests for, and the function both operands come from.  If you change only one of them, the ladder skips a rung. |
-| `parse_comparison`, the `op` | Use the operator token's `value` as the `op` string, just as `parse_muldiv` does.  The reference lexer's `value` for `LE` is the text `<=`, which is exactly what the tree and the unparser want. |
+| `parse_comparison`, the `op` | Use the operator token's `value` as the `op` string, just as `parse_muldiv` does.  Your lexer's `value` for `LE` should be the text `<=`, which is exactly what the tree and the unparser want. |
 | `parse_comparison`, the chain check | Without step 3, `a < b < c` stops quietly after `a < b`.  The stray `<` then surfaces somewhere else, as an error that names the wrong problem.  Catching it here reports the real one, at the right column. |
 | `parse_not` | It sits above `comparison`, so `not a < b` means `not (a < b)`.  The recursive call is what lets `not not ok` nest, and consuming the `NOT` *before* that call is what keeps it from recursing forever. |
 | `parse_and`, `parse_or` | The token's `value` is `and` (or `or`), so the fold builds `BinOp("and", ...)` with no translation.  `or` is the loosest tier, which is why `a or b and c` puts the `and` underneath. |
@@ -831,7 +848,7 @@ Each statement begins with a token that tells you which rule to use.  `parse_stm
 **You write:** `parser.py` - `parse_let_stmt`, `parse_assign_stmt`, `parse_print_stmt`, `parse_block`, `parse_if_stmt`, `parse_while_stmt`, `parse_stmt`, and `parse_program` (and `parse_fun_stmt` last, if you implement it); `test_parser.py` - one test per statement form; `readme.md` - your lookahead note.
 **You run:** `python3 test_parser.py`, and the two `python3 -c` commands below.
 
-*How `parse_stmt` can tell an assignment apart.*  The reference lexer's `peek()` shows you one token and has no offset argument, so you cannot look two tokens ahead to check for `IDENT EQ`.  You do not need to.  Look at the `stmt` rule in Part 1: no statement other than `assign_stmt` begins with `IDENT`, because the grammar has no expression statements.  So one token of lookahead decides it.  When `parse_stmt` peeks an `IDENT`, it calls `parse_assign_stmt`, which consumes the `IDENT` and then expects `EQ`.  If `EQ` is missing, `expect` reports it with a position.  Your readme note should say this in your own words.
+*How `parse_stmt` can tell an assignment apart.*  The Lexer's `peek()` shows you one token and has no offset argument, so you cannot look two tokens ahead to check for `IDENT EQ`.  You do not need to.  Look at the `stmt` rule in Part 1: no statement other than `assign_stmt` begins with `IDENT`, because the grammar has no expression statements.  So one token of lookahead decides it.  When `parse_stmt` peeks an `IDENT`, it calls `parse_assign_stmt`, which consumes the `IDENT` and then expects `EQ`.  If `EQ` is missing, `expect` reports it with a position.  Your readme note should say this in your own words.
 
 Every statement function reads its grammar rule from left to right, the way the worked `parse_muldiv` does.  A terminal in the rule becomes a call to `expect` with that token type.  A non-terminal becomes a call to its parsing function.  A `( ... )*` becomes a loop, and a `( ... )?` becomes an `if` on the peeked token.  Here are the signatures and docstrings; the bodies are yours.
 
@@ -1838,7 +1855,7 @@ Submit a ZIP containing the files below, and list your Python version in the rea
 - [ ] `unparse` inserts parentheses only where the tree shape requires them, and the round-trip check runs over every program in the suite.
 - [ ] The Hypothesis test runs, and the readme reports one shrunk counterexample (or a reasoned all-clear with the generator shown).
 - [ ] Every `ParseError` names the expected token, the found token, and the line and column, and exposes all four as attributes; parsing `;` alone reports line 1, col 1; the ten broken programs are recorded.
-- [ ] `lexer.py` is imported unchanged, or the readme declares the reference lexer, and the Python version is listed.
+- [ ] `lexer.py` is imported unchanged, or the readme notes each lexer fix, and the Python version is listed.
 - [ ] `closure({(0, 0)})` returns exactly the seven items in the activity's Step 1 table, and `goto(I0, "T")` returns exactly two.
 - [ ] The canonical collection has twelve states, and any renumbering against the activity's table is documented in the readme rather than corrected by hand.
 - [ ] `FOLLOW(E)` is `{ + ) $ }` and `FOLLOW(T)` and `FOLLOW(F)` are both `{ * + ) $ }`, computed by the code rather than typed in.

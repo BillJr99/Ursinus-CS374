@@ -95,7 +95,7 @@ class Environment:
 # The AST (written for you)
 #
 # A small copy of the class AST: the same node names and field names as the
-# reference ast_nodes.py, plus the optional annotation on Let.  To run the
+# class ast_nodes.py, plus the optional annotation on Let.  To run the
 # checker on trees from your own parser later, replace this section with
 #     from ast_nodes import *
 # ===========================================================================
