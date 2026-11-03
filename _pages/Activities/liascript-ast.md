@@ -1661,7 +1661,7 @@ A block opens at the end of the line that introduces it, so `while` and `if` str
 # Step 38, ast_nodes.py: add above the final raise in unparse
     if isinstance(node, Block):
         inner = "".join(unparse(s, indent + 1) + "\n" for s in node.stmts)
-        return f"{pad}{{\n{inner}{pad}}}"
+        return pad + "{" + "\n" + inner + pad + "}"
     if isinstance(node, While):
         body = unparse(node.body, indent).lstrip()
         return f"{pad}while {unparse(node.condition)} {body}"
