@@ -1850,7 +1850,7 @@ TODO 2 is the door into *Type Systems*.  A size check is the *most* a linker can
 
 ---
 
-**Up next:** the *Tree-Walking Interpretation* activity finally gives parsed programs their meaning; the front end is complete.  The tiered expression parser you finished here goes directly into the Parser assignment, which is handed out today, and the ACTION/GOTO table you drove in Part III is the answer key for that assignment's Part 4.
+**Up next:** the *Tree-Walking Interpretation* activity finally gives parsed programs their meaning; the front end is complete.  The tiered expression parser you finished here goes directly into the Parser assignment, which is handed out next session, and the ACTION/GOTO table you drove in Part III is the answer key for that assignment's Part 4.
 
 # Answer Key
 

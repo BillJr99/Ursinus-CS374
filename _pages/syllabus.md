@@ -426,10 +426,6 @@ schedule:
   link: "Activities/liascript-recursivedescent.md"
   liapage: true
   deliverables:
-  - dtitle: "Lab: Finite Automata Simulators Due"
-    dlink: "Assignments/Automata"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-automata.md"
   - dtitle: "Team Language Project Handed Out"
     dlink: "Projects/TeamLanguage"
     points: "100"
@@ -443,14 +439,10 @@ schedule:
   link: "Activities/liascript-parsingexpressions.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Build a Lexer Due"
-    dlink: "Assignments/Lexer"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-lexer.md"
-  - dtitle: "Programming Assignment: Parser and AST Handed Out"
-    dlink: "Assignments/Parser"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-parser.md"
+  - dtitle: "Lab: Finite Automata Simulators Due"
+    dlink: "Assignments/Automata"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-automata.md"
   readings:
   - rtitle: "Allison, Ch. 5: Pushdown Automata, Adding a Stack to Finite Automata"
   - rtitle: "Allison, Ch. 6 §6.3: Equivalence of PDAs and Context-Free Grammars"
@@ -461,6 +453,15 @@ schedule:
   title: "Tree-Walking Interpretation (Day 1 of 2): Evaluating the AST"
   link: "Activities/liascript-interpretation.md"
   liapage: true
+  deliverables:
+  - dtitle: "Programming Assignment: Build a Lexer Due"
+    dlink: "Assignments/Lexer"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-lexer.md"
+  - dtitle: "Programming Assignment: Parser and AST Handed Out"
+    dlink: "Assignments/Parser"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-parser.md"
   readings:
   - rtitle: "For the Parser assignment (Step 3e): Property-Based Testing with Hypothesis, covering the round-trip property and how to shrink a failing case"
     rlink: "Tutorials/PropertyBasedTesting"
