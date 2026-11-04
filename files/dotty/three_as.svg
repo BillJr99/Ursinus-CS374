@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="650pt" height="170pt" viewBox="0 0 650 170" xmlns="http://www.w3.org/2000/svg">
+<title>three_as</title><defs><marker id="ah" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="black"/></marker></defs>
+<path fill="none" stroke="black" d="M10,110 L47,110" marker-end="url(#ah)"/>
+<ellipse fill="none" stroke="black" cx="70" cy="110" rx="22" ry="22"/>
+<text xml:space="preserve" text-anchor="middle" x="70" y="115" font-family="Helvetica,sans-Serif" font-size="14.00">q0</text>
+<ellipse fill="none" stroke="black" cx="210" cy="110" rx="22" ry="22"/>
+<text xml:space="preserve" text-anchor="middle" x="210" y="115" font-family="Helvetica,sans-Serif" font-size="14.00">q1</text>
+<ellipse fill="none" stroke="black" cx="350" cy="110" rx="22" ry="22"/>
+<text xml:space="preserve" text-anchor="middle" x="350" y="115" font-family="Helvetica,sans-Serif" font-size="14.00">q2</text>
+<ellipse fill="none" stroke="black" cx="490" cy="110" rx="22" ry="22"/><ellipse fill="none" stroke="black" cx="490" cy="110" rx="26" ry="26"/>
+<text xml:space="preserve" text-anchor="middle" x="490" y="115" font-family="Helvetica,sans-Serif" font-size="14.00">q3</text>
+<path fill="none" stroke="black" d="M92,110 L187,110" marker-end="url(#ah)"/>
+<text xml:space="preserve" text-anchor="middle" x="140.0" y="104" font-family="Courier,monospace" font-size="13.00">a</text>
+<path fill="none" stroke="black" d="M232,110 L327,110" marker-end="url(#ah)"/>
+<text xml:space="preserve" text-anchor="middle" x="280.0" y="104" font-family="Courier,monospace" font-size="13.00">a</text>
+<path fill="none" stroke="black" d="M372,110 L463,110" marker-end="url(#ah)"/>
+<text xml:space="preserve" text-anchor="middle" x="420.0" y="104" font-family="Courier,monospace" font-size="13.00">a</text>
+<path fill="none" stroke="black" d="M210,132 C190,160 90,160 76,133" marker-end="url(#ah)"/>
+<text xml:space="preserve" text-anchor="middle" x="140.0" y="160" font-family="Courier,monospace" font-size="13.00">b</text>
+<path fill="none" stroke="black" d="M350,132 C310,168 130,168 84,129" marker-end="url(#ah)"/>
+<text xml:space="preserve" text-anchor="middle" x="220.0" y="165" font-family="Courier,monospace" font-size="13.00">b</text>
+<path fill="none" stroke="black" d="M60,90 C40,45 100,45 80,87" marker-end="url(#ah)"/>
+<text xml:space="preserve" text-anchor="middle" x="70" y="52" font-family="Courier,monospace" font-size="13.00">b</text>
+<path fill="none" stroke="black" d="M480,86 C460,40 520,40 500,83" marker-end="url(#ah)"/>
+<text xml:space="preserve" text-anchor="middle" x="490" y="48" font-family="Courier,monospace" font-size="13.00">a, b</text>
+</svg>

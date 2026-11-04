@@ -88,7 +88,7 @@ Now design two machines of your own.  Draw them; do not write code yet.
 ### Critical Thinking Questions
 
 1.  Trace `1011` through the parity DFA and list the state after each symbol.  Is the string accepted or rejected?  The Recorder writes the trace.
-2.  Draw a DFA over $\{a, b\}$ that accepts strings that end in `ab`.  How many states did your team need, and what does each state remember?
+2.  Draw a DFA over $\{a, b\}$ that accepts strings that end in `ba`.  How many states did your team need, and what does each state remember?
 3.  Draw a DFA that accepts strings containing the substring `aa`.  Compare it with question 2: "ends in" versus "contains" changes which states are accepting.  Explain how.
 4.  Try to draw a DFA for $a^n b^n$.  Where does finite memory fail you, and which earlier module predicted this?
 
@@ -117,23 +117,26 @@ def even_ones(s):
             return False                             # no move defined: the implicit dead state
     return state == "even"                           # F = {even}
 
-def ends_in_ab(s):
-    """Accept strings over {a, b} that end in ab.  States: q0 (start), q_a, q_ab (accept)."""
+def three_as(s):
+    """Accept strings over {a, b} with at least 3 consecutive a's.  States: q0 (start), q1, q2, q3 (accept)."""
     state = "q0"
     for ch in s:
         if state == "q0":
-            if ch == "a":   state = "q_a"
+            if ch == "a":   state = "q1"
             elif ch == "b": state = "q0"
             else:           return False
-        elif state == "q_a":
-            if ch == "a":   state = "q_a"            # still just one a pending
-            elif ch == "b": state = "q_ab"
+        elif state == "q1":
+            if ch == "a":   state = "q2"
+            elif ch == "b": state = "q0"             # the run of a's is broken: start counting over
             else:           return False
-        elif state == "q_ab":
-            if ch == "a":   state = "q_a"            # NOT q0: this a may start the next ab
+        elif state == "q2":
+            if ch == "a":   state = "q3"
             elif ch == "b": state = "q0"
             else:           return False
-    return state == "q_ab"
+        elif state == "q3":
+            if ch == "a" or ch == "b": state = "q3"  # once seen, it stays seen
+            else:           return False
+    return state == "q3"
 
 def trace_even_ones(s):
     """Same machine, printing every move, so the output matches the board trace."""
@@ -158,9 +161,9 @@ if __name__ == "__main__":
             print(f"  {s!r:9} -> {even_ones(s)}")
         print("\n=== Trace of '1011' ===")
         trace_even_ones("1011")
-        print("\n=== Ends-in-ab DFA, as if statements ===")
-        for s in ["ab", "aab", "abab", "ba", "a", "b", "aabb", ""]:
-            print(f"  {s!r:7} -> {ends_in_ab(s)}")
+        print("\n=== At-least-3-consecutive-a's DFA, as if statements ===")
+        for s in ["aaa", "baaab", "aaaa", "aabaa", "ababab", "aa", ""]:
+            print(f"  {s!r:9} -> {three_as(s)}")
     except Exception as e:
         print(f"[dfa_if:main] {e}")
         traceback.print_exc()
@@ -171,7 +174,7 @@ This works, and it is a faithful DFA, but it does not scale.  A machine with 50 
 
 ### Critical Thinking Questions
 
-5.  In `ends_in_ab`, what breaks on the input `abab` if the line in the `q_ab` block that handles `'a'` sends the machine to `q0` instead of `q_a`?
+5.  In `three_as`, what breaks on the input `aabaa` if the line in the `q2` block that handles `'b'` stays in `q2` instead of going to `q0`?
 
 ## Model 3: DFA Simulation, a Dictionary and a Loop
 
@@ -211,19 +214,20 @@ for s in ["", "1", "11", "1011", "0000", "10101", "abc"]:
 print("\n=== Trace of '1011' (compare against your table) ===")
 run_dfa(EVEN_ONES, "1011", trace=True)
 
-# Ends-in-ab DFA (3 states: nothing useful, saw an a, saw ab)
-ENDS_IN_AB_DFA = {
+# At least 3 consecutive a's (4 states: how many a's in a row so far, up to 3)
+THREE_AS_DFA = {
     "start": "q0",
-    "accept": {"q_ab"},
+    "accept": {"q3"},
     "delta": {
-        "q0":   {"a": "q_a",  "b": "q0"},
-        "q_a":  {"a": "q_a",  "b": "q_ab"},
-        "q_ab": {"a": "q_a",  "b": "q0"},
+        "q0": {"a": "q1", "b": "q0"},
+        "q1": {"a": "q2", "b": "q0"},
+        "q2": {"a": "q3", "b": "q0"},
+        "q3": {"a": "q3", "b": "q3"},
     },
 }
-print("\n=== Ends-in-ab DFA ===")
-for s in ["ab", "aab", "abab", "ba", "a", "b", "aabb", ""]:
-    print(f"  {s!r:7} -> {run_dfa(ENDS_IN_AB_DFA, s)}")
+print("\n=== At-least-3-consecutive-a's DFA ===")
+for s in ["aaa", "baaab", "aaaa", "aabaa", "ababab", "aa", ""]:
+    print(f"  {s!r:9} -> {run_dfa(THREE_AS_DFA, s)}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
@@ -232,13 +236,13 @@ for s in ["ab", "aab", "abab", "ba", "a", "b", "aabb", ""]:
 - `EVEN_ONES` is the five-tuple, field for field: `states` is $Q$, `delta` is $\delta$, `start` is $q_0$, and `accept` is $F$.  The alphabet $\Sigma$ is implicit in the keys of the inner dicts.
 - `run_dfa` is the entire recognizer, and it never changes.  Only the data that describes the machine changes.  Your lexer assignment uses the same split between the runner and the machine description.
 - The `if ch not in ...` guard implements a dead state without naming it.  A dead state is a trap: once the machine enters it, no further input can lead to acceptance.  A textbook DFA must have a transition for every symbol from every state, so a complete version would send the `a` in `abc` to an explicit trap state.  This version returns early instead, which is why `"abc"` returns `False` rather than raising an error.
-- In `ENDS_IN_AB_DFA`, look at `q_ab` on input `a`.  It goes to `q_a`, not to `q0`.  That `a` is not wasted; it might be the start of the next `ab`.  Getting that arrow wrong is the most common bug in hand-built DFAs.
+- In `THREE_AS_DFA`, look at `q2` on input `b`.  It goes back to `q0`, because a `b` ends the run and the two `a`s before it can no longer be part of three in a row.  Now look at `q3`: both arrows loop.  Once the machine has seen three `a`s in a row, no later input can undo that, so it never needs to leave.
 
 ### Critical Thinking Questions
 
 6.  `EVEN_ONES` accepts the empty string.  Point to the line of code *and* the part of the formal definition that together make that happen.  Then decide whether accepting it is correct for "even number of 1s."
-7.  Encode your ends-in-`ab` DFA from CTQ 2 in the same dictionary format and test five strings.  What was mechanical, and what required thought?  That split is the point: the design is the thinking, and the runner is ten lines that never change.
-8.  `ENDS_IN_AB_DFA` has three states.  If the target were "ends in `abc`", how many states would you need, and what would each remember?
+7.  Encode your ends-in-`ba` DFA from CTQ 2 in the same dictionary format and test five strings.  What was mechanical, and what required thought?  That split is the point: the design is the thinking, and the runner is ten lines that never change.
+8.  `THREE_AS_DFA` has four states.  If the target were "ends in `abc`", how many states would you need, and what would each remember?
 
 ### Try It Yourself
 
@@ -299,6 +303,63 @@ Expected output once you fill in the table: the two machines agree on `aa` and `
 
 ---
 
+## Worked Example: A DFA as JSON, and in Python
+
+The Finite Automata Simulators lab reads each machine from a JSON (JavaScript Object Notation) file, so that one program can run any machine.  Here is the parity machine in that format:
+
+```json
+{
+  "states": ["even", "odd"],
+  "alphabet": ["0", "1"],
+  "start": "even",
+  "accept": ["even"],
+  "delta": {
+    "even": {"0": "even", "1": "odd"},
+    "odd":  {"0": "odd",  "1": "even"}
+  }
+}
+```
+
+Read it against the diagram.  Each arrow is one entry in `delta`: the `1` arrow from `even` to `odd` is the `"1": "odd"` inside `"even"`.  The double circle is the `accept` list, and the arrow from nowhere is the `start` key.
+
+When `json.load` reads this file, each JSON object becomes a Python dictionary and each JSON list becomes a Python `list`.  So finding the next state takes two lookups, one per level.  The first picks the row for the current state, and the second picks the arrow for the symbol:
+
+| In the diagram | In the JSON | In Python | Value |
+|---|---|---|---|
+| the row of arrows out of `even` | `"even": {"0": "even", "1": "odd"}` | `delta["even"]` | `{'0': 'even', '1': 'odd'}` |
+| the arrow out of `even` on `1` | `"1": "odd"` inside `"even"` | `delta["even"]["1"]` | `'odd'` |
+| the next state, in general | | `delta[state][symbol]` | $\delta(q, a)$ |
+
+Two more operations cover the rest.  `delta["happy"]` raises a `KeyError`, because there is no state named `happy`, while `delta.get("happy", {})` returns the default you supply.  And `state in machine["accept"]` asks whether a state accepts, as `symbol in machine["alphabet"]` asks whether a symbol is legal.
+
+```python
+import json
+
+machine = json.loads("""
+{
+  "states": ["even", "odd"],
+  "alphabet": ["0", "1"],
+  "start": "even",
+  "accept": ["even"],
+  "delta": {
+    "even": {"0": "even", "1": "odd"},
+    "odd":  {"0": "odd",  "1": "even"}
+  }
+}
+""")
+delta = machine["delta"]
+
+print(type(machine).__name__, sorted(machine))  # a dict, and its five keys
+print(delta["even"])                            # the row for state even
+print(delta["even"]["1"])                       # one arrow: even on 1
+print(delta.get("happy"))                       # no such state: None, not a crash
+print(delta.get("happy", {}).get("1"))          # missing row, then missing arrow
+print("even" in machine["accept"], "2" in machine["alphabet"])
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+**Predict** before you run it: what would `delta["odd"]["1"]` print, and which arrow in the diagram is it?
+
 # Part II: Designing DFAs, and Where They Stop
 
 ## 2.  Theory: A State Is What You Must Remember
@@ -309,7 +370,7 @@ Designing a DFA looks like art the first time and becomes mechanical the second,
 
 Every distinct answer to that question is one state.  That is the whole method.
 
-For "even number of 1s," the answer is one bit of parity, so there are two states.  For "ends in `ab`," the answer is how much of the pattern `ab` you have just finished: nothing, an `a`, or a whole `ab`.  Three answers, three states.  For "ends in `abc`," four.  In general, a pattern of length $k$ needs about $k+1$ states, because the thing you must remember is how much of the pattern is in progress right now.
+For "even number of 1s," the answer is one bit of parity, so there are two states.  For "at least three consecutive `a`s," the answer is how many `a`s in a row you have just read, stopping at three: zero, one, two, or "three already."  Four answers, four states.  For "ends in `abc`," four as well: how much of `abc` you have just finished.  In general, a pattern of length $k$ needs about $k+1$ states, because the thing you must remember is how much of the pattern is in progress right now.
 
 Now turn the method on a language it cannot handle.  For $a^n b^n$, what must you remember after reading some `a`s?  The exact count, because you will need to demand the same number of `b`s.  And $n$ has no upper bound.  Every distinct count is a distinct state, so the machine needs infinitely many states, and a DFA has finitely many by definition.
 
@@ -317,25 +378,39 @@ That is not a failure of cleverness.  It is a proof, and it is the same boundary
 
 Remember two things from this section.  Each distinct thing the machine must remember is one state.  When that set of things is unbounded, no DFA exists.
 
-## Examples: Deriving the Ends-in-`ab` Machine
+## Examples: Deriving the At-Least-Three-`a`s Machine
 
 Instead of drawing arrows and hoping, build the machine by tabulating the answer to the design question.  Work down this table with your team before you run the model:
 
 | After reading... | What must I remember? | State |
 |------------------|-----------------------|-------|
-| `""` | nothing useful yet | `q0` |
-| `"a"` | I have an `a` pending | `q_a` |
-| `"ab"` | I just completed `ab` | `q_ab` |
-| `"aba"` | the `b` is stale, but I have an `a` pending | `q_a` |
-| `"abab"` | I just completed `ab` again | `q_ab` |
-| `"b"` | nothing useful | `q0` |
-| `"aa"` | still just an `a` pending, the older one is irrelevant | `q_a` |
+| `""` | no `a`s in a row yet | `q0` |
+| `"a"` | one `a` in a row | `q1` |
+| `"aa"` | two `a`s in a row | `q2` |
+| `"aab"` | the `b` broke the run, so no `a`s in a row | `q0` |
+| `"aaba"` | one `a` in a row, because the older two no longer count | `q1` |
+| `"aaa"` | three in a row: the answer is settled | `q3` |
+| `"aaab"` | still settled, because no later input can undo it | `q3` |
 
-The fourth and seventh rows reuse existing states.  That reuse is the finiteness: infinitely many input prefixes collapse into three buckets, because within a bucket the future behaves the same way.
+The fourth, fifth, and seventh rows reuse existing states.  That reuse is the finiteness: infinitely many input prefixes collapse into four buckets, because within a bucket the future behaves the same way.
 
 Here is the machine the table builds:
 
-![DFA for strings over a and b that end in ab. Three states: q0, q_a, and q_ab. The start state is q0, and the only accepting state is q_ab. Transitions: q0 on a goes to q_a, q0 on b stays in q0, q_a on a stays in q_a, q_a on b goes to q_ab, q_ab on a goes to q_a, q_ab on b goes to q0.](../../files/dotty/ends_in_ab.svg)
+![DFA for strings over a and b with at least three consecutive a's. Four states in a row: q0, q1, q2, and q3. The start state is q0, and the only accepting state is q3. On a, q0 goes to q1, q1 goes to q2, and q2 goes to q3. On b, q0 loops to itself, and q1 and q2 go back to q0. q3 loops to itself on a or b.](../../files/dotty/three_as.svg)
+
+Trace `aabaaa`, the string that shows why the `b` arrows matter:
+
+| Read | State after |
+|---|---|
+| *(start)* | `q0` |
+| `a` | `q1` |
+| `a` | `q2` |
+| `b` | `q0` |
+| `a` | `q1` |
+| `a` | `q2` |
+| `a` | `q3` |
+
+The input ends in `q3`, so the machine accepts.  A machine that only counted `a`s would have reached three at the fourth `a` too, but it would also accept `aabab`, which has three `a`s and never three in a row.
 
 ## Model 4: How State Count Grows, and Where It Explodes
 
@@ -426,7 +501,7 @@ print("  is why a^n b^n needs the stack you met in the Grammars activity.")
 ### Reading the Code
 
 - `build_ends_with` is the Examples table, automated.  Its state is the integer `i`, meaning "I have just completed the first `i` characters of the pattern."
-- The `while k > 0 and cand[-k:] != pattern[:k]` loop is the interesting line.  After reading `ch`, it finds the longest suffix of what you have that is still a live prefix of the pattern.  That is the `q_ab --a--> q_a` arrow from Model 3, done in general.  It is also the heart of the Knuth-Morris-Pratt string search algorithm.
+- The `while k > 0 and cand[-k:] != pattern[:k]` loop is the interesting line.  After reading `ch`, it finds the longest suffix of what you have that is still a live prefix of the pattern.  That keeps a partial match alive instead of throwing it away.  It is also the heart of the Knuth-Morris-Pratt string search algorithm.
 - `build_anbn_up_to` is doomed on purpose.  Its state is a `(phase, count)` pair, and `max_n` caps the count because a DFA must have a finite state set.  Every choice of `max_n` gives a machine that is wrong on some legal string.
 - The `<-- WRONG` marks are the point of the model.  They are not bugs in the code; they are the theorem.
 
@@ -495,11 +570,11 @@ A DFA's entire memory, at any moment during a run, consists of:
 
 ---
 
-In `ENDS_IN_AB_DFA`, the transition `q_ab --a--> q_a` (rather than to `q0`) is there because:
+In `THREE_AS_DFA`, the transition `q2 --b--> q0` (rather than staying in `q2`) is there because:
 
-[(X)] That `a` may be the first character of the next `ab`, so it must not be thrown away
-[( )] `q0` is the start state and cannot be re-entered
-[( )] Every accepting state must have a self-loop
+[(X)] The `b` ends the run, so the two `a`s before it can no longer be part of three in a row
+[( )] `q0` is the start state, and every `b` must return there
+[( )] Every non-accepting state must go to the start state on every symbol
 [( )] It makes the machine smaller
 
 ---
