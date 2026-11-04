@@ -69,14 +69,18 @@ class Environment:
     def define(self, name, value):
         """Create name in THIS scope, shadowing any outer binding of the same name."""
         # TODO (Part 1, Step 1.2): store value under name in this scope's table.
-        #      Do not look at the parent.
+        #      This takes one line, with no if and no mention of the parent.  It
+        #      shadows an outer binding because lookup checks this table first.
         raise NotImplementedError("define")
 
     def lookup(self, name):
         """Return the value of the nearest binding of name, or raise LangNameError."""
         # TODO (Part 1, Step 1.2):
-        #   1. If name is bound in this scope, return its value.
+        #   1. If name is bound in this scope, return its value.  Test with
+        #      name in self._bindings, not .get, because .get also gives None for
+        #      a name that is bound to None.
         #   2. Otherwise, if there is a parent, return the parent's lookup of name.
+        #      Without the return, the parent's answer is thrown away.
         #   3. Otherwise raise LangNameError with a message that contains the name,
         #      such as f"Undefined variable '{name}'".
         raise NotImplementedError("lookup")
@@ -84,8 +88,10 @@ class Environment:
     def assign(self, name, value):
         """Update the nearest binding of name.  Never creates a binding."""
         # TODO (Part 1, Step 1.3):
-        #   1. If name is bound in this scope, update it here and stop.
-        #   2. Otherwise, if there is a parent, hand the assignment to the parent.
+        #   1. If name is bound in this scope, update it here and stop, so that you
+        #      do not also hand the job to the parent.
+        #   2. Otherwise, if there is a parent, hand the name and value to the
+        #      parent's assign.  This path must never write into this scope.
         #   3. Otherwise raise LangNameError with a message that contains the name,
         #      such as f"Cannot assign to undefined variable '{name}'".
         raise NotImplementedError("assign")
@@ -142,7 +148,7 @@ class BinOp:
 
 
 @dataclass
-class UnaryOp:            # used only in the optional extension
+class UnaryOp:            # used only in the optional extensions
     op: str               # "-" or "not"
     operand: Any
     line: int = _pos()
@@ -150,7 +156,7 @@ class UnaryOp:            # used only in the optional extension
 
 
 @dataclass
-class LogicOp:            # used only in the optional extension
+class LogicOp:            # used only in the optional extensions
     op: str               # "and" or "or"
     left: Any
     right: Any
@@ -168,7 +174,7 @@ class Let:
 
 
 @dataclass
-class Assign:             # used only in the optional extension
+class Assign:             # used only in the optional extensions
     name: str
     value: Any
     line: int = _pos()
@@ -261,20 +267,24 @@ def check_expr(node, tenv):
         return NUM                    # the model rule: a literal needs nothing from tenv
 
     # TODO (Part 2, Step 2.2): literals.  A Str is STR, and a BoolLit is BOOL.
+    #      Copy the shape of the Num branch above.
 
     # TODO (Part 2, Step 2.2): variables.  Look node.name up in tenv, the Part 1
-    #      scope table.  A name no scope declares has the unknown type None:
+    #      scope table, which walks the chain for you.  A name no scope declares
+    #      has the unknown type None, because it is not an error here:
     #      catch the LangNameError and return None.  The evaluator reports
     #      undefined names when the program runs.
 
-    # TODO (Part 2, Step 2.3): binary operators.  Type both operands, then:
+    # TODO (Part 2, Step 2.3): binary operators.  Type node.left and node.right
+    #      by calling check_expr on each, then:
     #      ARITHMETIC needs Num and Num and gives NUM;
     #      COMPARISON needs Num and Num and gives BOOL;
     #      EQUALITY needs two equal types and gives BOOL.
     #      If either operand is None, skip the check and return the result type.
     #      A failed check raises LangTypeError at node.line, node.col with a
-    #      message that names the operator and BOTH operand types, such as
-    #      "'+' requires Num operands, got Num and Bool".
+    #      message that names the operator and BOTH types you found, such as
+    #      "'+' requires Num operands, got Num and Bool" or
+    #      "'==' requires operands of the same type, got Num and Str".
 
     raise NotImplementedError(f"no typing rule yet for {type(node).__name__}")
 
