@@ -1647,7 +1647,7 @@ For each Python expression below, identify which bird (I, K, S, B, C, W, M, KI) 
 
 4.  **Pairs from birds.**  Using only I, K, KI, V (Vireo), implement `swap` (exchange the components of a pair) as a bird expression, with no lambda.  Verify on `pair(1)(2)`.
 
-5.  **SKI Turing completeness (research).**  The combinator $$\mathbf{S}\ \mathbf{K}$$ applied to itself loops: $$\mathbf{S}\ \mathbf{K}\ (\mathbf{S}\ \mathbf{K}) \Rightarrow \mathbf{K}\ (\mathbf{S}\ \mathbf{K})\ (\mathbf{K}\ (\mathbf{S}\ \mathbf{K})) \Rightarrow \mathbf{S}\ \mathbf{K}$$. Write a one-paragraph explanation of why the existence of a non-terminating term (like $$\Omega$$ in the lambda calculus) is *necessary* for a system to be Turing complete, connecting to the Halting Problem.
+5.  **SKI Turing completeness (research).**  The combinator $$\mathbf{S}\ \mathbf{K}$$ applied to itself loops: $$\mathbf{S}\ \mathbf{K}\ (\mathbf{S}\ \mathbf{K}) \Rightarrow \mathbf{K}\ (\mathbf{S}\ \mathbf{K})\ (\mathbf{K}\ (\mathbf{S}\ \mathbf{K})) \Rightarrow \mathbf{S}\ \mathbf{K}$$. Write a one-paragraph explanation of why the existence of a non-terminating term (like $$\Omega$$ in the lambda calculus) is *necessary* for a system to be Turing complete.
 
 ---
 

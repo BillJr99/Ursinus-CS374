@@ -510,7 +510,6 @@ schedule:
     rlink: "Tutorials/TypingDisciplines"
   - rtitle: "The same buggy snippet under mypy (Python) and TypeScript, compared in class: gradual typing as an object of study"
     rlink: "https://www.typescriptlang.org/play"
-  - rtitle: "Allison, Ch. 10 §10.1: The Halting Problem (Why Some Questions About Programs Are Undecidable)"
   - rtitle: "Type Inference (Implementing Hindley-Milner)"
     rlink: "Tutorials/TypeInference"
 - week: "13"
