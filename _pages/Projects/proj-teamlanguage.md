@@ -90,14 +90,13 @@ Your team will design, build, document, and present a programming language of yo
 
 ## Milestone Timeline
 
-The project is worth **100 points**, earned at two graded milestones: the proposal (28 points) and the Demo Day Presentations deliverable (72 points), which you submit on the last class day and present at Demo Day.  One small check along the way falls within Class Activities and Participation: the Release and Review submission (6 points).  It keeps the team honest without raising the stakes of a studio day.  See the course schedule for the assigned and due dates; it is the source of truth for every date below.
+The project is worth **100 points**, earned at two graded milestones: the proposal (28 points) and the Demo Day Presentations deliverable (72 points), which you submit on the last class day and present at Demo Day.  The Sprint Studio's release and review work goes in with the final submission.  See the course schedule for the assigned and due dates; it is the source of truth for every date below.
 
 | Milestone (see the course schedule for dates) | What is due | Points |
 |---|---|---|
 | Project hand-out | Nothing is submitted.  The design phase opens: form a team of three, pick a niche, start the design scorecard and the team charter | - |
 | **Proposal: submitted, then presented at the Sprint 0 kickoff** | **The proposal, opening with the team roster, the niche, the design scorecard, and the signed team charter.  You submit it before the kickoff and present it at the kickoff** | **28** |
-| Release and Review (Sprint Studio) | One submission: the Sprint 2 gallery walk cards and your triage, and the Sprint 3 ShipIt Release Checklist (assessed within Class Activities and Participation) | 6 |
-| **Demo Day Presentations: submitted on the last class day, then presented at Demo Day (final exam period)** | **The final submission, due on the last class day, and the presentation at Demo Day** | **72** |
+| **Demo Day Presentations: submitted on the last class day, then presented at Demo Day (final exam period)** | **The final submission, due on the last class day, including your gallery walk cards and triage and the ShipIt Release Checklist, and the presentation at Demo Day** | **72** |
 
 Demo Day takes place in the course's final exam period, which the course schedule lists.  The final submission is due earlier, on the last class day.  There is no written final exam; Demo Day is the course's terminal event, and I accept no work after it.
 
@@ -389,9 +388,9 @@ python3 -m pytest tests/               # runs the test suite
 
 ---
 
-## Milestone 4: Release and Review (6 points): The Sprint Studio
+## Milestone 4: Release and Review: The Sprint Studio
 
-Sprints 2 and 3 meet in one Sprint Studio session on the last class day.  Their work goes in one Canvas submission, **Release and Review**, due that day: your gallery walk cards and their triage, and the ShipIt Release Checklist.  It is assessed within Class Activities and Participation.
+Sprints 2 and 3 meet in one Sprint Studio session on the last class day.  Their work goes in with your final submission, due that day: your gallery walk cards and their triage, and the ShipIt Release Checklist.
 
 ### Sprint 2: The Gallery Walk
 
@@ -422,7 +421,7 @@ Sprint 3 completes the feature, hardens errors, and finishes the sample suite.  
 
 > **Watch out.**  Flip the repository public only after the secrets audit.  Public means the full history is public.
 
-**Deliverables checklist (the Release and Review submission, due on the last class day):**
+**Deliverables checklist (part of the final submission, due on the last class day):**
 
 - [ ] Grammar differences implemented and reflected in `SEMANTICS.md`.
 - [ ] The distinctive feature's skeleton running end to end on at least one program (Direction B: the evaluator emitting a timed event list).

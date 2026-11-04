@@ -458,7 +458,7 @@ schedule:
     dlink: "Assignments/Lexer"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-lexer.md"
-  - dtitle: "Programming Assignment: Parser and AST Handed Out"
+  - dtitle: "Programming Assignment: Parser Handed Out"
     dlink: "Assignments/Parser"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-parser.md"
@@ -487,10 +487,6 @@ schedule:
   link: "Activities/liascript-bindingscope.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Tree-Walking Interpreter Handed Out"
-    dlink: "Assignments/Interpreter"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-interpreter.md"
   readings:
   - rtitle: "Tutorial: Environments and Type Checking, a walkthrough of the scope table and a small type checker"
     rlink: "Assignments/EnvironmentsLab"
@@ -524,6 +520,10 @@ schedule:
   link: "Activities/liascript-languagedesign.md"
   liapage: true
   deliverables:
+  - dtitle: "Programming Assignment: Interpreter Handed Out"
+    dlink: "Assignments/Interpreter"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-interpreter.md"
   readings:
   - rtitle: "Build a Bytecode VM"
     rlink: "Tutorials/BytecodeVM"
@@ -533,7 +533,7 @@ schedule:
   link: "Activities/liascript-lambdacalculus1.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Parser and AST Due"
+  - dtitle: "Programming Assignment: Parser Due"
     dlink: "Assignments/Parser"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-parser.md"
@@ -553,6 +553,10 @@ schedule:
   link: "Activities/liascript-lambdacalculus2.md"
   liapage: true
   deliverables:
+  - dtitle: "Lab: Lambda Calculus Due"
+    dlink: "Assignments/LambdaCalculusLab"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
   - rtitle: "Church encodings: numerals, booleans, and the arithmetic you reduce by hand in the Lambda Calculus lab (today's activity, Models 2-3)"
   - rtitle: "A Flock of Functions: Combinators, Lambda Calculus, & Church Encodings in JS - Part II (Gabriel Lebec)"
@@ -565,22 +569,14 @@ schedule:
   link: "Activities/liascript-sprintstudio.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Tree-Walking Interpreter Due"
+  - dtitle: "Programming Assignment: Interpreter Due"
     dlink: "Assignments/Interpreter"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-interpreter.md"
-  - dtitle: "Team Language Project: Release and Review Due"
-    dlink: "Projects/TeamLanguage"
-    points: "6"
-    rubricpath: "_pages/Projects/proj-teamlanguage.md"
   - dtitle: "Team Language Project: Demo Day Presentations Due"
     dlink: "Projects/TeamLanguage"
     points: "72"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
-  - dtitle: "Lab: Lambda Calculus Due"
-    dlink: "Assignments/LambdaCalculusLab"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
   - rtitle: "The Project Language Guide (a complete worked path for the team project)"
     rlink: "Tutorials/ProjectLanguageGuide"

@@ -852,7 +852,7 @@ LexError at line 3, col 7: unexpected character '@'
 LexError at line 0, col 0: no position
 ```
 
-19. The Interpreter assignment prints `Lexical error at line L, col C: <message>`.  Which attributes does it read to build that line, and what would it have to do if `LexError` held only one formatted string?
+19. Suppose an interpreter prints `Lexical error at line L, col C: <message>`.  Which attributes does it read to build that line, and what would it have to do if `LexError` held only one formatted string?
 
 ### Build Step 6: Scan One Token
 

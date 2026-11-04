@@ -60,7 +60,7 @@ Rules first, then the machine that enforces them.  Parts I and II are the vocabu
 | Part III: The Environment Chain | Run the paper machine by hand (CTQs 9-12), check it against the Model 3 code cell, and read the class (CTQs 13-15) |
 | Part IV: Define, Assign, and Blocks | Run Model 5 and answer CTQs 16-18, then simulate per-iteration scope in Model 6 and answer CTQs 19-20 |
 | Part V: Lifetime, and Your Language | Run `make_adder` and the loop-variable trap, and answer CTQs 23-25 |
-| Wrap-up | The Recorder posts the team's answers; everyone notes that the Interpreter assignment, handed out today, has its own `Environment` step |
+| Wrap-up | The Recorder posts the team's answers; everyone notes that the Scheme interpreter in the Interpreter assignment uses this same scope chain |
 
 If the period runs short, the Try It Yourself blocks (other than Probe 1) and CTQs 21-22 move to homework.  Everything after **In-class work stops here** is self-paced: the exercises and four extensions covering Python's LEGB rule, the define-when-you-meant-assign bug, a three-level chain trace, and a step-by-step storage trace.  The last two are the closest rehearsal for the lab's paper trace.
 
