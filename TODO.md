@@ -25,3 +25,5 @@
 - [ ] Align the lectures, tutorials, and activities with the assignments and labs, so that each one prepares students for the assignment it leads to.
 
 - [ ] Simplify the lectures so they build up the scaffolding the assignments need, which then lets the assignments carry less scaffolding themselves.
+
+- [ ] Make the project more defined and project-based, and more practical for groups to execute: clearer coordination (who does what, by when) and a focus on group accountability.
