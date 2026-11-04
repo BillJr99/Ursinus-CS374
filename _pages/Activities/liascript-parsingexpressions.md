@@ -831,6 +831,32 @@ A parser generator reports a shift-reduce conflict on the team's grammar at the 
 
 > **Going deeper:** why more lookahead extends LL but never LR, and the containments among the grammar classes, are the subject of the extension *What More Lookahead Buys, and What It Does Not* at the end of this page.
 
+### Two Small Grammars, Two Conflicts
+
+Each kind of conflict shows up in a grammar small enough to hold in your head.
+
+**Shift-reduce.**  Take `E -> E + E | E * E | id`, and parse `id + id * id`.  After `id + id`, the stack holds `E + E` and the next token is `*`.  The parser can reduce, which treats the addition as done and gives `(id + id) * id`, or it can shift, which gives `id + (id * id)`.  The grammar allows both trees, so it never says which one it means.  The fix is to give each precedence level its own nonterminal, so that only one tree exists:
+
+```text
+E -> E + T | T
+T -> T * F | F
+F -> id
+```
+
+Now a `*` can only appear inside a `T`, and the parser has one move at every step.
+
+**Reduce-reduce.**  Take `S -> A B | C D`, with `A`, `B`, `C`, and `D` each deriving `id`, and parse `id id`.  After the first `id`, the parser has finished a phrase, but it cannot tell whether that phrase is an `A` or a `C`, because both are followed by something that starts with `id`.  Both reductions are complete and neither is wrong.  The fix is to change the language so that the next token decides, here with four different tokens:
+
+```text
+S -> A B | C D
+A -> id_a
+C -> id_c
+B -> id_b
+D -> id_d
+```
+
+The [LR construction tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LRConstruction) runs both grammars through Bison, so you can read the reports it prints.
+
 ---
 
 ## Model 4: Technology Selection

@@ -294,6 +294,71 @@ states: 7   conflicts: 2
 
 Here both items are complete, and `FOLLOW(E)` and `FOLLOW(T)` overlap, so on `$` the parser has two finished productions and no basis to choose.  No precedence declaration helps: the grammar genuinely says an `n` on its own is both a `T` and an `E`.  This one needs the grammar restructured.
 
+**Both kinds, as Bison reports them.**  Here are two small grammars you can run yourself.  The first is ambiguous about `id + id * id`:
+
+```text
+%token ID
+%%
+e : e '+' e
+  | e '*' e
+  | ID
+  ;
+```
+
+```text
+$ bison -v sr.y
+sr.y: warning: 4 shift/reduce conflicts [-Wconflicts-sr]
+```
+
+After `e + e`, with `*` next, the parser can reduce to `(id + id) * id` or shift toward `id + (id * id)`.  The `-v` flag writes `sr.output`, which lists each state and its conflicts.  Giving each precedence level its own nonterminal removes the ambiguity, and Bison then prints nothing:
+
+```text
+%token ID
+%%
+e : e '+' t
+  | t
+  ;
+t : t '*' f
+  | f
+  ;
+f : ID
+  ;
+```
+
+The second grammar is ambiguous about what one token *is*:
+
+```text
+%token ID
+%%
+s : a b
+  | c d
+  ;
+a : ID ;
+c : ID ;
+b : ID ;
+d : ID ;
+```
+
+```text
+$ bison -v rr.y
+rr.y: warning: 1 reduce/reduce conflict [-Wconflicts-rr]
+rr.y:7.5-6: warning: rule useless in parser due to conflicts [-Wother]
+```
+
+After the first `ID`, the parser has two finished productions, `a : ID` and `c : ID`, and the next token is `ID` either way.  Bison keeps the rule listed first, so `c : ID` can never fire, which is what "useless" means here.  Distinct tokens let the next token decide, and Bison then prints nothing:
+
+```text
+%token ID_A ID_C ID_B ID_D
+%%
+s : a b
+  | c d
+  ;
+a : ID_A ;
+c : ID_C ;
+b : ID_B ;
+d : ID_D ;
+```
+
 That distinction is the practical lesson.  A shift-reduce conflict is often a precedence question you can declare your way out of.  A reduce-reduce conflict is usually a design problem in the grammar.
 
 ---

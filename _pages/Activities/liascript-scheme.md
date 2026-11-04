@@ -1013,6 +1013,8 @@ Scheme paid for its uniformity.  Name one thing about today that was genuinely h
 
 ## 6.  Further Reading
 
+- [Lists and recursion: `append` and `reverse`, *An Introduction to Scheme and its Implementation*](https://www.cs.utexas.edu/ftp/garbage/cs345/schintro-v14/schintro_46.html).
+- [A recursive `factorial` in Scheme, Trinity University](https://www.cs.trinity.edu/~jhowland/ccsc98/ccsc98/node5.html).
 - [The Scheme Programming Language](https://www.scheme.com/tspl3/) (Dybvig): the standard reference, and readable front to back
 - [Closures in Scheme](https://www.artificialworlds.net/presentations/scheme-03-closures/scheme-03-closures.html) (Andy Balaam): where `make-counter` comes from
 - [Structure and Interpretation of Computer Programs](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/full-text/book/book.html) (Abelson and Sussman), sections 3.1 and 3.2: where `make-account` comes from, and the source of the argument that a closure and an object are the same idea seen from two sides

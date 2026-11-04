@@ -208,6 +208,66 @@ print("if FALSE then 'yes' else 'no' =", FALSE("yes")("no"))
 
 ---
 
+### Worked: NOT, Then EQUALS from Its Truth Table
+
+A Church boolean chooses between two things: TRUE picks the first and FALSE picks the second.  So building a logic operator comes down to deciding what the boolean should choose between.
+
+NOT should turn TRUE into FALSE, so hand `x` the two answers in swapped order: `NOT = λx. x FALSE TRUE`.
+
+```text
+NOT TRUE  = TRUE FALSE TRUE              substitute TRUE for x
+          = (λa.λb. a) FALSE TRUE
+          = FALSE                        TRUE picks the first item
+
+NOT FALSE = FALSE FALSE TRUE             substitute FALSE for x
+          = (λa.λb. b) FALSE TRUE
+          = TRUE                         FALSE picks the second item
+```
+
+EQUALS is true exactly when its two inputs match.  Read the truth table, with 1 for TRUE:
+
+| `p` | `q` | XOR | EQUALS |
+|---|---|---|---|
+| 0 | 0 | 0 | 1 |
+| 0 | 1 | 1 | 0 |
+| 1 | 0 | 1 | 0 |
+| 1 | 1 | 0 | 1 |
+
+The EQUALS column is the opposite of the XOR column, which gives one definition.  Reading the rows where EQUALS is 0 gives another: EQUALS fails only when `p` is true and `q` is false, or when `p` is false and `q` is true.  Rule out both cases, and you have a second.
+
+```text
+EQUALS = λp.λq. NOT (XOR p q)
+EQUALS = λp.λq. AND (OR p (NOT q)) (OR (NOT p) q)
+```
+
+Selection gives a third that is shorter than both: if `p` is true, the answer is `q`; otherwise, it is `NOT q`.
+
+```text
+EQUALS = λp.λq. p q (NOT q)
+```
+
+```python
+TRUE  = lambda a: lambda b: a
+FALSE = lambda a: lambda b: b
+NOT   = lambda x: x(FALSE)(TRUE)
+AND   = lambda p: lambda q: p(q)(FALSE)
+OR    = lambda p: lambda q: p(TRUE)(q)
+XOR   = lambda p: lambda q: p(NOT(q))(q)
+
+EQ1 = lambda p: lambda q: NOT(XOR(p)(q))
+EQ2 = lambda p: lambda q: AND(OR(p)(NOT(q)))(OR(NOT(p))(q))
+EQ3 = lambda p: lambda q: p(q)(NOT(q))
+
+show = lambda b: b(1)(0)
+print("p q  EQ1 EQ2 EQ3")
+for p in (FALSE, TRUE):
+    for q in (FALSE, TRUE):
+        print(show(p), show(q), "", show(EQ1(p)(q)), " ", show(EQ2(p)(q)), " ", show(EQ3(p)(q)))
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+These definitions follow Kate Morley's [Boolean logic in the lambda calculus](https://code.iamkate.com/lambda-calculus/boolean-logic/).
+
 ## Model 2: Prove the Logic
 
 ### Critical Thinking Questions
@@ -261,6 +321,9 @@ SUCC ZERO
 ->β λf.λx. f x
 = ONE  OK
 ```
+
+Some references spell the same term with other letters.  [Cornell's CS 312 notes](http://www.cs.cornell.edu/courses/cs312/2008sp/recitations/rec26.html) write the successor as `λw.λy.λx. y (w y x)`, which is this `SUCC` with `n`, `f`, and `x` renamed, so the reduction is the same.
+
 
 **Step-by-step reduction: PLUS TWO THREE reduces to FIVE**
 
@@ -1211,6 +1274,8 @@ In your notebook, answer both prompts.  First: numbers, booleans, pairs, and con
 - **Lambda-Py / pycombinator**: combinators and Church encodings in Python.  Run every Church encoding from today interactively in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html
 - Raymond Smullyan.  *To Mock a Mockingbird* (1985): the combinator birds.
 - Raul Rojas.  "A Tutorial Introduction to the Lambda Calculus" (online), sections on encodings.
+- Kate Morley.  [Boolean logic in the lambda calculus](https://code.iamkate.com/lambda-calculus/boolean-logic/).
+- [Church numerals and the successor, CS 312 recitation notes, Cornell University](http://www.cs.cornell.edu/courses/cs312/2008sp/recitations/rec26.html).
 - [Build a Lambda Calculus Reducer](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LambdaCalculusReducer): builds the derivation from Part IV one step at a time in Python, from a factorial that takes a copy of itself through to the machinery separated out, and then implements the reducer that checks your hand reductions mechanically.  The Team Language Project's optional [lambda-calculus core extension](https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage#extensions-menu) builds on the Church encodings from this activity.
 - `call/cc`: capturing the rest of the computation as a value, and deriving break, return, exceptions, cooperative schedulers, generators, and backtracking from it.  The Team Language Project's optional [continuations extension](https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage#extensions-menu) builds on this.
 - The Curry-Howard correspondence: propositions as types, products and sums, the empty type and absurdity, and a glimpse of dependent types.  Philip Wadler, *Propositions as Types*.

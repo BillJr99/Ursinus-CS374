@@ -941,6 +941,155 @@ Each addition requires: (1) updating the lexer rules, (2) updating the grammar, 
 
 ---
 
+# Part 10: A Tiny Scheme in Flex and Bison
+
+Scheme's syntax is nearly all parentheses, so a small piece of it makes a good second grammar.  This one has arithmetic, `define`, and variable lookup, computes as it parses, and stores definitions in a linked list.
+
+Save this as `scheme.l`:
+
+```text
+%option noyywrap noinput nounput
+%{
+#include <stdlib.h>
+#include <string.h>
+#include "parser.tab.h"
+%}
+
+%%
+[ \t\r\n]+             { /* skip whitespace */ }
+;.*                    { /* a comment runs to the end of the line */ }
+"define"               { return DEFINE; }
+-?[0-9]+               { yylval.num = atoi(yytext); return NUMBER; }
+[a-zA-Z_][a-zA-Z0-9_]* { yylval.sym = strdup(yytext); return SYMBOL; }
+.                      { return yytext[0]; }
+%%
+```
+
+Single-character tokens such as `(` and `+` come through the last rule, which returns the character itself.  The minus sign needs no special case, because `-?[0-9]+` only matches when a digit follows.  Save this as `scheme.y`:
+
+```text
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int yylex(void);
+void yyerror(const char *s) { fprintf(stderr, "error: %s\n", s); }
+
+/* The symbol table is a linked list: a new definition goes on the front. */
+typedef struct Symbol {
+    char *name;
+    int value;
+    struct Symbol *next;
+} Symbol;
+
+static Symbol *table = NULL;
+
+static void define(char *name, int value) {
+    Symbol *s = malloc(sizeof(Symbol));
+    s->name = name;
+    s->value = value;
+    s->next = table;
+    table = s;
+}
+
+static int lookup(const char *name) {
+    for (Symbol *s = table; s != NULL; s = s->next)
+        if (strcmp(s->name, name) == 0)
+            return s->value;
+    fprintf(stderr, "error: undefined symbol '%s'\n", name);
+    return 0;
+}
+%}
+
+%union {
+    int num;
+    char *sym;
+}
+%token <num> NUMBER
+%token <sym> SYMBOL
+%token DEFINE
+%type <num> expr
+
+%%
+program
+    : %empty
+    | program form
+    ;
+form
+    : '(' DEFINE SYMBOL expr ')'  { define($3, $4); printf("%s = %d\n", $3, $4); }
+    | expr                        { printf("%d\n", $1); }
+    ;
+expr
+    : NUMBER                { $$ = $1; }
+    | SYMBOL                { $$ = lookup($1); }
+    | '(' '+' expr expr ')' { $$ = $3 + $4; }
+    | '(' '-' expr expr ')' { $$ = $3 - $4; }
+    | '(' '*' expr expr ')' { $$ = $3 * $4; }
+    | '(' '/' expr expr ')' {
+          if ($4 == 0) { yyerror("division by zero"); $$ = 0; }
+          else $$ = $3 / $4;
+      }
+    ;
+%%
+
+int main(void) { return yyparse(); }
+```
+
+Two details are easy to get wrong.  Every token that carries a value needs its type, as in `%token <num> NUMBER`, or Bison stops with "`$1` of 'expr' has no declared type."  And a `form` is either a definition or an `expr`, with no extra parentheses of its own, so that `(+ 1 2)` works at the top level.
+
+The symbol table has the same shape as one scope in [section 4.6](#46-scope-a-linked-list-of-symbol-tables).  `define` puts a new entry on the front of the list, and `lookup` walks from the front, so the newest definition of a name wins.
+
+Save this as `Makefile`, with a tab at the start of each command line:
+
+```make
+all: scheme
+
+scheme: scheme.y scheme.l
+	bison -d -o parser.tab.c scheme.y
+	flex scheme.l
+	gcc parser.tab.c lex.yy.c -o scheme
+
+clean:
+	rm -f parser.tab.c parser.tab.h lex.yy.c scheme
+```
+
+Save this as `tests.scm`:
+
+```text
+; arithmetic with no definitions
+(+ 1 2)
+(* (+ 1 2) (- 10 4))
+; a definition, then a lookup
+(define x 5)
+(+ x 2)
+; a later definition goes on the front of the list, so it wins
+(define x 100)
+(+ x 2)
+y
+(/ 7 0)
+```
+
+```bash
+make
+./scheme < tests.scm
+```
+
+```text
+3
+18
+x = 5
+7
+x = 100
+102
+error: undefined symbol 'y'
+0
+error: division by zero
+0
+```
+
+---
+
 ## Further Reading
 
 - Levine, John.  *Flex & Bison* (O'Reilly, 2009).  The definitive practical reference; covers everything in this tutorial and much more.

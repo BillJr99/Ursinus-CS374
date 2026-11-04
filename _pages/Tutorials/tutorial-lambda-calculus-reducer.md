@@ -603,6 +603,221 @@ The one step not covered here: **alpha-equivalence checking** for your cross-ver
 
 ---
 
+# Part 8: The Same Reducer in Flex and Bison
+
+This part builds a smaller reducer in C, with Flex and Bison reading the terms.  It shows how a parser generator connects to the three term shapes, and how little code beta reduction takes once you have them.  It also has a real limitation, on purpose, so that you can see what Part 3's capture-avoiding substitution is for.
+
+## 8.1 The Term and the Lexer
+
+A term is a variable, a lambda, or an application, so one struct with a `kind` covers all three.  Save this as `term.h`:
+
+```c
+#ifndef TERM_H
+#define TERM_H
+
+typedef enum { VAR, LAM, APP } Kind;
+
+typedef struct Term {
+    Kind kind;
+    char *name;              /* VAR: the variable.  LAM: the bound variable. */
+    struct Term *a, *b;      /* LAM: a is the body.  APP: a is the function, b the argument. */
+} Term;
+
+#endif
+```
+
+The lexer hands the parser the keyword `lambda`, names, punctuation, and newlines.  Each line is one term, so the newline is a token and not whitespace.  Save this as `lexer.l`:
+
+```text
+%option noyywrap noinput nounput
+%{
+#include <string.h>
+#include "term.h"
+#include "parser.tab.h"
+%}
+
+%%
+[#;].*              { /* a comment runs to the end of the line */ }
+"lambda"            { return LAMBDA; }
+[a-zA-Z][a-zA-Z0-9]* { yylval.name = strdup(yytext); return NAME; }
+"("                 { return '('; }
+")"                 { return ')'; }
+"."                 { return '.'; }
+[ \t\r]+            { /* skip spaces */ }
+\n                  { return '\n'; }
+.                   { fprintf(stderr, "unexpected character '%s'\n", yytext); }
+%%
+```
+
+## 8.2 The Grammar and the Reduction
+
+The grammar encodes two rules of the notation.  A lambda body stretches as far right as it can, because `expr` is the body.  Application associates to the left, because `app` is left-recursive, so `a b c` means `(a b) c`.  Save this as `parser.y`:
+
+```text
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "term.h"
+
+int yylex(void);
+void yyerror(const char *s) { fprintf(stderr, "error: %s\n", s); }
+
+static Term *make(Kind kind, char *name, Term *a, Term *b) {
+    Term *t = malloc(sizeof(Term));
+    t->kind = kind; t->name = name; t->a = a; t->b = b;
+    return t;
+}
+static Term *make_var(char *name)          { return make(VAR, name, NULL, NULL); }
+static Term *make_lam(char *name, Term *b) { return make(LAM, name, b, NULL); }
+static Term *make_app(Term *f, Term *x)    { return make(APP, NULL, f, x); }
+
+/* Replace free occurrences of name in t with value.  This builds new
+   nodes and leaves t alone.  It does NOT rename to avoid capture. */
+static Term *subst(Term *t, const char *name, Term *value) {
+    switch (t->kind) {
+    case VAR: return strcmp(t->name, name) == 0 ? value : t;
+    case LAM: return strcmp(t->name, name) == 0
+                     ? t
+                     : make_lam(t->name, subst(t->a, name, value));
+    default:  return make_app(subst(t->a, name, value), subst(t->b, name, value));
+    }
+}
+
+/* One normal-order step: the leftmost, outermost redex.
+   Returns NULL if t is already in normal form. */
+static Term *step(Term *t) {
+    Term *s;
+    switch (t->kind) {
+    case VAR: return NULL;
+    case LAM:
+        s = step(t->a);
+        return s ? make_lam(t->name, s) : NULL;
+    default:
+        if (t->a->kind == LAM)                      /* (lambda x. body) arg */
+            return subst(t->a->a, t->a->name, t->b);
+        s = step(t->a);
+        if (s) return make_app(s, t->b);
+        s = step(t->b);
+        return s ? make_app(t->a, s) : NULL;
+    }
+}
+
+static void print(Term *t) {
+    switch (t->kind) {
+    case VAR: printf("%s", t->name); break;
+    case LAM: printf("(lambda %s. ", t->name); print(t->a); printf(")"); break;
+    default:  printf("("); print(t->a); printf(" "); print(t->b); printf(")"); break;
+    }
+}
+
+static void reduce(Term *t) {
+    int n = 0;
+    Term *s;
+    while (n < 1000 && (s = step(t)) != NULL) { t = s; n++; }
+    print(t);
+    printf(n == 1000 ? "   (stopped after 1000 steps)\n" : "   (%d steps)\n", n);
+}
+%}
+
+%union {
+    char *name;
+    struct Term *term;
+}
+%token <name> NAME
+%token LAMBDA
+%type <term> expr app atom
+
+%%
+input
+    : %empty
+    | input '\n'
+    | input expr '\n'     { reduce($2); }
+    ;
+expr
+    : LAMBDA NAME '.' expr { $$ = make_lam($2, $4); }
+    | app                  { $$ = $1; }
+    ;
+app
+    : app atom             { $$ = make_app($1, $2); }
+    | atom                 { $$ = $1; }
+    ;
+atom
+    : NAME                 { $$ = make_var($1); }
+    | '(' expr ')'         { $$ = $2; }
+    ;
+%%
+
+int main(void) { return yyparse(); }
+```
+
+Three functions do the work:
+
+- `make_var`, `make_lam`, and `make_app` build the nodes, one per grammar action.
+- `subst` replaces a variable in a body.  If a lambda rebinds the same name, it stops, because inside that lambda the name means something else.
+- `step` finds the leftmost, outermost redex, which is normal order.  A term with no redex anywhere is in normal form, so `step` returns `NULL` and `reduce` stops.  It also reduces under lambdas, so that `1 + 1` reaches `2` rather than stopping partway.
+
+The `n < 1000` limit in `reduce` is there because some terms never finish.
+
+## 8.3 Build It and Run It
+
+Save this as `Makefile`, with a tab at the start of each command line:
+
+```make
+all: reducer
+
+reducer: parser.y lexer.l term.h
+	bison -d parser.y
+	flex lexer.l
+	gcc parser.tab.c lex.yy.c -o reducer
+
+clean:
+	rm -f parser.tab.c parser.tab.h lex.yy.c reducer
+```
+
+Save these test cases as `tests.txt`:
+
+```text
+# identity
+(lambda x. x) a
+# first and second
+(lambda x. lambda y. x) a b
+(lambda x. lambda y. y) a b
+# AND TRUE FALSE, and AND TRUE TRUE
+(lambda p. lambda q. p q p) (lambda x. lambda y. x) (lambda x. lambda y. y)
+(lambda p. lambda q. p q p) (lambda x. lambda y. x) (lambda x. lambda y. x)
+# 1 + 1, reduced all the way to 2
+(lambda m. lambda n. lambda f. lambda x. m f (n f x)) (lambda f. lambda x. f x) (lambda f. lambda x. f x)
+# capture: the correct answer is lambda z. y, for a fresh z
+(lambda x. lambda y. x) y
+# never finishes
+(lambda x. x x) (lambda x. x x)
+```
+
+Then build and run:
+
+```bash
+make
+./reducer < tests.txt
+```
+
+```text
+a   (1 steps)
+a   (2 steps)
+b   (2 steps)
+(lambda x. (lambda y. y))   (4 steps)
+(lambda x. (lambda y. x))   (4 steps)
+(lambda f. (lambda x. (f (f x))))   (6 steps)
+(lambda y. y)   (1 steps)
+((lambda x. (x x)) (lambda x. (x x)))   (stopped after 1000 steps)
+```
+
+## 8.4 What This Reducer Gets Wrong
+
+Look at the seventh line.  `(lambda x. lambda y. x) y` should return a function that ignores its argument and gives back the free `y`.  This reducer returns `(lambda y. y)`, the identity function, because substituting `y` into the body let the inner `lambda y` capture it.  `subst` never renames.  Add the fresh-name case from Part 3 to fix it, which is the case that makes substitution correct and not only usually right.
+
+---
+
 # Advanced: Deriving the Y Combinator
 
 *"The Y combinator is probably the most ingenious and least intuitive result in the lambda calculus."*, Pierce, *TAPL*
