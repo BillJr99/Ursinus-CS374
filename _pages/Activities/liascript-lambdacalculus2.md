@@ -181,7 +181,6 @@ FALSE = lambda x: lambda y: y          # KI (Kite)
 NOT   = lambda b: b(FALSE)(TRUE)
 AND   = lambda p: lambda q: p(q)(p)
 OR    = lambda p: lambda q: p(p)(q)
-XOR   = lambda p: lambda q: p(NOT(q))(q)
 
 # Decode helper: peek inside any Church boolean
 def church_to_bool(b):
@@ -196,8 +195,6 @@ print("NOT TRUE        =", show_bool(NOT(TRUE)))
 print("NOT FALSE       =", show_bool(NOT(FALSE)))
 print("AND TRUE FALSE  =", show_bool(AND(TRUE)(FALSE)))
 print("OR  FALSE TRUE  =", show_bool(OR(FALSE)(TRUE)))
-print("XOR TRUE  TRUE  =", show_bool(XOR(TRUE)(TRUE)))
-print("XOR TRUE  FALSE =", show_bool(XOR(TRUE)(FALSE)))
 
 # if-then-else is just application: b(then)(else)
 print("\n=== Church if-then-else ===")
@@ -207,6 +204,17 @@ print("if FALSE then 'yes' else 'no' =", FALSE("yes")("no"))
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
 ---
+
+**How to think about XOR.**  XOR is true when exactly one input is true.  You write it yourself in the Lambda Calculus lab, and you can reason it out the same way as the others:
+
+| `p` | `q` | XOR |
+|---|---|---|
+| 0 | 0 | 0 |
+| 0 | 1 | 1 |
+| 1 | 0 | 1 |
+| 1 | 1 | 0 |
+
+A Church boolean picks between two things, so let `p` do the picking.  In the rows where `p` is 1, the answer is the opposite of `q`.  In the rows where `p` is 0, the answer is `q`.  Those are the two things to hand to `p`.
 
 ### Worked: NOT, Then EQUALS from Its Truth Table
 
@@ -252,17 +260,15 @@ FALSE = lambda a: lambda b: b
 NOT   = lambda x: x(FALSE)(TRUE)
 AND   = lambda p: lambda q: p(q)(FALSE)
 OR    = lambda p: lambda q: p(TRUE)(q)
-XOR   = lambda p: lambda q: p(NOT(q))(q)
 
-EQ1 = lambda p: lambda q: NOT(XOR(p)(q))
-EQ2 = lambda p: lambda q: AND(OR(p)(NOT(q)))(OR(NOT(p))(q))
-EQ3 = lambda p: lambda q: p(q)(NOT(q))
+EQ1 = lambda p: lambda q: AND(OR(p)(NOT(q)))(OR(NOT(p))(q))
+EQ2 = lambda p: lambda q: p(q)(NOT(q))
 
 show = lambda b: b(1)(0)
-print("p q  EQ1 EQ2 EQ3")
+print("p q  EQ1 EQ2")
 for p in (FALSE, TRUE):
     for q in (FALSE, TRUE):
-        print(show(p), show(q), "", show(EQ1(p)(q)), " ", show(EQ2(p)(q)), " ", show(EQ3(p)(q)))
+        print(show(p), show(q), "", show(EQ1(p)(q)), " ", show(EQ2(p)(q)))
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
@@ -387,7 +393,6 @@ FALSE = lambda x: lambda y: y          # KI (Kite)
 NOT   = lambda b: b(FALSE)(TRUE)
 AND   = lambda p: lambda q: p(q)(p)
 OR    = lambda p: lambda q: p(p)(q)
-XOR   = lambda p: lambda q: p(NOT(q))(q)
 
 show_bool = lambda b: b("TRUE")("FALSE")    # a boolean selects its own name
 
@@ -1246,7 +1251,7 @@ In Model 6, changing `base = fn.env` to `base = env` in the `Call` branch turns 
 
 1.  *Pairs.*  Define $\textbf{PAIR} = \lambda a. \lambda b. \lambda f.\, f\, a\, b$, with $\textbf{FST} = \lambda p.\, p\, \textbf{K}$ and $\textbf{SND} = \lambda p.\, p\, \textbf{KI}$.  Verify in Python.  Then say what data structure you built from nothing, and what your AST could, in principle, be encoded as.
 2.  *IS-ZERO.*  Define $\textbf{ISZERO} = \lambda n.\, n\, (\lambda x.\, \textbf{FALSE})\, \textbf{TRUE}$ and verify it on 0, 1, and 2.  Explain the trick: what happens to TRUE if $f$ is applied even once?
-3.  *XOR.*  Build XOR from the flock (any correct construction).  Verify all four input pairs in code, and present your reduction for one pair on the board.
+3.  *NAND.*  Build NAND from the flock (any correct construction).  Verify all four input pairs in code, and present your reduction for one pair on the board.
 4.  *Flock report.*  Watch or skim Lebec's "A Flock of Functions" (linked below) and write a half page on one construction he presents that we did not build today.  Reduce or verify it yourself.
 5.  *Church list.*  Build a Church-encoded linked list: `NIL`, `CONS(head)(tail)`, `HEAD`, `TAIL`, `ISNIL`.  Represent the list `[1, 2, 3]` as Church numerals in a Church list, and write a `to_python_list` function that decodes it.
 6.  *Tie the knot.*  Write `sumlist-generator` so that $\textbf{Z}$ turns it into a function that sums a Scheme list.  Then write the same thing the ordinary way, with `define` and a self-reference, and say in two sentences what the name was doing that $\textbf{Z}$ now does instead.
