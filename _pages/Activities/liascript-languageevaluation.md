@@ -129,6 +129,49 @@ print("  a pipeline of functions, or nothing at all.")
 
 ---
 
+## Declarative Languages: Say What Is True
+
+In the table above, a logic program is "a set of facts and rules, plus a question."  You state what is true, and the system searches for the answer, so you never write the loop.  [Prolog](https://swish.swi-prolog.org/) is the classic example.  Here is a family, written as facts, and the rule that defines a parent:
+
+```prolog
+father(tom, bob).
+father(bob, ann).
+mother(sue, bob).
+mother(ann, jim).
+
+parent(X, Y) :- father(X, Y).
+parent(X, Y) :- mother(X, Y).
+```
+
+Read `:-` as "if."  Two clauses for `parent` mean "or," and a capitalized name is a variable.  Run it in [SWISH](https://swish.swi-prolog.org/), which needs no installation, and ask `?- parent(Who, ann).`  It answers `Who = bob`, and you never said how to find him.
+
+## Following a Chain: `is_ancestor`
+
+An ancestor is a parent, or a parent of an ancestor.  That chain of any length is called the *transitive closure* of `parent`.  It takes two clauses, and they look just like the base case and recursive case of a recursive function:
+
+```prolog
+is_ancestor(X, Y) :- parent(X, Y).                     % base case: one step
+is_ancestor(X, Y) :- parent(X, Z), is_ancestor(Z, Y).  % take one step, then follow the rest
+```
+
+`?- is_ancestor(tom, jim).` is true, through `bob` and `ann`.  `?- is_ancestor(jim, tom).` is false.  The [SWISH tutorial]({{ site.baseurl }}/Tutorials/Prolog) has more, if you would like to keep going.
+
+### Check: Implement `is_prereq`
+
+A catalog lists each course's direct prerequisites as facts, such as `prereq(cs173, cs174).` and `prereq(cs174, cs274).`  You want `is_prereq(X, Y)` to be true when `X` must come before `Y`, directly or through a chain of courses.  Which definition is correct?
+
+[(X)] `is_prereq(X, Y) :- prereq(X, Y).` and `is_prereq(X, Y) :- prereq(X, Z), is_prereq(Z, Y).`
+[( )] `is_prereq(X, Y) :- prereq(X, Z), is_prereq(Z, Y).` alone
+[( )] `is_prereq(X, Y) :- prereq(X, Y).` and `is_prereq(X, Y) :- prereq(X, Z), prereq(Z, Y).`
+[( )] `is_prereq(X, Y) :- prereq(X, Y).` and `is_prereq(X, Y) :- is_prereq(Z, Y), prereq(X, Z).`
+****************************************
+
+The first answer has the same shape as `is_ancestor`: a base case, and then one step followed by the rest of the chain.  The second has no base case, so no query can ever finish proving, and everything is false.  The third follows chains of at most two steps, so it misses longer ones.  The fourth finds the true answers, but its recursive call comes first and makes no progress, so a false query such as `is_prereq(cs374, cs173)` recurses until Prolog runs out of stack.
+
+****************************************
+
+---
+
 # Part II: The Criteria
 
 ## 1.  Four Lenses
