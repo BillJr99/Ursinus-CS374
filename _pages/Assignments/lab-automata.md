@@ -361,9 +361,9 @@ Open the folder in your editor and create one empty file at the top level, `writ
 | 1.1, 1.4 | `machines/even_ones.json`, `machines/ends_in_ab.json` | create the DFA machine files |
 | 1.2.1 to 1.2.5 | `simulator.py` | create the file, write the three checker helpers one at a time, then integrate them into the loader |
 | 1.3.1 to 1.3.4 | `simulator.py` | add `run_dfa` one rule at a time, then `main` |
-| 2.1, 2.2, 2.4 | `machines/ends_in_ab_nfa.json`, `machines/eps_cycle.json`, `machines/contains_aa.json` | create the NFA machine files |
-| 2.2 | `simulator.py` | add `eps_closure` |
-| 2.3.1, 2.3.2 | `simulator.py` | add the `nfa_move` helper, then integrate it with `eps_closure` into `run_nfa` |
+| 2.1, 2.3, 2.4 | `machines/ends_in_ab_nfa.json`, `machines/ab_optional.json`, `machines/eps_cycle.json`, `machines/contains_aa.json` | create the NFA machine files |
+| 2.2.1, 2.2.2 | `simulator.py` | add the `nfa_move` helper, then a first `run_nfa` without ε-moves |
+| 2.3.1, 2.3.2 | `simulator.py` | add `eps_closure`, then change two lines of `run_nfa` to use it |
 | 3.1 to 3.3 | `writeup.md` | add the construction traces and the lexer paragraph |
 
 > **Time budget.** This lab follows the class material on regular expressions and finite automata.  The course schedule has the assigned and due dates.  Plan about three hours (with your partner, if you have one) for Parts 1 and 2, and about an hour for the paper work in Parts 0 and 3.  Write the reflection as you go, not at the end.
@@ -950,7 +950,7 @@ Here is part of an NFA as a diagram and then as JSON.  The fragment does not say
 
 The `a` arrows out of `q0` go two ways, so `"q0,a"` lists two targets.  That is the nondeterminism.  Pairs with no arrow, such as `q1` on `a` or `q2` on anything, have no key.  Read transitions with `machine["delta"].get(key, [])`, so a missing key means "no moves" and does not raise a `KeyError`.
 
-Before you write any NFA code, encode an NFA whose behavior you already know, so you have something to test against.  The "ends in `ab`" NFA in the [Refresher on Finite Automata](#refresher-on-finite-automata) has a transition table and a worked trace of `aab`, and Step 2.3 checks your `run_nfa` against that trace.
+Before you write any NFA code, encode an NFA whose behavior you already know, so you have something to test against.  The "ends in `ab`" NFA in the [Refresher on Finite Automata](#refresher-on-finite-automata) has a transition table and a worked trace of `aab`, and Step 2.2 checks your `run_nfa` against that trace.
 
 **You write:** `machines/ends_in_ab_nfa.json`.  It is a test file, and you do not need to submit it.
 **You run:** `python3 -c "import simulator; simulator.load_machine('machines/ends_in_ab_nfa.json')"`
@@ -980,22 +980,7 @@ An NFA changes two things about the Python objects you used for the DFA.  Its mo
 
 *Moves, keyed by a string pair.*  You build the key from a state and a symbol with an f-string, `f"{state},{symbol}"`, so `q0` on `a` becomes the key `"q0,a"`.  The value is a list, because one label can lead to several states.  A pair with no arrow has no key at all, so you read moves with `delta.get(key, [])`.  A missing key then reads as "no moves," an empty list, and the loop that uses it simply does nothing.
 
-*ε-moves use the same kind of key.*  An ε-arrow from `q1` is stored under `"q1,eps"`, and you read it with `delta.get(f"{state},eps", [])`, exactly like any other move.  `eps` never goes in `alphabet`, because the alphabet lists the symbols a string can contain, and no input string ever contains an ε.
-
-*Several states at once: a Python set.*  The active set is a Python `set`, and each property of a set matches something the NFA needs:
-
-| The NFA needs | A Python `set` gives | In code |
-|---|---|---|
-| each state listed once, even if two arrows reach it | no duplicates | `{"q2", "q2"} == {"q2"}` |
-| `{q0, q1}` and `{q1, q0}` to be the same set | order does not matter | `{"q1", "q0"} == {"q0", "q1"}` |
-| the union of every active state's moves | `update` adds a whole list at once | `moved.update(targets)` |
-| "is any accepting state active?" | fast membership | `"q2" in active` |
-
-One pitfall: `{}` is an empty *dictionary*, not an empty set.  Write an empty set as `set()`.
-
-*Why `eps_closure` returns a `frozenset`.*  A `set` can change after you build it, so Python will not let you put one inside another set or use one as a dictionary key.  A `frozenset` holds the same states and cannot change, so it can go in both places.  You need that in Part 3, where each row of the subset-construction table is a set of NFA states, and you have to ask "have I seen this set before?"  Python compares frozensets by their contents, so the order you wrote the states in never matters.
-
-To see these pieces work on the "ends in `ab`" NFA from Step 2.1, save the lines below as `explore_nfa.py`, another scratch file you do not submit, and run `python3 explore_nfa.py`:
+To see this on the "ends in `ab`" NFA from Step 2.1, save the lines below as `explore_nfa.py`, another scratch file you do not submit, and run `python3 explore_nfa.py`:
 
 ```python
 import json
@@ -1008,15 +993,6 @@ state, symbol = "q0", "a"
 key = f"{state},{symbol}"
 print(repr(key), "->", delta.get(key, []))      # two targets: the nondeterminism
 print(repr("q1,a"), "->", delta.get("q1,a", []))  # no arrow: an empty list
-
-print(type({}).__name__, type(set()).__name__)   # {} is a dict, set() is a set
-print({"q1", "q0"} == {"q0", "q1"})
-seen = {frozenset({"q0"}), frozenset({"q0", "q1"})}
-print(frozenset({"q1", "q0"}) in seen)
-try:
-    { {"q0"} }   # a set inside a set
-except TypeError as e:
-    print("TypeError:", e)
 ```
 
 > **You should see.**
@@ -1024,17 +1000,93 @@ except TypeError as e:
 > ```text
 > 'q0,a' -> ['q0', 'q1']
 > 'q1,a' -> []
-> dict set
-> True
-> True
-> TypeError: unhashable type: 'set'
 > ```
 
-Now take one union by hand.  **Try it in the REPL:** run `python3` from inside `cs374-automata`, and type the `import`, `with`, and `delta` lines from the top of `explore_nfa.py`.  The REPL needs one blank line after the indented `json.load` line to finish the `with` block.  Then:
+#### Before You Code: `set` and `frozenset`
+
+A DFA is in one state, so one string holds it.  An NFA can be in several states at once, so it needs a collection, and a Python `set` fits best.  Run `python3` from inside `cs374-automata` and type these examples.  The `>>>` is the prompt, so do not type it.
+
+*A set holds each item once, in no particular order.*  Two arrows can reach the same state, and that state should still count once.  `{q0, q1}` and `{q1, q0}` are also the same set of states.  A Python set behaves the same way:
+
+```python
+>>> active = {"q0", "q1"}
+>>> "q0" in active
+True
+>>> "q2" in active
+False
+>>> len({"q2", "q2"})
+1
+>>> {"q1", "q0"} == {"q0", "q1"}
+True
+>>> sorted({"q1", "q0"})
+['q0', 'q1']
+```
+
+A set can print its items in any order, and the order can change between runs.  Print `sorted(active)` whenever you need the same output every time.  `sorted` gives you a list.
+
+*Build a set one step at a time.*  Start with `set()`, because `{}` makes an empty dictionary.  `add` puts in one item, and `update` puts in every item of a list.  An item that is already there stays once, and an empty list adds nothing:
+
+```python
+>>> type({}).__name__
+'dict'
+>>> moved = set()
+>>> moved.update(["q0"])
+>>> moved.update(["q0", "q2"])
+>>> moved.update([])
+>>> sorted(moved)
+['q0', 'q2']
+>>> moved.add("q1")
+>>> sorted(moved)
+['q0', 'q1', 'q2']
+```
+
+`update` is the one you need for NFA moves, because `delta.get(key, [])` gives you a list.  Give it the list, never a bare string.  It reads a string one character at a time:
+
+```python
+>>> oops = set()
+>>> oops.update("q2")
+>>> sorted(oops)
+['2', 'q']
+```
+
+*A `frozenset` is a set that cannot change.*  It answers `in`, works in a `for` loop and in `sorted`, and equals a regular set with the same items.  It has no `add` or `update`:
+
+```python
+>>> closed = frozenset({"q0", "q1"})
+>>> "q0" in closed
+True
+>>> sorted(closed)
+['q0', 'q1']
+>>> closed == {"q1", "q0"}
+True
+>>> closed.add("q2")
+Traceback (most recent call last):
+  ...
+AttributeError: 'frozenset' object has no attribute 'add'
+```
+
+*Why a frozenset exists.*  Python will not put a regular set inside another set, or use one as a dictionary key, because a regular set could change after Python has filed it away.  A frozenset cannot change, so Python allows it:
+
+```python
+>>> seen = set()
+>>> seen.add({"q0", "q1"})
+Traceback (most recent call last):
+  ...
+TypeError: unhashable type: 'set'
+>>> seen.add(frozenset({"q0", "q1"}))
+>>> frozenset({"q1", "q0"}) in seen
+True
+```
+
+The last line is the question the subset construction in Part 3 keeps asking: "have I seen this set of NFA states before?"  That is why `eps_closure` returns a frozenset.
+
+In this lab, use a regular `set` while you are still adding to it, and turn it into a frozenset when it is finished, with `frozenset(closure)`.  `nfa_move` returns a set, and `eps_closure` returns a frozenset.  `run_nfa` uses `in`, `for`, and `sorted` on the active set, and they work the same on both.
+
+Now take one union by hand.  Still in the REPL, load the machine by typing the `import`, `with`, and `delta` lines from the top of `explore_nfa.py`.  The REPL needs one blank line after the indented `json.load` line to finish the `with` block.  Then:
 
 1. Print the `b` moves of `q0`, using `.get` with an empty list as the default.
 2. Print the `b` moves of `q1` the same way.
-3. Turn each of those two lists into a `set`, take the union of the two sets with `|`, and print the result with `sorted(...)`.  A set prints in no fixed order, and `sorted` gives you one.
+3. Turn each of those two lists into a `set`, take the union of the two sets with `|`, and print the result with `sorted(...)`.  For example, `{"q0"} | {"q2"}` is the set holding both states.
 
 > **You should see.**
 >
@@ -1044,105 +1096,58 @@ Now take one union by hand.  **Try it in the REPL:** run `python3` from inside `
 > ['q0', 'q2']
 > ```
 >
-> The last line is the last row of the `aab` trace in the Refresher on Finite Automata: the set `{q0, q1}` moves on `b` to $$\{q0\} \cup \{q2\} = \{q0, q2\}$$.  Here you typed one lookup per state.  Your `run_nfa` in Step 2.3 must do the same for every state in the active set, however many there are, once per symbol.
+> The last line is the last row of the `aab` trace in the Refresher on Finite Automata: the set `{q0, q1}` moves on `b` to $$\{q0\} \cup \{q2\} = \{q0, q2\}$$.  Here you typed one lookup per state.  Your `nfa_move` in Step 2.2.1 does the same for every state in the active set, however many there are.
 
-*ε-moves, one pass at a time.*  The closure works from a to-do list called the *frontier*.  Here is the cycle machine of Step 2.2 (`q0 -ε-> q1`, `q1 -ε-> q2`, `q2 -ε-> q0`), closed by hand from `{q0}`, one pass of the loop per row:
+### Step 2.2: Write `run_nfa` Without ε-Moves
 
-| Pass | Take off the frontier | Its ε-targets | New ones added | `closure` after | `frontier` after |
-|---|---|---|---|---|---|
-| start | | | | {q0} | [q0] |
-| 1 | q0 | [q1] | q1 | {q0, q1} | [q1] |
-| 2 | q1 | [q2] | q2 | {q0, q1, q2} | [q2] |
-| 3 | q2 | [q0] | none, since q0 is already in `closure` | {q0, q1, q2} | [] |
+A DFA is in one state at a time, and an NFA is in a set of states.  Before you think about ε-moves at all, get that set working on a machine that has none.  The "ends in `ab`" NFA from Step 2.1 is that machine, and you already know its trace.
 
-The frontier is empty after pass 3, so the loop stops, even though the arrows form a cycle.  Step 2.2 turns this table into code.
+The plan has two pieces.  Step 2.2.1 writes one move, from the current active set to the next one.  Step 2.2.2 repeats that move once per input symbol.  Step 2.3 then adds ε-moves by changing two lines.
 
-### Step 2.2: Implement the Epsilon-Closure
+**You write:** `nfa_move` and a first version of `run_nfa` in `simulator.py`, below `run_dfa` and above `main`.
+**You run:** a one-line check on `nfa_move`, then the commands on `machines/ends_in_ab_nfa.json`.
 
-The epsilon-closure of a set of states holds every state you can reach from the set by following only `"eps"` transitions, plus the starting states themselves.  To compute it, start with the given set and follow every `"eps"` transition out of it, adding each target.  Repeat until no new state appears.  An ε-arrow may lead back to the same state or to an earlier one, and your loop must still stop.  One check handles every cycle: is this target already in the closure?  For example, if `q0 -ε-> q1`, `q1 -ε-> q2`, and `q2 -ε-> q0`, then `eps_closure(m, {"q0"}) = {"q0", "q1", "q2"}`.
+#### Step 2.2.1: One move (`nfa_move`)
 
-**You write:** `eps_closure` in `simulator.py`, below `run_dfa` and above `main`; and a new test file, `machines/eps_cycle.json`.
-**You run:** the one-line check command after the code.
+Suppose the active set is `{q0, q1}` and the next symbol is `b`.  Each active state has its own arrows, so look up each one:
 
-> **Do this.**
-> 1. Add `eps_closure` to `simulator.py`, below `run_dfa`, and write its body from the algorithm below.  It returns a `frozenset` so that a closure can sit inside another set later.
-> 2. Save the three-state cycle below as `machines/eps_cycle.json`.  It is a test machine, and you do not need to submit it.
-> 3. Run the check command.
-
-**The function.**  `def eps_closure(machine, states):` takes a loaded NFA and any collection of state names (a set, a list, or a frozenset).  It returns a `frozenset` of every state reachable from `states` by ε-moves alone, including the states in `states` themselves.
-
-**The algorithm.**  It is the frontier table from *Before You Code: How an NFA Lives in Python*, one pass per row:
-
-1. Make a set, the closure, that holds every state in `states`.  Zero moves count, so each state is in its own closure.
-2. Make a list, the frontier, that holds the same states.  It is your to-do list: the states whose ε-arrows you have not followed yet.
-3. While the frontier is not empty:
-   1. Take one state off the frontier.
-   2. Look up its ε-targets under the key `"state,eps"` for that state.  A missing key means it has no ε-arrows.
-   3. For each target, ask whether it is already in the closure.  If it is, skip it.  If it is not, add it to the closure and put it on the frontier, so its own ε-arrows get followed later.
-4. When the frontier is empty, nothing new can be reached.  Return the closure as a `frozenset`.
-
-| Idea | How to think about it |
-|---|---|
-| the cycle check | The question "is it already in the closure?" is the only thing that stops a cycle.  A state you have already found never goes back on the frontier, so each state is taken off at most once. |
-| no ε-arrows | Most states have none.  The lookup must quietly give you nothing to loop over, as in the Step 2.1 reading rule. |
-| order | It does not matter which state you take off the frontier first.  You reach the same closure either way. |
-
-```json
-{
-  "states": ["q0", "q1", "q2"],
-  "alphabet": ["a"],
-  "start": "q0",
-  "accept": ["q2"],
-  "delta": {"q0,eps": ["q1"], "q1,eps": ["q2"], "q2,eps": ["q0"]}
-}
+```python
+delta.get("q0,b", [])    # ['q0']
+delta.get("q1,b", [])    # ['q2']
 ```
 
-```bash
-python3 -c "import simulator as s; m = s.load_machine('machines/eps_cycle.json'); print(sorted(s.eps_closure(m, {'q0'})))"
+The next set holds everything those lookups found: `q0` and `q2`.  The code does the same thing for any active set and any symbol.  Add this function to `simulator.py`:
+
+```python
+def nfa_move(machine, active, symbol):
+    """Return every state reachable from active on one symbol."""
+    moved = set()
+    for state in active:
+        key = f"{state},{symbol}"
+        targets = machine["delta"].get(key, [])
+        moved.update(targets)
+    return moved
 ```
 
-> **You should see.** `['q0', 'q1', 'q2']` on one line.
+Read it one line at a time:
 
-> **If it fails.**
-> - The command never finishes: you push targets onto the frontier without checking whether they are already in the closure, so the cycle runs forever.  Press Ctrl+C to stop it.
-> - Only `['q0']`: you read `delta["q0,eps"]` once instead of following eps edges out of every newly added state.
-> - A `MachineError` that mentions `eps`: your loader from Step 1.2 (the `check_nfa_delta` helper of Step 1.2.4) rejects `eps` as an unknown symbol.  Allow it for NFAs.
+- `moved = set()` starts an empty set, once per call and before the loop.
+- `for state in active:` visits every state the machine might be in.  This is what makes it an NFA.
+- `key = f"{state},{symbol}"` builds the key, such as `"q0,b"`.
+- `.get(key, [])` looks up the arrows.  A state with no arrow on this symbol gives an empty list.
+- `moved.update(targets)` adds every target to the set.  The set only grows during the loop.
+- `return moved` hands back the result.  If no state had an arrow, it is the empty set.
 
-### Step 2.3: Implement `run_nfa`
+Here is the run for `{q0, q1}` on `b`.  The two states may come up in either order, and the result is the same:
 
-A DFA is in one state at a time; an NFA is in a set of states.  `run_nfa` tracks that set:
+```text
+moved = {}
+state q0: key "q0,b", targets ['q0'], moved = {q0}
+state q1: key "q1,b", targets ['q2'], moved = {q0, q2}
+return {q0, q2}
+```
 
-1.  Start with the epsilon-closure of `{start}` as the active set.
-2.  For each symbol in `s`, take the union of the `delta["state,symbol"]` lists of all active states, then take the epsilon-closure of that union.
-3.  Accept if the final active set contains at least one accepting state.
-
-Step 2 is the "move, then ε-close" rule from *One step of an NFA* in the [Refresher on Finite Automata](#refresher-on-finite-automata).  It has two halves.  You already wrote the close, `eps_closure`, in Step 2.2.  Step 2.3.1 writes the move as its own helper and tests it alone, and Step 2.3.2 integrates the two into `run_nfa`.
-
-**You write:** `nfa_move` and then `run_nfa` in `simulator.py`, below `eps_closure` and above `main`.
-**You run:** a one-line check on `nfa_move`, then the `--trace` command on `machines/ends_in_ab_nfa.json`, then the two commands on `machines/eps_cycle.json`.
-
-#### Step 2.3.1: The move, as its own helper (`nfa_move`)
-
-Students most often get the union wrong.  On each symbol, every active state contributes the targets of its own `"state,symbol"` key, and you must collect all of them.  The union grows one set, one active state at a time.  Here is the active set `{q0, q1}` reading `b`:
-
-| Active state | Its key and targets | the moved set so far |
-|---|---|---|
-| q0 | `"q0,b"` holds `["q0"]` | {q0} |
-| q1 | `"q1,b"` holds `["q2"]` | {q0, q2} |
-
-A state with no key adds nothing.  If no state adds anything, the moved set is empty.
-
-**The function.**  `def nfa_move(machine, active, symbol):` takes a loaded NFA, the current active set, and one symbol.  It returns the moved set, before any closure.
-
-**The algorithm.**
-
-1. Start a new, empty moved set.
-2. For each state in the active set, look up the key for that state and this symbol.  A missing key means no moves.  Add every target to the moved set.
-3. Return the moved set.
-
-| Idea | How to think about it |
-|---|---|
-| the union | This is the table above, one row per active state, and the union you took by hand in the REPL.  The moved set must start empty once per call, before you visit the active states, and only grow while you visit them. |
+Check it:
 
 ```bash
 python3 -c "import simulator as s; m = s.load_machine('machines/ends_in_ab_nfa.json'); print(sorted(s.nfa_move(m, {'q0', 'q1'}, 'b')), sorted(s.nfa_move(m, {'q0'}, 'a')), s.nfa_move(m, {'q2'}, 'a'))"
@@ -1154,41 +1159,50 @@ python3 -c "import simulator as s; m = s.load_machine('machines/ends_in_ab_nfa.j
 > ['q0', 'q2'] ['q0', 'q1'] set()
 > ```
 >
-> The first list is the table above.  The last value is the empty set, because `q2` has no `a` arrow.  If the first list holds only one state, such as `['q2']` or `['q0']`, your union kept only one active state's targets: the moved set was started over, or replaced, inside the loop over active states, when it should only grow there.
+> The first list is the run above.  The last value is the empty set, because `q2` has no `a` arrow.
 
-#### Step 2.3.2: Integrate the move and the close into `run_nfa`
+> **If it fails.**  If the first list holds only one state, your union kept only one active state's targets.  Look for one of these two lines inside the loop.  Each one throws away what the earlier states found:
+>
+> ```python
+> moved = set()          # started over for each state
+> moved = set(targets)   # replaced, not added to
+> ```
 
-> **Do this.**
-> 1. Add `run_nfa` below `nfa_move` and write its body from the algorithm below.  `main` from Step 1.3 already calls `run_nfa` when `is_nfa` returns true.
-> 2. With `trace` on, print the sorted active set after each symbol.  It replaces the single state that `run_dfa` prints.
+#### Step 2.2.2: One move per symbol (`run_nfa`, first version)
 
-**The function.**  `def run_nfa(machine, s, trace=False):` takes a loaded NFA, the input string, and the trace flag.  It returns `True` to accept and `False` to reject, just like `run_dfa`.
+`run_nfa` has the same shape as `run_dfa`.  It starts somewhere, moves once per symbol, and then checks whether it accepts.  The difference is that `active` is a set where `run_dfa` had one state.  Add this function below `nfa_move`:
 
-**The algorithm.**
+```python
+def run_nfa(machine, s, trace=False):
+    """Run the NFA on the string s.  Return True to accept, False to reject."""
+    active = {machine["start"]}
+    if trace:
+        print(f"start: {sorted(active)}")
+    for symbol in s:
+        active = nfa_move(machine, active, symbol)
+        if trace:
+            print(f"read {symbol} -> {sorted(active)}")
+    return any(state in active for state in machine["accept"])
+```
 
-1. Set the active set to the ε-closure of a set that holds only the start state.  Use your `eps_closure`.
-2. If trace is on, print `start: ` followed by the active set as a sorted list, as in `start: ['q0']`.
-3. For each symbol in `s`:
-   1. Compute the moved set with `nfa_move` (Step 2.3.1).
-   2. Replace the active set with the ε-closure of the moved set.
-   3. If trace is on, print `read `, the symbol, ` -> `, and the sorted active set, as in `read a -> ['q0', 'q1']`.
-4. After the loop, return whether any state in the active set is an accepting state.
+Read it one piece at a time:
 
-| Idea | How to think about it |
-|---|---|
-| the close (3.2) | Skip it and the `ab?` example in the Refresher rejects `a`.  The first active set needs a closure too, which is why step 1 closes the start state. |
-| the trace | Print the sorted active set, not the set itself.  A set prints in no fixed order, and the expected output below is sorted. |
-| empty string | The loop never runs, so step 4 tests the closure of the start state.  You need no special case. |
+- `active = {machine["start"]}` is a set that holds one state.  The curly braces make it a set.
+- `active = nfa_move(machine, active, symbol)` replaces the old active set with the next one.
+- `sorted(active)` keeps the trace in the same order on every run.
+- `any(state in active for state in machine["accept"])` is `True` if at least one accepting state is active.  An NFA accepts if any of its guesses worked.
 
-If no state adds anything on some symbol, the moved set is empty, and the active set stays empty for the rest of the input.  `run_nfa` does not check for symbols outside the alphabet.  It does not need to, because no key mentions such a symbol, so the moved set comes out empty and the string is rejected.
+You need no special cases.  On the empty string the loop never runs, so the last line tests the start state.  If the active set becomes empty, it stays empty, and the string is rejected.  A symbol outside the alphabet has no key, so the moved set is empty, and that string is rejected too.  `main` from Step 1.3 already calls `run_nfa` when `is_nfa` returns true.
 
-Test it first on the "ends in `ab`" NFA from Step 2.1.  The Refresher traces `aab` through this machine by hand, so you already know every line the program should print:
+Test it on the machine the Refresher traces by hand:
 
 ```bash
 python3 simulator.py machines/ends_in_ab_nfa.json aab --trace
+python3 simulator.py machines/ends_in_ab_nfa.json aba
+python3 simulator.py machines/ends_in_ab_nfa.json ""
 ```
 
-> **You should see.** The same active sets as the hand trace, in the same order:
+> **You should see.** The same active sets as the hand trace of `aab`, and then two rejects:
 >
 > ```text
 > start: ['q0']
@@ -1196,18 +1210,209 @@ python3 simulator.py machines/ends_in_ab_nfa.json aab --trace
 > read a -> ['q0', 'q1']
 > read b -> ['q0', 'q2']
 > accept
+> reject
+> reject
 > ```
 >
-> If the last set holds only one state, such as `['q2']` or `['q0']`, instead of `['q0', 'q2']`, your union kept only one active state's targets.  Rerun the Step 2.3.1 check: the moved set was started over, or replaced, inside the loop over active states, when it should only grow there.
+> If the last set of the trace holds only one state, go back to the *If it fails* note in Step 2.2.1.
 
-Then test it on the cycle machine from Step 2.2:
+### Step 2.3: Add ε-Moves
+
+Your `run_nfa` works when every arrow reads a symbol.  An ε-move reads nothing, so your code never takes one.  Here is a machine that shows the problem.  It is `ab?` from the [Refresher on Finite Automata](#refresher-on-finite-automata): an `a`, optionally followed by a `b`.  The `b` is optional because `q1` can slide to the accepting state `q2` for free.
+
+**You write:** two test files, `machines/ab_optional.json` and `machines/eps_cycle.json`; `eps_closure` in `simulator.py`, below `run_nfa` and above `main`; and two changed lines in `run_nfa`.
+**You run:** the commands below, one step at a time.
+
+Save this as `machines/ab_optional.json`.  It is a test file, and you do not need to submit it:
+
+```json
+{
+  "states": ["q0", "q1", "q2"],
+  "alphabet": ["a", "b"],
+  "start": "q0",
+  "accept": ["q2"],
+  "delta": {"q0,a": ["q1"], "q1,b": ["q2"], "q1,eps": ["q2"]}
+}
+```
+
+Run your first version on `a`, which this machine should accept:
+
+```bash
+python3 simulator.py machines/ab_optional.json a --trace
+```
+
+> **You should see this wrong answer.**
+>
+> ```text
+> start: ['q0']
+> read a -> ['q1']
+> reject
+> ```
+>
+> The active set stops at `q1`.  The machine could also be in `q2`, by the free move, and your code does not know that yet.
+
+> **If it fails.**  A `MachineError` that mentions `eps` means your loader rejects `eps` as an unknown symbol.  Allow it for NFAs in `check_nfa_delta` (Step 1.2.4).
+
+#### Step 2.3.1: Follow the free moves (`eps_closure`)
+
+An ε-arrow is stored like any other arrow, under the symbol `eps`, so you read it the same way:
+
+```python
+machine["delta"].get("q1,eps", [])    # ['q2']
+machine["delta"].get("q0,eps", [])    # [], since q0 has no ε-arrow
+```
+
+The ε-closure of a collection of states is those states plus everything you can reach from them by ε-arrows alone.  One lookup is not enough, because a state you reach may have ε-arrows of its own.  So the code keeps a to-do list, called the *frontier*, of states whose ε-arrows it has not followed yet.  Add this function below `run_nfa`:
+
+```python
+def eps_closure(machine, states):
+    """Return every state reachable from states by ε-moves alone, as a frozenset."""
+    closure = set(states)
+    frontier = list(states)
+    while frontier:
+        state = frontier.pop()
+        for target in machine["delta"].get(f"{state},eps", []):
+            if target not in closure:
+                closure.add(target)
+                frontier.append(target)
+    return frozenset(closure)
+```
+
+Read it one piece at a time:
+
+- `closure = set(states)` starts with the given states, because zero moves count.  Each state is in its own closure.  `states` may be a set, a list, or a frozenset, and `set(...)` accepts all three.
+- `frontier = list(states)` puts those same states on the to-do list.
+- `while frontier:` runs until the list is empty.  An empty list counts as false.
+- `frontier.pop()` takes one state off the list.  Which one you take does not change the answer.
+- The `for` line looks up that state's ε-arrows.  Most states have none, so this usually loops zero times.
+- `if target not in closure:` is the check that stops a cycle.  A state goes on the frontier only the first time you find it.
+- `return frozenset(closure)` freezes the finished set.
+
+Now test the cycle case.  An ε-arrow can lead back to an earlier state, and your loop must still stop.  Save this as `machines/eps_cycle.json`, another test file you do not need to submit:
+
+```json
+{
+  "states": ["q0", "q1", "q2"],
+  "alphabet": ["a"],
+  "start": "q0",
+  "accept": ["q2"],
+  "delta": {"q0,eps": ["q1"], "q1,eps": ["q2"], "q2,eps": ["q0"]}
+}
+```
+
+Here is the run from `{q0}`, one pass of the `while` loop per line:
+
+```text
+closure = {q0},          frontier = [q0]
+pop q0: ε-targets [q1], q1 is new.         closure = {q0, q1},      frontier = [q1]
+pop q1: ε-targets [q2], q2 is new.         closure = {q0, q1, q2},  frontier = [q2]
+pop q2: ε-targets [q0], q0 is not new.     closure = {q0, q1, q2},  frontier = []
+frontier is empty, so return {q0, q1, q2}
+```
+
+Check it on both machines:
+
+```bash
+python3 -c "import simulator as s; m = s.load_machine('machines/eps_cycle.json'); print(sorted(s.eps_closure(m, {'q0'})))"
+python3 -c "import simulator as s; m = s.load_machine('machines/ab_optional.json'); print(sorted(s.eps_closure(m, {'q1'})), sorted(s.eps_closure(m, {'q0'})))"
+```
+
+> **You should see.**
+>
+> ```text
+> ['q0', 'q1', 'q2']
+> ['q1', 'q2'] ['q0']
+> ```
+>
+> The second line shows that closure only follows arrows forward, and that `q0` has no ε-arrows, so its closure is just itself.
+
+> **If it fails.**
+> - The command never finishes: the `if target not in closure` check is missing, so the cycle runs forever.  Press Ctrl+C to stop it.
+> - Only `['q0']`: the targets are not going back on the frontier, so you followed one ε-arrow and stopped.
+
+#### Step 2.3.2: Close after each move, and at the start
+
+`run_nfa` needs the closure in two places, which is the *move, then ε-close* rule from the Refresher.  Change one line at a time, and watch what each change fixes.
+
+*Change 1: close after each move.*  After reading a symbol, the machine may also slide along free moves.  In the loop of `run_nfa`, change the move line:
+
+```python
+        active = eps_closure(machine, nfa_move(machine, active, symbol))
+```
+
+This line does the move first, closes the result, and stores it as the new active set.  `active` is now a frozenset after the first symbol, and the rest of `run_nfa` works the same on it.  Run the machine that failed:
+
+```bash
+python3 simulator.py machines/ab_optional.json a --trace
+python3 simulator.py machines/ab_optional.json ab --trace
+python3 simulator.py machines/ab_optional.json abb
+```
+
+> **You should see.** Both traces accept, and `abb` is rejected:
+>
+> ```text
+> start: ['q0']
+> read a -> ['q1', 'q2']
+> accept
+> start: ['q0']
+> read a -> ['q1', 'q2']
+> read b -> ['q2']
+> accept
+> reject
+> ```
+
+*Change 2: close at the start.*  The machine can take free moves before it reads anything.  One bug remains, and the cycle machine shows it.  Its start state reaches the accepting state `q2` by ε-moves alone, so it should accept the empty string:
+
+```bash
+python3 simulator.py machines/eps_cycle.json ""
+```
+
+> **You should see this wrong answer.** `reject`.  The loop never runs on the empty string, so no closure ever happens.
+
+Change the first line of `run_nfa`:
+
+```python
+    active = eps_closure(machine, {machine["start"]})
+```
+
+Your finished function differs from the first version in exactly these two lines:
+
+```python
+def run_nfa(machine, s, trace=False):
+    """Run the NFA on the string s.  Return True to accept, False to reject."""
+    active = eps_closure(machine, {machine["start"]})
+    if trace:
+        print(f"start: {sorted(active)}")
+    for symbol in s:
+        active = eps_closure(machine, nfa_move(machine, active, symbol))
+        if trace:
+            print(f"read {symbol} -> {sorted(active)}")
+    return any(state in active for state in machine["accept"])
+```
+
+Because `eps_closure` is defined below `run_nfa`, you may wonder whether the order matters.  It does not.  Python looks the name up when `run_nfa` runs, and by then the whole file has loaded.
+
+Rerun the cycle machine, and then rerun the first machine to confirm nothing broke:
 
 ```bash
 python3 simulator.py machines/eps_cycle.json ""
 python3 simulator.py machines/eps_cycle.json a
+python3 simulator.py machines/ends_in_ab_nfa.json aab --trace
 ```
 
-> **You should see.** `accept`, then `reject`.  The empty string accepts because the epsilon-closure of `q0` already contains the accepting state `q2`.  The string `a` rejects because no state has an `a` move, so the active set becomes empty and stays empty.  An empty active set is a reject, never a crash.
+> **You should see.** `accept`, then `reject`, and then the same `aab` trace as Step 2.2.2:
+>
+> ```text
+> accept
+> reject
+> start: ['q0']
+> read a -> ['q0', 'q1']
+> read a -> ['q0', 'q1']
+> read b -> ['q0', 'q2']
+> accept
+> ```
+>
+> The empty string accepts because the closure of `q0` already contains `q2`.  The string `a` rejects because no state has an `a` move, so the active set becomes empty and stays empty.  An empty active set is a reject, never a crash.  The `aab` trace is unchanged because that machine has no ε-arrows, so each closure leaves its set as it was.
 
 ### Step 2.4: Design the Contains-aa NFA
 
@@ -1341,7 +1546,7 @@ Submit a ZIP that contains the files below.  List your Python version in the wri
 | File or artifact | What it shows | Rubric row |
 |------------------|---------------|------------|
 | `dfa_core.py` | the ten-line DFA runner from Step 1.1, unchanged after that step | Part 1 |
-| `simulator.py` | `load_machine`, `run_dfa`, `eps_closure`, `run_nfa`, and the command-line entry point | Parts 1 and 2 |
+| `simulator.py` | `load_machine`, `run_dfa`, `nfa_move`, `run_nfa`, `eps_closure`, and the command-line entry point | Parts 1 and 2 |
 | `machines/even_ones.json` | the provided parity machine, unchanged | Part 1 |
 | `machines/ends_in_ab.json` | your designed DFA | Part 1 |
 | `machines/contains_aa.json` | your designed NFA | Part 2 |
