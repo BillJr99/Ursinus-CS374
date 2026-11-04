@@ -1,0 +1,14 @@
+digraph thompson_x_y {
+  rankdir=LR;
+  bgcolor="transparent";
+  node [shape=circle, fontname="Helvetica", fontsize=14];
+  edge [fontname="Courier", fontsize=13];
+  4 [shape=doublecircle];
+  2 [shape=doublecircle];
+  __s0 [shape=point, style=invis, width=0];
+  __s0 -> 1;
+  __s1 [shape=point, style=invis, width=0];
+  __s1 -> 3;
+  1 -> 2 [label="x"];
+  3 -> 4 [label="y"];
+}

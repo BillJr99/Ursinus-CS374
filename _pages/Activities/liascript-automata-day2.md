@@ -957,7 +957,7 @@ Expected output: the DFA column doubles on each row while the NFA column grows b
 
 11.  How many DFA states did the subset construction produce for the ends-in-ba NFA? Was there exponential blowup?  (For this NFA, the answer is no; why not?)
 12.  The subset construction creates DFA states that are *sets* of NFA states.  In what sense is this DFA tracking "where the NFA might be"?
-13.  Sketch Thompson's construction (boxes and epsilon arrows) for the regex `a(b|c)*`.  How many states does it produce, and why is an NFA the natural output of a regex compiler rather than a DFA?
+13.  Sketch Thompson's construction (boxes and epsilon arrows) for the regex `(x|y)*z`.  How many states does it produce, and why is an NFA the natural output of a regex compiler rather than a DFA?
 
 > **Watch out!**  The subset construction is the *theoretical* bridge between NFAs and DFAs.  In practice it can produce exponentially many DFA states ($2^{|Q|}$ in the worst case).  Real regex engines usually simulate the NFA directly (as in Model 3) to avoid this blowup, and they still run in linear time on the input string.
 
@@ -971,33 +971,53 @@ The result is an NFA because union and star are choices.  `A|B` means "take eith
 
 Each fragment has one start state and one accepting state.  No arrows enter its start, and none leave its accept, so fragments connect like plugs.  Once a fragment is wired into a larger one, its old accepting state stops accepting.
 
+To apply the rules, first read the regex's structure.  Star binds tightest, then concatenation, then union, so `ab*|c` means `(a(b*))|c`.  Number the states in the order you create them, and keep those numbers when you reuse a fragment.  Each rule adds at most two states, so the NFA has at most twice as many states as the regex has symbols and operators.
+
+The next slides build `(x|y)z` one step at a time, and then add a star.
+
+### Thompson, Step 1: One Fragment per Symbol
+
+A single symbol gets two new states and one arrow.  This is the rule, with `s` the start and `f` the accept:
+
 ![Thompson rule for a single symbol x: a start state s with one arrow labeled x to an accepting state f.](../../files/dotty/thompson_rule_symbol.svg)
 
-![Thompson rule for concatenation: fragment A, drawn as a box, joined to fragment B by one dashed epsilon arrow from A's accept to B's start.](../../files/dotty/thompson_rule_concat.svg)
+So `x` and `y` are two separate fragments, each with its own start and accept:
+
+![Two separate Thompson fragments. Fragment for x: start state 1 goes to accepting state 2 on x. Fragment for y: start state 3 goes to accepting state 4 on y.](../../files/dotty/thompson_x_y.svg)
+
+### Thompson, Step 2: An Or, with a New Start and a New Accept
+
+An or adds one new start with ε-arrows into both fragments, and one new accept with ε-arrows out of both.  In the rule, `[ A ]` stands for any fragment you already built:
 
 ![Thompson rule for union: a new start state s with dashed epsilon arrows into fragment A and fragment B, and dashed epsilon arrows from both fragments into a new accepting state f.](../../files/dotty/thompson_rule_union.svg)
 
-![Thompson rule for star: a new start state s and a new accepting state f around fragment A. Dashed epsilon arrows go from s into A (enter), from A to f (stop), from A back to its own start (repeat), and from s straight to f (zero times).](../../files/dotty/thompson_rule_star.svg)
+Here it is on `x|y`.  At state 5 the machine would have to guess which branch the input follows, and the active set follows both.  States 2 and 4 no longer accept, because only the outermost accept does.
 
-In the star rule, each of the four arrows has one job.  One enters the fragment, one stops after any number of repetitions, one goes around again, and one matches zero repetitions, so that `A*` accepts the empty string.  Leave out the last and `A*` becomes `A+`.  Leave out the back arrow and it becomes `A?`.
+![Thompson fragment for x or y. New start state 5 has dashed epsilon arrows to 1 and 3. 1 goes to 2 on x, and 3 goes to 4 on y. 2 and 4 have dashed epsilon arrows to the new accepting state 6.](../../files/dotty/thompson_x_or_y.svg)
 
-To apply the rules, first read the regex's structure.  Star binds tightest, then concatenation, then union, so `ab*|c` means `(a(b*))|c`.  Number the states in the order you create them, and keep those numbers when you reuse a fragment.  Each rule adds at most two states, so the NFA has at most twice as many states as the regex has symbols and operators.
+### Thompson, Step 3: Concatenate with an ε-Arrow
 
-*Worked: `(x|y)z`.*
+Concatenation joins the first fragment's accept to the second fragment's start with one ε-arrow, and it adds no new states of its own:
 
-```text
-x:       1 -x-> 2                                   start 1, accept 2
-y:       3 -y-> 4                                   start 3, accept 4
-x|y:     5 -ε-> 1,  5 -ε-> 3,  2 -ε-> 6,  4 -ε-> 6  start 5, accept 6
-z:       7 -z-> 8                                   start 7, accept 8
-(x|y)z:  6 -ε-> 7                                   start 5, accept 8
-```
+![Thompson rule for concatenation: fragment A, drawn as a box, joined to fragment B by one dashed epsilon arrow from A's accept to B's start.](../../files/dotty/thompson_rule_concat.svg)
+
+To build `(x|y)z`, make `z` as states 7 and 8, and then add the arrow from 6 to 7.  The result starts at 5 and accepts only at 8:
 
 ![The finished Thompson NFA for (x|y)z. Start state 5 has dashed epsilon arrows to 1 and 3; 1 goes to 2 on x and 3 goes to 4 on y; 2 and 4 have dashed epsilon arrows to 6; 6 has a dashed epsilon arrow to 7; 7 goes to the accepting state 8 on z.](../../files/dotty/thompson_xy_z.svg)
 
 Check it on `yz`: $E(\{5\}) = \{5, 1, 3\}$; on `y`, move to $\{4\}$ and close to $\{4, 6, 7\}$; on `z`, move to $\{8\}$, which accepts.  On `xy`, the active set after `x` is $\{2, 6, 7\}$, none of those states has a `y` arrow, and the NFA rejects.
 
-*Worked: `(ab)*`.*
+### Thompson, Step 4: A Star
+
+A star adds a new start, a new accept, and four ε-arrows.  One enters the fragment, one stops after any number of repetitions, one goes around again, and one matches zero repetitions, so that `A*` accepts the empty string.  Leave out the last and `A*` becomes `A+`.  Leave out the back arrow and it becomes `A?`.
+
+![Thompson rule for star: a new start state s and a new accepting state f around fragment A. Dashed epsilon arrows go from s into A (enter), from A to f (stop), from A back to its own start (repeat), and from s straight to f (zero times).](../../files/dotty/thompson_rule_star.svg)
+
+Here it is around the `x|y` fragment from Step 2:
+
+![Thompson fragment for the star of x or y. New start state 7 has dashed epsilon arrows to 5 and to the new accepting state 8. Inside, 5 has dashed epsilon arrows to 1 and 3, 1 goes to 2 on x, 3 goes to 4 on y, and 2 and 4 have dashed epsilon arrows to 6. 6 has dashed epsilon arrows back to 5 and on to 8.](../../files/dotty/thompson_x_or_y_star.svg)
+
+### Thompson, One More Worked: `(ab)*`
 
 ```text
 a:       1 -a-> 2                     start 1, accept 2
@@ -1735,29 +1755,29 @@ This is Exercise 6.  Add $s \xrightarrow{\varepsilon} P$ and $P \xrightarrow{\va
 
 Both denote "empty, or ends in `b`."  Order 1 is shorter because $Q$ had a single arrow in and a single arrow out, so eliminating it first created only one new arrow; eliminating a state with many neighbors first makes many arrows and a longer regex.  A useful habit: eliminate the state with the fewest (in-arrows × out-arrows) first.
 
-### Worked Example: Thompson's construction on `a(b|c)*`
+### Worked Example: Thompson's construction on `(x|y)*z`
 
 Thompson's construction builds an NFA from a regex one operator at a time.  Every operator has one fixed gadget, and you glue the gadgets together.  Each fragment has exactly one start and one accepting state, which is what makes the gluing work.  Using `ε` for the empty transition:
 
-**1.  Literals.** `a`, `b`, `c` are each a two-state fragment:
+**1.  Literals.** `x`, `y`, and `z` are each a two-state fragment:
 
-![Three separate Thompson literal fragments. Fragment for a: start state 1, accepting state 2, 1 on a goes to 2. Fragment for b: start state 3, accepting state 4, 3 on b goes to 4. Fragment for c: start state 5, accepting state 6, 5 on c goes to 6.](../../files/dotty/thompson_literals.svg)
+![Three separate Thompson fragments. Fragment for x: start state 1 goes to accepting state 2 on x. Fragment for y: start state 3 goes to accepting state 4 on y. Fragment for z: start state 9 goes to accepting state 10 on z.](../../files/dotty/thompson_xyz_literals.svg)
 
-**2.  Alternation `b|c`.**  Add a new start and a new accept, with `ε` branches into each side and `ε` exits out:
+**2.  Alternation `x|y`.**  Add a new start and a new accept, with `ε` branches into each side and `ε` exits out:
 
-![Thompson NFA for the alternation b or c. States 3, 4, 5, 6, 7, and 8. The start state is 7, and the only accepting state is 8. Transitions: 7 on epsilon goes to 3, 7 on epsilon goes to 5, 3 on b goes to 4, 5 on c goes to 6, 4 on epsilon goes to 8, 6 on epsilon goes to 8.](../../files/dotty/thompson_alternation.svg)
+![Thompson fragment for x or y. New start state 5 has dashed epsilon arrows to 1 and 3. 1 goes to 2 on x, and 3 goes to 4 on y. 2 and 4 have dashed epsilon arrows to the new accepting state 6.](../../files/dotty/thompson_x_or_y.svg)
 
-**3.  Star `(b|c)*`.**  Wrap it: `ε` to skip entirely, and `ε` from the old accept back to the old start to repeat:
+**3.  Star `(x|y)*`.**  Wrap it: `ε` to skip entirely, and `ε` from the old accept back to the old start to repeat:
 
-![Thompson NFA for the star of b or c. States 3 through 10. The start state is 9, and the only accepting state is 10. States 7, 3, 4, 5, 6, and 8 form the alternation gadget for b or c, drawn inside a dashed box: 7 on epsilon goes to 3, 7 on epsilon goes to 5, 3 on b goes to 4, 5 on c goes to 6, 4 on epsilon goes to 8, 6 on epsilon goes to 8. Star transitions: 9 on epsilon goes to 7, 8 on epsilon goes back to 7, 8 on epsilon goes to 10, 9 on epsilon goes straight to 10.](../../files/dotty/thompson_star.svg)
+![Thompson fragment for the star of x or y. New start state 7 has dashed epsilon arrows to 5 and to the new accepting state 8. Inside, 5 has dashed epsilon arrows to 1 and 3, 1 goes to 2 on x, 3 goes to 4 on y, and 2 and 4 have dashed epsilon arrows to 6. 6 has dashed epsilon arrows back to 5 and on to 8.](../../files/dotty/thompson_x_or_y_star.svg)
 
-The outer `ε` from `9` straight to `10` is what makes zero repetitions legal.  The back edge from `8` to `7` is what makes many legal.
+The outer `ε` from `7` straight to `8` is what makes zero repetitions legal.  The back edge from `6` to `5` is what makes many legal.
 
-**4.  Concatenation `a` then `(b|c)*`.**  Join with an `ε` from `a`'s accept to the star's start:
+**4.  Concatenation `(x|y)*` then `z`.**  Join with an `ε` from the star's accept to `z`'s start:
 
-![Complete ten-state Thompson NFA for a followed by the star of b or c. States 1 through 10. The start state is 1, and the only accepting state is 10. Transitions: 1 on a goes to 2, 2 on epsilon goes to 9, 9 on epsilon goes to 7, 9 on epsilon goes to 10, 7 on epsilon goes to 3, 7 on epsilon goes to 5, 3 on b goes to 4, 5 on c goes to 6, 4 on epsilon goes to 8, 6 on epsilon goes to 8, 8 on epsilon goes back to 7, 8 on epsilon goes to 10.](../../files/dotty/thompson_concat.svg)
+![Complete ten-state Thompson NFA for the star of x or y, followed by z. The start state is 7, and the only accepting state is 10. 7 has dashed epsilon arrows to 5 and 8. 5 has dashed epsilon arrows to 1 and 3. 1 goes to 2 on x, 3 goes to 4 on y, and 2 and 4 have dashed epsilon arrows to 6. 6 has dashed epsilon arrows to 5 and 8. 8 has a dashed epsilon arrow to 9, and 9 goes to 10 on z.](../../files/dotty/thompson_x_or_y_star_z.svg)
 
-Ten states, and every one of them is forced, no creativity anywhere.  That mechanical quality is the point: it is why a program can do this, which is exactly what `lab-automata.md` asks you to implement.  Count the `ε` transitions and notice how many are pure bookkeeping.  A real implementation usually removes them afterward with an ε-closure pass.
+Ten states, and every one of them is forced, no creativity anywhere.  That mechanical quality is the point: it is why a program can do this.  Count the `ε` transitions and notice how many are pure bookkeeping.  A real implementation usually removes them afterward with an ε-closure pass.
 
 
 ---
