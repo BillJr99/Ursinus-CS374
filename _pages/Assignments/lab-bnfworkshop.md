@@ -474,7 +474,7 @@ The last two are the ones worth slowing down for, and they are easier in this or
 > 5. For languages 5 and 6, work the two hints above.  For each one, name what the recognizer must remember and at which point in the string it must remember it, then name which of the four bullets at the top of this part supplies memory of that kind.  Finish with one sentence saying what `a^n b^n c^n` asks for that `a^n b^n` does not, since that single difference is what separates the two levels.
 > 6. Close with one sentence for each of these three questions.  Which level do Scheme's atoms (a number, a symbol, a boolean) need?  Which level do nested s-expressions need?  What does that split tell you about why a compiler has both a lexer and a parser?  The third sentence should connect the first two.
 
-Those three sentences are the point of this part, and they are the reason the next two assignments are two assignments.  The *Build a Lexer* assignment asks you for a program that recognizes exactly the level you named first, and the *Parser and AST* assignment asks you for a program that recognizes the level you named second.  They are separate programs because they are separate problems, and you just proved it.
+Those three sentences are the point of this part, and they are the reason the next two assignments are two assignments.  The *Build a Lexer* assignment asks you for a program that recognizes exactly the level you named first, and the *Parser* assignment asks you for a program that recognizes the level you named second.  They are separate programs because they are separate problems, and you just proved it.
 
 ---
 

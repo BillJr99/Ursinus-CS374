@@ -20,7 +20,7 @@ These tutorials are where you go for depth on your own schedule.  They are worke
 - [Building a Lexer and Parser with PLY](PLYLexerAndParser): the generator-toolchain route through the Lexer assignment, and the reading for the first interpretation session
 - [Grammars in Python](GrammarsInPython): CFGs as dictionaries, left-recursion detection, parse trees as data, a derivation tracer, and an ambiguity detector
 - [Your Course Development Environment: Docker, Git, and GitHub](DevEnvironment), *anchors required work*, the recommended setup route in the Overview assignment: the course container, a GitHub-backed workspace, and the commit/push workflow
-- [Build an Interpreter](BuildAnInterpreter): start-to-finish companion for the Tree-Walking Interpreter assignment
+- [Build an Interpreter](BuildAnInterpreter): start-to-finish companion for the Tree-Walking Interpretation activity
 - [Type Inference: Implementing Hindley-Milner](TypeInference): for a team language that wants static checks
 - [Property-Based Testing Your Language with Hypothesis](PropertyBasedTesting), optional depth for testing your team language
 - [Typing Disciplines: Strong vs. Weak, Static vs. Dynamic, and Gradual Typing](TypingDisciplines), *anchors required work*, required reading for the Type Systems unit
