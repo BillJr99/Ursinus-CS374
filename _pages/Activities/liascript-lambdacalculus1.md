@@ -46,18 +46,17 @@ Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Pr
 
 ## How Today Runs
 
-Class opens with the Sprint 1 increment check.  Due today: the Environments and Type Checking lab.  Handed out today: the Lambda Calculus lab, which uses everything below.
+Due today: the Parser and AST assignment.  Handed out today: the Lambda Calculus lab, which uses everything below.
 
 | Segment | What your team does |
 |---------|---------------------|
-| Sprint 1 increment check | In project teams, one member shows one running increment of your pipeline, live, and the team says what is next and what is blocking.  A team that gets "not yet" today can show the increment at the start of class on Thursday, December 3, for half credit |
 | Roles and whiteboard rules | Move to your POGIL team, rotate roles, and agree who checks each substitution before it counts |
 | Part I: The Whole Language | Read the notation bridge and the three forms, then parse by eye in Model 1 and answer its questions |
 | Part II: Beta Reduction | Work the three worked examples at the board, then reduce by hand in Model 2 and answer its questions |
 | Part II: Alpha Renaming | Walk the capture example, wrong and then right, and say aloud which step renames and why |
 | Part III: Model 3 | Run the step tracer, read the code, and answer its questions |
 
-To make room for the increment check, the Model 3 Try It Yourself block and Models 3b, 4, and 5 are self-paced today.  Work them after class, before you start the Lambda Calculus lab.  Everything after **In-class work stops here** is self-paced as well: the Check Your Understanding questions, the exercises, and the further reading.
+The Model 3 Try It Yourself block and Models 3b, 4, and 5 are self-paced today.  Work them after class, before you start the Lambda Calculus lab.  Everything after **In-class work stops here** is self-paced as well: the Check Your Understanding questions, the exercises, and the further reading.
 
 ---
 

@@ -47,7 +47,7 @@ Project roles (rotated by sprint) are in effect: Coordinator, Builder(s), Evalua
 
 ## How Today Runs
 
-The walk and the triage come first, because the cards are only useful while there is still time to act on them.  Build time follows, and it ends on the release checklist.  Due today: Release and Review (your gallery walk cards, your triage, and the ShipIt Release Checklist, in one submission), the Team Language Project: Demo Day Presentations deliverable, and the Lambda Calculus lab.  You present it on Demo Day.
+The walk and the triage come first, because the cards are only useful while there is still time to act on them.  Build time follows, and it ends on the release checklist.  Due today: Release and Review (your gallery walk cards, your triage, and the ShipIt Release Checklist, in one submission), the Team Language Project: Demo Day Presentations deliverable, which you present on Demo Day, and the Tree-Walking Interpreter.
 
 | Segment | What your team does |
 |---------|---------------------|

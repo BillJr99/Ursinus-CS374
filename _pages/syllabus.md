@@ -486,7 +486,14 @@ schedule:
   title: "Binding, Scope, and Environments"
   link: "Activities/liascript-bindingscope.md"
   liapage: true
+  deliverables:
+  - dtitle: "Programming Assignment: Tree-Walking Interpreter Handed Out"
+    dlink: "Assignments/Interpreter"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-interpreter.md"
   readings:
+  - rtitle: "Tutorial: Environments and Type Checking, a walkthrough of the scope table and a small type checker"
+    rlink: "Assignments/EnvironmentsLab"
   - rtitle: "Krishnamurthi, PLAI (3rd ed.): the Stacker and SMoL Tutor, which we step through in class, and the chapters on functions, scope, and environments"
     rlink: "https://www.plai.org/"
   - rtitle: "Build an Interpreter (start-to-finish companion for the upcoming assignment)"
@@ -503,10 +510,6 @@ schedule:
     dlink: "Projects/TeamLanguage"
     points: "28"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
-  - dtitle: "Lab: Environments and Type Checking Handed Out"
-    dlink: "Assignments/EnvironmentsLab"
-    points: "30"
-    rubricpath: "_pages/Assignments/lab-environments.md"
   readings:
   - rtitle: "Typing Disciplines, going past today's quadrant into structural vs. nominal typing, type erasure, and algebraic data types"
     rlink: "Tutorials/TypingDisciplines"
@@ -521,14 +524,6 @@ schedule:
   link: "Activities/liascript-languagedesign.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Parser and AST Due"
-    dlink: "Assignments/Parser"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-parser.md"
-  - dtitle: "Programming Assignment: Tree-Walking Interpreter Handed Out"
-    dlink: "Assignments/Interpreter"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-interpreter.md"
   readings:
   - rtitle: "Build a Bytecode VM"
     rlink: "Tutorials/BytecodeVM"
@@ -538,14 +533,10 @@ schedule:
   link: "Activities/liascript-lambdacalculus1.md"
   liapage: true
   deliverables:
-  - dtitle: "Team Language Project: Sprint 1 Increment Check (shown at the start of class)"
-    dlink: "Projects/TeamLanguage"
-    points: "3"
-    rubricpath: "_pages/Projects/proj-teamlanguage.md"
-  - dtitle: "Lab: Environments and Type Checking Due"
-    dlink: "Assignments/EnvironmentsLab"
-    points: "30"
-    rubricpath: "_pages/Assignments/lab-environments.md"
+  - dtitle: "Programming Assignment: Parser and AST Due"
+    dlink: "Assignments/Parser"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-parser.md"
   - dtitle: "Lab: Lambda Calculus Handed Out"
     dlink: "Assignments/LambdaCalculusLab"
     points: "15"
@@ -562,10 +553,6 @@ schedule:
   link: "Activities/liascript-lambdacalculus2.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Tree-Walking Interpreter Due"
-    dlink: "Assignments/Interpreter"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-interpreter.md"
   readings:
   - rtitle: "Church encodings: numerals, booleans, and the arithmetic you reduce by hand in the Lambda Calculus lab (today's activity, Models 2-3)"
   - rtitle: "A Flock of Functions: Combinators, Lambda Calculus, & Church Encodings in JS - Part II (Gabriel Lebec)"
@@ -578,10 +565,10 @@ schedule:
   link: "Activities/liascript-sprintstudio.md"
   liapage: true
   deliverables:
-  - dtitle: "Lab: Lambda Calculus Due"
-    dlink: "Assignments/LambdaCalculusLab"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
+  - dtitle: "Programming Assignment: Tree-Walking Interpreter Due"
+    dlink: "Assignments/Interpreter"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-interpreter.md"
   - dtitle: "Team Language Project: Release and Review Due"
     dlink: "Projects/TeamLanguage"
     points: "6"
@@ -603,6 +590,11 @@ schedule:
     rlink: "Tutorials/AdvancedCpp"
 - cdate: "2026/12/14"
   title: "Demo Day: Team Language Presentations (Final Exam Period, 11:15 AM-2:15 PM, Pfahler 012)"
+  deliverables:
+  - dtitle: "Lab: Lambda Calculus Due"
+    dlink: "Assignments/LambdaCalculusLab"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
 ---
 
 This semester is a build.  By December, your team will have designed and implemented a programming language of your own, assembled one assignment at a time.  The sections below explain how the pieces fit together, including how the course gives you choices, how to read an assignment, how to prepare for each class, and how I value and evaluate the day-to-day work of participating.  Please read them once now, and come back to the participation and preparation guides throughout the term.
@@ -627,7 +619,7 @@ I write every assignment in this course to be transparent about three things, so
 
 When you open an assignment, please read the Purpose first.  It tells you what the assignment is really for, and that is the fastest way to make good decisions when the task gets ambiguous.  Every assignment also closes by asking you to reflect on what you did, what fought you, how long it took, and what grade you would give yourself against the criteria.  I count that reflection as part of the work.
 
-A note on grade categories: the **Overview** (100 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the five programming assignments (Functional Programming with Scheme, Regular Expressions, Lexer, Parser, and Interpreter) make up the **Programming Assignments** category.  The **Labs** category comprises five short labs (BNF Workshop, Grammar and Derivations Workshop, Finite Automata Simulators, Environments and Type Checking, and Lambda Calculus), each scoped to roughly two to three hours.  Labs may be completed **in pairs** (both partners submit, naming each other; both earn the same grade); the programming assignments remain individual work.  Every lab feeds the assignment it scaffolds rather than adding to your load.  Most fall mid-assignment and complete a piece of it in place: the Finite Automata Simulators lab for the Lexer, and the Environments and Type Checking lab for the Interpreter's `Environment` class and type checker.  The Grammar and Derivations Workshop stands apart from both patterns: it closes out the grammars and derivations unit while that material is fresh, and the grammar you write there is the one your parser implements later in the term.  **There is no midterm or written final exam**: Demo Day, held in the final exam period (Monday, December 14, 11:15 AM-2:15 PM, Pfahler 012), is the course's terminal event, and no work is accepted after it.  Seven teams present for nine minutes each within that period, and external guests are welcome.
+A note on grade categories: the **Overview** (100 points) and **Warmup** (10 points) onboarding assignments are assessed within **Class Activities and Participation**; the five programming assignments (Functional Programming with Scheme, Regular Expressions, Lexer, Parser, and Interpreter) make up the **Programming Assignments** category.  The **Labs** category comprises four short labs (BNF Workshop, Grammar and Derivations Workshop, Finite Automata Simulators, and Lambda Calculus), each scoped to roughly two to three hours.  Labs may be completed **in pairs** (both partners submit, naming each other; both earn the same grade); the programming assignments remain individual work.  Every lab feeds the assignment it scaffolds rather than adding to your load.  The Finite Automata Simulators lab, for example, falls mid-assignment and completes a piece of the Lexer in place.  The Grammar and Derivations Workshop stands apart from both patterns: it closes out the grammars and derivations unit while that material is fresh, and the grammar you write there is the one your parser implements later in the term.  **There is no midterm or written final exam**: Demo Day, held in the final exam period (Monday, December 14, 11:15 AM-2:15 PM, Pfahler 012), is the course's terminal event, and no work is accepted after it.  Seven teams present for nine minutes each within that period, and external guests are welcome.
 
 ## Generative AI Policy
 

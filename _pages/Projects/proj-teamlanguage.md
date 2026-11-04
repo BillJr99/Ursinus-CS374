@@ -8,7 +8,7 @@ info:
   purpose: "To design, build, document, and present a programming language of your own, assembled from the lexer, parser, AST, environment, and evaluator components you built this semester, and to prove that those components snap together and grow."
   tilt:
     task: "In rotating-role team sprints, choose your language's direction, integrate your components into one pipeline, add a distinctive feature (going deeper via the Extensions Menu if you choose), and ship a REPL, file-runner, samples, tests, and SEMANTICS.md, then present the language at Demo Day."
-    criteria: "I assess your work on the Sprint 0 proposal, language design and documentation, implementation correctness and integration, testing, reproducibility, and the Demo Day presentation.  You submit the proposal on Thursday, November 19, and present it at the Sprint 0 kickoff on Tuesday, November 24; the rest is earned with the final submission, due on the last class day, and the presentation at Demo Day.  See the course schedule for the dates, and the rubric below for the full breakdown."
+    criteria: "I assess your work on the Sprint 0 proposal, language design and documentation, implementation correctness and integration, testing, reproducibility, and the Demo Day presentation.  You submit the proposal and then present it at the Sprint 0 kickoff; the rest is earned with the final submission, due on the last class day, and the presentation at Demo Day.  See the course schedule for the dates, and the rubric below for the full breakdown."
   points: 100
   goals:
     - To design a programming language with a niche, a documented grammar, and exhaustive semantics
@@ -20,7 +20,7 @@ info:
     - To work in sustained team sprints with rotating roles and structured peer review
   rubric:
     - weight: 28
-      description: Proposal (submitted Thursday, November 19, and presented at the Sprint 0 kickoff on Tuesday, November 24)
+      description: Proposal (submitted, and then presented at the Sprint 0 kickoff)
       preemerging: The proposal is missing, or names a language with no team roster, niche, grammar, or plan
       beginning: The proposal names the team and a niche, but the design scorecard or the team charter is missing, or the grammar v0, node inventory, or SEMANTICS.md v0 is missing or generic, or the merge plan and sprint plan are absent
       progressing: All checklist items are present and specific, with minor gaps such as a scorecard that states priorities without their sacrifices, a charter topic left vague, a vague risk pre-mortem, or an incomplete node inventory
@@ -90,17 +90,16 @@ Your team will design, build, document, and present a programming language of yo
 
 ## Milestone Timeline
 
-The project is worth **100 points**, earned at two graded milestones: the proposal (28 points) and the Demo Day Presentations deliverable (72 points), which you submit on the last class day and present at Demo Day.  Two small checks along the way fall within Class Activities and Participation: the Sprint 1 increment check (3 points) and the Release and Review submission (6 points).  They keep the team honest without raising the stakes of a studio day.  See the course schedule for the assigned and due dates; it is the source of truth for every date below.
+The project is worth **100 points**, earned at two graded milestones: the proposal (28 points) and the Demo Day Presentations deliverable (72 points), which you submit on the last class day and present at Demo Day.  One small check along the way falls within Class Activities and Participation: the Release and Review submission (6 points).  It keeps the team honest without raising the stakes of a studio day.  See the course schedule for the assigned and due dates; it is the source of truth for every date below.
 
 | Milestone (see the course schedule for dates) | What is due | Pipeline stage it depends on | Points |
 |---|---|---|---|
 | Project hand-out | Nothing is submitted.  The design phase opens: form a team of three, pick a niche, start the design scorecard and the team charter | Your lexer, and the parser and AST you are finishing | - |
 | **Proposal: submitted, then presented at the Sprint 0 kickoff** | **The proposal, opening with the team roster, the niche, the design scorecard, and the signed team charter.  You submit it before the kickoff and present it at the kickoff** | Lexer, parser, and AST: grammar v0 and the node inventory describe them | **28** |
-| Sprint 1 increment check | Shown at the start of class: one running increment, what is next, and what is blocking (assessed within Class Activities and Participation) | Environments and the evaluator.  This is the build phase | 3 |
 | Release and Review (Sprint Studio) | One submission: the Sprint 2 gallery walk cards and your triage, and the Sprint 3 ShipIt Release Checklist (assessed within Class Activities and Participation) | The whole pipeline, extended at each stage the feature touches, plus the test suite | 6 |
 | **Demo Day Presentations: submitted on the last class day, then presented at Demo Day (final exam period)** | **The final submission, due on the last class day, and the presentation at Demo Day** | Everything above | **72** |
 
-Demo Day takes place in the course's final exam period: Monday, December 14, 11:15 AM-2:15 PM, in Pfahler 012.  The final submission is due earlier, on the last class day.  There is no written final exam; Demo Day is the course's terminal event, and I accept no work after it.
+Demo Day takes place in the course's final exam period, which the course schedule lists.  The final submission is due earlier, on the last class day.  There is no written final exam; Demo Day is the course's terminal event, and I accept no work after it.
 
 ---
 
@@ -141,7 +140,7 @@ If the design phase feels contentious, the map is working.  Run the charter's co
 
 You need:
 
-- Your Lexer and Parser assignment code, and by Sprint 1, your Tree-Walking Interpreter.
+- Your Lexer and Parser assignment code, and your Tree-Walking Interpreter as you build it.
 - Python 3.10 or newer.  The pipeline can use the standard library only, so there need be nothing to install for it.
 - A shared git repository for the team.  It may stay private until release hardening; it must be public by Demo Day.
 - A working terminal.  If the shell is still new to you, read the [dev environment page]({{ site.baseurl }}/Tutorials/DevEnvironment) and the [shell primer for language development]({{ site.baseurl }}/Tutorials/ShellForLanguageDev) once before Sprint 1.
@@ -288,9 +287,9 @@ The hand-out opens a design phase that runs outside class.  There is no studio s
 
 ---
 
-## Milestone 2: The Proposal (28 points): Submitted Thursday, November 19, Presented at the Sprint 0 Kickoff
+## Milestone 2: The Proposal (28 points): Submitted, Then Presented at the Sprint 0 Kickoff
 
-Submit the proposal through Canvas on Thursday, November 19, and present it in class at the Sprint 0 kickoff on Tuesday, November 24.  It is two to three pages, and it is the only graded deliverable before Demo Day, so treat it as the contract your team builds against.  It opens with the team: your roster, your niche, the design scorecard, and the signed team charter.  The rest is the plan.  The rubric's proficient level asks for every checklist item complete and specific, the chosen direction declared and defended against the design scorecard, the distinctive feature (and any Extensions Menu adoptions) scoped to fit the sprint plan, and the proposal submitted on time and presented at the kickoff.
+Submit the proposal through Canvas by its due date, and present it in class at the Sprint 0 kickoff.  It is two to three pages, and it is the only graded deliverable before Demo Day, so treat it as the contract your team builds against.  It opens with the team: your roster, your niche, the design scorecard, and the signed team charter.  The rest is the plan.  The rubric's proficient level asks for every checklist item complete and specific, the chosen direction declared and defended against the design scorecard, the distinctive feature (and any Extensions Menu adoptions) scoped to fit the sprint plan, and the proposal submitted on time and presented at the kickoff.
 
 > **Do this.**
 > 1. Open with the team: list the three members.
@@ -305,8 +304,8 @@ Submit the proposal through Canvas on Thursday, November 19, and present it in c
 > 10. Write the merge plan: whose lexer, parser, and evaluator seed the integration, and in what order you merge.
 > 11. Run the risk pre-mortem: name the most likely derailment and the smallest experiment that retires it.
 > 12. Write the sprint plan with the role rotation schedule, and check that it matches the charter's rotation plan.
-> 13. Submit the proposal through Canvas on Thursday, November 19.
-> 14. Present the proposal in class at the Sprint 0 kickoff on Tuesday, November 24.
+> 13. Submit the proposal through Canvas by its due date.
+> 14. Present the proposal in class at the Sprint 0 kickoff.
 
 ### The Team Charter
 
@@ -340,9 +339,9 @@ All members sign the charter (typed names suffice) in the proposal.  One charter
 
 ---
 
-## Milestone 3: Sprint 1 Increment Check (3 points): Integrate the Pipeline
+## Milestone 3: Sprint 1: Integrate the Pipeline
 
-Sprint 1 is the build phase.  You integrate members' components into one pipeline that runs the class language (Direction B: the front end printing ASTs).  Build in sprints between the checks on the course schedule, following the sprint studio protocol: stand-ups with numbers, failing tests as specifications, current documents, and role rotation at boundaries.
+Sprint 1 is the build phase.  You integrate members' components into one pipeline that runs the class language (Direction B: the front end printing ASTs).  Build in sprints, following the sprint studio protocol: stand-ups with numbers, failing tests as specifications, current documents, and role rotation at boundaries.
 
 > **Do this.**
 > 1. Agree on one repository layout before anyone merges.  One layout that works is shown below.
@@ -381,11 +380,8 @@ python3 -m pytest tests/               # runs the test suite
 > - A program that lexes and parses but crashes in the evaluator is a stage-boundary bug.  Write it down; it is a bug story for Demo Day.
 > - If one component is too broken to merge, use a teammate's and keep moving.  Say so in the README.
 
-**The check.**  At the start of class on Tuesday, December 1, each team gets a short turn.  One member shows one running increment of your pipeline, live.  Then the team says, in a sentence each, what is next and what is blocking.  The check is shown or not yet, and there is no written submission.  A team that gets "not yet" on Tuesday, December 1, can show the increment at the start of class on Thursday, December 3, for half credit.
+**Checklist (nothing is uploaded):**
 
-**Deliverables checklist (nothing is uploaded; you show the increment at the start of class):**
-
-- [ ] One running increment shown in class, with what is next and what is blocking said aloud.
 - [ ] One integrated pipeline running the class language (Direction B: the front end parsing every specification example and printing ASTs with location-prefixed errors).
 - [ ] The README line naming whose components you started from.
 - [ ] A failing test for the distinctive feature, committed.
@@ -396,7 +392,7 @@ python3 -m pytest tests/               # runs the test suite
 
 ## Milestone 4: Release and Review (6 points): The Sprint Studio
 
-Sprints 2 and 3 meet in one Sprint Studio session on Tuesday, December 8.  Their work goes in one Canvas submission, **Release and Review**, due that day: your gallery walk cards and their triage, and the ShipIt Release Checklist.  It is assessed within Class Activities and Participation.
+Sprints 2 and 3 meet in one Sprint Studio session on the last class day.  Their work goes in one Canvas submission, **Release and Review**, due that day: your gallery walk cards and their triage, and the ShipIt Release Checklist.  It is assessed within Class Activities and Participation.
 
 ### Sprint 2: The Gallery Walk
 
@@ -427,7 +423,7 @@ Sprint 3 completes the feature, hardens errors, and finishes the sample suite.  
 
 > **Watch out.**  Flip the repository public only after the secrets audit.  Public means the full history is public.
 
-**Deliverables checklist (the Release and Review submission, due Tuesday, December 8):**
+**Deliverables checklist (the Release and Review submission, due on the last class day):**
 
 - [ ] Grammar differences implemented and reflected in `SEMANTICS.md`.
 - [ ] The distinctive feature's skeleton running end to end on at least one program (Direction B: the evaluator emitting a timed event list).
@@ -446,7 +442,7 @@ Sprint 3 completes the feature, hardens errors, and finishes the sample suite.  
 
 ## Milestone 5: Demo Day and Final Submission (72 points)
 
-All teams present during the final exam period (Monday, December 14, 11:15 AM-2:15 PM, Pfahler 012).  The final submission is due before that, on the last class day.  There is no written final exam, and I accept no work after Demo Day.  Demo Day is external-facing: alumni, industry guests, and faculty from other departments may join the audience and Q&A, as available.  Your grade never depends on who attends.  Prepare with the [Demo Day Guide]({{ site.baseurl }}/Projects/TeamLanguage#demo-day-external-guests).
+All teams present during the final exam period.  The final submission is due before that, on the last class day.  There is no written final exam, and I accept no work after Demo Day.  Demo Day is external-facing: alumni, industry guests, and faculty from other departments may join the audience and Q&A, as available.  Your grade never depends on who attends.  Prepare with the [Demo Day Guide]({{ site.baseurl }}/Projects/TeamLanguage#demo-day-external-guests).
 
 ### The Presentation (9 minutes)
 
@@ -684,7 +680,7 @@ Demo Day is not a private class ritual.  Alumni, industry guests, and faculty fr
 
 ### Demo Day Format and Schedule
 
-All teams present within the final exam period (Monday, December 14, 11:15 AM-2:15 PM, Pfahler 012).  Each team has a hard cap of **9 minutes**, followed by a 1-minute transition while the next team plugs in.  Nine minutes rewards a rehearsed demo, so time your run-through and cut material rather than rushing it.  The order of presentation is set by lot: teams draw lots in the release-hardening studio, so you know your slot before the day.
+All teams present within the final exam period.  Each team has a hard cap of **9 minutes**, followed by a 1-minute transition while the next team plugs in.  Nine minutes rewards a rehearsed demo, so time your run-through and cut material rather than rushing it.  The order of presentation is set by lot: teams draw lots in the release-hardening studio, so you know your slot before the day.
 
 ### What Strong Demo Day Work Looks Like
 

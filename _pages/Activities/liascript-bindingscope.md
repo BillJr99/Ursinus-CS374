@@ -30,7 +30,7 @@ By the end of this activity, you will be able to:
 - Wire the `Environment` class into a tree-walking interpreter so that block statements push and pop scopes correctly
 - Specify the scoping and binding rules for a new language design, and defend the chosen rules in terms of predictability, flexibility, and implementation complexity
 
-Your interpreter from *Tree-Walking Interpretation* stores every variable in one flat dictionary.  That design breaks as soon as two parts of a program use the same name for different things.  Today you build the vocabulary to fix it, **binding** (attaching a name to a meaning) and scope (where that attachment is visible), and then the data structure that enforces it.  The `Environment` class you build here is the one the Environments and Type Checking lab, handed out on Thursday, asks you to finish and test, and the one the Interpreter assignment imports unchanged.  The path for today runs from binding times, to static versus dynamic scope, to the environment chain, to the operations and blocks that use it, to lifetime and the design decisions for your own language.
+Your interpreter from *Tree-Walking Interpretation* stores every variable in one flat dictionary.  That design breaks as soon as two parts of a program use the same name for different things.  Today you build the vocabulary to fix it, **binding** (attaching a name to a meaning) and scope (where that attachment is visible), and then the data structure that enforces it.  The `Environment` class you build here is the one the Environments and Type Checking tutorial walks through, and the one the Interpreter assignment, handed out today, uses unchanged.  The path for today runs from binding times, to static versus dynamic scope, to the environment chain, to the operations and blocks that use it, to lifetime and the design decisions for your own language.
 
 > **Before You Begin:** This activity assumes you can:
 > - Write and call Python functions, including nested (inner) functions
@@ -60,7 +60,7 @@ Rules first, then the machine that enforces them.  Parts I and II are the vocabu
 | Part III: The Environment Chain | Run the paper machine by hand (CTQs 9-12), check it against the Model 3 code cell, and read the class (CTQs 13-15) |
 | Part IV: Define, Assign, and Blocks | Run Model 5 and answer CTQs 16-18, then simulate per-iteration scope in Model 6 and answer CTQs 19-20 |
 | Part V: Lifetime, and Your Language | Run `make_adder` and the loop-variable trap, and answer CTQs 23-25 |
-| Wrap-up | The Recorder posts the team's answers; everyone notes that Thursday's Environments and Type Checking lab starts from the `Environment` class built today |
+| Wrap-up | The Recorder posts the team's answers; everyone notes that the Interpreter assignment, handed out today, uses the `Environment` class built today |
 
 If the period runs short, the Try It Yourself blocks (other than Probe 1) and CTQs 21-22 move to homework.  Everything after **In-class work stops here** is self-paced: the exercises and four extensions covering Python's LEGB rule, the define-when-you-meant-assign bug, a three-level chain trace, and a step-by-step storage trace.  The last two are the closest rehearsal for the lab's paper trace.
 
@@ -984,7 +984,7 @@ Expected output: `1, 2, 3` then `1`, and `[2, 2, 2]` against `[0, 1, 2]`.  The t
 
 ---
 
-**In-class work stops here.**  Everything below is homework and going-deeper material.  Attempt the exercises before you start the Environments and Type Checking lab on Thursday.
+**In-class work stops here.**  Everything below is homework and going-deeper material.  Attempt the exercises before you start the environment step of the Interpreter assignment.
 
 ---
 
@@ -1471,4 +1471,4 @@ trace_program()
 
 ---
 
-Up next: the *Type Systems* activity asks what your interpreter should do with senseless values.  The `Environment` you built here goes into the Environments and Type Checking lab, handed out on Thursday with the Interpreter assignment, and from there straight into that assignment.
+Up next: the *Type Systems* activity asks what your interpreter should do with senseless values.  The `Environment` you built here goes straight into the Interpreter assignment.

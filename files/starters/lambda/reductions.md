@@ -1,57 +1,62 @@
 <Your name> and <your partner's name>   (or: <Your name>, worked alone)
 
-<!--
-HOW TO TYPE A TERM.  Write every term in display math, between $$ and $$, with one
-step per line.  A single $ does not render on the course site.
+# Part 1: AND and OR
 
-  The symbol lambda        \lambda
-  A binder and its body    \lambda x.\, x      (\, adds a small space after the dot)
-  Application              f\ x                (backslash-space keeps the gap)
-  An underlined redex      \underline{...}
-  A beta-step arrow        \to_\beta
-  An alpha arrow           \to_\alpha
-  A name                   \text{TRUE}
-  A wider gap              \quad
+AND = λp.λq. p q p
 
-THE TEMPLATE.  Copy this under each item.  Number the steps in order, counting alpha
-steps too.  Repeat the beta pair as often as you need, and leave out the alpha pair
-when no capture threatens.
+| p | q | Term after substitution | Which argument the first boolean picks | Result |
+|---|---|---|---|---|
+| TRUE | TRUE | TRUE TRUE TRUE | | |
+| TRUE | FALSE | TRUE FALSE TRUE | first | FALSE |
+| FALSE | TRUE | | | |
+| FALSE | FALSE | | | |
 
-$$\underline{<the first redex>}\ <the rest of the starting term>$$
+OR = λp.λq. p p q
 
-Start: <which subterm is the redex, and why you contract it>.
+| p | q | Term after substitution | Which argument the first boolean picks | Result |
+|---|---|---|---|---|
+| TRUE | TRUE | | | |
+| TRUE | FALSE | TRUE TRUE FALSE | first | TRUE |
+| FALSE | TRUE | | | |
+| FALSE | FALSE | | | |
 
-$$\to_\alpha \quad <the same term, with one binder and its uses renamed>$$
+# Part 2: XOR
 
-Step 1 (only when needed): rename <old binder> to <fresh name>, because <the free variable> would otherwise be captured.
+XOR = λp.λq. p ___ ___
 
-$$\to_\beta \quad <the new term, with the next redex underlined>$$
+| p | q | Term after substitution | Result | Matches the truth table? |
+|---|---|---|---|---|
+| TRUE | TRUE | | | |
+| TRUE | FALSE | | | |
+| FALSE | TRUE | | | |
+| FALSE | FALSE | | | |
 
-Step 2: substitute <the argument> for <the bound variable> in the body <the body>.  No capture, because <reason>.
--->
+# Part 3: SUCC and ADD
 
-## Part 0
+SUCC
 
-### Item 1
+1. In the SUCC ONE walkthrough, TWO has two copies of f.  Which one came from SUCC, and which came from ONE?  Point to the line that shows it.
 
-### Item 2
+2. What does `n f x` mean in words, and why does SUCC need it instead of just writing one more f?
 
-### Least-confident step
+3. Work out SUCC ZERO, one line at a time.  Which numeral do you get?
 
-## Part 1
+ADD
 
-### Item 1
+4. In the ADD ONE ONE walkthrough, what does the `x` of the outer ONE become at line 3, and why does that make the two counts add?
 
-### Item 2
+5. Work out ADD TWO ONE, one line at a time.  How many copies of f does the result have?
 
-### Item 3
+6. Would ADD ONE TWO give the same numeral?  Explain why, from what each numeral does to f.
 
-## Part 2
+# Part 4: Multiplication
 
-### Item 1
+Step 1.  Write the function that applies f a total of n times:  ______
 
-### Item 2
+Step 2.  Apply that function m times, starting from x, by filling in the blank:  m (______) x
 
-### Item 3
+Step 3.  Make it a numeral by wrapping it in the f and x binders:  λf.λx. ______
 
-### Item 4
+Step 4.  Make it a function of two numbers:  MULT = λm.λn. ______
+
+Step 5.  Check MULT TWO TWO.  Using your formula, how many times does the outer TWO apply its function, and how many copies of f does each one contribute?  How many copies of f are in the result, and which number is that?
