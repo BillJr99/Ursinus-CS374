@@ -1,0 +1,11 @@
+print 1 < 2;
+print 2 <= 1;
+print 1 == 1;
+print 1 != 1;
+print true == 1;
+print not false;
+print not 0;
+print false or 7;
+print 0 and 7;
+print true or (1 / 0);
+print false and (1 / 0);

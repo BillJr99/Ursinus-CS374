@@ -1,0 +1,2 @@
+1
+Runtime error at line 2: '+' requires numbers, got bool and num
