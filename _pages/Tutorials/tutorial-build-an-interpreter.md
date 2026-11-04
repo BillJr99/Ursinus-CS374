@@ -1791,16 +1791,14 @@ Each binding is `(var init step)`.  On each iteration: evaluate all `step` expre
 The built-in `map` uses Python recursion.  Write a **pure Scheme** `map` that is tail-recursive using an accumulator, then reverses the result.
 
 ```scheme
-(define my-reverse
-  (lambda (lst acc)
-    (if (null? lst)
-        acc
-        (my-reverse (cdr lst) (cons (car lst) acc)))))
+; An accumulator builds its result backwards, because cons adds to the front.
+; Use your own reverse with an accumulator, or the built-in reverse if your
+; evaluator has one, to put the result back in order.
 
 (define my-map
   (lambda (f lst)
     ; YOUR CODE HERE
-    ; Use my-reverse and an accumulator
+    ; Use an accumulator, and reverse it at the end
     ))
 
 (my-map (lambda (x) (* x x)) (list 1 2 3 4 5))

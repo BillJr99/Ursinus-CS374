@@ -290,7 +290,7 @@ Type `sumlist` into your REPL and get it running.  Then write `product`, which m
 
 You have already seen `(define add +)`.  Once functions are ordinary values, three things follow immediately: you can pass one to a function, you can build one on the spot without naming it, and a function you return can remember where it came from.  The next four models are those three ideas plus the one Scheme idiom that makes list traversal feel natural.
 
-## Model 3: The Linear Equation, Projectile Motion, and `czr`
+## Model 3: The Linear Equation, Projectile Motion, and Walking a List
 
 ```scheme
 (define y
@@ -328,57 +328,83 @@ The same equation with the multiplication pulled out into a function of its own:
 (+ (* v0 t) (* 0.5 (* a (square t))))
 ```
 
-```scheme
-(define czr
-  (lambda (l)
-    (if (null? (cdr l))
-        (car l)
-        (czr (cdr l)))))
+Here is a function that walks a list until it finds what it wants.  It has the same skeleton as `sumlist`, minus the work on the way back up: nothing happens after the recursive call returns.
 
-(czr '(1 2 3 4))             ; 4
+```scheme
+(define contains?
+  (lambda (x l)
+    (if (null? l)
+        #f
+        (if (= (car l) x)
+            #t
+            (contains? x (cdr l))))))
+
+(contains? 3 '(1 2 3 4))     ; #t
+(contains? 9 '(1 2 3 4))     ; #f
 ```
 
-`czr` gives you the *last* item.  The natural companion gives you everything *but* the last item, and it is written without any recursion of its own by borrowing `reverse` twice:
+### Building Up a List Function: the Last Element
+
+The assignment asks you to write `czr`, which returns the last element of a list.  Here is how to reason your way to it, so that you can write the code there.  Every list recursion answers the same two questions.
+
+*What is the base case?*  Find the smallest list where you can say the answer without recursing.  A one-item list is that case, because its only item is its last item.  How can your code tell it has a one-item list?  Look at what `(cdr l)` is for `'(4)`.
+
+*What does the recursive step work on?*  The last element of `'(1 2 3 4)` is the same as the last element of `'(2 3 4)`, because removing the front item cannot change what is at the end.  So each call works on the `cdr`, and each `cdr` is one item shorter, which is why the calls must reach the base case.
+
+Fill in the blanks:
+
+```text
+last of (1 2 3 4)   more than one item, so the answer is the last of (____)
+last of (2 3 4)     more than one item, so the answer is the last of (____)
+last of (3 4)       more than one item, so the answer is the last of (____)
+last of (4)         one item, so the answer is ____
+```
+
+Notice that nothing happens on the way back up.  The deepest call found the answer, and every other call hands it along.
+
+### Building Up a List Function: Reversing
+
+The assignment also asks you to write `reverse-list`, using `car`, `cdr`, and `append`.  The same two questions apply.
+
+*What is the base case?*  Find a list so short that it is already its own reverse.
+
+*What does the recursive step work on?*  Suppose someone hands you the reverse of `(cdr L)`.  Take `'(1 2 3)`: the reverse of `'(2 3)` is `'(3 2)`.  Where does the `1` have to go to finish the job?  The `cdr` is one item shorter on each call, so the calls reach the base case.
+
+Fill in the blanks, starting from the last line and working up:
+
+```text
+reverse of (1 2 3)  =  reverse of (2 3), then 1   =  (____)
+reverse of (2 3)    =  reverse of (3), then 2     =  (____)
+reverse of (3)      =  base case                  =  (____)
+```
+
+One thing to watch for when you write it: `append` joins two *lists*.  So the item you add at the end must be wrapped in a list, and your base case must return a list.  A base case that returns a bare item makes the program fail one level up, where the error message does not mention the base case at all.
+
+`reverse` is built in, and you can use the built-in to check your work.  Here is what it lets you write in one line: everything *but* the last item of a list.
 
 ```scheme
 (define cxr
   (lambda (l)
     (reverse (cdr (reverse l)))))
 
-(czr '(1 2 3 4 5))           ; 5
 (cxr '(1 2 3 4 5))           ; (1 2 3 4)
-```
-
-`reverse` is built in, but the assignment asks you to write it, so here it is with the same skeleton as `sumlist`:
-
-```scheme
-(define my-reverse
-  (lambda (L)
-    (if (null? (cdr L))
-        (list (car L))
-        (append (reverse (cdr L)) (list (car L))))))
-
-(display (my-reverse (list 1 2 3)))   ; (3 2 1)
-(newline)
-(display (cxr (list 1 2 3)))          ; (1 2)
 ```
 
 ### Reading the Code
 
 - `y` is `y = mx + b` with the parentheses moved.  Read it aloud as "add, to the product of x and m, b" and prefix notation stops fighting you.
 - The two projectile lines compute the same number.  The second one substitutes `(square t)` for `(* t t)`, which is the whole idea of composition: a function call is an expression, so it goes anywhere an expression goes.
-- `czr` walks to the end of the list and hands back the last element.  It is not a standard Scheme procedure; it is ours.  Notice it has the same skeleton as `sumlist`, minus the work on the way back up: nothing happens after the recursive call returns.
+- `contains?` walks the list one `cdr` at a time and stops as soon as it knows the answer.  Nothing happens after the recursive call returns, and that is the shape to carry over to other list walks.
 - `cxr` is the one to study, because it does its job with *no recursion of its own*.  Reverse the list, drop the new first element (which was the old last), then reverse it back.  Two calls to a function you already have replace a traversal you would otherwise have to write.  That is worth noticing before you write the harder version by hand.
-- `my-reverse` returns `(list (car L))` at the base case, not `(car L)`.  This is the most common bug in the whole assignment: `append` needs two *lists*, so a base case that hands back a bare element makes the whole thing fail one level up, where the error message will not mention the base case at all.
 
 ### Critical Thinking Questions
 
-10.  What does `czr` do in your own words?
-11.  Write a function to count the number of items in a list using a recursive call and a base case, using `czr` as a guide to traversing a list.
-12.  `czr` as written breaks on the empty list.  Bill's own version guards it with `(if (not (pair? l)) l ...)`.  Add that guard, decide what the empty list *should* return, and defend your choice.
-13.  Which of `sumlist`, `largest`, and `czr` are tail-recursive as written, and which are not?  Use your answer to question 8.
+10.  What does `contains?` do in your own words, and which line stops it from running off the end of the list?
+11.  Write a function to count the number of items in a list using a recursive call and a base case, using `contains?` as a guide to traversing a list.
+12.  The last-element function you reasoned about has no answer for the empty list.  Decide what it *should* return, and defend your choice.
+13.  Which of `sumlist`, `largest`, and `contains?` are tail-recursive as written, and which are not?  Use your answer to question 8.
 13a.  `cxr` calls `reverse` twice on a list of length $n$.  Roughly how much work is that compared with a single traversal that stops one element short?  Write the version that makes one pass, and say which of the two you would rather read six months from now.
-13b.  `my-reverse` breaks on the empty list for the same reason `czr` does.  Add the guard, and check your answer against what you decided in question 12.
+13b.  Reversing, as you reasoned about it, has a base case.  What should the reverse of the empty list be, and does your answer agree with what you decided in question 12?
 
 ---
 
@@ -564,14 +590,14 @@ Notice the shape: `(assq sym ops)` is used twice inside `lookup`, once in the `i
 
 Everything so far now pays off on one small problem.  A **convolution** of two equal-length lists multiplies the first list against the *reverse* of the second and sums the products.  It is the arithmetic under a digital filter, under polynomial multiplication, and under the sliding window of a convolutional neural network, so it is worth meeting once in six lines.
 
-The recursive route uses `czr` and `cxr` from Model 3: take the first of `x` with the *last* of `y`, then recur on the rest of `x` and everything-but-the-last of `y`, walking the two lists toward each other from opposite ends.
+The recursive route uses the built-in `reverse` and `cxr` from Model 3: take the first of `x` with the *last* of `y`, which is `(car (reverse y))`, then recur on the rest of `x` and everything-but-the-last of `y`, walking the two lists toward each other from opposite ends.
 
 ```scheme
 (define convolution
   (lambda (x y)
     (if (null? x)
         0
-        (+ (* (car x) (czr y))
+        (+ (* (car x) (car (reverse y)))
            (convolution (cdr x) (cxr y))))))
 
 (convolution '(1 2 2 3 3) '(1 2 3 4 5))   ; 28
@@ -596,7 +622,7 @@ The combinator route builds it out of `map` and `apply` instead.  A dot product 
 
 - The two routes compute the same number and read nothing alike.  `convolution` says *how* to walk the lists; `dot` and `convolution2` say *what* the answer is and let `map`, `apply`, and `reverse` do the walking.  That is the declarative-versus-imperative split from *Evaluating Languages*, inside one file, on one problem.
 - `(map * x y)` walks two lists at once, which is the two-list `map` from Model 5 doing real work rather than demonstrating itself.
-- `convolution` never calls `reverse`.  It gets the reversal for free by consuming `y` from the back with `czr` and `cxr` while consuming `x` from the front with `car` and `cdr`.
+- `convolution` consumes `y` from the back while it consumes `x` from the front, and it pays for that by reversing `y` at every level.  `convolution2` reverses once.
 - The base case is `0`, not `'()`, because the function returns a *number*.  A base case has to return the same kind of thing the recursive case returns, and forgetting that is the same mistake as `my-reverse` returning `(car L)` instead of `(list (car L))`.
 
 ### Critical Thinking Questions

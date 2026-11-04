@@ -195,31 +195,23 @@ This is correct and wasteful: `(largest (cdr L))` is evaluated in the test *and*
 
 On a list of sixteen elements whose largest is last, the first version makes 65,535 calls and the second makes 16.  Same answer, same shape, and the only difference in the source is a `let`.
 
-## 3.3 czr, and Tail Position
+## 3.3 Walking a List, and Tail Position
 
 ```scheme
-(define czr
-  (lambda (l)
-    (if (null? (cdr l))
-        (car l)
-        (czr (cdr l)))))
+(define contains?
+  (lambda (x l)
+    (if (null? l)
+        #f
+        (if (= (car l) x)
+            #t
+            (contains? x (cdr l))))))
 
-(czr '(1 2 3 4))             ; 4
+(contains? 3 '(1 2 3 4))     ; #t
 ```
 
-`czr` is not a standard Scheme procedure; it is ours.  It walks to the end of a list and hands back the last element.  Notice what makes it different from `sumlist`: nothing happens after the recursive call returns.  A call in that position is a **tail call**, and a Scheme implementation is required to run it in constant stack space, which is why recursion here costs no more than a loop.  Python makes no such guarantee, which is why Python programmers reach for `for` even when recursion reads better.
+`contains?` is ours, not a standard Scheme procedure.  It walks a list until it finds what it wants.  Notice what makes it different from `sumlist`: nothing happens after the recursive call returns.  A call in that position is a **tail call**, and a Scheme implementation is required to run it without growing the stack.
 
-`czr` as written breaks on the empty list.  Guard it, and decide deliberately what the empty list should return:
-
-```scheme
-(define czr
-  (lambda (l)
-    (if (not (pair? l))
-        l
-        (if (null? (cdr l))
-            l
-            (czr (cdr l))))))
-```
+The assignment's `czr` has this shape too.  To plan it, ask the two questions every list recursion answers.  What is the smallest list where you can say the answer without recursing?  And why does the answer for a list equal the answer for its `cdr`?  The `cdr` is one item shorter on each call, which is why the calls reach the base case.  You write the code in the assignment.
 
 ---
 
@@ -299,7 +291,7 @@ A closure is a small object with exactly one method.  An object is a closure wit
 
 These are the same exercises as the **Functional Programming with Scheme** assignment; if you are working the assignment, work them there.
 
-1. Write `count`, which returns how many items are in a list.  Use `czr` as a guide to traversing the list; note that its base case cannot look at `(car L)` at all.
+1. Write `count`, which returns how many items are in a list.  Use `contains?` as a guide to traversing the list; note that its base case cannot look at `(car L)` at all.
 2. Write `reverse-list` using only `car`, `cdr`, and `cons`.  Then count how many `cons` calls it makes for a list of length *n*, and say whether you are happy with that.
 3. Fix `sumlist` so that `(sumlist '())` returns 0, and argue in two sentences whether the original was a bug or a decision.
 4. Write the linear equation `y = mx + b` as a function of three parameters.  Then write projectile distance, `v0*t + 0.5*a*t^2`, twice: once with `(* t t)` spelled out and once with your `square` substituted in.  Say what the substitution bought you, given that it did not change the answer.
