@@ -23,3 +23,5 @@
 - [ ] Bring back a confidential peer pulse at the Sprint 1 boundary, with a named channel (for example a private Canvas survey) and a due date: each member rates themselves and each teammate 1-5 on the CATME dimensions, with a sentence of evidence for any 2 or below. (added 2026-10-31)
 
 - [ ] Align the lectures, tutorials, and activities with the assignments and labs, so that each one prepares students for the assignment it leads to.
+
+- [ ] Simplify the lectures so they build up the scaffolding the assignments need, which then lets the assignments carry less scaffolding themselves.
