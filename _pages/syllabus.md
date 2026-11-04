@@ -486,7 +486,6 @@ schedule:
   title: "Binding, Scope, and Environments"
   link: "Activities/liascript-bindingscope.md"
   liapage: true
-  deliverables:
   readings:
   - rtitle: "Tutorial: Environments and Type Checking, a walkthrough of the scope table and a small type checker"
     rlink: "Assignments/EnvironmentsLab"
@@ -590,7 +589,6 @@ schedule:
     rlink: "Tutorials/AdvancedCpp"
 - cdate: "2026/12/14"
   title: "Demo Day: Team Language Presentations (Final Exam Period, 11:15 AM-2:15 PM, Pfahler 012)"
-  deliverables:
 ---
 
 This semester is a build.  By December, your team will have designed and implemented a programming language of your own, built in team sprints on what each assignment teaches.  The sections below explain how the pieces fit together, including how the course gives you choices, how to read an assignment, how to prepare for each class, and how I value and evaluate the day-to-day work of participating.  Please read them once now, and come back to the participation and preparation guides throughout the term.
