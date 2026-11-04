@@ -413,6 +413,383 @@ expr:
   ;
 ```
 
+## 4.4 A Complete Calculator: Build a Tree, Print It, Evaluate It
+
+Here is the whole idea in one small program.  The grammar builds a tree as it reduces, and only then do we print the tree and evaluate it.  The precedence here comes from the grammar levels (`expression`, `term`, `factor`), not from `%left` declarations, so you can compare it with the recursive descent parser, which has the same three levels.
+
+The tree, in `calc.h`:
+
+```c
+#ifndef CALC_H
+#define CALC_H
+
+typedef enum {
+    NODE_NUMBER, NODE_ADD, NODE_SUBTRACT, NODE_MULTIPLY, NODE_DIVIDE
+} NodeType;
+
+typedef struct Node {
+    NodeType type;
+    struct Node *left;
+    struct Node *right;
+    double value;              /* used only by NODE_NUMBER */
+} Node;
+
+Node *create_node(NodeType type, Node *left, Node *right, double value);
+double eval(Node *node);
+void print_tree(Node *node, int depth);
+
+#endif
+```
+
+Creating, evaluating, and printing nodes, in `calc.c`.  `eval` and `print_tree` are both recursive walks of the tree:
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include "calc.h"
+
+Node *create_node(NodeType type, Node *left, Node *right, double value) {
+    Node *node = malloc(sizeof(Node));
+    node->type = type;
+    node->left = left;
+    node->right = right;
+    node->value = value;
+    return node;
+}
+
+double eval(Node *node) {
+    switch (node->type) {
+        case NODE_NUMBER:   return node->value;
+        case NODE_ADD:      return eval(node->left) + eval(node->right);
+        case NODE_SUBTRACT: return eval(node->left) - eval(node->right);
+        case NODE_MULTIPLY: return eval(node->left) * eval(node->right);
+        case NODE_DIVIDE:   return eval(node->left) / eval(node->right);
+    }
+    return 0;
+}
+
+void print_tree(Node *node, int depth) {
+    if (!node) return;
+    for (int i = 0; i < depth; i++) printf("  ");
+    switch (node->type) {
+        case NODE_NUMBER:   printf("Number: %f\n", node->value); break;
+        case NODE_ADD:      printf("Add:\n"); break;
+        case NODE_SUBTRACT: printf("Subtract:\n"); break;
+        case NODE_MULTIPLY: printf("Multiply:\n"); break;
+        case NODE_DIVIDE:   printf("Divide:\n"); break;
+    }
+    print_tree(node->left, depth + 1);
+    print_tree(node->right, depth + 1);
+}
+```
+
+The lexer, `calc.l`.  With a `%union`, the lexer stores into the union member that the token declares, `yylval.number`, and not into `yylval` itself:
+
+```c
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include "calc.h"
+#include "calc.tab.h"
+%}
+%option noyywrap
+
+%%
+[0-9]+(\.[0-9]+)?  { yylval.number = atof(yytext); return NUMBER; }
+"+"                { return ADD; }
+"-"                { return SUBTRACT; }
+"*"                { return MULTIPLY; }
+"/"                { return DIVIDE; }
+"("                { return LPAREN; }
+")"                { return RPAREN; }
+\n                 { return '\n'; }
+[ \t]+             { /* skip */ }
+.                  { fprintf(stderr, "Unexpected character: %s\n", yytext); exit(1); }
+%%
+```
+
+The grammar, `calc.y`.  Each action builds one node from the nodes of its children, and the `line` rule is what uses the finished tree:
+
+```c
+%{
+#include <stdio.h>
+#include "calc.h"
+int yylex(void);
+void yyerror(const char *msg) { fprintf(stderr, "%s\n", msg); }
+%}
+
+%union {
+    double number;
+    Node *node;
+}
+
+%token <number> NUMBER
+%token ADD SUBTRACT MULTIPLY DIVIDE LPAREN RPAREN
+%type <node> expression term factor
+
+%%
+program:
+      /* empty */
+    | program line
+    ;
+
+line:
+      '\n'
+    | expression '\n'  {
+          printf("Syntax Tree:\n");
+          print_tree($1, 0);
+          printf("Result: %f\n", eval($1));
+      }
+    ;
+
+expression:
+      expression ADD term       { $$ = create_node(NODE_ADD, $1, $3, 0); }
+    | expression SUBTRACT term  { $$ = create_node(NODE_SUBTRACT, $1, $3, 0); }
+    | term                      { $$ = $1; }
+    ;
+
+term:
+      term MULTIPLY factor      { $$ = create_node(NODE_MULTIPLY, $1, $3, 0); }
+    | term DIVIDE factor        { $$ = create_node(NODE_DIVIDE, $1, $3, 0); }
+    | factor                    { $$ = $1; }
+    ;
+
+factor:
+      NUMBER                    { $$ = create_node(NODE_NUMBER, NULL, NULL, $1); }
+    | LPAREN expression RPAREN  { $$ = $2; }
+    ;
+%%
+
+int main(void) {
+    return yyparse();
+}
+```
+
+Build and run it:
+
+```bash
+bison -d calc.y
+flex calc.l
+gcc calc.tab.c lex.yy.c calc.c -o calc
+echo '3 + 5 * (2 - 8)' | ./calc
+```
+
+> **You should see.**
+>
+> ```text
+> Syntax Tree:
+> Add:
+>   Number: 3.000000
+>   Multiply:
+>     Number: 5.000000
+>     Subtract:
+>       Number: 2.000000
+>       Number: 8.000000
+> Result: -27.000000
+> ```
+
+The shape of the tree is the precedence: `Multiply` sits below `Add`, so it runs first.
+
+## 4.5 Variables: Assignment and Lookup
+
+A variable needs two new tokens and two new grammar rules.  `x = 3` stores a value under a name, and `x` reads it back.  The place that holds the names is the *symbol table*.
+
+```c
+expr: T_ID T_ASSIGN expr line
+expr: T_ID
+```
+
+In a calculator that computes as it parses, as in Part 3, the `T_ID` action looks up `$1` in the symbol table and sets `$$` to the value it finds there.  The `T_ASSIGN` action inserts `$1` into the symbol table with the value `$3`.  Our tree version waits: the `T_ID` action makes a variable node, and `eval` looks the name up when it reaches that node.
+
+Add these to the program in Section 4.4.  In `calc.l`, above the `"+"` rule, along with `#include <string.h>` at the top:
+
+```c
+[a-zA-Z_][a-zA-Z0-9_]*  { yylval.name = strdup(yytext); return T_ID; }
+"="                { return T_ASSIGN; }
+```
+
+In `calc.y`, add `char *name;` to the `%union`, then:
+
+```c
+%token <name> T_ID
+%token T_ASSIGN
+
+/* a new alternative of line */
+    | T_ID T_ASSIGN expression '\n'  { set_var($1, eval($3)); }
+
+/* a new alternative of factor */
+    | T_ID                      { $$ = create_var($1); }
+```
+
+In `calc.h`, add `NODE_VAR` to the enum and `char *name;` to `Node`, and declare the three new functions.  In `calc.c`, include `<string.h>`, add `case NODE_VAR: return get_var(node->name);` to `eval`, add a matching `case` to `print_tree`, and add the symbol table.  C has no dictionary, so a short linked list of name and value pairs stands in for one:
+
+```c
+Node *create_var(char *name) {
+    Node *node = create_node(NODE_VAR, NULL, NULL, 0);
+    node->name = name;
+    return node;
+}
+
+/* The symbol table: a linked list of name and value pairs. */
+typedef struct Var {
+    char *name;
+    double value;
+    struct Var *next;
+} Var;
+
+static Var *table = NULL;
+
+void set_var(char *name, double value) {
+    for (Var *v = table; v; v = v->next) {
+        if (strcmp(v->name, name) == 0) {   /* already there: update it */
+            v->value = value;
+            return;
+        }
+    }
+    Var *v = malloc(sizeof(Var));           /* new name: insert it */
+    v->name = name;
+    v->value = value;
+    v->next = table;
+    table = v;
+}
+
+double get_var(char *name) {
+    for (Var *v = table; v; v = v->next) {
+        if (strcmp(v->name, name) == 0) return v->value;
+    }
+    fprintf(stderr, "undefined variable: %s\n", name);
+    exit(1);
+}
+```
+
+```bash
+printf 'x = 3\nx = x + 4\nx * 2\n' | ./calc
+```
+
+> **You should see** a tree with `Variable: x` in it, and `Result: 14.000000`.  The Bison rule lives at the `line` level because making assignment an `expression` here would add a shift-reduce conflict on `+`.
+
+## 4.6 Scope: A Linked List of Symbol Tables
+
+One symbol table has only one `x`, so a block cannot have its own `x` and then give the old one back.  The fix is one table per scope, with each table linked to the scope around it:
+
+```text
+current --> [ x = 10 ]          the block's scope
+                |  parent
+                v
+            [ x = 1, y = 20 ]   the global scope
+```
+
+A lookup checks the current table, then follows the links outward, and stops at the first match.  That first match is why the inner `x` shadows the outer one.  Leaving a block moves `current` back to the parent, and the outer `x` is visible again.
+
+We now need to tell a new variable from an update, so `let x = 3` defines `x` in the current scope, and `x = 3` walks outward and updates the `x` it finds.  Replace the symbol table in `calc.c` from Section 4.5 with this, and declare `define_var`, `push_scope`, and `pop_scope` in `calc.h`:
+
+```c
+/* One scope: its own list of names, and a link to the enclosing scope. */
+typedef struct Var {
+    char *name;
+    double value;
+    struct Var *next;
+} Var;
+
+typedef struct Scope {
+    Var *vars;
+    struct Scope *parent;
+} Scope;
+
+static Scope global = { NULL, NULL };
+static Scope *current = &global;
+
+void push_scope(void) {
+    Scope *s = malloc(sizeof(Scope));
+    s->vars = NULL;
+    s->parent = current;
+    current = s;
+}
+
+void pop_scope(void) {
+    current = current->parent;
+}
+
+/* Find a name in one scope, or return NULL. */
+static Var *find(Scope *s, char *name) {
+    for (Var *v = s->vars; v; v = v->next) {
+        if (strcmp(v->name, name) == 0) return v;
+    }
+    return NULL;
+}
+
+/* let x = 3: create x in the current scope only. */
+void define_var(char *name, double value) {
+    Var *v = malloc(sizeof(Var));
+    v->name = name;
+    v->value = value;
+    v->next = current->vars;
+    current->vars = v;
+}
+
+/* x = 3: walk outward and update the x we find. */
+void set_var(char *name, double value) {
+    for (Scope *s = current; s; s = s->parent) {
+        Var *v = find(s, name);
+        if (v) { v->value = value; return; }
+    }
+    fprintf(stderr, "undefined variable: %s\n", name);
+    exit(1);
+}
+
+/* x: walk outward and read the first x we find. */
+double get_var(char *name) {
+    for (Scope *s = current; s; s = s->parent) {
+        Var *v = find(s, name);
+        if (v) return v->value;
+    }
+    fprintf(stderr, "undefined variable: %s\n", name);
+    exit(1);
+}
+```
+
+In `calc.l`, above the `T_ID` rule, because `let` must win the tie against `T_ID`:
+
+```c
+"let"              { return T_LET; }
+"{"                { return LBRACE; }
+"}"                { return RBRACE; }
+```
+
+In `calc.y`, declare the tokens with `%token T_ASSIGN T_LET LBRACE RBRACE`, and make these the alternatives of `line`.  `push_scope()` is an action in the middle of a rule, so it runs as soon as the parser reads `{`.  This calculator runs each line as soon as it reduces, so the scope is correct when the block's lines run:
+
+```c
+    | T_LET T_ID T_ASSIGN expression '\n'  { define_var($2, eval($4)); }
+    | T_ID T_ASSIGN expression '\n'        { set_var($1, eval($3)); }
+    | LBRACE { push_scope(); } program RBRACE '\n'  { pop_scope(); }
+```
+
+Save this as `scope.txt`:
+
+```text
+let x = 1
+let y = 2
+{
+  let x = 10
+  y = 20
+  x + y
+}
+x + y
+```
+
+```bash
+./calc < scope.txt | grep Result
+```
+
+> **You should see.**
+>
+> ```text
+> Result: 30.000000
+> Result: 21.000000
+> ```
+>
+> Inside the block, `x` is the inner 10 and `y` is the outer `y`, now 20.  After the block, the inner `x` is gone, the outer `x` is 1 again, and the update to `y` remains.  The [Binding, Scope, and Environments activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-bindingscope.md) builds the same chain in Python.
+
 ---
 
 # Part 5: Error Recovery

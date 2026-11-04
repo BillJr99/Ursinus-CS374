@@ -371,6 +371,23 @@ $$
 
 The two grammars accept the same strings.  The loop version builds the same left-leaning tree if your loop folds as it goes (the next module makes this concrete).  A related repair, left factoring, fixes alternations that share a prefix: `A -> xy | xz` becomes `A -> x (y | z)`, which restores one-token decidability.
 
+> **Left factoring, worked.**  This grammar is not ready for an LL parser, because two productions of `expr` begin with `term`:
+>
+> ```text
+> expr -> term addsub term
+>       | term
+> ```
+>
+> We factor out the common part, sort of like factoring in algebra, so that each production's first element is unique:
+>
+> ```text
+> expr  -> term expr2
+> expr2 -> addsub term
+>        | <nothing>
+> ```
+>
+> In code, each new nonterminal gets a new function, and you move the matching part of the old code into it.  `expr()` calls `term()` and `expr2()`, and adds what `expr2()` returns to its value.  For subtraction, `expr2()` can return a negative value, so that `expr()` still gets the correct answer.
+
 > **Watch out!  Flipping the rule to `E -> T + E | T` stops the loop, but it changes the tree.**
 >
 > Moving `E` to the right end makes the rule right-recursive.  Now `parse_E` consumes a `T` before it calls itself, so every call starts further along the input and the recursion ends.  But the tree leans right: `1 + 2 + 3` parses as `1 + (2 + 3)`.  Addition gives the same number either way, so the mistake hides.  Subtraction exposes it: `8 - 4 - 2` becomes `8 - (4 - 2) = 6`, not `2`.  Use the loop `E -> T { + T }` for operators that group to the left, such as `+`, `-`, `*`, and `/`.  Keep right recursion for operators that group to the right, such as exponentiation (`2 ^ 3 ^ 2` is `2 ^ (3 ^ 2)`) and assignment (`a = b = c`); *Parsing Expressions* builds that case.

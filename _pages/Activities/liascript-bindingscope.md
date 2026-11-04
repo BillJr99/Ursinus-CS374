@@ -418,7 +418,7 @@ $$
 \text{lookup}(x, E) = \begin{cases} E.\text{vars}[x] & x \in E.\text{vars} \\ \text{lookup}(x, E.\text{parent}) & \text{otherwise, if a parent exists} \\ \text{NameError} & \text{at the root} \end{cases}
 $$
 
-That walk is static scope in code: innermost first, then outward.
+That walk is static scope in code: innermost first, then outward.  The self-paced extension *A Calculator with Variables and Scope* builds this into a working calculator.
 
 ---
 
@@ -1468,6 +1468,256 @@ trace_program()
 36.  The `__repr__` method prints the chain as `inner:{...} -> global:{...}`.  After Step 6, what does the full chain print?  Write it out before running the code, then confirm.
 
 37.  Extend the cell with a shadowing experiment: `outer` holds `x = 10`, and its child `inner2` holds its own `x = 99`.  `inner2.assign("x", 42)` updates the inner binding, because that is the first match on the walk.  With `inner2.define("x", 42)` instead, what would `inner2.lookup("x")` and `outer.lookup("x")` return?  State the `define`/`assign` difference in one sentence.
+
+# Extension: A Calculator with Variables and Scope (self-paced)
+
+> Nothing in class assumes it.  It builds Parts III and IV into a working calculator, one small step at a time.
+
+## Model 11: Assignment and Lookup with One Dictionary
+
+Start with the recursive descent calculator: `E`, `T`, and `F`, one function per level.  A variable needs two new things.  An assignment stores a value under a name, and a lookup reads it back.  Both use one dictionary, the *symbol table*:
+
+```text
+stmt -> "print" E ";"  |  NAME "=" E ";"
+F    -> "(" E ")"  |  NUMBER  |  NAME
+```
+
+The grammar stays LL(1), because the first token of a statement decides which rule applies.  Names have several characters, so this version splits the text into tokens first, where a character at a time was enough for numbers.
+
+```python
+import re
+
+class Parser:
+    def __init__(self, text):
+        # Names have several characters, so split the text into tokens first.
+        self.tokens = re.findall(r"\d+|[A-Za-z_]\w*|\S", text)
+        self.pos = 0
+        self.vars = {}                      # the symbol table: name -> value
+
+    def peek(self):
+        if self.pos < len(self.tokens):
+            return self.tokens[self.pos]
+        return None
+
+    def match(self, token):
+        if self.peek() == token:
+            self.pos += 1
+            return True
+        return False
+
+    def E(self):
+        value = self.T()
+        while self.peek() in ("+", "-"):
+            op = self.peek()
+            self.match(op)
+            right = self.T()
+            value = value + right if op == "+" else value - right
+        return value
+
+    def T(self):
+        value = self.F()
+        while self.peek() in ("*", "/"):
+            op = self.peek()
+            self.match(op)
+            right = self.F()
+            value = value * right if op == "*" else value / right
+        return value
+
+    def F(self):
+        token = self.peek()
+        if self.match("("):
+            value = self.E()
+            self.match(")")
+            return value
+        self.match(token)
+        if token.isdigit():
+            return int(token)
+        return self.vars[token]             # lookup: read the name's value
+
+    def statement(self):
+        token = self.peek()
+        self.match(token)
+        if token == "print":
+            print(self.E())
+        else:
+            self.match("=")
+            self.vars[token] = self.E()     # assignment: store the value
+        self.match(";")
+
+    def parse(self):
+        while self.peek() is not None:
+            self.statement()
+
+
+Parser("x = 3; x = x + 4; print x * 2;").parse()      # 14
+
+# Suppose x = 10 was meant to last only for a block.  One dictionary has only
+# one x, so the outer value is gone, and the last line still sees 10.
+Parser("x = 1; y = 2; x = 10; print x + y; print x + y;").parse()     # 12, 12
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- `self.vars[token] = self.E()` is the assignment, and `return self.vars[token]` in `F` is the lookup.  Those two lines are all it takes to have variables.
+- The right side runs first, so `x = x + 4` reads the old `x` and then stores the new one.
+- The last line of the output is the problem.  One dictionary has one `x`, so nothing can hold the outer value while a block has its own.
+
+## Model 12: A Linked List of Dictionaries
+
+The fix is one dictionary per scope, with a link to the scope around it, which makes a linked list:
+
+```text
+self.scope --> [ x: 10 ]          the block's scope
+                  |  parent
+                  v
+               [ x: 1, y: 20 ]    the global scope
+```
+
+Lookup checks the first dictionary, then follows the links outward, and stops at the first match.  We also need to tell a new variable from an update: `let x = 1;` defines `x` in the current scope, and `x = 1;` walks outward and updates the `x` it finds.  Entering a block pushes a new `Scope` onto the front of the list.  Leaving the block moves back to its parent.
+
+```python
+import re
+
+class Scope:
+    """One dictionary, plus a link to the scope around it."""
+    def __init__(self, parent=None):
+        self.vars = {}
+        self.parent = parent
+
+    def lookup(self, name):
+        scope = self
+        while scope is not None:            # walk outward along the links
+            if name in scope.vars:
+                return scope.vars[name]
+            scope = scope.parent
+        raise NameError(f"undefined variable {name!r}")
+
+    def define(self, name, value):
+        self.vars[name] = value             # this scope only
+
+    def assign(self, name, value):
+        scope = self
+        while scope is not None:            # update the x we find
+            if name in scope.vars:
+                scope.vars[name] = value
+                return
+            scope = scope.parent
+        raise NameError(f"undefined variable {name!r}")
+
+
+class Parser:
+    def __init__(self, text):
+        # Names have several characters, so split the text into tokens first.
+        self.tokens = re.findall(r"\d+|[A-Za-z_]\w*|\S", text)
+        self.pos = 0
+        self.scope = Scope()                # the global scope
+
+    def peek(self):
+        if self.pos < len(self.tokens):
+            return self.tokens[self.pos]
+        return None
+
+    def match(self, token):
+        if self.peek() == token:
+            self.pos += 1
+            return True
+        return False
+
+    def E(self):
+        value = self.T()
+        while self.peek() in ("+", "-"):
+            op = self.peek()
+            self.match(op)
+            right = self.T()
+            value = value + right if op == "+" else value - right
+        return value
+
+    def T(self):
+        value = self.F()
+        while self.peek() in ("*", "/"):
+            op = self.peek()
+            self.match(op)
+            right = self.F()
+            value = value * right if op == "*" else value / right
+        return value
+
+    def F(self):
+        token = self.peek()
+        if self.match("("):
+            value = self.E()
+            self.match(")")
+            return value
+        self.match(token)
+        if token.isdigit():
+            return int(token)
+        return self.scope.lookup(token)     # lookup: walk the chain
+
+    def statement(self):
+        token = self.peek()
+        self.match(token)
+        if token == "{":
+            self.scope = Scope(self.scope)  # enter: push a new scope
+            while not self.match("}"):
+                self.statement()
+            self.scope = self.scope.parent  # leave: back to the parent
+            return
+        if token == "print":
+            print(self.E())
+        elif token == "let":
+            name = self.peek()
+            self.match(name)
+            self.match("=")
+            self.scope.define(name, self.E())
+        else:
+            self.match("=")
+            self.scope.assign(token, self.E())
+        self.match(";")
+
+    def parse(self):
+        while self.peek() is not None:
+            self.statement()
+
+
+Parser("""
+let x = 1;
+let y = 2;
+{
+    let x = 10;
+    y = 20;
+    print x + y;
+}
+print x + y;
+""").parse()                                          # 30, then 21
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Here is what happens on that program:
+
+```text
+let x = 1;        global: x=1
+let y = 2;        global: x=1, y=2
+{                 push:   block: (empty) -> global: x=1, y=2
+let x = 10;       block: x=10 -> global: x=1, y=2       define in the block
+y = 20;           block: x=10 -> global: x=1, y=20      y is not in the block, so walk out
+print x + y;      x found in block, y found in global:  30
+}                 pop:    global: x=1, y=20
+print x + y;      the inner x is gone:                  21
+```
+
+### Reading the Code
+
+- `Scope` is the same idea as the `Environment` class from Part III: a dictionary and a parent link.
+- `statement` handles `{` with a recursive call per statement inside it, so nested blocks work without any extra code.
+- Nothing deletes the inner dictionary.  The parser stops pointing at it.
+
+### Critical Thinking Questions
+
+38.  What does this program print if `let x = 10;` in the block becomes `x = 10;`?  Predict, and then run it.  Why does the second `print` change?
+
+39.  What happens if you `let z = 5;` inside the block and then `print z;` after it?  Which line of `Scope` reports the error?
+
+40.  The [Flex and Bison tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/FlexAndBison) builds this same list of symbol tables in C.  Where does its `push_scope` run, compared with `Scope(self.scope)` here?
 
 ---
 

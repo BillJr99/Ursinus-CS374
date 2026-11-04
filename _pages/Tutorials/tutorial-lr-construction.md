@@ -327,3 +327,127 @@ Check every step against the [class activity]({{ site.lia_viewer_url }}{{ site.r
 If your numbering diverges from the activity's, document the mapping rather than renaming states by hand.  Renumbering by hand is how you introduce an error into code that was correct.
 
 And read row 2 of the finished table when you get there.  In the ladder grammar it shifts on `*` and reduces on `+`, and that single row is where `*` binds tighter than `+`.  Nothing decided it at parse time.  It fell out of the item sets, which is the result this whole tutorial exists to make believable.
+
+---
+
+## Section 12: A second grammar, by hand
+
+Here is the whole construction once more on a small grammar with no arithmetic in it, so you can see every state.  References: [LR parsing, part 1](https://www.youtube.com/watch?v=APJ_Eh60Qwo) and [part 2](https://www.youtube.com/watch?v=0kiTNN2kHyY).
+
+```text
+S' -> S        (production 0, the augmented start)
+S  -> X y x    (production 1)
+X  -> x X      (production 2)
+X  -> y        (production 3)
+```
+
+Because this is a bottom-up parser (the R in LR), we need to know where we are in each production, and whether the whole production has been read.  The `.` marks where we are.  There are finitely many places to put it, so the dots give us a finite set of states.
+
+*State 0* starts from `S' -> .S`.  The dot sits to the left of `S`, so we add the `S` productions, and then we repeat for any nonterminal with a dot before it.  This is the closure:
+
+```text
+State 0:  S' -> .S
+          S  -> .X y x
+          X  -> .x X
+          X  -> .y
+```
+
+*The other states.*  From each state, take one transition per symbol after a dot: move the dot over that symbol, then take the closure.
+
+```text
+State 1 (0 on S):  S' -> S .
+State 2 (0 on X):  S  -> X . y x
+State 3 (0 on x):  X  -> x . X
+                   X  -> .x X
+                   X  -> .y
+State 4 (0 on y):  X  -> y .
+State 5 (2 on y):  S  -> X y . x
+State 6 (3 on X):  X  -> x X .
+State 7 (5 on x):  S  -> X y x .
+```
+
+State 3 on `x` comes back to state 3, because the items are the same, and state 3 on `y` goes to state 4.
+
+*The table has one row per state.*  ACTION has a column for each terminal, plus `$` for the end of the string.  GOTO has a column for each nonterminal, leaving out `S'`.  Fill in the state each symbol leads to.  A transition on a terminal is a shift, because the dot has not reached the end of the production.  State 1 accepts on `$`.  In states 4, 6, and 7 the dot has reached the end, so those rows reduce by the production they hold: state 4 is `X -> y .` (production 3), state 6 is `X -> x X .` (production 2), and state 7 is `S -> X y x .` (production 1).  This is LR(0), so a reduce state reduces on every input.
+
+| State | `x` | `y` | `$` | `S` | `X` |
+|---|---|---|---|---|---|
+| 0 | s3 | s4 | | 1 | 2 |
+| 1 | | | acc | | |
+| 2 | | s5 | | | |
+| 3 | s3 | s4 | | | 6 |
+| 4 | r3 | r3 | r3 | | |
+| 5 | s7 | | | | |
+| 6 | r2 | r2 | r2 | | |
+| 7 | r1 | r1 | r1 | | |
+
+You could program this as a chain of `if` statements: if the state is 0 and the input is `x`, then shift to state 3, and so on.  Generated parsers such as yacc use a table instead.  Because each token was shifted onto the stack, a reduction knows the inputs to its production.
+
+*Parsing `xyyx`.*  First, for intuition, build the string with the grammar: `S` gives `X y x`, `X -> x X` gives `x X y x`, and `X -> y` gives `x y y x`.  The parser finds those same steps in reverse order.
+
+This trace keeps one stack with symbols and states mixed, and the top is on the right.  Section 8 keeps two stacks, which holds the same information.  A shift pushes the token and the state.  A reduce by a production of length $$n$$ pops $$2n$$ items and pushes the nonterminal, and then GOTO on the state below it gives the next state to push.
+
+```text
+[0]                 x, state 0: s3, push x and 3
+[0 x 3]             y, state 3: s4, push y and 4
+[0 x 3 y 4]         y, state 4: r3, X -> y, pop 2 and push X
+[0 x 3 X]           state 3 on X: goto 6, push 6
+[0 x 3 X 6]         y, state 6: r2, X -> x X, pop 4 and push X
+[0 X]               state 0 on X: goto 2, push 2
+[0 X 2]             y, state 2: s5, push y and 5
+[0 X 2 y 5]         x, state 5: s7, push x and 7
+[0 X 2 y 5 x 7]     $, state 7: r1, S -> X y x, pop 6 and push S
+[0 S]               state 0 on S: goto 1, push 1
+[0 S 1]             $, state 1: accept
+```
+
+Notice that a reduce does not consume the input.  The parser is still looking at the third character after both reductions, and only then does it shift that `y`.
+
+---
+
+## Section 13: Values on the stack
+
+A parser that only accepts is not much use, so where does the arithmetic happen?  On the reduces.  Each stack entry can carry a value, as if the entries were objects, and each reduction computes a new value from the ones it pops.  Here is `A*2+1` with `A` set to 5, using this grammar and table from the [Wikipedia LR parser article](https://en.wikipedia.org/wiki/LR_parser#Bottom-up_parse_steps_for_example_A*2_+_1):
+
+```text
+1: Sums     -> Sums + Products
+2: Sums     -> Products
+3: Products -> Products * Value
+4: Products -> Value
+5: Value    -> int
+6: Value    -> id
+```
+
+| State | `*` | `+` | `$` | `int` | `id` | `Sums` | `Products` | `Value` |
+|---|---|---|---|---|---|---|---|---|
+| 0 | | | | s8 | s9 | 1 | 4 | 7 |
+| 1 | | s2 | acc | | | | | |
+| 2 | | | | s8 | s9 | | 3 | 7 |
+| 3 | s5 | r1 | r1 | | | | | |
+| 4 | s5 | r2 | r2 | | | | | |
+| 5 | | | | s8 | s9 | | | 6 |
+| 6 | r3 | r3 | r3 | | | | | |
+| 7 | r4 | r4 | r4 | | | | | |
+| 8 | r5 | r5 | r5 | | | | | |
+| 9 | r6 | r6 | r6 | | | | | |
+
+Quotes mark an input digit, so it does not look like a state number.  Each reduce also shows the value it computes.
+
+```text
+[0]                            A, state 0: s9
+[0 A 9]                        *, state 9: r6, Value -> id          Value = 5
+[0 Value 7]                    *, state 7: r4, Products -> Value    Products = 5
+[0 Products 4]                 *, state 4: s5
+[0 Products 4 * 5]             2, state 5: s8
+[0 Products 4 * 5 '2' 8]       +, state 8: r5, Value -> int         Value = 2
+[0 Products 4 * 5 Value 6]     +, state 6: r3, Products -> Products * Value    Products = 5 * 2 = 10
+[0 Products 4]                 +, state 4: r2, Sums -> Products     Sums = 10
+[0 Sums 1]                     +, state 1: s2
+[0 Sums 1 + 2]                 1, state 2: s8
+[0 Sums 1 + 2 '1' 8]           $, state 8: r5, Value -> int         Value = 1
+[0 Sums 1 + 2 Value 7]         $, state 7: r4, Products -> Value    Products = 1
+[0 Sums 1 + 2 Products 3]      $, state 3: r1, Sums -> Sums + Products    Sums = 10 + 1 = 11
+[0 Sums 1]                     $, state 1: accept, and the answer is 11
+```
+
+After each pop, GOTO pushes the next state, which is why every reduce line above is followed by a stack with a new state on top.  Row 4 is where `*` binds tighter than `+`: it shifts on `*` and reduces on `+`.  This is what a Bison action does when it computes `$$` from `$1` and `$3`: see the [Flex and Bison tutorial]({{ site.baseurl }}/Tutorials/FlexAndBison).
