@@ -247,7 +247,7 @@ A building inspector reviews the blueprints before a single beam is cut; they ar
 
 ## Model 3: Types, The Contracts of Programming
 
-A type system prevents entire classes of errors by reasoning about programs **before they run**.  The code below is a tiny type checker for a small expression language.  It walks the AST and either confirms the program is well-typed or reports a type error, without executing a single expression.  This previews the *Type Systems* activity and the Interpreter assignment's type-checking direction.
+A type system prevents entire classes of errors by reasoning about programs **before they run**.  The code below is a tiny type checker for a small expression language.  It walks the AST and either confirms the program is well-typed or reports a type error, without executing a single expression.  This previews the *Type Systems* activity.
 
 ```python
 from dataclasses import dataclass

@@ -98,7 +98,7 @@ exprs = st.recursive(
 
 ---
 
-## Section 3: The round-trip law (Parser assignment)
+## Section 3: The round-trip law
 
 Now state the law: unparsing a tree and re-parsing it must return the same tree.
 
@@ -125,7 +125,7 @@ That is the **minimal** tree that breaks the law. `2 * (3 + 4)` shrank all the w
 
 ---
 
-## Section 4: Semantic invariants (Interpreter assignment)
+## Section 4: Semantic invariants
 
 The same generator, pointed at your evaluator, checks *meaning*.  Restrict the generator to the nodes your evaluator supports, then state invariants:
 

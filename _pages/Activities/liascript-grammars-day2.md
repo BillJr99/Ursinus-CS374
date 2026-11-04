@@ -339,7 +339,7 @@ MY_GRAMMAR = {
 lr = find_left_recursive(MY_GRAMMAR)
 if lr:
     print(f"LEFT-RECURSIVE: {sorted(lr)}")
-    print("Rewrite these before you start the Parser assignment, or")
+    print("Rewrite these before you hand-write a parser, or")
     print("commit to a parsing method that tolerates them (see the LR half")
     print("of Parsing Expressions and Table-Driven Parsing, which handles")
     print("left recursion natively).")
@@ -349,7 +349,7 @@ else:
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output: with the left-recursive `expression` filled in, the detector names it.  With the right-recursive version, it reports clean.  Keep whichever you choose.  It is the seed of your Parser assignment.
+Expected output: with the left-recursive `expression` filled in, the detector names it.  With the right-recursive version, it reports clean.  Keep whichever you choose.  It is the seed of a grammar for your own language.
 
 ---
 

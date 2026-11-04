@@ -625,7 +625,7 @@ Your component uses the assignment's names, so a few things change from the Part
 
 | Part II demo | Your component | Why it changes |
 |--------------|----------------|----------------|
-| `Token` namedtuple with a `lexeme` field | `Token` dataclass with a `value` field | The Parser assignment reads `tok.value` |
+| `Token` namedtuple with a `lexeme` field | `Token` dataclass with a `value` field | The Lexer assignment's tokens use `value` |
 | One `KEYWORD` type | One type per keyword, such as `IF` and `LET` | The parser can ask for `expect("LET")` directly |
 | `NE`, `SKIP`, `NEWLINE`, `MISMATCH` | `NEQ`, `WHITESPACE`, and no catch-all rule | Whitespace absorbs newlines, and no rule matching at all is now the error case |
 | A master pattern and `finditer` | A loop that tries each rule with `.match(source, pos)` | The loop can name a broken rule in a JSON file and can resume after a bad character |
@@ -957,7 +957,7 @@ Token(type='EOF', value='', line=1, col=12)
 
 ### Build Step 8: Every Keyword
 
-Let's grow the table.  The Lexer assignment requires `IF`, `ELSE`, `WHILE`, `LET`, `PRINT`, `TRUE`, `FALSE`, `AND`, `OR`, `NOT`, and `FUN`.  The Interpreter assignment later needs `BREAK` and `CONTINUE`, so you add those now, and your lexer will not need to change later.  Each keyword gets its own type and its own boundary check, and every one of them goes above `IDENT`.  You already have `LET`.  Two more are shown here, and Blank 5 stands for the other ten.
+Let's grow the table.  The Lexer assignment requires `IF`, `ELSE`, `WHILE`, `LET`, `PRINT`, `TRUE`, `FALSE`, `AND`, `OR`, `NOT`, and `FUN`.  A language with loops also wants `BREAK` and `CONTINUE`, so you add those now.  Each keyword gets its own type and its own boundary check, and every one of them goes above `IDENT`.  You already have `LET`.  Two more are shown here, and Blank 5 stands for the other ten.
 
 ```python
 # lexer.py: add just above the line with `("IDENT",`
@@ -1419,7 +1419,7 @@ world
 Token(type='IDENT', value='after', line=1, col=1, decoded=None)
 ```
 
-31. The Parser assignment builds its `Str` node from `tok.decoded`, not from `tok.value`.  What would end up inside your string values if it used `tok.value`?  Then name one use for `tok.value` on a string token.
+31. A parser builds its `Str` node from `tok.decoded`, not from `tok.value`.  What would end up inside your string values if it used `tok.value`?  Then name one use for `tok.value` on a string token.
 
 ### Build Step 18: Unterminated Strings
 
@@ -2250,7 +2250,7 @@ OK
 
 ### Build Step 35: Run It All
 
-You are done building.  One last pass checks the whole component the way the Parser assignment will use it.  Importing `lexer.py` must print nothing, and the full suite must pass.  The command below also saves the suite's report for your submission.  `unittest` writes its report to standard error, so the `2>&1` is required.
+You are done building.  One last pass checks the whole component the way a parser would use it.  Importing `lexer.py` must print nothing, and the full suite must pass.  The command below also saves the suite's report for your submission.  `unittest` writes its report to standard error, so the `2>&1` is required.
 
 ```bash
 python3 -c "import lexer"
@@ -2300,7 +2300,7 @@ Ran 32 tests in 0.003s
 OK
 ```
 
-Your lexer is finished, and you typed all of it.  To complete the Lexer assignment you still need `readme.md`, with your Part 0 answers, your Lexing Theory answers, the ordering rationale, and the two error modes, as the assignment's Deliverables table lists.  Save your work: the Parser assignment imports this `lexer.py` unchanged.
+Your lexer is finished, and you typed all of it.  To complete the Lexer assignment you still need `readme.md`, with your Part 0 answers, your Lexing Theory answers, the ordering rationale, and the two error modes, as the assignment's Deliverables table lists.
 
 47. Build Step 8 added `BREAK` and `CONTINUE` before anything used them.  Build Step 22 added a whole dialect with no change to `lexer.py`.  Compare the two.  Which future changes does your design make cheap, and which would still need new Python?
 

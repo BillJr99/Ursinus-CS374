@@ -1,7 +1,7 @@
 # mininote: a flex/bison mini-notation subset
 
-This is the TidalCycles-style **mini-notation** subset that Direction B
-of the Parser assignment grows into the real language.  It is a starter,
+This is the TidalCycles-style **mini-notation** subset that a Direction B
+team in the Team Language Project can grow into a language of its own.  It is a starter,
 packaged so you can build and run it outside the browser.  It scans and parses patterns such as `bd sn`,
 `bd*2`, `[bd sn]*2`, and `bd [sn sn] hh*2 ~`, builds an AST, prints the
 tree, and evaluates the pattern into timed events within one cycle.
@@ -38,13 +38,13 @@ cc -o mininote mininote.tab.c lex.yy.c ast.c eval.c main.c
 ```
 
 Run `bison -v mininote.y` to also generate `mininote.output`, the full
-LALR(1) automaton, every state and item set.  Direction B asks you to
-cite specific states from it, and the appendix of the Flex and Bison
+LALR(1) automaton, every state and item set.  Reading specific states from it
+is good practice, and the appendix of the Flex and Bison
 tutorial walks you through reading one.
 
 ## Adapting to PLY (Python)
 
-The Parser assignment uses Python, so you will likely translate rather
+If your team works in Python, you will likely translate rather
 than compile this.  PLY (`ply.lex` / `ply.yacc`) mirrors flex/bison
 almost line for line:
 
@@ -75,8 +75,8 @@ Try these (also in `samples.txt`):
   are straightforward bodies that make the example build.
 - The `N_SLOW` and `N_DEGRADE` cases in `eval.c` are deliberately left
   unimplemented, and they print a "not yet implemented" notice.
-  Completing them is **Step B.2** of the Parser assignment's Direction B,
-  which also fixes `srand(42)` so that `DEGRADE` grades reproducibly.
+  Completing them is a good first step for a Direction B team.  Fix
+  `srand(42)` so that `DEGRADE` runs reproducibly.
   Sample pattern 4 above parses fine but reports those notices when
   evaluated.
 - The Makefile does not link `-lfl`.  The lexer uses `%option noyywrap`,

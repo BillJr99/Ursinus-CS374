@@ -251,7 +251,7 @@ Part II has three written outputs.
 
 1.  *Grammar v0.*  Write the EBNF for your full statement set and your expression ladder, niche constructs included, in the dialect from the syntax module.  Mark every place where your grammar differs from the class language.  Each difference is parser work, and Sprint 1 is sized by this list.
 2.  *Node inventory.*  Make one table with a row for every AST node: its fields, the parser rule that builds it, and the evaluator rule that consumes it.  Empty cells are the sprint backlog, made visible.
-3.  *`SEMANTICS.md` v0.*  Import every decision your assignments already made you document (truthiness, division by zero, scoping, loop scopes, type strictness).  Then add the niche feature's semantics in the same style: exhaustive, with examples, and no "etc."
+3.  *`SEMANTICS.md` v0.*  Write down each decision your language has to make (truthiness, division by zero, scoping, loop scopes, type strictness).  Then add the niche feature's semantics in the same style: exhaustive, with examples, and no "etc."
 
 The grammar skeleton in the project guide works like a checklist.  You go through each language feature, decide yes or no, and the skeleton generates the grammar rules you need to implement.  Features you skip do not disappear.  They become explicit TODOs on your sprint backlog, which is far better than discovering a missing feature on Demo Day.
 
@@ -708,7 +708,7 @@ Expected output as written: the first two rows agree, and the last two report `D
 2.  *Grammar v0 and node inventory.*  As specified above, committed to the team repository with the decision log.  Use the grammar-v0 builder in [The Project Language Guide](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ProjectLanguageGuide) as a starting point: edit the feature flags, run it, copy the output into your grammar file, then hand-edit the niche feature's rules.  Build the node inventory from the Model 3 script.
 3.  *Sprint 1 plan.*  The Coordinator drafts: whose lexer, whose parser, and whose evaluator seed the merge (a real decision; discuss kindly), the merge order, and each member's first task with a date.
 4.  *Risk pre-mortem.*  As a team, name the **three** technical risks most likely to derail you (the Model 4 template gives structure), rank them by probability × impact, assign the mitigation experiment for the top risk, and commit the result to your design repo as `RISKS.md`.
-5.  *SEMANTICS.md skeleton.*  Using your prior assignment documentation, populate a `SEMANTICS.md` with at minimum: truthiness policy, division by zero policy, scoping rules (lexical or dynamic, block or function scope), variable-before-assignment behavior, and your null/absent-value policy.  Each section holds the rule, an example program, and the expected output.
+5.  *SEMANTICS.md skeleton.*  Write a `SEMANTICS.md` with at minimum: truthiness policy, division by zero policy, scoping rules (lexical or dynamic, block or function scope), variable-before-assignment behavior, and your null/absent-value policy.  Each section holds the rule, an example program, and the expected output.
 
 ---
 **In-class work stops here.**  Everything below is homework and going-deeper material.  Attempt the exercises before the related assignment.

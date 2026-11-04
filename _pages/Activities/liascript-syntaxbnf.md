@@ -26,7 +26,7 @@ By the end of this activity, you will be able to:
 - Write a BNF or EBNF grammar for a simple programming language construct such as an integer literal, an identifier, or an arithmetic expression
 - Explain how EBNF constructs map directly to parser implementation patterns (while loop, if statement) in recursive descent
 
-A language definition cannot afford vagueness, so every modern language publishes its syntax in BNF or EBNF.  Your parser assignment will translate that notation into code, rule by rule.  Today's path runs in four steps: why formal syntax matters, then BNF mechanics, then EBNF conveniences, then grammars for real constructs.
+A language definition cannot afford vagueness, so every modern language publishes its syntax in BNF or EBNF.  A parser translates that notation into code, rule by rule.  Today's path runs in four steps: why formal syntax matters, then BNF mechanics, then EBNF conveniences, then grammars for real constructs.
 
 > **Before You Begin:** This activity assumes you can:
 > - Read a Python function definition and identify its parts (name, parameters, body)
@@ -738,7 +738,7 @@ These exercises ask you to write grammars from scratch, which is harder than rea
 
 ## Practice (At Home): Allison, Ch. 4: Hand-Traced Grammar Recognition
 
-These exercises build confidence in the mapping between notation and code.  You write small recognizer functions from grammar rules and trace them on sample inputs.  They directly support the *Recursive Descent Parsing* activity and the Parser assignment.
+These exercises build confidence in the mapping between notation and code.  You write small recognizer functions from grammar rules and trace them on sample inputs.  They directly support the *Recursive Descent Parsing* activity.
 
 > *Exercises adapted from topics covered in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
@@ -849,4 +849,4 @@ In your notebook: BNF was introduced in 1959 to define ALGOL, and it remains in 
 
 ---
 
-Up next: the *Grammars and the Chomsky Hierarchy* activity places BNF in its theoretical home.  These grammar-writing skills feed directly into the Parser assignment.
+Up next: the *Grammars and the Chomsky Hierarchy* activity places BNF in its theoretical home.  These grammar-writing skills feed directly into your own language's grammar.

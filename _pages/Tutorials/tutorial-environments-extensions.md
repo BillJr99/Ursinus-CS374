@@ -1,7 +1,7 @@
 ---
 layout: textbook
 permalink: /Tutorials/EnvironmentsExtensions
-title: "CS374: Optional Extensions to the Environments Lab"
+title: "CS374: Optional Extensions to the Environments Tutorial"
 
 info:
   coursenum: CS374
@@ -10,7 +10,7 @@ info:
   objectives:
     - "Trace lexical and dynamic scope by hand on the same program"
     - "Work through models of runtime type checking, type inference, and a type-error postmortem"
-    - "Extend the lab's checker with the remaining type rules, and run it on real source files"
+    - "Extend the tutorial's checker with the remaining type rules, and run it on real source files"
 
 tags:
   - scope
@@ -19,7 +19,7 @@ tags:
 
 ---
 
-Everything here is optional and earns no points.  These sections go deeper into both halves of [Lab: Environments and Type Checking]({{ site.baseurl }}/Assignments/EnvironmentsLab): paper traces of lexical and dynamic scope, worked models of type systems, the remaining type rules, and running the checker on real source files from your own parser.  Several of them prepare you for the Interpreter assignment's Part 4, so they are worth a look when you get there.  Where a section asks for written answers, put them in `notes.md` under the section's name.
+Everything here is optional and earns no points.  These sections go deeper into both halves of [Environments and Type Checking]({{ site.baseurl }}/Assignments/EnvironmentsLab): paper traces of lexical and dynamic scope, worked models of type systems, the remaining type rules, and running the checker on real source files.  Where a section asks for written answers, put them in `notes.md` under the section's name.
 
 ### Extension A: Trace Binding and Scope on Paper
 
@@ -226,7 +226,7 @@ Those refusals are the whole lab in miniature.  The checker you wrote in Part 2 
 ##### Critical Thinking Questions
 
 1.  Identify the lines that make this typing *strong* (refusals) versus the line that would make it *weak* if you replaced a refusal with `float(...)` coercion.  Make the weak version mentally: what does `3.0 + "cd"` return, and what bug class did you just legalize?
-2.  We licensed `+` for two strings but not `*` for string and number.  Python licenses `"ab" * 3`.  Debate and record your project's policy on string repetition, and add it to `SEMANTICS.md` (the Interpreter assignment's semantics document).
+2.  We licensed `+` for two strings but not `*` for string and number.  Python licenses `"ab" * 3`.  Debate and record your project's policy on string repetition, and add it to `SEMANTICS.md` (your team language's semantics document).
 3.  Where would a *static* checker for your language live in the pipeline (between which two existing stages), and what would it walk?  You already own every data structure it needs; name them.
 
 Python raises a TypeError on `"5" - 1` at the moment the subtraction executes, never silently converting.  On the two axes, is Python statically and weakly typed, statically and strongly typed, dynamically and strongly typed, or dynamically and weakly typed?
@@ -515,7 +515,7 @@ In a weakly typed language, `"19.99" + 5.0` yields `"19.995"` and `"19.995" * 1.
 
 ### Extension D: The Remaining Type Rules
 
-The checker in Part 2 handles literals, variables, binary operators, and conditions.  The class language has three more constructs, and the starter's AST already includes their node classes: `Assign`, `LogicOp`, and `UnaryOp`.  Right now `check_stmt` and `check_expr` raise `NotImplementedError` for them.  Each rule below follows the same unknown-type rule as Part 2: when a type it compares is `None`, it skips the check.  The Interpreter assignment's Part 4 asks for all three, so this is a head start.
+The checker in Part 2 handles literals, variables, binary operators, and conditions.  The class language has three more constructs, and the starter's AST already includes their node classes: `Assign`, `LogicOp`, and `UnaryOp`.  Right now `check_stmt` and `check_expr` raise `NotImplementedError` for them.  Each rule below follows the same unknown-type rule as Part 2: when a type it compares is `None`, it skips the check.
 
 **You write:** `scope_lab.py` - an `Assign` branch in `check_stmt`, and `LogicOp` and `UnaryOp` branches in `check_expr`.
 
@@ -590,7 +590,6 @@ Right now `let x: Num = 42;` may not get past the lexer yet, if yours has no tok
 > Program(stmts=[Let(name='x', value=Num(value=42, line=1, col=14), line=1, col=1, annotation='Num')])
 > ```
 >
-> The Interpreter assignment's Step 4a suggests the field name `type_ann` for the same idea.  If you already did Step 4a with that name, keep it, and read `node.type_ann` wherever this page says `node.annotation`.  One name in both places is all that matters.
 
 > **If it fails.**
 > - `LexError at line 1, col 6: unexpected character ':'`: the `COLON` entry is missing from `TOKEN_SPEC`, or you added it only to `token_spec.json`.

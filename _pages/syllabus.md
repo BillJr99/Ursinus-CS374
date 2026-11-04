@@ -418,7 +418,7 @@ schedule:
     points: "100"
     rubricpath: "_pages/Assignments/asmt-lexer.md"
   readings:
-  - rtitle: "PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer and Parser assignments)"
+  - rtitle: "PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer assignment)"
     rlink: "Tutorials/PLYLexerAndParser"
 - week: "10"
   date: "0"
@@ -431,7 +431,7 @@ schedule:
     points: "100"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
-  - rtitle: "PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer and Parser assignments)"
+  - rtitle: "PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer assignment)"
     rlink: "Tutorials/PLYLexerAndParser"
 - week: "10"
   date: "1"
@@ -446,7 +446,7 @@ schedule:
   readings:
   - rtitle: "Allison, Ch. 5: Pushdown Automata, Adding a Stack to Finite Automata"
   - rtitle: "Allison, Ch. 6 §6.3: Equivalence of PDAs and Context-Free Grammars"
-  - rtitle: "Building an LR Parser from the Grammar Up, the companion to Part 4 of the Parser assignment, which walks the same construction on a smaller grammar with runnable code"
+  - rtitle: "Building an LR Parser from the Grammar Up, the companion to the Parser assignment, which walks the same construction on a smaller grammar with runnable code"
     rlink: "Tutorials/LRConstruction"
 - week: "11"
   date: "0"
@@ -463,9 +463,9 @@ schedule:
     points: "100"
     rubricpath: "_pages/Assignments/asmt-parser.md"
   readings:
-  - rtitle: "For the Parser assignment (Step 3e): Property-Based Testing with Hypothesis, covering the round-trip property and how to shrink a failing case"
+  - rtitle: "Property-Based Testing with Hypothesis (optional depth): the round-trip property and how to shrink a failing case"
     rlink: "Tutorials/PropertyBasedTesting"
-  - rtitle: "Parser Combinators (Parsers as First-Class Values), an alternative route through the Parser assignment"
+  - rtitle: "Parser Combinators (Parsers as First-Class Values), another way to write a parser (optional depth)"
     rlink: "Tutorials/ParserCombinators"
 - week: "11"
   date: "1"
@@ -475,9 +475,9 @@ schedule:
   readings:
   - rtitle: "This session is Day 2 of tree-walking interpretation: statements change state, where expressions returned values."
     rlink: false
-  - rtitle: "For the Parser assignment (Part 4): Building an LR Parser from the Grammar Up, the worked construction behind the SLR(1) tables and driver you implement"
+  - rtitle: "For the Parser assignment: Building an LR Parser from the Grammar Up, a worked SLR(1) construction on a smaller grammar"
     rlink: "Tutorials/LRConstruction"
-  - rtitle: "For the Tree-Walking Interpreter (Step 2e): Property-Based Testing with Hypothesis, covering the round-trip property, now over evaluation"
+  - rtitle: "Property-Based Testing with Hypothesis (optional depth): the same idea, now over evaluation"
     rlink: "Tutorials/PropertyBasedTesting"
   - rtitle: "CI and TDD for Interpreters"
     rlink: "Tutorials/CITDDForInterpreters"
@@ -577,6 +577,10 @@ schedule:
     dlink: "Projects/TeamLanguage"
     points: "72"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
+  - dtitle: "Lab: Lambda Calculus Due"
+    dlink: "Assignments/LambdaCalculusLab"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
   - rtitle: "The Project Language Guide (a complete worked path for the team project)"
     rlink: "Tutorials/ProjectLanguageGuide"
@@ -591,21 +595,17 @@ schedule:
 - cdate: "2026/12/14"
   title: "Demo Day: Team Language Presentations (Final Exam Period, 11:15 AM-2:15 PM, Pfahler 012)"
   deliverables:
-  - dtitle: "Lab: Lambda Calculus Due"
-    dlink: "Assignments/LambdaCalculusLab"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
 ---
 
-This semester is a build.  By December, your team will have designed and implemented a programming language of your own, assembled one assignment at a time.  The sections below explain how the pieces fit together, including how the course gives you choices, how to read an assignment, how to prepare for each class, and how I value and evaluate the day-to-day work of participating.  Please read them once now, and come back to the participation and preparation guides throughout the term.
+This semester is a build.  By December, your team will have designed and implemented a programming language of your own, built in team sprints on what each assignment teaches.  The sections below explain how the pieces fit together, including how the course gives you choices, how to read an assignment, how to prepare for each class, and how I value and evaluate the day-to-day work of participating.  Please read them once now, and come back to the participation and preparation guides throughout the term.
 
 ## How This Course Works: Choice and Universal Design
 
 I have built this course on the principle that there is more than one good path through it, and that you should have real say over yours.  The choices here are in the spirit of Universal Design for Learning, which asks for multiple ways to engage with the material and multiple ways to demonstrate what you have learned.  None of these paths is the "remedial" one.
 
 - **A capstone you shape.**  The Team Language Project is yours to design.  A compelling original language is always welcome, and the final project's extension menu lets you go deep wherever your interest lies instead of following one fixed spec.
-- **The Music and Live-Coding Directions.**  If you would rather build toward making music than a general-purpose language, the Parser assignment and the Team Language Project each offer a music direction inside the same required deliverable.  The [Music and Live-Coding guide](Projects/TeamLanguage#the-music-and-live-coding-path) maps the whole path, including a text-events-only route that never requires audio.  Choose direction by direction as each assignment arrives; teams commit to a project direction at the kickoff.
-- **Depth inside every assignment, and supplemental depth everywhere.**  Each programming assignment offers **directions** you choose inside it (a generator-toolchain lexer, a music-notation parser, a type checker for your interpreter), so nothing on the schedule is optional, but every deliverable has room for your interests.  The Team Language Project's [Extensions Menu](Projects/TeamLanguage#extensions-menu) carries the same idea into the capstone, with optional extensions in continuations, Church encodings, logic programming, and open-source contribution.  Beyond the assignments, the schedule carries supplemental activities and tutorials on parser combinators, garbage collection, bytecode VMs, and more, and you can browse them on the [Tutorials shelf](Tutorials/).  These are invitations rather than obligations.  Please tell me when one of them becomes the thing you want to go further with.
+- **The Music and Live-Coding Directions.**  If you would rather build toward making music than a general-purpose language, the Team Language Project offers a music direction inside the same required deliverable.  The [Music and Live-Coding guide](Projects/TeamLanguage#the-music-and-live-coding-path) maps the whole path, including a text-events-only route that never requires audio.  Choose direction by direction as each assignment arrives; teams commit to a project direction at the kickoff.
+- **Depth inside every assignment, and supplemental depth everywhere.**  Each programming assignment offers **directions** you choose inside it (a generator-toolchain lexer, or an interpreter in Python or in Flex and Bison), so nothing on the schedule is optional, but every deliverable has room for your interests.  The Team Language Project's [Extensions Menu](Projects/TeamLanguage#extensions-menu) carries the same idea into the capstone, with optional extensions in continuations, Church encodings, logic programming, and open-source contribution.  Beyond the assignments, the schedule carries supplemental activities and tutorials on parser combinators, garbage collection, bytecode VMs, and more, and you can browse them on the [Tutorials shelf](Tutorials/).  These are invitations rather than obligations.  Please tell me when one of them becomes the thing you want to go further with.
 
 If a path you want is not on the menu, please propose it.  The choices are here so you can build the language, and the fluency, that you actually care about.
 
@@ -613,7 +613,7 @@ If a path you want is not on the menu, please propose it.  The choices are here 
 
 I write every assignment in this course to be transparent about three things, so you are never guessing about what I am asking or how I will judge it:
 
-- **Purpose:** *why* the assignment exists and what capability it builds toward.  None of it is busywork.  Each piece is either a stage of the language you are building or a skill that stage depends on.
+- **Purpose:** *why* the assignment exists and what capability it builds toward.  None of it is busywork.  Each piece is either a stage of a language or a skill that stage depends on, and each assignment stands on its own, with anything it needs given to you.
 - **Task:** *what* you will actually do, broken into concrete steps.
 - **Criteria:** *how* your work will be evaluated.  Every graded assignment carries a rubric with four levels (pre-emerging, beginning, progressing, proficient) so you can see exactly what proficient work looks like before you start, and can use the rubric to assess your own draft.
 

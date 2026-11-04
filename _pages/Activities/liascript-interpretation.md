@@ -552,7 +552,7 @@ for label, tree in [("7 % 2", BinOp("%", Num(7,1,1), Num(2,1,5), 1, 3)),
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output as written: the first two report that `%` is unsupported, and the third divides by zero.  Once your TODOs are in, write the three resulting behaviors into `SEMANTICS.md` as one sentence each.  That paragraph is a deliverable of the Interpreter assignment.
+Expected output as written: the first two report that `%` is unsupported, and the third divides by zero.  Once your TODOs are in, write the three resulting behaviors into `SEMANTICS.md` as one sentence each.  The Interpreter assignment's `SEMANTICS.md` asks for rules like these.
 
 ---
 

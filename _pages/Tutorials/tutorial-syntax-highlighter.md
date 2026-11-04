@@ -88,7 +88,7 @@ echo 'let x = 2 + 3 * 4; print x;' | tree-sitter parse /dev/stdin
 
 You should see a parse tree.  Iterate in the [tree-sitter playground](https://tree-sitter.github.io/tree-sitter/playground); paste your grammar and type programs to watch the tree update live.
 
-> **Reuse your EBNF:** you already wrote a precedence-annotated grammar in the Parser assignment.  Your tree-sitter `prec.left`/`prec.right` annotations mirror the precedence ladder you built there; this is the same knowledge in a new notation.
+> **Reuse your EBNF:** your team already wrote a grammar with a precedence ladder.  Your tree-sitter `prec.left`/`prec.right` annotations mirror that ladder; this is the same knowledge in a new notation.
 
 ---
 
@@ -133,7 +133,7 @@ The "wow" upgrade: surface a real error from *your* parser as an editor squiggle
 // error output, and push a vscode.Diagnostic at that range.
 ```
 
-Because your Parser and Interpreter assignments already emit positioned errors (`line L, col C: message`), you have everything you need; you are just piping one line of error output into the editor's diagnostics API. One diagnostic is enough for full credit on this extension.
+Because your language already emits positioned errors (`line L, col C: message`), you have everything you need; you are just piping one line of error output into the editor's diagnostics API. One diagnostic is enough for full credit on this extension.
 
 ---
 

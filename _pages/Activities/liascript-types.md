@@ -1115,8 +1115,8 @@ Then: in Model 3, the checker deduced `c : Bool` from context alone, with no ann
 - Gary Bernhardt.  "Wat" (2012): four minutes of coercion comedy with a serious lesson underneath.
 - Benjamin Pierce.  *Types and Programming Languages*, the standard reference; Chapters 8 through 11 cover exactly the judgments in Part II.
 - Siek and Taha.  "Gradual Typing for Functional Languages" (2006), the paper that named Part III.
-- The [Hindley-Milner type inference tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypeInference) takes Model 3's inference to its conclusion: unification (the procedure that makes two partly unknown types agree), the occurs check, and Algorithm W.  Read it if you take the type-checking direction on the Interpreter assignment.
+- The [Hindley-Milner type inference tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/TypeInference) takes Model 3's inference to its conclusion: unification (the procedure that makes two partly unknown types agree), the occurs check, and Algorithm W.  Read it if your team's language wants static checks.
 
 ---
 
-Up next: the *Language Design Workshop* turns the whole term on a language of your own, and the Interpreter assignment's type-checking direction builds directly on Model 2.
+Up next: the *Language Design Workshop* turns the whole term on a language of your own, and a team that adds static checks builds directly on Model 2.

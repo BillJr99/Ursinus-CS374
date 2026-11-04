@@ -5,7 +5,7 @@ title: "CS374: Principles of Programming Languages - The Lexer"
 
 info:
   coursenum: CS374
-  purpose: "To turn the class tokenizer into the first permanent component of your language pipeline: a reusable Lexer with a stable peek/advance/expect interface that the Parser and the team project import unchanged."
+  purpose: "To turn the class tokenizer into the first permanent component of your language pipeline: a reusable Lexer with a stable peek/advance/expect interface."
   tilt:
     task: "Specify an ordered token grammar.  Build a reusable Lexer component with peek/advance/expect, string escapes, and a configurable token specification, either hand-rolled in Python or in the generator-toolchain direction (Flex or PLY).  Then add positioned error reporting and a full test suite."
     criteria: "I assess your work on a correctly ordered token spec, an idempotent side-effect-free Lexer interface, and precise error reporting with a full test suite.  The rubric applies the same way to whichever direction you choose.  The full breakdown is in the rubric below."
@@ -15,7 +15,7 @@ info:
     - To harden the class tokenizer into a reusable Lexer component with peek, advance, and expect interface methods
     - To implement string literals with escape sequences and JSON-configurable token specifications
     - To report lexical errors with precise line and column positions and support both fail-fast and collect-all error modes
-    - To deliver a fully tested component that the parser assignment and team project will import unchanged
+    - To deliver a fully tested component that other code can import unchanged
   rubric:
     - weight: 10
       description: "Part 0: Before You Start - Tokens and Scanning"
@@ -56,7 +56,7 @@ tags:
   - pipeline
 
 ---
-In this assignment you turn the class tokenizer into a **component**: a module that other code imports and uses without changing it.  You leave with a `Lexer` class behind a three-method contract (`peek`, `advance`, and `expect`), a token specification you can swap out with a JSON file, and a test suite that proves both.  The Parser assignment imports this Lexer unchanged and your team project ships it, so every design decision you make here carries forward.  Test after each step before you move on.
+In this assignment you turn the class tokenizer into a **component**: a module that other code imports and uses without changing it.  You leave with a `Lexer` class behind a three-method contract (`peek`, `advance`, and `expect`), a token specification you can swap out with a JSON file, and a test suite that proves both.  This assignment stands alone: the later assignments give you the lexer they need.  Test after each step before you move on.
 
 ---
 
@@ -260,7 +260,7 @@ TOKEN_SPEC = [
     # underscore," so iffy fails this rule and falls through to IDENT.
     ("IF",         r"if(?!\w)"),
     # TODO: ELSE, WHILE, LET, PRINT, TRUE, FALSE, in the same form as IF.
-    # TODO: AND, OR, NOT.  The Parser's and_expr, or_expr, and not_expr use these.
+    # TODO: AND, OR, NOT.
     # TODO: FUN.  Function definitions use this.
 
     ("IDENT",      r"[a-zA-Z_][a-zA-Z0-9_]*"),  # foo, my_var, x1
@@ -1192,7 +1192,7 @@ To build on this for your own scanner, add your remaining token types to the `en
 
 ### Where the toolchain goes next
 
-Flex is one half of a pair.  Its companion parser generator, Bison (or PLY's `yacc` module), turns a context-free grammar with precedence declarations into an LALR (look-ahead LR) parser.  That half is deliberately out of scope here.  It is the natural continuation of this direction, and the Parser assignment offers a matching generator-toolchain direction where your Flex/PLY scanner feeds a Bison/PLY grammar.  Choosing the generator direction now sets you up well for that one, but the two choices are independent: you choose a direction assignment by assignment.
+Flex is one half of a pair.  Its companion parser generator, Bison (or PLY's `yacc` module), turns a context-free grammar with precedence declarations into an LALR (look-ahead LR) parser.  That half is deliberately out of scope here.  It is the natural continuation of this direction, and the Interpreter assignment's Flex and Bison option shows the two working together.
 
 ---
 

@@ -573,7 +573,7 @@ A grammar rule `stmt -> IDENT "=" expr | IDENT "(" args ")"` cannot be parsed wi
 
 ## Practice, Parser Tracing: Hand-Simulate a Descent Parser
 
-These exercises give you practice with the grammar-to-code mapping and the call structure of a recursive descent parser.  You hand-simulate the exact sequence of function calls and token consumption.  They prepare you for the parser assignment by showing the execution you will later trace in a debugger.
+These exercises give you practice with the grammar-to-code mapping and the call structure of a recursive descent parser.  You hand-simulate the exact sequence of function calls and token consumption.  They prepare you for the assignments ahead by showing the execution you will later trace in a debugger.
 
 > *Exercises adapted from the recursive descent parsing technique covered in standard compiler texts, including Douglas Thain's *Introduction to Compilers and Language Design* (Chapter 4).*
 
@@ -1141,7 +1141,7 @@ print("meaning * is evaluated first -- this is how precedence is encoded in the 
 - Robert Nystrom.  *Crafting Interpreters*, "Parsing Expressions" (online).
 - Wirth, Niklaus.  *Compiler Construction* (online), the classic minimalist treatment.
 - [Build an Interpreter](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BuildAnInterpreter): a complete recursive-descent parser (Stage 3) wired into a lexer and an evaluator.
-- Panic-mode error recovery and synchronization points, for a parser that reports several syntax errors in one run: the "Synchronizing a recursive descent parser" section of *Crafting Interpreters*.  A strong stretch goal for the Parser assignment.
+- Panic-mode error recovery and synchronization points, for a parser that reports several syntax errors in one run: the "Synchronizing a recursive descent parser" section of *Crafting Interpreters*.  A strong stretch goal for your team language.
 
 ---
 
@@ -1159,7 +1159,7 @@ This part continues the build that started in Part VI of [Abstract Syntax Trees]
 
 As in Stage 1, each step is one slide, you type the fragment, `____R1____` is a blank answered in the **Answer Key** at the end of this page, and you run each check from inside `cs374-parser/`.
 
-Your permanent parser keeps the shape of Models 2 and 3 and changes three things, so that it matches Part 2 of the Parser assignment:
+Your permanent parser keeps the shape of Models 2 and 3 and changes three things:
 
 | In the models above | In your `parser.py` |
 |---|---|
@@ -1407,7 +1407,7 @@ ParseError at line 1, col 1: expected a statement, found EQ
 ParseError at line 1, col 3: expected EQ, found INT
 ```
 
-> **CTQ B15** The last two errors come from different functions.  Which function raised each one, and what did `parse_stmt` know when it chose?  Step 2c of the Parser assignment asks you to explain your lookahead in your readme; this check gives you the evidence, and the explanation is yours, so the Answer Key leaves that part out.
+> **CTQ B15** The last two errors come from different functions.  Which function raised each one, and what did `parse_stmt` know when it chose?  This check gives you the evidence for how much lookahead you need, and the explanation is yours, so the Answer Key leaves that part out.
 
 ---
 
@@ -1450,7 +1450,7 @@ Program(stmts=[Assign(name='x', value=Num(value=1, line=1, col=6), line=1, col=1
 
 ## Build Step 17: A Test File That Grows with You
 
-Every step from here on can add a test, and each test stays in the file for good.  This is the same harness as Step 2b of the Parser assignment, plus a helper for tests that must fail.  Each test asserts on nodes and fields, and it can write `Num(1)` with no position, because Build Step 2 made `==` skip positions.
+Every step from here on can add a test, and each test stays in the file for good.  This harness has a helper for tests that must fail.  Each test asserts on nodes and fields, and it can write `Num(1)` with no position, because Build Step 2 made `==` skip positions.
 
 ```python
 # Step 17, test_parser.py
@@ -1672,13 +1672,13 @@ Program
               Num(3)
 ```
 
-> **CTQ B20** Trace `parse_if_stmt` on the program in `test_dangling_else_attaches_to_nearest_if`, and write down which call is running when the parser reaches `else`.  Step 1b of the Parser assignment asks you to state your rule and how the parser enforces it, so turn this trace into your own readme entry.  The Answer Key leaves this one out.
+> **CTQ B20** Trace `parse_if_stmt` on the program in `test_dangling_else_attaches_to_nearest_if`, and write down which call is running when the parser reaches `else`.  State your rule and how the parser enforces it, in your own words.  The Answer Key leaves this one out.
 
 ---
 
 ## Build Step 21: `break` and `continue`
 
-The Parser assignment's grammar has no `break` or `continue`, but the Interpreter assignment's tree has `Break` and `Continue` nodes, so adding them now saves you from reopening the parser later.  Your lexer needs `BREAK` and `CONTINUE` tokens, listed before `IDENT` like every other keyword.  Without them, `break` lexes as a name and `parse_stmt` treats it as the start of an assignment.
+A language with loops usually wants `break` and `continue`, so add them now.  Your lexer needs `BREAK` and `CONTINUE` tokens, listed before `IDENT` like every other keyword.  Without them, `break` lexes as a name and `parse_stmt` treats it as the start of an assignment.
 
 ```python
 # Step 21, parser.py
@@ -1737,7 +1737,7 @@ def test_error_position_on_later_line():
     assert err.found == "SEMICOLON"
 ```
 
-**You write:** two broken programs of your own.  Run each through `show_error(parse, ...)` and decide whether its message passes your 2 AM standard.  Step 3d of the Parser assignment collects ten such messages in your readme.
+**You write:** two broken programs of your own.  Run each through `show_error(parse, ...)` and decide whether its message passes your 2 AM standard.  A good parser's messages all pass this test.
 
 Run this check:
 
@@ -1766,7 +1766,7 @@ PASS test_error_position_on_later_line
 
 ---
 
-**Up next:** the *Parsing Expressions and Table-Driven Parsing* activity turns this same machinery loose on the full operator-precedence ladder, then drives the same grammar bottom-up from an LR table; together, the statement parser from today and the expression parser you build there form the core of the Parser assignment.
+**Up next:** the *Parsing Expressions and Table-Driven Parsing* activity turns this same machinery loose on the full operator-precedence ladder, then drives the same grammar bottom-up from an LR table; together, the statement parser from today and the expression parser you build there make a complete hand-written parser.
 
 # Answer Key
 

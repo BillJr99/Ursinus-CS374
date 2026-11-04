@@ -128,7 +128,7 @@ Close by connecting logic programming back to the pipeline:
 - **Binding.**  Your interpreter's `Environment` maps a name to a *value* by assignment, one direction, permanently (until reassigned).  Prolog **unifies** a logic variable with a *term*, two-directionally, and **un-binds** it on backtracking.
 - **Control.**  Your evaluator makes a single forward pass.  Prolog searches a proof tree, trying alternatives and backtracking on failure.
 
-If you took the **type-checking direction** of the Interpreter assignment, make the link explicit: the unification in your Hindley-Milner inferencer is the *same algorithm* Prolog uses to match goals; it just serves type inference there and proof search here.
+If your team added Hindley-Milner checking, make the link explicit: the unification in your Hindley-Milner inferencer is the *same algorithm* Prolog uses to match goals; it just serves type inference there and proof search here.
 
 ---
 

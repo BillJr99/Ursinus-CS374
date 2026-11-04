@@ -11,7 +11,7 @@ info:
     - To distinguish the static/dynamic axis (when types are checked) from the strong/weak axis (how strictly types are enforced)
     - To place real languages in the strong/weak by static/dynamic quadrant with concrete examples
     - To explain gradual typing and why mypy and TypeScript are unsound by design
-    - To connect these disciplines to your interpreter's dynamic typing and the Hindley-Milner type-checking direction
+    - To connect these disciplines to your interpreter's dynamic typing and Hindley-Milner type checking
 
 readings:
   - rtitle: "mypy Documentation"
@@ -75,9 +75,9 @@ Worked contrasts to try:
 You have built (or will build) *both* type stories:
 
 - The **tree-walking interpreter** enforces types **dynamically and strongly**: `"a" + 1` gets as far as evaluation and then raises a positioned `LangTypeError`.  The rule lives in `SEMANTICS.md`.
-- The **Hindley-Milner type-checking direction** moves the *same* language to **static** checking: it rejects `"a" + 1` *before evaluation ever begins*, the way Haskell and OCaml do, and documents each rule in `TYPES.md`.  Notice this direction is also *stricter* than the dynamic version in places (it requires `if`/`while` conditions to be `Bool`, not merely truthy).
+- **Hindley-Milner type checking**, which a team may add to its language, moves the *same* language to **static** checking: it rejects `"a" + 1` *before evaluation ever begins*, the way Haskell and OCaml do, and documents each rule in `TYPES.md`.  Notice this approach is also *stricter* than the dynamic version in places (it requires `if`/`while` conditions to be `Bool`, not merely truthy).
 
-Choosing the type-checking direction moves your language one column left in the quadrant.
+Adding the checker moves your language one column left in the quadrant.
 
 ---
 
@@ -120,7 +120,7 @@ x.foo();                  // tsc: no error - 'any' silences the check
 
 1.  Place Go, Elixir, and Rust in the quadrant.  Where is each, and what evidence (a one-line program) puts it there?
 2.  TypeScript compiles to JavaScript and then *erases* all types: the runtime has no type information.  What class of bug can therefore still occur at runtime despite a clean `tsc`?  How does that relate to `Any`?
-3.  Your interpreter is strong/dynamic.  Name one program that runs to completion under it but is *rejected* by the HM type-checking direction.  Why is the checker stricter, and is that a bug or a feature?
+3.  Your interpreter is strong/dynamic.  Name one program that runs to completion under it but is *rejected* by HM type checking.  Why is the checker stricter, and is that a bug or a feature?
 4.  Weakly-typed C lets you reinterpret an `int`'s bits as a `float`.  Name one situation where that is useful and one where it is a catastrophe.
 
 ---
@@ -654,4 +654,4 @@ Questions to consider:
 - Wadler & Findler, "Well-Typed Programs Can't Be Blamed" (2009): the blame calculus behind Section 9
 - Typed Racket: a production gradually-typed language that does insert runtime checks at boundaries, giving you actual blame semantics
 - TypeScript's `unknown` vs `any`: a real-world version of Section 9's `DYN` type, with `unknown` requiring an explicit narrowing check before use
-- Your own `SEMANTICS.md` (dynamic rules) and `TYPES.md` (static rules) from the Interpreter assignment
+- Your own `SEMANTICS.md` (dynamic rules) and `TYPES.md` (static rules)

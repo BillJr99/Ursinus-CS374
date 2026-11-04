@@ -1222,7 +1222,7 @@ In your notebook, answer both prompts.  First: numbers, booleans, pairs, and con
 
 ## Going Further (at home)
 
-The core lesson above stands on its own.  Two self-paced tutorials extend today's mechanism into runtime territory that feeds the Interpreter assignment's extensions and the team project:
+The core lesson above stands on its own.  Two self-paced tutorials extend today's mechanism into runtime territory that feeds the team project:
 
 - [Coroutines and Generators: Pausable Computation](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/CoroutinesAndGenerators): how `yield` freezes a stack frame, how `async`/`await` desugars to a state machine, and how to add generator objects to your interpreter
 - [Error Handling: From Return Codes to Algebraic Effects](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/ErrorHandling): return codes, exceptions, Option/Maybe, Result/Either, and designing error propagation for your interpreter

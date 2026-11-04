@@ -55,7 +55,7 @@ Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Pr
 
 ## How Today Runs
 
-The descent half comes first because it is the code your Parser assignment asks for; the table-driven half follows because it shows where the same precedence decision lives when a generator builds the parser for you.
+The descent half comes first because it is the easier code to read; the table-driven half follows because it shows where the same precedence decision lives when a table drives the parser, which is what your Parser assignment builds.
 
 | Segment | What your team does |
 |---------|---------------------|
@@ -856,7 +856,7 @@ Your project grammar contains the left-recursive list rule `args -> args "," exp
 
 ---
 
-**In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the Parser assignment, whose Part 1 theory questions and Part 4 LR construction build directly on Parts III and IV.
+**In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the Parser assignment, whose LR(1) construction builds directly on Parts III and IV.
 
 > **Build your own parser at home.**  Part V, after the Further Reading, is Stage 3 of a step-by-step build that starts in Part VI of the *Abstract Syntax Trees* activity.  It turns the Code Cell in Part I into your own expression ladder, one tier at a time.
 
@@ -1020,7 +1020,7 @@ In your notebook, answer both prompts.  First: the hardest conceptual move in th
 - Vaughan Pratt.  "Top Down Operator Precedence" (1973), the original paper behind Model 2.
 - Aho, Lam, Sethi, Ullman.  *Compilers*, sections 4.5 through 4.7, for the canonical LR(1) and LALR(1) table constructions that go beyond the SLR table we built by hand.
 - Donald Knuth.  "On the Translation of Languages from Left to Right."  (1965).  Where LR was born.
-- [Building an LR Parser from the Grammar Up](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LRConstruction): closure, GOTO, the canonical collection, and SLR(1) tables built step by step with runnable code; the companion to Part 4 of the Parser assignment.
+- [Building an LR Parser from the Grammar Up](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LRConstruction): closure, GOTO, the canonical collection, and SLR(1) tables built step by step with runnable code; a companion to the Parser assignment.
 
 - [Flex and Bison from Zero to a Working Language](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/FlexAndBison): installing Flex and Bison, a complete `.l`/`.y` walkthrough of a calculator language with variables, and an appendix on LR(0) item-set construction and how Yacc builds and resolves its parse tables.  The ready-to-build mini-notation scaffold is in the course examples at [files/examples/mininote/](https://www.billmongan.com/Ursinus-CS374-Fall2026/files/examples/mininote/).
 - [Building a Bytecode VM for Mini](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BytecodeVM): compiling expressions to bytecode and executing them on a stack machine.
@@ -1051,7 +1051,7 @@ primary     ::= INT | FLOAT | STRING | TRUE | FALSE | IDENT
               | LPAREN expr RPAREN
 ```
 
-You climb from the bottom, and `parse_expr` moves up one rung each time, so every check runs on a working parser.  Step 2b of the Parser assignment works the same way.
+You climb from the bottom, and `parse_expr` moves up one rung each time, so every check runs on a working parser.
 
 ---
 
@@ -1106,7 +1106,7 @@ BoolLit(value=False, line=1, col=1)
 
 ## Build Step 24: Parentheses and Unary Minus
 
-A parenthesis calls back up to the loosest tier, which is where the *recursive* in recursive descent shows up: inside parentheses, the whole ladder starts over.  The parser returns the inner expression itself and builds no node for the parentheses, because the tree's shape already records the grouping.  Step 2a of the Parser assignment asks you to record that choice in your readme.
+A parenthesis calls back up to the loosest tier, which is where the *recursive* in recursive descent shows up: inside parentheses, the whole ladder starts over.  The parser returns the inner expression itself and builds no node for the parentheses, because the tree's shape already records the grouping.
 
 ```python
 # Step 24, parser.py: add above the final raise in parse_primary
@@ -1160,7 +1160,7 @@ Var(name='x', line=1, col=8)
 
 ## Build Step 25: The First Fold
 
-Model 1 traced this loop by hand on `7 - 2 - 1`.  Here it builds real nodes, and each node's position is its operator's position, so a later type error can point at the `/` itself.  Step 2a.4 of the Parser assignment walks through the same function line by line against its grammar rule.
+Model 1 traced this loop by hand on `7 - 2 - 1`.  Here it builds real nodes, and each node's position is its operator's position, so a later type error can point at the `/` itself.
 
 ```python
 # Step 25, parser.py
@@ -1346,7 +1346,7 @@ Program
 
 ## Build Step 29: `and`, `or`, and the Top of the Ladder
 
-The last two tiers are left folds again, and they build `LogicOp` rather than `BinOp`.  The Parser assignment accepts either, but the Interpreter assignment requires `LogicOp`, because `and` and `or` must short-circuit.  `or` is the loosest tier, so this is where `parse_expr` finally stops moving.
+The last two tiers are left folds again, and they build `LogicOp` rather than `BinOp`.  An evaluator needs `LogicOp`, because `and` and `or` must short-circuit.  `or` is the loosest tier, so this is where `parse_expr` finally stops moving.
 
 ```python
 # Step 29, parser.py
@@ -1439,7 +1439,7 @@ ParseError at line 1, col 3: expected EOF after expression, found INT
 
 ## Build Step 31: The Worked Program
 
-Every piece of the Parser assignment's worked program now exists, so this check uses all three stages.  The nodes and `pretty` came from Stage 1, the statements from Stage 2, and the condition's `>` from this stage.  Compare the output with Build Step 9: you built that tree by hand, and the parser now builds it from text.
+Every piece of a small `while` program now exists, so this check uses all three stages.  The nodes and `pretty` came from Stage 1, the statements from Stage 2, and the condition's `>` from this stage.  Compare the output with Build Step 9: you built that tree by hand, and the parser now builds it from text.
 
 ```python
 # Step 31, test_parser.py: add above the main block
@@ -1487,13 +1487,13 @@ Program
           Num(1)
 ```
 
-> **CTQ B31** Step 2d of the Parser assignment asks for this program's call trace in your readme, starting `parse_program`, `parse_stmt`, `parse_let_stmt`, `parse_expr`.  Write that trace now, while the ladder is fresh.  It is your own write-up, so the Answer Key leaves it out.
+> **CTQ B31** Write this program's call trace, starting `parse_program`, `parse_stmt`, `parse_let_stmt`, `parse_expr`.  Write that trace now, while the ladder is fresh.  It is your own write-up, so the Answer Key leaves it out.
 
 ---
 
 ## Build Step 32: The Suite So Far
 
-The ladder is complete, so the last two broken programs from Step 3d of the Parser assignment can finally give the right errors.  Stage 2 could not reach them, because they fail inside an expression.
+The ladder is complete, so the last two broken programs can finally give the right errors.  Stage 2 could not reach them, because they fail inside an expression.
 
 ```python
 # Step 32, test_parser.py: add above the main block
@@ -2374,7 +2374,7 @@ TODO 2 is the door into *Type Systems*.  A size check is the *most* a linker can
 
 ---
 
-**Up next:** the *Tree-Walking Interpretation* activity finally gives parsed programs their meaning; the front end is complete.  The tiered expression parser you finished here goes directly into the Parser assignment, which is handed out next session, and the ACTION/GOTO table you drove in Part III is the answer key for that assignment's Part 4.
+**Up next:** the *Tree-Walking Interpretation* activity finally gives parsed programs their meaning; the front end is complete.  The ACTION/GOTO table you drove in Part III is the same kind of table your Parser assignment has you generate, for a given grammar.
 
 # Answer Key
 

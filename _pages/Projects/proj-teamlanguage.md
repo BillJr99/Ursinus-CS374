@@ -5,15 +5,15 @@ title: "CS374: Principles of Programming Languages - Final Project: A Language o
 
 info:
   coursenum: CS374
-  purpose: "To design, build, document, and present a programming language of your own, assembled from the lexer, parser, AST, environment, and evaluator components you built this semester, and to prove that those components snap together and grow."
+  purpose: "To design, build, document, and present a programming language of your own, starting from a small working language I give you, and to show that a language can grow one stage at a time."
   tilt:
-    task: "In rotating-role team sprints, choose your language's direction, integrate your components into one pipeline, add a distinctive feature (going deeper via the Extensions Menu if you choose), and ship a REPL, file-runner, samples, tests, and SEMANTICS.md, then present the language at Demo Day."
+    task: "In rotating-role team sprints, choose your language's direction, grow the starter language into your own, add a distinctive feature (going deeper via the Extensions Menu if you choose), and ship a REPL, file-runner, samples, tests, and SEMANTICS.md, then present the language at Demo Day."
     criteria: "I assess your work on the Sprint 0 proposal, language design and documentation, implementation correctness and integration, testing, reproducibility, and the Demo Day presentation.  You submit the proposal and then present it at the Sprint 0 kickoff; the rest is earned with the final submission, due on the last class day, and the presentation at Demo Day.  See the course schedule for the dates, and the rubric below for the full breakdown."
   points: 100
   goals:
     - To design a programming language with a niche, a documented grammar, and exhaustive semantics
     - To choose and commit to a direction (a general-purpose or domain language of the team's design, or a music/live-coding language) and defend that choice against the design scorecard
-    - To implement the language end to end by integrating the lexer, parser, AST, environments, and evaluator built across the semester
+    - To implement the language end to end by extending a provided lexer, parser, AST, and evaluator
     - To implement at least one distinctive feature requiring real design and implementation work
     - To deliver a tested, reproducible implementation with a REPL, file-runner, and sample program suite
     - To present the language at a public Demo Day with a candid account of its limitations
@@ -22,12 +22,12 @@ info:
     - weight: 28
       description: Proposal (submitted, and then presented at the Sprint 0 kickoff)
       preemerging: The proposal is missing, or names a language with no team roster, niche, grammar, or plan
-      beginning: The proposal names the team and a niche, but the design scorecard or the team charter is missing, or the grammar v0, node inventory, or SEMANTICS.md v0 is missing or generic, or the merge plan and sprint plan are absent
+      beginning: The proposal names the team and a niche, but the design scorecard or the team charter is missing, or the grammar v0, node inventory, or SEMANTICS.md v0 is missing or generic, or the build plan and sprint plan are absent
       progressing: All checklist items are present and specific, with minor gaps such as a scorecard that states priorities without their sacrifices, a charter topic left vague, a vague risk pre-mortem, or an incomplete node inventory
       proficient: Every checklist item is complete and specific; the proposal opens with the three-member team roster, the niche in one sentence, the design scorecard with a priority and a sacrifice for each of readability, writability, reliability, and implementation cost, and the team charter covering all four topics and signed by every member; the chosen direction is declared and defended against the design scorecard; the distinctive feature (and any Extensions Menu adoptions) is scoped to fit the sprint plan; and the proposal is submitted on time and presented at the Sprint 0 kickoff
     - weight: 19
       description: Language Design and Documentation
-      preemerging: The language has no documented grammar or semantics, or the design is the class language unchanged
+      preemerging: The language has no documented grammar or semantics, or the design is the starter language unchanged
       beginning: A grammar exists but diverges from the implementation, and semantics documentation is generic or incomplete
       progressing: The grammar and SEMANTICS.md are complete and largely match the implementation, with a stated niche and scorecard, and minor gaps
       proficient: The niche, scorecard, EBNF grammar, node inventory, and exhaustive SEMANTICS.md are complete, current, and verified against the implementation, with a decision log recording contested choices and their rationales
@@ -36,13 +36,13 @@ info:
       preemerging: The implementation fails to run the sample programs
       beginning: The implementation runs but fails on several sample or test programs due to one or more minor issues
       progressing: The implementation passes its test suite and sample programs, with a fragile area such as error recovery or a semantics corner that diverges from the documentation
-      proficient: The integrated pipeline passes a substantive test suite and all sample programs, the distinctive feature works end to end, error messages identify their stage and position, and behavior matches SEMANTICS.md throughout
+      proficient: The pipeline passes a substantive test suite and all sample programs, the distinctive feature works end to end, error messages identify their stage and position, and behavior matches SEMANTICS.md throughout
     - weight: 14
       description: Evaluation and Testing
       preemerging: No systematic testing exists
       beginning: A minimal test suite exists without coverage of the distinctive feature or error cases
       progressing: The test suite covers the core language, the distinctive feature, and error cases, with results tracked across sprints
-      proficient: The test suite covers the core language, the distinctive feature, error cases, and the differential semantics programs, results are tracked across sprints with the failing-test-as-specification discipline visible in the history, and at least three fixed bugs are documented with their regression tests
+      proficient: The test suite covers the core language, the distinctive feature, error cases, and programs that check the implementation against SEMANTICS.md, results are tracked across sprints with the failing-test-as-specification discipline visible in the history, and at least three fixed bugs are documented with their regression tests
     - weight: 10
       description: Documentation and Reproducibility
       preemerging: The repository cannot be run by a stranger
@@ -84,7 +84,7 @@ tags:
 
 # What Your Team Builds
 
-Your team will design, build, document, and present a programming language of your own.  It must be a real language: it has a niche (the kind of problem it exists to solve), a grammar, documented semantics, and a working implementation assembled from the lexer, parser, AST, environment, and evaluator components your members built individually this semester.  This project is where you find out whether those components really were components.  They should snap together, and then they should grow.  You work in a team of three, in sprints with rotating roles, and you finish by presenting the language at a public Demo Day.  You leave with a public repository under your own name, a language reference you wrote, and a project story you can tell in an interview.
+Your team will design, build, document, and present a programming language of your own.  It must be a real language: it has a niche (the kind of problem it exists to solve), a grammar, documented semantics, and a working implementation.  You start from a [small working language]({{ site.baseurl }}/files/starters/teamlanguage/README.md) that already has a lexer, a parser, an AST, and an evaluator, so the project needs nothing from any other assignment.  Your job is to grow it into a language of your own.  You work in a team of three, in sprints with rotating roles, and you finish by presenting the language at a public Demo Day.  You leave with a public repository under your own name, a language reference you wrote, and a project story you can tell in an interview.
 
 ---
 
@@ -92,12 +92,12 @@ Your team will design, build, document, and present a programming language of yo
 
 The project is worth **100 points**, earned at two graded milestones: the proposal (28 points) and the Demo Day Presentations deliverable (72 points), which you submit on the last class day and present at Demo Day.  One small check along the way falls within Class Activities and Participation: the Release and Review submission (6 points).  It keeps the team honest without raising the stakes of a studio day.  See the course schedule for the assigned and due dates; it is the source of truth for every date below.
 
-| Milestone (see the course schedule for dates) | What is due | Pipeline stage it depends on | Points |
-|---|---|---|---|
-| Project hand-out | Nothing is submitted.  The design phase opens: form a team of three, pick a niche, start the design scorecard and the team charter | Your lexer, and the parser and AST you are finishing | - |
-| **Proposal: submitted, then presented at the Sprint 0 kickoff** | **The proposal, opening with the team roster, the niche, the design scorecard, and the signed team charter.  You submit it before the kickoff and present it at the kickoff** | Lexer, parser, and AST: grammar v0 and the node inventory describe them | **28** |
-| Release and Review (Sprint Studio) | One submission: the Sprint 2 gallery walk cards and your triage, and the Sprint 3 ShipIt Release Checklist (assessed within Class Activities and Participation) | The whole pipeline, extended at each stage the feature touches, plus the test suite | 6 |
-| **Demo Day Presentations: submitted on the last class day, then presented at Demo Day (final exam period)** | **The final submission, due on the last class day, and the presentation at Demo Day** | Everything above | **72** |
+| Milestone (see the course schedule for dates) | What is due | Points |
+|---|---|---|
+| Project hand-out | Nothing is submitted.  The design phase opens: form a team of three, pick a niche, start the design scorecard and the team charter | - |
+| **Proposal: submitted, then presented at the Sprint 0 kickoff** | **The proposal, opening with the team roster, the niche, the design scorecard, and the signed team charter.  You submit it before the kickoff and present it at the kickoff** | **28** |
+| Release and Review (Sprint Studio) | One submission: the Sprint 2 gallery walk cards and your triage, and the Sprint 3 ShipIt Release Checklist (assessed within Class Activities and Participation) | 6 |
+| **Demo Day Presentations: submitted on the last class day, then presented at Demo Day (final exam period)** | **The final submission, due on the last class day, and the presentation at Demo Day** | **72** |
 
 Demo Day takes place in the course's final exam period, which the course schedule lists.  The final submission is due earlier, on the last class day.  There is no written final exam; Demo Day is the course's terminal event, and I accept no work after it.
 
@@ -132,7 +132,7 @@ Teams are three members each, formed in the design phase from your standing POGI
 
 If the design phase feels contentious, the map is working.  Run the charter's conflict-repair process and keep going.
 
-**Whose components.**  Your team may start from any member's semester components, or merge them, as long as the project README says which.  I grade the language you design and build on top, and I do not care whose components you started from.  Spend your sprint time on the design, the distinctive feature, and the integration.
+**Where you start.**  Most teams should start from the [small working language]({{ site.baseurl }}/files/starters/teamlanguage/README.md).  You may use your own code or a teammate's instead, as long as the project README says which.  I grade the language you design and build on top, and I do not care where you started.  Spend your sprint time on the design and the distinctive feature.
 
 ---
 
@@ -140,7 +140,7 @@ If the design phase feels contentious, the map is working.  Run the charter's co
 
 You need:
 
-- Your Lexer and Parser assignment code, and your Tree-Walking Interpreter as you build it.
+- The [small working language]({{ site.baseurl }}/files/starters/teamlanguage/README.md): a lexer, parser, AST, evaluator, REPL, and test that run as they are.
 - Python 3.10 or newer.  The pipeline can use the standard library only, so there need be nothing to install for it.
 - A shared git repository for the team.  It may stay private until release hardening; it must be public by Demo Day.
 - A working terminal.  If the shell is still new to you, read the [dev environment page]({{ site.baseurl }}/Tutorials/DevEnvironment) and the [shell primer for language development]({{ site.baseurl }}/Tutorials/ShellForLanguageDev) once before Sprint 1.
@@ -175,7 +175,7 @@ The rubric is the same on both directions.
 
 ### Direction A: A General-Purpose or Domain Language of Your Design
 
-This is the default framing above.  Design a language with a niche of your choosing (a recipe domain-specific language (DSL), a query language over in-memory lists, a turtle-graphics language, a logic language, a constraint language, or a compelling original idea), implement the required scope end to end from your semester components, and add a distinctive feature that serves the niche.  Everything in the milestone sections below applies as written.
+This is the default framing above.  Design a language with a niche of your choosing (a recipe domain-specific language (DSL), a query language over in-memory lists, a turtle-graphics language, a logic language, a constraint language, or a compelling original idea), grow the starter into the required scope end to end, and add a distinctive feature that serves the niche.  Everything in the milestone sections below applies as written.
 
 > **Code path.**  Scaffold option: Make-a-Lisp (mal).  If your team's niche is a Lisp-shaped or expression-oriented language, you may build on the [Make-a-Lisp (mal)](https://github.com/kanaka/mal) process as your scaffold instead of starting the front end from scratch.  mal is an eleven-step incremental path to a working Lisp.  What makes it useful here is its shared test harness (`runtest.py` against per-step `.mal` test files), which becomes a free, rigorous regression suite for your language as you build.  You still own the design.  You must give the language a niche of its own and a distinctive feature of your own (mal out of the box is a generic Lisp, which is not by itself a distinctive feature), document your semantics, and integrate your team's components.  mal's staged tests and reference structure can carry the routine reader/eval/print plumbing, so your sprint time goes to the parts that make your language *yours*.  Cite mal in your proposal if you adopt it, and note which steps you used.
 
@@ -186,7 +186,7 @@ Design a small live-coding language of your own: a language whose programs denot
 Direction B maps onto the same milestones:
 
 - **Proposal (Sprint 0):** your design document also includes a denotational semantics (one displayed equation per construct, mapping programs to event sets over cycle spans), at least one algebraic law your language satisfies, stated as an equation, and a design rationale argued against the embedded-versus-external tradeoff axes, with at least two rejected alternatives.  These stand in for (or fold into) `SEMANTICS.md` v0.
-- **Sprint 1:** the lexical and syntactic front end, built either from your semester's Python components or with flex/bison.  If you use bison, keep the grammar conflict-free and include the `-v` automaton report in your repository.  The front end parses every specification example and prints ASTs with location-prefixed errors.
+- **Sprint 1:** the lexical and syntactic front end, built either from the starter language or with flex/bison (the [mini-notation starter]({{ site.baseurl }}/files/examples/mininote/README.md) is a good seed).  If you use bison, keep the grammar conflict-free and include the `-v` automaton report in your repository.  The front end parses every specification example and prints ASTs with location-prefixed errors.
 - **Sprint 2:** the evaluator, by structural recursion over the AST, one case per semantic equation, each case commented with the equation it implements, emitting a timed event list.
 - **Sprint 3:** hardening, the specification-driven test suite, and performance rehearsal.  In the test suite, every semantic equation has at least one test against a hand-computed event list, the algebraic law is verified empirically on at least three instances, and stochastic constructs are reproducible under a fixed seed.
 - **Demo Day:** your live demonstration closes with a short performance: live-editing and re-running a program while the class follows the event output as it changes.  **Emitting events as text is sufficient; audio hardware is never required.**  Ambitious teams may also render sound by translating event lists into Strudel or MIDI.  That translation layer (mapping your semantics onto someone else's) is itself worth a section of your report.
@@ -297,11 +297,11 @@ Submit the proposal through Canvas by its due date, and present it in class at t
 > 3. Finish the design scorecard.  For each of readability, writability, reliability, and implementation cost, state its priority and what you give up to get it.
 > 4. Write the team charter (all four topics below), and have every member sign it.
 > 5. Write the pitch: the language name, three sentences, and your direction (A or B).
-> 6. Write grammar v0 in EBNF, starting from the class language's grammar and marking every difference.
-> 7. Build the node inventory table from your parser's AST: every node, its fields, the rule that produces it, the rule that consumes it.
-> 8. Start `SEMANTICS.md` v0 by importing the decisions you recorded during the Interpreter assignment, then add the niche feature's semantics.  Direction B: the denotational equations, the algebraic law, and the embedded/external rationale go here.
+> 6. Write grammar v0 in EBNF, starting from the starter language's grammar at the top of its `parser.py` and marking every difference.
+> 7. Build the node inventory table: every node your language will have, its fields, the rule that produces it, the rule that consumes it.
+> 8. Start `SEMANTICS.md` v0: one short section per rule of your language (truthiness, scope, types, division by zero), each with a small program and what it prints.  Then add the niche feature's semantics.  Direction B: the denotational equations, the algebraic law, and the embedded/external rationale go here.
 > 9. Specify the distinctive feature: its syntax, its semantics, and which pipeline stages it touches (lexer, parser, AST, environment, evaluator).  Scope any Extensions Menu adoptions against the sprint plan; one that ships beats two that do not.
-> 10. Write the merge plan: whose lexer, parser, and evaluator seed the integration, and in what order you merge.
+> 10. Write the build plan: which feature each sprint adds, and which stages each one touches.
 > 11. Run the risk pre-mortem: name the most likely derailment and the smallest experiment that retires it.
 > 12. Write the sprint plan with the role rotation schedule, and check that it matches the charter's rotation plan.
 > 13. Submit the proposal through Canvas by its due date.
@@ -327,11 +327,11 @@ All members sign the charter (typed names suffice) in the proposal.  One charter
 - [ ] The niche, in one sentence.
 - [ ] The language name and three-sentence pitch, with your **direction (A or B)** declared.
 - [ ] The design scorecard: readability, writability, reliability, and implementation cost, with priorities and sacrifices stated.
-- [ ] Grammar v0 in EBNF, with differences from the class language marked.
+- [ ] Grammar v0 in EBNF, with differences from the starter language marked.
 - [ ] The node inventory table: every AST node, fields, producing rule, consuming rule.
-- [ ] `SEMANTICS.md` v0 importing your assignment-era decisions and adding the niche feature's semantics (Direction B: the denotational equations, algebraic law, and embedded/external rationale described above).
+- [ ] `SEMANTICS.md` v0 with one section per rule and the niche feature's semantics (Direction B: the denotational equations, algebraic law, and embedded/external rationale described above).
 - [ ] The distinctive feature specification: syntax, semantics, and the pipeline stages it touches, plus any **Extensions Menu** adoptions, scoped to the sprint plan.
-- [ ] The merge plan: whose lexer, parser, and evaluator seed the integration, and the order of merging.
+- [ ] The build plan: which feature each sprint adds, and which stages it touches.
 - [ ] The risk pre-mortem: the most likely derailment and the smallest experiment that retires it.
 - [ ] The sprint plan with role rotation schedule.
 - [ ] The **signed team charter**: role rotation, communication channel and norms, preparation norms, and disagreement resolution, with every member's typed signature.
@@ -339,14 +339,14 @@ All members sign the charter (typed names suffice) in the proposal.  One charter
 
 ---
 
-## Milestone 3: Sprint 1: Integrate the Pipeline
+## Milestone 3: Sprint 1: Get It Running and Grow the Core
 
-Sprint 1 is the build phase.  You integrate members' components into one pipeline that runs the class language (Direction B: the front end printing ASTs).  Build in sprints, following the sprint studio protocol: stand-ups with numbers, failing tests as specifications, current documents, and role rotation at boundaries.
+Sprint 1 is the build phase.  You get the starter running in your repository and start growing it toward the required scope (Direction B: the front end printing ASTs).  Build in sprints, following the sprint studio protocol: stand-ups with numbers, failing tests as specifications, current documents, and role rotation at boundaries.
 
 > **Do this.**
-> 1. Agree on one repository layout before anyone merges.  One layout that works is shown below.
-> 2. Merge in the order your merge plan states, running each component's own tests before you move it into `src/`.
-> 3. Get the REPL and the file-runner working on the class language, from the top of the repository, with the commands below.
+> 1. Copy the starter into your team's repository, and run its test before you change anything.  One layout that works is shown below.
+> 2. Add the required scope one feature at a time, in the order your build plan states.  For each feature, write a failing test, and then touch the lexer, the parser, the AST, and the evaluator in that order.
+> 3. Keep the REPL and the file-runner working from the top of the repository, with the commands below.
 > 4. Write the first failing test for the distinctive feature.  A failing test is your specification; it tells the next sprint what to build.
 > 5. Re-read the charter as a team and ask "does it still describe this team?"  File one revision if not.
 
@@ -376,14 +376,13 @@ python3 -m pytest tests/               # runs the test suite
 > **You should see.**  The REPL prompt, then a value echoed back for an expression you type; the file-runner printing the sample program's output; and the test suite reporting how many tests passed, with the distinctive-feature test failing on purpose.
 
 > **If it fails.**
-> - An import error after merging usually means two components disagree on a name (`Token` versus `Tok`, `parse` versus `parse_program`).  Fix the contract in one place; the assignment interfaces (`peek`/`advance`/`expect`; the AST node dataclasses) are the contract every component follows.
+> - An import error after moving files usually means the starter's flat imports (`from lexer import ...`) no longer match the layout.  Fix the imports, or keep the starter's files together in one folder.
 > - A program that lexes and parses but crashes in the evaluator is a stage-boundary bug.  Write it down; it is a bug story for Demo Day.
-> - If one component is too broken to merge, use a teammate's and keep moving.  Say so in the README.
 
 **Checklist (nothing is uploaded):**
 
-- [ ] One integrated pipeline running the class language (Direction B: the front end parsing every specification example and printing ASTs with location-prefixed errors).
-- [ ] The README line naming whose components you started from.
+- [ ] The pipeline running in your repository, with at least one feature added beyond the starter (Direction B: the front end parsing every specification example and printing ASTs with location-prefixed errors).
+- [ ] The README line naming what you started from.
 - [ ] A failing test for the distinctive feature, committed.
 - [ ] The charter re-read, with a revision filed if it no longer describes the team.
 - [ ] Roles rotated for Sprint 2, recorded in the decision log.
@@ -415,7 +414,7 @@ Sprint 3 completes the feature, hardens errors, and finishes the sample suite.  
 > **Do this.**
 > 1. Finish the distinctive feature so it works end to end, and make every error message identify its stage and position.
 > 2. Finish the sample suite: at least five programs, one that shows off the niche, each with its expected output.
-> 3. Finish the test suite: the core language, the distinctive feature, error cases, and the differential semantics programs that check the implementation against `SEMANTICS.md`.  Direction B: every semantic equation has at least one test against a hand-computed event list, the algebraic law is verified on at least three instances, and stochastic constructs reproduce under a fixed seed.
+> 3. Finish the test suite: the core language, the distinctive feature, error cases, and programs that check the implementation against `SEMANTICS.md`.  Direction B: every semantic equation has at least one test against a hand-computed event list, the algebraic law is verified on at least three instances, and stochastic constructs reproduce under a fixed seed.
 > 4. Document at least three fixed bugs with their regression tests.
 > 5. Run the [ShipIt self-check]({{ site.baseurl }}/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist) as a team: the secrets audit, the public flip with a license, pinned dependencies, the recruiter-legible README, the packaging path verified cold by the teammate who did not build it, and each member's portfolio entry.
 > 6. Draw lots for the Demo Day presentation order.
@@ -433,7 +432,7 @@ Sprint 3 completes the feature, hardens errors, and finishes the sample suite.  
 - [ ] Roles rotated for Sprint 3.
 - [ ] The distinctive feature complete, with stage-and-position error messages throughout.
 - [ ] At least five sample programs with expected outputs, one showing off the niche.
-- [ ] The test suite covering the core language, the distinctive feature, error cases, and the differential semantics programs, with results tracked across sprints.
+- [ ] The test suite covering the core language, the distinctive feature, error cases, and programs that check `SEMANTICS.md`, with results tracked across sprints.
 - [ ] At least three fixed bugs documented with regression tests.
 - [ ] The ShipIt self-check run: public repository, license, secrets audit, pinned dependencies, README, packaging verified cold, portfolio entries.
 - [ ] Presentation order drawn, and the demo rehearsed with a fallback ready.
@@ -465,17 +464,17 @@ Every teammate speaks.  You answer the audience's questions, from classmates and
 
 Submit these four deliverables on the last class day, before you present:
 
-1. **The repository:** the integrated implementation, REPL and file-runner, test suite, sample programs with expected outputs, all configuration in JSON, located exception handling throughout, and a readme tested by the teammate who did not write it.  Ensure reproducibility by fixing random seeds where applicable and listing software version information.  The repository is public and recruiter-legible: run the [ShipIt self-check]({{ site.baseurl }}/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist) before Demo Day; it is scored within the Documentation and Reproducibility dimension.  (Direction B: the timed-event test fixtures and, if you used bison, the automaton report ride along here.)
+1. **The repository:** the implementation, REPL and file-runner, test suite, sample programs with expected outputs, all configuration in JSON, located exception handling throughout, and a readme tested by the teammate who did not write it.  Ensure reproducibility by fixing random seeds where applicable and listing software version information.  The repository is public and recruiter-legible: run the [ShipIt self-check]({{ site.baseurl }}/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist) before Demo Day; it is scored within the Documentation and Reproducibility dimension.  (Direction B: the timed-event test fixtures and, if you used bison, the automaton report ride along here.)
 2. **The language reference** (approximately four pages): teach your language to a newcomer with examples for every construct, the full grammar, the distinctive feature's guide, and a section per adopted extension.
-3. **`SEMANTICS.md`,** final and verified against the implementation by the differential programs (Direction B: the semantic equations, revised to match the implemented language, with a change log from the proposal).
-4. **The report** (approximately four pages): the design story with the decision log's three most contested calls, the integration experience (what snapped together, what did not, and why), the evaluation summary, limitations (your disclose bucket, verbatim), responses to the Strength, Question, and Risk cards your station received at the Release and Review gallery walk, and individual contribution statements covering the rotation.  (Direction B: include the performance postmortem, what performing revealed that the test suite could not, and, if you rendered audio, the translation-layer section.)
+3. **`SEMANTICS.md`,** final and verified against the implementation by your semantics programs (Direction B: the semantic equations, revised to match the implemented language, with a change log from the proposal).
+4. **The report** (approximately four pages): the design story with the decision log's three most contested calls, the build experience (which features came easily, which did not, and why), the evaluation summary, limitations (your disclose bucket, verbatim), responses to the Strength, Question, and Risk cards your station received at the Release and Review gallery walk, and individual contribution statements covering the rotation.  (Direction B: include the performance postmortem, what performing revealed that the test suite could not, and, if you rendered audio, the translation-layer section.)
 
 **Deliverables checklist:**
 
 - [ ] The presentation delivered within 9 minutes, with every teammate speaking and the distinctive feature explained by its non-author.
 - [ ] The public repository: implementation, REPL, file-runner, tests, samples with expected outputs, JSON configuration, located exception handling, pinned versions and fixed seeds, and a readme tested by the teammate who did not write it (Direction B: timed-event fixtures and any bison automaton report).
 - [ ] The language reference (about four pages).
-- [ ] `SEMANTICS.md`, final and verified by the differential programs (Direction B: revised equations with a change log).
+- [ ] `SEMANTICS.md`, final and verified by your semantics programs (Direction B: revised equations with a change log).
 - [ ] The report (about four pages), including responses to your gallery walk cards and each member's contribution statement.
 - [ ] Each member's answers to the Reflection Prompts, inside their contribution statement.
 - [ ] Each member's drafted LinkedIn-style post from the ShipIt guide (submitting the draft is required; publishing it is optional).
@@ -488,7 +487,7 @@ A note on what the rubric is looking for.  It rewards a finished minimal languag
 
 Answer individually in your contribution statement:
 
-- Which component (yours or a teammate's) survived integration best, and what property made it survive?
+- Which stage of the pipeline was easiest to extend, and what property made it easy?
 - Which design decision would you reverse if you had one more sprint, and what would it cost now versus what it would have cost in Sprint 0?
 
 ---
@@ -499,8 +498,8 @@ Answer individually in your contribution statement:
 
 ### Goals
 
-- Understand that the music and live-coding path runs through the same required assignments as every other path, as directions chosen within them, one assignment at a time
-- Know which assignments offer a music direction (the Parser assignment and the Team Language Project) and what each direction entails
+- Understand that the music and live-coding path is a direction of the Team Language Project, and that every other assignment is taken as it stands
+- Know what the direction entails
 - Know that every music direction supports a text-events-only route, so no audio production or playback is ever required
 
 ### Background Reading and References
@@ -513,7 +512,7 @@ This section is a guide, not a graded assignment.  It describes the music and li
 
 ### How the Music Path Works
 
-Every assignment in this course exercises the same core outcomes: specifying a language formally, building a lexer/parser/evaluator pipeline, reasoning about semantics, and defending design decisions.  Several assignments offer more than one direction.  A direction is an equivalent way of meeting those outcomes, with a single deliverable and a single rubric that applies to every direction equally.  Languages for live-coded music (TidalCycles, Strudel, and the mini-notation they share) are real, production languages with formal grammars, denotational semantics, and active communities, and they support every outcome the assignments assess.  The music directions put those languages under your hands.
+Every assignment in this course exercises the same core outcomes: specifying a language formally, building a lexer/parser/evaluator pipeline, reasoning about semantics, and defending design decisions.  The Team Language Project offers a music direction.  It is an equivalent way of meeting those outcomes, with a single deliverable and a single rubric that applies to both directions equally.  Languages for live-coded music (TidalCycles, Strudel, and the mini-notation they share) are real, production languages with formal grammars, denotational semantics, and active communities, and they support every outcome the assignments assess.  The music direction puts those languages under your hands.
 
 In the spirit of Universal Design for Learning, the music path is a deliberate choice of engagement (a problem domain that may hold your attention differently than a general-purpose toy language does) and of expression (your capstone demonstration can be a short live-coded performance instead of a REPL walkthrough, or a walkthrough of timed event output, if you prefer).  It is not the easy path and it is not remedial.  It is the same mountain, climbed on the same rubrics, by a route that happens to make rhythm.
 
@@ -521,27 +520,25 @@ In the spirit of Universal Design for Learning, the music path is a deliberate c
 
 ### The Path, Assignment by Assignment
 
-The music path follows the course's own arc: the same required assignments, in the same order, with the music direction chosen where one is offered:
+The music path follows the course's own arc, with the music direction chosen in the team project:
 
 1. **[Music Languages and Live Coding]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-languagedesign.md)** (activity): meet TidalCycles and Strudel as *language designs*: embedded versus external DSLs, a formal model of patterns, and the timed-event semantics the rest of the path builds on.
-2. **[Parsing Expressions and Table-Driven Parsing]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsingexpressions.md)** (activity): meet the bottom-up, table-driven side of parsing, which is what a generator emits and what the mini-notation starter is built on.  The flex/yacc pipeline itself lives in two places you can work through on your own.  The [Flex and Bison tutorial]({{ site.baseurl }}/Tutorials/FlexAndBison) builds one end to end, and the mini-notation starter under `files/examples/mininote/` in this repository is the subset Direction B grows.  Relatedly, the [Lexer assignment]({{ site.baseurl }}/Assignments/Lexer)'s generator-toolchain direction is a natural on-ramp: choosing Flex or PLY there puts those tools in your hands early.  It pairs well with what follows, but it is not required for it.
-3. **[The Parser and AST]({{ site.baseurl }}/Assignments/Parser) -> the Mini-Notation direction**: grow the mini-notation starter in this repository toward the real language: alternation, Euclidean rhythms, and polymeter, parsed into an AST, evaluated to timed events, and validated against the Strudel reference implementation (or against printed event lists alone).
-4. **[Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) -> the Music and Live-Coding direction** (capstone): design, specify, build, and demonstrate a small live-coding language with your team.  The closing demonstration may be a live edit-and-rerun session over printed event output; rendered sound is optional here as everywhere on the path.  The project's optional [Contribute Upstream extension](#contribute-upstream-an-open-source-contribution) adds an open-source stop: a pattern or transformation function contributed to Strudel/TidalCycles.
+2. **[Parsing Expressions and Table-Driven Parsing]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsingexpressions.md)** (activity): meet the bottom-up, table-driven side of parsing, which is what a generator emits and what the mini-notation starter is built on.  The flex/yacc pipeline itself lives in two places you can work through on your own.  The [Flex and Bison tutorial]({{ site.baseurl }}/Tutorials/FlexAndBison) builds one end to end, and the mini-notation starter under `files/examples/mininote/` in this repository is a subset Direction B can grow.  Relatedly, the [Lexer assignment]({{ site.baseurl }}/Assignments/Lexer)'s generator-toolchain direction and the [Interpreter]({{ site.baseurl }}/Assignments/Interpreter)'s Flex and Bison option put those tools in your hands early.  They pair well with what follows, but neither is required for it.
+3. **[Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) -> the Music and Live-Coding direction** (capstone): design, specify, build, and demonstrate a small live-coding language with your team.  The closing demonstration may be a live edit-and-rerun session over printed event output; rendered sound is optional here as everywhere on the path.  The project's optional [Contribute Upstream extension](#contribute-upstream-an-open-source-contribution) adds an open-source stop: a pattern or transformation function contributed to Strudel/TidalCycles.
 
-Assignments without a music direction listed here (Warmup, Regex, the Automata lab, Lexer, Interpreter, and the rest) are taken as they stand; they build the skills every direction draws on.  The choices are independent: you can take the Mini-Notation direction in the Parser assignment and a general-purpose direction for your team's language, or the reverse.  The path above is the coherent musical route, not a package deal.
+The other assignments are taken as they stand; they build the skills every direction draws on.
 
 ### The Mapping at a Glance
 
 | Required assignment | Its music direction |
 |---|---|
-| [The Parser and AST]({{ site.baseurl }}/Assignments/Parser) | Direction B: The Mini-Notation Music Parser |
 | [Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) | The Music and Live-Coding direction (text-events-only route available) |
 
 The two activities above (Music Languages and Live Coding; Parsing Expressions and Table-Driven Parsing) and the Flex and Bison tutorial are preparation rather than deliverables.  They play the same role the optional readings do elsewhere in the schedule.
 
 ### When to Decide
 
-There is no track to join and no deadline to declare by.  Each direction is chosen when its assignment is handed out, inside that assignment, and each choice stands alone.  If the music path appeals to you, the useful early moves are to work through the two activities above before the Parser assignment arrives, and to raise the Music and Live-Coding direction with your team when the Team Language Project kicks off.  That one is a team decision, and it benefits from being made at the project's first sprint rather than mid-stream.  Questions about any direction are always welcome in office hours.  The choosing itself needs no permission: the directions are built in.
+There is no track to join.  If the music path appeals to you, the useful early moves are to work through the two activities above, and to raise the Music and Live-Coding direction with your team when the Team Language Project kicks off.  That one is a team decision, and it benefits from being made at the project's first sprint rather than mid-stream.  Questions about any direction are always welcome in office hours.  The choosing itself needs no permission: the directions are built in.
 
 ---
 

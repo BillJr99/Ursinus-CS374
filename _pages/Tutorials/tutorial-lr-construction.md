@@ -33,7 +33,7 @@ tags:
 
 # Building an LR Parser from the Grammar Up
 
-This tutorial is the companion to **Part 4 of the Parser assignment**, where you implement SLR(1) (Simple LR with one token of lookahead) table construction and a shift-reduce driver.  It explains the mechanism the assignment asks you to build, and it does so on a *different, smaller grammar* than the assignment uses.  That is deliberate.  You can read every line here, run it, and take it apart, and the assignment's ladder grammar is still yours to do.  The two differ in exactly the places that make the assignment interesting: operator precedence between `+` and `*`, and parentheses.
+This tutorial is a companion to the **Parser assignment**, where you build LR(1) tables and a shift-reduce driver.  It builds SLR(1) (Simple LR with one token of lookahead), which is simpler, on a *different, smaller grammar* than the assignment uses.  That is deliberate.  You can read every line here, run it, and take it apart, and the assignment's work is still yours to do.  The last section says how SLR(1) and LR(1) differ.
 
 You already know recursive descent from Part 2.  This tutorial takes you from "I wrote one function per non-terminal" to "I built the table a generator emits, and I know why each cell holds what it holds."
 
@@ -306,7 +306,7 @@ That is sometimes too coarse.  A token can be in `FOLLOW(A)` globally while bein
 
 **LR(1)** fixes it by carrying a lookahead token inside each item, so `[A -> α . , a]` means "reduce only on `a`".  It is precise and its state count explodes.  **LALR(1)** merges LR(1) states that share the same items but differ only in lookahead, keeping almost all of the precision at SLR's state count.  That trade is why **LALR(1) is what Bison and PLY build**.  It is also why `bison -v` output repays reading once you have built one of these by hand.  The states in `mininote.output` are the same kind of object as the ones you just enumerated.
 
-The assignment does not ask you for LALR.  If you want it, that is the interesting next step, and the Parser assignment's Part 4 says to note it in your readme rather than leaving it as a surprise.
+The Parser assignment builds LR(1) directly, on a small enough grammar that the state count stays manageable.  It does not ask you for LALR, which is the interesting next step if you want it.
 
 ---
 

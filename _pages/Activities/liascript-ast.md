@@ -812,7 +812,7 @@ To remember: `unparse` walks the tree and passes each node the precedence of its
 
 **In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the related assignment.
 
-> **Build your own parser at home.**  Part VI below starts a step-by-step build of the parser, AST, and pretty-printer for the Parser assignment.  It continues in the *Recursive Descent* and *Parsing Expressions* activities, and it ends in Part VII.
+> **Build your own parser at home.**  Part VI below starts a step-by-step build of the parser, AST, and pretty-printer for practice with how a hand-written parser works.  It continues in the *Recursive Descent* and *Parsing Expressions* activities, and it ends in Part VII.
 
 # Check Your Understanding
 
@@ -1056,7 +1056,7 @@ Each step is one slide with one small addition, one check, and one question or s
 - Run every check from inside `cs374-parser/` on your own machine, not in the browser, because the checks import your `lexer.py`.
 - If you add a step's lines and the check's output differs from what the slide shows, fix that before you go on.  Each later step assumes the earlier ones work.
 
-Model 1 above kept its node classes short.  Your permanent classes use the field names that the Parser and Interpreter assignments use, because your evaluator will dispatch on exactly these classes.  They also carry both a `line` and a `col`.  The Parser assignment's printed examples show only `line`, so your output has more fields than those; the Interpreter assignment needs the column, and `==` ignores both:
+Model 1 above kept its node classes short.  Your permanent classes carry both a `line` and a `col`, because an evaluator needs them for error messages, and `==` ignores both:
 
 | Model 1 | Your `ast_nodes.py` |
 |---|---|
@@ -1071,7 +1071,7 @@ Model 1 above kept its node classes short.  Your permanent classes use the field
 
 ## Build Step 1: Confirm Your Lexer
 
-The parser imports the lexer you built in the *Tokens and Scanning* activity and the Lexer assignment, and it uses only three methods: `peek()`, `advance()`, and `expect()`.  Before you add anything, make sure the contract holds.  If your lexer is not finished, the at-home part of *Tokens and Scanning* builds one; its step numbers are separate from these.  Create `cs374-parser/` and copy `lexer.py`, `token_spec.json`, and `token_spec_alt.json` into it, along with `tokens.py` if your lexer has one.  Every token carries `type`, `value`, `line`, and `col`, and a `STRING` token also carries `decoded`.
+The parser imports the lexer you built in the *Tokens and Scanning* activity, and it uses only three methods: `peek()`, `advance()`, and `expect()`.  Before you add anything, make sure the contract holds.  If your lexer is not finished, the at-home part of *Tokens and Scanning* builds one; its step numbers are separate from these.  Create `cs374-parser/` and copy `lexer.py`, `token_spec.json`, and `token_spec_alt.json` into it, along with `tokens.py` if your lexer has one.  Every token carries `type`, `value`, `line`, and `col`, and a `STRING` token also carries `decoded`.
 
 Run this check:
 
@@ -1176,7 +1176,7 @@ True
 
 ## Build Step 4: Statements That Name a Value
 
-Statements run for their effect.  `Let` defines a new name, `Print` evaluates and prints, and `Break` carries only its line, so that a later error can say where a stray `break` was.  `Print`, `Break`, and `Continue` keep a `line` and no `col`, which matches the node list in Step 1a of the Interpreter assignment.
+Statements run for their effect.  `Let` defines a new name, `Print` evaluates and prints, and `Break` carries only its line, so that a later error can say where a stray `break` was.  `Print`, `Break`, and `Continue` keep a `line` and no `col`.
 
 ```python
 # Step 4, ast_nodes.py
@@ -1408,7 +1408,7 @@ This step finishes the printer.  `Program` and `Block` print the same way, so on
         return "\n".join(lines)
 ```
 
-This check builds the tree for the Parser assignment's worked `while` program by hand, because you have no parser yet.
+This check builds the tree for a small `while` program by hand, because you have no parser yet.
 
 Run this check:
 
@@ -1447,7 +1447,7 @@ Program
 
 Come here after [Parsing Expressions](https://www.billmongan.com/LiaScript/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-parsingexpressions.md), Part V.  Your parser now reads every construct, so the last stage goes the other way, as Part IV's `unparse` did, and then checks both directions against each other.
 
-Part IV's cell handled four node types and passed a precedence number down the tree.  Your version handles every node and puts the decision in one helper, `unparse_child`, where the two extra rules this language needs are easy to find: comparisons do not chain, and `not` is a word.  It goes in `ast_nodes.py`, below `pretty`, under the names that Step 3b of the Parser assignment uses.
+Part IV's cell handled four node types and passed a precedence number down the tree.  Your version handles every node and puts the decision in one helper, `unparse_child`, where the two extra rules this language needs are easy to find: comparisons do not chain, and `not` is a word.  It goes in `ast_nodes.py`, below `pretty`.
 
 ---
 
@@ -1822,13 +1822,13 @@ PASS test_random_expression_round_trip
 29 passed, 0 failed
 ```
 
-> **CTQ B40** A fixed seed makes this test repeat exactly.  What does that cost you compared with a fresh seed on every run, and which tool in Step 3e of the Parser assignment deals with that cost and also makes a failing tree small?
+> **CTQ B40** A fixed seed makes this test repeat exactly.  What does that cost you compared with a fresh seed on every run, and which tool in the Property-Based Testing tutorial deals with that cost and also makes a failing tree small?
 
-**The build is complete.**  You typed `ast_nodes.py`, `parser.py`, and `test_parser.py`, and each one matches the names that the Parser and Interpreter assignments use.  The Parser assignment still asks for things this build does not give you: the Part 0 sketches, the grammar and the theory answers in your readme, your lookahead and dangling-else notes, the call trace in Step 2d, your ten error messages in Step 3d, the Hypothesis test and your shrunk counterexample in Step 3e, the `fun_stmt`, `call`, and type-annotation productions from Part 1, and all of Part 4.
+**The build is complete.**  You typed `ast_nodes.py`, `parser.py`, and `test_parser.py`.  The Parser assignment still asks for things this build does not give you: the Part 0 sketches, the grammar and the theory answers in your readme, your lookahead and dangling-else notes, the call trace in Step 2d, your ten error messages in Step 3d, the Hypothesis test and your shrunk counterexample in Step 3e, the `fun_stmt`, `call`, and type-annotation productions from Part 1, and all of Part 4.
 
 ---
 
-Up next: the *Recursive Descent Parsing* activity builds the machine that constructs these trees from tokens; together they are the core of the Parser assignment.
+Up next: the *Recursive Descent Parsing* activity builds the machine that constructs these trees from tokens; together they show how a hand-written parser works, and the Parser assignment then builds the table-driven kind.
 
 # Answer Key
 
@@ -2038,4 +2038,4 @@ def test_round_trip_fixed():
 
 **CTQ B39.**  `print 8 - (3 - 2);` fails first, with the message `Round-trip failed on: print 8 - (3 - 2);`.  Unparsed without parentheses, it comes back as `(8 - 3) - 2`.
 
-**CTQ B40.**  A fixed seed tests the same 300 trees forever, so it never finds a new bug.  Hypothesis, in Step 3e, varies its inputs and shrinks a failing tree to a small one.  That test, its strategies, and the counterexample you report are yours to write.
+**CTQ B40.**  A fixed seed tests the same 300 trees forever, so it never finds a new bug.  Hypothesis, in the Property-Based Testing tutorial, varies its inputs and shrinks a failing tree to a small one.  That test, its strategies, and the counterexample you report are yours to write.

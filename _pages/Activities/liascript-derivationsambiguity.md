@@ -508,7 +508,7 @@ For `+`, the two trees of an ambiguous grammar give the same number.  Ambiguity 
 
 ## 4.  Exercises
 
-1.  *Full ladder.*  Write the complete unambiguous grammar for expressions with `+ - * / ^`, unary minus, parentheses, numbers, and identifiers, with conventional precedence and associativity.  This grammar is, nearly verbatim, the one your parser assignment implements, so invest accordingly.
+1.  *Full ladder.*  Write the complete unambiguous grammar for expressions with `+ - * / ^`, unary minus, parentheses, numbers, and identifiers, with conventional precedence and associativity.  The grammar your Parser assignment gives you has this same shape, so invest accordingly.
 2.  *Tree drawing drill.*  For `1 + 2 * (3 + 4) - 5`, draw the unique parse tree under your full ladder and evaluate it bottom-up, showing the value at every internal node.
 3.  *Ambiguity hunt.*  Each teammate writes a small grammar (three to five rules) that is secretly ambiguous.  The team finds a witness string with two trees for each.  Hardest-to-spot ambiguity wins.
 4.  *Convention archaeology.*  Find one language whose precedence or associativity surprises you (APL evaluates right-to-left; Smalltalk gives all binary operators equal precedence).  Report the rule and one expression where it bites.

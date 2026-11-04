@@ -1,0 +1,6 @@
+# Precedence, parentheses, and variables.
+let width = 3;
+let height = 4 + 1;
+print width * height;
+print (width + 1) * 2 - 1;
+print 7 / 2;

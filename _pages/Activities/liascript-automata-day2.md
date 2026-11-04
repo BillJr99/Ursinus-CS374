@@ -434,7 +434,7 @@ A DFA state accepts exactly when its set contains an accepting NFA state, and on
 
 ***********************************************************************
 
-> **Check it yourself.**  Enter the NFA above into [Automata Studio](https://reyescarlata0.github.io/automata-studio/), which prints the full subset table and then minimizes the DFA, and watch A and C merge.  The [FSM Simulator](https://ivanzuzak.info/noam/webapps/fsm_simulator/) steps the same NFA one symbol at a time (it writes ε as `$`), and each set of active states it highlights is one row of the table above.  The Automata lab's Step 3.1 asks for this same kind of trace on your own Contains-aa NFA.
+> **Check it yourself.**  Enter the NFA above into [Automata Studio](https://reyescarlata0.github.io/automata-studio/), which prints the full subset table and then minimizes the DFA, and watch A and C merge.  The [FSM Simulator](https://ivanzuzak.info/noam/webapps/fsm_simulator/) steps the same NFA one symbol at a time (it writes ε as `$`), and each set of active states it highlights is one row of the table above.  The Automata lab's Step 0.2 asks for a short trace of this same kind.
 
 ### Removing ε-Moves First: From an ε-NFA to an Ordinary NFA
 
