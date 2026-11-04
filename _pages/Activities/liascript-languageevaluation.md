@@ -154,7 +154,7 @@ is_ancestor(X, Y) :- parent(X, Y).                     % base case: one step
 is_ancestor(X, Y) :- parent(X, Z), is_ancestor(Z, Y).  % take one step, then follow the rest
 ```
 
-`?- is_ancestor(tom, jim).` is true, through `bob` and `ann`.  `?- is_ancestor(jim, tom).` is false.  The [SWISH tutorial]({{ site.baseurl }}/Tutorials/Prolog) has more, if you would like to keep going.
+`?- is_ancestor(tom, jim).` is true, through `bob` and `ann`.  `?- is_ancestor(jim, tom).` is false.  The [SWISH tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/Prolog) has more, if you would like to keep going.
 
 ### Check: Implement `is_prereq`
 
