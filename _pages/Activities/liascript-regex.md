@@ -406,7 +406,7 @@ So far every pattern has answered a yes-or-no question: is this string in the se
 
 ## 3.  Theory: Numbering, Naming, and Pasting Back
 
-Four rules cover nearly everything:
+Six rules cover nearly everything:
 
 | Rule | Example | Reads as |
 |------|---------|----------|
@@ -414,6 +414,8 @@ Four rules cover nearly everything:
 | Group 0 is always the whole match | `m.group(0)` | everything the pattern consumed |
 | `(?:...)` groups without capturing, and takes no number | `(?:\w+), (\w+)` | now group 1 is the first name |
 | `(?P<name>...)` captures under a name as well as a number | `(?P<last>\w+)` | `m.group("last")`, or `\g<last>` in a replacement |
+| A repeated group keeps only its last repetition | `(a\|b)*` on `ab` | `group(1)` is `b`, so use `(?:...)` when you only need to repeat |
+| `\|` has the lowest precedence, so it splits everything around it | `if\|else(?!\w)` | the check guards only `else`; `(?:if\|else)(?!\w)` guards both |
 
 `re.sub(pattern, replacement, text)` finds every match and replaces the **whole match** with the replacement.  Inside the replacement string, `\1` (or `\g<1>`, or `\g<name>`) means "the text that group captured in *this* match."  This has a consequence worth stating plainly: there is no way to tell `re.sub` to replace "only group 2."  To change one part of a match and keep the rest, you capture the parts you keep, write them back with references, and write the new text literally in the place of the part you are changing.
 

@@ -112,14 +112,13 @@ This table shows which file each step works in, so you always know where new cod
 | Step | File you work in | What you do there |
 |---|---|---|
 | Before You Code | `explore_lexer.py` (scratch) | run a short tour of `re`, generators, and dataclasses |
-| 1a | `lexer.py` | grow `TOKEN_SPEC` to the full token table |
+| 1a | `lexer.py` | fill in the full `TOKEN_SPEC` |
 | 1b | `lexer.py` | define the `Token` dataclass |
 | 1c.1, 1c.2 | `lexer.py` | add the `advance_position` and `match_rule` helpers (with `LexError` and `COMPILED_SPEC`), each checked on its own |
 | 1c.3 | `lexer.py` | integrate the helpers into the `tokenize` generator |
 | 1a to 3b | `scratch.py` (scratch) | print tokens and probe each new feature |
 | 1d | `readme.md` | answer the three theory questions under `Lexing Theory` |
 | 2a.1 to 2a.5, 2b | `lexer.py` | add the `Lexer` class one method at a time (`_fill`, `peek`, `advance`, `expect`), then run the full probe |
-| before 2c | `groups_lexer_demo.py` (scratch) | run the capture-group walkthrough |
 | 2c.1 to 2c.4 | `lexer.py` | add the decoded-value field, the `STRING` rule, and `decode`, each checked on its own, then integrate them into `tokenize` |
 | 2d.1 to 2d.5 | `token_spec.json`, `token_spec_alt.json`, `lexer.py` | move the rules to JSON, write `load_spec`, add the `spec` and `config_path` parameters, then run the alternate dialect |
 | 3a, 3b.1 to 3b.3 | `lexer.py` | add error positions, then `LexErrorList`, the `error_mode` parameter, and the `collect_all` branch |
@@ -239,71 +238,48 @@ The third line shows how a lexer moves forward.  `m.end()` is 6, which is where 
 **You write:** `lexer.py` - the full `TOKEN_SPEC` list.
 **You run:** `python3 scratch.py` on each of the seven maximal-munch cases below, once Step 1c's `tokenize` works.
 
-> **Do this.**
-> 1. In `lexer.py`, grow your six-rule `TOKEN_SPEC`, a list of `(token_name, regex_pattern)` pairs with each pattern written as a raw string (`r"..."`), until it covers every row of the table below in the priority order the Notes column requires.
-> 2. Put a boundary check (`(?!\w)`) on every keyword so that `iffy` falls through to `IDENT`.
-> 3. List every multi-character operator before the single-character operator it starts with.
+Each rule is a `(token_name, regex_pattern)` pair, and each pattern is a raw string (`r"..."`), so that backslashes reach the regex engine.  The tokenizer takes the first rule that matches, so two ordering rules follow from maximal munch.  A keyword goes before `IDENT`, or `if` becomes an identifier.  A longer operator goes before the operator it starts with, or `<=` becomes `<` and `=`.
+
+Replace your six-rule `TOKEN_SPEC` with this list, and replace each `TODO` with its rules.  The comments give each token's lexemes and what its pattern needs, and a few rules are done for you as worked examples.
 
 ```python
 TOKEN_SPEC = [
-    ("COMMENT",    r"#[^\n]*"),
-    ("WHITESPACE", r"[ \t\n]+"),
-    # TODO: STRING (double-quoted; Step 2c adds escapes)
-    # TODO: FLOAT before INT
-    # TODO: every keyword, each with a (?!\w) boundary check, before IDENT
-    ("IDENT",      r"[a-zA-Z_][a-zA-Z0-9_]*"),
-    # TODO: LE, GE, EQEQ, NEQ, ARROW before LT, GT, EQ, BANG, MINUS
-    # TODO: the remaining single-character operators and punctuation
+    # Skipped tokens.  tokenize drops these after counting their newlines.
+    ("COMMENT",    r"#[^\n]*"),                 # "# note", through the end of the line
+    ("WHITESPACE", r"[ \t\n]+"),                # spaces, tabs, and newlines
+
+    # Literals.
+    # TODO: STRING   "hello".  A double quote, any run of characters that are neither a
+    #                double quote nor a newline, and a double quote.  Step 2c adds escapes.
+    # TODO: FLOAT    3.14, 0.5.  Digits, a dot, digits.  Escape the dot, because a bare .
+    #                matches any character.
+    # TODO: INT      42, 0.  Digits only, and after FLOAT so that 3.14 is not cut off at 3.
+    #                There is no sign, because the parser handles unary minus.
+
+    # Keywords, all before IDENT.  (?!\w) means "not followed by a letter, digit, or
+    # underscore," so iffy fails this rule and falls through to IDENT.
+    ("IF",         r"if(?!\w)"),
+    # TODO: ELSE, WHILE, LET, PRINT, TRUE, FALSE, in the same form as IF.
+    # TODO: AND, OR, NOT.  The Parser's and_expr, or_expr, and not_expr use these.
+    # TODO: FUN.  Function definitions use this.
+
+    ("IDENT",      r"[a-zA-Z_][a-zA-Z0-9_]*"),  # foo, my_var, x1
+
+    # Two-character operators, each above the one-character operator it starts with.
+    ("LE",         r"<="),
+    # TODO: GE >=, EQEQ ==, NEQ !=, and ARROW ->, the return-type annotation.
+
+    # One-character operators and punctuation.  Six of them mean something in a regex and
+    # need a backslash: + * ( ) { }.  The others need none.
+    ("LT",         r"<"),
+    ("PLUS",       r"\+"),
+    # TODO: GT >, EQ =, BANG ! (logical negation), MINUS -, STAR *, SLASH /
+    # TODO: LPAREN (, RPAREN ), LBRACE {, RBRACE }
+    # TODO: SEMICOLON ;, COLON : (as in let x: Num = 42;), COMMA , (parameter and argument lists)
 ]
 ```
 
-| `# TODO` | How to think about it |
-|---|---|
-| STRING | For now, a string is a double quote, then any run of characters that are neither a double quote nor a newline, then a closing double quote.  Step 2c replaces the middle with an escape-aware body. |
-| FLOAT before INT | A float is one or more digits, a literal dot, and one or more digits.  Escape the dot: a bare `.` in a regex matches any character.  `INT` is the digits alone, and it goes second so that `3.14` is not cut off at `3`. |
-| keywords | Worked example: `("IF", r"if(?!\w)")`.  `(?!\w)` means "not followed by a letter, digit, or underscore," so `iffy` fails this rule and falls through to `IDENT`.  Write the other ten keywords the same way. |
-| two-character operators | Worked example: `("LE", r"<=")`, placed above `LT`.  `GE`, `EQEQ`, `NEQ`, and `ARROW` follow the same shape, each above the one-character rule it starts with. |
-| single characters | Six of them mean something in a regex and need a backslash: `+`, `*`, `(`, `)`, `{`, and `}`.  `;`, `:`, `,`, `/`, `=`, `<`, `>`, `!`, and `-` need no escape at this position. |
-
-| Token Name | Example Lexemes | Notes |
-|------------|----------------|-------|
-| `COMMENT` | `# this is a comment` | Match to end of line; to be skipped |
-| `WHITESPACE` | a space (`' '`), `\t`, `\n` | Skip; track newlines for line counting |
-| `STRING` | `"hello"`, `"a\nb"` | Double-quoted; see Part 3 for escapes |
-| `FLOAT` | `3.14`, `0.5` | Must appear before INT |
-| `INT` | `42`, `0` | Non-negative; sign handled by unary minus |
-| `IF` | `if` | Must appear before IDENT |
-| `ELSE` | `else` | Must appear before IDENT |
-| `WHILE` | `while` | Must appear before IDENT |
-| `LET` | `let` | Must appear before IDENT |
-| `PRINT` | `print` | Must appear before IDENT |
-| `TRUE` | `true` | Must appear before IDENT |
-| `FALSE` | `false` | Must appear before IDENT |
-| `AND` | `and` | Must appear before IDENT; used by the Parser's `and_expr` |
-| `OR` | `or` | Must appear before IDENT; used by the Parser's `or_expr` |
-| `NOT` | `not` | Must appear before IDENT; used by the Parser's `not_expr` |
-| `FUN` | `fun` | Must appear before IDENT; used by function definitions |
-| `IDENT` | `foo`, `my_var`, `x1` | Letter or underscore, then letters/digits/underscores |
-| `LE` | `<=` | Must appear before LT |
-| `GE` | `>=` | Must appear before GT |
-| `EQEQ` | `==` | Must appear before EQ |
-| `NEQ` | `!=` | Must appear before BANG |
-| `BANG` | `!` | Logical negation; must appear after NEQ |
-| `ARROW` | `->` | Return-type annotation; must appear before MINUS |
-| `EQ` | `=` | Assignment |
-| `LT` | `<` | |
-| `GT` | `>` | |
-| `PLUS` | `+` | |
-| `MINUS` | `-` | |
-| `STAR` | `*` | |
-| `SLASH` | `/` | |
-| `LPAREN` | `(` | |
-| `RPAREN` | `)` | |
-| `LBRACE` | `{` | |
-| `RBRACE` | `}` | |
-| `SEMICOLON` | `;` | |
-| `COLON` | `:` | Type annotations, e.g. `let x: Num = 42;` |
-| `COMMA` | `,` | Parameter and argument lists |
+When you finish, the list has thirty-seven rules.
 
 **Maximal-munch test cases you must pass:** `iffy` -> `IDENT("iffy")` (not `IF` + `IDENT("fy")`); `<=` -> `LE` (not `LT` + `EQ`); `==` -> `EQEQ` (not two `EQ`s); `whiles` -> `IDENT("whiles")`; `notable` -> `IDENT("notable")` (not `NOT` + `IDENT("able")`); `->` -> `ARROW` (not `MINUS` + `GT`); `!=` -> `NEQ` (not `BANG` + `EQ`).  Once Step 1c's `tokenize` works, run each of the seven through `scratch.py`.  If any one of them splits, the fix is the order of two rules in `TOKEN_SPEC`, never the loop.
 
@@ -690,90 +666,9 @@ The `==` in the `assert` compares two lists of `Token` objects field by field.  
 
 > **You should see.** No output at all; a silent run means the assertion passed.  If you see `AssertionError: Consumption patterns disagree!`, print both lists and find the first index where they differ.  The culprit is almost always `advance` failing to clear the buffer, or `peek` clearing it.
 
-### Before Step 2c: Groups and Group References, a Walkthrough
+### Before Step 2c: Capture Groups
 
-Step 2c asks you to do two things with one string literal: match the whole lexeme (quotes and all) as a single token, and then take its body apart to decode the escapes.  Python's `re` library does both with *capture groups*: parentheses `(...)` remember the text they matched, `m.group(n)` reads that text back, and a group reference such as `\1` in `re.sub` puts it back into a replacement.  This walkthrough shows each technique on a toy language whose strings use single quotes and three escapes of their own (`\'`, `\\`, and `\s` for a space), so you see every move without being handed the double-quoted, four-escape version Step 2c asks for.
-
-> **Do this.**
-> 1. Create `groups_lexer_demo.py` in `cs374-lexer` and paste the code below into it.
-> 2. Run `python3 groups_lexer_demo.py`.  This file is practice, like `scratch.py`, and is not a deliverable.
-
-```python
-import re
-
-# A toy language with SINGLE-quoted strings and three escapes: \'  \\  \s (a space).
-# Your lexer's STRING is double-quoted with four escapes; the techniques carry over unchanged.
-source = r"say 'it\'s' then 'a\sb' then 'c:\\new'"
-
-# 1. Numbering: group(0) is the whole lexeme, group(1) is the first ( from the left.
-TOY_STRING = re.compile(r"'((?:[^'\\]|\\.)*)'")
-m = TOY_STRING.search(source)
-print("1. group(0):", m.group(0), "| group(1):", m.group(1), "| span(0):", m.span(0), "| span(1):", m.span(1))
-
-# 2. Alternation inside a group.  A lookahead after an ungrouped | guards only the LAST branch.
-print("2. ungrouped on 'iffy':", re.match(r"if|else|while(?!\w)", "iffy").group(0), "(matched the front of iffy)")
-print("   grouped on 'iffy':  ", re.match(r"(?:if|else|while)(?!\w)", "iffy"))
-print("   grouped on 'if (':  ", re.match(r"(?:if|else|while)(?!\w)", "if (").group(0))
-
-# 3. Non-capturing groups.  Make the inner group capturing and watch the numbering shift:
-#    a repeated group keeps only its LAST repetition.
-m = re.search(r"'(([^'\\]|\\.)*)'", source)
-print("3. groups() with a capturing inner group:", m.groups())
-m = TOY_STRING.search(source)
-print("   groups() with (?:...) inside:         ", m.groups())
-
-# 4. Group references in re.sub, then a FUNCTION replacement.
-print("4. reference: ", re.sub(r"\\(.)", r"<\1>", r"it\'s a\sb"))
-def shout(m):
-    # re.sub calls this once per match and inserts whatever string it returns.
-    return m.group(1).upper()
-print("   function:  ", re.sub(r"\\(.)", shout, r"it\'s a\sb"))
-for m in TOY_STRING.finditer(source):
-    # One left-to-right pass: each backslash pairs with exactly ONE following character.
-    shouted = re.sub(r"\\(.)", shout, m.group(1))
-    print(f"   raw {m.group(0):12} body {m.group(1):10} shouted |{shouted}|")
-bad = r"c:\\new".replace("\\\\", "\\").replace("\\n", "\n")
-print("   two str.replace calls instead:", repr(bad), "<- the \\\\ became \\, and then that \\n became a newline")
-
-# 5. Named groups and lastgroup: every rule in ONE pattern, and the match names its own rule.
-SPEC = [("STR", r"'(?:[^'\\]|\\.)*'"), ("IDENT", r"[A-Za-z_]\w*"), ("WS", r"\s+")]
-MASTER = re.compile("|".join(f"(?P<{name}>{pattern})" for name, pattern in SPEC))
-for pos in (0, 3, 4):
-    m = MASTER.match(source, pos)       # try every rule, in order, at one position
-    print(f"5. at {pos}: {m.lastgroup:5} |{m.group()}| ends at {m.end()}")
-```
-
-> **You should see.** 15 lines, numbered by section.  The shouted column in section 4, and each lexeme in section 5, is wrapped in `|...|` so you can see exactly where it starts and ends.
-
-```text
-1. group(0): 'it\'s' | group(1): it\'s | span(0): (4, 11) | span(1): (5, 10)
-2. ungrouped on 'iffy': if (matched the front of iffy)
-   grouped on 'iffy':   None
-   grouped on 'if (':   if
-3. groups() with a capturing inner group: ("it\\'s", 's')
-   groups() with (?:...) inside:          ("it\\'s",)
-4. reference:  it<'>s a<s>b
-   function:   it's aSb
-   raw 'it\'s'      body it\'s      shouted |it's|
-   raw 'a\sb'       body a\sb       shouted |aSb|
-   raw 'c:\\new'    body c:\\new    shouted |c:\new|
-   two str.replace calls instead: 'c:\new' <- the \\ became \, and then that \n became a newline
-5. at 0: IDENT |say| ends at 3
-5. at 3: WS    | | ends at 4
-5. at 4: STR   |'it\'s'| ends at 11
-```
-
-**Reading the code.**
-
-- **Section 1, numbering.**  Groups are numbered by the position of their *opening* parenthesis, counting from the left and starting at 1.  Group 0 is always the whole match, so for a string literal `group(0)` is the raw lexeme (the `value` field of your `Token`) and `group(1)` is the body between the quotes, the part you decode.  The two spans differ by one character at each end: the quotes.
-- **Section 2, alternation.**  `|` has the lowest precedence of any operator, so `if|else|while(?!\w)` means "`if`, *or* `else`, *or* `while` not followed by a word character."  The boundary check guards only the last branch, and `iffy` splits.  Wrap the alternatives in a group, `(?:if|else|while)(?!\w)`, and the check applies to all of them.  If you ever collapse your keyword rules into one pattern, this is the bug waiting for you.
-- **Section 3, non-capturing groups.**  The string body needs parentheses to repeat "an ordinary character *or* a backslash pair" as one unit, but it does not need to remember each repetition.  A capturing inner group adds a group 2 that holds only the *last* repetition (`'s'` here), which is useless and shifts the numbering of anything after it.  `(?:...)` groups without capturing.  That is why the `STRING` rule in Step 2d's JSON is written with `(?:...)`.
-- **Section 4, references and function replacements.**  In the replacement string of `re.sub`, `\1` means "whatever group 1 captured in this match," and the replacement must be a raw string, or Python turns `"\1"` into the control character `\x01` before `re` sees it.  A fixed template cannot look an escape up in a table, so `re.sub` also accepts a *function*: it calls the function once per match with the match object and inserts whatever string the function returns.  `shout` only uppercases the character after the backslash, so `\s` became `S`, not a space.  Your decoder needs a function that turns each escape into the character it stands for.  Because `\\(.)` consumes a backslash *and* the one character after it, a single left-to-right pass pairs every backslash correctly.  Two chained `str.replace` calls do not: the first turns `\\` into `\`, and the second then reads that new backslash as the start of `\n`.
-- **Section 5, named groups and `lastgroup`.**  `(?P<name>...)` names a group.  Joining every rule as `(?P<NAME>pattern)` with `|` builds one master pattern that tries the rules in order (the same priority your `TOKEN_SPEC` loop gives), and `m.lastgroup` reports which named rule matched.  The demo matches at three fixed positions: position 3 is the space after `say`, so `WS` wins there.  It never moves forward on its own.  A tokenizer built this way still needs the loop you write in Step 1c: start at 0, match, skip whitespace and comments, record the rest, and continue from where the match ended.  This is an optional alternative to Step 1c's loop over `COMPILED_SPEC`, and it is how the tokenizer example in the Python `re` documentation works.  If you adopt it, write any grouping inside a rule as `(?:...)`, so that only the rule names capture.
-
-> **Now try this.**
-> 1. Add `'bad\qescape'` to `source`.  Predict what section 4 prints for it before you run it.  The toy language has no `\q` escape.  Your decoder will look each escape up in a table of known ones.  Which behavior do you want for an unknown escape in your own lexer: keep it as written, or raise an error?  If you raise, where does Part 3 want the error reported?
-> 2. In section 5, move the `IDENT` rule above `STR` and run again.  Nothing changes.  Why not, and which pair of rules in your own `TOKEN_SPEC` *would* change if you swapped them?
+Step 2c matches a whole string literal as one token, and then takes its body apart to decode the escapes.  Both jobs use capture groups, so review [Part III: Capture Groups and Replacement](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-regex.md#20) in the Regular Expressions activity before you start: group numbering, `(?:...)`, group references, and replacement functions in `re.sub`.
 
 ### Step 2c: String Literals with Escapes
 
@@ -782,7 +677,7 @@ Extend the STRING pattern (or handle strings as a special case) to support four 
 **You write:** `lexer.py` - the decoded-value field on `Token`, the new `STRING` rule, a `decode` helper, a `STRING` branch in `tokenize`, and the unterminated-string check.
 **You run:** a short check after each of the first three pieces, then `python3 scratch.py`, with the self-test in Step 2c.4.
 
-You build this in four pieces: the field, the rule, and the decoder each get written and checked on their own, and Step 2c.4 integrates them into `tokenize`.  Sections 1, 3, and 4 of the walkthrough above show every regex move this step needs.
+You build this in four pieces: the field, the rule, and the decoder each get written and checked on their own, and Step 2c.4 integrates them into `tokenize`.  Part III of the Regular Expressions activity shows every regex move this step needs.
 
 #### Step 2c.1: The decoded-value field
 
@@ -927,7 +822,7 @@ You do this in five pieces: the file, the loader, the `tokenize` parameter, the 
 > python3 -c "import json; spec = json.load(open('token_spec.json'))['tokens']; print(len(spec), spec[0][0])"
 > ```
 
-> **You should see.** `37 COMMENT` if your spec has the thirty-seven rules of the Step 1a table with `COMMENT` first.  The count must match the number of rules in your `TOKEN_SPEC`.
+> **You should see.** `37 COMMENT` if your spec has the thirty-seven rules of Step 1a with `COMMENT` first.  The count must match the number of rules in your `TOKEN_SPEC`.
 
 > **If it fails.** `json.decoder.JSONDecodeError: Invalid \escape`: a regex backslash was written once.  In JSON, `\.` must be `"\\."`.
 
@@ -1135,7 +1030,7 @@ if __name__ == "__main__":
     unittest.main(verbosity=2)
 ```
 
-- **Token type coverage (one test per type in the Step 1a table):** every token type in the table, as the rubric requires.  That is the literals INT, FLOAT, STRING (with escape), and IDENT; every keyword: IF, ELSE, WHILE, LET, PRINT, TRUE, FALSE, AND, OR, NOT, FUN; and every operator and punctuation token: PLUS, MINUS, STAR, SLASH, EQ, EQEQ, NEQ, BANG, ARROW, LT, LE, GT, GE, LPAREN, RPAREN, LBRACE, RBRACE, SEMICOLON, COLON, COMMA.  For the two skipped types, COMMENT and WHITESPACE, assert that they produce no token (for example, `x # note` lexes to just IDENT, and the newline in `x\ny` advances `line` on the second IDENT).
+- **Token type coverage (one test per type in Step 1a's `TOKEN_SPEC`):** every token type in the list, as the rubric requires.  That is the literals INT, FLOAT, STRING (with escape), and IDENT; every keyword: IF, ELSE, WHILE, LET, PRINT, TRUE, FALSE, AND, OR, NOT, FUN; and every operator and punctuation token: PLUS, MINUS, STAR, SLASH, EQ, EQEQ, NEQ, BANG, ARROW, LT, LE, GT, GE, LPAREN, RPAREN, LBRACE, RBRACE, SEMICOLON, COLON, COMMA.  For the two skipped types, COMMENT and WHITESPACE, assert that they produce no token (for example, `x # note` lexes to just IDENT, and the newline in `x\ny` advances `line` on the second IDENT).
 
 #### Step 3c.2: `TestMaximalMunch`
 
@@ -1197,7 +1092,7 @@ In this direction, you build the same component with a lexer generator instead o
 
 ### Part 1 equivalent: the rule specification
 
-Write a Flex `.l` file (or a PLY `tokens`/`t_*` module) that covers the full token table from Step 1a.  The ordering discipline is the same.  Generators resolve ties by rule order (Flex) or by function definition order and pattern length (PLY), so the same bugs await you if keywords trail `IDENT` or `<` precedes `<=`.  Your specification must handle:
+Write a Flex `.l` file (or a PLY `tokens`/`t_*` module) that covers every token in Step 1a's `TOKEN_SPEC`.  The ordering discipline is the same.  Generators resolve ties by rule order (Flex) or by function definition order and pattern length (PLY), so the same bugs await you if keywords trail `IDENT` or `<` precedes `<=`.  Your specification must handle:
 
 - **Numeric literals**: integers and floats (`[0-9]+\.[0-9]*` and `[0-9]*\.[0-9]+`), with FLOAT tried before INT.
 - **String literals** in double quotes with `\"`, `\\`, `\n`, `\t` escape sequences, decoded at scan time (in Flex, store the decoded string via `strdup`; in PLY, set `t.value` to the decoded text while keeping the raw lexeme available).
@@ -1216,6 +1111,84 @@ In place of Step 2d's JSON configuration, provide a second rule specification th
 ### Part 3 applies unchanged
 
 This direction requires precise line and column positions on every error, the fail-fast and collect-all modes, and the full test suite of Step 3c (token type coverage, maximal-munch cases, string escapes, and the five deliberate error programs), exactly as written.  (In Flex, collect-all means your error rule records the offense and continues scanning rather than exiting.)
+
+### Walkthrough: A Small Flex Scanner
+
+This walkthrough scans a small language with one keyword, so you can see how a `.l` file works before you write yours.  It is practice and is not a deliverable.  Check that you have the tools with `flex --version` and `gcc --version`.  (On Ubuntu, `sudo apt install flex gcc` installs them.)
+
+A `.l` file has three sections, separated by `%%` lines: definitions, rules, and your own C code.  Flex turns the file into a C scanner, `lex.yy.c`.  Save this as `small.l`:
+
+```lex
+%option noyywrap yylineno
+%{
+#include <stdio.h>
+#include <string.h>
+enum { LET = 1, IDENT, INT, LE, LT, EQ, SEMICOLON };
+%}
+
+DIGIT   [0-9]
+ALPHA   [a-zA-Z_]
+
+%%
+#[^\n]*                     { /* comment: no return, so the scanner keeps going */ }
+[ \t\n]+                    { /* whitespace: yylineno already counts the newlines */ }
+{DIGIT}+                    { return INT; }
+{ALPHA}({ALPHA}|{DIGIT})*   { return strcmp(yytext, "let") == 0 ? LET : IDENT; }
+"<"                         { return LT; }
+"<="                        { return LE; }
+"="                         { return EQ; }
+";"                         { return SEMICOLON; }
+.                           { printf("line %d: unexpected character '%s'\n", yylineno, yytext); }
+%%
+
+int main(void) {
+    const char *names[] = {"", "LET", "IDENT", "INT", "LE", "LT", "EQ", "SEMICOLON"};
+    int t;
+    while ((t = yylex()) != 0) {
+        printf("%-9s %-6s line %d\n", names[t], yytext, yylineno);
+    }
+    return 0;
+}
+```
+
+Here is what each part does, and how it maps onto the Python you would otherwise write:
+
+- `%option noyywrap yylineno` says there is only one input file, and asks Flex to count lines for you.  The `%{ ... %}` block is copied straight into the C file, so the token numbers go there.
+- `DIGIT` and `ALPHA` are named patterns, which the rules use as `{DIGIT}` and `{ALPHA}`.
+- Each rule is a pattern and a C action, and together the rules play the role of `TOKEN_SPEC`.  An action that returns gives a token to the caller.  An action that does not return skips the text, as your `tokenize` skips `COMMENT` and `WHITESPACE`.
+- `yylex()` plays the role of `next(tokens)`.  It returns the next token's number, or 0 at the end of the input, and `yytext` holds the lexeme.
+- The `.` rule is last, and it catches anything no other rule matched.  This is the place for your error handling.
+
+Two details differ from your Python tokenizer, because Flex builds a DFA from these rules.  Flex always takes the longest match, so `<=` wins even though the `"<"` rule is listed first.  When two rules match the same length, the earlier rule wins.  That is why keywords need care here too.  This file uses the other common approach: it matches every word with one rule, and it checks the keyword in the action.
+
+Build it and run it:
+
+```bash
+flex small.l
+gcc lex.yy.c -o small
+printf 'let x1 <= 42; # note\nletter = 7 < 8;\n@' | ./small
+```
+
+> **You should see.**
+>
+> ```text
+> LET       let    line 1
+> IDENT     x1     line 1
+> LE        <=     line 1
+> INT       42     line 1
+> SEMICOLON ;      line 1
+> IDENT     letter line 2
+> EQ        =      line 2
+> INT       7      line 2
+> LT        <      line 2
+> INT       8      line 2
+> SEMICOLON ;      line 2
+> line 3: unexpected character '@'
+> ```
+>
+> `letter` is an `IDENT`, because the keyword check compares the whole word.  `<=` is one `LE`, even though `"<"` comes first in the file.
+
+To build on this for your own scanner, add your remaining token types to the `enum` and the `names` array, add the rest of the Step 1a rules, and replace `main` with the wrapper that Part 2 asks for.  For PLY, the [PLY tutorial]({{ site.baseurl }}/Tutorials/PLYLexerAndParser) walks through the same steps in Python.
 
 ### Where the toolchain goes next
 
@@ -1243,7 +1216,7 @@ Submit a ZIP containing the files below, and list your Python version (`python -
 
 ## Self-Check Before You Submit
 
-- [ ] Every token type in the Step 1a table is in my spec, keywords come before `IDENT`, and every multi-character operator comes before its single-character prefix.
+- [ ] Every token type in Step 1a's `TOKEN_SPEC` is in my spec, keywords come before `IDENT`, and every multi-character operator comes before its single-character prefix.
 - [ ] All seven maximal-munch cases from Step 1a pass, including `notable` and `->`.
 - [ ] `import lexer` in a fresh Python session prints nothing and runs nothing.
 - [ ] Calling `peek()` ten times in a row returns the same token, and `advance()` at end of input returns EOF every time without raising.
