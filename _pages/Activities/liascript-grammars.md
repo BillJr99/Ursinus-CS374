@@ -75,6 +75,16 @@ Here is what each row means, starting from the most restricted type.
 > **Type 1 has two equivalent definitions, and the second one is easier to check.**  The table gives the *context-sensitive form*, $\alpha A \beta \rightarrow \alpha \gamma \beta$ with $\gamma \neq \varepsilon$.  You will also meet the *monotonic* (or noncontracting) form: $\alpha \rightarrow \beta$ with $|\alpha| \le |\beta|$.  It asks only that no production shrink its string.  Both forms generate exactly the same class of languages.  Reach for the second one when you are testing a grammar by hand, because comparing two lengths is easier than matching a context pattern.  One technical exception applies.  We permit $S \rightarrow \varepsilon$, so that a language may contain the empty string, provided $S$ appears on no right-hand side.
 >
 > **That length condition is the whole difference between Type 1 and Type 0.**  Because nothing shrinks, every sentential form on the way to a string of length $n$ has length at most $n$.  Only finitely many strings are that short.  A recognizer can therefore search that finite space and always halt, which makes membership **decidable**.  Drop the condition and productions may erase what they wrote.  A grammar can then use erasure as scratch paper, simulate an arbitrary Turing machine, and push membership past decidability.  That is why we call the Type 0 languages recursively enumerable rather than decidable.  Remember the distinction this way: noncontracting means no scratch paper, because every symbol you write must survive into the answer.
+>
+> **Why "undecidable" is not an exaggeration: the halting problem.**  Suppose we had a function `halts(program, input)` that always answers correctly whether a program stops on an input.  We could then write this program:
+>
+> ```text
+> paradox(p):
+>     if halts(p, p): loop forever
+>     else: stop
+> ```
+>
+> Now ask what `paradox(paradox)` does.  If `halts` says it stops, it loops forever, and if `halts` says it loops, it stops.  Either answer is wrong, so no such function can exist.  That is why a machine at the top of the hierarchy may run forever, with no general way to detect it.
 
 > **Watch out!**  Counting nonterminals is not the Type 3 test.  "One nonterminal on the right" does not make a grammar regular by itself, because the nonterminal's *position* matters just as much, and every production in the grammar must place it on the same side.  Keep the nonterminal always at the far right ($A \rightarrow aB$) and the grammar is right-linear, so it is regular.  Keep it always at the far left ($A \rightarrow Ba$) and the grammar is left-linear, so it is regular too.  Mix the two shapes in one grammar and you can leave the regular languages behind entirely.  Here is the counterexample.  The production $S \rightarrow aA$ is right-linear and $A \rightarrow Sb \mid b$ is left-linear, and together they generate $\{a^n b^n \mid n \ge 1\}$, which Part II shows is not regular.  The BNF Workshop lab states this rule in its Part 2, and this grammar is why the rule exists.
 
