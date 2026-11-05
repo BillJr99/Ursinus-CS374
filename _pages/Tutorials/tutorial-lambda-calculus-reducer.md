@@ -378,18 +378,14 @@ succ_term = lam("n", lam("f", lam("x",
 add_term = lam("m", lam("n", lam("f", lam("x",
     app(app(var("m"), var("f")), app(app(var("n"), var("f")), var("x")))))))
 
-# Multiplication: λm. λn. λf. m (n f)
-mul_term = lam("m", lam("n", lam("f",
-    app(var("m"), app(var("n"), var("f"))))))
+# Multiplication as repeated addition: λm. λn. m (add n) zero
+mul_term = lam("m", lam("n", app(app(var("m"), app(add_term, var("n"))), zero)))
 
 # Decode a Church numeral to a Python int
 def to_int(church_n, max_steps=10000):
-    """Apply the Church numeral to (+1) and 0, reduce, read off the number."""
-    plus_one = lam("k", app(var("k"), var("SUCC")))  # placeholder
-    # Actually: apply to a counting function and initial value
-    applied = app(app(church_n, lam("k", app(var("k"), var("__succ__")))), var("__zero__"))
-    # Simpler: just count reduction steps by interpreting directly
-    result, _ = reduce_normal(app(app(church_n, lam("n", var("S"))), var("Z")), max_steps)
+    """Apply the Church numeral to S and Z, reduce, and count the S's."""
+    # S and Z are free variables, so the result is S (S (... Z)), one S per application.
+    result, _ = reduce_normal(app(app(church_n, var("S")), var("Z")), max_steps)
     # Count the S's in the result
     def count_s(term):
         if isinstance(term, Var) and term.name == "Z": return 0
@@ -783,11 +779,11 @@ Save these test cases as `tests.txt`:
 # first and second
 (lambda x. lambda y. x) a b
 (lambda x. lambda y. y) a b
-# AND TRUE FALSE, and AND TRUE TRUE
+# AND TRUE FALSE, and NOT FALSE
 (lambda p. lambda q. p q p) (lambda x. lambda y. x) (lambda x. lambda y. y)
-(lambda p. lambda q. p q p) (lambda x. lambda y. x) (lambda x. lambda y. x)
-# 1 + 1, reduced all the way to 2
-(lambda m. lambda n. lambda f. lambda x. m f (n f x)) (lambda f. lambda x. f x) (lambda f. lambda x. f x)
+(lambda b. b (lambda x. lambda y. y) (lambda x. lambda y. x)) (lambda x. lambda y. y)
+# 1 + 2, reduced all the way to 3
+(lambda m. lambda n. lambda f. lambda x. m f (n f x)) (lambda f. lambda x. f x) (lambda f. lambda x. f (f x))
 # capture: the correct answer is lambda z. y, for a fresh z
 (lambda x. lambda y. x) y
 # never finishes
@@ -806,8 +802,8 @@ a   (1 steps)
 a   (2 steps)
 b   (2 steps)
 (lambda x. (lambda y. y))   (4 steps)
-(lambda x. (lambda y. x))   (4 steps)
-(lambda f. (lambda x. (f (f x))))   (6 steps)
+(lambda x. (lambda y. x))   (3 steps)
+(lambda f. (lambda x. (f (f (f x)))))   (6 steps)
 (lambda y. y)   (1 steps)
 ((lambda x. (x x)) (lambda x. (x x)))   (stopped after 1000 steps)
 ```

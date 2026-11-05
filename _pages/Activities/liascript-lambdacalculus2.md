@@ -63,7 +63,7 @@ The reductions happen on the whiteboard, and the Python checks stay quick.  Part
 |---------|---------------------|
 | Roles and whiteboard rules | Rotate roles; agree who verifies each reduction before it counts |
 | Parts I and II: Combinators and Church Booleans | Answer CTQ 1.1, run the boolean cell, and reduce CTQs 2.1-2.3 at the board |
-| Part III: Numbers as Repetition | Reduce `SUCC ZERO` and `PLUS TWO THREE` together, run the encodings, and answer CTQs 3.1-3.3 |
+| Part III: Numbers as Repetition | Reduce `SUCC TWO` and `PLUS TWO THREE` together, run the encodings, and answer CTQs 3.1-3.3 |
 | Part IV: Recursion Without Names | Walk Steps 0 through 5, run Model 4, and answer CTQ 4.1 |
 | Part V: Closures, the Problem and the Mechanism | Run `make_adder`, answer CTQs 5.1 and 5.2, then run Model 5 and answer CTQs 5.4-5.5 |
 | Part VI: Closures in Your Own Interpreter | Fill the by-hand table, run Model 6 under both settings, and answer CTQs 6.1-6.3 |
@@ -194,7 +194,7 @@ print("church_to_bool(FALSE) =", church_to_bool(FALSE))
 print("NOT TRUE        =", show_bool(NOT(TRUE)))
 print("NOT FALSE       =", show_bool(NOT(FALSE)))
 print("AND TRUE FALSE  =", show_bool(AND(TRUE)(FALSE)))
-print("OR  FALSE TRUE  =", show_bool(OR(FALSE)(TRUE)))
+print("OR  TRUE FALSE  =", show_bool(OR(TRUE)(FALSE)))
 
 # if-then-else is just application: b(then)(else)
 print("\n=== Church if-then-else ===")
@@ -280,7 +280,7 @@ These definitions follow Kate Morley's [Boolean logic in the lambda calculus](ht
 
 > **CTQ 2.1** Reduce $\textbf{NOT}\, \textbf{TRUE}$ step by step to $\textbf{FALSE}$.  (Substitute, then let TRUE select.)  The trace above is a guide; write your own with every substitution made explicit.
 
-> **CTQ 2.2** Reduce $\textbf{AND}\, \textbf{TRUE}\, \textbf{FALSE}$ and $\textbf{AND}\, \textbf{FALSE}\, \textbf{TRUE}$.  Explain in one sentence why `p q p` works: when is the answer "whatever q is," and when is it "p itself"?
+> **CTQ 2.2** Reduce $\textbf{AND}\, \textbf{TRUE}\, \textbf{FALSE}$, following the trace above.  Explain in one sentence why `p q p` works: when is the answer "whatever q is," and when is it "p itself"?
 
 > **CTQ 2.3** $\textbf{AND}$ never examines $q$ when $p$ is FALSE.  Which semantics from the control-flow module did you get for free, and why is it free here?
 
@@ -310,22 +310,22 @@ You met $\textbf{2}$ in *The Lambda Calculus, Part 1* as `twice`.  Arithmetic be
 $$
 \textbf{SUCC} = \lambda n. \lambda f. \lambda x.\, f\, (n\, f\, x) \qquad
 \textbf{PLUS} = \lambda m. \lambda n. \lambda f. \lambda x.\, m\, f\, (n\, f\, x) \qquad
-\textbf{MULT} = \lambda m. \lambda n. \lambda f.\, m\, (n\, f)
+\textbf{MULT} = \lambda m. \lambda n.\, m\, (\textbf{PLUS}\, n)\, \textbf{0}
 $$
 
-Read PLUS aloud: "apply $f$ $n$ times to $x$, then $m$ more times."  Read MULT: "$n$ copies of $f$, repeated $m$ times."
+Read PLUS aloud: "apply $f$ $n$ times to $x$, then $m$ more times."  Read MULT: "starting from zero, add $n$, $m$ times."  The Lambda Calculus lab has you build a shorter formula for multiplication.
 
 > **Watch out!**  Church numerals are iteration counts, not numbers.  `TWO f x = f(f(x))` applies `f` twice to `x`.  The numeral does not contain the digit 2; it is the behavior of applying something twice.  This is why `church_to_int` works: you hand it the successor function on machine integers and the seed 0, and count how many times successor fires.
 
-**Step-by-step reduction: SUCC ZERO reduces to ONE**
+**Step-by-step reduction: SUCC TWO reduces to THREE**
 
 ```
-SUCC ZERO
-= (λn.λf.λx. f (n f x)) (λf.λx. x)
-->β λf.λx. f ((λf.λx. x) f x)
-->β λf.λx. f ((λx. x) x)
-->β λf.λx. f x
-= ONE  OK
+SUCC TWO
+= (λn.λf.λx. f (n f x)) (λf.λx. f (f x))
+->β λf.λx. f ((λf.λx. f (f x)) f x)
+->β λf.λx. f ((λx. f (f x)) x)
+->β λf.λx. f (f (f x))
+= THREE  OK
 ```
 
 Some references spell the same term with other letters.  [Cornell's CS 312 notes](http://www.cs.cornell.edu/courses/cs312/2008sp/recitations/rec26.html) write the successor as `λw.λy.λx. y (w y x)`, which is this `SUCC` with `n`, `f`, and `x` renamed, so the reduction is the same.
@@ -360,7 +360,7 @@ PLUS TWO THREE
 
 Count the `f`s at each stage: `THREE f x` contributes three, and `TWO f` wraps two more around them.  Addition of Church numerals is function composition, counted.  You get `m + n` applications of `f` because you applied `f` `n` times and then `m` more times to the result.  Nothing was added; things were nested.
 
-Try `MULT TWO THREE = λf.λx. m (n f) x` on your own with the same method, and watch why it gives six.  `n f` is "apply `f` three times" treated as a single function, and `m` applies that function twice.
+Try `MULT THREE TWO = THREE (PLUS TWO) ZERO` on your own with the same method, and watch why it gives six.  `PLUS TWO` is "add two" treated as a single function, and `THREE` applies that function three times, starting from zero.
 
 **Decode helper, "peek inside" a Church numeral:**
 
@@ -407,7 +407,7 @@ print("=== Church Numerals ===")
 ZERO  = lambda f: lambda x: x
 SUCC  = lambda n: lambda f: lambda x: f(n(f)(x))
 PLUS  = lambda m: lambda n: lambda f: lambda x: m(f)(n(f)(x))
-MULT  = lambda m: lambda n: lambda f: m(n(f))
+MULT  = lambda m: lambda n: m(PLUS(n))(ZERO)
 EXP   = lambda m: lambda n: n(m)    # m^n; shockingly simple
 
 ONE, TWO = SUCC(ZERO), SUCC(SUCC(ZERO))
@@ -455,7 +455,7 @@ IF    = lambda b: lambda t: lambda f: b(t)(f)
 ZERO  = lambda f: lambda x: x
 SUCC  = lambda n: lambda f: lambda x: f(n(f)(x))
 ADD   = lambda m: lambda n: lambda f: lambda x: m(f)(n(f)(x))
-MULT  = lambda m: lambda n: lambda f: m(n(f))
+MULT  = lambda m: lambda n: m(ADD(n))(ZERO)
 
 to_int  = lambda n: n(lambda k: k + 1)(0)
 to_bool = lambda b: b(True)(False)
@@ -477,11 +477,10 @@ NOT = lambda p: p                      # replace me
 
 print("\n=== Your booleans (all True until you fix the stubs) ===")
 for name, expr in [("AND(TRUE)(FALSE)", AND(TRUE)(FALSE)),
-                   ("AND(TRUE)(TRUE)",  AND(TRUE)(TRUE)),
-                   ("OR(FALSE)(TRUE)",  OR(FALSE)(TRUE)),
+                   ("OR(TRUE)(FALSE)",  OR(TRUE)(FALSE)),
                    ("NOT(TRUE)",        NOT(TRUE))]:
     print("  " + name.ljust(20) + " = " + str(to_bool(expr)))
-print("  want: False, True, True, False")
+print("  want: False, True, False")
 
 # TODO 2: POW(m)(n) is m to the power n, and it is SHORTER than MULT.
 #         Think about what happens when you apply one numeral to another.
@@ -494,7 +493,7 @@ print("\n  to_int(POW(TWO)(THREE)) = " + str(to_int(POW(TWO)(THREE))) + "   (wan
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-Expected output: the first three lines are 3, 5 and 6.  Your four booleans all print `True` because the stubs return `p`, and `POW` reports 2 instead of 8.  Fix the stubs and the wanted values appear.
+Expected output: the first three lines are 3, 5 and 6.  Your three booleans all print `True` because the stubs return `p`, and `POW` reports 2 instead of 8.  Fix the stubs and the wanted values appear.
 
 ## Model 3: Interrogate the Encodings
 
@@ -502,9 +501,9 @@ Expected output: the first three lines are 3, 5 and 6.  Your four booleans all p
 
 > **CTQ 3.1** `church_to_int` decodes a numeral by handing it the successor function on machine integers and the seed 0.  Explain why this works in one sentence that begins "A Church numeral n is...".
 
-> **CTQ 3.2** Reduce $\textbf{SUCC}\; \textbf{1}$ by hand to confirm it is $\textbf{2}$ (expect two or three careful steps).  The trace for `SUCC ZERO` above is a model; repeat the pattern one numeral up.
+> **CTQ 3.2** Reduce $\textbf{SUCC}\; \textbf{3}$ by hand to confirm it is $\textbf{4}$ (expect two or three careful steps).  The trace for `SUCC TWO` above is a model; repeat the pattern one numeral up.
 
-> **CTQ 3.3** Verify in code that $\textbf{MULT}\, \textbf{2}\, \textbf{3}$ and $\textbf{PLUS}\, \textbf{3}\, \textbf{3}$ decode equally.  Then explain why MULT is so short: what is `n(f)`, and what does `m` do to that?
+> **CTQ 3.3** Verify in code that $\textbf{MULT}\, \textbf{2}\, \textbf{3}$ and $\textbf{PLUS}\, \textbf{3}\, \textbf{3}$ decode equally.  Then explain why this MULT works: what is `PLUS(n)`, and what does `m` do to that?
 
 > **CTQ 3.4** Where is the data?  A Church numeral stores no digits anywhere.  Connect this to the lesson from homoiconicity week, and to the claim "data is frozen behavior."
 
