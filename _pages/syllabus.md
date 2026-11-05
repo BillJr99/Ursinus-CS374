@@ -440,11 +440,6 @@ schedule:
   title: "Parsing Expressions, Part 1: Left Factoring and Precedence"
   link: "Activities/liascript-parsingexpressions.md"
   liapage: true
-  deliverables:
-  - dtitle: "Lab: Finite Automata Simulators Due"
-    dlink: "Assignments/Automata"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-automata.md"
   readings:
   - rtitle: "Allison, Ch. 5: Pushdown Automata, Adding a Stack to Finite Automata"
   - rtitle: "Allison, Ch. 6 §6.3: Equivalence of PDAs and Context-Free Grammars"
@@ -453,6 +448,11 @@ schedule:
   title: "Parsing, Part 2: LR Tables, Conflicts, and Flex and Bison"
   link: "Activities/liascript-parsing2.md"
   liapage: true
+  deliverables:
+  - dtitle: "Lab: Finite Automata Simulators Due"
+    dlink: "Assignments/Automata"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-automata.md"
   readings:
   - rtitle: "Building an LR Parser from the Grammar Up, the companion to the Parser assignment, which walks the same construction on a smaller grammar with runnable code"
     rlink: "Tutorials/LRConstruction"
