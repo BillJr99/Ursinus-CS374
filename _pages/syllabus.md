@@ -453,15 +453,6 @@ schedule:
   title: "Tree-Walking Interpretation (Day 1 of 2): Evaluating the AST"
   link: "Activities/liascript-interpretation.md"
   liapage: true
-  deliverables:
-  - dtitle: "Programming Assignment: Build a Lexer Due"
-    dlink: "Assignments/Lexer"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-lexer.md"
-  - dtitle: "Programming Assignment: Parser Handed Out"
-    dlink: "Assignments/Parser"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-parser.md"
   readings:
   - rtitle: "Property-Based Testing with Hypothesis (optional depth): the round-trip property and how to shrink a failing case"
     rlink: "Tutorials/PropertyBasedTesting"
@@ -486,6 +477,15 @@ schedule:
   title: "Binding, Scope, and Environments"
   link: "Activities/liascript-bindingscope.md"
   liapage: true
+  deliverables:
+  - dtitle: "Programming Assignment: Build a Lexer Due"
+    dlink: "Assignments/Lexer"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-lexer.md"
+  - dtitle: "Programming Assignment: Parser Handed Out"
+    dlink: "Assignments/Parser"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-parser.md"
   readings:
   - rtitle: "Tutorial: Environments and Type Checking, a walkthrough of the scope table and a small type checker"
     rlink: "Assignments/EnvironmentsLab"
@@ -517,11 +517,6 @@ schedule:
   title: "Language Design Workshop: Project Kickoff (Sprint 0)"
   link: "Activities/liascript-languagedesign.md"
   liapage: true
-  deliverables:
-  - dtitle: "Programming Assignment: Interpreter Handed Out"
-    dlink: "Assignments/Interpreter"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-interpreter.md"
   readings:
   - rtitle: "Build a Bytecode VM"
     rlink: "Tutorials/BytecodeVM"
@@ -539,6 +534,10 @@ schedule:
     dlink: "Assignments/LambdaCalculusLab"
     points: "15"
     rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
+  - dtitle: "Programming Assignment: Interpreter Handed Out"
+    dlink: "Assignments/Interpreter"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-interpreter.md"
   readings:
   - rtitle: "Allison, Ch. 8: Turing Machines and the Church-Turing Thesis"
   - rtitle: "Lambda Calculus - Fundamentals of Lambda Calculus & Functional Programming in JavaScript (Gabriel Lebec)"
@@ -550,11 +549,6 @@ schedule:
   title: "Lambda Calculus II and Closures: Church Encodings, Combinators, and First-Class Functions"
   link: "Activities/liascript-lambdacalculus2.md"
   liapage: true
-  deliverables:
-  - dtitle: "Lab: Lambda Calculus Due"
-    dlink: "Assignments/LambdaCalculusLab"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
   - rtitle: "Church encodings: numerals, booleans, and the arithmetic you reduce by hand in the Lambda Calculus lab (today's activity, Models 2-3)"
   - rtitle: "A Flock of Functions: Combinators, Lambda Calculus, & Church Encodings in JS - Part II (Gabriel Lebec)"
@@ -567,14 +561,14 @@ schedule:
   link: "Activities/liascript-sprintstudio.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Interpreter Due"
-    dlink: "Assignments/Interpreter"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-interpreter.md"
   - dtitle: "Team Language Project: Demo Day Presentations Due"
     dlink: "Projects/TeamLanguage"
     points: "72"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
+  - dtitle: "Lab: Lambda Calculus Due"
+    dlink: "Assignments/LambdaCalculusLab"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
   - rtitle: "The Project Language Guide (a complete worked path for the team project)"
     rlink: "Tutorials/ProjectLanguageGuide"
@@ -588,6 +582,11 @@ schedule:
     rlink: "Tutorials/AdvancedCpp"
 - cdate: "2026/12/14"
   title: "Demo Day: Team Language Presentations (Final Exam Period, 11:15 AM-2:15 PM, Pfahler 012)"
+  deliverables:
+  - dtitle: "Programming Assignment: Interpreter Due"
+    dlink: "Assignments/Interpreter"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-interpreter.md"
 ---
 
 This semester is a build.  By December, your team will have designed and implemented a programming language of your own, built in team sprints on what each assignment teaches.  The sections below explain how the pieces fit together, including how the course gives you choices, how to read an assignment, how to prepare for each class, and how I value and evaluate the day-to-day work of participating.  Please read them once now, and come back to the participation and preparation guides throughout the term.
