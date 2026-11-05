@@ -48,7 +48,7 @@ info:
     - rtitle: "Thain, Chapter 1"
     - rtitle: "uv: the Python environment manager we standardize on (Part 1.5)"
       rlink: "https://docs.astral.sh/uv/"
-    - rtitle: "Setup (Route A): The Course Development Environment - Docker, Git, and GitHub (Tutorial)"
+    - rtitle: "Setup (Route A): The Course Development Environment - Docker, Git, and GitHub"
       rlink: "../Tutorials/DevEnvironment"
     - rtitle: "Setup (Part 1.5): Shell Skills for Language Development, the step-by-step tutorial article this assignment's shell work follows"
       rlink: "../Tutorials/ShellForLanguageDev"

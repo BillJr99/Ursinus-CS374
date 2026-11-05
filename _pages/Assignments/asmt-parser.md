@@ -46,7 +46,7 @@ info:
       liapage: true
     - rtitle: "Building an LR Parser from the Grammar Up (Tutorial, the same construction on a smaller grammar)"
       rlink: "../Tutorials/LRConstruction"
-    - rtitle: "Flex and Bison, Complete (Tutorial)"
+    - rtitle: "Flex and Bison"
       rlink: "../Tutorials/FlexAndBison"
 
 tags:

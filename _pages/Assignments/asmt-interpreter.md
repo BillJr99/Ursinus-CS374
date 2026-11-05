@@ -41,7 +41,7 @@ info:
       progressing: The form chooses correctly, but a case with no matching clause is not reported
       proficient: "`cond` evaluates tests in order and only the chosen expression, reports an error when no clause matches, and the provided programs give the same output as before"
   readings:
-    - rtitle: "Flex and Bison, Complete (Tutorial)"
+    - rtitle: "Flex and Bison"
       rlink: "../Tutorials/FlexAndBison"
     - rtitle: "Binding, Scope, and Environments Activity (the scope chain this interpreter uses)"
       rlink: "Activities/liascript-bindingscope.md"

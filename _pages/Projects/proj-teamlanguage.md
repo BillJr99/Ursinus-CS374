@@ -505,7 +505,7 @@ Answer individually in your contribution statement:
 
 - [Music Languages and Live Coding Activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-languagedesign.md)
 - [Parsing Expressions and Table-Driven Parsing Activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsingexpressions.md)
-- [Flex and Bison from Zero to a Working Language (Tutorial)]({{ site.baseurl }}/Tutorials/FlexAndBison)
+- [Flex and Bison from Zero to a Working Language]({{ site.baseurl }}/Tutorials/FlexAndBison)
 
 This section is a guide, not a graded assignment.  It describes the music and live-coding path through the course: the same required assignments everyone completes, taken through the music directions built into them.  There is no separate set of deliverables and nothing to sign up for.  Each direction is a choice you make *inside* its assignment, when that assignment is handed out, one at a time.
 

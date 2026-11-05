@@ -44,7 +44,7 @@ info:
       rlink: "https://www.metalevel.at/prolog"
     - rtitle: "SWISH: SWI-Prolog in the Browser (Direction F)"
       rlink: "https://swish.swi-prolog.org/"
-    - rtitle: "Prolog in the Browser with SWISH (Tutorial)"
+    - rtitle: "Prolog in the Browser with SWISH"
       rlink: "../Tutorials/Prolog"
     - rtitle: "Make-a-Lisp (mal): Direction G target"
       rlink: "https://github.com/kanaka/mal"
