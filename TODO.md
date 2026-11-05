@@ -27,3 +27,5 @@
 - [ ] Simplify the lectures so they build up the scaffolding the assignments need, which then lets the assignments carry less scaffolding themselves.
 
 - [ ] Make the project more defined and project-based, and more practical for groups to execute: clearer coordination (who does what, by when) and a focus on group accountability.
+
+- [ ] Simplify the Overview assignment and streamline its software setup. Leave the Warmup syllabus survey assignment unchanged.
