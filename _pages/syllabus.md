@@ -526,6 +526,10 @@ schedule:
     dlink: "Assignments/Parser"
     points: "100"
     rubricpath: "_pages/Assignments/asmt-parser.md"
+  - dtitle: "Lab: Lambda Calculus Handed Out"
+    dlink: "Assignments/LambdaCalculusLab"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
   - rtitle: "Build a Bytecode VM"
     rlink: "Tutorials/BytecodeVM"
@@ -534,11 +538,6 @@ schedule:
   title: "Lambda Calculus I: Syntax and Beta Reduction"
   link: "Activities/liascript-lambdacalculus1.md"
   liapage: true
-  deliverables:
-  - dtitle: "Lab: Lambda Calculus Handed Out"
-    dlink: "Assignments/LambdaCalculusLab"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
   - rtitle: "Allison, Ch. 8: Turing Machines and the Church-Turing Thesis"
   - rtitle: "Lambda Calculus - Fundamentals of Lambda Calculus & Functional Programming in JavaScript (Gabriel Lebec)"
@@ -550,6 +549,11 @@ schedule:
   title: "Lambda Calculus II and Closures: Church Encodings, Combinators, and First-Class Functions"
   link: "Activities/liascript-lambdacalculus2.md"
   liapage: true
+  deliverables:
+  - dtitle: "Lab: Lambda Calculus Due"
+    dlink: "Assignments/LambdaCalculusLab"
+    points: "15"
+    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
   - rtitle: "Church encodings: numerals, booleans, and the arithmetic you reduce by hand in the Lambda Calculus lab (today's activity, Models 2-3)"
   - rtitle: "A Flock of Functions: Combinators, Lambda Calculus, & Church Encodings in JS - Part II (Gabriel Lebec)"
@@ -566,10 +570,6 @@ schedule:
     dlink: "Projects/TeamLanguage"
     points: "72"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
-  - dtitle: "Lab: Lambda Calculus Due"
-    dlink: "Assignments/LambdaCalculusLab"
-    points: "15"
-    rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   - dtitle: "Programming Assignment: Interpreter Due"
     dlink: "Assignments/Interpreter"
     points: "100"
