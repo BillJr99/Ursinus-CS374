@@ -59,15 +59,15 @@ info:
     - rtitle: "The Project Language Guide, including the Grammar v0 starter and the feature menu"
       rlink: "Tutorials/ProjectLanguageGuide"
     - rtitle: "Music and Live-Coding Track Guide (for Direction B: deliverable equivalence table and the text-events-only route)"
-      rlink: "../Projects/TeamLanguage#the-music-and-live-coding-path"
+      rlink: "../Tutorials/MusicLiveCodingPath"
     - rtitle: "Make-a-Lisp (mal): incremental scaffold with a built-in test harness (Direction A option)"
       rlink: "https://github.com/kanaka/mal"
     - rtitle: "A Syntax Highlighter for Your Language with tree-sitter (Extensions Menu)"
       rlink: "../Tutorials/SyntaxHighlighter"
     - rtitle: "ShipIt Guide: Repo Hygiene, README, Packaging, and Your Portfolio (required self-check before Demo Day)"
-      rlink: "../Projects/TeamLanguage#shipping-your-language-the-shipit-checklist"
+      rlink: "../Tutorials/ShipIt"
     - rtitle: "Demo Day Guide: External Guests"
-      rlink: "../Projects/TeamLanguage#demo-day-external-guests"
+      rlink: "../Tutorials/DemoDayGuide"
 
 tags:
   - final-project
@@ -186,75 +186,13 @@ Direction B maps onto the same milestones:
 - **Sprint 3:** hardening, the specification-driven test suite, and performance rehearsal.  In the test suite, every semantic equation has at least one test against a hand-computed event list, the algebraic law is verified empirically on at least three instances, and stochastic constructs are reproducible under a fixed seed.
 - **Demo Day:** your live demonstration closes with a short performance: live-editing and re-running a program while the class follows the event output as it changes.  **Emitting events as text is sufficient; audio hardware is never required.**  Ambitious teams may also render sound by translating event lists into Strudel or MIDI.  That translation layer (mapping your semantics onto someone else's) is itself worth a section of your report.
 
-The required scope maps naturally.  Patterns and tracks are your non-numeric type, cycle arithmetic and transformation operators are your arithmetic and precedence story, conditional and repeated structures are your selection and iteration, and the cycle semantics itself is a distinctive feature by construction.  The Music and Live-Coding guide at [Projects/TeamLanguage#the-music-and-live-coding-path]({{ site.baseurl }}/Projects/TeamLanguage#the-music-and-live-coding-path) provides the full equivalence table mapping each deliverable to its classic counterpart, plus the text-events-only route through the whole track.
+The required scope maps naturally.  Patterns and tracks are your non-numeric type, cycle arithmetic and transformation operators are your arithmetic and precedence story, conditional and repeated structures are your selection and iteration, and the cycle semantics itself is a distinctive feature by construction.  The Music and Live-Coding guide at [Tutorials/MusicLiveCodingPath]({{ site.baseurl }}/Tutorials/MusicLiveCodingPath) provides the full equivalence table mapping each deliverable to its classic counterpart, plus the text-events-only route through the whole track.
 
 ---
 
 ## Extensions Menu
 
-The distinctive feature is required; the Extensions Menu is where teams go deeper.  Adopting one or more extensions raises the ceiling of your language.  Depth here is credited through the project rubric (chiefly *Implementation Correctness and Integration*, *Evaluation and Testing*, and *Language Design and Documentation*), not through separate point values.  An extension counts only when it is documented in your language reference, covered by at least two dedicated test programs, and demonstrated.  A fully working extension with tests scores far better than two half-working ones without, so scope what you adopt in your proposal's sprint plan.
-
-### Static Type Inference (Hindley-Milner)
-
-Add a type-checking pass that runs before evaluation and infers types for every expression without user-written annotations, reporting type errors with positions and the conflicting types.  Implement let-polymorphism so a polymorphic utility (such as an identity function) works at multiple types in one program.  Include a test program that is correctly rejected.
-
-### Transpilation to Another Language
-
-Add a visitor-based code generator that walks your AST and emits valid Python 3 or ES2020 source as a standalone file runnable with `python3` or `node`, producing output identical to your interpreter for every test program.  Parenthesize operator precedence correctly in the target.  Document any constructs that do not transpile and the substitution your generator makes.  Make the back end a runtime flag alongside your interpreter so a test harness can diff the two execution paths across your whole suite.
-
-### Bytecode Compiler and Stack VM
-
-Add a two-phase back end: a compiler that lowers your AST to a linear stack-machine instruction sequence (PUSH, LOAD, STORE, ADD, JMP_IF_FALSE, CALL, RETURN, and kin) and a virtual machine that executes it, producing the same output as the tree-walking evaluator on all test programs.  Include an annotated execution trace for one non-trivial program showing each instruction, the operand stack before and after, and the program counter.
-
-### Pattern Matching over Algebraic Data Types
-
-Add user-definable algebraic data types (ADTs) and a `match` construct supporting at minimum constructor patterns and wildcard.  Exhaustiveness checking is recognized in grading.  Demonstrate with at least one recursive ADT (a list or tree) and a recursive function over it.
-
-### Garbage Collector
-
-Implement a mark-and-sweep or Cheney copying collector over your runtime environment and heap-allocated values.  Demonstrate that cyclic structures are identified and collected, include a program that would leak without a GC, and report live and dead object counts before and after a collection cycle.
-
-### Concurrency Primitives
-
-Add `spawn` (lightweight concurrent execution) and channel send/receive, implemented with threads, asyncio, or similar.  Demonstrate a producer/consumer program communicating through a channel, and document your memory model: are variables shared, isolated, or communicated exclusively through channels?
-
-### Macros or Hygienic Quoting
-
-Add a macro system that expands at parse time, with hygienic renaming so bindings introduced inside a macro body do not capture user bindings of the same name.  Demonstrate at least two macros, one structural (such as `unless`) and one that introduces a binding, plus a test case that would fail under unhygienic expansion and passes under yours.
-
-### Foreign Function Interface
-
-Allow calling host-language functions from your language via a `foreign` declaration, with marshalling that converts your values to host objects before the call and back after.  Demonstrate at least two foreign functions whose results feed further computation in your language.
-
-### Libraries and Packaging
-
-Give your language a module system: an `import` form that creates a module environment and runs its top-level code, qualified access (`mod.name`), a from-import that copies bindings into the caller's environment, and circular-import detection that raises a clean error rather than recursing forever.  Module namespaces must be isolated: private names are not reachable from outside without qualification.  Test with at least three modules, including one that imports another.
-
-On the packaging side, structure your *implementation* as a proper package with a clean public API (`__init__.py` re-exports, `__all__`, underscore-private helpers).  Consider a plugin architecture (discovering extension modules by name pattern via `importlib` and validating each against a required interface, skipping malformed plugins with a warning) as a way to make your language's built-in library user-extensible.
-
-### Scripting and Automation Targets
-
-Make your language a good citizen of the shell: a file-runner that composes in pipelines (reads stdin, writes stdout, sends errors to stderr), meaningful exit codes on success and each error class, and a scripts-as-tests harness.  The harness is a driver that runs your whole sample suite, checks exit codes, prints a pass/fail line per program, and exits non-zero if anything failed.  Ship the driver and any helper scripts shellcheck-clean and portable (no GNU-only flags without a fallback), with a README explaining how to run the suite.  If your language's niche *is* automation (a build language, a text-processing language, a task-runner DSL), this extension deepens into the niche itself: demonstrate your language orchestrating real programs through pipes and redirection.
-
-### Editor Support: Syntax Highlighting (and an Optional Diagnostic)
-
-Give your language editor support so an audience *sees* it is a language.  Build either a [tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammar for your syntax (its precedence annotations mirror the ladder you already wrote) plus a `highlights.scm` query, or, the lower-friction route, a TextMate grammar wrapped in a minimal VS Code extension.  Scope this small: keyword, number, operator, and string coloring is a complete extension.  The "wow" upgrade is one live diagnostic: pipe your interpreter's positioned error output (`line L, col C: message`, which your pipeline already emits) into VS Code's diagnostics API so a bad program shows a red squiggle at the right spot.  Demonstrate on a sample program at Demo Day, and include a README line showing how a grader installs the extension.  The [Syntax Highlighter tutorial]({{ site.baseurl }}/Tutorials/SyntaxHighlighter) is the step-by-step companion.
-
-### Continuations and First-Class Control
-
-Make "the rest of the computation" a value in your language.  Transform your evaluator, or a small core of it, into continuation-passing style, so that no evaluation step ever returns and each step instead hands its result to an explicit continuation; add a trampoline so that deep programs do not exhaust the host stack; then expose `call/cc`, or an equivalent escape form, to programs written in your language.  Demonstrate at least one control structure rebuilt from it, such as an early `break` out of a loop or an exception handler with `raise`, and state in `SEMANTICS.md` what a captured continuation holds and how long it remains valid.  The `call/cc` reading in the *Lambda Calculus II* activity and the [Coroutines and Generators tutorial]({{ site.baseurl }}/Tutorials/CoroutinesAndGenerators) are the starting points.
-
-### A Lambda-Calculus Core: Church Encodings and Combinators
-
-Give your language a pure functional core and show that other features can be built on it.  Implement capture-avoiding substitution and normal-order reduction for the untyped lambda calculus inside your project (as a mode of your language, or as its core), and encode booleans, numerals, and pairs as pure behavior, with a decoder that turns each encoding back into an ordinary value of your language.  A combinatory variant removes variables entirely: a reducer for S, K, and I, with bracket abstraction from lambda terms.  Test every encoding against hand reductions of the kind the Lambda Calculus lab asks for, and document the evaluation order your reducer uses.  The [Build a Lambda Calculus Reducer tutorial]({{ site.baseurl }}/Tutorials/LambdaCalculusReducer) is the step-by-step companion.
-
-### Logic Programming: A Declarative Sublanguage
-
-Add relations that hold, rather than functions that return: facts, rules, and queries answered by unification plus backtracking, either as the core of a logic-flavored niche language or as a query sublanguage inside a general-purpose one.  Demonstrate at least one relation run "backwards" (a list-append relation that splits a list as well as joining two is the classic case), and document the search order and what a query with no solution produces.  The [Prolog in the Browser with SWISH tutorial]({{ site.baseurl }}/Tutorials/Prolog) works the paradigm in SWI-Prolog with nothing to install, and is the reference for the behavior your sublanguage should reproduce.
-
-### Contribute Upstream: An Open-Source Contribution
-
-Instead of (or alongside) extending your own language, contribute to an existing open-source ecosystem your project touches: a pattern or transformation function in [Strudel](https://github.com/tidalcycles/strudel)/TidalCycles (a natural fit for Direction B teams), a [tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammar improvement (pairs with the Editor Support extension), a step port or test-suite improvement in [Make-a-Lisp (mal)](https://github.com/kanaka/mal), or documentation and worked examples for [SWI-Prolog](https://www.swi-prolog.org/).  This counts like any other extension (credited through the existing rubric dimensions) when three conditions hold: the issue you are addressing is scoped in your proposal, the pull request is submitted with tests and documentation following the upstream project's contributing guidelines, and the maintainer exchange is documented in your report.  A merged pull request is ideal but **not required**.  A substantive review exchange is what is credited, because maintainer response times are outside your control.  A contribution to a live project, reviewed by its maintainer, is a portfolio line few graduates have.
+The distinctive feature is required, and the [Extensions Menu]({{ site.baseurl }}/Tutorials/LanguageExtensions) is where teams go deeper.  It describes each extension your team can adopt: static type inference, transpilation, a bytecode compiler and stack VM, pattern matching, garbage collection, concurrency, macros, a foreign function interface, libraries and packaging, scripting targets, editor support, continuations, a lambda-calculus core, logic programming, and an upstream open-source contribution.
 
 ---
 
@@ -423,7 +361,7 @@ Sprint 3 completes the feature, hardens errors, and finishes the sample suite.  
 > 2. Finish the sample suite: at least five programs, one that shows off the niche, each with its expected output.
 > 3. Finish the test suite: the core language, the distinctive feature, error cases, and programs that check the implementation against `SEMANTICS.md`.  Direction B: every semantic equation has at least one test against a hand-computed event list, the algebraic law is verified on at least three instances, and stochastic constructs reproduce under a fixed seed.
 > 4. Document at least three fixed bugs with their regression tests.
-> 5. Run the [ShipIt self-check]({{ site.baseurl }}/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist) as a team: the secrets audit, the public flip with a license, pinned dependencies, the recruiter-legible README, the packaging path verified cold by the teammate who did not build it, and each member's portfolio entry.
+> 5. Run the [ShipIt self-check]({{ site.baseurl }}/Tutorials/ShipIt) as a team: the secrets audit, the public flip with a license, pinned dependencies, the recruiter-legible README, the packaging path verified cold by the teammate who did not build it, and each member's portfolio entry.
 > 6. Draw lots for the Demo Day presentation order.
 > 7. Rehearse the 9-minute demo with a timer, and prepare a fallback (a recording or transcript of the REPL session).
 
@@ -448,7 +386,7 @@ Sprint 3 completes the feature, hardens errors, and finishes the sample suite.  
 
 ## Milestone 5: Demo Day and Final Submission (72 points)
 
-All teams present during the final exam period.  The final submission is due before that, on the last class day.  There is no written final exam, and I accept no work after Demo Day.  Demo Day is external-facing: alumni, industry guests, and faculty from other departments may join the audience and Q&A, as available.  Your grade never depends on who attends.  Prepare with the [Demo Day Guide]({{ site.baseurl }}/Projects/TeamLanguage#demo-day-external-guests).
+All teams present during the final exam period.  The final submission is due before that, on the last class day.  There is no written final exam, and I accept no work after Demo Day.  Demo Day is external-facing: alumni, industry guests, and faculty from other departments may join the audience and Q&A, as available.  Your grade never depends on who attends.  Prepare with the [Demo Day Guide]({{ site.baseurl }}/Tutorials/DemoDayGuide).
 
 ### The Presentation (9 minutes)
 
@@ -471,7 +409,7 @@ Every teammate speaks.  You answer the audience's questions, from classmates and
 
 Submit these four deliverables on the last class day, before you present:
 
-1. **The repository:** the implementation, REPL and file-runner, test suite, sample programs with expected outputs, all configuration in JSON, located exception handling throughout, and a readme tested by the teammate who did not write it.  Ensure reproducibility by fixing random seeds where applicable and listing software version information.  The repository is public and recruiter-legible: run the [ShipIt self-check]({{ site.baseurl }}/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist) before Demo Day; it is scored within the Documentation and Reproducibility dimension.  (Direction B: the timed-event test fixtures and, if you used bison, the automaton report ride along here.)
+1. **The repository:** the implementation, REPL and file-runner, test suite, sample programs with expected outputs, all configuration in JSON, located exception handling throughout, and a readme tested by the teammate who did not write it.  Ensure reproducibility by fixing random seeds where applicable and listing software version information.  The repository is public and recruiter-legible: run the [ShipIt self-check]({{ site.baseurl }}/Tutorials/ShipIt) before Demo Day; it is scored within the Documentation and Reproducibility dimension.  (Direction B: the timed-event test fixtures and, if you used bison, the automaton report ride along here.)
 2. **The language reference** (approximately four pages): teach your language to a newcomer with examples for every construct, the full grammar, the distinctive feature's guide, and a section per adopted extension.
 3. **`SEMANTICS.md`,** final and verified against the implementation by your semantics programs (Direction B: the semantic equations, revised to match the implemented language, with a change log from the proposal).
 4. **The report** (approximately four pages): the design story with the decision log's three most contested calls, the build experience (which features came easily, which did not, and why), the evaluation summary, limitations (your disclose bucket, verbatim), responses to the Strength, Question, and Risk cards from your peer review, and individual contribution statements covering the rotation.  (Direction B: include the performance postmortem, what performing revealed that the test suite could not, and, if you rendered audio, the translation-layer section.)
@@ -499,235 +437,8 @@ Answer individually in your contribution statement:
 
 ---
 
-## The Music and Live-Coding Path
-
-*To show you the music and live-coding path through the course's required assignments (the built-in directions that let you meet the same outcomes on live-coding languages) so that each choice is made with full information.*
-
-### Goals
-
-- Understand that the music and live-coding path is a direction of the Team Language Project, and that every other assignment is taken as it stands
-- Know what the direction entails
-- Know that every music direction supports a text-events-only route, so no audio production or playback is ever required
-
-### Background Reading and References
-
-- [Parsing, Part 2: LR Tables, Conflicts, and Flex and Bison]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsing2.md)
-- [Flex and Bison from Zero to a Working Language]({{ site.baseurl }}/Tutorials/FlexAndBison)
-
-This section is a guide, not a graded assignment.  It describes the music and live-coding path through the course: the same required assignments everyone completes, taken through the music directions built into them.  There is no separate set of deliverables and nothing to sign up for.  Each direction is a choice you make *inside* its assignment, when that assignment is handed out, one at a time.
-
-### How the Music Path Works
-
-Every assignment in this course exercises the same core outcomes: specifying a language formally, building a lexer/parser/evaluator pipeline, reasoning about semantics, and defending design decisions.  The Team Language Project offers a music direction.  It is an equivalent way of meeting those outcomes, with a single deliverable and a single rubric that applies to both directions equally.  Languages for live-coded music (TidalCycles, Strudel, and the mini-notation they share) are real, production languages with formal grammars, denotational semantics, and active communities, and they support every outcome the assignments assess.  The music direction puts those languages under your hands.
-
-In the spirit of Universal Design for Learning, the music path is a deliberate choice of engagement (a problem domain that may hold your attention differently than a general-purpose toy language does) and of expression (your capstone demonstration can be a short live-coded performance instead of a REPL walkthrough, or a walkthrough of timed event output, if you prefer).  It is not the easy path and it is not remedial.  It is the same mountain, climbed on the same rubrics, by a route that happens to make rhythm.
-
-**Accessibility note, stated up front:** the music materials are built around a semantics that maps programs to timed event structures: lists of `(value, begin, end)` events you can read, print, diff, and test as plain text.  Every music direction supports a text-events-only route.  Sound rendering is always optional, and no deliverable requires you to produce, hear, or evaluate audio.  If audio is not accessible or not appealing to you, the path is fully available through its textual semantics.
-
-### The Path, Assignment by Assignment
-
-The music path follows the course's own arc, with the music direction chosen in the team project:
-
-1. **[Parsing, Part 2]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsing2.md)** (activity): meet the bottom-up, table-driven side of parsing, which is what a generator emits and what the mini-notation starter is built on.  The flex/yacc pipeline itself lives in two places you can work through on your own.  The [Flex and Bison tutorial]({{ site.baseurl }}/Tutorials/FlexAndBison) builds one end to end, and the mini-notation starter under `files/examples/mininote/` in this repository is a subset Direction B can grow.  Relatedly, the [Lexer assignment]({{ site.baseurl }}/Assignments/Lexer)'s generator-toolchain direction and the [Interpreter]({{ site.baseurl }}/Assignments/Interpreter)'s Flex and Bison option put those tools in your hands early.  They pair well with what follows, but neither is required for it.
-2. **[Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) -> the Music and Live-Coding direction** (capstone): design, specify, build, and demonstrate a small live-coding language with your team.  The closing demonstration may be a live edit-and-rerun session over printed event output; rendered sound is optional here as everywhere on the path.  The project's optional [Contribute Upstream extension](#contribute-upstream-an-open-source-contribution) adds an open-source stop: a pattern or transformation function contributed to Strudel/TidalCycles.
-
-The other assignments are taken as they stand; they build the skills every direction draws on.
-
-### The Mapping at a Glance
-
-| Required assignment | Its music direction |
-|---|---|
-| [Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) | The Music and Live-Coding direction (text-events-only route available) |
-
-The activity above and the Flex and Bison tutorial are preparation rather than deliverables.  They play the same role the optional readings do elsewhere in the schedule.
-
-### When to Decide
-
-There is no track to join.  If the music path appeals to you, the useful early moves are to work through the two activities above, and to raise the Music and Live-Coding direction with your team when the Team Language Project kicks off.  That one is a team decision, and it benefits from being made at the project's first sprint rather than mid-stream.  Questions about any direction are always welcome in office hours.  The choosing itself needs no permission: the directions are built in.
-
----
-
-## Shipping Your Language: The ShipIt Checklist
-
-*To turn your team's language repository into a public, professional artifact: one a stranger can run, a recruiter can read, and each teammate can point to from a portfolio, so the semester's work exists in the world under your names.*
-
-### Goals
-
-- To publish the team language repository in a state a stranger can clone, install, and run from the README alone
-- To write a README that answers what the language is, how to install it, and how to run a first program in thirty seconds, with each member's contribution credited
-- To package the language for installation with pip, npm, or Docker, verified by a teammate who did not do the packaging
-- To create a personal portfolio entry: the repository pinned or linked from each member's GitHub profile or portfolio page with a short project story suitable for a resume
-
-### Background Reading and References
-
-- [Publishing Your Language: pip, npm, and Docker]({{ site.baseurl }}/Tutorials/PublishingYourLanguage)
-- [CI and TDD for Interpreters]({{ site.baseurl }}/Tutorials/CITDDForInterpreters)
-- [Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage)
-
-This guide is not separately graded.  Its checklist is assessed within the Team Language Project's Documentation and Reproducibility dimension.
-
-By Demo Day your team will have built something few undergraduates can claim: a working programming language, designed and implemented end to end.  This guide is required preparation for the final submission.  It makes sure that work *exists in the world* in a form that does it justice: a public repository a stranger can run, a README a recruiter can read in thirty seconds, an installation path that works cold, and a portfolio entry under each of your names.  The self-check rewards a finished job over an ambitious one.  A small language with a spotless repository, a legible README, and a verified install demonstrates more than an ambitious one nobody else can run.  Run the checklist as a team during the release-hardening studio, before Demo Day.
-
-### What Strong Work Looks Like
-
-Strong work has these qualities:
-
-- **A stranger succeeds without you in the room.**  The decisive test for every stage of this guide is the cold test: someone who was not on your team (or the teammate who did *not* do the work) follows the public record alone, and it works.  "Setup was tested by the teammate who did not write it" is already in the project rubric; this guide extends the same discipline to installation and the README.
-- **The README opens like an elevator pitch rather than a lab report.**  The first screen answers three questions: what is this language and what is its niche, how do I install it, and what does a first program look like, with its output shown.  Details (the full grammar, the semantics, the extension guides) are linked, not inlined.
-- **The repository tells the team's story by itself.**  Issues and pull requests show the sprints, the decision log shows the contested calls, and the README's credits section names who built what.  A visitor (a grader, a recruiter, a future you) can reconstruct the process without asking anyone.
-- **The portfolio entry is specific.**  A weak story says "We built a programming language for class."  A strong story says: "Our team of three designed and shipped a query language over in-memory lists with a Hindley-Milner type checker.  I built the parser and the AST layer, property-tested with Hypothesis, and wrote the differential test harness that caught three semantics bugs before Demo Day."
-
-Weak work has a private repository, a README that assumes the reader attended the class, an install path nobody has tried cold, and no trace of the project anywhere under your own name.
-
-### ShipIt Stage 1: Repository Hygiene
-
-Make the repository presentable before making it prominent.
-
-> **Do this.**
-> 1. **Make it public**, with a `LICENSE` file (MIT or BSD-3-Clause are fine defaults; agree as a team).  Everything in the project rubric assumes a repository a stranger can reach.
-> 2. **Audit the history for secrets and personal data.**  Search the full history (the current tree is not enough) for tokens, passwords, and anything personal that does not belong in public.  If you find any, rotate the credential and consult the instructor before rewriting history.
-> 3. **Pin your dependencies** and state your toolchain versions (Python version, `uv` lock file or `requirements.txt` with versions), exactly as the project's reproducibility requirement demands.
-> 4. **Clean the top level.**  A visitor should see the README, the license, the source package, the tests, the sample programs, the language reference, and `SEMANTICS.md`, not scratch files, stale experiments, or `old_parser_v2_final.py`.
-> 5. **Leave the process visible.**  Do not squash away your issues, pull requests, or decision log.  They are evidence of the professional practice the rubric credits, and they are what makes the repository more than a code dump.
-
-### ShipIt Stage 2: The Recruiter-Legible README
-
-Rewrite the README so its first screen passes the thirty-second test.
-
-> **Do this.**
-> 1. **What it is**: the language name, its niche, and a one-paragraph pitch (your proposal already contains this; compress it).
-> 2. **Install**: the one command that installs it (see Stage 3).
-> 3. **First program**: a small sample program *and its output*, so a reader sees the language run without installing anything.
-> 4. Below the fold, add a **CI badge** showing the test suite passing on the submission commit (the [CI and TDD for Interpreters]({{ site.baseurl }}/Tutorials/CITDDForInterpreters) tutorial covers wiring this up).
-> 5. Below the fold, link the **language reference**, **`SEMANTICS.md`**, and the sample program suite.
-> 6. Below the fold, add a **credits section** naming each teammate and what they built.  Contribution attribution is part of the self-check, and it is what lets each of you point at this repository individually.
-> 7. Hand it to the teammate who did not write it for the cold test: fresh clone, follow it top to bottom, and note every place they stall.
-
-### ShipIt Stage 3: Package Your Language
-
-Give your language a real installation path, one of:
-
-- **pip:** package the implementation (a `pyproject.toml` with an entry point so `your-language` runs the REPL and `your-language file.lang` runs a program).  Installing directly from the repository (`pip install git+https://...`) is sufficient; publishing to PyPI is stretch work under the Extensions Menu's *Libraries and Packaging* entry.
-- **npm:** for JavaScript implementations, a scoped package with a working `bin`.
-- **Docker:** a small image whose default command opens the REPL and which can run a mounted program file.
-
-The step-by-step mechanics live in the [Publishing Your Language: pip, npm, and Docker]({{ site.baseurl }}/Tutorials/PublishingYourLanguage) tutorial.  This guide only insists on the discipline around it.
-
-> **Do this.**
-> 1. **Tag the release** with a semantic version (`v1.0.0` for the Demo Day submission) so the installed artifact and the graded commit are the same thing.
-> 2. **Verify cold.**  The teammate who did *not* do the packaging installs it on a machine (or in a fresh container) that has never seen the project, following the README alone, and records a one-line confirmation with their name in the report.
-> 3. **Audit before you publish.**  Review what the package or image actually contains (a `pip` sdist listing, `npm pack --dry-run`, or the image layer listing): no test fixtures, no secrets, no personal files.
-
-### ShipIt Stage 4: The Portfolio Entry
-
-The last stage is individual.
-
-> **Do this.**  Each teammate:
-> 1. **Pins or links the repository** from their GitHub profile (or personal portfolio page).  If you do not have a profile README, this is the moment to create one; it is a ten-minute job with an outsized payoff.
-> 2. **Writes a project story of roughly 200 words**: the problem (what niche, why a new language), what the team built (the pipeline, the distinctive feature, any extensions), and the evidence (the repo link, the CI badge, the verified install, a test-suite number).  Name your individual contribution explicitly ("I built X"), because that is the sentence a resume bullet and an interview answer are made from.
-> 3. **Reuses the story.**  The same story is your opening move with guests at Demo Day (see the [Demo Day Guide]({{ site.baseurl }}/Projects/TeamLanguage#demo-day-external-guests)) and the seed of the resume bullet you will write when you next update your materials.
-> 4. **Drafts the post.**  Turn the story into a drafted LinkedIn-style post (150-250 words: the niche, what you built, one concrete number (tests passing, sample programs, the install command), and what you learned) and include the draft in the final submission.  Submitting the draft is required; **publishing it is always optional and never graded: your professional profiles are yours.**  The draft exists so that if you choose to post, the post is already written while the language still runs on your machine.
-
-### ShipIt Frequently Asked Questions
-
-**Q: Do we have to publish to PyPI or npm?**
-A: No.  An installation path that works cold from the public repository (`pip install git+...`, a Dockerfile, or an npm install from the repo) satisfies this guide.  A public registry release is stretch work credited through the Extensions Menu's *Libraries and Packaging* entry.
-
-**Q: Our repository has been private all semester.  When should we flip it public?**
-A: During the release-hardening studio at the latest, after the Stage 1 hygiene audit, before Demo Day.  Do the secrets audit *first*: public means the full history is public.
-
-**Q: One teammate doesn't want the repository on their profile.  Is that a problem?**
-A: The repository-side items (public repo, README credits) are team obligations.  The profile pin is personal, and a link from a portfolio page satisfies the self-check instead.  If someone prefers not to be named publicly at all, talk to the instructor; there is always an accommodation, and the credit lives in the graded report regardless.
-
-**Q: Does the ShipIt self-check add points?**
-A: No; it is how you earn the points that already exist.  The Documentation and Reproducibility dimension of the Team Language Project rubric names this checklist.  Running it honestly during release hardening is how you arrive at Demo Day already knowing that score.
-
-### ShipIt Reflection Prompts
-
-Answer these as a team during release hardening, and individually as part of your contribution statement:
-
-- What did the cold test catch that the authors could not see, and why couldn't they see it?
-- Read your own 200-word project story as a stranger: what claim in it is best supported by evidence in the repository, and what claim still needs shoring up?
-
-### ShipIt Self-Check
-
-| Criterion | Pre-Emerging | Beginning | Progressing | Proficient |
-|---|---|---|---|---|
-| Self-Check: Repository Hygiene | Our repository is private or cannot be found, has no license, or has credentials or secrets somewhere in its history | Our repository is public with a license, but dependencies are unpinned, the top level is cluttered with scratch files, or our team process (issues, pull requests, decision log) is invisible in the repository | Our repository is public, licensed, and clean at the top level, with pinned dependencies and visible team process, though a minor gap remains such as a stale branch or an untracked configuration step | Our repository is public with a license and a clean, self-explanatory top-level layout; dependencies and versions are pinned; no secrets or personal data appear anywhere in the history; and our issues, pull requests, and decision log make the team's process legible to an outsider |
-| Self-Check: README and Language Reference Quality | Our README is missing, or only an author could follow it | Our README describes the language but a stranger could not install and run a first program from it alone, or no teammate is credited | Our README answers what, install, and first program in thirty seconds and links the language reference, with a minor gap such as a missing sample output or an out-of-date badge | Our README answers what the language is, how to install it, and how to run a first program in thirty seconds; shows a sample program with its output; carries a passing CI badge; links the language reference and SEMANTICS.md; and credits each member's contribution by name |
-| Self-Check: Packaging and Distribution | The only way to run our language is to reproduce our development environment by hand | A packaging path (pip, npm, or Docker) exists but has not been verified by anyone who did not build it | Our language installs via pip, npm, or Docker following the README, verified cold by the teammate who did not do the packaging, though a minor gap remains such as a missing version tag | Our language installs via pip, npm, or Docker following the README alone; the installation was verified cold by the teammate who did not do the packaging, and their confirmation is recorded; and the release carries a semantic version tag matching the submission |
-| Self-Check: Personal Portfolio and GitHub Profile | Nothing links me to this project outside the course | The repository is linked from my profile or portfolio, but with no story; a visitor cannot tell what I did or why it matters | The repository is pinned or linked from my GitHub profile or portfolio page with a short description, though my individual contribution is not yet legible | The repository is pinned or linked from my GitHub profile or portfolio page with a project story of roughly 200 words (the problem, what we built, and the evidence) that names my individual contribution and is ready to reuse on a resume and at Demo Day |
-
----
-
-## Demo Day: External Guests
-
-*To prepare you to present your language to people outside the course (invited guests at Demo Day, and eventually interviewers and colleagues) by practicing the plain-language pitch, the known limitation, and the detailed walk-through of work you actually did.*
-
-### Goals
-
-- To open your project for a non-specialist in ninety seconds: what the language is, why it exists, and what working means, without jargon
-- To handle questions honestly, including redirecting a question you cannot answer and disclosing a known limitation without being asked
-- To connect the project to what comes next, whether that is a portfolio story, a resume conversation, or venues for presenting student work beyond the course
-
-### Background Reading and References
-
-- [Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage)
-- [ShipIt Guide: Repo Hygiene, README, Packaging, and Your Portfolio]({{ site.baseurl }}/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist)
-
-This guide is not separately graded.  The presentation is assessed within the Team Language Project's Demo Day Presentation dimension.
-
-Demo Day is not a private class ritual.  Alumni, industry guests, and faculty from other departments may be in the room as audience members and Q&A panelists, invited as available.  Your grade never depends on who attends.  The skills the day demands are exactly the ones a technical interview demands: explain a system you built, in plain language first and in full depth on request, defend your decisions, and be honest about what does not work.  This guide prepares you for both audiences at once.  Nothing here is extra work; it is rehearsal for work you already owe.
-
-### Demo Day Format and Schedule
-
-All teams present within the final exam period.  Each team has a hard cap of **9 minutes**, followed by a 1-minute transition while the next team plugs in.  Nine minutes rewards a rehearsed demo, so time your run-through and cut material rather than rushing it.  The order of presentation is set by lot: teams draw lots in the release-hardening studio, so you know your slot before the day.
-
-### What Strong Demo Day Work Looks Like
-
-- **The opener lands with someone who has never heard of a parser.**  "We built a small programming language for describing drum patterns.  You type a pattern, our system checks it, understands it, and plays it back as timed events.  I built the part that turns your text into a structure the computer can walk."  Ninety seconds, no jargon, and it ends with what *working* looks like.
-- **Keep the depth available on demand, and do not impose it up front.**  When a guest asks "how does it actually work?", the answer walks one line of code through the whole pipeline (characters to tokens to tree to value) at whatever level the asker's follow-ups invite.
-- **Volunteer your limitations before anyone has to pull them out of you.**  Strong presenters disclose a known limitation with its triage rationale before anyone asks.  It reads as command of the work, because it is.
-- **Questions come back.**  The best conversations at Demo Day are two-way: ask the guest what they build, what languages their team uses, and what they wish new graduates knew.
-
-### The One-Page Brief: Talking to Guests
-
-Have these five moves rehearsed before Demo Day:
-
-1. **The ninety-second opener.**  What the language is, the niche it serves, who would use it, and one sentence on what you personally built.  Write it, say it aloud, and cut every term a non-CS friend would stumble on.
-2. **The three-sentence architecture.**  The pipeline in plain words: *text comes in; the lexer breaks it into words; the parser builds the sentence structure; the evaluator walks that structure and produces the answer.*  Then one sentence on where your distinctive feature lives in that pipeline.
-3. **The known limitation.**  One known limitation, stated plainly, with why you triaged it as disclose-rather-than-fix.  Practice saying it without apologizing.
-4. **The redirect.**  For questions you cannot answer: "I don't know, my teammate built that part, let me hand you to them," or "I don't know, but here's how I'd find out."  Both are strong answers.  Bluffing is the only weak one.
-5. **The question back.**  Prepare two real questions to ask a guest, about their work, their team's languages and tools, or their path.  Demo Day is a networking event wearing a final-exam costume; treat the conversation as two-way.
-
-### Taking It Further
-
-The project does not have to end at Demo Day:
-
-- **[CCSC-Eastern](https://sites.google.com/site/ccsceastern/)** and similar regional conferences run student poster sessions.  A team language with a live REPL demo is exactly the kind of work they exist to present.  Talk to the instructor about submitting; the proposal you already wrote is most of the abstract.
-- **Campus research and creative-work showcases** welcome course projects of this scope.  Presenting there is a low-stakes rehearsal for any external venue.
-- **Your profile.**  The [ShipIt guide]({{ site.baseurl }}/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist)'s Stage 4 (the pinned repository and 200-word project story) is the durable version of everything you rehearsed here.  Update your resume and LinkedIn while the numbers (test counts, sample programs, the verified install) are fresh.
-
-### Demo Day Frequently Asked Questions
-
-**Q: Will there definitely be external guests at Demo Day?**
-A: Guests are invited as available.  Some years the room is full; some years it is classmates and faculty.  Prepare the same either way: the rubric's multi-audience expectations do not change.
-
-**Q: Does talking to guests affect my grade?**
-A: The Demo Day presentation is graded by its existing rubric dimension.  Guest attendance and guest reactions are never grading conditions.
-
-**Q: What should I wear / bring on Demo Day?**
-A: Whatever you present comfortably in.  Bring a machine with the demo rehearsed and a fallback (a recording or transcript of the REPL session) in case of technical trouble.  A rehearsed fallback is professional practice, and nobody will read it as doubt.
-
-### Demo Day Reflection Prompts
-
-Answer individually after Demo Day:
-
-- Which question made you realize you understood something less well than you thought, and what would you do about it next time?
-
-### Demo Day Self-Check
-
-| Criterion | Pre-Emerging | Beginning | Progressing | Proficient |
-|---|---|---|---|---|
-| Self-Check: Guest-Facing Communication | I cannot explain the project without assuming the listener took this course | I can describe the language, but my opening runs long, leans on jargon, or hides what does not work | I can open the project in about ninety seconds in plain language and disclose a limitation when asked, though my answers to unexpected questions still wobble | I can open the project in ninety seconds in plain language, volunteer one rehearsed limitation with its triage rationale, redirect a question I cannot answer honestly ("I don't know, but here is how I would find out"), and ask a guest a real question back |
-| Self-Check: Portfolio Story | I have no way to show this project to anyone outside the course | I can point at the repository but cannot yet tell its story in a way a recruiter would follow | My 200-word project story exists and names my contribution, though it is not yet linked from anywhere or rehearsed aloud | My project story is written, linked from my profile or portfolio per the ShipIt guide, rehearsed aloud as a two-minute narrative, a drafted (publication-optional) LinkedIn-style post exists, and I can produce the evidence behind every claim in it on request |
+## Companion Guides
+
+- [The Music and Live-Coding Path]({{ site.baseurl }}/Tutorials/MusicLiveCodingPath): how Direction B fits the course.
+- [The ShipIt Checklist]({{ site.baseurl }}/Tutorials/ShipIt): repository hygiene, the README, packaging, and your portfolio entry.  Run its self-check before Demo Day.
+- [Demo Day: External Guests]({{ site.baseurl }}/Tutorials/DemoDayGuide): the format, the one-page brief, and how to talk to guests.

@@ -44,10 +44,14 @@ info:
     - rtitle: "Parsing, Part 2 Activity (shift-reduce parsing and a table built by hand)"
       rlink: "Activities/liascript-parsing2.md"
       liapage: true
-    - rtitle: "Building an LR Parser from the Grammar Up (Tutorial, the same construction on a smaller grammar)"
+    - rtitle: "Building an LR Parser from the Grammar Up: the same construction on a smaller grammar"
       rlink: "../Tutorials/LRConstruction"
     - rtitle: "Flex and Bison"
       rlink: "../Tutorials/FlexAndBison"
+    - rtitle: "C for Flex and Bison"
+      rlink: "../Tutorials/CForFlexAndBison"
+    - rtitle: "Python for Language Work"
+      rlink: "../Tutorials/PythonForLanguageWork"
 
 tags:
   - parser
@@ -113,6 +117,8 @@ Trace this grammar on paper first, in `notes.md`.  Every function you write does
 2  E  -> n
 ```
 
+Items, closure, and lookaheads are worked on a smaller grammar in [LR(1) items, by hand]({{ site.baseurl }}/Tutorials/LRConstruction#lr1-items-by-hand), and the shift-reduce idea in [Bottom-Up in One Picture](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-parsing2.md#6).
+
 An **LR(1) item** is a production, a dot showing how much of it the parser has seen, and a lookahead: the token that must come next once the production is complete.  `[E -> E . + n, $]` means "I have seen an `E`, I expect `+ n`, and after that I expect `$`."
 
 The closure rule says that if an item has the dot before a non-terminal `B`, as in `[A -> x . B y, a]`, the parser may be about to see a `B`, so it may also be at the start of any `B` production.  Add `[B -> . z, b]` for every `B -> z`, where `b` is any token that can come right after this `B`: whatever begins `y`, or `a` if `y` is empty.
@@ -124,7 +130,7 @@ The closure rule says that if an item has the dot before a non-terminal `B`, as 
 
 ### Step 1.2: Items
 
-An item is a tuple `(production_index, dot, lookahead)`.  So `(1, 1, "+")` is `[E -> E . + T, +]`, because `PRODUCTIONS[1]` is `E -> E + T` and the dot sits before position 1.  Tuples work well here, because a state will be a `frozenset` of items, and a `frozenset` can be a dictionary key.  That is how you will recognize a state you have already built.
+An item is a tuple `(production_index, dot, lookahead)`.  So `(1, 1, "+")` is `[E -> E . + T, +]`, because `PRODUCTIONS[1]` is `E -> E + T` and the dot sits before position 1.  Tuples work well here, because a state will be a `frozenset` of items, and a `frozenset` can be a dictionary key.  That is how you will recognize a state you have already built.  [Python for Language Work]({{ site.baseurl }}/Tutorials/PythonForLanguageWork#sets-and-frozensets) covers tuples and frozensets.
 
 Fill in `show_item`, so that every later check is something you can read:
 
@@ -149,7 +155,7 @@ python3 -c "from calculator import show_item; print(show_item((1, 1, '+'))); pri
 
 ### Step 1.3: FIRST sets
 
-Closure needs to know which tokens can begin a non-terminal, because that is what can come next.  To know `FIRST(T)` you need `FIRST(T)`, since `T -> T * F`, so you cannot compute these in one sweep.  You start with empty sets and sweep until nothing changes.  That is a *fixed point*, and closure uses the same idea:
+Closure needs to know which tokens can begin a non-terminal, because that is what can come next.  To know `FIRST(T)` you need `FIRST(T)`, since `T -> T * F`, so you cannot compute these in one sweep.  You start with empty sets and sweep until nothing changes.  That is a *fixed point*, and closure uses the same idea ([FIRST and FOLLOW Sets](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-parsing2.md#29) shows more):
 
 ```text
 first = an empty set for each non-terminal
@@ -331,7 +337,7 @@ python3 calculator.py "1 + ) 2"
 
 You just built what Bison builds.  Bison reads a grammar like the one in Part 1 and writes the tables and driver as C, and Flex writes the lexer.  You only write the grammar and what to do on each reduction.
 
-Read `calc.l` first.  Each line is a pattern and the C code to run when it matches.  `[0-9]+` stores the number in `yylval` and returns the token `NUM`.  A single-character token returns the character itself.
+[Flex and Bison]({{ site.baseurl }}/Tutorials/FlexAndBison) explains these files from zero, and [From the Table to Flex and Bison](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-parsing2.md#21) connects them to Part 1.  Read `calc.l` first.  Each line is a pattern and the C code to run when it matches.  `[0-9]+` stores the number in `yylval` and returns the token `NUM`.  A single-character token returns the character itself.
 
 Now read `calc.y`.  It has three sections, separated by `%%`: declarations, grammar rules, and C code.  Here is the rule that matters:
 
@@ -371,7 +377,7 @@ printf '1 + 2 * 3\n(1 + 2) * 3\n8 - 3 - 2\n8 / 2 / 2\n' | ./calc
 
 ## Part 3: Add Variable Assignment and Lookup
 
-A variable needs two things: somewhere to keep its value, and grammar rules that use it.  The somewhere is a *symbol table*, which maps names to values.  Both versions use the same two grammar rules: a name in an expression looks up its value, and an assignment stores one.
+[Calculator with Variables](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-calculator-variables.md#7) walks through the idea.  A variable needs two things: somewhere to keep its value, and grammar rules that use it.  The somewhere is a *symbol table*, which maps names to values.  Both versions use the same two grammar rules: a name in an expression looks up its value, and an assignment stores one.
 
 Assignment goes in its own level, `A`, above `E`.  If you put `id = E` directly into `E`, the grammar has shift/reduce conflicts, because after `x = 1` the parser cannot tell whether a `+` continues the right side.  The new level settles it, and the rule refers to itself so that `a = b = 2` works.
 
@@ -429,6 +435,8 @@ python3 -c "from calculator import *; calculate('z')"
 
 **You write:** changes to `flexbison/calc.l` and `flexbison/calc.y`.
 **You run:** `make`, then the check.
+
+[C for Flex and Bison]({{ site.baseurl }}/Tutorials/CForFlexAndBison) covers the linked list, `malloc`, `strdup`, and `strcmp` this step uses, on a different example.
 
 *In `calc.l`*, return two new tokens.  Add these two lines above the line for single-character tokens, and add `#include <string.h>` at the top.  `strdup` matters because Flex reuses `yytext` for the next token, so you have to keep your own copy of the name.
 

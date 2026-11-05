@@ -373,25 +373,56 @@ That is sometimes too coarse.  A token can be in `FOLLOW(A)` globally while bein
 
 The Parser assignment builds LR(1) directly, on a small enough grammar that the state count stays manageable.  It does not ask you for LALR, which is the interesting next step if you want it.
 
+### LR(1) items, by hand
+
+Here is the move from SLR to LR(1) on the smallest grammar that shows it.
+
+```text
+0  S' -> S
+1  S  -> C C
+2  C  -> c C
+3  C  -> d
+```
+
+An LR(1) item adds a lookahead: `[C -> d ., c]` means "I have seen a complete `C`, and I reduce it only if the next token is `c`."  Closure changes in one place.  From an item `[A -> x . B y, a]`, you add `[B -> . z, b]` for every production `B -> z`, where `b` is each token that can come right after this `B`.  That is what `y` can begin with, or `a` if `y` is empty.
+
+Start with `[S' -> . S, $]`.  The dot is before `S`, nothing follows it, so `S`'s item gets `$`.  In `[S -> . C C, $]` the dot is before a `C`, and another `C` follows, so its lookaheads are `FIRST(C)`, which is `c` and `d`.  Those items have the dot before a terminal, so nothing else is added:
+
+```text
+[S' -> . S, $]
+[S  -> . C C, $]
+[C  -> . c C, c]   [C -> . c C, d]
+[C  -> . d, c]     [C -> . d, d]
+```
+
+Goto moves the dot and keeps the lookahead, and then closes.  Move past the first `C`, and the second `C` now has nothing after it, so the lookahead `$` comes down from the item above it:
+
+```text
+[S -> C . C, $]
+[C -> . c C, $]
+[C -> . d, $]
+```
+
+Now follow `d` from both of those states.  The production is the same, and the states differ:
+
+```text
+from the first state:   [C -> d ., c]  [C -> d ., d]
+from the second state:  [C -> d ., $]
+```
+
+The machine remembers which `C` it is reading.  After the first `C` another must come, so `$` is an error there and the table has no reduce on it.  After the second, only `$` can follow.  SLR would reduce on all of `FOLLOW(C)` in both places.  This precision is what LR(1) buys, and the price is the state count: this grammar has ten LR(1) states.
+
 ---
 
 ## Section 11: Taking this to the assignment's grammar
 
-Part 4 uses the ladder grammar, which adds three things this tutorial's grammar does not have:
+The Parser assignment has you write these functions for LR(1), on a grammar with two precedence levels and parentheses.  It computes about thirty states, which is too many to do by hand, so three habits save time.
 
-| Addition | What it costs you |
-|---|---|
-| `T -> T * F`, a second precedence tier | Twelve states instead of six, and the state that holds both `E -> T .` and `T -> T . * F` |
-| `F -> ( E )` | `)` enters the FOLLOW sets, which changes several reduce rows |
-| A larger symbol set | Your discovery order may number states differently from the printed table |
+Compute one small result and check it before you go on.  The assignment gives you a check after each function for this reason.
 
-Three pieces of advice, in order of how much time they save.
+Keep every piece that repeats until nothing changes in the same shape, because FIRST sets, closure, and the set of states are all *fixed points*: you start small and keep going until a whole pass adds nothing.
 
-Check every step against the [class activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsing2.md) before moving to the next one.  The activity prints the correct closure, the twelve item sets, the FOLLOW sets, and the full ACTION and GOTO table, so you never have to wonder whether a bug is upstream or downstream.
-
-If your numbering diverges from the activity's, document the mapping rather than renaming states by hand.  Renumbering by hand is how you introduce an error into code that was correct.
-
-And read row 2 of the finished table when you get there.  In the ladder grammar it shifts on `*` and reduces on `+`, and that single row is where `*` binds tighter than `+`.  Nothing decided it at parse time.  It fell out of the item sets, which is the result this whole tutorial exists to make believable.
+And when the table is done, read one row.  Find the state holding both `E -> T .` and `T -> T . * F`.  It shifts on `*` and reduces on `+`, and that one row is where `*` binds tighter than `+`.  Nothing decided it at parse time.  It fell out of the item sets, which is the result this whole tutorial exists to make believable.
 
 ---
 

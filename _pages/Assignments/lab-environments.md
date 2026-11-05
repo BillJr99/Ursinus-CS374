@@ -23,6 +23,8 @@ This is a walkthrough, and there is nothing to submit.  It shows you the one dat
 
 ## Part 1: The Scope Table
 
+[Python for Language Work]({{ site.baseurl }}/Tutorials/PythonForLanguageWork#classes-dataclasses-and-exceptions) covers the classes and exceptions used here.
+
 A block can use the names of the blocks around it, and it can also hide them with its own.  So each scope needs its own table of names and a link to the scope that encloses it.  Here is a program after entering one block:
 
 ```text

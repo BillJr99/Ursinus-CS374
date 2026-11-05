@@ -16,6 +16,7 @@ These tutorials are where you go for depth on your own schedule.  They are worke
 
 ## Companions to the Assignments
 
+- [C for Flex and Bison](CForFlexAndBison): structs, pointers, strings, linked lists, tagged values, tables of functions, and Make, as the Parser and Interpreter assignments use them
 - [Python for Language Work](PythonForLanguageWork): lists, dictionaries, sets, f-strings, JSON, classes, dataclasses, exceptions, generators, `unittest`, and capture groups, for every programming assignment
 - [Parser Combinators: Parsers as First-Class Values](ParserCombinators): companion to Recursive Descent Parsing
 - [Building a Lexer and Parser with PLY](PLYLexerAndParser): the generator-toolchain route through the Lexer assignment, and the reading for the first interpretation session
@@ -34,13 +35,15 @@ These tutorials are where you go for depth on your own schedule.  They are worke
 
 ## Companions to the Team Language Project
 
+- [Team Language Extensions Menu](LanguageExtensions): each extension a team can adopt
+- [The Music and Live-Coding Path](MusicLiveCodingPath): how Direction B fits the course
 - [The Project Language Guide](ProjectLanguageGuide): a complete worked path for the team project
 - [A Syntax Highlighter for Your Language with tree-sitter](SyntaxHighlighter): an editor-support extension (tree-sitter grammar + VS Code highlighting, optional diagnostic) with big Demo-Day payoff
 - [CI and TDD for Interpreters](CITDDForInterpreters): test suites, GitHub Actions, and coverage for your language
 - [Shell Skills for Language Development](ShellForLanguageDev): run, test, and debug confidently from the command line
 - [Publishing Your Language: pip, npm, and Docker](PublishingYourLanguage): release hardening and distribution
-- [ShipIt: Repo Hygiene, README, Packaging, and Your Portfolio]({{ site.baseurl }}/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist), *anchors required work*, the self-check scored within the project's Documentation and Reproducibility dimension
-- [Demo Day Guide: External Guests]({{ site.baseurl }}/Projects/TeamLanguage#demo-day-external-guests): presenting your language to guests at Demo Day
+- [ShipIt: Repo Hygiene, README, Packaging, and Your Portfolio]({{ site.baseurl }}/Tutorials/ShipIt), *anchors required work*, the self-check scored within the project's Documentation and Reproducibility dimension
+- [Demo Day Guide: External Guests]({{ site.baseurl }}/Tutorials/DemoDayGuide): presenting your language to guests at Demo Day
 - [Build a Bytecode VM](BytecodeVM): a compilation-target extension for ambitious teams
 - [From AST to Code: Visitors and Transpilers](ASTToCode): expression-oriented design, the Visitor pattern, and transpiling your AST to Python, JavaScript, and Haskell (with source maps)
 - [Coroutines and Generators: Pausable Computation](CoroutinesAndGenerators): `yield`, `send`, and `async`/`await` built up from the idea of a frozen stack frame, ending with generator objects in your interpreter

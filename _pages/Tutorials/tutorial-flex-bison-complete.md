@@ -592,6 +592,8 @@ The shape of the tree is the precedence: `Multiply` sits below `Add`, so it runs
 
 ## 4.5 Variables: Assignment and Lookup
 
+If C is new to you, [C for Flex and Bison]({{ site.baseurl }}/Tutorials/CForFlexAndBison) covers the structs, pointers, and strings used from here on.
+
 A variable needs two new tokens and two new grammar rules.  `x = 3` stores a value under a name, and `x` reads it back.  The place that holds the names is the *symbol table*.
 
 ```c
@@ -630,32 +632,25 @@ Node *create_var(char *name) {
     return node;
 }
 
-/* The symbol table: a linked list of name and value pairs. */
-typedef struct Var {
-    char *name;
-    double value;
-    struct Var *next;
-} Var;
-
-static Var *table = NULL;
+/* The symbol table: an array of name and value pairs. */
+static struct { char *name; double value; } table[100];
+static int table_size = 0;
 
 void set_var(char *name, double value) {
-    for (Var *v = table; v; v = v->next) {
-        if (strcmp(v->name, name) == 0) {   /* already there: update it */
-            v->value = value;
+    for (int i = 0; i < table_size; i++) {
+        if (strcmp(table[i].name, name) == 0) {   /* already there: update it */
+            table[i].value = value;
             return;
         }
     }
-    Var *v = malloc(sizeof(Var));           /* new name: insert it */
-    v->name = name;
-    v->value = value;
-    v->next = table;
-    table = v;
+    table[table_size].name = name;                /* new name: add it */
+    table[table_size].value = value;
+    table_size++;
 }
 
 double get_var(char *name) {
-    for (Var *v = table; v; v = v->next) {
-        if (strcmp(v->name, name) == 0) return v->value;
+    for (int i = 0; i < table_size; i++) {
+        if (strcmp(table[i].name, name) == 0) return table[i].value;
     }
     fprintf(stderr, "undefined variable: %s\n", name);
     exit(1);

@@ -62,7 +62,7 @@ tags:
 ---
 Welcome to CS374!  This warmup has two jobs: to confirm your tools before the build begins, and to capture your current relationship with programming languages as a baseline you'll come back to at the end of the semester.
 
-One pointer before you begin.  Several assignments this semester offer **directions**, which are equivalent ways of meeting the same deliverable, and some of those directions build toward live-coded music.  If a language that makes music appeals to you, please skim the [Music and Live-Coding guide]({{ site.baseurl }}/Projects/TeamLanguage#the-music-and-live-coding-path) this week.  You choose directions later, inside each assignment, so nothing is committed now.
+One pointer before you begin.  Several assignments this semester offer **directions**, which are equivalent ways of meeting the same deliverable, and some of those directions build toward live-coded music.  If a language that makes music appeals to you, please skim the [Music and Live-Coding guide]({{ site.baseurl }}/Tutorials/MusicLiveCodingPath) this week.  You choose directions later, inside each assignment, so nothing is committed now.
 
 ---
 

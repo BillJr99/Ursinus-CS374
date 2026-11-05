@@ -1640,7 +1640,7 @@ Purity forbids a function from leaving traces on the world.  That makes it trust
 - [Build a Complete Interpreter in Python](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/BuildAnInterpreter): its metacircular Scheme evaluator section covers s-expression parsing, environment chains, the evaluator core, the global environment, and tail-call optimization via trampoline.  The Interpreter assignment has you build the same architecture for the Mini language.
 
 ---
-- Continuation-passing style returns as the optional [continuations extension](https://www.billmongan.com/Ursinus-CS374-Fall2026/Projects/TeamLanguage#continuations-and-first-class-control) of the Team Language Project.
+- Continuation-passing style returns as the optional [continuations extension](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LanguageExtensions#continuations-and-first-class-control) of the Team Language Project.
 
 ---
 

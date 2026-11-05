@@ -61,7 +61,7 @@ Download [reductions.md]({{ site.baseurl }}/files/starters/lambda/reductions.md)
 
 ## Part 1: AND and OR
 
-A Church boolean is a function that picks one of two arguments:
+[Church Booleans](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-lambdacalculus2.md#10) covers this in the activity.  A Church boolean is a function that picks one of two arguments:
 
 ```text
 TRUE  = λa.λb. a      picks the first argument
@@ -105,7 +105,7 @@ NOT = λb. b FALSE TRUE
 
 ## Part 3: SUCC and ADD
 
-A Church numeral is a function that applies `f` that many times.  The number *is* the repetition:
+[Church Numerals](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-lambdacalculus2.md#16) covers this in the activity.  A Church numeral is a function that applies `f` that many times.  The number *is* the repetition:
 
 ```text
 ZERO = λf.λx. x

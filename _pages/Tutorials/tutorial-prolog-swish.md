@@ -31,7 +31,7 @@ tags:
 
 # Prolog in the Browser with SWISH
 
-This tutorial is the companion to the optional **[Logic Programming extension]({{ site.baseurl }}/Projects/TeamLanguage#logic-programming-a-declarative-sublanguage)** of the Team Language Project, and it stands on its own as a tour of the declarative paradigm.  Everything here runs in the browser at [SWISH](https://swish.swi-prolog.org/), so there is nothing to install.  For depth beyond this tutorial, read the opening chapters of [The Power of Prolog](https://www.metalevel.at/prolog).
+This tutorial is the companion to the optional **[Logic Programming extension]({{ site.baseurl }}/Tutorials/LanguageExtensions#logic-programming-a-declarative-sublanguage)** of the Team Language Project, and it stands on its own as a tour of the declarative paradigm.  Everything here runs in the browser at [SWISH](https://swish.swi-prolog.org/), so there is nothing to install.  For depth beyond this tutorial, read the opening chapters of [The Power of Prolog](https://www.metalevel.at/prolog).
 
 Logic programming is the widest paradigm contrast in the course.  Every other assignment is about **evaluation**: you write an expression and a machine reduces it to a value.  Prolog is about **relations**; you state what is true, pose a query, and a search engine finds every way to make it true.
 

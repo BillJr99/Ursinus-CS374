@@ -41,8 +41,13 @@ info:
       progressing: The form chooses correctly, but a case with no matching clause is not reported
       proficient: "`cond` evaluates tests in order and only the chosen expression, reports an error when no clause matches, and the provided programs give the same output as before"
   readings:
+    - rtitle: "From Calculator to Scheme Activity"
+      rlink: "Activities/liascript-calculator-to-scheme.md"
+      liapage: true
     - rtitle: "Flex and Bison"
       rlink: "../Tutorials/FlexAndBison"
+    - rtitle: "C for Flex and Bison"
+      rlink: "../Tutorials/CForFlexAndBison"
     - rtitle: "Scope Chains and Closures Activity (the scope chain this interpreter uses)"
       rlink: "Activities/liascript-scope-chains.md"
       liapage: true
@@ -92,6 +97,8 @@ make
 > (4 5 6)
 > ```
 
+[From Calculator to Scheme](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-calculator-to-scheme.md#7) builds this same evaluator in Python, and [C for Flex and Bison]({{ site.baseurl }}/Tutorials/CForFlexAndBison) covers the C it is written in: structs, `->`, `switch`, and the table of functions.
+
 Read these three files in this order, because each change below touches a different one:
 
 - **`scanner.l`** turns characters into tokens: numbers, symbols, `#t`, `#f`, and parentheses.
@@ -108,7 +115,7 @@ Read these three files in this order, because each change below touches a differ
 
 ## Part 2: Add a Primitive, `max`
 
-A primitive is a function written in C.  It receives its evaluated arguments as a list, and `first(a)` and `second(a)` read them.  So adding one takes two lines in `scheme.c`: a function next to `prim_add`, and a row in the `PRIMITIVES` table.  Write `prim_max`, which returns the larger argument, and add its row under the name `max`.
+A primitive is a function written in C, and [the table of functions]({{ site.baseurl }}/Tutorials/CForFlexAndBison#enums-switch-and-a-table-of-functions) shows the pattern on another example.  It receives its evaluated arguments as a list, and `first(a)` and `second(a)` read them.  So adding one takes two lines in `scheme.c`: a function next to `prim_add`, and a row in the `PRIMITIVES` table.  Write `prim_max`, which returns the larger argument, and add its row under the name `max`.
 
 ```bash
 make && printf '(max 3 7)\n(max (+ 5 5) 7)\n' | ./scheme
@@ -118,7 +125,7 @@ make && printf '(max 3 7)\n(max (+ 5 5) 7)\n' | ./scheme
 
 ## Part 3: Add a Shorthand, `'`
 
-Scheme programmers write `'x` for `(quote x)`.  The evaluator already handles `quote`, so this change lives only in the scanner and the grammar.
+Scheme programmers write `'x` for `(quote x)`, and [Step 5: Quote](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-calculator-to-scheme.md#10) explains what `quote` does.  The evaluator already handles `quote`, so this change lives only in the scanner and the grammar.
 
 1. In `scanner.l`, the last rule catches a stray `'` as an error, and it is the only character that rule can still reach.  Replace that rule with one that returns the character:
 
@@ -140,7 +147,7 @@ make && printf "'(a b c)\n(car '(1 2))\n" | ./scheme
 
 ## Part 4: Add a Special Form, `cond`
 
-`cond` has to be a special form, because a call would evaluate every clause, and `cond` must evaluate only the one it chooses.  It looks like this:
+[Step 4: If](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-calculator-to-scheme.md#9) shows why `if` is a special form, and `cond` has to be one for the same reason: a call would evaluate every clause, and `cond` must evaluate only the one it chooses.  It looks like this:
 
 ```text
 (cond (test1 expr1) (test2 expr2) ...)

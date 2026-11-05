@@ -774,7 +774,7 @@ match xs with
 
 # Advanced: A Metacircular Scheme Evaluator, Scheme in Python
 
-This advanced section goes deeper into the same lexer -> parser -> environment -> evaluator architecture you built for Mini above, and it backs the Team Language Project's mal (Make-a-Lisp) scaffold option and its [Contribute Upstream extension]({{ site.baseurl }}/Projects/TeamLanguage#contribute-upstream-an-open-source-contribution) for teams heading that way.
+This advanced section goes deeper into the same lexer -> parser -> environment -> evaluator architecture you built for Mini above, and it backs the Team Language Project's mal (Make-a-Lisp) scaffold option and its [Contribute Upstream extension]({{ site.baseurl }}/Tutorials/LanguageExtensions#contribute-upstream-an-open-source-contribution) for teams heading that way.
 
 An interpreter written in the very language it interprets sounds like a paradox, but it is actually one of the most clarifying ideas in computer science: it shows that the language is expressive enough to describe its own evaluation rules, and it makes those rules precise enough to run.  Think of it like a dictionary that defines every word using other words in the same dictionary: the circularity is the point here, because nothing outside the language is needed to explain it.  Building this evaluator in Python forces every semantic choice to become explicit code, revealing the machinery that the Mini interpreter you just built already contains.
 
