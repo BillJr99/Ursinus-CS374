@@ -72,6 +72,7 @@ In this lab you write two programs that run finite automata: a DFA simulator and
 
 The class notes cover every idea this lab uses, with a worked example of each.  Read these before Part 0, and come back when a step points to one:
 
+- [Python for Language Work]({{ site.baseurl }}/Tutorials/PythonForLanguageWork): dictionaries, sets, f-strings, JSON, classes, and exceptions, if you have not used them
 - [What a DFA is, and how to trace one](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-automata.md#5)
 - [A DFA as JSON, and in Python](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-automata.md#15)
 - [Designing a DFA by asking what it must remember](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-automata.md#17), with [a worked machine](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-automata.md#18)

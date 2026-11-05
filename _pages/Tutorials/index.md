@@ -16,6 +16,7 @@ These tutorials are where you go for depth on your own schedule.  They are worke
 
 ## Companions to the Assignments
 
+- [Python for Language Work](PythonForLanguageWork): lists, dictionaries, sets, f-strings, JSON, classes, dataclasses, exceptions, generators, `unittest`, and capture groups, for every programming assignment
 - [Parser Combinators: Parsers as First-Class Values](ParserCombinators): companion to Recursive Descent Parsing
 - [Building a Lexer and Parser with PLY](PLYLexerAndParser): the generator-toolchain route through the Lexer assignment, and the reading for the first interpretation session
 - [Grammars in Python](GrammarsInPython): CFGs as dictionaries, left-recursion detection, parse trees as data, a derivation tracer, and an ambiguity detector

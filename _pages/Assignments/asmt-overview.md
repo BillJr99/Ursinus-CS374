@@ -139,52 +139,11 @@ Route A is still the one I recommend, because the container carries the entire s
 
 Decide at Step 2: if Docker Desktop installs and the tutorial's `docker run hello-world` succeeds, run Step 2 inside the container; if Docker will not run on your machine, run it natively and say so in your transcript.
 
-### Terminal Basics: Opening One, Moving Around, and Saving a File
+### Terminal Basics
 
-Every step on this page happens at a terminal, and several ask you to save a file.  Here is how, on every system this course supports.  Come back to this section whenever a step says "open a terminal," "`cd`," or "save it."
-
-#### Opening a terminal
-
-| System | How to open it | What the prompt looks like |
-|---|---|---|
-| macOS | Press Cmd+Space, type `Terminal`, press Enter (Terminal also lives in **Applications > Utilities**) | `you@laptop ~ %` |
-| Windows, PowerShell | Open the Start menu, type `PowerShell`, press Enter (not "Command Prompt").  On Windows 11, right-clicking the Start button and choosing **Terminal** opens PowerShell too | `PS C:\Users\you>` |
-| Windows, WSL2 Ubuntu | Open the Start menu, type `Ubuntu`, press Enter (Step 1 of the Development Environment tutorial installs it) | `you@laptop:~$` |
-| Linux | Press Ctrl+Alt+T, or open Terminal from the applications menu | `you@laptop:~$` |
-| VS Code, on any system | Press Ctrl+` (backtick), or **View > Terminal**.  It opens in the folder you have open | one of the above |
-| The course container | `docker compose run --rm cs374` from `cs374-work/.devcontainer/`, or **Reopen in Container** in VS Code | `student@a1b2c3d4e5f6:/workspace$` |
-
-#### Printing where you are, and moving around
-
-The terminal always has a current folder, and every relative path is measured from it.  These commands work the same in every shell above, including PowerShell:
-
-```bash
-pwd               # print the folder you are in
-ls                # list what is here (ls -la also shows hidden files; in PowerShell, plain ls)
-cd ~              # go to your home folder
-mkdir -p ~/cs374  # make a folder for this course (in PowerShell: mkdir ~/cs374)
-cd ~/cs374        # go into it
-cd ..             # go up one level
-```
-
-`~` is your home folder: `/Users/you` on macOS, `C:\Users\you` in PowerShell, and `/home/you` in WSL2 Ubuntu.  From WSL2, your Windows files are under `/mnt/c/Users/you`.  `~` does *not* work in the old Windows Command Prompt, which is one reason to use PowerShell or Ubuntu instead.
+Every step on this page happens at a terminal, and several ask you to save a file.  [Step 0 of Shell Skills]({{ site.baseurl }}/Tutorials/ShellForLanguageDev#step-0-open-a-terminal-move-around-and-save-a-file) shows how to open a terminal, move around, and save a file on every system this course supports.  Come back to it whenever a step says "open a terminal," "`cd`," or "save it."
 
 Do all of this course's work in `~/cs374`, or in the `cs374-work` clone from the tutorial on Route A, so that every `cd ~/cs374` on this page lands in the same place.
-
-Two habits worth building right away: press **Tab** to complete a name you have started typing, and press the up arrow to recall the previous command.
-
-#### Saving a file
-
-When a step says "save this as `warmup_check.py`," first `cd` into the folder the file belongs in, then use one of these:
-
-- **nano**, on macOS, Linux, WSL2, and inside the course container.  Run `nano warmup_check.py`, paste the contents (Cmd+V on macOS; right-click or Ctrl+Shift+V in Ubuntu), press **Ctrl+O** then **Enter** to write the file, then **Ctrl+X** to exit.
-- **vim**, present on every Unix system.  Run `vim warmup_check.py`, press **i** to enter insert mode, paste, press **Esc**, then type `:wq` and press **Enter** to write and quit.  If you get stuck, press **Esc**, type `:q!`, and press **Enter** to leave without saving.
-- **VS Code**, on any system.  From the folder, run `code .` to open it (or **File > Open Folder**), then **File > New File**, paste, and press **Ctrl+S** (Cmd+S on macOS) to save under the name the step gives.  Type the name with its extension, `warmup_check.py`, and check that the editor did not add `.txt`.
-- **PowerShell without nano.**  Run `notepad warmup_check.py`, click **Yes** to create the file, paste, save, and close Notepad.  For a one-line file, `Set-Content sample.txt "let x = 1;"` writes it directly.
-
-#### Checking that the file landed where you meant it to
-
-Run `ls` and see the file's name; run `cat warmup_check.py` and see its contents.  If `ls` does not show it, you saved into a different folder than the one you are in, and `pwd` tells you which one that is.
 
 With those basics in hand, here are the three verification steps.
 
@@ -236,7 +195,7 @@ In PowerShell, spell them `python --version` and `python -m pip --version`.  If 
 
 ### Step 2: Saving and running the starter script
 
-**Do this.**  Save the script below as `warmup_check.py`, using any of the ways in *Terminal Basics* above.  On Route A, save it in your `cs374-work` repository, which is `/workspace` inside the container; on Route B, save it in `~/cs374`.  It exercises `re`, `json`, and `match`/`case`, and prints a confirmation banner if all three pass.
+**Do this.**  Save the script below as `warmup_check.py`, using any of the ways in [Step 0 of Shell Skills]({{ site.baseurl }}/Tutorials/ShellForLanguageDev#step-0-open-a-terminal-move-around-and-save-a-file).  On Route A, save it in your `cs374-work` repository, which is `/workspace` inside the container; on Route B, save it in `~/cs374`.  It exercises `re`, `json`, and `match`/`case`, and prints a confirmation banner if all three pass.
 
 ```python
 # warmup_check.py: CS374 environment verification script
@@ -497,29 +456,7 @@ git push -u origin main
 
 ### Other ways to do Steps 2 and 3
 
-Choose at most one of these, and verify with `ssh -T git@github.com` either way.
-
-#### The GitHub CLI, and the one I would take on native Windows
-
-The [GitHub CLI](https://cli.github.com/), the `gh` command, does the entire exchange in 2b through 2c for you.  Install it (`winget install --id GitHub.cli` in PowerShell, `brew install gh` on macOS, or your package manager on Linux), then run `gh auth login`, choose **GitHub.com**, choose **SSH** as the protocol, and answer yes when it offers to generate a new SSH key and upload it to your account.
-
-That one prompt replaces `ssh-keygen`, the `cat` of the `.pub` file, and the paste into Settings.  Verify it exactly as in 2d and paste that output; `gh` also clones for you, with `gh repo clone YOURUSERNAME/REPO` in place of the `git clone` in 3a.
-
-#### VS Code, for the clone in 3a
-
-It drives the same git underneath, so the result is identical.  With no folder open, the Source Control view (Ctrl+Shift+G, or Cmd+Shift+G on macOS) offers a **Clone Repository** button; from anywhere, the Command Palette (Ctrl+Shift+P, or Cmd+Shift+P) runs **Git: Clone**.
-
-Either one asks for the repository address, where you paste the same SSH URL, then asks which local folder to put it in, `~/cs374` here, and offers to open the clone when it finishes.  Say yes: the integrated terminal (Ctrl+`) then opens already inside the repository, which is where you run `git log --oneline` for your transcript.
-
-The palette also offers **Clone from GitHub**, which lets you pick from a list of your repositories instead of pasting a URL, though it signs you in to GitHub inside VS Code and authenticates as that account rather than with your key.  This is the same editor you identified in Part 1, Step 3, so if you set a breakpoint there you already have it installed.
-
-#### GitHub Desktop, for 3a and 3b
-
-[GitHub Desktop](https://desktop.github.com/) is the graphical client; it bundles Git for Windows, which is where `ssh-keygen` and Git Bash come from, and it handles its own authentication so you can clone, commit, and push without touching a key at all.
-
-Paste `git log --oneline` from Repository > Open in terminal, which is the same transcript the command-line route produces.  Create the key in Step 2 anyway, because the checklist asks for the `ssh -T` output.
-
-> **Telling the two GitHub downloads apart on native Windows without WSL2.**  `gh` is the command-line tool, a separate install rather than something GitHub Desktop brings along, though installing both is common and they coexist happily.  GitHub Desktop is the graphical client just described.  Either one spares you the manual key dance; the Ubuntu or WSL2 route gives you the standard Unix tooling instead, and every command on this page then works as written.
+If you would rather use the GitHub CLI, VS Code, or GitHub Desktop, [Other Ways to Connect to GitHub]({{ site.baseurl }}/Tutorials/DevEnvironment#other-ways-to-connect-to-github) walks through each one.  Choose at most one, and verify with `ssh -T git@github.com` either way.
 
 ### Step 4: Making a reproducible Python environment with uv
 

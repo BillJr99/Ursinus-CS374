@@ -62,6 +62,8 @@ Work the parts in order, because I test each one on its own and each part uses w
 
 ### Environment and Setup
 
+This assignment uses Python's dictionaries, f-strings, and files as well as `re`.  [Python for Language Work]({{ site.baseurl }}/Tutorials/PythonForLanguageWork) covers them if you have not used them.
+
 Before you start, you need:
 
 - Python 3.10 or newer.  The `re` and `json` modules are part of the standard library, so there is nothing to install.
@@ -470,98 +472,9 @@ PASS MARKDOWN_LINK (3 positive, 3 negative)
 
 ## Part 3: Regex-Based Text Transformer and Log Parser
 
-### Step 3.0: Groups and Group References, a Walkthrough
+### Step 3.0: Groups and Group References
 
-The date step of the transformer asks you to take a date apart and put the pieces back together in a different order.  Two tools do that work.  A *capture group* `(...)` remembers the text it matched.  A *group reference* such as `\1` in the replacement string of `re.sub` puts that remembered text back.  This walkthrough shows both on a date conversion that runs in the opposite direction from the one you will write: it turns ISO `YYYY-MM-DD` into the European `DD.MM.YYYY`.  You see every technique here, and you still decide for yourself how to apply it to `MM/DD/YYYY`.
-
-> **Do this.**
-> 1. Create `groups_demo.py` in `cs374-regex` and paste the code below into it.
-> 2. Run `python3 groups_demo.py`.  This file is practice, like `five_verbs.py`, and is not a deliverable.
-
-```python
-import re
-
-text = "2026-09-18 was the deadline; it moved to 2026-10-02, then to 2026-11-30"
-
-# 1. Numbering: each ( opens a group, counted left to right from 1.  Group 0 is the whole match.
-m = re.search(r"(\d{4})-(\d{2})-(\d{2})", text)
-print("1. group(0):", m.group(0), "| group(1):", m.group(1), "| group(2):", m.group(2), "| group(3):", m.group(3))
-print("   groups():", m.groups(), "| span(2):", m.span(2))
-
-# 2. Alternation inside a group.  Without the parentheses, | splits the WHOLE pattern in two.
-print("2. ungrouped:", re.search(r"\d{4}-0[1-9]|1[0-2]-\d{2}", "2026-12-25").group(0))
-print("   grouped:  ", re.search(r"\d{4}-(0[1-9]|1[0-2])-\d{2}", "2026-12-25").group(0))
-ISO = r"(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])"
-for s in ["2026-09-18", "2026-13-01", "2026-02-31", "2026-00-15"]:
-    print(f"   fullmatch {s}: {bool(re.fullmatch(ISO, s))}")
-
-# 3. Non-capturing groups (?:...) group without taking a number.
-m = re.search(r"(?:\d{4})-(\d{2})-(\d{2})", text)
-print("3. with (?:...) on the year, group(1) is now the month:", m.group(1), "| groups():", m.groups())
-
-# 4. Group references in re.sub: \1, \2, \3 in the replacement mean "the text group n captured".
-print("4.", re.sub(ISO, r"\3.\2.\1", text))
-print("   not raw: ", repr(re.sub(ISO, "\3.\2.\1", "2026-09-18")))
-print("   \\g<n> form:", re.sub(ISO, r"\g<3>.\g<2>.\g<1>", "2026-09-18"))
-
-# 5. Named groups: (?P<name>...) in the pattern, \g<name> in the replacement, m.group("name") in code.
-ISO_NAMED = r"(?P<year>\d{4})-(?P<month>0[1-9]|1[0-2])-(?P<day>0[1-9]|[12]\d|3[01])"
-print("5.", re.sub(ISO_NAMED, r"\g<day>.\g<month>.\g<year>", text))
-m = re.search(ISO_NAMED, text)
-print("   m.group('month'):", m.group("month"), "| m.groupdict():", m.groupdict())
-
-# 6. Word boundaries keep the pattern from rewriting part of a longer number.
-noisy = "ids 12026-09-18 and 2026-09-180, real date 2026-09-18"
-print("6. no \\b:  ", re.sub(ISO, r"\3.\2.\1", noisy))
-print("   with \\b:", re.sub(r"\b" + ISO + r"\b", r"\3.\2.\1", noisy))
-
-# 7. Replacing WITHIN a group: capture the context you keep, rewrite only the part you change.
-cfg = "user=alice token=8f3a91 retries=3 token=77c0de"
-print("7.", re.sub(r"(token=)\w+", r"\1[REDACTED]", cfg))
-print("   year only:", re.sub(ISO, r"2027-\2-\3", text))
-print("   \\g<1> then digits:", re.sub(ISO, r"\g<1>0101", "2026-09-18"), "| \\1 then digits:", repr(re.sub(ISO, r"\10101", "2026-09-18")))
-MONTHS = {"09": "Sep", "10": "Oct", "11": "Nov"}
-print("   function:", re.sub(ISO_NAMED, lambda m: f"{m.group('year')}-{MONTHS[m.group('month')]}-{m.group('day')}", text))
-```
-
-> **You should see.** Twenty lines, numbered by section.  Section 4 and section 5 print the same sentence, section 6 shows the boundaries protecting the two longer numbers, and section 7 changes one piece of each match while leaving the rest exactly as it was.
-
-```text
-1. group(0): 2026-09-18 | group(1): 2026 | group(2): 09 | group(3): 18
-   groups(): ('2026', '09', '18') | span(2): (5, 7)
-2. ungrouped: 12-25
-   grouped:   2026-12-25
-   fullmatch 2026-09-18: True
-   fullmatch 2026-13-01: False
-   fullmatch 2026-02-31: True
-   fullmatch 2026-00-15: False
-3. with (?:...) on the year, group(1) is now the month: 09 | groups(): ('09', '18')
-4. 18.09.2026 was the deadline; it moved to 02.10.2026, then to 30.11.2026
-   not raw:  '\x03.\x02.\x01'
-   \g<n> form: 18.09.2026
-5. 18.09.2026 was the deadline; it moved to 02.10.2026, then to 30.11.2026
-   m.group('month'): 09 | m.groupdict(): {'year': '2026', 'month': '09', 'day': '18'}
-6. no \b:   ids 118.09.2026 and 18.09.20260, real date 18.09.2026
-   with \b: ids 12026-09-18 and 2026-09-180, real date 18.09.2026
-7. user=alice token=[REDACTED] retries=3 token=[REDACTED]
-   year only: 2027-09-18 was the deadline; it moved to 2027-10-02, then to 2027-11-30
-   \g<1> then digits: 20260101 | \1 then digits: 'A01'
-   function: 2026-Sep-18 was the deadline; it moved to 2026-Oct-02, then to 2026-Nov-30
-```
-
-**Reading the code.**
-
-- **Section 1, numbering.**  Groups are numbered by the position of their *opening* parenthesis, counting from the left and starting at 1, so the year is group 1, the month group 2, and the day group 3.  Group 0 is always the whole match.  `span(2)` reports where group 2 sits in the string, here characters 5 through 7.
-- **Section 2, alternation.**  `|` has the lowest precedence of any operator, so `\d{4}-0[1-9]|1[0-2]-\d{2}` means "`\d{4}-0[1-9]`, *or* `1[0-2]-\d{2}`."  On `2026-12-25` the first branch fails, and the second branch matches only `12-25`, without the year.  Wrapping the alternation in parentheses confines the choice to the month position.  That is how `(0[1-9]|1[0-2])` expresses "01 through 12" and `(0[1-9]|[12]\d|3[01])` expresses "01 through 31," and the same parentheses that confine the choice also capture the result.  Notice that `2026-02-31` still passes: as P7 says, a regex checks the format and ranges, not the calendar.
-- **Section 3, non-capturing groups.**  `(?:...)` groups for precedence without capturing, so every group after it moves down one number.  If you add or remove a capturing group, renumber every reference that comes after it.
-- **Section 4, group references.**  In the *replacement* string of `re.sub`, `\3` means "whatever group 3 captured in this match."  `re.sub` applies the replacement to every match, so all three dates are rewritten, including the one at the very start of the string and the one at the very end.  The replacement must be a raw string: without the `r`, Python turns `"\3"` into the control character `\x03` before `re` ever sees it, as the `not raw` line shows.  `\g<3>` is the long form of `\3`.  Use it when a literal digit follows the reference, because `\30` would be read as group 30.
-- **Section 5, named groups.**  `(?P<year>...)` names a group, `\g<year>` refers to it in a replacement, and `m.group("year")` or `m.groupdict()` reads it in code.  The named form gives the same result as section 4 and cannot get the order wrong by miscounting.  Step 3.2 requires named groups for the log parser.
-- **Section 6, boundaries.**  Without `\b`, the pattern happily matches the last ten characters of `12026-09-18` and the first ten of `2026-09-180`, and rewrites those pieces of longer numbers.  `\b` on both ends requires a non-word character (or the edge of the string) just outside the date.
-- **Section 7, replacing within a group.**  `re.sub` always replaces the *whole match*; there is no way to point it at "just group 2."  So to change one piece and keep the rest, capture the pieces you keep and write them back with references, and write the new text literally where the changed piece goes.  In `r"\1[REDACTED]"`, `\1` puts back `token=` and `[REDACTED]` takes the place of the value, which was matched but deliberately not captured.  In `r"2027-\2-\3"`, the year is the changed piece, so it is the one part *not* referenced.  When a literal digit follows a reference, use the `\g<1>` form: `r"\10101"` does not mean "group 1, then `0101`"; Python's `re` reads `\101` as the octal escape for the letter `A`, so the year silently disappears and you get `'A01'`, with no error to warn you.  When the new text must be *computed* from what a group captured (a lookup, arithmetic, a change of case), pass a function instead: it receives the match object, transforms the one group it cares about, and passes the others through unchanged with `m.group(...)`.
-
-> **Now try this.**
-> 1. Change the section 4 replacement to `r"\2/\3/\1"` and predict the output before you run it.
-> 2. Section 7 passed `re.sub` a function in place of the replacement string.  It calls the function once per match with the match object and inserts whatever string the function returns.  Predict, then run this one, which reorders instead of transforming: `re.sub(ISO_NAMED, lambda m: f"{m.group('day')}.{m.group('month')}.{m.group('year')}", text)`.  When is a function worth the extra typing?  (One answer: when the new text needs arithmetic or a lookup, such as turning `09` into `September`.)
+The date step of the transformer takes a date apart and puts the pieces back together in a different order.  A *capture group* `(...)` remembers the text it matched, and a *group reference* such as `\1` in a replacement string puts it back.  Work through [Capture Groups and Group References]({{ site.baseurl }}/Tutorials/PythonForLanguageWork#capture-groups-and-group-references) before Step 3.1: its script, `groups_demo.py`, shows numbering, alternation inside a group, `(?:...)`, group references, named groups, `\b`, and replacing within a group, in numbered sections that the steps below refer to.  The [Regular Expressions activity's Part III](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-regex.md#20) has more worked examples.
 
 ### Step 3.1: Text Transformer
 

@@ -58,6 +58,56 @@ The tree is the meaning.  When your interpreter evaluates `2 + 3 * 4`, it evalua
 
 ---
 
+## Worked Example: One Derivation and Its Parse Tree
+
+A derivation starts from the grammar's start symbol and rewrites one nonterminal per step until only terminals (tokens) remain.  A leftmost derivation always rewrites the leftmost nonterminal, which makes it unique for an unambiguous grammar and easy to check.  A parse tree is the same information drawn as a tree: each nonterminal becomes a node whose children are the right-hand side you chose for it.  Here is a three-production grammar for sums and products of integers; terminals are token names from your Lexer, in all caps.
+
+```ebnf
+expr    ::= term ( PLUS term )*
+term    ::= factor ( STAR factor )*
+factor  ::= INT | LPAREN expr RPAREN
+```
+
+The `( PLUS term )*` in the first production means "zero or more copies of `PLUS term`."  You will also see EBNF that writes the same repetition with braces, as `{ PLUS term }`; the two notations mean exactly the same thing, so these two lines define the same rule:
+
+```ebnf
+expr    ::= term ( PLUS term )*
+expr    ::= term { PLUS term }
+```
+
+Everything said about a `( ... )*` group applies equally to a `{ ... }` group.  Likewise, `( X )?` and `[ X ]` both mean "`X` once or not at all."
+
+One convention keeps derivations over EBNF clean: when you apply a production that contains a `( ... )*` group, decide how many times the group repeats and write out every copy in that one step, citing the production and the count.  Here is the leftmost derivation of `2 + 3 * 4`:
+
+```text
+Input:  2 + 3 * 4
+Tokens: INT(2) PLUS INT(3) STAR INT(4)
+
+expr
+=> term PLUS term                  expr:    ( PLUS term )* used once
+=> factor PLUS term                term:    ( STAR factor )* used zero times
+=> INT PLUS term                   factor:  INT                (this INT is 2)
+=> INT PLUS factor STAR factor     term:    ( STAR factor )* used once
+=> INT PLUS INT STAR factor        factor:  INT                (this INT is 3)
+=> INT PLUS INT STAR INT           factor:  INT                (this INT is 4)
+```
+
+Check the leftmost rule at line four: the sentential form was `INT PLUS term`, the only nonterminal left was `term`, so `term` is what got rewritten.  The last line is exactly the program's token sequence, which is how you know the derivation is finished.  The matching parse tree records the same six choices as nodes:
+
+```text
+                    expr
+              ________|________
+             /        |        \
+           term      PLUS      term
+            |              _____|_____
+            |             /     |     \
+          factor       factor  STAR  factor
+            |             |             |
+          INT(2)        INT(3)        INT(4)
+```
+
+Read the tree from the bottom.  `3 * 4` sits under its own `term` node, one level below the `PLUS`, so the multiplication is grouped before the addition happens.  No rule anywhere says "multiplication first."  The shape of the ladder says it: `PLUS` lives in `expr`, `STAR` lives in `term`, and `expr` is built from `term`s, so a `STAR` can never sit above a `PLUS`.  Part 3 asks you to make this argument for your own grammar and to show what goes wrong without the ladder.
+
 ## Model 1: One String, Two Trees
 
 *Intuition: The grammar `E -> E + E | E * E | num` looks reasonable at first glance.  It says an expression can be a sum, a product, or a number.  The problem is that it says nothing about which operation groups first, so a parser following it is free to build either tree.  This model makes that ambiguity concrete: you build both trees by hand.*

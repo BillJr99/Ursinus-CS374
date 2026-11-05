@@ -261,6 +261,138 @@ There are two functions here.  The outer one is named; the inner one is created,
 
 ---
 
+# Part 4b: `let`, Association Lists, and `assq`
+
+An evaluator is built from four ingredients: `let` to name a value once, an association list to store lookups, `assq` to search that list, and `map` and `apply` to spread work across a list.  This part builds each one with short examples.
+
+## `let`: naming a value once
+
+Every expression you have written so far names things only two ways: as a function parameter, or with a top-level `define`. `let` gives you a third way: a name that exists only for the extent of one expression. Use it when a function body needs the same value more than once and you do not want to compute it twice.
+
+The shape is `(let ((name expression)) body)`. It evaluates `expression` once, binds it to `name`, and then evaluates `body` with that binding visible.
+
+```scheme
+(let ((x (+ 2 3)))
+  (* x x))                   ; 25
+```
+
+Read that as: compute `(+ 2 3)`, call the result `x`, then compute `(* x x)` using that `x`. The parentheses nest more deeply than you are used to, so build them from the inside out. `(x (+ 2 3))` is one binding pair. `((x (+ 2 3)))` is a list holding that one pair. The `let` then wraps that list around a body.
+
+You can bind more than one name in the same `let` by adding more pairs:
+
+```scheme
+(let ((a 3)
+      (b 4))
+  (+ (* a a) (* b b)))       ; 25
+```
+
+Scheme computes both `a` and `b` from the *outside* environment, not from each other. A binding that depends on another binding needs `let*`, which you will not need here. Keep every binding in a single `let` independent of the others.
+
+> **Watch out!** A common typo is writing `(let (x (+ 2 3)) ...)` with one pair of parentheses missing. `let` always wants a *list of bindings*, so even a single binding needs its own extra parentheses: `((x (+ 2 3)))`, not `(x (+ 2 3))`. If Scheme complains that `x` is not a procedure, this is almost always why.
+
+**Practice (ungraded):** at your REPL, bind a single name to `(* 6 7)` with `let` and use it twice in the body, once to print it and once to compare it against `42` with `=`. If you have written `make-counter`, you have already used `let` for real; this is just isolating it so that the syntax becomes automatic.
+
+## Association lists: a list of pairs
+
+An **association list**, usually just called an *alist*, is Scheme's simplest lookup table: a list where each element is a pair, `(key . value)`, built with `cons`.
+
+```scheme
+(define ops (list (cons '+ +) (cons '- -)))
+```
+
+`(cons '+ +)` builds the pair `(+ . #<procedure:+>)`, a symbol on the left and the actual addition procedure on the right; `car` of that pair gets you the symbol back, `cdr` gets you the procedure back. `ops` is then a list of two such pairs. Nothing here is a new data type: it is exactly the `list`, `cons`, `car`, and `cdr` from Part 1, just arranged so that each element is itself a two-part `key . value` record.
+
+**Practice (ungraded):** build a two-entry alist pairing the symbols `'red` and `'blue` with the strings `"stop"` and `"go"`. Use `car` and `cdr` on the first entry by hand to confirm you get `red` and `"stop"` back.
+
+## `assq`: searching an alist
+
+Writing `car`/`cdr` chains to search an alist by hand works, but Scheme gives you `assq` to do it directly. `(assq key alist)` walks the list looking for a pair whose `car` is `eq?` to `key`, and returns that whole pair if found, or `#f` if not.
+
+```scheme
+(define ops (list (cons '+ +) (cons '- -)))
+(assq '+ ops)                ; (+ . #<procedure:+>)
+(assq '* ops)                ; #f
+```
+
+Notice that `assq` gives you back the **pair**, not just the value; you still need `cdr` to pull the value out once you have found it:
+
+```scheme
+(cdr (assq '+ ops))          ; #<procedure:+>
+```
+
+An evaluator relies on exactly that trick. Look up a symbol with `assq`, then `cdr` the result to get the value that symbol was paired with. If the symbol is not in the list, `assq` returns `#f`, and your code needs to decide what to do about that. A common pattern is:
+
+```scheme
+(let ((found (assq '* ops)))
+  (if found
+      (cdr found)
+      (error "not found:" '*)))
+```
+
+That `let` is doing exactly the job from the section above: `(assq '* ops)` only gets called once, its result is named `found`, and both the `if` test and the `error` branch reuse that name instead of calling `assq` a second time.
+
+**`assq` versus `assoc`.** Scheme gives you two searching functions, and they differ in one way. `assq` compares keys with `eq?`, an identity comparison. `assoc` compares keys with `equal?`, a structural comparison. For symbol keys such as `'+`, `'-`, or `'x`, the two never disagree. The reader interns every symbol it reads, so two occurrences of `'+` are already the same object in memory. Whenever your keys are symbols, `assq` is the correct and cheaper tool. `assoc` earns its keep once your keys are lists, strings, or other structured data, where two values can be `equal?` (same contents) without being `eq?` (same object):
+
+```scheme
+(define points (list (cons '(0 . 0) "origin")))
+
+(assq  '(0 . 0) points)      ; #f  -- eq? sees two DIFFERENT list objects
+(assoc '(0 . 0) points)      ; ((0 . 0) . "origin")  -- equal? compares structure
+```
+
+A lookup table with symbol keys needs only `assq`. Learn the difference anyway. A future lookup table keyed by lists or strings will silently miss every match under `assq`.
+
+**Practice (ungraded):** using the `'red`/`'blue` alist you built above, call `assq` for `'red` and confirm you get the pair back, then call it for a key that is not in the list and confirm you get `#f`.
+
+## `map`, once more
+
+You have seen `map` in section 4.1.  The one habit worth locking in: `map`'s first argument is always a *function*, never a function call. `(map square '(1 2 3))` passes the function `square` itself into `map`, which calls it once per element. `(map (square 1) '(1 2 3))` calls `square` first, gets back a number, and then tries to use that number as a function. That fails.
+
+```scheme
+(map square '(1 2 3))        ; (1 4 9)
+```
+
+`map` always returns a list the same length as its input, with each element replaced by the function's result on that element. When those elements are themselves expressions, `map` calls your function once per expression. A function that can handle a nested expression therefore handles the nesting automatically, one layer at a time. That is the role `map` plays in an evaluator.
+
+**Practice (ungraded):** call `(map square '(2 (+ 1 2) 4))` and read the error carefully. `square` only multiplies a number by itself, so it cannot handle the middle element, which is a list. Keep that error in mind. An evaluator handles *both* numbers and nested lists, which is why it can map `evaluate` over sub-expressions without hitting the error that `square` just hit.
+
+## `apply`, once more
+
+`apply` takes a function and a list, and calls the function with the list's elements spread out as separate arguments, rather than as one list argument.
+
+```scheme
+(apply + '(1 2 3))           ; same as (+ 1 2 3), which is 6
+(+ '(1 2 3))                 ; error: + does not want a list as an argument
+```
+
+That second line is worth trying on purpose: `+` wants numbers, not a list of numbers, so calling it directly on a list fails, and `apply` is exactly the tool that unpacks the list into individual arguments first. This matters for an evaluator because after `map` evaluates every operand down to a plain number, you are left holding a procedure and a list of numbers, precisely the two things `apply` wants.
+
+**Practice (ungraded):** call `(apply * '(2 3 4))` and confirm you get `24`, then call `(* '(2 3 4))` directly and read the error it produces.
+
+## Putting the four together
+
+Here is a small, complete example that uses all four forms from this section at once, entirely separate from the evaluator, so you can see them cooperate:
+
+```scheme
+(define square (lambda (n) (* n n)))
+(define ops (list (cons '+ +) (cons '- -) (cons '* *) (cons '/ /)))
+
+(define lookup
+  (lambda (sym)
+    (let ((found (assq sym ops)))
+      (if found
+          (cdr found)
+          (error "not found:" sym)))))
+
+(apply (lookup '*) (map square '(2 3 4)))   ; (* 4 9 16) = 576
+```
+
+Walk that last line from the inside out. `map` squares each element of `'(2 3 4)`, giving `(4 9 16)`. `lookup` searches `ops` with `assq` for the symbol `'*`, using a `let` so `assq` runs once, and returns the multiplication procedure. `apply` then calls that procedure with the three squared numbers spread out as arguments. That is, in miniature, the three-step shape of an evaluator, with a fixed operator and a fixed list in place of a nested expression tree.
+
+**Practice (ungraded):** run the block above as written, then change `'*` to `'+` and confirm the result changes to `29`. If both run correctly, you have every piece an evaluator needs.
+
+---
+
 # Part 5: Closures
 
 ```scheme

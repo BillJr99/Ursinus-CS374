@@ -110,61 +110,15 @@ Every later step that says "an `ebnf` block" or "a `text` block" means a block i
 
 ## Worked Example: One Derivation and Its Parse Tree
 
-A derivation starts from the grammar's start symbol and rewrites one nonterminal per step until only terminals (tokens) remain.  A leftmost derivation always rewrites the leftmost nonterminal, which makes it unique for an unambiguous grammar and easy to check.  A parse tree is the same information drawn as a tree: each nonterminal becomes a node whose children are the right-hand side you chose for it.  Here is a three-production grammar for sums and products of integers; terminals are token names from your Lexer, in all caps.
-
-```ebnf
-expr    ::= term ( PLUS term )*
-term    ::= factor ( STAR factor )*
-factor  ::= INT | LPAREN expr RPAREN
-```
-
-The `( PLUS term )*` in the first production means "zero or more copies of `PLUS term`."  You will also see EBNF that writes the same repetition with braces, as `{ PLUS term }`; the two notations mean exactly the same thing, so these two lines define the same rule:
-
-```ebnf
-expr    ::= term ( PLUS term )*
-expr    ::= term { PLUS term }
-```
-
-Everything this page says about a `( ... )*` group applies equally to a `{ ... }` group, and you may use either notation in `grammar.md`.  Likewise, `( X )?` and `[ X ]` both mean "`X` once or not at all."
-
-One convention keeps derivations over EBNF clean: when you apply a production that contains a `( ... )*` group, decide how many times the group repeats and write out every copy in that one step, citing the production and the count.  Here is the leftmost derivation of `2 + 3 * 4`:
-
-```text
-Input:  2 + 3 * 4
-Tokens: INT(2) PLUS INT(3) STAR INT(4)
-
-expr
-=> term PLUS term                  expr:    ( PLUS term )* used once
-=> factor PLUS term                term:    ( STAR factor )* used zero times
-=> INT PLUS term                   factor:  INT                (this INT is 2)
-=> INT PLUS factor STAR factor     term:    ( STAR factor )* used once
-=> INT PLUS INT STAR factor        factor:  INT                (this INT is 3)
-=> INT PLUS INT STAR INT           factor:  INT                (this INT is 4)
-```
-
-Check the leftmost rule at line four: the sentential form was `INT PLUS term`, the only nonterminal left was `term`, so `term` is what got rewritten.  The last line is exactly the program's token sequence, which is how you know the derivation is finished.  The matching parse tree records the same six choices as nodes:
-
-```text
-                    expr
-              ________|________
-             /        |        \
-           term      PLUS      term
-            |              _____|_____
-            |             /     |     \
-          factor       factor  STAR  factor
-            |             |             |
-          INT(2)        INT(3)        INT(4)
-```
-
-Read the tree from the bottom.  `3 * 4` sits under its own `term` node, one level below the `PLUS`, so the multiplication is grouped before the addition happens.  No rule anywhere says "multiplication first."  The shape of the ladder says it: `PLUS` lives in `expr`, `STAR` lives in `term`, and `expr` is built from `term`s, so a `STAR` can never sit above a `PLUS`.  Part 3 asks you to make this argument for your own grammar and to show what goes wrong without the ladder.
+The [worked derivation slide](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-derivationsambiguity.md#6) derives `2 + 3 * 4` on a three-production grammar and draws its tree, one rule per line, and it explains the two notations for repetition: `( X )*` and `{ X }` mean the same thing, as do `( X )?` and `[ X ]`, and you may use either in `grammar.md`.  When you apply a production with a repeated group, decide how many times the group repeats and write every copy in that one step, citing the production and the count.
 
 Make one derivation of your own on this grammar, smaller than the one you'll write, so the mechanics are settled before the real work.
 
 > **Do this.**
-> 1. Read the derivation above again with a pencil, checking at every line that the nonterminal being rewritten is the leftmost one.
-> 2. Copy the three-production grammar into a scratch section at the bottom of `grammar.md` (delete it before you submit).
+> 1. Read the derivation on the slide with a pencil, checking at every line that the nonterminal being rewritten is the leftmost one.
+> 2. Copy its three-production grammar into a scratch section at the bottom of `grammar.md` (delete it before you submit).
 > 3. Derive `2 * 3 + 4` step by step in the same format, and draw its tree.
-> 4. Compare with the example.  The `STAR` should sit under its own `term` and the `PLUS` at the top of the tree, even though the multiplication now comes first in the input.  If it came out that way, Parts 2 and 3 are the same move on a bigger grammar.  If it didn't, reread the note above on `( ... )*` groups, which is where derivations usually go wrong.
+> 4. Compare with the slide.  The `STAR` should sit under its own `term` and the `PLUS` at the top of the tree, even though the multiplication now comes first in the input.  If it came out that way, Parts 2 and 3 are the same move on a bigger grammar.  If it didn't, reread the note above on `( ... )*` groups, which is where derivations usually go wrong.
 
 ---
 

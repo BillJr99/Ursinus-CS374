@@ -518,6 +518,32 @@ Verify with `mit-scheme --version` or `guile --version`.  The [Scheme assignment
 
 ---
 
+## Other Ways to Connect to GitHub
+
+These replace the command-line key and clone steps of the Overview assignment.  Choose at most one of these, and verify with `ssh -T git@github.com` either way.
+
+### The GitHub CLI, and the one I would take on native Windows
+
+The [GitHub CLI](https://cli.github.com/), the `gh` command, does the entire exchange in 2b through 2c for you.  Install it (`winget install --id GitHub.cli` in PowerShell, `brew install gh` on macOS, or your package manager on Linux), then run `gh auth login`, choose **GitHub.com**, choose **SSH** as the protocol, and answer yes when it offers to generate a new SSH key and upload it to your account.
+
+That one prompt replaces `ssh-keygen`, the `cat` of the `.pub` file, and the paste into Settings.  Verify it exactly as in 2d and paste that output; `gh` also clones for you, with `gh repo clone YOURUSERNAME/REPO` in place of the `git clone` in 3a.
+
+### VS Code, for the clone in 3a
+
+It drives the same git underneath, so the result is identical.  With no folder open, the Source Control view (Ctrl+Shift+G, or Cmd+Shift+G on macOS) offers a **Clone Repository** button; from anywhere, the Command Palette (Ctrl+Shift+P, or Cmd+Shift+P) runs **Git: Clone**.
+
+Either one asks for the repository address, where you paste the same SSH URL, then asks which local folder to put it in, `~/cs374` here, and offers to open the clone when it finishes.  Say yes: the integrated terminal (Ctrl+`) then opens already inside the repository, which is where you run `git log --oneline` for your transcript.
+
+The palette also offers **Clone from GitHub**, which lets you pick from a list of your repositories instead of pasting a URL, though it signs you in to GitHub inside VS Code and authenticates as that account rather than with your key.  This is the same editor you identified in Part 1, Step 3, so if you set a breakpoint there you already have it installed.
+
+### GitHub Desktop, for 3a and 3b
+
+[GitHub Desktop](https://desktop.github.com/) is the graphical client; it bundles Git for Windows, which is where `ssh-keygen` and Git Bash come from, and it handles its own authentication so you can clone, commit, and push without touching a key at all.
+
+Paste `git log --oneline` from Repository > Open in terminal, which is the same transcript the command-line route produces.  Create the key in Step 2 anyway, because the checklist asks for the `ssh -T` output.
+
+> **Telling the two GitHub downloads apart on native Windows without WSL2.**  `gh` is the command-line tool, a separate install rather than something GitHub Desktop brings along, though installing both is common and they coexist happily.  GitHub Desktop is the graphical client just described.  Either one spares you the manual key dance; the Ubuntu or WSL2 route gives you the standard Unix tooling instead, and every command on this page then works as written.
+
 ## Step 10: Troubleshooting
 
 The entries are in step order.  Find the step you are on and work down its entries before you post in the course channel; when you do post, include the exact command and its full output.

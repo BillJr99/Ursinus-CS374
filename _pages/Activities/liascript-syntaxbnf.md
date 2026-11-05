@@ -250,6 +250,51 @@ The EBNF fragment `term { ("*" | "/") term }` describes:
 
 ---
 
+## The EBNF Shortcuts We Use
+
+Every grammar in this course is written the same way, and this is the whole notation.  A production has a nonterminal on the left, `::=` in the middle, and a sequence of symbols on the right.  A **nonterminal** is a name in angle brackets that has its own production, such as `<digit>`.  A **terminal** is a symbol that appears in the string itself, written in quotes, such as `"-"`.  BNF gives you sequence, alternation, and recursion; EBNF adds three operators on top of those, and those three are the shortcuts that do all the work in this lab.
+
+| Shortcut | Means | Example |
+|---|---|---|
+| `::=` | "is defined as," separating a nonterminal from its definition | <code>&lt;sign&gt; ::= "+" &#124; "-"</code> |
+| `<name>` | a nonterminal, which must have its own production somewhere | `<digit>` |
+| `"x"` | a terminal, the literal text that appears in the string | `"("` |
+| <code>&#124;</code> | alternation: exactly one of these choices is used | <code>"+" &#124; "-"</code> |
+| `{ X }` | repetition: **zero or more** copies of `X` | `{ <digit> }` |
+| `[ X ]` | optionality: `X` appears once or not at all | `[ <sign> ]` |
+| <code>( X &#124; Y )</code> | grouping: treats the alternatives as one unit inside a larger rule | <code>( "," &#124; ";" )</code> |
+| `<empty>` | the empty string, the BNF way to let a recursive rule stop | <code>&lt;exprs&gt; ::= &lt;expr&gt; &lt;exprs&gt; &#124; &lt;empty&gt;</code> |
+| `(* … *)` | a comment, ignored by the grammar; use it to record a decision | `(* spaces ignored between atoms *)` |
+
+Here is the same notation at work, with each shortcut labeled in a comment:
+
+```ebnf
+(* Sequence: symbols on the right side must appear in this order. *)
+<entry>  ::= <name> ":" <number>
+(* Alternation: | separates choices; exactly one is used. *)
+<sign>   ::= "+" | "-"
+(* Repetition: { X } means zero or more copies of X. *)
+<digits> ::= <digit> { <digit> }
+(* Optionality: [ X ] means X appears once or not at all. *)
+<number> ::= [ <sign> ] <digits>
+(* Grouping: ( X | Y ) treats the alternatives as one unit inside a larger rule. *)
+<pair>   ::= <number> ( "," | ";" ) <number>
+```
+
+**Three shortcuts we do not use here.**  You will meet them elsewhere, so recognize them.  Many books and tools write repetition and optionality as postfix marks instead of brackets:
+
+| You may see | It means | We write |
+|---|---|---|
+| `X*` | zero or more | `{ X }` |
+| `X+` | one or more | `X { X }` |
+| `X?` | optional | `[ X ]` |
+
+You will see that style later in this course.  The grammar in the Parser assignment uses `stmt*` and `( COLON type )?`, with bare uppercase token names instead of angle brackets.  Neither style is more correct.  **We use the bracket style when we write grammars by hand.**
+
+Two habits keep grammars honest.  Every nonterminal that appears on a right side must have its own production; an undefined nonterminal is the most common mistake in a first grammar.  And "one or more" is `<x> { <x> }`, not `{ <x> }`, which also accepts nothing at all.
+
+> **Check your grammar with the tester.**  The course [BNF/EBNF Tester](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tools/BNFTester) reads exactly this notation.  Choose *Course notation*, and leave *Allow EBNF* off for pure-BNF work, so that a stray `{ }` is caught rather than quietly accepted, and tick it when you write EBNF.  It flags undefined nonterminals as you type, shows the parse tree and leftmost derivation for a string it accepts, and points at the spot where it gets stuck on one it rejects.  It checks your work; it does not replace the by-hand derivations and arguments the lab asks you to write.
+
 # Part II: Grammars for Real Constructs
 
 You can now read and write basic grammars.  This part applies that skill to constructs from real programming languages.  You will also watch a grammar become runnable Python code, which ties the notation to its implementation.
