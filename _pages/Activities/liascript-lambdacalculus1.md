@@ -46,7 +46,7 @@ Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Pr
 
 ## How Today Runs
 
-Due today: the Parser assignment.  Handed out today: the Lambda Calculus lab, which uses everything below.
+Due today: the Parser assignment.  Handed out today: the Lambda Calculus lab, which uses everything below, and the Interpreter assignment.
 
 | Segment | What your team does |
 |---------|---------------------|

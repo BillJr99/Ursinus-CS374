@@ -394,7 +394,7 @@ Sprints 2 and 3 meet in one Sprint Studio session on the last class day.  Their 
 
 ### Sprint 2: The Gallery Walk
 
-Sprint 2 implements the grammar differences and the distinctive feature's skeleton (Direction B: the evaluator emitting timed events, by structural recursion, one case per semantic equation, each commented with the equation it implements).  The gallery walk at the Sprint Studio on Tuesday, December 8, is mandatory.
+Sprint 2 implements the grammar differences and the distinctive feature's skeleton (Direction B: the evaluator emitting timed events, by structural recursion, one case per semantic equation, each commented with the equation it implements).  The gallery walk at the Sprint Studio is mandatory.
 
 > **Do this.**
 > 1. Implement every grammar difference you marked in grammar v0, and update `SEMANTICS.md` as you go so the documents stay current.

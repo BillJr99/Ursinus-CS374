@@ -1833,4 +1833,4 @@ print(f"Closure counter: {clo_counter['value']()}")
 
 ---
 
-Up next: the *Sprint Studio* session on Tuesday hands the room to your team's language, with the Gallery Walk and release hardening in one period.  The Tree-Walking Interpreter is due at that session.  Closures complete the environment story that assignment depends on, and the Church encodings you built here are the ones the Lambda Calculus lab asks you to work with.
+Up next: the *Sprint Studio* session on Tuesday hands the room to your team's language, with the Gallery Walk and release hardening in one period.  The Lambda Calculus lab is due at that session, and the Interpreter assignment is due at Demo Day.  Closures complete the environment story that assignment depends on, and the Church encodings you built here are the ones the Lambda Calculus lab asks you to work with.
