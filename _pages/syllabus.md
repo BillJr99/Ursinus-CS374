@@ -517,6 +517,15 @@ schedule:
   title: "Language Design Workshop: Project Kickoff (Sprint 0)"
   link: "Activities/liascript-languagedesign.md"
   liapage: true
+  deliverables:
+  - dtitle: "Programming Assignment: Interpreter Handed Out"
+    dlink: "Assignments/Interpreter"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-interpreter.md"
+  - dtitle: "Programming Assignment: Parser Due"
+    dlink: "Assignments/Parser"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-parser.md"
   readings:
   - rtitle: "Build a Bytecode VM"
     rlink: "Tutorials/BytecodeVM"
@@ -526,18 +535,10 @@ schedule:
   link: "Activities/liascript-lambdacalculus1.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Parser Due"
-    dlink: "Assignments/Parser"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-parser.md"
   - dtitle: "Lab: Lambda Calculus Handed Out"
     dlink: "Assignments/LambdaCalculusLab"
     points: "15"
     rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
-  - dtitle: "Programming Assignment: Interpreter Handed Out"
-    dlink: "Assignments/Interpreter"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-interpreter.md"
   readings:
   - rtitle: "Allison, Ch. 8: Turing Machines and the Church-Turing Thesis"
   - rtitle: "Lambda Calculus - Fundamentals of Lambda Calculus & Functional Programming in JavaScript (Gabriel Lebec)"
@@ -569,6 +570,10 @@ schedule:
     dlink: "Assignments/LambdaCalculusLab"
     points: "15"
     rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
+  - dtitle: "Programming Assignment: Interpreter Due"
+    dlink: "Assignments/Interpreter"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-interpreter.md"
   readings:
   - rtitle: "The Project Language Guide (a complete worked path for the team project)"
     rlink: "Tutorials/ProjectLanguageGuide"
@@ -580,13 +585,6 @@ schedule:
     rlink: "Tutorials/PublishingYourLanguage"
   - rtitle: "Advanced C++ for Language Implementers"
     rlink: "Tutorials/AdvancedCpp"
-- cdate: "2026/12/14"
-  title: "Demo Day: Team Language Presentations (Final Exam Period, 11:15 AM-2:15 PM, Pfahler 012)"
-  deliverables:
-  - dtitle: "Programming Assignment: Interpreter Due"
-    dlink: "Assignments/Interpreter"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-interpreter.md"
 ---
 
 This semester is a build.  By December, your team will have designed and implemented a programming language of your own, built in team sprints on what each assignment teaches.  The sections below explain how the pieces fit together, including how the course gives you choices, how to read an assignment, how to prepare for each class, and how I value and evaluate the day-to-day work of participating.  Please read them once now, and come back to the participation and preparation guides throughout the term.
