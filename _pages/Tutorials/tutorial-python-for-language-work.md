@@ -291,7 +291,7 @@ A lexer uses a few Python tools, and each one has a job:
 Two details are easy to miss.
 
 - **`match` versus `search`.**  `.match(source, pos)` succeeds only when the pattern begins exactly at `pos`.  `.search` skips ahead to the first place the pattern appears.  A lexer must use `match`, because skipping ahead would silently jump over characters that no rule recognizes.
-- **How a generator stops.**  Each call to `next(gen)` runs the function until its next `yield`.  When the function returns, the next `next(gen)` raises `StopIteration`.  A `for` loop, or `list(gen)`, catches that for you.  A `Lexer` class calls `next` directly, so it has to know this.
+- **How a generator stops.**  Each call to `next(gen)` runs the function until its next `yield`.  When the function returns, the next `next(gen)` raises `StopIteration`.  A `for` loop, or `list(gen)`, catches that for you.  A `Lexer` class calls `next` directly, so it has to know this.  [Generators and `yield`](#generators-and-yield) walks through it.
 
 Save the lines below as `explore_lexer.py`, a scratch file you do not submit, and run `python3 explore_lexer.py`:
 
@@ -352,6 +352,104 @@ print(a == Token("INT", "42", 1, 5), a.type, a.col)
 > **Predict** before you move on: in `"x = 42"`, what does `INT.match(source, 5)` return, and what is its `end()`?
 
 The third line shows how a lexer moves forward.  `m.end()` is 6, which is where the next token begins, so advancing the position is `pos = m.end()`.
+
+## Generators and `yield`
+
+Your lexer's `tokenize` is a generator, and the word `yield` is what makes it one.  Let's watch one run, using a function small enough to follow.  Save the lines below as `explore_yield.py`, a scratch file you do not submit, and run `python3 explore_yield.py`:
+
+```python
+def three_letters():
+    print("  started")
+    yield "a"
+    print("  resumed after a")
+    yield "b"
+    print("  resumed after b")
+
+gen = three_letters()
+print("nothing has run yet")
+print(next(gen))
+print(next(gen))
+try:
+    next(gen)
+except StopIteration:
+    print("StopIteration: the generator is used up")
+```
+
+> **You should see.**
+>
+> ```text
+> nothing has run yet
+>   started
+> a
+>   resumed after a
+> b
+>   resumed after b
+> StopIteration: the generator is used up
+> ```
+
+Follow the output line by line, because it shows the three rules of a generator:
+
+1. **Calling the function runs none of it.**  `three_letters()` returns a *generator object*, and `started` does not print until the first `next`.
+2. **`next(gen)` runs the function up to its next `yield`, hands back that value, and pauses.**  The function picks up from that same line on the following `next`, with its local variables still holding their values.
+3. **When the function ends, the next `next(gen)` raises `StopIteration`.**  That exception is how a generator says it has nothing left.
+
+A `return` could not do this job, because `return` ends the function and throws away its local variables.  A `yield` keeps them.  That is why `tokenize` can keep `pos`, `line`, and `col` as ordinary local variables, without a class or a global to remember them between tokens.
+
+A generator object is an *iterator*: an object you can call `next` on until it raises `StopIteration`.  A `for` loop works this way: it calls `next` for you and stops quietly at `StopIteration`.  `list(gen)` does the same and collects the values.
+
+Now let's scan something.  The scratch function below is not your lexer, since it only knows words and spaces, but it has the same shape as `tokenize`: a position, a loop, and a `yield` for each piece it finds.  Add these lines to `explore_yield.py` and run it again:
+
+```python
+def words(text):
+    """Yield (word, start) for each run of letters, skipping spaces."""
+    pos = 0
+    while pos < len(text):
+        if text[pos] == " ":
+            pos += 1
+        elif text[pos].isalpha():
+            start = pos
+            while pos < len(text) and text[pos].isalpha():
+                pos += 1
+            yield (text[start:pos], start)
+        else:
+            raise ValueError(f"unexpected {text[pos]!r} at {pos}")
+
+gen = words("let x ?")
+print(next(gen))
+print(next(gen))
+print("the caller could stop here, and the ? has not been read")
+try:
+    next(gen)
+except ValueError as e:
+    print(e)
+
+for word, start in words("let x"):
+    print(word, start)
+```
+
+> **You should see,** after the earlier output:
+>
+> ```text
+> ('let', 0)
+> ('x', 4)
+> the caller could stop here, and the ? has not been read
+> unexpected '?' at 6
+> let 0
+> x 4
+> ```
+>
+> **Predict** before you move on: if you change the `yield` in `words` to a `return`, what does the first `next(gen)` do?  Here is a hint: with no `yield` left, is `words` still a generator?  Try it and see!
+
+The scan is *lazy*: it reads only as far as it needs to produce the next value.  The first two calls never touch the `?`, and the error appears only when the caller asks for the piece that holds it.  In your lexer, this means the parser pulls tokens one at a time, and a syntax error can stop the scan before the rest of the file is read.
+
+Here is where each rule shows up in the [Lexer assignment]({{ site.baseurl }}/Assignments/Lexer):
+
+- **`tokenize` in Step 1c.**  `for tok in tokenize(source)` is the `for` loop above.  You yield a token *before* you advance, because the function pauses at that line, and at that moment `line` and `col` still describe where the token starts.
+- **`Lexer.__init__` in Step 2a.**  `tokenize(source)` scans nothing yet.  You are storing the paused generator for later.
+- **`_fill` in Step 2a.**  Asking the generator for a token is rule 2: it runs the scan just far enough to produce one more token.
+- **`advance` and EOF in Step 2a.**  `EOF` is the last thing `tokenize` yields.  One more `next` is rule 3, which is why the assignment keeps `EOF` in the buffer rather than asking again.
+
+A generator also runs only once.  After `StopIteration`, it stays used up, so scanning the same source again takes a new call to `tokenize`.
 
 ## Capture Groups and Group References
 

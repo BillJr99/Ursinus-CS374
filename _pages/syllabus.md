@@ -372,6 +372,8 @@ schedule:
   liapage: true
   readings:
   - rtitle: "Allison, Ch. 2 §2.4: Machines with Output, Lexical Analysis"
+  - rtitle: "Python for Language Work: generators and yield, behind the tokenize generator in the Lexer assignment"
+    rlink: "Tutorials/PythonForLanguageWork#generators-and-yield"
 - week: "6"
   date: "0"
   title: "Abstract Syntax Trees"
@@ -420,6 +422,8 @@ schedule:
     points: "100"
     rubricpath: "_pages/Assignments/asmt-lexer.md"
   readings:
+  - rtitle: "Python for Language Work: generators and yield, behind the tokenize generator in the Lexer assignment"
+    rlink: "Tutorials/PythonForLanguageWork#generators-and-yield"
   - rtitle: "PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer assignment)"
     rlink: "Tutorials/PLYLexerAndParser"
 - week: "10"

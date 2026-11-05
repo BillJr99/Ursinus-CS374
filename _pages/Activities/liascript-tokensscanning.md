@@ -194,7 +194,7 @@ for tok in tokenize(code):
   Track this yourself and you get error messages a person can act on.
 - `tokenize` is a generator: it yields tokens one at a time instead of building a
   list.  The parser can start work before the whole file is scanned, and a syntax
-  error can stop the scan early.
+  error can stop the scan early.  The next slide, What `yield` Does, shows how.
 - `MISMATCH` is last and matches `.`, so the scanner always makes progress and always
   has something specific to complain about.
 
@@ -207,6 +207,62 @@ for tok in tokenize(code):
 - The token names match the Lexer assignment: `EQ` is `=`, `EQEQ` is `==`, `SEMICOLON`
   is `;`, and numbers are `INT` or `FLOAT`.  This deck folds every keyword into one
   `KEYWORD` type for brevity; the Lexer assignment gives each keyword its own type.
+
+### What `yield` Does
+
+`tokenize` has no `return` for its tokens.  It uses `yield`, which pauses the function instead of ending it.  This cell uses the same `finditer` loop as the lexer above, with prints added so that you can watch it pause.  **Before you run it, predict:** does `started` print before or after `gen exists`?
+
+```python
+import re
+import traceback
+
+def tokens(source):
+    print("  started")
+    for m in re.finditer(r"\w+", source):
+        print(f"  found {m.group()!r}, pausing")
+        yield m.group()
+        print("  resumed")
+    print("  finished")
+
+try:
+    gen = tokens("let x")
+    print("gen exists")
+    print("parser got", next(gen))
+    print("parser got", next(gen))
+    try:
+        next(gen)
+    except StopIteration:
+        print("StopIteration: no tokens left")
+except Exception as e:
+    print(f"[tokens:yield] {e}")
+    traceback.print_exc()
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+You should see:
+
+```text
+gen exists
+  started
+  found 'let', pausing
+parser got let
+  resumed
+  found 'x', pausing
+parser got x
+  resumed
+  finished
+StopIteration: no tokens left
+```
+
+Three rules explain that output:
+
+1. Calling `tokens("let x")` runs none of the function.  It returns a *generator object*, an iterator that waits to be asked.
+2. `next(gen)` runs the function up to its next `yield`, hands back that value, and pauses there.  The local variables stay as they were, so the next `next(gen)` resumes with the scan's position intact.  A `return` would end the function and lose them.
+3. When the function ends, the next `next(gen)` raises `StopIteration`.
+
+The `for tok in tokenize(code)` loop above calls `next` for you and stops quietly at `StopIteration`.  A parser does not want a `for` loop, though, since it has to look at one token before deciding what to do.  Model 3 calls `next` directly and keeps the token in a buffer, and that is why the lexer is a generator: it scans only as far as the parser has asked.
+
+[Generators and `yield`](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PythonForLanguageWork#generators-and-yield) has more to try, with a small scanner you can change and run.
 
 ### Try It Yourself
 
@@ -908,7 +964,7 @@ LexError at line 1, col 5: unexpected character '@'
 
 ### Build Step 7: The tokenize Generator
 
-The generator is short because the helpers hold the hard parts.  It starts at line 1, column 1, scans one piece at a time, and ends with an `EOF` token placed just past the last character.  Printing stays in `scratch.py`, so importing `lexer.py` runs nothing.
+The generator is short because the helpers hold the hard parts.  It starts at line 1, column 1, scans one piece at a time, and ends with an `EOF` token placed just past the last character.  Each `yield` hands one token to the caller and pauses, as you saw in What `yield` Does, so the function's `pos`, `line`, and `col` are still there when the caller asks for the next one.  Printing stays in `scratch.py`, so importing `lexer.py` runs nothing.
 
 ```python
 # lexer.py: add at the end of the file

@@ -45,6 +45,8 @@ info:
     - rtitle: "Tokens and Scanning Activity"
       rlink: "Activities/liascript-tokensscanning.md"
       liapage: true
+    - rtitle: "Python for Language Work: generators and yield, behind the tokenize generator"
+      rlink: "Tutorials/PythonForLanguageWork#generators-and-yield"
     - rtitle: "regex101 (interactive regex tester; set the Flavor to Python, and switch to PCRE only to use its step-by-step debugger)"
       rlink: "https://regex101.com/"
     - rtitle: "pythex (tests patterns with Python's own re module, in your browser)"
@@ -236,6 +238,8 @@ class Token:
 
 The `tokenize(source: str) -> Iterator[Token]` generator does three jobs at each position: it finds the first `TOKEN_SPEC` rule that matches, it decides whether to yield a token (WHITESPACE and COMMENT are skipped), and it moves the position, line, and column past the match.  Skipping, yielding, and the line and column bookkeeping are the whole job.  You build it in three pieces.  The two jobs that need the most thought, the line and column bookkeeping and the rule search, each become a small helper that you write and test on its own.  Then Step 1c.3 integrates them into the generator.  Verify the generator against the provided test programs before you wrap it in a class.
 
+If `yield` is new to you, start with [Generators and `yield`]({{ site.baseurl }}/Tutorials/PythonForLanguageWork#generators-and-yield), which shows how a generator pauses and resumes, and with the deck's [What `yield` Does]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-tokensscanning.md#13) slide, which traces one token at a time.
+
 #### Step 1c.1: Track the line and column (`advance_position`)
 
 **You write:** `lexer.py` - `advance_position`, below `TOKEN_SPEC`.
@@ -417,12 +421,12 @@ The class holds two things: the generator from Step 1c, and a one-token *buffer*
 #### Step 2a.1: `__init__` and `_fill`
 
 **`__init__(source, config_path=None)`**
-1. Call `tokenize(source)` and keep the generator it returns in `_tokens`.  Nothing is lexed yet; the generator waits until it is asked.
+1. Call `tokenize(source)` and keep the generator it returns in `_tokens`.  Nothing is lexed yet; the generator waits until it is asked ([Generators and `yield`]({{ site.baseurl }}/Tutorials/PythonForLanguageWork#generators-and-yield) shows why).
 2. Set `_buffer` to `None`, which means "empty."
 3. Ignore `config_path` for now.  Step 2d uses it.
 
 **`_fill()`**
-1. If the buffer is empty, ask the generator for one token and store it in the buffer.
+1. If the buffer is empty, ask the generator for one token with `next` and store it in the buffer.
 2. If the buffer already holds a token, do nothing.  This is what makes `peek` idempotent.
 
 > **Do this.** Implement the two methods, then replace the body of `scratch.py` with this probe and run `python3 scratch.py`.  The probe reaches into `_buffer` only to watch it work; the parser never will.  If you named the buffer attribute something else, use your name in the probe.
