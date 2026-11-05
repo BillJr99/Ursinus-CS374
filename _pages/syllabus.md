@@ -345,6 +345,8 @@ schedule:
     rubricpath: "_pages/Assignments/lab-grammarworkshop.md"
   readings:
   - rtitle: "Allison, Ch. 2 §2.1-2.2: Deterministic and Non-Deterministic Finite Automata"
+  - rtitle: "Python for Language Work: dictionaries, sets, f-strings, and JSON, used in today's activity and the Finite Automata lab"
+    rlink: "Tutorials/PythonForLanguageWork"
   - rtitle: "Allison, Ch. 4 §4.2: Decision Algorithms (Is the Language Empty?)"
 - week: "5"
   date: "0"

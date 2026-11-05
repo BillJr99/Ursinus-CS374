@@ -30,7 +30,7 @@ A regular expression *describes* a set of strings.  A finite automaton *recogniz
 
 > **Before You Begin**, make sure you can:
 > - Describe what a regular expression *denotes* (the set of strings it matches), rather than only writing one
-> - Create and look up values in a Python `dict`, including a dict whose values are themselves dicts
+> - Create and look up values in a Python `dict`, including a dict whose values are themselves dicts ([Python for Language Work](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PythonForLanguageWork) covers dictionaries and sets, if you want a refresher)
 > - Trace a simple `for` loop by hand, tracking the value of one variable through each iteration
 
 ---
@@ -638,6 +638,8 @@ Worked answers to the *mechanical* questions.  The design questions (2, 3, 4, 7)
 ---
 
 # Further Reading
+
+- [Python for Language Work](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/PythonForLanguageWork): dictionaries, sets, f-strings, and JSON, which this activity and the Finite Automata lab use.
 
 - Allison, Chapter 2 §2.1-2.2, on deterministic and non-deterministic finite automata.
 - Allison, Chapter 2 §2.4, on machines with output and lexical analysis.
