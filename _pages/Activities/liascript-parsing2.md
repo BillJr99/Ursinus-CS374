@@ -88,7 +88,7 @@ In the second-to-last row, the stack `E + T` with input `$` is reduced using the
 
 ## Worked Example: Building the Table by Hand
 
-The trace above used a table without saying where the table came from.  That is the gap this section closes: an LR parser is a stack plus a *table*, and the table is not magic.  It is a finite automaton over **items**, and you can build it with a pencil.
+The trace above used a table without saying where the table came from.  This section shows where it comes from: an LR parser is a stack plus a *table*, and that table is a finite automaton over **items** that you can build with a pencil.
 
 An **item** is a production with a dot marking how much of the right-hand side we have already seen. `T -> T . * F` means "we are partway through `T -> T * F`; we have the `T`, we expect a `*` next."
 
@@ -128,7 +128,7 @@ That set of seven items **is** state `I0`.  Notice what closure means: standing 
 - Advance the dot: `E -> T .` and `T -> T . * F`
 - Closure adds nothing (no dot sits before a non-terminal)
 
-So `I2 = { E -> T . , T -> T . * F }`.  **This one state is the whole precedence story.**  It contains a completed item (`E -> T .`, meaning "reduce") *and* an item expecting more input (`T -> T . * F`, meaning "shift the `*`").  Which one fires depends entirely on the lookahead token, and that is exactly the shift-reduce decision CTQ 3.2 asks about, sitting in a single state you just built by hand.
+So `I2 = { E -> T . , T -> T . * F }`.  **This one state decides precedence.**  It contains a completed item (`E -> T .`, meaning "reduce") *and* an item expecting more input (`T -> T . * F`, meaning "shift the `*`").  Which one fires depends entirely on the lookahead token, which is the shift-reduce decision CTQ 3.2 asks about.
 
 Repeating this for every state and every symbol gives twelve states.  Here are the ones you need; the [Building an LR Parser from the Grammar Up](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LRConstruction) tutorial carries the same construction through every state on a smaller grammar:
 
@@ -416,7 +416,7 @@ Your project grammar contains the left-recursive list rule `args -> args "," exp
 
 # Part III: From the Table to Flex and Bison
 
-You built that table by hand because a table is simple enough to understand.  Nobody builds one by hand for a real language, because Bison builds it from the grammar.  Flex is the same deal for tokens.  Here is the smallest useful example: `+` and `*` over numbers.
+You built that table by hand because a table is simple enough to understand.  Nobody builds one by hand for a real language, because Bison builds it from the grammar.  Flex does the same for tokens.  Here is the smallest useful example: `+` and `*` over numbers.
 
 ```
 %{
@@ -1253,7 +1253,7 @@ for line in SOURCE:
 
 - Pass 1 never emits anything.  Its whole job is the **symbol table**: `start -> 0`, `done -> 4`.  It has to count instructions as it goes, which is why it still has to look at every line.
 - Pass 2 does the same walk with the answers already in hand, so `JMPZ x done` becomes `JMPZ x 4` with no guessing.
-- The one-pass version resolves the *backward* jump to `start` perfectly and stalls on the *forward* jump to `done`.  That asymmetry is the whole argument for two passes: backward references are free, forward references are not.
+- The one-pass version resolves the *backward* jump to `start` perfectly and stalls on the *forward* jump to `done`.  That difference is the reason for two passes: a backward reference is already known, and a forward reference is not.
 - Real assemblers do exactly this, and real linkers do it one level up, with object files in place of lines.
 
 ### Critical Thinking Questions
@@ -1334,7 +1334,7 @@ report("3.  Both files say 'static int counter;'",
 
 ## `static` at File Scope: the Keyword's Other Job
 
-Here is the whole vocabulary, in three lines of C:
+Here are all three terms, in three lines of C:
 
 ```c
 int counter;            /* definition, GLOBAL: offered to the linker      */

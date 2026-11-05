@@ -165,8 +165,8 @@ except NameError as e:
 
 ### Reading the Code
 
-- `vars` and `parent` are the whole data structure.  Each `Environment` object is one frame: one box in your drawing.  Every method on the class is a walk over the chain of frames.  There is no other state anywhere.
-- `define` writes to `self.vars` and never looks at `parent`.  `assign` never writes to `self.vars` unless the name is already there.  That one asymmetry is the whole difference between declaring and updating, and it is where most interpreter bugs live.
+- The data structure is only `vars` and `parent`.  Each `Environment` object is one frame: one box in your drawing.  Every method on the class is a walk over the chain of frames.  There is no other state anywhere.
+- `define` writes to `self.vars` and never looks at `parent`.  `assign` never writes to `self.vars` unless the name is already there.  That difference is what separates declaring from updating, and it is a common source of interpreter bugs.
 - `lookup` walks outward and stops at the first frame that has the name.  Shadowing is not a special case in the code.  It falls out of stopping early.
 - Leaving a block is not an operation.  There is no `pop`.  The code stops using `block`, so nothing points to it anymore.  Memory that nothing points to is garbage, and Python's garbage collector reclaims it.  Keep two ideas apart here.  The block's *scope*, the stretch of program text where its names are visible, ends at the closing brace.  The environment *object* lives until its last reference disappears, not when an instruction says so, and a closure created inside the block can keep it alive long after the block's scope has ended.
 - `__repr__` prints the chain outward with `->`, which is why the printed trace reads like the boxes you drew on paper.
@@ -253,7 +253,7 @@ Before you edit anything, the chain prints as `inner:{} -> global:{'total': 0}` 
 
 ## Model 5: The Four Operations in Practice
 
-The `Environment` class has exactly four operations.  Which scope each one targets is the whole story of variable handling in your interpreter.
+The `Environment` class has exactly four operations.  Variable handling in your interpreter comes down to which scope each one targets.
 
 | Operation | Method | Scope targeted | Used for |
 |-----------|--------|----------------|----------|
@@ -841,7 +841,7 @@ Expected output: `'original'`, then `'changed'`, then a dict with exactly one en
 
 # Part IV: Functions in Our Scheme
 
-Here is the Scheme from *From Calculator to Scheme* again.  Only three things changed.  `symbols` became a chain, `Env`.  `evaluate` takes the environment it is working in.  And `lambda` makes a `Closure`, which a call turns into a new scope.
+Here is the Scheme from *From Calculator to Scheme* again.  Three things changed: `symbols` became a chain called `Env`, `evaluate` takes the environment it is working in, and `lambda` makes a `Closure`, which a call turns into a new scope.
 
 ```python
 def tokenize(text):
@@ -1523,7 +1523,7 @@ for lexical in (True, False):
 
 > **Watch out!**  It is tempting to store the *values* of the free variables in the closure instead of the environment: capture `x = 10` rather than a pointer to the frame holding `x`.  That works until something reassigns `x`.  Then your closure reads a stale copy while Python's would see the update.  Model 5 already showed the difference; this is where you either preserve it or lose it.
 
-Remember two things from this part.  `Fun` captures the defining environment and evaluates nothing.  `Call` extends that captured environment, and swapping it for the caller's environment is the whole difference between lexical and dynamic scope.
+Remember two things from this part.  `Fun` captures the defining environment and evaluates nothing.  `Call` extends that captured environment, and swapping it for the caller's environment turns lexical scope into dynamic scope.
 
 ### Critical Thinking Questions
 
@@ -1681,7 +1681,7 @@ The code above showed the trap and two fixes.  The notes below explain the code,
 
 ### Reading the Code
 
-- `[lambda: i for i in range(3)]` builds three functions that all close over the *same* `i`.  Nothing about that is a bug.  It is capture-by-reference doing exactly what Model 5 demonstrated on purpose.
+- `[lambda: i for i in range(3)]` builds three functions that all close over the *same* `i`.  That is capture-by-reference, the behavior Model 5 demonstrated, rather than a bug in Python.
 - The two fixes attack different halves.  The default argument stops closing over `i` at all, so there is nothing to share.  The factory function makes a new binding per iteration, so there are three `i`s to close over instead of one.
 - JavaScript's `var` had this exact shape, and `let` changed it by giving loop bodies per-iteration bindings.  You made the same decision in the Model 6 Try It Yourself of *Binding, Scope, and Environments*; JavaScript made it at ecosystem scale.
 

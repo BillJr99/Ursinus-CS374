@@ -21,7 +21,7 @@ tags:
 ---
 # Tutorial: Python for Language Work
 
-We build interpreters in Python because it stays out of the way, and most of a language tool comes down to a few data structures and a loop.  If you have written Python but have not used some of these, this page has what you need.  Use it as a reference: save each block as a scratch file, or type it at `python3`, run it, and compare what you see.
+Most of a language tool comes down to a few data structures and a loop, and Python makes those short to write.  If you have written Python but have not used some of these, this page has what you need.  Use it as a reference: save each block as a scratch file, or type it at `python3`, run it, and compare what you see.
 
 ## Lists, Tuples, and Dictionaries
 
@@ -278,7 +278,7 @@ if __name__ == "__main__":
 
 ## A Lexer's Tools
 
-A lexer leans on a few Python tools, and each one has a job.  Here they are side by side.
+A lexer uses a few Python tools, and each one has a job:
 
 | Tool | What it is | Its job in your lexer |
 |---|---|---|
@@ -439,7 +439,7 @@ print("   function:", re.sub(ISO_NAMED, lambda m: f"{m.group('year')}-{MONTHS[m.
 - **Section 3, non-capturing groups.**  `(?:...)` groups for precedence without capturing, so every group after it moves down one number.  If you add or remove a capturing group, renumber every reference that comes after it.
 - **Section 4, group references.**  In the *replacement* string of `re.sub`, `\3` means "whatever group 3 captured in this match."  `re.sub` applies the replacement to every match, so all three dates are rewritten, including the one at the very start of the string and the one at the very end.  The replacement must be a raw string: without the `r`, Python turns `"\3"` into the control character `\x03` before `re` ever sees it, as the `not raw` line shows.  `\g<3>` is the long form of `\3`.  Use it when a literal digit follows the reference, because `\30` would be read as group 30.
 - **Section 5, named groups.**  `(?P<year>...)` names a group, `\g<year>` refers to it in a replacement, and `m.group("year")` or `m.groupdict()` reads it in code.  The named form gives the same result as section 4 and cannot get the order wrong by miscounting.  Step 3.2 requires named groups for the log parser.
-- **Section 6, boundaries.**  Without `\b`, the pattern happily matches the last ten characters of `12026-09-18` and the first ten of `2026-09-180`, and rewrites those pieces of longer numbers.  `\b` on both ends requires a non-word character (or the edge of the string) just outside the date.
+- **Section 6, boundaries.**  Without `\b`, the pattern matches the last ten characters of `12026-09-18` and the first ten of `2026-09-180`, and rewrites those pieces of longer numbers.  `\b` on both ends requires a non-word character (or the edge of the string) just outside the date.
 - **Section 7, replacing within a group.**  `re.sub` always replaces the *whole match*; there is no way to point it at "just group 2."  So to change one piece and keep the rest, capture the pieces you keep and write them back with references, and write the new text literally where the changed piece goes.  In `r"\1[REDACTED]"`, `\1` puts back `token=` and `[REDACTED]` takes the place of the value, which was matched but deliberately not captured.  In `r"2027-\2-\3"`, the year is the changed piece, so it is the one part *not* referenced.  When a literal digit follows a reference, use the `\g<1>` form: `r"\10101"` does not mean "group 1, then `0101`"; Python's `re` reads `\101` as the octal escape for the letter `A`, so the year silently disappears and you get `'A01'`, with no error to warn you.  When the new text must be *computed* from what a group captured (a lookup, arithmetic, a change of case), pass a function instead: it receives the match object, transforms the one group it cares about, and passes the others through unchanged with `m.group(...)`.
 
 > **Now try this.**

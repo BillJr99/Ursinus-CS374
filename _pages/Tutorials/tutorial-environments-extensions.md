@@ -219,7 +219,7 @@ for l, op, r in [(3.0, "+", 4.0), ("ab", "+", "cd"), (3.0, "+", "cd"),
   3.0 / 0.0 -> ZeroDivisionError: division by zero
 ```
 
-Those refusals are the whole lab in miniature.  The checker you wrote in Part 2 produces the same kind of message, with two differences: it names a line and column, and it fires before the program runs rather than while it runs.
+The checker you wrote in Part 2 produces the same kind of message, with two differences: it names a line and column, and it fires before the program runs rather than while it runs.
 
 `type_name` turns a Python type into the name the error messages print.  The first `if` in `eval_binop` handles arithmetic: it allows string concatenation, refuses booleans, computes on two floats, and refuses everything else.  The second `if` handles comparisons, which require both sides to have the same type.
 
@@ -431,7 +431,7 @@ Follow the environment through the good program.  It starts empty; `let a = 2` b
 
 #### Model 4: A Type-Error Postmortem
 
-The danger of weak typing is not crashes; it is the absence of crashes.  When a language coerces instead of refusing, a type mistake does not stop the program.  It flows onward disguised as a plausible-looking value, and the first symptom appears far from the cause, often outside the program entirely.
+Weak typing is dangerous because the program does not crash.  When a language coerces instead of refusing, a type mistake flows onward as a plausible-looking value, and the first symptom appears far from the cause, often outside the program entirely.
 
 **The incident.**  A checkout system written in a weakly typed language reads a price from a web form.  Form fields always arrive as *strings*, and nobody converted: `subtotal = "19.99"` is a string, `shipping = 5.00` is a number, and `total = (subtotal + shipping) * 1.06` adds shipping and then 6% tax.  The intended arithmetic is `(19.99 + 5.00) * 1.06 = 26.49`.  What the weak language actually computes, step by step:
 

@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # From Calculator to Scheme
 
-In *Calculator with Variables* the calculator learned names, and we hit a wall: it computes as it reads, so it cannot skip a branch or run anything twice.  Today you take it the rest of the way.  In five small steps it becomes a language you have already written programs in: Scheme.  Every step adds one idea, and each one runs.
+In *Calculator with Variables* we gave the calculator names, and then we got stuck: it computes as it reads, so it cannot skip a branch or run anything twice.  Today you turn it into a language you have already written programs in, Scheme, in five steps.  Each step adds one idea, and you can run the code after each one.
 
 ```text
 calculator          computes while it reads
@@ -70,7 +70,7 @@ if x = 0 then 1 / x else x
 
 A parser that computes as it reads would divide by zero on a branch that was never meant to run.  A function body is worse, because it has to run again on every call, long after it was read.
 
-The way out is to stop computing during the parse.  Reading produces a structure, and a separate step walks it.  Parsers usually build a tree of node objects for this, which is what the *Abstract Syntax Trees* activity showed.  Scheme gets to be simpler: its programs are already written as nested lists, so the structure is just a list.
+The fix is to stop computing during the parse: reading produces a structure, and a separate step walks that structure.  Parsers usually build a tree of node objects for this, which is what the *Abstract Syntax Trees* activity showed.  Scheme can be simpler, because its programs are already written as nested lists, so the structure is a list.
 
 > **CTQ 0.1** Name two things a compute-while-reading calculator can never do, and say why.
 
@@ -184,7 +184,7 @@ The children finish before the parent can combine them.  That order is called po
 
 # Step 3: Define
 
-Here is the symbol table again.  A symbol evaluates by lookup, and `define` writes.  Notice that the operators moved into the same table, so `+` is now just a name whose value happens to be a function.
+The symbol table comes back here.  A symbol evaluates by lookup, and `define` writes to the table.  The operators moved into the same table, so `+` is a name whose value is a function.
 
 ```python
 def tokenize(text):
@@ -396,7 +396,7 @@ run("""
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 
-The last line of output is the point: `(+ 1 2)` is a program, and with `quote` it is also three pieces of data.
+Look at the last line of output: `(+ 1 2)` is a program, and with `quote` it is also three pieces of data.
 
 > **CTQ 5.1** Why must `quote` be a special form?
 
@@ -438,7 +438,7 @@ Quick check: a tree-walking interpreter and a compiler for the same language bot
 - [( )] The interpreter produces machine code; the compiler produces the answer
 - [( )] Both produce new source text in a different language
 
-The central idea here is simple to state: **the value of any expression is computed entirely from the values of its sub-expressions.**  A number node is its own value.  An addition node evaluates both children and adds the results.  This recursive definition is both the formal meaning of the language and the literal shape of the code you will write.
+**The value of any expression is computed entirely from the values of its sub-expressions.**  A number node is its own value.  An addition node evaluates both children and adds the results.  This recursive definition is both the formal meaning of the language and the literal shape of the code you will write.
 
 ## 1.  The Recursive Definition of Meaning
 
@@ -546,7 +546,7 @@ Three things to notice.  First, multiplication finishes entirely before addition
 
 ### Reading the Code
 
-- The whole evaluator is one `if isinstance(...)` chain.  Each branch matches exactly one line of the recursive definition of meaning in section 1.  That match is the point: the definition *is* the program.
+- The whole evaluator is one `if isinstance(...)` chain.  Each branch matches one line of the recursive definition of meaning in section 1, so the code reads like the definition.
 - The `Num` and `Var` branches are the base cases; they return without recursing.  Every other branch recurses first and combines afterward.  A recursive function over a tree always has this shape.
 - `env` is passed to every call, including calls that cannot use it.  That uniformity lets you later swap the flat dictionary for a chained environment without touching any other branch.
 - Nothing in the file mentions precedence, parentheses, or the grammar.  The parser did that work, and the tree that arrives here already records the answer in its shape.
@@ -603,7 +603,7 @@ Expected output once `Min` is in place: `3`, `6`, and `11`.  Before you write it
 ### Critical Thinking Questions
 
 1.  Trace `evaluate` on `3 + price * 2`.  Write every call with its arguments and return value, in order.  Where in your trace does the multiplication happen relative to the addition, and which week's design decision (which module) put it there?
-2.  The evaluator never consults precedence, parentheses, or the grammar.  State exactly where precedence "went," and explain why this separation of concerns is the architecture lesson of the whole pipeline.
+2.  The evaluator never consults precedence, parentheses, or the grammar.  State exactly where precedence "went," and explain why the pipeline separates these concerns.
 3.  We chose to make division by zero raise an error with a custom message.  List two other behaviors your team could have chosen (return infinity, return zero) and one language that makes each choice.  Record your project's decision.
 4.  Compare `evaluate` and a tree pretty-printer line by line.  Write the general recipe: to add a new *consumer* of the AST (a type checker, an optimizer, a compiler), what do you write, and what do you never touch?
 
@@ -671,7 +671,7 @@ print(f"\nFinal result: {result}")
 
 ### Reading the Code
 
-- `evaluate_traced` is a thin wrapper that only manages indentation.  `_eval_inner` is Model 1's evaluator with `print` statements added.  The recursion is unchanged, so the trace is trustworthy: you are watching the real thing, not a simulation of it.
+- `evaluate_traced` is a thin wrapper that only manages indentation.  `_eval_inner` is Model 1's evaluator with `print` statements added.  The recursion is unchanged, so the trace shows what the evaluator really does.
 - Each `BinOp` prints twice: once *before* recursing ("evaluating children...") and once *after* ("`2 * 4 = 8`").  The lines between those two are exactly the subtree's evaluation.
 - Indentation depth equals call-stack depth.  Read the output as a picture of the stack: every indent is a frame that has not returned yet.
 - `ops` is a dictionary of lambdas, so only the selected operator runs.  If it were a dictionary of computed values, every entry would run, and a division by zero anywhere in the tree would surface at the wrong node.
@@ -771,7 +771,7 @@ For each tree below, say what your evaluator *should* do, before looking at what
 | `Var("prise")` with `env = {"price": 3}` | a typo: no such name | ? |
 | `BinOp("%", Num(7), Num(2))` | operator not implemented | ? |
 
-The middle row is the interesting one.  A helpful interpreter can notice that `prise` is one character away from `price` and say so.  That costs about four lines, and it is the difference between a language people tolerate and one they enjoy.
+Look at the middle row.  A helpful interpreter can notice that `prise` is one character away from `price` and say so, which costs about four lines of code.
 
 ## Model 3: Errors That Name the Program, Not the Interpreter
 
@@ -1088,7 +1088,7 @@ In Model 3, why does `evaluate` raise at the node where the problem is found rat
 
 # Extension: Selection and Truth (self-paced)
 
-An `if` statement makes one promise: it evaluates the condition, then runs exactly one of its two branches.  That promise has three consequences.  It makes guarded divisions safe.  It forces you to define what counts as true.  And it separates `if` from every ordinary function call in your language.
+An `if` statement evaluates the condition, then runs exactly one of its two branches.  That rule makes guarded divisions safe, it forces you to define what counts as true, and it separates `if` from every ordinary function call in your language.
 
 ## 1.  The Semantics of If
 
@@ -1427,7 +1427,7 @@ Remember two things from the extensions above.  `and` and `or` stop as soon as t
 
 # Extension: Iteration (self-paced)
 
-Loops give control flow its most useful power and its most dangerous failure mode.  A `while` loop runs its body again and again as long as the condition holds.  You need to know exactly when the condition is re-checked, whether the body gets a fresh environment each time, and what it means to exit the loop early.  These details decide which programs your language can express correctly.
+A `while` loop runs its body as long as the condition holds, and a loop that never ends is its most dangerous failure.  You need to decide when the condition is re-checked, whether the body gets a fresh environment each time, and what it means to exit the loop early, because these details decide which programs your language runs correctly.
 
 ## 3.  While, and the Questions It Raises
 
@@ -1748,7 +1748,7 @@ Expected output as written: the numbers 1 through 10.  Add a `Break` and, until 
 
 ## Model 6: The REPL
 
-The REPL (Read-Eval-Print Loop) is what makes your language feel like a language.  It runs the whole pipeline (tokenize, parse, evaluate) inside a loop that keeps a single `env` across lines, so earlier assignments are visible in later ones.  This model uses a simulated REPL (a list of inputs instead of real keyboard input) so it can run here without interaction.  The structure is the same as what you would wire up with Python's `input()`.
+The REPL (Read-Eval-Print Loop) lets someone type your language one line at a time.  It runs the whole pipeline (tokenize, parse, evaluate) inside a loop that keeps a single `env` across lines, so earlier assignments are visible in later ones.  This model uses a simulated REPL (a list of inputs instead of real keyboard input) so it can run here without interaction.  The structure is the same as what you would wire up with Python's `input()`.
 
 > **Watch out!**  Because the REPL's `env` dictionary persists across lines, a variable assigned on line 1 is still live on line 100.  So the order in which the user types lines matters, and re-running the REPL from scratch starts with an empty environment.  Students sometimes expect the REPL to behave like a script (isolated, top-to-bottom) rather than a stateful session.  They are different execution models.  State in your language documentation which one your REPL provides.
 
@@ -1843,7 +1843,7 @@ print(f"\nFinal environment: {env}")
 
 ### Reading the Code
 
-- The REPL is a loop around the same three stages the whole session has been building: tokenize, parse, evaluate (here `evaluate` also handles `Assign`, so one function covers both expressions and assignments).  Nothing new is required to make a language interactive.  You stop reading from a file and start reading from the user.
+- The REPL is a loop around the same three stages the whole session has been building: tokenize, parse, evaluate (here `evaluate` also handles `Assign`, so one function covers both expressions and assignments).  To make a language interactive, you read from the user in place of a file, and nothing else is new.
 - `env` lives outside the loop, which is what makes the session stateful.  A variable defined on one line is visible on the next.  Move it inside the loop and every line would start from nothing.
 - Errors are caught per line rather than ending the session.  This is the `LangError` discipline from the AST evaluator extension at work: a user's typo prints a message and the prompt comes back.
 

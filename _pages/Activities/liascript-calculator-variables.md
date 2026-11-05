@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # Calculator with Variables
 
-A calculator forgets everything between lines.  A language remembers.  The first step from one to the other is small: let a program give a value a name, and read it back.  Today you add that step to the calculator two ways, by hand in Python and in Flex and Bison, and you meet the symbol table that makes it work.
+Our calculator forgets everything between lines, and a language has to remember.  The first step toward that is small: let a program give a value a name, and read it back.  Today you add that step to the calculator two ways, by hand in Python and in Flex and Bison, using a dictionary called a symbol table.
 
 ## Learning Goals
 
@@ -211,7 +211,7 @@ Parser("x = 1; y = 2; x = 10; print x + y; print x + y;").parse()     # 12, 12
 
 ### Reading the Code
 
-- `self.vars[token] = self.E()` is the assignment, and `return self.vars[token]` in `F` is the lookup.  Those two lines are all it takes to have variables.
+- `self.vars[token] = self.E()` is the assignment, and `return self.vars[token]` in `F` is the lookup.  Those two lines are all the variables need.
 - The right side runs first, so `x = x + 4` reads the old `x` and then stores the new one.
 - The last line of the output is the problem.  One dictionary has one `x`, so nothing can hold the outer value while a block has its own.
 
@@ -286,7 +286,7 @@ printf 'let x = 3\nlet y = x * 2 + 1\nprint y\nlet x = x + 1\nprint x * y\n' | .
 
 > **You should see.** `7`, and then `28`.
 
-Follow `let x = x + 1` through it.  The parser reduces `x` to an `expr` with the lookup rule, then `1`, then `expr '+' expr`.  Only when the whole statement has been read does the `LET` rule's action run and store the result.  Bottom-up parsing gives you the "right side first" order for free.
+Follow `let x = x + 1` through it.  The parser reduces `x` to an `expr` with the lookup rule, then `1`, then `expr '+' expr`.  Only when the whole statement has been read does the `LET` rule's action run and store the result.  Because the parser works bottom-up, the right side is always evaluated first.
 
 > **CTQ 3.1** Find the two lines that correspond to `symbols[...] = ...` and `symbols[...]` in Model 2.
 
@@ -296,7 +296,7 @@ Follow `let x = x + 1` through it.  The parser reduces `x` to an `expr` with the
 
 # Part IV: What One Dictionary Cannot Do
 
-These programs fit this calculator, and they show its limits.
+These programs run on this calculator, and they show where it stops being enough.
 
 ```text
 let x = 1
