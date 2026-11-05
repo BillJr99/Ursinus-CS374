@@ -121,7 +121,7 @@ Three conventions save parentheses:
 
 1.  Fully parenthesize each expression, then circle each binder and underline each free variable: (a) $\lambda x. x$; (b) $\lambda x. \lambda y. x$; (c) $(\lambda x. x\, x)(\lambda x. x\, x)$; (d) $\lambda x. x\, (\lambda y. y\, x)$.
 2.  Expression (b) takes two arguments (curried) and returns the first.  Which familiar Python one-liner is it?  Write the Python.
-3.  In (d), which λ binds the inner $x$ at the far right?  Apply the rule that the innermost enclosing binder wins, and connect that rule, by name, to the lookup walk along an environment chain.
+3.  In (d), which λ binds the inner $x$ at the far right?  Apply the rule that the innermost enclosing binder wins, and compare it with how Scheme treats a nested `lambda` that reuses a name.  You will see this formally later, in *Scope Chains and Closures*.
 4.  Why does the grammar need no precedence ladder?  (You answered this once for Scheme; Scheme got it from the lambda calculus.)
 
 ---
@@ -233,7 +233,7 @@ $$
 (\lambda x. \lambda y.\, x)\; y \;=_\alpha\; (\lambda x. \lambda z.\, x)\; y \;\rightarrow_\beta\; \lambda z.\, y
 $$
 
-The result correctly returns the free $y$, whatever it refers to outside.  Capture is the shadowing bug from your scope module in formal dress, and alpha renaming is the formal version of "pick a fresh local name."
+The result correctly returns the free $y$, whatever it refers to outside.  Capture is what we will later call a shadowing bug, in formal dress, and alpha renaming is the formal version of "pick a fresh local name."
 
 > **Watch out**: When you substitute a value that contains a free variable `y` into a body that binds `y`, the `y` in your value would become bound by the inner lambda by accident.  The fix (alpha renaming) matches how Python programmers avoid shadowing bugs: pick a fresh name for the inner binder that does not collide with anything free in the argument.
 
@@ -678,7 +678,7 @@ print("They match -> alpha-equivalent.")
 13.  De Bruijn indices replace variable names with distances to the binder.  For `λx.λy.x`, the `x` in the body has index 1 (one lambda up).  Confirm this by reading the printed de Bruijn structure, and explain why index 0 would mean "bound by the innermost lambda."
 14.  The checker says `λx.x y` is alpha-equivalent to `λz.z y`.  Why must the free variable `y` stay a name (not an index) for the comparison to be correct?  What would go wrong if free variables were also replaced by indices?
 15.  Two expressions with different de Bruijn representations are never alpha-equivalent.  Prove this claim in two sentences by referring to what de Bruijn indices encode.
-16.  In your CS374 interpreter, when do two AST nodes represent "the same" computation?  Is that relation alpha equivalence, beta-normal-form equality, or something else?  Give a concrete example where the distinction matters.
+16.  In the AST activity's trees, when do two AST nodes represent "the same" computation?  Is that relation alpha equivalence, beta-normal-form equality, or something else?  Give a concrete example where the distinction matters.
 
 ---
 
@@ -775,7 +775,7 @@ print("  unreachable subexpressions, enabling infinite data structures.")
 17.  The expression `f ((λx.x) z)` is in WHNF but not in normal form.  Explain precisely why: what makes it WHNF, and where is the remaining redex?
 18.  Haskell evaluates to WHNF rather than full normal form.  Write a Python example where evaluating an argument before it is needed causes an error or an infinite loop that lazy (WHNF) evaluation would avoid.
 19.  The `bound_vars` function returns all bound variable names, not only the one bound at the outermost lambda.  In the expression `λx. λy. x`, both `x` and `y` are bound.  Explain why knowing the full set of bound variable names matters when performing a substitution.
-20.  Connect WHNF to your CS374 interpreter: when your `evaluate` function meets `("call", func, arg)`, does it evaluate `arg` before or after looking up `func`?  What evaluation strategy does that correspond to, and what is its name?
+20.  Connect WHNF to Scheme: when Scheme evaluates a call, does it evaluate the argument before or after it looks up the function?  What evaluation strategy does that correspond to, and what is its name?
 
 ---
 
@@ -836,7 +836,7 @@ A term is in normal form when:
 1.  *Reduction portfolio.*  Reduce to normal form, showing every step: $(\lambda x.\, x)(\lambda y.\, y)(z)$; $(\lambda f.\, f\, a)(\lambda x.\, x)$; $(\lambda x. \lambda y.\, y\, x)\; p\; (\lambda q.\, q)$; and one capture trap of your own design, solved with explicit alpha renaming.
 2.  *Python mirror.*  Express the first three terms from exercise 1 as Python lambdas, and verify by running them that each normal form matches Python's answer (use strings or small functions as stand-ins for the free variables).
 3.  *Currying made real.*  Write Python's `add = lambda x: lambda y: x + y` and call `add(3)(4)`.  Then write the lambda calculus term it transliterates.  In one sentence, say what partial application (`add(3)` alone) means in both notations.
-4.  *The scope bridge.*  Write a paragraph that maps vocabulary across your three systems: λ-binder, `let`-declaration, and environment `define`; free variable and name resolved in an outer scope; alpha renaming and shadow avoidance.  This paragraph is your study sheet for the closures module.
+4.  *The scope bridge.*  Write a paragraph that maps the vocabulary from the calculus to Scheme and Python: λ-binder and a `lambda` parameter or a `let`; free variable and a name resolved outside the function; alpha renaming and picking a fresh local name.  Keep it for *Binding and Scope*.
 
 ---
 

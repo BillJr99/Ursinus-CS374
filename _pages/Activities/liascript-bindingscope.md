@@ -673,4 +673,4 @@ print(c(), c(), c())        # 1 2 3
 
 ---
 
-**Up next:** *Lambda Calculus I* takes functions down to almost nothing, and *Scope Chains and Closures* comes back to names, with the machine that enforces today's rules.
+**Up next:** *Scope Chains and Closures* builds the machine that enforces today's rules.

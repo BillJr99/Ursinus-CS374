@@ -273,7 +273,7 @@ These definitions follow Kate Morley's [Boolean logic in the lambda calculus](ht
 
 > **CTQ 2.2** Reduce $\textbf{AND}\, \textbf{TRUE}\, \textbf{FALSE}$, following the trace above.  Explain in one sentence why `p q p` works: when is the answer "whatever q is," and when is it "p itself"?
 
-> **CTQ 2.3** $\textbf{AND}$ never examines $q$ when $p$ is FALSE.  Which semantics from the control-flow module did you get for free, and why is it free here?
+> **CTQ 2.3** $\textbf{AND}$ never examines $q$ when $p$ is FALSE.  Which behavior of Scheme's `and` did you get for free, and why is it free here?
 
 > **CTQ 2.4** Does applying $\textbf{C}$ to a Church boolean flip its selections?  Reduce $\textbf{C}\, \textbf{TRUE}\, A\, B$ and compare the result with $\textbf{FALSE}\, A\, B$.
 
@@ -766,15 +766,6 @@ $\textbf{Y}$ diverges in Scheme but $\textbf{Z}$ does not, because:
 
 ---
 
-`[lambda: i for i in range(3)]` returns three functions that all print `2`. This is because:
-
-[(X)] All three closed over the same binding of `i`, and by call time it holds the loop's final value
-[( )] Python evaluates lambdas lazily and only the last one survives
-[( )] List comprehensions reuse one function object
-[( )] `range(3)` is exhausted before the lambdas run
-
----
-
 ## 9.  Exercises
 
 1.  *Pairs.*  Define $\textbf{PAIR} = \lambda a. \lambda b. \lambda f.\, f\, a\, b$, with $\textbf{FST} = \lambda p.\, p\, \textbf{K}$ and $\textbf{SND} = \lambda p.\, p\, \textbf{KI}$.  Verify in Python.  Then say what data structure you built from nothing, and what your AST could, in principle, be encoded as.
@@ -1085,7 +1076,7 @@ Here are the same three definitions in Scheme.  They sit closer to the lambda te
 
 > **CTQ 9.5** `fact-generator` receives the rest of the recursion as a parameter.  `make-counter`, from the Scheme activity, got its persistence from `set!` on a captured variable instead.  Both supply something the bare calculus lacks.  Which would you rather explain to a first-year student, and which would you rather implement in your interpreter?  They need not be the same answer.
 
-> **CTQ 9.6** Your tree-walking interpreter has to make recursion work somehow.  Find the place in it where a function's own name becomes visible inside its body, and say whether your implementation is closer to $\textbf{Z}$ or closer to `set!`.  Put the answer in `SEMANTICS.md` in one sentence.
+> **CTQ 9.6** A Scheme interpreter has to make recursion work somehow.  You will see how in *Scope Chains and Closures*.  For now, predict: does `define` work more like $\textbf{Z}$ or more like `set!`?
 
 ### Try It Yourself
 
@@ -1110,4 +1101,4 @@ Recap: a recursive function becomes a generator when it takes the rest of the re
 
 ---
 
-Up next: the Lambda Calculus lab goes out today.  *Scope Chains and Closures* then asks what a capturing lambda needs from the machine underneath it.
+Up next: the Lambda Calculus lab goes out today.  *From Calculator to Scheme* comes next, and it builds a language that can use all of this.

@@ -14,7 +14,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 # From Calculator to Scheme
 
-Last session the calculator learned names, and we hit a wall: it computes as it reads, so it cannot skip a branch or run anything twice.  Today you take it the rest of the way.  In five small steps it becomes a language you have already written programs in: Scheme.  Every step adds one idea, and each one runs.
+In *Calculator with Variables* the calculator learned names, and we hit a wall: it computes as it reads, so it cannot skip a branch or run anything twice.  Today you take it the rest of the way.  In five small steps it becomes a language you have already written programs in: Scheme.  Every step adds one idea, and each one runs.
 
 ```text
 calculator          computes while it reads
@@ -51,7 +51,7 @@ Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Pr
 
 | Segment | What your team does |
 |---------|---------------------|
-| Why the calculator stops working | Answer CTQ 0.1 from what you found last session |
+| Why the calculator stops working | Answer CTQ 0.1 from what you found in *Calculator with Variables* |
 | Steps 1 and 2: Read, Then Evaluate | Run both cells, trace `(+ 1 (* 2 3))`, and answer CTQs 1.1-2.2 |
 | Step 3: Define | Run the cell, and answer CTQ 3.1 |
 | Step 4: If | Predict first, run the cell, and answer CTQs 4.1 and 4.2 |

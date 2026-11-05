@@ -26,7 +26,7 @@ By the end of this activity, you will be able to:
 - Trace environment diagrams for closure creation and invocation, identifying captured variable bindings and parent environment pointers
 - Add `lambda` to a small Scheme, using a scope chain for its parameters
 
-> **Before You Begin:** You need *Binding and Scope*, *From Calculator to Scheme*, and Python classes with instance variables.
+> **Before You Begin:** You need *Binding and Scope*, *From Calculator to Scheme*, *Lambda Calculus II*, and Python classes with instance variables.
 
 ---
 
@@ -985,6 +985,15 @@ This is also why CTQ 6.3 was harder than it looked.  When `Fun` runs, the functi
 ---
 
 # Check Your Understanding
+
+`[lambda: i for i in range(3)]` returns three functions that all print `2`. This is because:
+
+[(X)] All three closed over the same binding of `i`, and by call time it holds the loop's final value
+[( )] Python evaluates lambdas lazily and only the last one survives
+[( )] List comprehensions reuse one function object
+[( )] `range(3)` is exhausted before the lambdas run
+
+---
 
 A `while` loop's body declares `let t = ...` each iteration, and the team gives each iteration a fresh child environment.  After the loop, `t` is undefined.  This behavior is the direct consequence of:
 

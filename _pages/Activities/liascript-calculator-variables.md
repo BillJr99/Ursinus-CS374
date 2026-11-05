@@ -306,7 +306,7 @@ print x                      should print 1, and one dictionary prints 10
 
 > **CTQ 4.1** Why is there no way to get `1` on the last line with one dictionary?  We will fix this when we reach *Scope Chains and Closures*.
 
-> **CTQ 4.2** Suppose you want `if`.  This parser computes while it reads.  What happens to the branch that should not run?  Hold on to your answer for next session.
+> **CTQ 4.2** Suppose you want `if`.  This parser computes while it reads.  What happens to the branch that should not run?  Hold on to your answer for *From Calculator to Scheme*.
 
 ---
 
@@ -334,4 +334,4 @@ A name used in an expression belongs at the `F` level of the grammar because:
 
 ---
 
-**Up next:** *From Calculator to Scheme* answers CTQ 4.2: to run only one branch, the program has to stop computing while it reads.
+**Up next:** *Lambda Calculus I*, and the Lambda Calculus lab soon after.  *From Calculator to Scheme* then answers CTQ 4.2: to run only one branch, the program has to stop computing while it reads.
