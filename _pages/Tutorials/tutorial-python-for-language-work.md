@@ -445,6 +445,10 @@ The scan is *lazy*: it reads only as far as it needs to produce the next value. 
 Here is where each rule shows up in the [Lexer assignment]({{ site.baseurl }}/Assignments/Lexer):
 
 - **`tokenize` in Step 1c.**  `for tok in tokenize(source)` is the `for` loop above.  You yield a token *before* you advance, because the function pauses at that line, and at that moment `line` and `col` still describe where the token starts.
+- **Skipped text.**  The space branch in `words` moves `pos` without yielding anything, and that is how `tokenize` skips WHITESPACE and COMMENT.  The caller never sees them, but the position still moves past them.
+- **EOF after the loop.**  A `yield` does not have to sit inside a loop.  `tokenize` yields one more token, EOF, after its `while` loop ends, and then the function returns.  So EOF is always the last value the generator hands out.
+- **The return type.**  `-> Iterator[Token]` in the signature says that calling `tokenize` gives you an iterator of `Token`s, not a list and not a single token.  It needs `from typing import Iterator`, which the Step 1c code already includes.  The annotation is for you and your tools: Python does not check it when the code runs.
+- **One token, for a test.**  `next(tokenize(text))` makes a fresh generator and takes only its first token, without scanning the rest.  The string tests in Step 2c use this.
 - **`Lexer.__init__` in Step 2a.**  `tokenize(source)` scans nothing yet.  You are storing the paused generator for later.
 - **`_fill` in Step 2a.**  Asking the generator for a token is rule 2: it runs the scan just far enough to produce one more token.
 - **`advance` and EOF in Step 2a.**  `EOF` is the last thing `tokenize` yields.  One more `next` is rule 3, which is why the assignment keeps `EOF` in the buffer rather than asking again.

@@ -46,7 +46,7 @@ info:
       rlink: "Activities/liascript-tokensscanning.md"
       liapage: true
     - rtitle: "Python for Language Work: generators and yield, behind the tokenize generator"
-      rlink: "Tutorials/PythonForLanguageWork#generators-and-yield"
+      rlink: "../Tutorials/PythonForLanguageWork#generators-and-yield"
     - rtitle: "regex101 (interactive regex tester; set the Flavor to Python, and switch to PCRE only to use its step-by-step debugger)"
       rlink: "https://regex101.com/"
     - rtitle: "pythex (tests patterns with Python's own re module, in your browser)"
