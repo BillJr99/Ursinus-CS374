@@ -34,7 +34,7 @@ By the end of this activity, you will be able to:
 - Explain why gradual type systems are deliberately unsound, and what that buys
 - Specify the typing rules for your team's language and justify them against the evaluation criteria
 
-Your interpreter now has the environments from *Binding, Scope, and Environments*, so it knows what to do with `5 / 0`.  But what should it do with
+Your interpreter now has the environments from *Scope Chains and Closures*, so it knows what to do with `5 / 0`.  But what should it do with
 
 ```
 "hello" * true
@@ -1119,4 +1119,4 @@ Then: in Model 3, the checker deduced `c : Bool` from context alone, with no ann
 
 ---
 
-Up next: the *Language Design Workshop* turns the whole term on a language of your own, and a team that adds static checks builds directly on Model 2.
+Up next: your team's language, and Demo Day.  A team that adds static checks builds directly on Model 2.

@@ -8,7 +8,7 @@ info:
   purpose: "To design, build, document, and present a programming language of your own, starting from a small working language I give you, and to show that a language can grow one stage at a time."
   tilt:
     task: "In rotating-role team sprints, choose your language's direction, grow the starter language into your own, add a distinctive feature (going deeper via the Extensions Menu if you choose), and ship a REPL, file-runner, samples, tests, and SEMANTICS.md, then present the language at Demo Day."
-    criteria: "I assess your work on the Sprint 0 proposal, language design and documentation, implementation correctness and integration, testing, reproducibility, and the Demo Day presentation.  You submit the proposal and then present it at the Sprint 0 kickoff; the rest is earned with the final submission, due on the last class day, and the presentation at Demo Day.  See the course schedule for the dates, and the rubric below for the full breakdown."
+    criteria: "I assess your work on the proposal, language design and documentation, implementation correctness and integration, testing, reproducibility, and the Demo Day presentation.  You submit the proposal; the rest is earned with the final submission, due on the last class day, and the presentation at Demo Day.  See the course schedule for the dates, and the rubric below for the full breakdown."
   points: 100
   goals:
     - To design a programming language with a niche, a documented grammar, and exhaustive semantics
@@ -20,11 +20,11 @@ info:
     - To work in sustained team sprints with rotating roles and structured peer review
   rubric:
     - weight: 28
-      description: Proposal (submitted, and then presented at the Sprint 0 kickoff)
+      description: Proposal
       preemerging: The proposal is missing, or names a language with no team roster, niche, grammar, or plan
       beginning: The proposal names the team and a niche, but the design scorecard or the team charter is missing, or the grammar v0, node inventory, or SEMANTICS.md v0 is missing or generic, or the build plan and sprint plan are absent
       progressing: All checklist items are present and specific, with minor gaps such as a scorecard that states priorities without their sacrifices, a charter topic left vague, a vague risk pre-mortem, or an incomplete node inventory
-      proficient: Every checklist item is complete and specific; the proposal opens with the three-member team roster, the niche in one sentence, the design scorecard with a priority and a sacrifice for each of readability, writability, reliability, and implementation cost, and the team charter covering all four topics and signed by every member; the chosen direction is declared and defended against the design scorecard; the distinctive feature (and any Extensions Menu adoptions) is scoped to fit the sprint plan; and the proposal is submitted on time and presented at the Sprint 0 kickoff
+      proficient: Every checklist item is complete and specific; the proposal opens with the three-member team roster, the niche in one sentence, the design scorecard with a priority and a sacrifice for each of readability, writability, reliability, and implementation cost, and the team charter covering all four topics and signed by every member; the chosen direction is declared and defended against the design scorecard; the distinctive feature (and any Extensions Menu adoptions) is scoped to fit the sprint plan; and the proposal is submitted on time
     - weight: 19
       description: Language Design and Documentation
       preemerging: The language has no documented grammar or semantics, or the design is the starter language unchanged
@@ -56,12 +56,8 @@ info:
       progressing: The presentation includes a live demonstration and acknowledges limitations, with most teammates participating
       proficient: The presentation includes a live REPL demonstration, a sample program that shows off the niche, the distinctive feature explained by its non-author, a rehearsed disclosure of one known limitation, and every teammate presenting
   readings:
-    - rtitle: "Language Design Studio Activity"
-      rlink: "Activities/liascript-languagedesign.md"
-      liapage: true
-    - rtitle: "Sprint Studio Protocol"
-      rlink: "Activities/liascript-sprintstudio.md"
-      liapage: true
+    - rtitle: "The Project Language Guide, including the Grammar v0 starter and the feature menu"
+      rlink: "Tutorials/ProjectLanguageGuide"
     - rtitle: "Music and Live-Coding Track Guide (for Direction B: deliverable equivalence table and the text-events-only route)"
       rlink: "../Projects/TeamLanguage#the-music-and-live-coding-path"
     - rtitle: "Make-a-Lisp (mal): incremental scaffold with a built-in test harness (Direction A option)"
@@ -90,13 +86,13 @@ Your team will design, build, document, and present a programming language of yo
 
 ## Milestone Timeline
 
-The project is worth **100 points**, earned at two graded milestones: the proposal (28 points) and the Demo Day Presentations deliverable (72 points), which you submit on the last class day and present at Demo Day.  The Sprint Studio's release and review work goes in with the final submission.  See the course schedule for the assigned and due dates; it is the source of truth for every date below.
+The project is worth **100 points**, earned at two graded milestones: the proposal (28 points) and the Demo Day Presentations deliverable (72 points), which you submit on the last class day and present at Demo Day.  Your peer review and release work goes in with the final submission.  See the course schedule for the assigned and due dates; it is the source of truth for every date below.
 
 | Milestone (see the course schedule for dates) | What is due | Points |
 |---|---|---|
 | Project hand-out | Nothing is submitted.  The design phase opens: form a team of three, pick a niche, start the design scorecard and the team charter | - |
-| **Proposal: submitted, then presented at the Sprint 0 kickoff** | **The proposal, opening with the team roster, the niche, the design scorecard, and the signed team charter.  You submit it before the kickoff and present it at the kickoff** | **28** |
-| **Demo Day Presentations: submitted on the last class day, then presented at Demo Day (final exam period)** | **The final submission, due on the last class day, including your gallery walk cards and triage and the ShipIt Release Checklist, and the presentation at Demo Day** | **72** |
+| **Proposal** | **The proposal, opening with the team roster, the niche, the design scorecard, and the signed team charter** | **28** |
+| **Demo Day Presentations: submitted on the last class day, then presented at Demo Day (final exam period)** | **The final submission, due on the last class day, including your peer review cards and triage and the ShipIt Release Checklist, and the presentation at Demo Day** | **72** |
 
 Demo Day takes place in the course's final exam period, which the course schedule lists.  The final submission is due earlier, on the last class day.  There is no written final exam; Demo Day is the course's terminal event, and I accept no work after it.
 
@@ -125,7 +121,7 @@ Teams are three members each, formed in the design phase from your standing POGI
 
 - *Forming* is the team charter, drafted in the design phase and signed in the proposal.  You do it before the stakes get high.
 - *Storming* is the design phase.  The argument over which niche to serve and what the design scorecard says is productive conflict, so have it out loud in your own team meeting instead of quietly in a group chat.
-- *Norming* is the Sprint 0 proposal: a signed and presented agreement about what you are building and who owns what.
+- *Norming* is the proposal: a signed agreement about what you are building and who owns what.
 - *Performing* is the sprints, where role rotation and stand-ups carry the load and the team self-corrects without drama.
 - *Adjourning* is Demo Day's retrospective.  Close deliberately, with contribution statements and the portfolio story each member takes away.
 
@@ -143,7 +139,7 @@ You need:
 - Python 3.10 or newer.  The pipeline can use the standard library only, so there need be nothing to install for it.
 - A shared git repository for the team.  It may stay private until release hardening; it must be public by Demo Day.
 - A working terminal.  If the shell is still new to you, read the [dev environment page]({{ site.baseurl }}/Tutorials/DevEnvironment) and the [shell primer for language development]({{ site.baseurl }}/Tutorials/ShellForLanguageDev) once before Sprint 1.
-- The [Project Language Guide]({{ site.baseurl }}/Tutorials/ProjectLanguageGuide), a complete worked path through this project, which the schedule lists as reading for the sprint studios.
+- The [Project Language Guide]({{ site.baseurl }}/Tutorials/ProjectLanguageGuide), a complete worked path through this project, which the schedule lists as reading.
 
 Confirm your Python version before the first team meeting:
 
@@ -157,7 +153,7 @@ Python 3.11.2
 
 Any version 3.10 or newer is fine.  If the command is not found, follow the dev environment page before continuing.
 
-> **Time budget.**  The project runs about six weeks from the hand-out to Demo Day.  The design phase has no studio session, so budget one team meeting of your own early in the design phase, well before the proposal is due.  Budget about 4 hours in Sprint 3 for the ShipIt checks (cold clone-to-run, packaging, README).  The sprint studios are working sessions; arrive with a pipeline that runs.
+> **Time budget.**  The project runs about six weeks from the hand-out to Demo Day.  The project has no in-class studio sessions, so budget one team meeting of your own early in the design phase, well before the proposal is due.  Budget about 4 hours in Sprint 3 for the ShipIt checks (cold clone-to-run, packaging, README).
 
 ---
 
@@ -184,7 +180,7 @@ Design a small live-coding language of your own: a language whose programs denot
 
 Direction B maps onto the same milestones:
 
-- **Proposal (Sprint 0):** your design document also includes a denotational semantics (one displayed equation per construct, mapping programs to event sets over cycle spans), at least one algebraic law your language satisfies, stated as an equation, and a design rationale argued against the embedded-versus-external tradeoff axes, with at least two rejected alternatives.  These stand in for (or fold into) `SEMANTICS.md` v0.
+- **Proposal:** your design document also includes a denotational semantics (one displayed equation per construct, mapping programs to event sets over cycle spans), at least one algebraic law your language satisfies, stated as an equation, and a design rationale argued against the embedded-versus-external tradeoff axes, with at least two rejected alternatives.  These stand in for (or fold into) `SEMANTICS.md` v0.
 - **Sprint 1:** the lexical and syntactic front end, built either from the starter language or with flex/bison (the [mini-notation starter]({{ site.baseurl }}/files/examples/mininote/README.md) is a good seed).  If you use bison, keep the grammar conflict-free and include the `-v` automaton report in your repository.  The front end parses every specification example and prints ASTs with location-prefixed errors.
 - **Sprint 2:** the evaluator, by structural recursion over the AST, one case per semantic equation, each case commented with the equation it implements, emitting a timed event list.
 - **Sprint 3:** hardening, the specification-driven test suite, and performance rehearsal.  In the test suite, every semantic equation has at least one test against a hand-computed event list, the algebraic law is verified empirically on at least three instances, and stochastic constructs are reproducible under a fixed seed.
@@ -246,7 +242,7 @@ Give your language editor support so an audience *sees* it is a language.  Build
 
 ### Continuations and First-Class Control
 
-Make "the rest of the computation" a value in your language.  Transform your evaluator, or a small core of it, into continuation-passing style, so that no evaluation step ever returns and each step instead hands its result to an explicit continuation; add a trampoline so that deep programs do not exhaust the host stack; then expose `call/cc`, or an equivalent escape form, to programs written in your language.  Demonstrate at least one control structure rebuilt from it, such as an early `break` out of a loop or an exception handler with `raise`, and state in `SEMANTICS.md` what a captured continuation holds and how long it remains valid.  The `call/cc` reading in the *Lambda Calculus II and Closures* activity and the [Coroutines and Generators tutorial]({{ site.baseurl }}/Tutorials/CoroutinesAndGenerators) are the starting points.
+Make "the rest of the computation" a value in your language.  Transform your evaluator, or a small core of it, into continuation-passing style, so that no evaluation step ever returns and each step instead hands its result to an explicit continuation; add a trampoline so that deep programs do not exhaust the host stack; then expose `call/cc`, or an equivalent escape form, to programs written in your language.  Demonstrate at least one control structure rebuilt from it, such as an early `break` out of a loop or an exception handler with `raise`, and state in `SEMANTICS.md` what a captured continuation holds and how long it remains valid.  The `call/cc` reading in the *Lambda Calculus II* activity and the [Coroutines and Generators tutorial]({{ site.baseurl }}/Tutorials/CoroutinesAndGenerators) are the starting points.
 
 ### A Lambda-Calculus Core: Church Encodings and Combinators
 
@@ -264,17 +260,30 @@ Instead of (or alongside) extending your own language, contribute to an existing
 
 ## Milestone 1: Project Hand-Out (the design phase opens)
 
-The hand-out opens a design phase that runs outside class.  There is no studio session for it, so the work happens in a team meeting you schedule yourselves.  Nothing is submitted at the hand-out; the point of this milestone is to leave it with a team, a meeting, and a shortlist.
+The hand-out opens a design phase that runs outside class.  There is no class session for it, so the work happens in a team meeting you schedule yourselves.  Nothing is submitted at the hand-out; the point of this milestone is to leave it with a team, a meeting, and a shortlist.
 
 > **Do this.**
 > 1. Form a team of three from your standing POGIL groups.
 > 2. Put a team meeting on the calendar, early in the design phase.  Pick one external communication channel (Discord, text, or email) and use it from now on.
-> 3. Read the [Language Design Studio activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-languagedesign.md) and the [Sprint Studio Protocol]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-sprintstudio.md) before the meeting.
+> 3. Read the Niche and the Design Scorecard below before the meeting.
 > 4. At the meeting, argue the niche out loud.  Read Choose Your Direction above and lean toward A or B; a team direction is easier to settle now than mid-sprint.
 > 5. Start the design scorecard: readability, writability, reliability, and implementation cost, with what you prioritize and what you sacrifice.
 > 6. Create the team's shared repository.  It can stay private for now.
 
 > **Why this matters.**  This is Tuckman's *storming*.  The argument over which niche to serve is productive conflict.  Have it now, in person, while nothing is graded yet.
+
+### The Niche and the Design Scorecard
+
+Your language needs a reason to exist beyond the assignment.  The strongest student languages pick a *niche* and let it drive every decision.  A niche is the specific group of users and the specific kind of program your language exists to serve: dice-game scripting, turtle-style drawing, survey logic, recipe scaling, music patterns, or grading rules.  The niche supplies your example programs, your Demo Day story, and the tiebreaker for every design argument ("which choice serves dice players?").
+
+The **design scorecard** rates your language on four criteria.  For each one, write what you prioritize and what you give up to get it:
+
+- **Readability:** can a reader who did not write the code follow it quickly?
+- **Writability:** can an author produce correct code quickly?
+- **Reliability:** how well does the language keep a program from doing the wrong thing without anyone noticing?
+- **Implementation cost:** how much will it take to build?  This is your scarcest resource.
+
+The [Project Language Guide]({{ site.baseurl }}/Tutorials/ProjectLanguageGuide) has a Grammar v0 builder and a menu of features, with models you can run, for when you get to the proposal.
 
 **Deliverables checklist (nothing is uploaded at this milestone; carry these into the proposal, Milestone 2):**
 
@@ -286,9 +295,9 @@ The hand-out opens a design phase that runs outside class.  There is no studio s
 
 ---
 
-## Milestone 2: The Proposal (28 points): Submitted, Then Presented at the Sprint 0 Kickoff
+## Milestone 2: The Proposal (28 points)
 
-Submit the proposal through Canvas by its due date, and present it in class at the Sprint 0 kickoff.  It is two to three pages, and it is the only graded deliverable before Demo Day, so treat it as the contract your team builds against.  It opens with the team: your roster, your niche, the design scorecard, and the signed team charter.  The rest is the plan.  The rubric's proficient level asks for every checklist item complete and specific, the chosen direction declared and defended against the design scorecard, the distinctive feature (and any Extensions Menu adoptions) scoped to fit the sprint plan, and the proposal submitted on time and presented at the kickoff.
+Submit the proposal through Canvas by its due date.  It is two to three pages, and it is the only graded deliverable before Demo Day, so treat it as the contract your team builds against.  It opens with the team: your roster, your niche, the design scorecard, and the signed team charter.  The rest is the plan.  The rubric's proficient level asks for every checklist item complete and specific, the chosen direction declared and defended against the design scorecard, the distinctive feature (and any Extensions Menu adoptions) scoped to fit the sprint plan, and the proposal submitted on time.
 
 > **Do this.**
 > 1. Open with the team: list the three members.
@@ -304,7 +313,6 @@ Submit the proposal through Canvas by its due date, and present it in class at t
 > 11. Run the risk pre-mortem: name the most likely derailment and the smallest experiment that retires it.
 > 12. Write the sprint plan with the role rotation schedule, and check that it matches the charter's rotation plan.
 > 13. Submit the proposal through Canvas by its due date.
-> 14. Present the proposal in class at the Sprint 0 kickoff.
 
 ### The Team Charter
 
@@ -320,7 +328,7 @@ Your team writes a one-page charter it will actually use.  The signed charter is
 
 All members sign the charter (typed names suffice) in the proposal.  One charter per team.  During Sprint 1, re-read it as a team and file a revision if it no longer describes your team.
 
-**Deliverables checklist (two to three pages, one Canvas submission per team, presented in class):**
+**Deliverables checklist (two to three pages, one Canvas submission per team):**
 
 - [ ] Team roster (three members).
 - [ ] The niche, in one sentence.
@@ -340,7 +348,7 @@ All members sign the charter (typed names suffice) in the proposal.  One charter
 
 ## Milestone 3: Sprint 1: Get It Running and Grow the Core
 
-Sprint 1 is the build phase.  You get the starter running in your repository and start growing it toward the required scope (Direction B: the front end printing ASTs).  Build in sprints, following the sprint studio protocol: stand-ups with numbers, failing tests as specifications, current documents, and role rotation at boundaries.
+Sprint 1 is the build phase.  You get the starter running in your repository and start growing it toward the required scope (Direction B: the front end printing ASTs).  Build in sprints, with stand-ups that report numbers, failing tests as specifications, current documents, and role rotation at boundaries.
 
 > **Do this.**
 > 1. Copy the starter into your team's repository, and run its test before you change anything.  One layout that works is shown below.
@@ -388,27 +396,27 @@ python3 -m pytest tests/               # runs the test suite
 
 ---
 
-## Milestone 4: Release and Review: The Sprint Studio
+## Milestone 4: Release and Review
 
-Sprints 2 and 3 meet in one Sprint Studio session on the last class day.  Their work goes in with your final submission, due that day: your gallery walk cards and their triage, and the ShipIt Release Checklist.
+Sprints 2 and 3 happen outside class, in your team's own meetings.  Their work goes in with your final submission, due on the last class day: your peer review cards and their triage, and the ShipIt Release Checklist.
 
-### Sprint 2: The Gallery Walk
+### Sprint 2: Peer Review
 
-Sprint 2 implements the grammar differences and the distinctive feature's skeleton (Direction B: the evaluator emitting timed events, by structural recursion, one case per semantic equation, each commented with the equation it implements).  The gallery walk at the Sprint Studio is mandatory.
+Sprint 2 implements the grammar differences and the distinctive feature's skeleton (Direction B: the evaluator emitting timed events, by structural recursion, one case per semantic equation, each commented with the equation it implements).  Trading a review with another team is required, because it is how you find out what your README and your demo actually do for someone who did not build them.
 
 > **Do this.**
 > 1. Implement every grammar difference you marked in grammar v0, and update `SEMANTICS.md` as you go so the documents stay current.
 > 2. Build the distinctive feature's skeleton so the failing test from Sprint 1 either passes or fails for a more interesting reason.
-> 3. Host your station with one known failure shown.  A demo that hides its failures gets no useful cards.
-> 4. Walk the other stations and leave one Strength, one Question, and one Risk card at each.
-> 5. Back at your own station, triage every card you received into one of three buckets: fix, disclose, or future work.  The Scribe records the triage in the decision log.
+> 3. Pair with another team, and trade repositories.  Show one known failure in your README, because a demo that hides its failures gets no useful cards.
+> 4. Run the other team's language from its README, and leave one card with three fields.  **Strength:** one specific thing that works, precisely named.  **Question:** one real question it raised, ideally about a seam or a semantics decision.  **Risk:** the one thing most likely to fail on Demo Day, stated kindly and concretely.
+> 5. Triage every card you received into one of three buckets: fix before Demo Day, disclose at Demo Day, or future work.  The Scribe records the triage in the decision log.
 > 6. Rotate roles for Sprint 3.
 
 > **Checkpoint.**  Your disclose bucket becomes, verbatim, the limitations section of your report and the candid minute of your presentation.  Do not clean it up later.
 
 ### Sprint 3: Release Hardening and the ShipIt Checklist
 
-Sprint 3 completes the feature, hardens errors, and finishes the sample suite.  The Sprint Studio is your last in-class working session before Demo Day, and release hardening starts there, right after the gallery walk triage.  Budget about 4 hours for the ShipIt checks (cold clone-to-run, packaging, README); they are scored in the Documentation and Reproducibility dimension.
+Sprint 3 completes the feature, hardens errors, and finishes the sample suite.  Release hardening starts right after you triage your peer review.  Budget about 4 hours for the ShipIt checks (cold clone-to-run, packaging, README); they are scored in the Documentation and Reproducibility dimension.
 
 > **Do this.**
 > 1. Finish the distinctive feature so it works end to end, and make every error message identify its stage and position.
@@ -425,8 +433,8 @@ Sprint 3 completes the feature, hardens errors, and finishes the sample suite.  
 
 - [ ] Grammar differences implemented and reflected in `SEMANTICS.md`.
 - [ ] The distinctive feature's skeleton running end to end on at least one program (Direction B: the evaluator emitting a timed event list).
-- [ ] The gallery walk hosted with one known failure shown.
-- [ ] Strength, Question, and Risk cards left at every other station.
+- [ ] A peer review traded with another team, with one known failure shown.
+- [ ] A Strength, Question, and Risk card left for the other team.
 - [ ] Every card you received triaged into fix, disclose, or future work, recorded in the decision log.
 - [ ] Roles rotated for Sprint 3.
 - [ ] The distinctive feature complete, with stage-and-position error messages throughout.
@@ -466,7 +474,7 @@ Submit these four deliverables on the last class day, before you present:
 1. **The repository:** the implementation, REPL and file-runner, test suite, sample programs with expected outputs, all configuration in JSON, located exception handling throughout, and a readme tested by the teammate who did not write it.  Ensure reproducibility by fixing random seeds where applicable and listing software version information.  The repository is public and recruiter-legible: run the [ShipIt self-check]({{ site.baseurl }}/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist) before Demo Day; it is scored within the Documentation and Reproducibility dimension.  (Direction B: the timed-event test fixtures and, if you used bison, the automaton report ride along here.)
 2. **The language reference** (approximately four pages): teach your language to a newcomer with examples for every construct, the full grammar, the distinctive feature's guide, and a section per adopted extension.
 3. **`SEMANTICS.md`,** final and verified against the implementation by your semantics programs (Direction B: the semantic equations, revised to match the implemented language, with a change log from the proposal).
-4. **The report** (approximately four pages): the design story with the decision log's three most contested calls, the build experience (which features came easily, which did not, and why), the evaluation summary, limitations (your disclose bucket, verbatim), responses to the Strength, Question, and Risk cards your station received at the Release and Review gallery walk, and individual contribution statements covering the rotation.  (Direction B: include the performance postmortem, what performing revealed that the test suite could not, and, if you rendered audio, the translation-layer section.)
+4. **The report** (approximately four pages): the design story with the decision log's three most contested calls, the build experience (which features came easily, which did not, and why), the evaluation summary, limitations (your disclose bucket, verbatim), responses to the Strength, Question, and Risk cards from your peer review, and individual contribution statements covering the rotation.  (Direction B: include the performance postmortem, what performing revealed that the test suite could not, and, if you rendered audio, the translation-layer section.)
 
 **Deliverables checklist:**
 
@@ -474,7 +482,7 @@ Submit these four deliverables on the last class day, before you present:
 - [ ] The public repository: implementation, REPL, file-runner, tests, samples with expected outputs, JSON configuration, located exception handling, pinned versions and fixed seeds, and a readme tested by the teammate who did not write it (Direction B: timed-event fixtures and any bison automaton report).
 - [ ] The language reference (about four pages).
 - [ ] `SEMANTICS.md`, final and verified by your semantics programs (Direction B: revised equations with a change log).
-- [ ] The report (about four pages), including responses to your gallery walk cards and each member's contribution statement.
+- [ ] The report (about four pages), including responses to your peer review cards and each member's contribution statement.
 - [ ] Each member's answers to the Reflection Prompts, inside their contribution statement.
 - [ ] Each member's drafted LinkedIn-style post from the ShipIt guide (submitting the draft is required; publishing it is optional).
 
@@ -487,7 +495,7 @@ A note on what the rubric is looking for.  It rewards a finished minimal languag
 Answer individually in your contribution statement:
 
 - Which stage of the pipeline was easiest to extend, and what property made it easy?
-- Which design decision would you reverse if you had one more sprint, and what would it cost now versus what it would have cost in Sprint 0?
+- Which design decision would you reverse if you had one more sprint, and what would it cost now versus what it would have cost at the proposal?
 
 ---
 
@@ -503,8 +511,7 @@ Answer individually in your contribution statement:
 
 ### Background Reading and References
 
-- [Music Languages and Live Coding Activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-languagedesign.md)
-- [Parsing Expressions and Table-Driven Parsing Activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsingexpressions.md)
+- [Parsing, Part 2: LR Tables, Conflicts, and Flex and Bison]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsing2.md)
 - [Flex and Bison from Zero to a Working Language]({{ site.baseurl }}/Tutorials/FlexAndBison)
 
 This section is a guide, not a graded assignment.  It describes the music and live-coding path through the course: the same required assignments everyone completes, taken through the music directions built into them.  There is no separate set of deliverables and nothing to sign up for.  Each direction is a choice you make *inside* its assignment, when that assignment is handed out, one at a time.
@@ -521,9 +528,8 @@ In the spirit of Universal Design for Learning, the music path is a deliberate c
 
 The music path follows the course's own arc, with the music direction chosen in the team project:
 
-1. **[Music Languages and Live Coding]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-languagedesign.md)** (activity): meet TidalCycles and Strudel as *language designs*: embedded versus external DSLs, a formal model of patterns, and the timed-event semantics the rest of the path builds on.
-2. **[Parsing Expressions and Table-Driven Parsing]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsingexpressions.md)** (activity): meet the bottom-up, table-driven side of parsing, which is what a generator emits and what the mini-notation starter is built on.  The flex/yacc pipeline itself lives in two places you can work through on your own.  The [Flex and Bison tutorial]({{ site.baseurl }}/Tutorials/FlexAndBison) builds one end to end, and the mini-notation starter under `files/examples/mininote/` in this repository is a subset Direction B can grow.  Relatedly, the [Lexer assignment]({{ site.baseurl }}/Assignments/Lexer)'s generator-toolchain direction and the [Interpreter]({{ site.baseurl }}/Assignments/Interpreter)'s Flex and Bison option put those tools in your hands early.  They pair well with what follows, but neither is required for it.
-3. **[Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) -> the Music and Live-Coding direction** (capstone): design, specify, build, and demonstrate a small live-coding language with your team.  The closing demonstration may be a live edit-and-rerun session over printed event output; rendered sound is optional here as everywhere on the path.  The project's optional [Contribute Upstream extension](#contribute-upstream-an-open-source-contribution) adds an open-source stop: a pattern or transformation function contributed to Strudel/TidalCycles.
+1. **[Parsing, Part 2]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-parsing2.md)** (activity): meet the bottom-up, table-driven side of parsing, which is what a generator emits and what the mini-notation starter is built on.  The flex/yacc pipeline itself lives in two places you can work through on your own.  The [Flex and Bison tutorial]({{ site.baseurl }}/Tutorials/FlexAndBison) builds one end to end, and the mini-notation starter under `files/examples/mininote/` in this repository is a subset Direction B can grow.  Relatedly, the [Lexer assignment]({{ site.baseurl }}/Assignments/Lexer)'s generator-toolchain direction and the [Interpreter]({{ site.baseurl }}/Assignments/Interpreter)'s Flex and Bison option put those tools in your hands early.  They pair well with what follows, but neither is required for it.
+2. **[Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) -> the Music and Live-Coding direction** (capstone): design, specify, build, and demonstrate a small live-coding language with your team.  The closing demonstration may be a live edit-and-rerun session over printed event output; rendered sound is optional here as everywhere on the path.  The project's optional [Contribute Upstream extension](#contribute-upstream-an-open-source-contribution) adds an open-source stop: a pattern or transformation function contributed to Strudel/TidalCycles.
 
 The other assignments are taken as they stand; they build the skills every direction draws on.
 
@@ -533,7 +539,7 @@ The other assignments are taken as they stand; they build the skills every direc
 |---|---|
 | [Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage) | The Music and Live-Coding direction (text-events-only route available) |
 
-The two activities above (Music Languages and Live Coding; Parsing Expressions and Table-Driven Parsing) and the Flex and Bison tutorial are preparation rather than deliverables.  They play the same role the optional readings do elsewhere in the schedule.
+The activity above and the Flex and Bison tutorial are preparation rather than deliverables.  They play the same role the optional readings do elsewhere in the schedule.
 
 ### When to Decide
 
@@ -666,7 +672,6 @@ Answer these as a team during release hardening, and individually as part of you
 
 ### Background Reading and References
 
-- [Sprint Studio Protocol]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-sprintstudio.md)
 - [Team Language Project]({{ site.baseurl }}/Projects/TeamLanguage)
 - [ShipIt Guide: Repo Hygiene, README, Packaging, and Your Portfolio]({{ site.baseurl }}/Projects/TeamLanguage#shipping-your-language-the-shipit-checklist)
 

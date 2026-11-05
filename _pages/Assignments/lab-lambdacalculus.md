@@ -43,7 +43,7 @@ info:
     - rtitle: "Lambda Calculus I Activity"
       rlink: "Activities/liascript-lambdacalculus1.md"
       liapage: true
-    - rtitle: "Lambda Calculus II and Closures Activity"
+    - rtitle: "Lambda Calculus II Activity"
       rlink: "Activities/liascript-lambdacalculus2.md"
       liapage: true
 

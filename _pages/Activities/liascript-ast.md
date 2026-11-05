@@ -117,7 +117,7 @@ To remember: the parse tree records how the grammar matched the input, and the A
 
 ## Model 1: Node Classes and the `pretty` Printer
 
-This model represents an AST in Python.  Each node type is a dataclass, so its fields have names instead of positions.  Then `pretty`, a pretty printer, walks the tree and prints each node on its own indented line, so you can read the tree's shape at a glance.  A tree walk visits every node in order, and it is the one pattern you will use for everything: printing, evaluating, type checking, compiling.  Once you understand `pretty`, the evaluator in the *Tree-Walking Interpretation* activity is a small step.
+This model represents an AST in Python.  Each node type is a dataclass, so its fields have names instead of positions.  Then `pretty`, a pretty printer, walks the tree and prints each node on its own indented line, so you can read the tree's shape at a glance.  A tree walk visits every node in order, and it is the one pattern you will use for everything: printing, evaluating, type checking, compiling.  Once you understand `pretty`, the evaluator in the *From Calculator to Scheme* activity is a small step.
 
 ```python
 from dataclasses import dataclass, field
@@ -236,7 +236,7 @@ pretty(tree2)
 
 ### Critical Thinking Questions
 
-> **CTQ 1.5** `pretty` dispatches on node type and recurses on children.  Name the two or three lines you would change to make it *evaluate* instead of print.  You have just designed the interpreter of the *Tree-Walking Interpretation* activity.
+> **CTQ 1.5** `pretty` dispatches on node type and recurses on children.  Name the two or three lines you would change to make it *evaluate* instead of print.  You have just designed the interpreter of the *From Calculator to Scheme* activity.
 
 > **CTQ 1.6** The recursion visits children before finishing the parent's subtree.  For evaluation, must children be processed before or after the parent's operation?  Which traversal order is that (pre-order, in-order, or post-order)?
 

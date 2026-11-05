@@ -435,7 +435,7 @@ schedule:
     rlink: "Tutorials/PLYLexerAndParser"
 - week: "10"
   date: "1"
-  title: "Parsing Expressions and Table-Driven Parsing: Left Factoring, Precedence, and LR"
+  title: "Parsing Expressions, Part 1: Left Factoring and Precedence"
   link: "Activities/liascript-parsingexpressions.md"
   liapage: true
   deliverables:
@@ -446,22 +446,20 @@ schedule:
   readings:
   - rtitle: "Allison, Ch. 5: Pushdown Automata, Adding a Stack to Finite Automata"
   - rtitle: "Allison, Ch. 6 §6.3: Equivalence of PDAs and Context-Free Grammars"
-  - rtitle: "Building an LR Parser from the Grammar Up, the companion to the Parser assignment, which walks the same construction on a smaller grammar with runnable code"
-    rlink: "Tutorials/LRConstruction"
 - week: "11"
   date: "0"
-  title: "Tree-Walking Interpretation (Day 1 of 2): Evaluating the AST"
-  link: "Activities/liascript-interpretation.md"
+  title: "Parsing, Part 2: LR Tables, Conflicts, and Flex and Bison"
+  link: "Activities/liascript-parsing2.md"
   liapage: true
   readings:
-  - rtitle: "Property-Based Testing with Hypothesis (optional depth): the round-trip property and how to shrink a failing case"
-    rlink: "Tutorials/PropertyBasedTesting"
-  - rtitle: "Parser Combinators (Parsers as First-Class Values), another way to write a parser (optional depth)"
-    rlink: "Tutorials/ParserCombinators"
+  - rtitle: "Building an LR Parser from the Grammar Up, the companion to the Parser assignment, which walks the same construction on a smaller grammar with runnable code"
+    rlink: "Tutorials/LRConstruction"
+  - rtitle: "Flex and Bison from Zero to a Working Language"
+    rlink: "Tutorials/FlexAndBison"
 - week: "11"
   date: "1"
-  title: "Control Flow and Statement Semantics (Interpretation, Day 2)"
-  link: "Activities/liascript-controlflowsemantics.md"
+  title: "Calculator with Variables"
+  link: "Activities/liascript-calculator-variables.md"
   liapage: true
   deliverables:
   - dtitle: "Programming Assignment: Build a Lexer Due"
@@ -473,32 +471,26 @@ schedule:
     points: "100"
     rubricpath: "_pages/Assignments/asmt-parser.md"
   readings:
-  - rtitle: "This session is Day 2 of tree-walking interpretation: statements change state, where expressions returned values."
-    rlink: false
-  - rtitle: "For the Parser assignment: Building an LR Parser from the Grammar Up, a worked SLR(1) construction on a smaller grammar"
-    rlink: "Tutorials/LRConstruction"
-  - rtitle: "Property-Based Testing with Hypothesis (optional depth): the same idea, now over evaluation"
+  - rtitle: "Parser Combinators (Parsers as First-Class Values), another way to write a parser (optional depth)"
+    rlink: "Tutorials/ParserCombinators"
+- week: "12"
+  date: "0"
+  title: "From Calculator to Scheme"
+  link: "Activities/liascript-calculator-to-scheme.md"
+  liapage: true
+  readings:
+  - rtitle: "Build an Interpreter (start-to-finish companion for the upcoming assignment)"
+    rlink: "Tutorials/BuildAnInterpreter"
+  - rtitle: "Build a Bytecode VM"
+    rlink: "Tutorials/BytecodeVM"
+  - rtitle: "Property-Based Testing with Hypothesis (optional depth): the round-trip property and how to shrink a failing case"
     rlink: "Tutorials/PropertyBasedTesting"
   - rtitle: "CI and TDD for Interpreters"
     rlink: "Tutorials/CITDDForInterpreters"
 - week: "12"
-  date: "0"
-  title: "Binding, Scope, and Environments"
-  link: "Activities/liascript-bindingscope.md"
-  liapage: true
-  readings:
-  - rtitle: "Tutorial: Environments and Type Checking, a walkthrough of the scope table and a small type checker"
-    rlink: "Assignments/EnvironmentsLab"
-  - rtitle: "Krishnamurthi, PLAI (3rd ed.): the Stacker and SMoL Tutor, which we step through in class, and the chapters on functions, scope, and environments"
-    rlink: "https://www.plai.org/"
-  - rtitle: "Build an Interpreter (start-to-finish companion for the upcoming assignment)"
-    rlink: "Tutorials/BuildAnInterpreter"
-  - rtitle: "Garbage Collection (Implementing Memory Management)"
-    rlink: "Tutorials/GarbageCollection"
-- week: "12"
   date: "1"
-  title: "Lambda Calculus I: Syntax and Beta Reduction"
-  link: "Activities/liascript-lambdacalculus1.md"
+  title: "Binding and Scope"
+  link: "Activities/liascript-bindingscope.md"
   liapage: true
   deliverables:
   - dtitle: "Team Language Project: Proposal (team, niche, design scorecard, and signed team charter) Due"
@@ -506,25 +498,38 @@ schedule:
     points: "28"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
+  - rtitle: "Tutorial: Environments and Type Checking, a walkthrough of the scope table and a small type checker"
+    rlink: "Assignments/EnvironmentsLab"
+  - rtitle: "Krishnamurthi, PLAI (3rd ed.): the Stacker and SMoL Tutor, which we step through in class, and the chapters on functions, scope, and environments"
+    rlink: "https://www.plai.org/"
+  - rtitle: "Garbage Collection (Implementing Memory Management)"
+    rlink: "Tutorials/GarbageCollection"
+- week: "13"
+  date: "0"
+  title: "Lambda Calculus I: Syntax and Beta Reduction"
+  link: "Activities/liascript-lambdacalculus1.md"
+  liapage: true
+  deliverables:
+  - dtitle: "Programming Assignment: Parser Due"
+    dlink: "Assignments/Parser"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-parser.md"
+  - dtitle: "Programming Assignment: Interpreter Handed Out"
+    dlink: "Assignments/Interpreter"
+    points: "100"
+    rubricpath: "_pages/Assignments/asmt-interpreter.md"
+  readings:
   - rtitle: "Allison, Ch. 8: Turing Machines and the Church-Turing Thesis"
   - rtitle: "Lambda Calculus - Fundamentals of Lambda Calculus & Functional Programming in JavaScript (Gabriel Lebec)"
     rlink: "https://www.youtube.com/watch?v=3VQ382QG-y4"
   - rtitle: "Build a Lambda Calculus Reducer"
     rlink: "Tutorials/LambdaCalculusReducer"
-- week: "13"
+- week: "14"
   date: "0"
-  title: "Lambda Calculus II and Closures: Church Encodings, Combinators, and First-Class Functions"
+  title: "Lambda Calculus II: Church Encodings and Combinators"
   link: "Activities/liascript-lambdacalculus2.md"
   liapage: true
   deliverables:
-  - dtitle: "Programming Assignment: Interpreter Handed Out"
-    dlink: "Assignments/Interpreter"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-interpreter.md"
-  - dtitle: "Programming Assignment: Parser Due"
-    dlink: "Assignments/Parser"
-    points: "100"
-    rubricpath: "_pages/Assignments/asmt-parser.md"
   - dtitle: "Lab: Lambda Calculus Handed Out"
     dlink: "Assignments/LambdaCalculusLab"
     points: "15"
@@ -536,17 +541,9 @@ schedule:
   - rtitle: "Build a Lambda Calculus Reducer: the Y combinator built up one step at a time in Python, for today's activity"
     rlink: "Tutorials/LambdaCalculusReducer"
 - week: "14"
-  date: "0"
-  title: "Language Design Workshop: Project Kickoff (Sprint 0)"
-  link: "Activities/liascript-languagedesign.md"
-  liapage: true
-  readings:
-  - rtitle: "Build a Bytecode VM"
-    rlink: "Tutorials/BytecodeVM"
-- week: "14"
   date: "1"
-  title: "Type Systems"
-  link: "Activities/liascript-types.md"
+  title: "Scope Chains and Closures"
+  link: "Activities/liascript-scope-chains.md"
   liapage: true
   deliverables:
   - dtitle: "Lab: Lambda Calculus Due"
@@ -554,16 +551,12 @@ schedule:
     points: "15"
     rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
-  - rtitle: "Typing Disciplines, going past today's quadrant into structural vs. nominal typing, type erasure, and algebraic data types"
-    rlink: "Tutorials/TypingDisciplines"
-  - rtitle: "The same buggy snippet under mypy (Python) and TypeScript, compared in class: gradual typing as an object of study"
-    rlink: "https://www.typescriptlang.org/play"
-  - rtitle: "Type Inference (Implementing Hindley-Milner)"
-    rlink: "Tutorials/TypeInference"
+  - rtitle: "Flex and Bison from Zero to a Working Language: the same list of symbol tables, in C"
+    rlink: "Tutorials/FlexAndBison"
 - week: "15"
   date: "0"
-  title: "Sprint Studio: Sprints 1-3, Gallery Walk, and Release Hardening (Class Switch Day: follows a Thursday schedule)"
-  link: "Activities/liascript-sprintstudio.md"
+  title: "Type Systems (Class Switch Day: follows a Thursday schedule)"
+  link: "Activities/liascript-types.md"
   liapage: true
   deliverables:
   - dtitle: "Team Language Project: Demo Day Presentations Due"
@@ -575,15 +568,21 @@ schedule:
     points: "100"
     rubricpath: "_pages/Assignments/asmt-interpreter.md"
   readings:
-  - rtitle: "The Project Language Guide (a complete worked path for the team project)"
+  - rtitle: "Typing Disciplines, going past today's quadrant into structural vs. nominal typing, type erasure, and algebraic data types"
+    rlink: "Tutorials/TypingDisciplines"
+  - rtitle: "The same buggy snippet under mypy (Python) and TypeScript, compared in class: gradual typing as an object of study"
+    rlink: "https://www.typescriptlang.org/play"
+  - rtitle: "Type Inference (Implementing Hindley-Milner)"
+    rlink: "Tutorials/TypeInference"
+  - rtitle: "For the team project: The Project Language Guide (a complete worked path for the team project)"
     rlink: "Tutorials/ProjectLanguageGuide"
-  - rtitle: "Shell Skills for Language Development"
+  - rtitle: "For the team project: Shell Skills for Language Development"
     rlink: "Tutorials/ShellForLanguageDev"
-  - rtitle: "Prolog and the declarative paradigm, optional background for a team language that takes a logic-programming direction, alongside The Power of Prolog"
+  - rtitle: "For the team project: Prolog and the declarative paradigm, optional background for a team language that takes a logic-programming direction, alongside The Power of Prolog"
     rlink: "Tutorials/Prolog"
-  - rtitle: "Publishing Your Language (pip, npm, and Docker)"
+  - rtitle: "For the team project: Publishing Your Language (pip, npm, and Docker)"
     rlink: "Tutorials/PublishingYourLanguage"
-  - rtitle: "Advanced C++ for Language Implementers"
+  - rtitle: "For the team project: Advanced C++ for Language Implementers"
     rlink: "Tutorials/AdvancedCpp"
 ---
 
@@ -594,7 +593,7 @@ This semester is a build.  By December, your team will have designed and impleme
 I have built this course on the principle that there is more than one good path through it, and that you should have real say over yours.  The choices here are in the spirit of Universal Design for Learning, which asks for multiple ways to engage with the material and multiple ways to demonstrate what you have learned.  None of these paths is the "remedial" one.
 
 - **A capstone you shape.**  The Team Language Project is yours to design.  A compelling original language is always welcome, and the final project's extension menu lets you go deep wherever your interest lies instead of following one fixed spec.
-- **The Music and Live-Coding Directions.**  If you would rather build toward making music than a general-purpose language, the Team Language Project offers a music direction inside the same required deliverable.  The [Music and Live-Coding guide](Projects/TeamLanguage#the-music-and-live-coding-path) maps the whole path, including a text-events-only route that never requires audio.  Choose direction by direction as each assignment arrives; teams commit to a project direction at the kickoff.
+- **The Music and Live-Coding Directions.**  If you would rather build toward making music than a general-purpose language, the Team Language Project offers a music direction inside the same required deliverable.  The [Music and Live-Coding guide](Projects/TeamLanguage#the-music-and-live-coding-path) maps the whole path, including a text-events-only route that never requires audio.  Choose direction by direction as each assignment arrives; teams commit to a project direction in the proposal.
 - **Depth inside every assignment, and supplemental depth everywhere.**  Each programming assignment offers **directions** you choose inside it (a generator-toolchain lexer, or an interpreter in Python or in Flex and Bison), so nothing on the schedule is optional, but every deliverable has room for your interests.  The Team Language Project's [Extensions Menu](Projects/TeamLanguage#extensions-menu) carries the same idea into the capstone, with optional extensions in continuations, Church encodings, logic programming, and open-source contribution.  Beyond the assignments, the schedule carries supplemental activities and tutorials on parser combinators, garbage collection, bytecode VMs, and more, and you can browse them on the [Tutorials shelf](Tutorials/).  These are invitations rather than obligations.  Please tell me when one of them becomes the thing you want to go further with.
 
 If a path you want is not on the menu, please propose it.  The choices are here so you can build the language, and the fluency, that you actually care about.

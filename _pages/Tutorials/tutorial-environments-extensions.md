@@ -86,7 +86,7 @@ caller();
 > 2. For each program, write your prediction of what it prints under each rule: one line for lexical, one line for dynamic.
 > 3. If both predictions for a probe match, it cannot tell the rules apart, so change it.
 
-> **Have ready.** Both probe programs and all four predictions.  Run them against the Mystery Scoping Language interpreter in Part II of the *Binding, Scope, and Environments* activity.
+> **Have ready.** Both probe programs and all four predictions.  Run them against the Mystery Scoping Language interpreter in Part II of the *Binding and Scope* activity.
 
 ### Extension B: The Full Trace Table
 
@@ -644,7 +644,7 @@ Verify your checker against the [twelve provided programs]({{ site.baseurl }}/fi
 
 ### Extension F: Theory Questions
 
-These four questions come from the *Binding, Scope, and Environments* and *Type Systems* sessions.  Answer each in a few sentences.
+These four questions come from the *Binding and Scope*, *Scope Chains and Closures*, and *Type Systems* sessions.  Answer each in a few sentences.
 
 **Scope.**
 

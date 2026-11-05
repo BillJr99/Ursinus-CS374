@@ -788,7 +788,7 @@ x + y
 > Result: 21.000000
 > ```
 >
-> Inside the block, `x` is the inner 10 and `y` is the outer `y`, now 20.  After the block, the inner `x` is gone, the outer `x` is 1 again, and the update to `y` remains.  The [Binding, Scope, and Environments activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-bindingscope.md) builds the same chain in Python.
+> Inside the block, `x` is the inner 10 and `y` is the outer `y`, now 20.  After the block, the inner `x` is gone, the outer `x` is 1 again, and the update to `y` remains.  The [Scope Chains and Closures activity]({{ site.lia_viewer_url }}{{ site.raw_pages_url }}Activities/liascript-scope-chains.md) builds the same chain in Python.
 
 ---
 

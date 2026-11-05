@@ -41,8 +41,8 @@ info:
       progressing: Both versions work, but reassignment or chained assignment is wrong, or an undefined name does not report an error
       proficient: In both versions, assignment stores and updates a value, lookup finds it, chained assignment works, the grammar has no conflicts, and an undefined name reports an error with its name
   readings:
-    - rtitle: "Parsing Expressions and Table-Driven Parsing Activity (shift-reduce parsing and a table built by hand)"
-      rlink: "Activities/liascript-parsingexpressions.md"
+    - rtitle: "Parsing, Part 2 Activity (shift-reduce parsing and a table built by hand)"
+      rlink: "Activities/liascript-parsing2.md"
       liapage: true
     - rtitle: "Building an LR Parser from the Grammar Up (Tutorial, the same construction on a smaller grammar)"
       rlink: "../Tutorials/LRConstruction"

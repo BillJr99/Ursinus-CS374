@@ -1035,7 +1035,7 @@ Before then, and independent of the assignment:
 
 ## Reflection Prompt
 
-Scheme paid for its uniformity.  Name one thing about today that was genuinely harder than the equivalent Python, and one thing that was genuinely easier.  Then say which of the two you would rather your team's language optimize for, and why.  Keep your answer; we will come back to it at the Language Design Workshop.
+Scheme paid for its uniformity.  Name one thing about today that was genuinely harder than the equivalent Python, and one thing that was genuinely easier.  Then say which of the two you would rather your team's language optimize for, and why.  Keep your answer for your team's proposal.
 
 ## 6.  Further Reading
 

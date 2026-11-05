@@ -410,7 +410,7 @@ The ideas in this activity lead directly into the next several topics in this co
 In this course (coming soon):
 
 - *Recursive descent parsing* (`recursivedescent` activity): You will implement `parseE()`, `parseT()`, and `parseF()` as mutually recursive functions, one per nonterminal in `grammar_rr`.  Every rule you wrote in Model 2 becomes a function.
-- *Parser tables* (the `parsingexpressions` activity, *Parsing Expressions and Table-Driven Parsing*): LL(1) and LR(0/1) tables are built mechanically from a grammar.  The `FIRST` and `FOLLOW` sets you will compute come directly from the production rules you practiced here.
+- *Parser tables* (the `parsingexpressions` activity, *Parsing Expressions, Part 1*, and *Parsing, Part 2*): LL(1) and LR(0/1) tables are built mechanically from a grammar.  The `FIRST` and `FOLLOW` sets you will compute come directly from the production rules you practiced here.
 
 Grammars in the wild:
 

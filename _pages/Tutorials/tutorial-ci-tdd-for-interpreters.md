@@ -1047,9 +1047,9 @@ Pick the `TestArithmetic` class or the `TestBooleans` class.  Replace the indivi
 - Beck, Kent.  *Test Driven Development: By Example*.  Addison-Wesley, 2002.  The original TDD book; the Red-Green-Refactor cycle comes from Chapter 1.
 - Fowler, Martin.  *Refactoring: Improving the Design of Existing Code*, 2nd ed.  Addison-Wesley, 2018.  Chapter 4 covers test strategy for larger systems.
 
-# From the Sprint Studio: Velocity and Red-Green Discipline
+# Velocity and Red-Green Discipline
 
-Two studio tools from the Sprint Studio sessions: measuring what "done" means across sprints, and writing the test before the code.
+Two tools for your team's sprints: measuring what "done" means across sprints, and writing the test before the code.
 
 ## Model 1: Sprint Velocity; Measuring What "Done" Looks Like
 
@@ -1138,7 +1138,7 @@ print("  Rule: test_pct < 80% triggers a test-debt sprint before new features.")
 
 ### Critical Thinking Questions
 
-1.  The dashboard reports "known failures."  Why is it *better* to list them than to omit them?  Connect to the gallery walk protocol's requirement that every host show at least one failure.
+1.  The dashboard reports "known failures."  Why is it *better* to list them than to omit them?  Connect to the peer review's requirement that every host show at least one failure.
 2.  If the projection says "2.3 more sprints" and only 1 sprint remains, what are the two legitimate responses?  (Hint: one improves execution; the other improves scope.)  Which is harder, and why?
 3.  "Mostly working" is not a status.  Rewrite each of these non-statuses as a measurable status using the dashboard's vocabulary: "the parser is almost done," "tests are passing," "the niche feature is nearly complete."
 
@@ -1238,3 +1238,248 @@ print("  Key: failing tests ARE the sprint backlog. Each FAIL is the next task."
 
 ---
 
+---
+
+# Peer Review Triage and a Release Checklist
+
+## Model 3: Feedback Triage, Turning Peer Review Cards into Backlog
+
+Raw peer review feedback is like unprocessed ore: valuable, but unusable until refined.  Triage converts each card into a decision: this gets fixed before Demo Day, this gets disclosed honestly, or this goes on the future-work list.  The middle bucket is the discipline.  Admitting a known limitation in public is mature engineering, and nobody in the room will read it as weakness.
+
+> **Watch out!**  "Disclose" does not mean "hide."  It means you have a rehearsed, candid one-sentence description of the limitation ready for Demo Day.  A question-and-answer session where a known bug surfaces without preparation is much worse than a proactive "our interpreter does not yet handle nested function calls, and here is why that is hard."
+
+The Scribe collects all peer review cards and triages them live.  The cell below simulates that triage: it takes each card, classifies it into a bucket, and produces a backlog sorted by priority that you can assign on the spot.
+
+```python
+# Peer review feedback triage simulator.
+# FEEDBACK: list of (team, type, text) where type is "strength"|"question"|"risk"
+# Edit FEEDBACK to reflect what your team actually received today.
+
+FEEDBACK = [
+    ("Team Amber", "strength", "Error message names the exact line and column for undefined variable"),
+    ("Team Amber", "question", "What does the loop variable contain after the while exits?"),
+    ("Team Amber", "risk",     "Function with no return statement: silently returns None or crashes?"),
+
+    ("Team Cobalt", "strength", "Niche feature (dice rolls) parses cleanly in three contexts"),
+    ("Team Cobalt", "question", "Can you pass a function as an argument to another function?"),
+    ("Team Cobalt", "risk",     "REPL does not recover from a parse error - requires restart"),
+
+    ("Team Jade",   "strength", "Sample programs are polished and diverse (five different patterns)"),
+    ("Team Jade",   "question", "String equality: == or a separate 'equals' operator?"),
+    ("Team Jade",   "risk",     "Nested function calls crash on more than two levels of nesting"),
+
+    ("Instructor",  "question", "Does your scoping rule apply inside while loop bodies?"),
+    ("Instructor",  "risk",     "SEMANTICS.md says null returns default-value, but the code raises"),
+]
+
+# -- Triage rules --------------------------------------------------------------
+# Each "risk" and "question" becomes a backlog item.
+# Classify into: FIX (blocks demo), DISCLOSE (acknowledged, out of scope), FUTURE
+
+def triage_item(text):
+    """Heuristic classifier - replace with your team's actual judgment."""
+    crash_words = ["crash", "restart", "None", "raises", "fails", "breaks"]
+    if any(w.lower() in text.lower() for w in crash_words):
+        return "FIX"
+    scope_words = ["first-class", "pass a function", "nested", "two levels"]
+    if any(w.lower() in text.lower() for w in scope_words):
+        return "FUTURE"
+    return "DISCLOSE"
+
+print("=" * 60)
+print("  PEER REVIEW TRIAGE REPORT")
+print("=" * 60)
+print()
+
+buckets = {"FIX": [], "DISCLOSE": [], "FUTURE": [], "STRENGTH": []}
+for team, kind, text in FEEDBACK:
+    if kind == "strength":
+        buckets["STRENGTH"].append((team, text))
+    else:
+        bucket = triage_item(text)
+        buckets[bucket].append((team, kind, text))
+
+print("  OK STRENGTHS (keep and amplify)")
+for team, text in buckets["STRENGTH"]:
+    print(f"    [{team}] {text}")
+
+print()
+print(f"  FIX BEFORE DEMO DAY ({len(buckets['FIX'])} items)")
+for team, kind, text in buckets["FIX"]:
+    print(f"    [{team}] {text}")
+    print(f"           -> Assign to: ___  Due: ___  Done when: ___")
+
+print()
+print(f"  DISCLOSE AT DEMO DAY ({len(buckets['DISCLOSE'])} items)")
+for team, kind, text in buckets["DISCLOSE"]:
+    print(f"    [{team}] {text}")
+    print(f"           -> Disclosure wording: ___")
+
+print()
+print(f"  FUTURE WORK ({len(buckets['FUTURE'])} items)")
+for team, kind, text in buckets["FUTURE"]:
+    print(f"    [{team}] {text}")
+
+print()
+print(f"  Totals: {len(buckets['FIX'])} fix / {len(buckets['DISCLOSE'])} disclose / {len(buckets['FUTURE'])} future")
+print()
+print("  Scribe: fill in the blanks above and commit BACKLOG.md before end of day.")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+### Reading the Code
+
+- The triage rules are the whole method.  Every risk and every question becomes a backlog item, and each lands in exactly one of FIX, DISCLOSE, or FUTURE.  Nothing may stay unclassified, because unclassified feedback is feedback that quietly evaporates.
+- DISCLOSE is the bucket that makes this mature rather than defensive.  A named, well-worded limitation costs a sentence at Demo Day.  An unnamed one costs your credibility when someone finds it live.
+- Strengths are counted but generate no backlog items.  They are there so the walk is worth attending, and so you know which parts of the design not to disturb.
+
+### Try It Yourself
+
+Run the triage on the cards your team actually received today.
+
+```python
+# TODO 1: replace this with the REAL cards from your peer review.
+#         (reviewer, type, text) where type is strength | question | risk
+FEEDBACK = [
+    ("Team B",     "strength", "Error messages name the line and column"),
+    ("Team B",     "risk",     "Parser crashes on an unclosed string literal"),
+    ("Team C",     "question", "What happens when you divide by zero?"),
+    ("Team C",     "risk",     "SEMANTICS.md says lexical scope, the code does dynamic"),
+    ("Instructor", "risk",     "No test covers the while loop"),
+    ("Team D",     "strength", "The REPL keeps state between lines"),
+    ("Team D",     "question", "Can functions be passed as arguments yet?"),
+]
+
+# TODO 2: classify each risk and question yourself. The rule of thumb:
+#         FIX      -- breaks the core demo story
+#         DISCLOSE -- real, acknowledged, out of scope for this sprint
+#         FUTURE   -- report material, not this term's work
+CLASSIFICATION = {
+    "Parser crashes on an unclosed string literal": "FIX",
+    "What happens when you divide by zero?":        "DISCLOSE",
+    "SEMANTICS.md says lexical scope, the code does dynamic": "FIX",
+    "No test covers the while loop":                "FIX",
+    "Can functions be passed as arguments yet?":    "FUTURE",
+}
+
+buckets = {"FIX": [], "DISCLOSE": [], "FUTURE": [], "UNCLASSIFIED": []}
+strengths = []
+for who, kind, text in FEEDBACK:
+    if kind == "strength":
+        strengths.append((who, text)); continue
+    buckets[CLASSIFICATION.get(text, "UNCLASSIFIED")].append((who, text))
+
+print("=== Strengths (no action, but do not disturb these) ===")
+for who, text in strengths:
+    print("  " + who.ljust(11) + text)
+
+for name in ("FIX", "DISCLOSE", "FUTURE", "UNCLASSIFIED"):
+    print("\n=== " + name + " (" + str(len(buckets[name])) + ") ===")
+    for who, text in buckets[name]:
+        print("  " + who.ljust(11) + text)
+
+print("\n  Backlog items to assign before anyone leaves: " + str(len(buckets["FIX"])))
+if buckets["UNCLASSIFIED"]:
+    print("  UNCLASSIFIED is not a bucket. Sort these before you close the session.")
+
+# TODO 3: every FIX item needs an owner and a date, today, in the room.
+#         Print them as assignable lines and paste into your issue tracker.
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+Expected output: three FIX items, one DISCLOSE, one FUTURE, and an empty UNCLASSIFIED bucket.  If your own run leaves anything unclassified, that is the session's real work.
+
+---
+
+## Demo Day Release Checklist
+
+Before Demo Day, the Evaluator verifies and signs each line:
+
+1.  The REPL and the file-runner both work from a fresh clone following the readme, in under three minutes.
+2.  All sample programs (five minimum, including one that shows off the niche) run with committed expected outputs.
+3.  The test suite passes and its results table is current in the repository.
+4. `SEMANTICS.md` and the grammar document match what the implementation actually does today.
+5.  One failure case is rehearsed and its disclosure worded.
+6.  Every teammate can run the demo and explain the distinctive feature solo.
+7.  Reproducibility: Python version listed, any dependencies pinned, setup tested by the teammate who did not write it.
+
+The script below turns that checklist into code.  Each check must return True to pass.
+
+```python
+# Release checklist automator: enforces the 7-item checklist as code.
+# Run this before Demo Day. Each check must return True to pass.
+
+import os, subprocess, sys
+
+def check(label, result, guidance=""):
+    status = "OK" if result else "FAIL"
+    print(f"  {status}  {label}")
+    if not result and guidance:
+        print(f"        -> {guidance}")
+    return result
+
+print("=" * 55)
+print("  DEMO DAY RELEASE CHECKLIST")
+print("=" * 55)
+print()
+
+results = []
+
+# Check 1: README exists and contains setup instructions
+readme_ok = os.path.exists("README.md") or os.path.exists("readme.md")
+results.append(check("README exists with setup instructions", readme_ok,
+    "Create README.md with: Python version, install steps, 'python main.py' usage"))
+
+# Check 2: sample programs exist
+samples = [f for f in os.listdir(".") if f.startswith("sample") and f.endswith(".lang")]
+results.append(check(f"Sample programs present ({len(samples)} found, 5 required)",
+    len(samples) >= 5,
+    "Add sample_01.lang through sample_05.lang; one must show the niche feature"))
+
+# Check 3: test suite file exists
+test_file = os.path.exists("test_lang.py") or os.path.exists("tests.py")
+results.append(check("Test suite file exists", test_file,
+    "Create test_lang.py; run it; commit passing output"))
+
+# Check 4: SEMANTICS.md exists and is non-empty
+sem_ok = os.path.exists("SEMANTICS.md") and os.path.getsize("SEMANTICS.md") > 500
+results.append(check("SEMANTICS.md exists and is non-trivial (>500 bytes)", sem_ok,
+    "Must cover: scoping, truthiness, division, strings, null/absent-value policy"))
+
+# Check 5: grammar file exists
+grammar_ok = os.path.exists("grammar.ebnf") or os.path.exists("GRAMMAR.md")
+results.append(check("Grammar document present", grammar_ok,
+    "grammar.ebnf or GRAMMAR.md must match current implementation"))
+
+# Check 6: main entry point is runnable
+entry_ok = os.path.exists("main.py") or os.path.exists("lang.py")
+results.append(check("Entry point (main.py or lang.py) exists", entry_ok,
+    "python main.py --repl and python main.py program.lang must both work"))
+
+# Check 7: no Python syntax errors in main entry point
+if entry_ok:
+    entry_file = "main.py" if os.path.exists("main.py") else "lang.py"
+    try:
+        result = subprocess.run([sys.executable, "-m", "py_compile", entry_file],
+                                capture_output=True)
+        syntax_ok = result.returncode == 0
+    except Exception:
+        syntax_ok = False
+    results.append(check(f"Entry point has no Python syntax errors", syntax_ok,
+        f"Run: python -m py_compile {entry_file}"))
+else:
+    results.append(check("Entry point syntax check (skipped: no entry file)", False,
+        "Create main.py first"))
+
+print()
+passed = sum(results)
+total  = len(results)
+print(f"  {passed}/{total} checks passed")
+if passed == total:
+    print("  -> Ready for Demo Day. OK")
+elif passed >= total - 1:
+    print("  -> One item remaining. Fix it today.")
+else:
+    print(f"  -> {total - passed} items remaining. Triage them now.")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)

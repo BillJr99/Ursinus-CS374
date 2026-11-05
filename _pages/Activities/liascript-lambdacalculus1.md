@@ -857,4 +857,4 @@ In your notebook: Church built this system in 1936 to study what "computable" me
 
 ---
 
-Up next: *Lambda Calculus II and Closures* builds booleans, numbers, and arithmetic from nothing but these functions, then shows what a capturing lambda costs at run time.  Those Church encodings are the ones the Lambda Calculus lab asks you to reduce by hand.
+Up next: *Lambda Calculus II* builds booleans, numbers, and arithmetic from nothing but these functions.  Those Church encodings are the ones the Lambda Calculus lab asks you to reduce by hand.

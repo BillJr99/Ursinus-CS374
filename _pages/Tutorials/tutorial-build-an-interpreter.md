@@ -1865,7 +1865,7 @@ Answer these questions in your course notebook after completing this section.
 
 # From the Closures Activity: Closures in Your Interpreter
 
-Twenty lines that give your interpreter first-class functions, plus why closures are what make recursion work.  It extends Parts V and VI of the *Lambda Calculus II and Closures* activity.
+Twenty lines that give your interpreter first-class functions, plus why closures are what make recursion work.  It extends Parts III and IV of the *Scope Chains and Closures* activity.
 
 Building an interpreter that supports closures requires translating the abstract idea ("a function carries its birth environment") into concrete data structures.  Think of it like building a passport system: when a function is created, you stamp its passport with the environment it was born in; when it is called later, you open a new room that is connected back to that stamped environment, not to wherever the function happens to be called from.  This section shows exactly how `Environment`, `Closure`, and `eval_call` work together to implement that passport stamp.
 

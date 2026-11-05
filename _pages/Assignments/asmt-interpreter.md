@@ -43,8 +43,8 @@ info:
   readings:
     - rtitle: "Flex and Bison"
       rlink: "../Tutorials/FlexAndBison"
-    - rtitle: "Binding, Scope, and Environments Activity (the scope chain this interpreter uses)"
-      rlink: "Activities/liascript-bindingscope.md"
+    - rtitle: "Scope Chains and Closures Activity (the scope chain this interpreter uses)"
+      rlink: "Activities/liascript-scope-chains.md"
       liapage: true
     - rtitle: "Functional Programming in Scheme Activity"
       rlink: "Activities/liascript-functional.md"
