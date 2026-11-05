@@ -333,32 +333,44 @@ python3 -c "from lexer import match_rule, COMPILED_SPEC as S; n, m = match_rule(
 
 > **Do this.**
 > 1. Below `match_rule` in `lexer.py`, add the `tokenize(source: str) -> Iterator[Token]` generator from the skeleton below.  At the current position it asks `match_rule` for the first `TOKEN_SPEC` rule that matches, skips WHITESPACE and COMMENT tokens, and advances the position by the match length with `advance_position`.
-> 2. Write the body of each numbered step.  Each one is now a line or two, because the two helpers do the hard parts.
+> 2. Fill in the three `TODO`s: Step 4, the skip test in Step 5, and Step 6.  Each one is a line or two, because the two helpers do the hard parts.
 > 3. Verify it against the provided test programs before you wrap it in a class.
 
 ```python
 def tokenize(source: str) -> Iterator[Token]:
     """Yield one Token per lexeme in source, skipping WHITESPACE and COMMENT, then one EOF token."""
     # Step 1: start at position 0, on line 1, in column 1.
+    pos, line, col = 0, 1, 1
     # Step 2: repeat while the position is still inside source.
-    # Step 3:   ask match_rule(COMPILED_SPEC, source, pos) for the first rule that matches here.
-    # Step 4:   on a match, take its text.  Unless the rule is WHITESPACE or COMMENT, yield a Token
-    #           built from the rule name, the text, and the current line and col.
-    # Step 5:   move the position past the match, and update line and col with advance_position.
-    # Step 6:   if no rule matched (match_rule returned None), raise LexError naming the
-    #           unexpected character.  (Part 3 adds line and col.)
+    while pos < len(source):
+        # Step 3: ask match_rule for the first rule that matches here.
+        found = match_rule(COMPILED_SPEC, source, pos)
+        # Step 4: if no rule matched, raise LexError naming the unexpected character.
+        #         TODO (Part 3): pass the line and col as well.
+        if found is None:
+            ...  # TODO
+        name, m = found
+        text = m.group()
+        # Step 5: unless the rule is WHITESPACE or COMMENT, yield a Token built from the
+        #         rule name, the text, and the current line and col.
+        if ...:  # TODO: the rule is not one of the two skipped names
+            yield Token(name, text, line, col)
+        # Step 6: move pos past the match, and update line and col with advance_position.
+        ...  # TODO
     # Step 7: after the loop, yield the EOF token at the current line and col.
-    ...
+    yield Token("EOF", "", line, col)
 ```
 
-Steps 4 and 5 are the main loop's work, and each takes a line or two.  The table covers the steps that need the most thought:
+The skeleton gives you the loop and both `yield` lines.  `pos` is the index in `source` where the next token starts, and each pass through the loop consumes one match, skipped or not, so the loop ends once the matches have covered all of `source`.  The `yield` inside the loop hands one token to whoever asked for it and pauses right there.  The next request resumes on the line after it, at Step 6.  The `yield` after the loop runs once, when the loop finishes, so EOF is always the last token.  [Generators and `yield`]({{ site.baseurl }}/Tutorials/PythonForLanguageWork#generators-and-yield) walks through this pause and resume on a smaller scanner.
+
+The table covers the steps that need the most thought:
 
 | Step | How to think about it |
 |---|---|
-| Step 3 and Step 6 | `match_rule` already answers "did any rule match?": a `None` means no, and Step 6 raises. |
-| Step 4, skip | A membership test against the two skipped names decides whether to yield.  Skipped text still moves the position, line, and column forward, so Step 5 runs for every match. |
-| Step 4, yield | Yield *before* you advance.  At that moment `line` and `col` still describe where this token starts. |
-| Step 5, advance | The match object already knows where the next token begins (the `m.end()` you met in Before You Code), and `advance_position` from Step 1c.1 computes the new line and column from the matched text. |
+| Steps 3 and 4 | `match_rule` already answers "did any rule match?": a `None` means no, and Step 4 raises before the unpacking line can fail on `None`. |
+| Step 5, skip | A membership test against the two skipped names decides whether to yield.  Skipped text still moves the position, line, and column forward, so Step 6 runs for every match. |
+| Step 5, yield | The skeleton yields *before* it advances.  At that moment `line` and `col` still describe where this token starts. |
+| Step 6, advance | The match object already knows where the next token begins (the `m.end()` you met in Before You Code), and `advance_position` from Step 1c.1 computes the new line and column from the matched text. |
 
 > **You should see.** For the source `"let x = 42;"`, one token per line.  `@dataclass` writes the `Token(type=..., ...)` format for you:
 >
@@ -374,7 +386,7 @@ Steps 4 and 5 are the main loop's work, and each takes a line or two.  The table
 > After Step 2c adds the decoded-value field, each line also ends with that field, for example `decoded=None)`.
 
 > **If it fails.**
-> - The loop never ends: the position does not move.  Check that Step 5 runs for skipped tokens too, not only inside the branch that yields.
+> - The loop never ends: the position does not move.  Check that Step 6 runs for skipped tokens too, not only inside the branch that yields.
 > - `LET` reports `col=4` instead of `col=1`: you advanced `col` before you yielded, so each token reports where the *next* one starts.  Yield first, then advance.
 > - `x` on the second line of `"let\nx"` reports `col=5` instead of `col=1`: the newline branch kept adding to the old column.  Rerun the Step 1c.1 check; `advance_position` must compute `col` fresh after a newline.
 
