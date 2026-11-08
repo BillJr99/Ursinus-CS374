@@ -130,7 +130,7 @@ That set of seven items **is** state `I0`.  Notice what closure means: standing 
 
 So `I2 = { E -> T . , T -> T . * F }`.  **This one state decides precedence.**  It contains a completed item (`E -> T .`, meaning "reduce") *and* an item expecting more input (`T -> T . * F`, meaning "shift the `*`").  Which one fires depends entirely on the lookahead token, which is the shift-reduce decision CTQ 3.2 asks about.
 
-Repeating this for every state and every symbol gives twelve states.  Here are the ones you need; the [Building an LR Parser from the Grammar Up](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LRConstruction) tutorial carries the same construction through every state on a smaller grammar:
+Repeating this for every state and every symbol gives twelve states.  Here are the nine you need for any input without parentheses, so this list and the table in Step 3 leave out the three parenthesis states and the `(` and `)` columns; the [Building an LR Parser from the Grammar Up](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LRConstruction) tutorial carries the same construction through every state on a smaller grammar:
 
 | State | Items |
 |---|---|
@@ -165,6 +165,88 @@ Now read the table straight off the states.  A dot before a **terminal** means *
 Look at **row 2**: on `*` the parser shifts, on `+` or `$` it reduces `E -> T`.  That single row is where `*` binds tighter than `+`.  Nobody decided it at parse time; it fell out of the item set.  Compare that to recursive descent, where the same precedence lives in the *shape of your function calls*.
 
 > **Check yourself.**  In row 8 (`E -> E + T .` and `T -> T . * F`), why is there an `s7` under `*` rather than a reduce?  Because `T . * F` is still expecting a `*`; reducing `E -> E + T` first would build `(2+3)*4` instead of `2+(3*4)`.  That is CTQ 3.2's answer, visible in one table cell.
+
+---
+
+## From FOLLOW to Lookaheads: What LR(1) Changes
+
+The table above reduces on FOLLOW, which is SLR.  The Parser assignment builds **canonical LR(1)**, where each item carries the token that must come next.  Here is the difference on the small grammar from Section 12 of the [LR tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LRConstruction):
+
+```text
+0  S' -> S
+1  S  -> X y x
+2  X  -> x X
+3  X  -> y
+```
+
+An LR(1) item such as `[X -> y . , y]` means: I have a complete `X`, and I reduce only if the next token is `y`.  The closure rule changes in one place.  From `[A -> w . B z, a]`, add `[B -> . r, b]` for each token `b` that can start `z`, or `a` if `z` is empty.  In the start state:
+
+```text
+[S' -> . S, $]
+[S  -> . X y x, $]      the dot is before X and y follows, so X gets lookahead y
+[X  -> . x X, y]
+[X  -> . y, y]
+```
+
+This grammar keeps the same eight states.  Only the reduce rows change:
+
+| State | `x` | `y` | `$` | Without lookaheads |
+|---|---|---|---|---|
+| 4 | | r3 | | r3 in all three columns |
+| 6 | | r2 | | r2 in all three columns |
+| 7 | | | r1 | r1 in all three columns |
+
+Every cell that emptied was a place the parser used to keep going on bad input.  Run both tables on `xyx`, which is not in the language:
+
+```python
+PROD = {1: ("S", ["X", "y", "x"]), 2: ("X", ["x", "X"]), 3: ("X", ["y"])}
+SHIFTS = {
+    (0, "x"): "s3", (0, "y"): "s4", (1, "$"): "acc", (2, "y"): "s5",
+    (3, "x"): "s3", (3, "y"): "s4", (5, "x"): "s7",
+}
+GOTO = {(0, "S"): 1, (0, "X"): 2, (3, "X"): 6}
+
+# With lookaheads: each reduce appears on one token.
+LR1 = dict(SHIFTS)
+LR1.update({(4, "y"): "r3", (6, "y"): "r2", (7, "$"): "r1"})
+
+# Without lookaheads: each reduce appears on every token.
+LR0 = dict(SHIFTS)
+for state, action in ((4, "r3"), (6, "r2"), (7, "r1")):
+    for tok in "xy$":
+        LR0[(state, tok)] = action
+
+def parse(text, table):
+    tokens = list(text) + ["$"]
+    stack, pos = [0], 0
+    while True:
+        state, tok = stack[-1], tokens[pos]
+        act = table.get((state, tok))
+        print(f"{str(stack):<34} next {tok}  {act or 'ERROR'}")
+        if act is None:
+            return False
+        if act == "acc":
+            return True
+        if act[0] == "s":
+            stack += [tok, int(act[1:])]
+            pos += 1
+        else:
+            lhs, rhs = PROD[int(act[1:])]
+            del stack[-2 * len(rhs):]
+            stack += [lhs, GOTO[(stack[-1], lhs)]]
+
+print("=== xyyx, with lookaheads ===")
+print(parse("xyyx", LR1))
+print("\n=== xyx, with lookaheads ===")
+print(parse("xyx", LR1))
+print("\n=== xyx, without lookaheads ===")
+print(parse("xyx", LR0))
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+> **You should see.**  Both tables reject `xyx`.  With lookaheads, the parser stops at the first `x` it cannot use, and without them it makes two more reductions first.
+
+On a harder grammar, LR(1) also splits states.  The tutorial's `S -> C C` grammar has ten LR(1) states, because after the first `C` another must come, and after the second only `$` can.
 
 ---
 
@@ -457,6 +539,23 @@ printf '2 + 3 * 4\n' | ./tiny
 > **You should see.** `14`.  Then open `tiny.output`, which Bison wrote because of `-v`.  It lists every state and its actions, the same ACTION table you drove by hand in Model 3.
 
 **Take the `%left` lines out** and run Bison again.  It reports shift/reduce conflicts, the same undecidable table cells from Part II, and it resolves each by shifting.  Run `2 * 3 + 4` both ways and compare: with the `%left` lines it prints `10`, and without them it prints `14`, because shifting makes the `+` bind tighter there.
+
+> **You should see,** with the `%left` lines gone, `4 shift/reduce conflicts`, and this state in `tiny.output`.  The bracketed lines are the moves Bison threw away, so this is one table cell with two entries:
+
+```text
+State 8
+
+    3 expr: expr . '+' expr
+    3     | expr '+' expr .
+    4     | expr . '*' expr
+
+    '+'  shift, and go to state 6
+    '*'  shift, and go to state 7
+
+    '+'       [reduce using rule 3 (expr)]
+    '*'       [reduce using rule 3 (expr)]
+    $default  reduce using rule 3 (expr)
+```
 
 > **CTQ 5.1** In `tiny.output`, find a state that has both `shift` and `reduce` on the same token when the `%left` lines are gone.  Which grammar rule is it deciding about?
 

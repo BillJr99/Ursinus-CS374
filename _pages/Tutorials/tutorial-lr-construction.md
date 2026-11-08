@@ -477,6 +477,8 @@ State 3 on `x` comes back to state 3, because the items are the same, and state 
 | 6 | r2 | r2 | r2 | | |
 | 7 | r1 | r1 | r1 | | |
 
+Notice that each reduce fills its whole row, which is LR(0): the rule from Section 7 limited reduces to FOLLOW, and this table has not applied it yet.  It works here because no state mixes a completed item with anything else.  Apply FOLLOW, or carry LR(1) lookaheads, and rows 4 and 6 keep their reduce only on `y`, and row 7 only on `$`.  The states do not change.
+
 You could program this as a chain of `if` statements: if the state is 0 and the input is `x`, then shift to state 3, and so on.  Generated parsers such as yacc use a table instead.  Because each token was shifted onto the stack, a reduction knows the inputs to its production.
 
 *Parsing `xyyx`.*  First, for intuition, build the string with the grammar: `S` gives `X y x`, `X -> x X` gives `x X y x`, and `X -> y` gives `x y y x`.  The parser finds those same steps in reverse order.
