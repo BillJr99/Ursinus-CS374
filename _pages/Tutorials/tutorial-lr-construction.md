@@ -479,6 +479,83 @@ State 3 on `x` comes back to state 3, because the items are the same, and state 
 
 Notice that each reduce fills its whole row, which is LR(0): the rule from Section 7 limited reduces to FOLLOW, and this table has not applied it yet.  It works here because no state mixes a completed item with anything else.  Apply FOLLOW, or carry LR(1) lookaheads, and rows 4 and 6 keep their reduce only on `y`, and row 7 only on `$`.  The states do not change.
 
+### Reading a table entry: `s3`, `r3`, and a bare `1`
+
+A table cell tells the parser what to do next, and there are five kinds of entry. The letter says which action to take, and the number means something different for each letter, so read the letter first.
+
+| Entry | Where it appears | What the number means | What the parser does |
+|---|---|---|---|
+| `s3` | ACTION, under a terminal | State 3 | **Shift.** Push the current token, push state 3, and move to the next token. This is the only entry that consumes input. |
+| `r3` | ACTION, under a terminal or `$` | Production 3 | **Reduce.** The right-hand side of production 3 is on top of the stack. Pop it, push the left-hand side, and then use GOTO to find the next state. The input does not move. |
+| `1` (no letter) | GOTO, under a nonterminal | State 1 | **Go to state 1.** Push the state. This entry is only ever read during a reduce, right after the left-hand side has been pushed. |
+| `acc` | ACTION, under `$` | Nothing | **Accept.** The whole input is a valid sentence. |
+| blank | Anywhere | Nothing | **Syntax error.** No valid sentence continues this way. |
+
+The most common mistake is reading `r3` as "go to state 3." In this grammar, `s3` goes to state 3, which is the state after reading an `x`. `r3` applies production 3, `X -> y`. State 3 and production 3 have nothing to do with each other, and they only happen to share a number.
+
+GOTO entries have no letter because there is only one thing a GOTO can do. A nonterminal never appears in the input, so the parser can never shift one. A nonterminal arrives on the stack only because a reduce just put it there, and the only remaining question is which state comes next. A terminal column needs a letter because a terminal can be shifted, or it can be the lookahead that triggers a reduce.
+
+### Filling in the table, step by step
+
+Start with the numbered productions and the finished DFA. Production 0 is the augmented start, and its number is never used in an `r` entry.
+
+1. **Draw the grid.** Make one row per state. Make one ACTION column per terminal, plus one for `$`. Here that is `x`, `y` and `$`. Make one GOTO column per nonterminal, leaving out the augmented start. Here that is `S` and `X`.
+2. **Take the states in order.** For each state, look at every arrow leaving it, and look at every item with the dot at the far right.
+3. **An arrow on a terminal `t` to state `n` is a shift.** Write `sn` in that row, under `t`.
+4. **An arrow on a nonterminal `A` to state `n` is a GOTO.** Write the bare number `n` in that row, under `A`.
+5. **A dot at the far right of production `p` is a reduce.** Write `rp`. Which columns get it depends on the kind of table: every terminal column and `$` in LR(0), every token in FOLLOW of the left-hand side in SLR, and only the item's own lookahead in LR(1).
+6. **The item `S' -> S .` is the exception.** Write `acc` under `$`, and do not write a reduce.
+7. **Leave everything else blank.** A blank cell means a syntax error.
+8. **If a cell needs a second entry, stop and write both.** That cell is a conflict.
+
+Here is every state of the grammar, and exactly what each one writes in the LR(0) version.
+
+| State | Items in the state | What to write |
+|---|---|---|
+| 0 | `S' -> . S`, `S -> . X y x`, `X -> . x X`, `X -> . y` | arrow on nonterminal `S` to state 1: write `1` under `S`; arrow on nonterminal `X` to state 2: write `2` under `X`; arrow on terminal `x` to state 3: write `s3` under `x`; arrow on terminal `y` to state 4: write `s4` under `y` |
+| 1 | `S' -> S .` | `S' -> S .` is complete: write `acc` under `$` |
+| 2 | `S -> X . y x` | arrow on terminal `y` to state 5: write `s5` under `y` |
+| 3 | `X -> . x X`, `X -> x . X`, `X -> . y` | arrow on nonterminal `X` to state 6: write `6` under `X`; arrow on terminal `x` to state 3: write `s3` under `x`; arrow on terminal `y` to state 4: write `s4` under `y` |
+| 4 | `X -> y .` | `X -> y .` is complete, and it is production 3: write `r3` under `x`, `y` and `$` |
+| 5 | `S -> X y . x` | arrow on terminal `x` to state 7: write `s7` under `x` |
+| 6 | `X -> x X .` | `X -> x X .` is complete, and it is production 2: write `r2` under `x`, `y` and `$` |
+| 7 | `S -> X y x .` | `S -> X y x .` is complete, and it is production 1: write `r1` under `x`, `y` and `$` |
+
+The finished LR(0) table, with the three kinds of entry in the same grid:
+
+| State | `x` | `y` | `$` | `S` | `X` |
+|---|---|---|---|---|---|
+| 0 | s3 | s4 | | 1 | 2 |
+| 1 | | | acc | | |
+| 2 | | s5 | | | |
+| 3 | s3 | s4 | | | 6 |
+| 4 | r3 | r3 | r3 | | |
+| 5 | s7 | | | | |
+| 6 | r2 | r2 | r2 | | |
+| 7 | r1 | r1 | r1 | | |
+
+Row 0 shows all three shapes of an arrow at once. The `x` and `y` arrows consume input, so they become `s3` and `s4`. The `S` and `X` arrows do not, so they stay as the bare numbers `1` and `2`.
+
+### Adding the lookaheads, cell by cell
+
+An LR(1) item carries the token that must come next, so `[X -> y . , y]` means "I have a complete `X`, and I reduce only if the next token is `y`." The closure rule says that from `[A -> w . B z, a]` we add `[B -> . r, b]`, where `b` is each token that can start `z`, or `a` when `z` is empty.
+
+| Item we expand | What follows the nonterminal | Items added |
+|---|---|---|
+| `[S' -> . S, $]` | Nothing, so we inherit `$` | `[S -> . X y x, $]` |
+| `[S -> . X y x, $]` | `y` | `[X -> . x X, y]` and `[X -> . y, y]` |
+| `[X -> x . X, y]` (state 3) | Nothing, so we inherit `y` | `[X -> . x X, y]` and `[X -> . y, y]` |
+
+Every `X` in this language is followed by `y`, and `S` is followed only by `$`. The reduce rows change as follows, and nothing else does.
+
+| Row | Item | LR(0) wrote | LR(1) keeps | Cells erased |
+|---|---|---|---|---|
+| 4 | `[X -> y . , y]` | `r3` under `x`, `y`, `$` | `r3` under `y` | `x` and `$` |
+| 6 | `[X -> x X . , y]` | `r2` under `x`, `y`, `$` | `r2` under `y` | `x` and `$` |
+| 7 | `[S -> X y x . , $]` | `r1` under `x`, `y`, `$` | `r1` under `$` | `x` and `y` |
+
+The DFA still has the same eight states. On a harder grammar LR(1) also splits states, because two items can match while their lookaheads differ.
+
 You could program this as a chain of `if` statements: if the state is 0 and the input is `x`, then shift to state 3, and so on.  Generated parsers such as yacc use a table instead.  Because each token was shifted onto the stack, a reduction knows the inputs to its production.
 
 *Parsing `xyyx`.*  First, for intuition, build the string with the grammar: `S` gives `X y x`, `X -> x X` gives `x X y x`, and `X -> y` gives `x y y x`.  The parser finds those same steps in reverse order.
@@ -500,6 +577,47 @@ This trace keeps one stack with symbols and states mixed, and the top is on the 
 ```
 
 Notice that a reduce does not consume the input.  The parser is still looking at the third character after both reductions, and only then does it shift that `y`.
+
+### Tracing `xyyx`, move by move
+
+Before tracing, build the string with the grammar: `S` gives `X y x`, `X -> x X` gives `x X y x`, and `X -> y` gives `x y y x`. The parser finds those same three productions in reverse order: production 3, then 2, then 1.
+
+The stack holds symbols and states in turn, and the top is on the right. At every move, the parser reads the state on top and the next token, and looks up that one cell in the LR(1) table.
+
+| Stack before the move | Next token | Cell | What the parser does |
+|---|---|---|---|
+| `[0]` | `x` | row 0, column `x`: `s3` | Shift: push `x`, push state 3, and move past `x` in the input. |
+| `[0 x 3]` | `y` | row 3, column `y`: `s4` | Shift: push `y`, push state 4, and move past `y` in the input. |
+| `[0 x 3 y 4]` | `y` | row 4, column `y`: `r3` | Reduce by production 3, `X -> y`. Pop 2 items, which exposes state 3. Push `X`. Row 3, column `X` holds `6`, so push 6. The input does not move. |
+| `[0 x 3 X 6]` | `y` | row 6, column `y`: `r2` | Reduce by production 2, `X -> x X`. Pop 4 items, which exposes state 0. Push `X`. Row 0, column `X` holds `2`, so push 2. The input does not move. |
+| `[0 X 2]` | `y` | row 2, column `y`: `s5` | Shift: push `y`, push state 5, and move past `y` in the input. |
+| `[0 X 2 y 5]` | `x` | row 5, column `x`: `s7` | Shift: push `x`, push state 7, and move past `x` in the input. |
+| `[0 X 2 y 5 x 7]` | `$` | row 7, column `$`: `r1` | Reduce by production 1, `S -> X y x`. Pop 6 items, which exposes state 0. Push `S`. Row 0, column `S` holds `1`, so push 1. The input does not move. |
+| `[0 S 1]` | `$` | row 1, column `$`: `acc` | Accept. |
+
+There are three things to notice. Both reductions happen while the next token stays `y`, because a reduce does not consume input. A reduce pops twice the length of the right-hand side, because each symbol has a state above it. And the state number after a reduce comes from the row exposed by the pop, not from the row the parser was just in.
+
+### Tracing `xyx`, and where the error appears
+
+`xyx` is not in the language, because the string needs a `y` after the `X` and this one has an `x` there. Here it is on the LR(1) table:
+
+| Stack before the move | Next token | Cell | What the parser does |
+|---|---|---|---|
+| `[0]` | `x` | row 0, column `x`: `s3` | Shift: push `x`, push state 3, and move past `x` in the input. |
+| `[0 x 3]` | `y` | row 3, column `y`: `s4` | Shift: push `y`, push state 4, and move past `y` in the input. |
+| `[0 x 3 y 4]` | `x` | row 4, column `x`: blank | Stop with an error. The parser names state 4 and token `x`. |
+
+Here is the same input on the LR(0) table:
+
+| Stack before the move | Next token | Cell | What the parser does |
+|---|---|---|---|
+| `[0]` | `x` | row 0, column `x`: `s3` | Shift: push `x`, push state 3, and move past `x` in the input. |
+| `[0 x 3]` | `y` | row 3, column `y`: `s4` | Shift: push `y`, push state 4, and move past `y` in the input. |
+| `[0 x 3 y 4]` | `x` | row 4, column `x`: `r3` | Reduce by production 3, `X -> y`. Pop 2 items, which exposes state 3. Push `X`. Row 3, column `X` holds `6`, so push 6. The input does not move. |
+| `[0 x 3 X 6]` | `x` | row 6, column `x`: `r2` | Reduce by production 2, `X -> x X`. Pop 4 items, which exposes state 0. Push `X`. Row 0, column `X` holds `2`, so push 2. The input does not move. |
+| `[0 X 2]` | `x` | row 2, column `x`: blank | Stop with an error. The parser names state 2 and token `x`. |
+
+Both tables reject the string, and both are correct. The LR(0) table makes two reductions first, because its rows 4 and 6 reduce on every token, while the LR(1) table stops as soon as the bad token arrives. No shift happens after the bad token in either table. The practical difference is the error message: LR(1) can report "expected `y`, found `x`" from state 4 with the input in the place the error occurred.
 
 ---
 
@@ -549,3 +667,270 @@ Quotes mark an input digit, so it does not look like a state number.  Each reduc
 ```
 
 After each pop, GOTO pushes the next state, which is why every reduce line above is followed by a stack with a new state on top.  Row 4 is where `*` binds tighter than `+`: it shifts on `*` and reduces on `+`.  This is what a Bison action does when it computes `$$` from `$1` and `$3`: see the [Flex and Bison tutorial]({{ site.baseurl }}/Tutorials/FlexAndBison).
+
+### Tracing `A*2+1` with values, move by move
+
+Here each stack entry also carries a value. `A` is an identifier whose value is 5. A shift of a token brings in the token's value, and a reduce computes a new value from the entries it pops. Each entry is printed as a symbol, its value, and the state above it. The operators carry no value.
+
+| Stack (each symbol with its value) | Next | Cell | What the parser does | Value computed |
+|---|---|---|---|---|
+| `[0]` | `A` | row 0, `id`: `s9` | Shift `A`, and push state 9. | |
+| `[0  A=5 9]` | `*` | row 9, `*`: `r6` | Reduce by 6, `Value -> id`. Pop 1 entry, exposing state 0. Row 0, `Value` holds `7`. | `Value` = 5 |
+| `[0  Value=5 7]` | `*` | row 7, `*`: `r4` | Reduce by 4, `Products -> Value`. Pop 1 entry, exposing state 0. Row 0, `Products` holds `4`. | `Products` = 5 |
+| `[0  Products=5 4]` | `*` | row 4, `*`: `s5` | Shift `*`, and push state 5. | |
+| `[0  Products=5 4  * 5]` | `2` | row 5, `int`: `s8` | Shift `2`, and push state 8. | |
+| `[0  Products=5 4  * 5  2=2 8]` | `+` | row 8, `+`: `r5` | Reduce by 5, `Value -> int`. Pop 1 entry, exposing state 5. Row 5, `Value` holds `6`. | `Value` = 2 |
+| `[0  Products=5 4  * 5  Value=2 6]` | `+` | row 6, `+`: `r3` | Reduce by 3, `Products -> Products * Value`. Pop 3 entries, exposing state 0. Row 0, `Products` holds `4`. | `Products` = 5 * 2 = 10 |
+| `[0  Products=10 4]` | `+` | row 4, `+`: `r2` | Reduce by 2, `Sums -> Products`. Pop 1 entry, exposing state 0. Row 0, `Sums` holds `1`. | `Sums` = 10 |
+| `[0  Sums=10 1]` | `+` | row 1, `+`: `s2` | Shift `+`, and push state 2. | |
+| `[0  Sums=10 1  + 2]` | `1` | row 2, `int`: `s8` | Shift `1`, and push state 8. | |
+| `[0  Sums=10 1  + 2  1=1 8]` | `$` | row 8, `$`: `r5` | Reduce by 5, `Value -> int`. Pop 1 entry, exposing state 2. Row 2, `Value` holds `7`. | `Value` = 1 |
+| `[0  Sums=10 1  + 2  Value=1 7]` | `$` | row 7, `$`: `r4` | Reduce by 4, `Products -> Value`. Pop 1 entry, exposing state 2. Row 2, `Products` holds `3`. | `Products` = 1 |
+| `[0  Sums=10 1  + 2  Products=1 3]` | `$` | row 3, `$`: `r1` | Reduce by 1, `Sums -> Sums + Products`. Pop 3 entries, exposing state 0. Row 0, `Sums` holds `1`. | `Sums` = 10 + 1 = 11 |
+| `[0  Sums=11 1]` | `$` | row 1, `$`: `acc` | Accept. The value on top is the answer. | **11** |
+
+Three moments are worth stopping on. First, at `[0 Products=5 4]` with `*` next, row 4 says `s5`, so the parser holds on to the 5 and waits for the right operand. Second, at `[0 Products=5 4 * 5 Value=2 6]` with `+` next, row 6 says `r3`, and 5 times 2 happens here. Third, at `[0 Products=10 4]` with `+` next, row 4 says `r2`. The same row 4 shifted on `*` and reduces on `+`, which is exactly where "`*` binds tighter than `+`" lives. The multiplication finishes before the addition can start, and no tree was ever built.
+
+---
+
+## Section 14: Conflicts, Read From the Table
+
+A conflict is a table cell with two entries. It is not a crash. It means the grammar lets one state, on one token, do two different things, and the table has room for only one.
+
+**A shift/reduce conflict: which operator goes first?** The grammar below is ambiguous, because `id + id * id` has two parse trees. Save it as `sr.y`.
+
+```c
+%token ID
+%%
+e: e '+' e | e '*' e | ID ;
+%%
+```
+
+Bison numbers the productions from 1: rule 1 is `e: e '+' e`, rule 2 is `e: e '*' e`, and rule 3 is `e: ID`. Run `bison -v -b sr sr.y`, and it prints:
+
+```text
+sr.y: warning: 4 shift/reduce conflicts [-Wconflicts-sr]
+```
+
+The `-v` flag writes `sr.output`. The state after `e + e` reads:
+
+```text
+State 6
+
+    1 e: e . '+' e
+    1  | e '+' e .
+    2  | e . '*' e
+
+    '+'  shift, and go to state 4
+    '*'  shift, and go to state 5
+
+    '+'       [reduce using rule 1 (e)]
+    '*'       [reduce using rule 1 (e)]
+    $default  reduce using rule 1 (e)
+```
+
+Bison prints the dot as a bullet; it is a period here so that it matches the rest of this page. Read it as a table row. The second item is complete, so it wants `r1`. The first and third items have the dot before an operator, so they want to shift. In our notation the row holds:
+
+| State | `+` | `*` |
+|---|---|---|
+| 6 | `s4` or `r1` | `s5` or `r1` |
+| 7 | `s4` or `r2` | `s5` or `r2` |
+
+State 7 is the same situation after `e * e`. Two states with two cells each makes the 4 in the warning.
+
+Now take `2 + 3 * 4`. The parser has shifted and reduced up to `e + e` on the stack, and `*` is next. That is state 6, column `*`.
+
+| Choice | What happens | The tree | The value |
+|---|---|---|---|
+| Reduce by rule 1 | `2 + 3` becomes `e` now, and `*` comes later | `(2 + 3) * 4` | 20 |
+| Shift | `*` goes on the stack, and `3 * 4` finishes first | `2 + (3 * 4)` | 14 |
+
+Nothing in the grammar says which one is right. Bison picks the shift, prints the warning, and puts the reduce it threw away in square brackets. There are two ways out. We can restructure the grammar with one nonterminal per level, or we can declare precedence with `%left`.
+
+**A reduce/reduce conflict: what is this token?** Save this as `rr.y`.
+
+```c
+%token ID
+%%
+s: a b | c d ;
+a: ID ; b: ID ; c: ID ; d: ID ;
+%%
+```
+
+The rules are numbered 1 `s: a b`, 2 `s: c d`, 3 `a: ID`, 4 `b: ID`, 5 `c: ID`, 6 `d: ID`. Bison prints:
+
+```text
+rr.y: warning: 1 reduce/reduce conflict [-Wconflicts-rr]
+rr.y:4.20-21: warning: rule useless in parser due to conflicts [-Wother]
+```
+
+And the state after the first `ID`:
+
+```text
+State 1
+
+    3 a: ID .
+    5 c: ID .
+
+    ID        reduce using rule 3 (a)
+    ID        [reduce using rule 5 (c)]
+    $default  reduce using rule 3 (a)
+```
+
+Both items are complete, and each one can be followed by `ID`, so the cell in state 1, column `ID`, holds `r3` or `r5`. Nothing is being shifted here. The parser has one token and two names for it, and the next token is `ID` either way. Bison keeps the rule that appears first in the file. As a result, `c: ID` can never fire, which is what "useless" means, and the second alternative `s: c d` can never match.
+
+A precedence declaration cannot help, because no operator is involved. The fix is to change the grammar so the next token can tell the two apart, for example by using different tokens.
+
+**Which is worse?** A shift/reduce conflict is often a precedence question that we can declare away. A reduce/reduce conflict usually means two different meanings cannot be told apart, so it is a design problem.
+
+**The dangling else: a shift/reduce conflict we usually keep.** Save this as `de.y`.
+
+```c
+%token IF THEN ELSE COND OTHER
+%%
+s: IF COND THEN s
+ | IF COND THEN s ELSE s
+ | OTHER
+ ;
+%%
+```
+
+Bison prints `de.y: warning: 1 shift/reduce conflict [-Wconflicts-sr]`, and the state reads:
+
+```text
+State 7
+
+    1 s: IF COND THEN s .
+    2  | IF COND THEN s . ELSE s
+
+    ELSE  shift, and go to state 8
+
+    ELSE      [reduce using rule 1 (s)]
+    $default  reduce using rule 1 (s)
+```
+
+Given `if c then if c then x else y`, the stack holds the inner `if ... then s`, and `ELSE` is next. Reducing would finish the inner `if` and give the `else` to the outer one. Shifting gives the `else` to the nearest `if`, which is what almost every language wants. So we accept the default, and write `%expect 1` at the top of the file to record that we chose it. Bison then stays quiet unless the count changes.
+
+**How Bison settles a conflict when nothing else says how:** a shift/reduce conflict becomes a shift, and a reduce/reduce conflict goes to the rule listed first in the file.
+
+---
+
+## Section 15: `tiny.y`, Line by Line
+
+Here is the same machine, generated for us. Save this as `tiny.y`.
+
+```c
+%{
+#include <stdio.h>
+#include <ctype.h>
+int yylex(void);
+void yyerror(const char *s) { fprintf(stderr, "error: %s\n", s); }
+%}
+%token NUM
+%left '+'
+%left '*'
+%%
+input: /* nothing */ | input expr '\n' { printf("%d\n", $2); } ;
+expr:  expr '+' expr  { $$ = $1 + $3; }
+     | expr '*' expr  { $$ = $1 * $3; }
+     | NUM            { $$ = $1; }
+     ;
+%%
+int yylex(void) {
+    int c = getchar();
+    while (c == ' ') c = getchar();
+    if (isdigit(c)) { ungetc(c, stdin); scanf("%d", &yylval); return NUM; }
+    return c == EOF ? 0 : c;
+}
+int main(void) { return yyparse(); }
+```
+
+| Piece of the file | What it does |
+|---|---|
+| The block between `%{` and `%}` | C code copied into the generated parser as it stands. `yyerror` is what Bison calls on a syntax error. |
+| `%token NUM` | Declares a terminal that the lexer returns. Single characters like `'+'` need no declaration. |
+| `%left '+'` | Gives `+` a precedence level, and says that two `+` in a row group to the left. |
+| `%left '*'` | Gives `*` a higher level, because a later line binds tighter. |
+| The `input` rule | Zero or more lines, each an `expr` and a newline. Its action prints the value of the `expr`, which is `$2`, the second symbol. |
+| `expr '+' expr` and its action | `$1` and `$3` are the values on the stack under the first and third symbols. `$$` is the value of the new `expr`. The action runs when the rule is reduced. |
+| `NUM` and its action | Copies the token's value to the `expr`. |
+| `yylex` | Skips spaces. For a digit, it reads the whole number into `yylval` and returns `NUM`. Otherwise it returns the character itself, or 0 at the end of the input. |
+
+Build and run it:
+
+```bash
+bison -d -v tiny.y
+gcc tiny.tab.c -o tiny
+printf '2 + 3 * 4\n2*3+4\n' | ./tiny
+```
+
+```text
+14
+10
+```
+
+`-d` writes the header, and `-v` writes `tiny.output`, the states in readable form.
+
+**How `%left` chooses.** Each rule takes the precedence of its last terminal. In a state with a shift/reduce conflict, Bison compares the rule against the next token. If the rule is higher, it reduces. If the token is higher, it shifts. If they are equal, `%left` reduces, so that `2+3+4` groups as `(2+3)+4`.
+
+| Input | Stack | Next | Rule against token | Decision |
+|---|---|---|---|---|
+| `2 + 3 * 4` | `expr(2) + expr(3)` | `*` | `+` rule is lower than `*` | Shift, so `3 * 4` is 12, then `2 + 12` is 14 |
+| `2*3+4` | `expr(2) * expr(3)` | `+` | `*` rule is higher than `+` | Reduce, so `2 * 3` is 6, then `6 + 4` is 10 |
+
+So with `%left` in place, state 8 (after `expr + expr`) shifts only on `*`:
+
+```text
+State 8
+
+    3 expr: expr . '+' expr
+    3     | expr '+' expr .
+    4     | expr . '*' expr
+
+    '*'  shift, and go to state 6
+
+    $default  reduce using rule 3 (expr)
+```
+
+**Now delete the two `%left` lines and rebuild.** Bison prints:
+
+```text
+tiny.y: warning: 4 shift/reduce conflicts [-Wconflicts-sr]
+```
+
+The program still runs, and now it prints:
+
+```text
+14
+14
+```
+
+Without precedence, every conflict becomes a shift. Follow each input:
+
+| Input | Stack | Next | Conflict goes to | Then |
+|---|---|---|---|---|
+| `2 + 3 * 4` | `expr(2) + expr(3)` | `*` | Shift | `3 * 4` is 12, then `2 + 12` is 14, the right answer by luck |
+| `2*3+4` | `expr(2) * expr(3)` | `+` | Shift | The stack grows to `expr(2) * expr(3) + expr(4)`. At the newline, `3 + 4` reduces to 7, then `2 * 7` is 14 |
+
+`2*3+4` came out as `2*(3+4)`. The first input looks right only because shifting happens to be what `*` needed. That is why a warning about conflicts deserves attention, even when the first test passes.
+
+Now `tiny.output` shows the cell with two entries. State 8 reads:
+
+```text
+State 8
+
+    3 expr: expr . '+' expr
+    3     | expr '+' expr .
+    4     | expr . '*' expr
+
+    '+'  shift, and go to state 6
+    '*'  shift, and go to state 7
+
+    '+'       [reduce using rule 3 (expr)]
+    '*'       [reduce using rule 3 (expr)]
+    $default  reduce using rule 3 (expr)
+```
+
+The bracketed lines are the moves Bison discarded. State 9, after `expr * expr`, has the same two conflicts with rule 4, which makes four in all. Put the `%left` lines back when you are done.
+
+The question to ask of any grammar is where "`*` binds tighter than `+`" lives. In recursive descent it was which function calls which. In the LR table it was one cell. In Bison it is the order of two `%left` lines.
