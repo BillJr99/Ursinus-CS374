@@ -29,3 +29,5 @@
 - [ ] Make the project more defined and project-based, and more practical for groups to execute: clearer coordination (who does what, by when) and a focus on group accountability.
 
 - [ ] Simplify the Overview assignment and streamline its software setup. Leave the Warmup syllabus survey assignment unchanged.
+
+- [ ] Refine the rubrics and the assignment steps: make each rubric row match what the assignment steps ask students to do, and make each step concrete enough to check.
