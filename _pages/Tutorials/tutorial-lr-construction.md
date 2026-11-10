@@ -16,6 +16,9 @@ info:
     - To write the shift-reduce driver and read its stack-input-action trace
     - To diagnose a shift-reduce and a reduce-reduce conflict down to the state and the two items that disagree
     - To place SLR(1) against LALR(1) and LR(1), and to say which one Bison builds
+    - To build a grammar's item NFA and turn it into the LR DFA with the subset construction
+    - To find the next state after a reduce from the production number and the state the pop exposes
+    - To build a top-down PDA from a grammar, and to describe the LR parser as a PDA
 
 readings:
   - rtitle: "Allison, Ch. 5: Pushdown Automata, and Ch. 6 §6.3: Equivalence of PDAs and Context-Free Grammars"
@@ -479,6 +482,154 @@ State 3 on `x` comes back to state 3, because the items are the same, and state 
 
 Notice that each reduce fills its whole row, which is LR(0): the rule from Section 7 limited reduces to FOLLOW, and this table has not applied it yet.  It works here because no state mixes a completed item with anything else.  Apply FOLLOW, or carry LR(1) lookaheads, and rows 4 and 6 keep their reduce only on `y`, and row 7 only on `$`.  The states do not change.
 
+### Where the eight states come from: an NFA of items
+
+The states above came from closure and GOTO.  There is a second way to get them, and it uses the construction from the Automata lab: build an NFA from the grammar, then turn it into a DFA with the subset construction.  The DFA that comes out is exactly the eight states above, which shows that closure and GOTO were the subset construction all along.
+
+**Step 1: every item is an NFA state.**  Put the dot in every possible place in every production.  This grammar has eleven items, so the NFA has eleven states, `i0` to `i10`.  The start state is `i0`, the item `S' -> . S`.
+
+**Step 2: two kinds of arrow.**
+
+- *Moving the dot over a symbol is an arrow on that symbol.*  `S -> X . y x` goes to `S -> X y . x` on `y`.  This is the same move as reading one character in a lab NFA, except that the symbol can be a nonterminal.
+- *A dot just before a nonterminal `B` gets an ε (epsilon) arrow to every item `B -> . w`.*  The parser is about to start a `B` and has not decided which production it is, so the NFA tries all of them for free.  This is where the nondeterminism comes from.
+- An item with the dot at the far right has no arrows out.  It is finished, and it is where a reduce will happen.
+
+| NFA state | Item | Arrows out |
+|---|---|---|
+| `i0` | `S' -> . S` | on `S` to `i1`; ε to `i2` |
+| `i1` | `S' -> S .` | none |
+| `i2` | `S -> . X y x` | on `X` to `i3`; ε to `i6` and `i9` |
+| `i3` | `S -> X . y x` | on `y` to `i4` |
+| `i4` | `S -> X y . x` | on `x` to `i5` |
+| `i5` | `S -> X y x .` | none |
+| `i6` | `X -> . x X` | on `x` to `i7` |
+| `i7` | `X -> x . X` | on `X` to `i8`; ε to `i6` and `i9` |
+| `i8` | `X -> x X .` | none |
+| `i9` | `X -> . y` | on `y` to `i10` |
+| `i10` | `X -> y .` | none |
+
+**Step 3: the subset construction.**  Start with the ε-closure of the start state, then follow each symbol and close again, exactly as in the lab's `run_nfa`.  Closure in Section 3 *is* the ε-closure, and GOTO in Section 4 *is* "move on the symbol, then take the ε-closure."
+
+| DFA state | How it is built | NFA states in it |
+|---|---|---|
+| 0 | ε-closure of `{i0}`: `i0` reaches `i2`, and `i2` reaches `i6` and `i9` | `i0`, `i2`, `i6`, `i9` |
+| 1 | state 0 on `S`: move to `i1`; nothing to close | `i1` |
+| 2 | state 0 on `X`: move to `i3` | `i3` |
+| 3 | state 0 on `x`: move to `i7`, and `i7`'s ε arrows add `i6` and `i9` | `i6`, `i7`, `i9` |
+| 4 | state 0 on `y`, and also state 3 on `y`: move to `i10` | `i10` |
+| 5 | state 2 on `y`: move to `i4` | `i4` |
+| 6 | state 3 on `X`: move to `i8` | `i8` |
+| 7 | state 5 on `x`: move to `i5` | `i5` |
+
+State 3 on `x` moves to `i7` again, which closes to the same three items, so it is state 3 again.  That is the loop on `x` in the DFA.
+
+The program below builds the NFA from the grammar and runs the subset construction on it.
+
+```python
+# items_nfa.py: the grammar's item NFA, and the subset construction that turns it into the LR(0) DFA.
+PRODS = [("S'", ["S"]), ("S", ["X", "y", "x"]), ("X", ["x", "X"]), ("X", ["y"])]
+NONTERMINALS = {"S'", "S", "X"}
+
+# Every item is one NFA state: (production, dot position).
+ITEMS = [(p, d) for p, (lhs, rhs) in enumerate(PRODS) for d in range(len(rhs) + 1)]
+
+def show(item):
+    lhs, rhs = PRODS[item[0]]
+    return lhs + " -> " + " ".join(rhs[:item[1]] + ["."] + rhs[item[1]:])
+
+def edges(item):
+    """The NFA's arrows out of one item: one on the symbol after the dot,
+    and an epsilon arrow to each production of that symbol if it is a nonterminal."""
+    p, d = item
+    rhs = PRODS[p][1]
+    if d == len(rhs):
+        return []                                   # dot at the end: no arrows out
+    out = [(rhs[d], (p, d + 1))]                    # move the dot over the next symbol
+    if rhs[d] in NONTERMINALS:
+        out += [("eps", (q, 0)) for q, (lhs, _) in enumerate(PRODS) if lhs == rhs[d]]
+    return out
+
+print("NFA states and arrows:")
+for i, item in enumerate(ITEMS):
+    arrows = ", ".join("%s -> i%d" % (sym, ITEMS.index(dst)) for sym, dst in edges(item))
+    print("  i%-2d %-16s %s" % (i, show(item), arrows or "(none)"))
+
+def eps_closure(states):
+    """Follow epsilon arrows until nothing new appears (a visited set, as in the Automata lab)."""
+    result, frontier = set(states), list(states)
+    while frontier:
+        for sym, dst in edges(frontier.pop()):
+            if sym == "eps" and dst not in result:
+                result.add(dst)
+                frontier.append(dst)
+    return frozenset(result)
+
+def move(states, symbol):
+    return {dst for s in states for sym, dst in edges(s) if sym == symbol}
+
+# Subset construction: each DFA state is the epsilon closure of a set of items.
+start = eps_closure({(0, 0)})
+dfa, order, work = {}, [start], [start]
+while work:
+    S = work.pop(0)
+    for symbol in ["S", "X", "x", "y"]:
+        T = move(S, symbol)
+        if T:
+            T = eps_closure(T)
+            if T not in order:
+                order.append(T)
+                work.append(T)
+            dfa[(order.index(S), symbol)] = order.index(T)
+
+print("\nDFA states (subset construction):")
+for n, S in enumerate(order):
+    names = ", ".join("i%d" % ITEMS.index(it) for it in sorted(S))
+    print("  state %d = [%s]: %s" % (n, names, "; ".join(show(it) for it in sorted(S))))
+print("\nDFA arrows:")
+for (src, sym), dst in sorted(dfa.items()):
+    print("  state %d on %s -> state %d" % (src, sym, dst))
+```
+
+It prints:
+
+```text
+NFA states and arrows:
+  i0  S' -> . S        S -> i1, eps -> i2
+  i1  S' -> S .        (none)
+  i2  S -> . X y x     X -> i3, eps -> i6, eps -> i9
+  i3  S -> X . y x     y -> i4
+  i4  S -> X y . x     x -> i5
+  i5  S -> X y x .     (none)
+  i6  X -> . x X       x -> i7
+  i7  X -> x . X       X -> i8, eps -> i6, eps -> i9
+  i8  X -> x X .       (none)
+  i9  X -> . y         y -> i10
+  i10 X -> y .         (none)
+
+DFA states (subset construction):
+  state 0 = [i0, i2, i6, i9]: S' -> . S; S -> . X y x; X -> . x X; X -> . y
+  state 1 = [i1]: S' -> S .
+  state 2 = [i3]: S -> X . y x
+  state 3 = [i6, i7, i9]: X -> . x X; X -> x . X; X -> . y
+  state 4 = [i10]: X -> y .
+  state 5 = [i4]: S -> X y . x
+  state 6 = [i8]: X -> x X .
+  state 7 = [i5]: S -> X y x .
+
+DFA arrows:
+  state 0 on S -> state 1
+  state 0 on X -> state 2
+  state 0 on x -> state 3
+  state 0 on y -> state 4
+  state 2 on y -> state 5
+  state 3 on X -> state 6
+  state 3 on x -> state 3
+  state 3 on y -> state 4
+  state 5 on x -> state 7
+```
+
+The DFA's state numbers come out in the same order as the hand construction, because both take the symbols in the same order.  The NFA is a picture of the grammar, and the DFA is what the parser runs.
+
 ### Reading a table entry: `s3`, `r3`, and a bare `1`
 
 A table cell tells the parser what to do next, and there are five kinds of entry. The letter says which action to take, and the number means something different for each letter, so read the letter first.
@@ -597,6 +748,120 @@ The stack holds symbols and states in turn, and the top is on the right. At ever
 
 There are three things to notice. Both reductions happen while the next token stays `y`, because a reduce does not consume input. A reduce pops twice the length of the right-hand side, because each symbol has a state above it. And the state number after a reduce comes from the row exposed by the pop, not from the row the parser was just in.
 
+### After a reduce: the production number, then the state the pop exposes
+
+The `xyyx` trace has only one reduce of each kind, so it hides the step that is easiest to get wrong: after a reduce, which state comes next?  A longer string, `xxyyx`, makes the answer change partway through.
+
+**The rule for every reduce.**
+
+1. **`rn` names production `n`, not state `n`.**  Look `n` up in the numbered list of productions.  `r2` means `X -> x X`, and state 2 has nothing to do with it.
+2. **Pop twice the length of the right-hand side.**  Each symbol on the stack has its state above it.  `X -> x X` has two symbols, so pop 4 items.
+3. **Read the state that is now on top.**  Call it the *exposed state*.  It is the state the parser was in just before it started reading this right-hand side.
+4. **Push the left-hand side, then push GOTO[exposed state, left-hand side].**  The reduce entry never says where to go next.  The GOTO column of the exposed state's row does.
+5. **Leave the input where it is.**  Look up the same next character again, now in the new top state.
+
+**Build the string first.**  Each step rewrites the rightmost nonterminal:
+
+```text
+S  =>  X y x        production 1
+   =>  x X y x      production 2
+   =>  x x X y x    production 2
+   =>  x x y y x    production 3
+```
+
+The parser finds these four productions in reverse order: 3, then 2, then 2 again, then 1.
+
+**The trace, on the LR(1) table.**
+
+| Stack before the move | Next | Cell | What the parser does |
+|---|---|---|---|
+| `[0]` | `x` | row 0, `x`: `s3` | Shift: push `x` and state 3.  Move to the next character. |
+| `[0 x 3]` | `x` | row 3, `x`: `s3` | Shift: push `x` and state 3.  Move to the next character. |
+| `[0 x 3 x 3]` | `y` | row 3, `y`: `s4` | Shift: push `y` and state 4.  Move to the next character. |
+| `[0 x 3 x 3 y 4]` | `y` | row 4, `y`: `r3` | Production 3 is `X -> y`.  Pop 2, which exposes state **3**.  Push `X`.  Row 3, column `X` holds 6, so push **6**.  The next character is still `y`. |
+| `[0 x 3 x 3 X 6]` | `y` | row 6, `y`: `r2` | Production 2 is `X -> x X`.  Pop 4, which exposes state **3**.  Push `X`.  Row 3, column `X` holds 6, so push **6**.  The next character is still `y`. |
+| `[0 x 3 X 6]` | `y` | row 6, `y`: `r2` | Production 2 again.  Pop 4, which this time exposes state **0**.  Push `X`.  Row 0, column `X` holds 2, so push **2**.  The next character is still `y`. |
+| `[0 X 2]` | `y` | row 2, `y`: `s5` | Shift: push `y` and state 5.  Move to the next character. |
+| `[0 X 2 y 5]` | `x` | row 5, `x`: `s7` | Shift: push `x` and state 7.  Move to the next character. |
+| `[0 X 2 y 5 x 7]` | `$` | row 7, `$`: `r1` | Production 1 is `S -> X y x`.  Pop 6, which exposes state **0**.  Push `S`.  Row 0, column `S` holds 1, so push **1**. |
+| `[0 S 1]` | `$` | row 1, `$`: `acc` | Accept. |
+
+**Look at the two `r2` moves.**  Both happen in state 6, on the same next character `y`, and both apply the same production.  The first goes to state 6, and the second goes to state 2.  The only difference is the state the pop exposes.  The first `X` is built inside another `x X`, so the pop lands in state 3, the state that was waiting for that inner `X`.  The second `X` is the one at the front of `S -> X y x`, so the pop lands in state 0.
+
+This is why the next state cannot be stored in the reduce entry.  A reduce knows *what* it built, but only the exposed state knows *where that piece fits*.  When the parser first entered the exposed state, one of its items had the dot just before the left-hand side, such as `X -> x . X` in state 3.  GOTO moves the dot over that whole `X` at once, as if the `X` had been read from the input as a single character.
+
+Here is every reduce in this grammar, and where it can go:
+
+| Reduce | Production | Items popped | If the pop exposes state 0 | If the pop exposes state 3 |
+|---|---|---|---|---|
+| `r3` | `X -> y` | 2 | GOTO[0, `X`] = 2 | GOTO[3, `X`] = 6 |
+| `r2` | `X -> x X` | 4 | GOTO[0, `X`] = 2 | GOTO[3, `X`] = 6 |
+| `r1` | `S -> X y x` | 6 | GOTO[0, `S`] = 1 | cannot happen: an `S` is only ever built from state 0 |
+
+The driver below prints the same trace, and after every reduce it prints the production, the exposed state, and the GOTO lookup.
+
+```python
+# reduce_trace.py: the LR(1) table, and a driver that says out loud what each reduce does.
+PROD = {1: ("S", ["X", "y", "x"]), 2: ("X", ["x", "X"]), 3: ("X", ["y"])}
+ACTION = {
+    (0, "x"): "s3", (0, "y"): "s4",
+    (1, "$"): "acc",
+    (2, "y"): "s5",
+    (3, "x"): "s3", (3, "y"): "s4",
+    (4, "y"): "r3",
+    (5, "x"): "s7",
+    (6, "y"): "r2",
+    (7, "$"): "r1",
+}
+GOTO = {(0, "S"): 1, (0, "X"): 2, (3, "X"): 6}
+
+def parse(text):
+    tokens = list(text) + ["$"]
+    stack, pos = [0], 0
+    while True:
+        state, tok = stack[-1], tokens[pos]
+        act = ACTION.get((state, tok))
+        print("%-24s next %s  %s" % (" ".join(map(str, stack)), tok, act or "ERROR"))
+        if act is None or act == "acc":
+            return act == "acc"
+        n = int(act[1:])
+        if act[0] == "s":                      # s n: n is a STATE
+            stack += [tok, n]
+            pos += 1
+        else:                                  # r n: n is a PRODUCTION
+            lhs, rhs = PROD[n]
+            del stack[-2 * len(rhs):]          # pop each symbol and the state above it
+            exposed = stack[-1]                # where we were before reading the rhs
+            nxt = GOTO[(exposed, lhs)]
+            print("%24s   production %d is %s -> %s: pop %d, exposed state %d, GOTO[%d, %s] = %d"
+                  % ("", n, lhs, " ".join(rhs), 2 * len(rhs), exposed, exposed, lhs, nxt))
+            stack += [lhs, nxt]                # the input does not move
+
+print(parse("xxyyx"))
+```
+
+It prints:
+
+```text
+0                        next x  s3
+0 x 3                    next x  s3
+0 x 3 x 3                next y  s4
+0 x 3 x 3 y 4            next y  r3
+                           production 3 is X -> y: pop 2, exposed state 3, GOTO[3, X] = 6
+0 x 3 x 3 X 6            next y  r2
+                           production 2 is X -> x X: pop 4, exposed state 3, GOTO[3, X] = 6
+0 x 3 X 6                next y  r2
+                           production 2 is X -> x X: pop 4, exposed state 0, GOTO[0, X] = 2
+0 X 2                    next y  s5
+0 X 2 y 5                next x  s7
+0 X 2 y 5 x 7            next $  r1
+                           production 1 is S -> X y x: pop 6, exposed state 0, GOTO[0, S] = 1
+0 S 1                    next $  acc
+True
+```
+
+**Check yourself.**  Trace `yyx`.  Which state does the `r3` expose, and where does it go?  (State 0, so GOTO[0, `X`] = 2.  In `xyyx` the same `r3` exposed state 3 and went to 6.)
+
 ### Tracing `xyx`, and where the error appears
 
 `xyx` is not in the language, because the string needs a `y` after the `X` and this one has an `x` there. Here it is on the LR(1) table:
@@ -618,6 +883,42 @@ Here is the same input on the LR(0) table:
 | `[0 X 2]` | `x` | row 2, column `x`: blank | Stop with an error. The parser names state 2 and token `x`. |
 
 Both tables reject the string, and both are correct. The LR(0) table makes two reductions first, because its rows 4 and 6 reduce on every token, while the LR(1) table stops as soon as the bad token arrives. No shift happens after the bad token in either table. The practical difference is the error message: LR(1) can report "expected `y`, found `x`" from state 4 with the input in the place the error occurred.
+
+### The grammar as a pushdown automaton
+
+Allison §6.3 says that every context-free grammar has a pushdown automaton (PDA) that accepts the same language.  There are two standard ways to build one from a grammar, and both are parsers.  The first works top down, like recursive descent.  The second is the LR parser above.
+
+**The top-down PDA, built straight from the grammar.**  It needs only one state.  The stack holds the part of the sentence that still has to be matched, with the top on the left.
+
+- Start with `S` on the stack, above a bottom marker `$`.
+- For each production `A -> w`, add an ε move: pop `A` and push `w`, with `w`'s first symbol on top.  This grammar gives three: pop `S` and push `X y x`; pop `X` and push `x X`; pop `X` and push `y`.
+- For each terminal `a`, add a move that reads `a` from the input and pops `a` from the stack.  This grammar gives two, for `x` and `y`.
+- Accept when the input is used up and only `$` is left on the stack.
+
+Here it is on `xyyx`:
+
+| Stack (top on the left) | Input left | Move |
+|---|---|---|
+| `S $` | `x y y x` | Expand `S -> X y x`. |
+| `X y x $` | `x y y x` | Expand `X -> x X`.  The other choice was `X -> y`, so this is a guess. |
+| `x X y x $` | `x y y x` | Match `x`. |
+| `X y x $` | `y y x` | Expand `X -> y`.  Another guess. |
+| `y y x $` | `y y x` | Match `y`. |
+| `y x $` | `y x` | Match `y`. |
+| `x $` | `x` | Match `x`. |
+| `$` | (empty) | Accept. |
+
+This PDA is nondeterministic.  With `X` on top it has two moves and must guess.  One character of lookahead removes the guess here: an `x` next means `X -> x X`, and a `y` next means `X -> y`.  A PDA that guesses with one character of lookahead is LL(1), and it is what recursive descent did with one function per nonterminal.  It expands productions 1, 2, 3, which is a leftmost derivation, from the root down.
+
+**The bottom-up PDA is the LR parser.**  Its finite control is the DFA built above, and its stack holds states, with the grammar symbols between them so we can read it.
+
+- A shift reads one character and pushes it and its state.
+- A reduce by `A -> w` is an ε move.  It pops `w` with its states, exposing a state `e`, and pushes `A` and GOTO[`e`, `A`].
+- It accepts when state 1 sees `$`.
+
+It finds the same productions in the opposite order (3, 2, 1, a rightmost derivation in reverse), and the table makes every move deterministic, so it never guesses.
+
+One caution about this example.  The language of this grammar is `x* y y x`, which is regular, so a plain DFA could *recognize* it without any stack.  The parser needs the stack anyway, because it has to report *which productions* built the string, and the nesting of `x X` inside `x X` is exactly what the stack remembers.  For a language with real nesting, such as balanced parentheses, the stack is needed even just to say yes or no.
 
 ---
 
