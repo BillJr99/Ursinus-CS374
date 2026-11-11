@@ -396,7 +396,56 @@ for s in ["if", "iffy", "while", "x"]:
 
 `if` and `while` belong to both sets, and deciding which token they become is the question the *Tokens and Scanning* activity answers.
 
-To remember from Part II: `+`, `?`, character classes, and `{n,m}` are shorthand for the three primitives, so they add readability and no power.  Backreferences are the one common feature that does add power, and they take you outside the regular languages.
+## Excluding Characters and Substrings
+
+Sometimes the easiest way to describe a token is to say what it cannot contain.  A comment runs to the end of the line, so its body is "anything except a newline."  A string body is "anything except the closing quote."  Regex has two tools for this, and which one you need depends on whether you are excluding single characters or a whole substring.
+
+**Excluding characters: the negated class `[^...]`.**  A `^` right after the opening bracket flips the menu, so `[^abc]` matches any *one* character that is not `a`, `b`, or `c`.  `[^\n]*` is "any run of characters with no newline in it," which is how a comment rule like `#[^\n]*` stops at the end of the line.  The `^` means "not" only in that first position.  Anywhere else inside a class it is an ordinary character, and outside a class it is the start-of-string anchor.
+
+| Pattern | Matches one character that is |
+|---------|-------------------------------|
+| `[^0-9]` | not a digit (the same as `\D`) |
+| `[^"\n]` | neither a double quote nor a newline |
+| `[^"\\]` | neither a double quote nor a backslash (inside the class, `\\` is one escaped backslash) |
+| `[a^b]` | `a`, `^`, or `b`, because the `^` is not first |
+
+A negated class is still exactly one character, and it matches a newline unless you put `\n` in the menu.  It is also still sugar: over a finite alphabet, `[^abc]` is the alternation of every other character.
+
+**Excluding a substring: the negative lookahead `(?!...)`.**  A class works one character at a time, so `[^*/]` does not mean "not the pair `*/`."  It means "not a `*` and not a `/`," which also rejects a lone `*` or a lone `/`.  To exclude a sequence, use a negative lookahead.  `(?!...)` checks that the text ahead does *not* match, and it consumes nothing.  You have already seen one in the keyword rule `if(?!\w)`.  Put a lookahead in front of a `.` and repeat the pair, and you get "any run of characters that never starts the forbidden substring":
+
+| Pattern | Reads as |
+|---------|----------|
+| `(?:(?!\*/).)*` | any run of characters that does not contain `*/` |
+| `/\*(?:(?!\*/).)*\*/` | a C block comment: `/*`, then anything without `*/` in it, then `*/` |
+| `(?!.*TODO).*` | with `fullmatch`, a whole line that does not contain `TODO` anywhere |
+
+At each position, the lookahead asks "does `*/` start here?"  Only when the answer is no does the `.` take one character.  Predict each line of output before you run this:
+
+```python
+import re
+
+# Negated class: one character that is not in the menu.
+print(re.findall(r"[^aeiou ]", "lexer rules"))           # every consonant
+print(re.fullmatch(r"#[^\n]*", "# note\nx = 1"))          # None: the class cannot cross the newline
+print(re.match(r"#[^\n]*", "# note\nx = 1").group())      # the comment stops at the newline
+
+# A class excludes characters, not a sequence.
+by_class     = r"/\*[^*/]*\*/"
+by_lookahead = r"/\*(?:(?!\*/).)*\*/"
+for c in ["/* plain */", "/* a * b */", "/* x / y */", "/* one */ two */"]:
+    print(f"{c!r:20} class={bool(re.fullmatch(by_class, c))!s:5} lookahead={bool(re.fullmatch(by_lookahead, c))}")
+
+# A whole line with no TODO anywhere in it.  Case matters.
+for line in ["x = 1", "# TODO: fix", "y = 2  # todo later"]:
+    print(f"{line!r:22} {bool(re.fullmatch(r'(?!.*TODO).*', line))}")
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+
+The class version rejects `/* a * b */` and `/* x / y */`, which are perfectly good comments, because each one contains a lone `*` or `/`.  The lookahead version accepts both.  Both reject `/* one */ two */`, because its body contains `*/`.  A `.` does not match a newline, so a comment that spans lines needs the `re.DOTALL` flag.
+
+Is "does not contain `*/`" still a regular language?  Yes.  Regular languages are closed under complement, and the finite automata module shows why: flip which states of the automaton accept.  You *can* write it in the three primitives, as `([^*]|\*+[^*/])*\**`, but nobody wants to read that, and the lookahead says the same thing plainly.
+
+To remember from Part II: `+`, `?`, character classes, and `{n,m}` are shorthand for the three primitives, so they add readability and no power.  A negated class `[^...]` excludes single characters, and a negative lookahead `(?!...)` excludes a whole substring.  Backreferences are the one common feature that does add power, and they take you outside the regular languages.
 
 ---
 

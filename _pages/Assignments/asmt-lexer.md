@@ -169,6 +169,8 @@ Part 1 uses a list of `(name, pattern)` tuples, `re.compile` with `.match(source
 
 Each rule is a `(token_name, regex_pattern)` pair, and each pattern is a raw string (`r"..."`), so that backslashes reach the regex engine.  The tokenizer takes the first rule that matches, so two ordering rules follow from maximal munch.  A keyword goes before `IDENT`, or `if` becomes an identifier.  A longer operator goes before the operator it starts with, or `<=` becomes `<` and `=`.
 
+Two of these rules describe a token by what it cannot contain.  `COMMENT` runs until a newline, and `STRING` runs until the closing quote.  Both use a negated class such as `[^\n]`, which [Excluding Characters and Substrings](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-regex.md#20) in the Regular Expressions activity explains.
+
 Replace your six-rule `TOKEN_SPEC` with this list, and replace each `TODO` with its rules.  The comments give each token's lexemes and what its pattern needs, and a few rules are done for you as worked examples.
 
 ```python
@@ -611,7 +613,7 @@ The `==` in the `assert` compares two lists of `Token` objects field by field.  
 
 ### Before Step 2c: Capture Groups
 
-Step 2c matches a whole string literal as one token, and then takes its body apart to decode the escapes.  Both jobs use capture groups, so review [Part III: Capture Groups and Replacement](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-regex.md#20) in the Regular Expressions activity before you start: group numbering, `(?:...)`, group references, and replacement functions in `re.sub`.
+Step 2c matches a whole string literal as one token, and then takes its body apart to decode the escapes.  Both jobs use capture groups, so review [Part III: Capture Groups and Replacement](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-regex.md#21) in the Regular Expressions activity before you start: group numbering, `(?:...)`, group references, and replacement functions in `re.sub`.
 
 ### Step 2c: String Literals with Escapes
 
@@ -631,6 +633,22 @@ You build this in four pieces: the field, the rule, and the decoder each get wri
 > **If it fails.** `TypeError` about a missing argument when an `INT` or `IDENT` token is built: the new field has no default.
 
 #### Step 2c.2: The `STRING` rule
+
+> **Backslashes in a pattern, and what `r"..."` does.**  Your `STRING` rule has to match a real backslash.  A backslash in your pattern passes through two readers before it matches anything.  Python reads your string literal first, and then the regex engine reads the string Python built.  Both treat `\` as an escape character.
+>
+> - **The regex engine.**  A backslash means "the next character is special" (as in `\d`) or "the next character is literal" (as in `\.`).  To match one real backslash, the engine has to see two: `\\`.  So the pattern for "a backslash, then any one character" is `\\.`.
+> - **Python.**  In an ordinary string literal, Python turns `\n` into a newline and `\\` into one backslash before your program runs.  To hand the engine `\\.` from an ordinary string, you would have to type `"\\\\."`: four backslashes, which Python halves to two.
+> - **A raw string turns off Python's step.**  An `r` before the opening quote makes a *raw string*, and Python keeps every backslash exactly as you typed it.  `r"\\."` is the three characters `\`, `\`, and `.`, which is what the engine needs.  A raw string is still an ordinary `str`.  The `r` changes only how Python reads the literal in your source file, not the kind of value it builds.
+>
+> ```python
+> print(len("\\"), len(r"\\"))      # 1 2: Python halved the first; the raw string kept both
+> print(r"\n" == "\\n")             # True: each is a backslash and then the letter n, not a newline
+> print(r"\\." == "\\\\.")          # True: the same three characters, typed two ways
+> ```
+>
+> Two details catch people.  First, a raw string cannot end in a single backslash.  `r"\"` is a `SyntaxError`, because the backslash still keeps the quote after it from closing the string (and then stays in the string itself).  The same rule is why `r'"quote\"end"'` in the check below is one string: the `\"` inside it is the two characters `\` and `"`.  Second, `print` shows a string's real characters, but `repr` (and the interactive prompt) shows each real backslash doubled.  So `print(r"\\.")` shows `\\.`, while `repr(r"\\.")` is `'\\\\.'`.
+>
+> The other half of the body is "any one character that is neither a double quote nor a backslash," which is a negated class.  [Excluding Characters and Substrings](https://liascript.github.io/course/?https://raw.githubusercontent.com/BillJr99/Ursinus-CS374-Fall2026/gh-pages/_pages/Activities/liascript-regex.md#20) in the Regular Expressions activity shows how `[^...]` works, and how to exclude a whole substring when one character is not enough.
 
 > **Do this.**
 > 1. Replace the middle of your `STRING` rule in `TOKEN_SPEC` with an escape-aware body.  The `STRING` rule matches a whole double-quoted literal, quotes included, and a backslash together with the one character after it counts as a single unit.  So `\"` does not end the string early, and `"quote\"end"` is one token.
