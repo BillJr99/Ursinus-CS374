@@ -226,7 +226,7 @@ schedule:
   readings:
   - rtitle: "Thain, Chapter 1"
   - rtitle: "Allison, Ch. 1: Introduction, Formal Languages and Finite State Machines"
-  - rtitle: "Course overview: what CS374 covers, how the term is organized, and what you will have built by December"
+  - rtitle: "Course overview"
     rlink: "https://www.billmongan.com/Ursinus-CS374-Overview"
 - week: "0"
   date: "1"
@@ -253,11 +253,11 @@ schedule:
     dlink: "Assignments/Warmup"
     points: "10"
   readings:
-  - rtitle: "Continues Part 1.  Please have Scheme running before class, either installed locally or open in a browser tab at try.scheme.org, and have ready the expression that would not evaluate."
+  - rtitle: "Have Scheme running (installed or at try.scheme.org) and the expression that would not evaluate ready."
     rlink: false
   - rtitle: "Scheme Essentials for the Programming Languages Course"
     rlink: "Tutorials/SchemeEssentials"
-  - rtitle: "The Scheme Programming Language (Dybvig), Chapter 2: Getting Started"
+  - rtitle: "Dybvig, The Scheme Programming Language, Chapter 2: Getting Started"
     rlink: "https://www.scheme.com/tspl3/start.html"
   - rtitle: "Closures in Scheme (Andy Balaam)"
     rlink: "https://www.artificialworlds.net/presentations/scheme-03-closures/scheme-03-closures.html"
@@ -278,7 +278,7 @@ schedule:
   readings:
   - rtitle: "Scheme Essentials for the Programming Languages Course"
     rlink: "Tutorials/SchemeEssentials"
-  - rtitle: "The declarative paradigm in Prolog: a short SWISH exercise in class (facts, rules, and a query that backtracks), background for the Team Language Project's optional logic-programming extension"
+  - rtitle: "The Declarative Paradigm in Prolog (SWISH exercise)"
     rlink: "https://swish.swi-prolog.org/"
   - rtitle: "The Power of Prolog (Markus Triska)"
     rlink: "https://www.metalevel.at/prolog"
@@ -305,7 +305,7 @@ schedule:
   link: "Activities/liascript-grammars-day2.md"
   liapage: true
   readings:
-  - rtitle: "Continues Day 1.  Have the grammar you drafted ready; we build on it."
+  - rtitle: "Have the grammar you drafted ready."
     rlink: false
 - week: "3"
   date: "1"
@@ -322,7 +322,7 @@ schedule:
     points: "15"
     rubricpath: "_pages/Assignments/lab-bnfworkshop.md"
   readings:
-  - rtitle: "Allison, Ch. 6 §6.2: Derivation Trees and Ambiguous Grammars (Operator Precedence and Associativity)"
+  - rtitle: "Allison, Ch. 6 §6.2: Derivation Trees and Ambiguous Grammars"
 - week: "4"
   date: "0"
   title: "Regular Expressions"
@@ -330,8 +330,8 @@ schedule:
   liapage: true
   readings:
   - rtitle: "Allison, Ch. 3 §3.1-3.2: Regular Expressions and Their Equivalence to Finite Automata"
-  - rtitle: "Allison, Ch. 4: The Pumping Lemma, proving a language is not regular (we work one example in class; it is background for the regular-versus-context-free boundary)"
-  - rtitle: "The Shell for Language Development, the grep section, which puts today's patterns to work on your own source tree"
+  - rtitle: "Allison, Ch. 4: The Pumping Lemma"
+  - rtitle: "The Shell for Language Development: grep"
     rlink: "Tutorials/ShellForLanguageDev"
 - week: "4"
   date: "1"
@@ -345,7 +345,7 @@ schedule:
     rubricpath: "_pages/Assignments/lab-grammarworkshop.md"
   readings:
   - rtitle: "Allison, Ch. 2 §2.1-2.2: Deterministic and Non-Deterministic Finite Automata"
-  - rtitle: "Python for Language Work: dictionaries, sets, f-strings, and JSON, used in today's activity and the Finite Automata lab"
+  - rtitle: "Python for Language Work: dictionaries, sets, f-strings, and JSON"
     rlink: "Tutorials/PythonForLanguageWork"
   - rtitle: "Allison, Ch. 4 §4.2: Decision Algorithms (Is the Language Empty?)"
 - week: "5"
@@ -363,7 +363,7 @@ schedule:
     points: "100"
     rubricpath: "_pages/Assignments/asmt-regex.md"
   readings:
-  - rtitle: "Continues Day 1.  Have your hand-traced DFA from last session ready."
+  - rtitle: "Have your hand-traced DFA ready."
     rlink: false
 - week: "5"
   date: "1"
@@ -372,7 +372,7 @@ schedule:
   liapage: true
   readings:
   - rtitle: "Allison, Ch. 2 §2.4: Machines with Output, Lexical Analysis"
-  - rtitle: "Python for Language Work: generators and yield, behind the tokenize generator in the Lexer assignment"
+  - rtitle: "Python for Language Work: generators and yield"
     rlink: "Tutorials/PythonForLanguageWork#generators-and-yield"
 - week: "6"
   date: "0"
@@ -422,9 +422,9 @@ schedule:
     points: "100"
     rubricpath: "_pages/Assignments/asmt-lexer.md"
   readings:
-  - rtitle: "Python for Language Work: generators and yield, behind the tokenize generator in the Lexer assignment"
+  - rtitle: "Python for Language Work: generators and yield"
     rlink: "Tutorials/PythonForLanguageWork#generators-and-yield"
-  - rtitle: "PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer assignment)"
+  - rtitle: "PLY Lexer and Parser in Python"
     rlink: "Tutorials/PLYLexerAndParser"
 - week: "10"
   date: "0"
@@ -437,7 +437,7 @@ schedule:
     points: "100"
     rubricpath: "_pages/Projects/proj-teamlanguage.md"
   readings:
-  - rtitle: "PLY Lexer and Parser in Python (the generator-toolchain path through the Lexer assignment)"
+  - rtitle: "PLY Lexer and Parser in Python"
     rlink: "Tutorials/PLYLexerAndParser"
 - week: "10"
   date: "1"
@@ -458,7 +458,7 @@ schedule:
     points: "15"
     rubricpath: "_pages/Assignments/lab-automata.md"
   readings:
-  - rtitle: "Building an LR Parser from the Grammar Up, the companion to the Parser assignment, which walks the same construction on a smaller grammar with runnable code"
+  - rtitle: "Building an LR Parser from the Grammar Up"
     rlink: "Tutorials/LRConstruction"
   - rtitle: "Flex and Bison from Zero to a Working Language"
     rlink: "Tutorials/FlexAndBison"
@@ -479,7 +479,7 @@ schedule:
   readings:
   - rtitle: "C for Flex and Bison: structs, pointers, strings, linked lists, and Make"
     rlink: "Tutorials/CForFlexAndBison"
-  - rtitle: "Parser Combinators (Parsers as First-Class Values), another way to write a parser (optional depth)"
+  - rtitle: "Parser Combinators (optional)"
     rlink: "Tutorials/ParserCombinators"
 - week: "12"
   date: "0"
@@ -488,7 +488,7 @@ schedule:
   liapage: true
   readings:
   - rtitle: "Allison, Ch. 8: Turing Machines and the Church-Turing Thesis"
-  - rtitle: "Lambda Calculus - Fundamentals of Lambda Calculus & Functional Programming in JavaScript (Gabriel Lebec)"
+  - rtitle: "Gabriel Lebec, Lambda Calculus: Fundamentals of Lambda Calculus and Functional Programming in JavaScript"
     rlink: "https://www.youtube.com/watch?v=3VQ382QG-y4"
   - rtitle: "Build a Lambda Calculus Reducer"
     rlink: "Tutorials/LambdaCalculusReducer"
@@ -507,10 +507,10 @@ schedule:
     points: "15"
     rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
-  - rtitle: "Church encodings: numerals, booleans, and the arithmetic you reduce by hand in the Lambda Calculus lab (today's activity, Models 2-3)"
-  - rtitle: "A Flock of Functions: Combinators, Lambda Calculus, & Church Encodings in JS - Part II (Gabriel Lebec)"
+  - rtitle: "Church Encodings"
+  - rtitle: "Gabriel Lebec, A Flock of Functions, Part II"
     rlink: "https://www.youtube.com/watch?v=pAnLQ9jwN-E"
-  - rtitle: "Build a Lambda Calculus Reducer: the Y combinator built up one step at a time in Python, for today's activity"
+  - rtitle: "Build a Lambda Calculus Reducer"
     rlink: "Tutorials/LambdaCalculusReducer"
 - week: "13"
   date: "0"
@@ -527,11 +527,11 @@ schedule:
     points: "100"
     rubricpath: "_pages/Assignments/asmt-interpreter.md"
   readings:
-  - rtitle: "Build an Interpreter (start-to-finish companion for the upcoming assignment)"
+  - rtitle: "Build an Interpreter"
     rlink: "Tutorials/BuildAnInterpreter"
   - rtitle: "Build a Bytecode VM"
     rlink: "Tutorials/BytecodeVM"
-  - rtitle: "Property-Based Testing with Hypothesis (optional depth): the round-trip property and how to shrink a failing case"
+  - rtitle: "Property-Based Testing with Hypothesis (optional)"
     rlink: "Tutorials/PropertyBasedTesting"
   - rtitle: "CI and TDD for Interpreters"
     rlink: "Tutorials/CITDDForInterpreters"
@@ -541,9 +541,9 @@ schedule:
   link: "Activities/liascript-bindingscope.md"
   liapage: true
   readings:
-  - rtitle: "Tutorial: Environments and Type Checking, a walkthrough of the scope table and a small type checker"
+  - rtitle: "Environments and Type Checking"
     rlink: "Assignments/EnvironmentsLab"
-  - rtitle: "Krishnamurthi, PLAI (3rd ed.): the Stacker and SMoL Tutor, which we step through in class, and the chapters on functions, scope, and environments"
+  - rtitle: "Krishnamurthi, PLAI (3rd ed.): the Stacker, the SMoL Tutor, and the chapters on functions, scope, and environments"
     rlink: "https://www.plai.org/"
   - rtitle: "Garbage Collection (Implementing Memory Management)"
     rlink: "Tutorials/GarbageCollection"
@@ -558,7 +558,7 @@ schedule:
     points: "15"
     rubricpath: "_pages/Assignments/lab-lambdacalculus.md"
   readings:
-  - rtitle: "Flex and Bison from Zero to a Working Language: the same list of symbol tables, in C"
+  - rtitle: "Flex and Bison from Zero to a Working Language"
     rlink: "Tutorials/FlexAndBison"
 - week: "15"
   date: "0"
@@ -575,17 +575,17 @@ schedule:
     points: "100"
     rubricpath: "_pages/Assignments/asmt-interpreter.md"
   readings:
-  - rtitle: "Typing Disciplines, going past today's quadrant into structural vs. nominal typing, type erasure, and algebraic data types"
+  - rtitle: "Typing Disciplines"
     rlink: "Tutorials/TypingDisciplines"
-  - rtitle: "The same buggy snippet under mypy (Python) and TypeScript, compared in class: gradual typing as an object of study"
+  - rtitle: "The same buggy snippet under mypy and TypeScript"
     rlink: "https://www.typescriptlang.org/play"
   - rtitle: "Type Inference (Implementing Hindley-Milner)"
     rlink: "Tutorials/TypeInference"
-  - rtitle: "For the team project: The Project Language Guide (a complete worked path for the team project)"
+  - rtitle: "For the team project: The Project Language Guide"
     rlink: "Tutorials/ProjectLanguageGuide"
   - rtitle: "For the team project: Shell Skills for Language Development"
     rlink: "Tutorials/ShellForLanguageDev"
-  - rtitle: "For the team project: Prolog and the declarative paradigm, optional background for a team language that takes a logic-programming direction, alongside The Power of Prolog"
+  - rtitle: "For the team project: Prolog and the Declarative Paradigm (optional)"
     rlink: "Tutorials/Prolog"
   - rtitle: "For the team project: Publishing Your Language (pip, npm, and Docker)"
     rlink: "Tutorials/PublishingYourLanguage"
