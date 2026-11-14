@@ -2,7 +2,10 @@
    prefers-color-scheme and data-theme; panels: env frames/heap/closures, lambda tree, bison table and
    graph box (.gbox), agent timeline (.ev), terminal replay. The QR dialog (.qrdialog) is the teacher's
    projector view; body.student is student mode (?student=1): one column, 17 px text, 44 px touch
-   targets, step controls sticky at the bottom with safe-area insets. [hidden] always hides. */
+   targets, step controls sticky at the bottom with safe-area insets. [hidden] always hides.
+
+   Full manual: the header of code-viz (`code-viz readme`, or README.md), sections 8 and 9.
+*/
 :root {
   --bg: #fbfaf7; --fg: #1d2330; --muted: #677085; --line: #d9dde5; --card: #ffffff;
   --accent: #1f6feb; --hl: #fff2b3; --hl-strong: #ffd54f; --ok: #1a7f37; --bad: #c62828;
@@ -130,3 +133,9 @@ body.student .panel { overflow-x: auto; }
    of the scroll; the current line is kept in view inside the code box. */
 body.student .code { max-height: 40vh; }
 body.student .output { max-height: 22vh; }
+
+/* setup= examples: the earlier cells' code, collapsed above the stepped code */
+.setupbox { margin: 0 0 6px; border: 1px dashed var(--line, #8884); border-radius: 6px; }
+.setupbox > summary { cursor: pointer; padding: 4px 8px; font-size: 0.85em; color: var(--muted, #666); }
+.setupbox > pre { margin: 0; max-height: 30vh; overflow: auto; opacity: 0.8; }
+body.student .setupbox > summary { min-height: 44px; display: flex; align-items: center; }

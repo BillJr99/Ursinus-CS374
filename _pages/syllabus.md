@@ -401,9 +401,7 @@ schedule:
     rlink: "Tutorials/ParserCombinators"
 - week: "8"
   date: "0"
-  title: "Abstract Syntax Trees, Continued: From Parse Trees to ASTs"
-  link: "Activities/liascript-ast.md"
-  liapage: true
+  title: "Abstract Syntax Trees"
   deliverables:
   - dtitle: "Programming Assignment: Regular Expressions Due"
     dlink: "Assignments/Regex"
@@ -414,8 +412,6 @@ schedule:
 - week: "8"
   date: "1"
   title: "Recursive Descent Parsing: From Grammar to Code"
-  link: "Activities/liascript-recursivedescent.md"
-  liapage: true
   deliverables:
   - dtitle: "Programming Assignment: Build a Lexer Handed Out"
     dlink: "Assignments/Lexer"
@@ -428,9 +424,7 @@ schedule:
     rlink: "Tutorials/PLYLexerAndParser"
 - week: "10"
   date: "0"
-  title: "Recursive Descent Parsing, continued"
-  link: "Activities/liascript-recursivedescent.md"
-  liapage: true
+  title: "Recursive Descent Parsing: From Grammar to Code"
   deliverables:
   - dtitle: "Team Language Project Handed Out"
     dlink: "Projects/TeamLanguage"
@@ -479,7 +473,7 @@ schedule:
   readings:
   - rtitle: "C for Flex and Bison: structs, pointers, strings, linked lists, and Make"
     rlink: "Tutorials/CForFlexAndBison"
-  - rtitle: "Parser Combinators (optional)"
+  - rtitle: "Parser Combinators"
     rlink: "Tutorials/ParserCombinators"
 - week: "12"
   date: "0"
@@ -531,7 +525,7 @@ schedule:
     rlink: "Tutorials/BuildAnInterpreter"
   - rtitle: "Build a Bytecode VM"
     rlink: "Tutorials/BytecodeVM"
-  - rtitle: "Property-Based Testing with Hypothesis (optional)"
+  - rtitle: "Property-Based Testing with Hypothesis"
     rlink: "Tutorials/PropertyBasedTesting"
   - rtitle: "CI and TDD for Interpreters"
     rlink: "Tutorials/CITDDForInterpreters"
@@ -585,7 +579,7 @@ schedule:
     rlink: "Tutorials/ProjectLanguageGuide"
   - rtitle: "For the team project: Shell Skills for Language Development"
     rlink: "Tutorials/ShellForLanguageDev"
-  - rtitle: "For the team project: Prolog and the Declarative Paradigm (optional)"
+  - rtitle: "For the team project: Prolog and the Declarative Paradigm"
     rlink: "Tutorials/Prolog"
   - rtitle: "For the team project: Publishing Your Language (pip, npm, and Docker)"
     rlink: "Tutorials/PublishingYourLanguage"

@@ -48,6 +48,7 @@ Work in your POGIL team with your rotated roles (**Manager**, **Recorder**, **Pr
 | Part I: The Shift-Reduce Idea | Read the bottom-up trace of `2 + 3`, follow the worked construction of the ACTION/GOTO table, then drive the machine in Model 3 and answer CTQs 3.1-3.4 |
 | Part II: Conflicts and Choices | Diagnose the dangling-else conflict, and fill the technology matrix in Model 4 |
 | Part III: From the Table to Flex and Bison | Read the small grammar below, build it, and find one reduction's action in it |
+| Part IV: Canonical LR(1), Built in Full | Follow the worked construction (FIRST, closure, every GOTO, the table) in Model 8, read the pseudocode in Model 9, and see what LALR merges in Model 10, answering CTQs 8.1-10.4 |
 
 ---
 
@@ -571,7 +572,331 @@ The [Flex and Bison tutorial](https://www.billmongan.com/Ursinus-CS374-Fall2026/
 
 ---
 
-**In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the Parser assignment, whose LR(1) construction builds directly on Parts I and II.
+# Part IV: Canonical LR(1), Built in Full
+
+Part I built an SLR table: every reduce went on every token in FOLLOW.  The Parser assignment builds **canonical LR(1)** tables, where each item carries its own lookahead, and it grades the construction itself: FIRST by fixed point, closure with lookaheads, GOTO, the states in a fixed order, and a table with no conflicts.  This part works that construction from start to finish on the four-production grammar from *From FOLLOW to Lookaheads*, writes each algorithm as pseudocode, and then looks at the LALR tables that Bison actually builds.
+
+```text
+0  S' -> S
+1  S  -> X y x
+2  X  -> x X
+3  X  -> y
+```
+
+## Model 8: The Construction, Worked in Full
+
+### Step 1: FIRST, by fixed point
+
+`FIRST(A)` is the set of tokens that can begin something derived from `A`.  No production here is empty, so only the first symbol of each right-hand side matters.  Start every set empty and sweep the productions in order, adding the first symbol (if it is a token) or the FIRST set of that symbol (if it is a non-terminal), until a whole sweep changes nothing.
+
+| Sweep | `S' -> S` | `S -> X y x` | `X -> x X` | `X -> y` | Changed? |
+|---|---|---|---|---|---|
+| 1 | FIRST(S) is empty, so nothing | FIRST(X) is empty, so nothing | add `x` to FIRST(X) | add `y` to FIRST(X) | yes |
+| 2 | FIRST(S) is still empty | add FIRST(X) = `{x, y}` to FIRST(S) | nothing new | nothing new | yes |
+| 3 | add FIRST(S) = `{x, y}` to FIRST(S') | nothing new | nothing new | nothing new | yes |
+| 4 | nothing new | nothing new | nothing new | nothing new | no: stop |
+
+So `FIRST(X) = FIRST(S) = FIRST(S') = {x, y}`.  Information flowed backwards one production per sweep, which is why one sweep is never enough in general.
+
+### Step 2: the closure of the start state, with lookaheads
+
+An LR(1) item `[A -> w . B z, a]` says: "I am inside `A -> w B z`, I have seen `w`, and once the whole production is done, `a` comes next."  The closure rule adds, for every production `B -> r`, the item `[B -> . r, b]` for each token `b` in `FIRST(z a)`: whatever can start `z`, or `a` itself when `z` is empty.
+
+| Added because | Item |
+|---|---|
+| we start here | `[S' -> . S, $]` |
+| dot before `S`; nothing follows `S`, so the lookahead stays `$` | `[S -> . X y x, $]` |
+| dot before `X`; `y x` follows, and `FIRST(y x) = {y}` | `[X -> . x X, y]` |
+| the same, for the other `X` production | `[X -> . y, y]` |
+
+No item has its dot before a non-terminal that has not been closed, so state `I0` is these four items.  Notice that the `X` items get lookahead `y`, not `$`: an `X` at the start of the input is always followed by the `y` of `S -> X y x`.
+
+### Step 3: every GOTO
+
+`GOTO(I, s)` moves the dot past `s` in every item of `I` that has the dot before `s`, keeps each lookahead, drops every other item, and closes the result.  Try the symbols in the order `S, X, x, y`, and number each new state the first time it appears, exploring the states in the order they were numbered.
+
+| From | On | Items after moving the dot | Added by closure | Result |
+|---|---|---|---|---|
+| `I0` | `S` | `[S' -> S ., $]` | nothing | new state `I1` |
+| `I0` | `X` | `[S -> X . y x, $]` | nothing (the dot is before a token) | new state `I2` |
+| `I0` | `x` | `[X -> x . X, y]` | `[X -> . x X, y]`, `[X -> . y, y]` (nothing follows `X`, so the lookahead `y` is kept) | new state `I3` |
+| `I0` | `y` | `[X -> y ., y]` | nothing | new state `I4` |
+| `I1` | any | no item can move | | no edge |
+| `I2` | `y` | `[S -> X y . x, $]` | nothing | new state `I5` |
+| `I3` | `X` | `[X -> x X ., y]` | nothing | new state `I6` |
+| `I3` | `x` | `[X -> x . X, y]` | the same two items as before | the same set as `I3`, so the edge loops back to `I3` |
+| `I3` | `y` | `[X -> y ., y]` | nothing | the same set as `I4` |
+| `I4` | any | no item can move | | no edge |
+| `I5` | `x` | `[S -> X y x ., $]` | nothing | new state `I7` |
+| `I6`, `I7` | any | no item can move | | no edge |
+
+Eight states and nine edges.  The whole collection:
+
+| State | Items |
+|---|---|
+| `I0` | `[S' -> . S, $]`  `[S -> . X y x, $]`  `[X -> . x X, y]`  `[X -> . y, y]` |
+| `I1` | `[S' -> S ., $]` |
+| `I2` | `[S -> X . y x, $]` |
+| `I3` | `[X -> x . X, y]`  `[X -> . x X, y]`  `[X -> . y, y]` |
+| `I4` | `[X -> y ., y]` |
+| `I5` | `[S -> X y . x, $]` |
+| `I6` | `[X -> x X ., y]` |
+| `I7` | `[S -> X y x ., $]` |
+
+### Step 4: read ACTION and GOTO off the states
+
+For every item in state `i`: a dot before a token `t` means *shift* `t` and go where the edge on `t` leads; a completed item `[A -> w ., a]` means *reduce by that production, on `a` only*; and `[S' -> S ., $]` means *accept*.  Each edge on a non-terminal is a GOTO entry.
+
+| State | `x` | `y` | `$` | GOTO `S` | GOTO `X` |
+|---|---|---|---|---|---|
+| 0 | s3 | s4 | | 1 | 2 |
+| 1 | | | acc | | |
+| 2 | | s5 | | | |
+| 3 | s3 | s4 | | | 6 |
+| 4 | | r3 | | | |
+| 5 | s7 | | | | |
+| 6 | | r2 | | | |
+| 7 | | | r1 | | |
+
+This is the table the cell in *From FOLLOW to Lookaheads* typed in as `SHIFTS`, `GOTO` and `LR1`, now derived instead of transcribed.  Every cell holds at most one action, so the grammar is LR(1).
+
+### Watch the states while the table runs
+
+The driver below is the same one as before.  This time it also prints the items of the state on top of the stack, so you can see which item each action came from.
+
+<!-- run: id=cs374-liascript-parsing2-lr1-states viz=env -->
+```python
+PROD = {1: ("S", ["X", "y", "x"]), 2: ("X", ["x", "X"]), 3: ("X", ["y"])}
+ITEMS = {
+    0: "[S' -> . S, $]  [S -> . X y x, $]  [X -> . x X, y]  [X -> . y, y]",
+    1: "[S' -> S ., $]",
+    2: "[S -> X . y x, $]",
+    3: "[X -> x . X, y]  [X -> . x X, y]  [X -> . y, y]",
+    4: "[X -> y ., y]",
+    5: "[S -> X y . x, $]",
+    6: "[X -> x X ., y]",
+    7: "[S -> X y x ., $]",
+}
+ACTION = {
+    (0, "x"): "s3", (0, "y"): "s4", (1, "$"): "acc", (2, "y"): "s5",
+    (3, "x"): "s3", (3, "y"): "s4", (4, "y"): "r3", (5, "x"): "s7",
+    (6, "y"): "r2", (7, "$"): "r1",
+}
+GOTO = {(0, "S"): 1, (0, "X"): 2, (3, "X"): 6}
+
+def parse(text):
+    tokens = list(text) + ["$"]
+    stack, pos = [0], 0
+    while True:
+        state, tok = stack[-1], tokens[pos]
+        act = ACTION.get((state, tok))
+        print(f"state {state}: {ITEMS[state]}")
+        print(f"    next {tok}  ->  {act or 'ERROR: no item expects ' + tok}")
+        if act is None:
+            return False
+        if act == "acc":
+            return True
+        if act[0] == "s":
+            stack += [tok, int(act[1:])]
+            pos += 1
+        else:
+            lhs, rhs = PROD[int(act[1:])]
+            del stack[-2 * len(rhs):]
+            stack += [lhs, GOTO[(stack[-1], lhs)]]
+
+for text in ["xxyyx", "xyx"]:
+    print(f"=== {text} ===")
+    print("accepted" if parse(text) else "rejected")
+    print()
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-parsing2-lr1-states) <!-- code-viz link -->
+
+### Critical Thinking Questions
+
+**CTQ 8.1** In `I0`, why do `[X -> . x X]` and `[X -> . y]` get the lookahead `y` and not `$`?  Point to the item and the part of it that decided.
+
+**CTQ 8.2** `GOTO(I3, x)` is `I3` again.  What about the items makes the edge loop, and which inputs make the parser go around that loop more than once?
+
+**CTQ 8.3** State 4 reduces `X -> y` only on `y`.  In the `xyx` run, where does the parser stop, and what would an SLR row 4 (reduce on every token) have done there instead?
+
+**CTQ 8.4** This grammar has the same eight states with or without lookaheads.  Why did no core split into two LR(1) states here?  (The LR tutorial's `S -> C C` grammar does split: seven states without lookaheads, ten with them.  What is different about where its `C` can appear?)
+
+---
+
+## Model 9: The Algorithms, as Pseudocode
+
+These are the five procedures behind Model 8.  The Parser assignment asks you to turn each into Python for its calculator grammar, so the Python is yours to write; the pseudocode says exactly what each one must do.  An item is a triple `(production, dot, lookahead)`, and a state is a set of items, frozen so that it can be a dictionary key.
+
+**FIRST, by fixed point.**  No production in our grammars is empty; a grammar with empty productions also tracks which non-terminals can vanish, and keeps reading past them.
+
+```text
+first_sets():
+    first[A] = { } for every non-terminal A
+    repeat:
+        changed = false
+        for each production A -> X ...:
+            add = { X } if X is a token, else first[X]
+            if add has anything not already in first[A]:
+                first[A] = first[A] + add
+                changed = true
+    until changed is false
+    return first
+```
+
+**The lookaheads of a new item.**  For `[A -> w . B z, a]`, the tokens that can follow `B` are `FIRST(z a)`:
+
+```text
+lookaheads(z, a):
+    if z is empty:                  return { a }
+    if z starts with a token t:     return { t }
+    otherwise:                      return first[z[0]]
+```
+
+**CLOSURE, with lookaheads.**  This is a fixed point too.  Adding an item can put a dot before a new non-terminal, or give a non-terminal a lookahead it did not have, so loop until a pass adds nothing.  Collect into `new` rather than changing the set you are walking.
+
+```text
+closure(items):
+    result = items
+    repeat:
+        new = { }
+        for each item (p, dot, a) in result:
+            if the symbol after the dot in production p is a non-terminal B:
+                z = the symbols after B in production p
+                for each b in lookaheads(z, a):
+                    for each production q whose left side is B:
+                        add (q, 0, b) to new
+        if every item in new is already in result: return result
+        result = result + new
+```
+
+**GOTO.**  Lookaheads ride along unchanged; only closure creates new ones.
+
+```text
+goto(state, s):
+    moved = { (p, dot + 1, a) for each (p, dot, a) in state
+              where the symbol after the dot in production p is s }
+    if moved is empty: return no state
+    return closure(moved)
+```
+
+**The canonical collection.**  A first-in, first-out worklist and a fixed symbol order make the numbering the same for everyone, which is how a grader can ask for "state 4".
+
+```text
+build_states(symbols):
+    states = [ closure({ (0, 0, $) }) ]
+    number = { states[0]: 0 }
+    worklist = [ 0 ]
+    while worklist is not empty:
+        i = remove the FRONT of worklist
+        for each s in symbols, in order:
+            g = goto(states[i], s)
+            if there is no g: skip s
+            if g is not in number:
+                number[g] = the length of states
+                append g to states
+                append number[g] to the BACK of worklist
+            transitions[(i, s)] = number[g]
+    return states, transitions
+```
+
+**Table filling, with conflict detection.**  Never overwrite a cell.  A second, different action in the same cell is a conflict, and a builder that overwrites hides an ambiguous grammar from you.
+
+```text
+build_tables(states, transitions):
+    for each state i, and each item (p, dot, a) in states[i]:
+        if the symbol after the dot is a token t:   put (i, t, shift transitions[(i, t)])
+        else if the dot is at the end and p is 0:  put (i, $, accept)
+        else if the dot is at the end:             put (i, a, reduce p)
+    for each (i, s) -> j in transitions where s is a non-terminal:
+        goto_table[i][s] = j
+
+put(i, t, act):
+    if action[i][t] is empty:        action[i][t] = act
+    else if action[i][t] is not act: record the conflict (i, t, action[i][t], act)
+```
+
+### Critical Thinking Questions
+
+**CTQ 9.1** In the calculator grammar (`E -> E + T | E - T | T`, ...), closing `[S' -> . E, $]` needs more than one pass even though no new non-terminal appears in the second pass.  What does the second pass add, and which item causes it?
+
+**CTQ 9.2** Why must `build_states` take states from the *front* of the worklist and try symbols in a fixed order?  What would still be correct, and what would change, if two students used different orders?
+
+**CTQ 9.3** The table builder puts a reduce on the item's lookahead `a`.  An SLR builder puts it on every token in `FOLLOW(A)`.  Which pseudocode line would change, and why can the LR(1) version never put more reduces in a row than the SLR one?
+
+**CTQ 9.4** How many times does `build_states` call `goto` for a grammar with `n` states and `k` symbols?  For the Parser assignment's grammar (30 states, 10 symbols), estimate it, and say which of the five procedures does most of the work.
+
+---
+
+## Model 10: LALR(1), and What Bison Builds
+
+Two LR(1) states have the same **core** when they hold the same items once you ignore the lookaheads.  Canonical LR(1) keeps them apart, so a large grammar can have many more states than its LR(0) automaton.  **LALR(1)** merges every group of states with the same core into one, taking the union of the lookaheads.  The result has exactly as many states as the LR(0) automaton (the SLR state count), but keeps most of LR(1)'s precision, because each reduce still goes only on the lookaheads that really reached it, not on all of FOLLOW.
+
+| Grammar | LR(1) states | LALR(1) and SLR states |
+|---|---|---|
+| Model 8: `S -> X y x`, `X -> x X`, `X -> y` | 8 | 8 (no two states share a core) |
+| the Parser assignment's calculator | 30 | 16 |
+
+**Bison builds LALR(1) by default.**  That is why its tables stay small for real languages.  The `%define lr.type` declaration selects the other constructions: `ielr` (LALR-sized when that is safe) and `canonical-lr` (the construction in Model 8).
+
+**What merging can break.**  Merging never creates a new shift-reduce conflict, because the shift items in a state do not depend on lookaheads.  It can create a **reduce-reduce** conflict.  Here is a grammar that is LR(1) but not LALR(1):
+
+```text
+S -> a A d | b B d | a B e | b A e
+A -> c
+B -> c
+```
+
+After reading `a c`, the LR(1) state is `[A -> c ., d]  [B -> c ., e]`: reduce to `A` on `d`, to `B` on `e`, no conflict.  After `b c`, it is `[A -> c ., e]  [B -> c ., d]`, also no conflict.  The two states have the same core, so LALR merges them into `[A -> c ., d/e]  [B -> c ., d/e]`, and now both reductions want both `d` and `e`.  Bison 3.8.2 on that grammar, first with its default and then with `%define lr.type canonical-lr` at the top:
+
+```text
+lalr.y: warning: 2 reduce/reduce conflicts [-Wconflicts-rr]
+lalr.y:5.4: warning: rule useless in parser due to conflicts [-Wother]
+```
+
+With `canonical-lr`, Bison reports no conflicts at all.
+
+The cell below takes those two LR(1) states as data, merges states that share a core, and checks each merged state for two reductions on one token:
+
+<!-- run: id=cs374-liascript-parsing2-lalr-merge viz=env -->
+```python
+# Each item is (left side, right side, dot, lookahead).
+STATE_AFTER_A_C = {("A", "c", 1, "d"), ("B", "c", 1, "e")}
+STATE_AFTER_B_C = {("A", "c", 1, "e"), ("B", "c", 1, "d")}
+
+def core(state):
+    return frozenset((lhs, rhs, dot) for lhs, rhs, dot, _ in state)
+
+def reduce_conflicts(state):
+    wants = {}
+    for lhs, rhs, dot, look in state:
+        if dot == len(rhs.split()):
+            wants.setdefault(look, set()).add(f"{lhs} -> {rhs}")
+    return {look: sorted(r) for look, r in wants.items() if len(r) > 1}
+
+for name, st in [("after a c", STATE_AFTER_A_C), ("after b c", STATE_AFTER_B_C)]:
+    print(f"LR(1) state {name}: conflicts {reduce_conflicts(st) or 'none'}")
+
+print("same core?", core(STATE_AFTER_A_C) == core(STATE_AFTER_B_C))
+merged = STATE_AFTER_A_C | STATE_AFTER_B_C
+print("LALR(1) merged state: conflicts", reduce_conflicts(merged))
+```
+@LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-parsing2-lalr-merge) <!-- code-viz link -->
+
+### Critical Thinking Questions
+
+**CTQ 10.1** Why does merging two states with the same core never add a shift-reduce conflict, but can add a reduce-reduce conflict?  Use the items of the merged state above.
+
+**CTQ 10.2** The calculator grammar has 30 LR(1) states but 16 LALR(1) states.  Find one pair of LR(1) states that LALR would merge.  (Hint: follow `num` from the top level and from inside parentheses, as the Parser assignment's Step 1.5 does.)
+
+**CTQ 10.3** Run `bison -v` on `tiny.y` from Part III and count the states in `tiny.output`.  Is that the LR(0) count or a canonical LR(1) count, and how do you know without building both?
+
+**CTQ 10.4** Your team's language will be parsed by Bison.  When would you change `lr.type`, and what would you check in the `.output` file before and after?
+
+---
+
+**In-class work stops here.**  Everything below is homework and going-deeper material: attempt the exercises before the Parser assignment, whose LR(1) construction is Part IV, worked in full.
 
 ---
 
