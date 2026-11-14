@@ -31,3 +31,7 @@
 - [ ] Simplify the Overview assignment and streamline its software setup. Leave the Warmup syllabus survey assignment unchanged.
 
 - [ ] Refine the rubrics and the assignment steps: make each rubric row match what the assignment steps ask students to do, and make each step concrete enough to check.
+
+- [ ] Add an ungraded interview with each student (a short one-on-one conversation about their work and progress).
+
+- [ ] Add a grading component tied to on-time submissions.
