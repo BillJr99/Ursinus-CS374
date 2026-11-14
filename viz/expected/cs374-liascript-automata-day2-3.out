@@ -1,0 +1,14 @@
+=== contains 'aba' ===
+  'aba'     -> True
+  'bbabab'  -> True
+  'abba'    -> False
+  'aab'     -> False
+  ''        -> False
+
+=== watch the state set on 'bbaba' ===
+    start: {q0}
+    after 'b': {q0}
+    after 'b': {q0}
+    after 'a': {q0, q1}
+    after 'b': {q0, q2}
+    after 'a': {q0, q1, q3}

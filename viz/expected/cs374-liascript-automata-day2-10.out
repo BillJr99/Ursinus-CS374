@@ -1,0 +1,3 @@
+=== a*b (eliminate in order ['q0', 'q1']) ===
+  eliminate q0: s->q1 becomes a*b
+[automata:state_elimination] 

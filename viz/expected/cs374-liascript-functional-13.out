@@ -1,0 +1,7 @@
+  sumlist([1, 2, 3])        = 6
+  sumlist([4])              = 4
+  sumlist(list(range(101))) = 5050
+
+  oplist(add, [2, 4, 6])    = 12
+  oplist(mul, [2, 4, 6])    = 48
+  oplist(max, [2, 9, 6])    = 9

@@ -1,0 +1,12 @@
+=== (1 + 2) * 3 ===
+  prefix:  * + 1 2 3
+  infix:   ((1 + 2) * 3)
+  postfix: 1 2 + 3 *
+  value:   9.0  (OK)
+
+=== 1 + 2 * 3 ===
+  prefix:  + 1 * 2 3
+  infix:   (1 + (2 * 3))
+  postfix: 1 2 3 * +
+  value:   7.0  (OK)
+

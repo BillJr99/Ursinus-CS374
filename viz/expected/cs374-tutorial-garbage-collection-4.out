@@ -1,0 +1,10 @@
+Live before GC: 6 (includes 2 garbage objects)
+  [GC] starting mark-and-sweep (6 live objects)
+  [GC] swept 2 objects, 4 remain
+Live after GC: 4 (garbage collected)
+
+Cycle collection:
+Live with cycle: 6
+  [GC] starting mark-and-sweep (6 live objects)
+  [GC] swept 2 objects, 4 remain
+Live after GC: 4 (cycle collected!)

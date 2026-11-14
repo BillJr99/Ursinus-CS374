@@ -1,0 +1,3 @@
+ends-in-ab empty?      False
+dead-accept empty?     True
+accepts-epsilon empty? False

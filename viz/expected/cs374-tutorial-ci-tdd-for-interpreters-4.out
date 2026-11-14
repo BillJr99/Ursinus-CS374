@@ -1,0 +1,18 @@
+=== Strengths (no action, but do not disturb these) ===
+  Team B     Error messages name the line and column
+  Team D     The REPL keeps state between lines
+
+=== FIX (3) ===
+  Team B     Parser crashes on an unclosed string literal
+  Team C     SEMANTICS.md says lexical scope, the code does dynamic
+  Instructor No test covers the while loop
+
+=== DISCLOSE (1) ===
+  Team C     What happens when you divide by zero?
+
+=== FUTURE (1) ===
+  Team D     Can functions be passed as arguments yet?
+
+=== UNCLASSIFIED (0) ===
+
+  Backlog items to assign before anyone leaves: 3

@@ -100,6 +100,7 @@ Run this cell to check your answers to questions 9 through 12.
 
 This cell holds the canonical `Environment` class, the one complete build in this activity.  Every later cell repeats the class at the top so that each cell runs on its own.  Read it here once.  In later cells, look only at the code below the class.
 
+<!-- run: id=cs374-liascript-scope-chains-1 viz=env -->
 ```python
 class Environment:
     """A chain of scopes: each environment holds bindings and a parent link."""
@@ -162,6 +163,7 @@ except NameError as e:
     print("P2 c:", e)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-1) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -175,6 +177,7 @@ except NameError as e:
 
 Break the chain on purpose and watch which operation notices.
 
+<!-- run: id=cs374-liascript-scope-chains-2 viz=env -->
 ```python
 class Environment:
     def __init__(self, parent=None, name="?"):
@@ -228,6 +231,7 @@ print(f"  inner: {inner}")
 print(f"  glob : {glob}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-2) <!-- code-viz link -->
 
 Before you edit anything, the chain prints as `inner:{} -> global:{'total': 0}` at the start and again at the end.  Each TODO changes exactly one thing, so run the cell after each one rather than after all three.
 
@@ -266,6 +270,7 @@ The critical distinction: `define` writes to `self.vars` without checking ancest
 
 Run the cell below to see all four operations interact; no new methods are needed.  Before you run it, predict what each `print` will output.
 
+<!-- run: id=cs374-liascript-scope-chains-3 viz=env -->
 ```python
 # --- The canonical Environment class from Model 3 (repeated so this cell
 # --- runs on its own; each cell in this deck is self-contained).
@@ -334,6 +339,7 @@ print(f"outer2.lookup('x') = {outer2.lookup('x')}")   # 99, changed
 print(f"\nEnvironment chain: {inner}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-3) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -361,6 +367,7 @@ The interpreter changes are small.  `execute(Block(stmts), env)` creates `child 
 
 When a language gives every loop body its own fresh scope, a variable declared in one iteration is invisible to the next and gone after the loop.  The cell below simulates a `while` loop where each iteration pushes a child environment.  Again, nothing new goes into the class.
 
+<!-- run: id=cs374-liascript-scope-chains-4 viz=env -->
 ```python
 # --- The canonical Environment class from Model 3 (repeated so this cell
 # --- runs on its own; each cell in this deck is self-contained).
@@ -432,6 +439,7 @@ except NameError as e:
     print("After loop: t is gone --", e)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-4) <!-- code-viz link -->
 
 If the body used `define` for `n` instead of `assign`, you would recreate the bug in Model 8 (an extension at the end of this page): the outer `n` would never decrease, and the loop would never end.
 
@@ -445,6 +453,7 @@ If the body used `define` for `n` instead of `assign`, you would recreate the bu
 
 Decide the per-iteration question for your own language, and prove your answer with the environment rather than by asserting it.
 
+<!-- run: id=cs374-liascript-scope-chains-5 viz=env -->
 ```python
 class Environment:
     def __init__(self, parent=None, name="?"):
@@ -503,6 +512,7 @@ print(f"  remembered values: {run(False)}")
 #         really captures?
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-5) <!-- code-viz link -->
 
 Expected output: `[0, 1, 2]` and then `[2, 2, 2]`.  If you have seen `[2, 2, 2]` before, that is the point.  It is the same bug, one level down.
 
@@ -528,6 +538,7 @@ self.scope --> [ x: 10 ]          the block's scope
 
 Lookup checks the first dictionary, then follows the links outward, and stops at the first match.  We also need to tell a new variable from an update: `let x = 1;` defines `x` in the current scope, and `x = 1;` walks outward and updates the `x` it finds.  Entering a block pushes a new `Scope` onto the front of the list.  Leaving the block moves back to its parent.
 
+<!-- run: id=cs374-liascript-scope-chains-6 viz=env -->
 ```python
 import re
 
@@ -643,6 +654,7 @@ print x + y;
 """).parse()                                          # 30, then 21
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-6) <!-- code-viz link -->
 
 Here is what happens on that program:
 
@@ -701,6 +713,7 @@ A function defined inside another function keeps reading the variables of its bi
 
 ## 6.  A Function Outlives Its Scope
 
+<!-- run: id=cs374-liascript-scope-chains-7 viz=env -->
 ```python
 def make_adder(n):
     def adder(x):
@@ -719,6 +732,7 @@ print(f"add5's closure cells: {add5.__closure__[0].cell_contents}")
 print(f"add10's closure cells: {add10.__closure__[0].cell_contents}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-7) <!-- code-viz link -->
 
 By the lifetime rules of the environments module, `make_adder`'s local scope should die at `return` and take `n` with it.  Yet `add5` still finds `n = 5`.  The resolution is that **a function value is not just code; it is a closure**, a pair of `(code, defining_environment)`.  When Python created `adder`, it captured a reference to the environment where `n` was bound.  That environment survives because the closure still points to it.  Lifetime follows reachability: an environment stays alive as long as something, such as a closure, can still reach it.
 
@@ -744,6 +758,7 @@ A closure holds a live reference to a variable binding.  Any change to that vari
 
 ## Model 5: Closures Capture, Not Copy
 
+<!-- run: id=cs374-liascript-scope-chains-8 viz=env -->
 ```python
 # CRITICAL: closures capture the VARIABLE BINDING, not the value at capture time
 
@@ -780,6 +795,7 @@ rst()
 print(inc())                 # 1, both closures share the same count cell
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-8) <!-- code-viz link -->
 
 > **CTQ 5.4** `get_x()` returns 99 after `x = 99`.  What does this prove about whether closures copy or reference the captured binding?
 
@@ -797,6 +813,7 @@ These notes cover the Model 5 code.
 
 Find out, by experiment, exactly what Python keeps in a closure.
 
+<!-- run: id=cs374-liascript-scope-chains-9 viz=env -->
 ```python
 def make():
     secret = "original"
@@ -832,6 +849,7 @@ print(f"  peek captured: {dict(zip(names, cells))}")
 #         by the old poke. How many 'secret' variables exist now?
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-9) <!-- code-viz link -->
 
 Expected output: `'original'`, then `'changed'`, then a dict with exactly one entry.  The absence of `hidden` from that dict is the answer to TODO 1.
 
@@ -843,6 +861,7 @@ Expected output: `'original'`, then `'changed'`, then a dict with exactly one en
 
 Here is the Scheme from *From Calculator to Scheme* again.  Three things changed: `symbols` became a chain called `Env`, `evaluate` takes the environment it is working in, and `lambda` makes a `Closure`, which a call turns into a new scope.
 
+<!-- run: id=cs374-liascript-scope-chains-10 viz=env -->
 ```python
 def tokenize(text):
     return text.replace("(", " ( ").replace(")", " ) ").split()
@@ -941,6 +960,7 @@ x
 """)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-10) <!-- code-viz link -->
 
 Trace `(add3 4)`:
 
@@ -1079,6 +1099,7 @@ In Model 6, changing `base = fn.env` to `base = env` in the `Call` branch turns 
 
 The most common environment bug is quiet.  A student forgets that updating a loop counter needs `assign`, not `define`.  The code runs, but the outer counter never changes, so the loop runs forever (or returns wrong answers without complaint).  Nothing new goes into the class here.  Run the cell and watch the bug unfold.  With `assign` instead, the outer counter would reach 0 after three iterations; Model 6 shows that working version inside a real loop.
 
+<!-- run: id=cs374-liascript-scope-chains-11 viz=env -->
 ```python
 # --- The canonical Environment class from Model 3 (repeated so this cell
 # --- runs on its own; each cell in this deck is self-contained).
@@ -1138,6 +1159,7 @@ for i in range(1, 4):
 print(f"  outer counter at end = {glob2.lookup('counter')}")  # still 3!
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-11) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -1161,6 +1183,7 @@ Before you run the cell, trace line INNER by hand.  `lookup("x")` misses in `inn
 
 No new code is needed.  Your canonical `lookup` already carries the tracer (`trace=True`), and this model is where it earns its keep.  The cell below builds a three-level program and prints a full trace of every lookup at line INNER, showing which environment satisfied each one.  Extend it to trace lines MID and OUTER.
 
+<!-- run: id=cs374-liascript-scope-chains-12 viz=env -->
 ```python
 # --- The canonical Environment class from Model 3 (repeated so this cell
 # --- runs on its own; each cell in this deck is self-contained).
@@ -1242,6 +1265,7 @@ except NameError as e:
     print("  As expected:", e)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-12) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -1281,6 +1305,7 @@ Before you run the trace, predict the chain's contents after each of these momen
 
 The class itself contains nothing new; this model is pure rehearsal.  Run the trace and check each printed state against your prediction.
 
+<!-- run: id=cs374-liascript-scope-chains-13 viz=env -->
 ```python
 # --- The canonical Environment class from Model 3 (repeated so this cell
 # --- runs on its own; each cell in this deck is self-contained).
@@ -1364,6 +1389,7 @@ def trace_program():
 trace_program()
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-13) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -1421,6 +1447,7 @@ Now say which line of code you would change to move from one row to the other.  
 
 This is a complete evaluator for a language with first-class functions.  The `LEXICAL` flag at the top selects which environment a call body runs in, and the *same* program runs under both settings.
 
+<!-- run: id=cs374-liascript-scope-chains-14 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -1512,6 +1539,7 @@ for lexical in (True, False):
     print(f"  {label:20} -> {interp(program2, Env(), lexical)}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-14) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -1539,6 +1567,7 @@ Remember two things from this part.  `Fun` captures the defining environment and
 
 Add recursion, which is the one thing the model above cannot do.
 
+<!-- run: id=cs374-liascript-scope-chains-15 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -1621,6 +1650,7 @@ except NameError as err:
 #         Which does your language do, and why?
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-15) <!-- code-viz link -->
 
 Expected output as written: a `NameError` naming `fact`, with the explanation.  Once TODO 1 is in, `fact(5) = 120`.  Those two lines are why `letrec` exists at all.
 
@@ -1638,6 +1668,7 @@ The loop-variable trap is one of the most common beginner bugs in Python and Jav
 
 ## 13.  The Famous Python Bug
 
+<!-- run: id=cs374-liascript-scope-chains-16 viz=env -->
 ```python
 # The loop-variable trap, every Python programmer falls into this once
 fns = [lambda: i for i in range(3)]
@@ -1666,6 +1697,7 @@ print("Fix 2 (factory):", [f() for f in fns_fixed2])   # [0, 1, 2]
 # JavaScript's 'let' fixed this at the ecosystem scale (was 'var' before)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-16) <!-- code-viz link -->
 
 > **CTQ 10.1** All three lambdas captured the same `i` binding.  After the loop, what is `i`?  Why do all three lambdas return 2?
 
@@ -1689,6 +1721,7 @@ The code above showed the trap and two fixes.  The notes below explain the code,
 
 Predict, then check, which of these five loops has the trap.
 
+<!-- run: id=cs374-liascript-scope-chains-17 viz=env -->
 ```python
 def factory(v):
     return lambda: v
@@ -1718,6 +1751,7 @@ print("For each, say WHERE the per-iteration binding comes from,")
 print("or why there isn't one.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-17) <!-- code-viz link -->
 
 Expected output: `a` and `d` give `[2, 2, 2]`; `b`, `c`, and `e` give `[0, 1, 2]`.  If you predicted the comprehension and the for-loop would differ, note that they do not.  The comprehension's scope is not what saves you.
 
@@ -1757,6 +1791,7 @@ Here is the broken version's history as a timeline.  The trap is a *timing* bug:
 | iteration 2 | 2 | lam0, lam1, lam2 | all -> 2 |
 | after the loop (calls happen here) | 2 | all three | **all -> 2** |
 
+<!-- run: id=cs374-liascript-scope-chains-18 viz=env -->
 ```python
 # Evidence for the diagrams: inspect the closure cells directly
 broken = [lambda: i for i in range(3)]
@@ -1779,6 +1814,7 @@ print("\nfix1 results:", [f() for f in fix1])
 print("fix1 closures:", [f.__closure__ for f in fix1])   # [None, None, None]
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-18) <!-- code-viz link -->
 
 `fns = [lambda: i for i in range(3)]` yields functions that all return 2, and `fns[0].__closure__[0] is fns[1].__closure__[0]` prints `True`.  Together these show:
 
@@ -1820,6 +1856,7 @@ Objects and closures do the same job.  Both bundle state with behavior, and both
 
 A well-known saying in the field puts it this way: "Closures are a poor man's objects; objects are a poor man's closures."  Each can stand in for the other.  They are dual.
 
+<!-- run: id=cs374-liascript-scope-chains-19 viz=env -->
 ```python
 # Objects approach: counter using a class
 class Counter:
@@ -1857,6 +1894,7 @@ print(f"Closure counter: {clo_counter['value']()}")
 # They are structurally dual.
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scope-chains-19) <!-- code-viz link -->
 
 > **CTQ 11.1** In the closure-based counter, `count` is a shared mutable cell.  In the object-based counter, `self._count` is a field.  What is the structural difference?  What is the conceptual difference?
 

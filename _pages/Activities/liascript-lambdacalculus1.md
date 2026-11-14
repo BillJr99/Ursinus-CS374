@@ -150,11 +150,13 @@ $$
 
 Step by step:
 
+<!-- run: id=cs374-liascript-lambdacalculus1-6 viz=lambda lang=lambda -->
 ```
 (λx.x) z
 ->β  [x := z] x      # substitute z for every free x in the body
 ->β  z               # the body was just x, now replaced by z
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus1-6) <!-- code-viz link -->
 
 Result: `z`.  The identity function returns its argument unchanged.
 
@@ -168,6 +170,7 @@ $$
 
 Step by step.  Application is left-associative, so this is $(((\lambda x. \lambda y. x)\; A)\; B)$:
 
+<!-- run: id=cs374-liascript-lambdacalculus1-7 viz=lambda lang=lambda -->
 ```
 (λx.λy.x) A B
 ->β  [x := A] (λy.x)   B    # substitute A for x in body (λy.x)
@@ -175,6 +178,7 @@ Step by step.  Application is left-associative, so this is $(((\lambda x. \lambd
 ->β  [y := B] A             # substitute B for y in body A
 ->β  A                      # y never appeared in body, so B is discarded
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus1-7) <!-- code-viz link -->
 
 Result: `A`.  This function selects its first argument and ignores its second.
 
@@ -196,6 +200,7 @@ $$
 
 Step by step:
 
+<!-- run: id=cs374-liascript-lambdacalculus1-8 viz=lambda lang=lambda -->
 ```
 (λf.λx. f(f x)) g a
 ->β  [f := g] (λx. f(f x))   a   # substitute g for f in body
@@ -203,6 +208,7 @@ Step by step:
 ->β  [x := a] g(g x)             # substitute a for x in body
 ->β  g(g a)                      # x replaced by a in both places
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus1-8) <!-- code-viz link -->
 
 Result: `g(g a)`.  This applies `g` twice to `a`, exactly what `twice(g)(a)` does in Python.
 
@@ -241,21 +247,25 @@ The result correctly returns the free $y$, whatever it refers to outside.  Captu
 
 **Wrong (capture):**
 
+<!-- run: id=cs374-liascript-lambdacalculus1-9 viz=lambda lang=lambda -->
 ```
 (λx.λy.x) y
 ->β  [x := y] (λy.x)    # naively substitute y for x
 ->β  λy.y               # WRONG: the free y is now captured by λy!
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus1-9) <!-- code-viz link -->
 This result says "a function that ignores its argument and returns ... its argument."  That is the identity function, not the constant function.  We changed the meaning.
 
 Right (alpha-rename first):
 
+<!-- run: id=cs374-liascript-lambdacalculus1-10 viz=lambda lang=lambda -->
 ```
 (λx.λy.x) y
 =α  (λx.λz.x) y        # rename bound y to fresh z (safe because z is not free in argument)
 ->β  [x := y] (λz.x)    # now substitute y for x
 ->β  λz.y               # correct: a function that ignores z and returns the free y
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus1-10) <!-- code-viz link -->
 
 The reduction $(\lambda x. \lambda y.\, x\, y)\; y \rightarrow \lambda y.\, y\, y$ is wrong because:
 
@@ -274,6 +284,7 @@ The reduction $(\lambda x. \lambda y.\, x\, y)\; y \rightarrow \lambda y.\, y\, 
 
 The tracer below handles a small subset of the lambda calculus (small examples need no full substitution engine) and prints each beta-reduction step.  Study the output to see exactly what the substitution rule does.
 
+<!-- run: id=cs374-liascript-lambdacalculus1-1 viz=env -->
 ```python
 # A Python-based beta-reduction step tracer for the lambda calculus.
 # Expressions are represented as Python tuples:
@@ -398,6 +409,7 @@ print("Free vars in (λx. x y):", free_vars(lam('x', app(var('x'), var('y')))))
 print("Free vars in (λx.λy. x):", free_vars(lam('x', lam('y', var('x')))))
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus1-1) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -410,6 +422,7 @@ print("Free vars in (λx.λy. x):", free_vars(lam('x', lam('y', var('x')))))
 
 Make variable capture happen, then watch renaming prevent it.
 
+<!-- run: id=cs374-liascript-lambdacalculus1-2 viz=env -->
 ```python
 def free_vars(e):
     tag = e[0]
@@ -476,6 +489,7 @@ print("  free vars with renaming:    " + str(sorted(free_vars(good))))
 #         both to a canonical form as you walk.
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus1-2) <!-- code-viz link -->
 
 Expected output: without renaming you get a term whose free-variable set is empty; with renaming, `y` is still free.  A substitution that changes which variables are free has changed the meaning.  Alpha renaming exists to prevent exactly that.
 
@@ -496,6 +510,7 @@ Expected output: without renaming you get a term whose free-variable set is empt
 
 Build any lambda expression from the `Var`, `Lam`, and `App` building blocks, then watch each substitution step.  Build the expression you want, call `normalize(...)`, and compare the output with your whiteboard work.
 
+<!-- run: id=cs374-liascript-lambdacalculus1-3 viz=env -->
 ```python
 # A simple substitution-based reducer for lambda calculus
 # Represents: Var(name), Lam(param, body), App(fun, arg)
@@ -574,6 +589,7 @@ print("\nApply-twice: (λf.λx.f(f x)) g a")
 normalize(App(App(Lam("f", Lam("x", App(Var("f"), App(Var("f"), Var("x"))))), Var("g")), Var("a")))
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus1-3) <!-- code-viz link -->
 
 ---
 
@@ -583,6 +599,7 @@ normalize(App(App(Lam("f", Lam("x", App(Var("f"), App(Var("f"), Var("x"))))), Va
 
 Two lambda expressions are alpha-equivalent ($=_\alpha$) when you can turn one into the other by consistently renaming bound variables.  They mean the same thing; only the choice of parameter names differs.
 
+<!-- run: id=cs374-liascript-lambdacalculus1-4 viz=env -->
 ```python
 # Alpha-equivalence checker using de Bruijn indices.
 # Replace each bound variable with the numeric "distance" to its binder.
@@ -672,6 +689,7 @@ print(" ", to_debruijn(lam('a', lam('b', var('a')))))
 print("They match -> alpha-equivalent.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus1-4) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -688,6 +706,7 @@ print("They match -> alpha-equivalent.")
 
 Weak Head Normal Form (WHNF) is a partial normal form used by lazy languages such as Haskell.  An expression is in WHNF when its outermost form is not a redex, even if sub-expressions remain unreduced.  Full normal form is stricter: no redexes remain anywhere.
 
+<!-- run: id=cs374-liascript-lambdacalculus1-5 viz=env -->
 ```python
 # Demonstrate free/bound variable analysis and WHNF detection.
 
@@ -769,6 +788,7 @@ print("  Lazy evaluation (Haskell) only reduces to WHNF: avoids evaluating")
 print("  unreachable subexpressions, enabling infinite data structures.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus1-5) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 

@@ -1,0 +1,1 @@
+Haskell expression: (let x = 3 in ((x * 2) + 1))

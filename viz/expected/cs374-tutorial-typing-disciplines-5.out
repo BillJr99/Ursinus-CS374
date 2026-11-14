@@ -1,0 +1,2 @@
+{'items': typing.List[str], 'count': <class 'int'>, 'return': <class 'bool'>}
+['a', 'b', 99]

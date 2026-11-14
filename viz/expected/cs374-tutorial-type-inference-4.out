@@ -1,0 +1,7 @@
+let x = 42 -> Nil
+1 + 2 -> Int
+λx. x+1 -> (Int -> Int)
+(λx. x)(5) -> Int
+if true then 1 else 2 -> Int
+type error (expected): cannot unify Int with Bool
+type error (expected): cannot unify Bool with Int

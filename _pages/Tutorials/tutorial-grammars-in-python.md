@@ -51,6 +51,7 @@ E
 
 The `*` sub-expression is deeper in the derivation (and in the tree), which means it is evaluated first; that is **how layered grammars encode precedence**.
 
+<!-- run: id=cs374-tutorial-grammars-in-python-1 viz=env -->
 ```python
 # Model 3: CFG as a Python dict + membership checker
 # Grammar: arithmetic over single-digit numbers with + and *
@@ -105,6 +106,7 @@ tests = ["2+3", "2*3", "1+2*3", "2++3", "2+", "+2", "9*8*7"]
 for s in tests:
     print(f"  {s!r:12} in L(G)? {derivable(s, GRAMMAR)}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-grammars-in-python-1) <!-- code-viz link -->
 
 The prune is worth a second look, because it is a fact about leftmost derivation and not merely an optimization.  Once the leftmost nonterminal sits at position `k`, every terminal before it is final: no later step can reach to its left, so that settled prefix is committed and must already match the target or the branch is dead.  The terminals *after* position `k` carry no such guarantee, because nonterminals still standing to their left will expand and push more symbols in front of them.  Pruning on all of a form's terminals rather than on the settled prefix therefore throws away valid derivations, and with a left-recursive rule like `E -> E + T`, whose first expansion is `E + T`, it throws away every one of them.
 
@@ -149,6 +151,7 @@ Right-recursive generates:
 
 Same strings, same left-to-right order, but the right-recursive version never calls itself as its very first action, so recursive descent can handle it.
 
+<!-- run: id=cs374-tutorial-grammars-in-python-2 viz=env -->
 ```python
 # Model 4: Detecting direct left recursion in a grammar dict
 
@@ -198,6 +201,7 @@ report("Left-recursive arithmetic", grammar_lr)
 report("Right-recursive (LL) arithmetic", grammar_rr)
 report("Balanced parentheses", grammar_bp)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-grammars-in-python-2) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -257,6 +261,7 @@ This tree computes `2 + 3` first, then multiplies by `4`.  Result: 20.  Same str
 
 **Two different parse trees prove ambiguity.**  A grammar is **ambiguous** if any string in its language has two or more distinct parse trees.  Ambiguity is not just an aesthetic problem: it means the grammar gives two different computation orders for the same expression.  Every parser you write must work from an *unambiguous* grammar; the layered `E/T/F` structure is the standard fix.
 
+<!-- run: id=cs374-tutorial-grammars-in-python-3 viz=env -->
 ```python
 # Model 5: Parse trees as nested dicts + pretty printer
 
@@ -328,6 +333,7 @@ right_tree = tree("-", leaf(7), tree("-", leaf(2), leaf(1)))
 print(f"Left-assoc  (7-2)-1 = {evaluate(left_tree)}")   # 2
 print(f"Right-assoc 7-(2-1) = {evaluate(right_tree)}")  # 6
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-grammars-in-python-3) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -361,6 +367,7 @@ The three models below were previously embedded in the *Derivations, Parse Trees
 
 A leftmost derivation always expands the leftmost nonterminal at each step; a rightmost derivation always expands the rightmost one.  Watching them side by side makes it concrete that **both derivations produce the same parse tree** even though the step sequences differ.
 
+<!-- run: id=cs374-tutorial-grammars-in-python-4 viz=env -->
 ```python
 # Model 4: Leftmost and rightmost derivation tracer for simple CFGs
 
@@ -420,6 +427,7 @@ for label in ("Leftmost", "Rightmost"):
         print(f"  {'   ' if i == 0 else '=> '}{' '.join(form)}")
     print(f"  {len(steps) - 1} steps, final string: {' '.join(steps[-1])}\n")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-grammars-in-python-4) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -436,6 +444,7 @@ for label in ("Leftmost", "Rightmost"):
 
 An ambiguous grammar lets the same string be derived via two *different* leftmost derivations, which means two different parse trees.  The detector below generates all parse trees up to a size bound for a naive expression grammar and reports strings that have more than one tree.
 
+<!-- run: id=cs374-tutorial-grammars-in-python-5 viz=env -->
 ```python
 # Model 5: Find two distinct parse trees for a + b + c under an ambiguous grammar
 # Grammar: E -> E + E | id
@@ -508,6 +517,7 @@ if len(found) >= 2:
 else:
     print("Only one tree found (grammar may be unambiguous for this input).")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-grammars-in-python-5) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -524,6 +534,7 @@ else:
 
 The standard cure for expression ambiguity is to stratify the grammar: one nonterminal per precedence level, left recursion on the left for left-associativity.  The model below builds parse trees under both the ambiguous and the unambiguous grammar for the same string and shows they differ in shape.
 
+<!-- run: id=cs374-tutorial-grammars-in-python-6 viz=env -->
 ```python
 # Model 6: Compare trees from ambiguous vs. unambiguous (layered) grammar
 
@@ -589,6 +600,7 @@ right_assoc = node("-", leaf(5), node("-", leaf(2), leaf(1)))
 print(f"Left-assoc  (5-2)-1 = {evaluate(left_assoc)}")   # 2  (correct)
 print(f"Right-assoc 5-(2-1) = {evaluate(right_assoc)}")  # 4  (wrong for subtraction)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-grammars-in-python-6) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -615,6 +627,7 @@ term   -> factor { ("*" | "/") factor }
 factor -> NUMBER | "(" expr ")"
 ```
 
+<!-- run: id=cs374-tutorial-grammars-in-python-7 viz=env -->
 ```python
 # Grammar as a Python dict: each key is a nonterminal, each value is
 # a list of alternatives. Each alternative is a list of symbols.
@@ -678,6 +691,7 @@ for tokens, expected, label in test_cases:
     status = "OK" if result == expected else "FAIL"
     print(f"{label:<35} {str(expected):>6}  {str(result):>6}  {status:>4}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-grammars-in-python-7) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 

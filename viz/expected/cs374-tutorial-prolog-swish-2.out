@@ -1,0 +1,10 @@
+?- append([1,2], [3], Xs).       % concatenate:  Xs = [1,2,3].
+ERROR: -g forall((append([1,2], [3], Xs).       % concatenate:  Xs = [1,2,3]), (print_message(informational, format('~w', [ok])), writeln(yes))) -> true ; writeln(no): Syntax error: Operator expected
+ERROR: forall((append([1,2], [3], Xs
+ERROR: ** here **
+ERROR: ). 
+?- append(Xs, Ys, [1,2,3]).      % split every way:.
+ERROR: -g forall((append(Xs, Ys, [1,2,3]).      % split every way:), (print_message(informational, format('~w', [ok])), writeln(yes))) -> true ; writeln(no): Syntax error: Operator expected
+ERROR: forall((append(Xs, Ys, [1,2,3]
+ERROR: ** here **
+ERROR: ). 

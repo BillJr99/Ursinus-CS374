@@ -1,0 +1,33 @@
+
+'let x = 1;'   (the baseline: should scan cleanly)
+    line 1 col  1  KEYWORD   'let'
+    line 1 col  5  IDENT     'x'
+    line 1 col  7  EQ        '='
+    line 1 col  9  INT       '1'
+    line 1 col 10  SEMICOLON ';'
+
+'let s = "hi there";'   (needs STRING; without it, watch it shatter)
+    line 1 col  1  KEYWORD   'let'
+    line 1 col  5  IDENT     's'
+    line 1 col  7  EQ        '='
+    line 1 col  9  ERROR     '"'   <-- ERROR
+    line 1 col 10  IDENT     'hi'
+    line 1 col 13  IDENT     'there'
+    line 1 col 18  ERROR     '"'   <-- ERROR
+    line 1 col 19  SEMICOLON ';'
+
+'if x != 1 print x;'   (!= must stay one token)
+    line 1 col  1  KEYWORD   'if'
+    line 1 col  4  IDENT     'x'
+    line 1 col  6  NE        '!='
+    line 1 col  9  INT       '1'
+    line 1 col 11  KEYWORD   'print'
+    line 1 col 17  IDENT     'x'
+    line 1 col 18  SEMICOLON ';'
+
+'let n = 3.14;'   (a float is ONE number token)
+    line 1 col  1  KEYWORD   'let'
+    line 1 col  5  IDENT     'n'
+    line 1 col  7  EQ        '='
+    line 1 col  9  FLOAT     '3.14'
+    line 1 col 13  SEMICOLON ';'

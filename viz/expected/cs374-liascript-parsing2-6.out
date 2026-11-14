@@ -1,0 +1,62 @@
+=== Dangling Else Grammar (ambiguous) ===
+Productions:
+  [0] S -> if E then S
+  [1] S -> if E then S else S
+  [2] S -> other
+  [3] E -> cond
+
+Configuration demonstrating the conflict:
+  Stack: ... if E then S
+  Input: else ...
+
+  Option 1: REDUCE using [S -> if E then S]
+            => The 'else' will attach to an outer 'if' (if one exists)
+
+  Option 2: SHIFT 'else'
+            => The 'else' will attach to the INNER 'if' (nearest-if rule)
+
+  Convention: shift wins (YACC/Bison default) = nearest 'if' binding.
+  This is the RIGHT behavior for most languages but requires a CHOICE,
+  meaning the grammar is AMBIGUOUS.
+
+=== Reduce-Reduce Conflict Grammar ===
+Productions:
+  [0] S -> A c
+  [1] S -> B c
+  [2] A -> a b
+  [3] B -> a b
+
+Configuration demonstrating the conflict:
+  Stack: ... a b
+  Input: c ...
+
+  Option 1: REDUCE using [A -> a b]
+  Option 2: REDUCE using [B -> a b]
+
+  The parser cannot distinguish A from B using only 'a b' on the stack!
+  This grammar is ambiguous; A and B are indistinguishable.
+  Fix: merge A and B into a single nonterminal, or change their RHS.
+
+=== Precedence as Conflict Resolution ===
+
+Grammar:  E -> E + E | E * E | num   (ambiguous)
+
+Config 1:  Stack: E + E   Input: + ...
+  Conflict: reduce [E -> E + E]  OR  shift '+'
+  Resolution via precedence: both '+' have equal precedence, LEFT assoc
+  => REDUCE (left associativity: 1+2+3 = (1+2)+3)
+
+Config 2:  Stack: E + E   Input: * ...
+  Conflict: reduce [E -> E + E]  OR  shift '*'
+  Resolution via precedence: '*' has higher precedence than '+'
+  => SHIFT (let '*' bind more tightly: 1+2*3 = 1+(2*3))
+
+Declared precedence rules in yacc/bison translate directly into
+conflict-resolution entries in the parse table, replacing ambiguity
+with a documented, predictable choice.
+
+=== Summary of Conflict Types ===
+Type               Cause                                    Example                        Fix
+------------------------------------------------------------------------------------------------------------------------
+Shift-Reduce       Can extend OR close the current phrase   Dangling else, operator precedence Declare precedence/associativity, or restructure grammar
+Reduce-Reduce      Two completed productions match the stack top Indistinguishable nonterminals, over-general grammar Merge nonterminals, add distinguishing tokens, use LR(1)

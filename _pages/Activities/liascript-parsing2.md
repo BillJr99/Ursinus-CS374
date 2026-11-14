@@ -198,6 +198,7 @@ This grammar keeps the same eight states.  Only the reduce rows change:
 
 Every cell that emptied was a place the parser used to keep going on bad input.  Run both tables on `xyx`, which is not in the language:
 
+<!-- run: id=cs374-liascript-parsing2-1 viz=env -->
 ```python
 PROD = {1: ("S", ["X", "y", "x"]), 2: ("X", ["x", "X"]), 3: ("X", ["y"])}
 SHIFTS = {
@@ -243,6 +244,7 @@ print("\n=== xyx, without lookaheads ===")
 print(parse("xyx", LR0))
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-parsing2-1) <!-- code-viz link -->
 
 > **You should see.**  Both tables reject `xyx`.  With lookaheads, the parser stops at the first `x` it cannot use, and without them it makes two more reductions first.
 
@@ -270,6 +272,7 @@ The example above walked through `2 + 3` step by step.  Now your team will execu
 
 The table above is data.  Below it is wired to a driver of about twenty lines, so you can check the parse you just did by hand against what the algorithm actually does, and watch the precedence decision from row 2 happen in real time.
 
+<!-- run: id=cs374-liascript-parsing2-2 viz=env -->
 ```python
 # The ACTION/GOTO table transcribed EXACTLY from the table above.
 #   ("s", n) = shift and go to state n
@@ -353,6 +356,7 @@ print("\n=== And an input the table rejects ===")
 parse(["num", "+", "+"])
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-parsing2-2) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -366,6 +370,7 @@ parse(["num", "+", "+"])
 
 Use the driver to find where the tree is built, and then break the table on purpose.
 
+<!-- run: id=cs374-liascript-parsing2-3 viz=env -->
 ```python
 PRODUCTIONS = {1: ("E", 3), 2: ("E", 1), 3: ("T", 3), 4: ("T", 1), 5: ("F", 1)}
 RHS_TEXT    = {1: "E + T", 2: "T", 3: "T * F", 4: "F", 5: "num"}
@@ -421,6 +426,7 @@ for src in [["num","+","num","*","num"], ["num","*","num","+","num"]]:
 #         recursive descent: where does the same fact live there?
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-parsing2-3) <!-- code-viz link -->
 
 Expected output: the two reduction sequences, each ending in `E + T -> E`.  For TODO 2, changing that single cell makes the parser reduce `2 + 3` to `E` before it has seen `* 4`, which is the first step toward the tree for `(2 + 3) * 4`, the same wrong grouping the ambiguous grammar produced back in *Derivations, Parse Trees, Ambiguity, and Precedence*.  This grammar has no way to finish that tree, though: the parser lands in state 1 with `*` next, finds an empty cell, and reports `ERROR at '*'`.
 
@@ -728,6 +734,7 @@ Before you can build a parse table, you need to know two things about every nont
 
 **FIRST(A)** is the set of terminals that can begin any string derived from A. **FOLLOW(A)** is the set of terminals (and `$`) that can appear immediately after A in some sentential form.  Together they power LL(1) table construction: the parse table entry for nonterminal A on lookahead token t is the production to use when t ∈ FIRST(RHS), or when ε is derivable from RHS and t ∈ FOLLOW(A).
 
+<!-- run: id=cs374-liascript-parsing2-4 viz=env -->
 ```python
 # Compute FIRST and FOLLOW sets for a context-free grammar.
 # Grammar is represented as a dict: NT -> list of productions (lists of symbols).
@@ -860,6 +867,7 @@ for nt in grammar:
     print(f"  FOLLOW({nt:<4}) = " + "{ " + ", ".join(symbols) + " }")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-parsing2-4) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -877,6 +885,7 @@ for nt in grammar:
 
 Armed with FIRST and FOLLOW, building the LL(1) table is a purely mechanical process: for each production `A -> α`, add it to table[A][t] for every `t ∈ FIRST(α) - {ε}`, and for every `t ∈ FOLLOW(A)` if `ε ∈ FIRST(α)`.  A conflict (two entries in one cell) means the grammar is not LL(1).  The table-driven parser then replaces the call stack of recursive descent with an explicit stack and a loop, same logic, different bookkeeping.
 
+<!-- run: id=cs374-liascript-parsing2-5 viz=env -->
 ```python
 # Build the LL(1) parse table and run a table-driven LL(1) parser.
 
@@ -1056,6 +1065,7 @@ for stack, inp, action in trace:
 print(f"\nResult: {'ACCEPTED' if accepted else 'REJECTED'}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-parsing2-5) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -1079,6 +1089,7 @@ You have seen what a conflict is in the abstract; now see concrete examples.  Th
 
 A **shift-reduce conflict** occurs when the LR parser, in some configuration (stack + lookahead), can either (a) shift the lookahead token onto the stack, or (b) reduce the stack top using a completed production.  The canonical example is the **dangling else**, but conflicts arise whenever a grammar is ambiguous or requires more than the available lookahead.
 
+<!-- run: id=cs374-liascript-parsing2-6 viz=env -->
 ```python
 # Illustrate shift-reduce and reduce-reduce conflicts by simulating
 # a simplified LR(0) conflict detector on small grammars.
@@ -1187,6 +1198,7 @@ for ctype, cause, example, fix in conflicts:
     print(f"{ctype:<18} {cause:<40} {example:<30} {fix}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-parsing2-6) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -1264,6 +1276,7 @@ That is a language-design decision, not an implementation detail: option 1 puts 
 
 The clearest place to watch this happen is an assembler, where the "names" are jump labels and the "addresses" are instruction numbers.  Predict, before you run: which of the two `JMPZ` instructions can a single left-to-right pass resolve, and which one can it not?
 
+<!-- run: id=cs374-liascript-parsing2-7 viz=env -->
 ```python
 # A two-pass assembler.  The machine has four instructions, one word each:
 #     SET  r n    put the number n into register r
@@ -1347,6 +1360,7 @@ for line in SOURCE:
     address += 1
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-parsing2-7) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -1365,6 +1379,7 @@ for line in SOURCE:
 
 The linker plays the same game with a coarser board.  Each object file publishes what it **defines** and what it **uses**; the linker matches holes to tabs across the whole program.  Predict each of the three outcomes before running.
 
+<!-- run: id=cs374-liascript-parsing2-8 viz=env -->
 ```python
 # Three "object files".  Each records what it DEFINES and what it USES.
 # A real ELF symbol entry carries a name, a size, and a binding
@@ -1424,6 +1439,7 @@ report("3.  Both files say 'static int counter;'",
         LIBC])
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-parsing2-8) <!-- code-viz link -->
 
 ### Reading the Code
 

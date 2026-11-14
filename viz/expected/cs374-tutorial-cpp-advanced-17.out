@@ -1,0 +1,6 @@
+=== Safe FFI for math module ===
+  ffi("math", "sqrt", 25.0) = 5.0
+  ffi("math", "floor", 3.7) = 3
+  ffi("math", "pow", 2.0, 10.0) = 1024.0
+
+  Security block: Module 'os' not in FFI allowlist

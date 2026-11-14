@@ -1,0 +1,10 @@
+after map:    [93, 97, 59, 76, 72, 100, 54, 88]
+after filter: [93, 97, 76, 72, 100, 88]
+reduce, step by step:
+    fold step: acc=  0 +  93 -> 93
+    fold step: acc= 93 +  97 -> 190
+    fold step: acc=190 +  76 -> 266
+    fold step: acc=266 +  72 -> 338
+    fold step: acc=338 + 100 -> 438
+    fold step: acc=438 +  88 -> 526
+total = 526, mean = 87.7

@@ -1,0 +1,15 @@
+First pass (computes each value):
+  [computing 0]
+  got 0
+  [computing 1]
+  got 1
+  [computing 2]
+  got 4
+  [computing 3]
+  got 9
+
+Second pass (reads from cache, no recomputation):
+  got 0
+  got 1
+  got 4
+  got 9

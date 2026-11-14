@@ -1,0 +1,11 @@
+Evaluating: 2 * x + 1  where x=4
+
+BinOp('+') - evaluating children...
+  BinOp('*') - evaluating children...
+    Num(2) -> 2
+    Var('x') -> 4.0  [lookup in env]
+  BinOp('*'): 2 * 4.0 = 8.0
+  Num(1) -> 1
+BinOp('+'): 8.0 + 1 = 9.0
+
+Final result: 9.0

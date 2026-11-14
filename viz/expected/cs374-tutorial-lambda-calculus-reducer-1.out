@@ -1,0 +1,3 @@
+Identity: (λx. x)
+True:     (λt. (λf. t))
+False:    (λt. (λf. f))

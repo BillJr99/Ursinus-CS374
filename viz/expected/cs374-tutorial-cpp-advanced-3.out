@@ -1,0 +1,14 @@
+=== shared_ptr simulation ===
+  [alloc] object(42) created, refcount=1
+  [addref] object(42) refcount=2
+  [addref] object(42) refcount=3
+  [status] refcount=3
+  [release] object(42) refcount=2
+  [release] object(42) refcount=1
+  [release] object(42) refcount=0
+  [destroy] object(42) freed!
+
+=== Python's own refcount (sys.getrefcount adds 1 for the call arg) ===
+  sys.getrefcount('hello world') = 4
+  after alias s2=s: getrefcount = 8
+  after del s2:     getrefcount = 10

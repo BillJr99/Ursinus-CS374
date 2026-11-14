@@ -1,0 +1,5 @@
+Before: double(5)
+After:  (5+5)
+
+Before: double((3+2))
+Inlined: ((3+2)+(3+2))

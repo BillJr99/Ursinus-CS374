@@ -1,0 +1,18 @@
+=== Sequential async (awaits one at a time) ===
+  [638719.69s] Starting fetch from server_A...
+  [638719.74s] Finished fetch from server_A
+  [638719.74s] Starting fetch from server_B...
+  [638719.79s] Finished fetch from server_B
+  Sequential: got 'data from server_A', 'data from server_B' in 0.102s
+
+=== Concurrent async (gather runs both at once) ===
+  [638719.79s] Starting fetch from server_A...
+  [638719.79s] Starting fetch from server_B...
+  [638719.84s] Finished fetch from server_A
+  [638719.84s] Finished fetch from server_B
+  Concurrent: got 'data from server_A', 'data from server_B' in 0.052s
+
+=== Desugaring: async/await as generator syntax ===
+  about to 'yield' (simulating await)
+  [event loop] doing other work...
+  resumed after 'yield'

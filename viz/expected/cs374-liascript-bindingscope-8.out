@@ -1,0 +1,9 @@
+=== Two counters from the same factory ===
+  c1: 1, 2, 3
+  c2: 1
+
+=== The loop again, three ways ===
+  late-bound : [2, 2, 2]
+  default-arg: [0, 1, 2]
+
+=== The decision for YOUR language ===

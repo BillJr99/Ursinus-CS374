@@ -1,0 +1,4 @@
+
+=== Balanced parentheses ===
+  ''         should be ACCEPTED -> ok
+  '()'       should be ACCEPTED -> ok

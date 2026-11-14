@@ -1,0 +1,27 @@
+=== Python Orthogonality Probe ===
+
+  int + int = 3   OK
+  float + float = 3.0   OK
+  str + str = 'ab'   OK
+  list + list = [1, 2]   OK
+
+  int * int = 12   OK
+  float * float = 12.0   OK
+  str * int = 'hahaha'   OK
+  list * int = [1, 2, 1, 2, 1, 2]   OK
+  list * list -> TypeError: can't multiply sequence by non-int of type 'list'  FAIL
+
+=== '==' Comparison Orthogonality ===
+  1 == 1  ->  True
+  1 == 1.0  ->  True
+  1 == '1'  ->  False
+  [] == []  ->  True
+  {} == {}  ->  True
+  None == False  ->  False
+  0 == False  ->  True
+
+=== Container + Operator Asymmetry ===
+  set | set = {1, 2, 3}   (union)  OK
+  set + set -> TypeError: unsupported operand type(s) for +: 'set' and 'set'  FAIL
+  dict | dict = {'a': 1, 'b': 2}  OK
+  dict + dict -> TypeError: unsupported operand type(s) for +: 'dict' and 'dict'  FAIL

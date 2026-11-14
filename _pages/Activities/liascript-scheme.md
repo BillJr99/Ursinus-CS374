@@ -126,6 +126,7 @@ Hold onto that.  In a few weeks this course will spend three sessions building a
 
 Two ways to say the same thing, and then a function that calls itself:
 
+<!-- run: id=cs374-liascript-scheme-2 viz=env -->
 ```scheme
 (define L (list 'a 'b 'c))
 (car L)                      ; a
@@ -137,7 +138,9 @@ Two ways to say the same thing, and then a function that calls itself:
 (define add +)
 (add 3 2)                    ; 5
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-2) <!-- code-viz link -->
 
+<!-- run: id=cs374-liascript-scheme-3 viz=env -->
 ```scheme
 (define square
   (lambda (n)
@@ -151,9 +154,11 @@ Two ways to say the same thing, and then a function that calls itself:
 
 (square (pow 5 3))           ; 15625
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-3) <!-- code-viz link -->
 
 The same shape, on the most famous recursion there is:
 
+<!-- run: id=cs374-liascript-scheme-4 viz=env -->
 ```scheme
 (define factorial
   (lambda (n)
@@ -163,6 +168,7 @@ The same shape, on the most famous recursion there is:
 
 (factorial 5)                ; 120
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-4) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -193,6 +199,7 @@ Scheme has no `while`.  Iteration is recursion, almost always over a list, and a
 
 ## Model 2: `sumlist` and `largest`
 
+<!-- run: id=cs374-liascript-scheme-5 viz=env -->
 ```scheme
 (define sumlist
   (lambda (L)
@@ -202,7 +209,9 @@ Scheme has no `while`.  Iteration is recursion, almost always over a list, and a
 
 (sumlist (list 1 2 3))       ; 6
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-5) <!-- code-viz link -->
 
+<!-- run: id=cs374-liascript-scheme-6 viz=env -->
 ```scheme
 (define largest
   (lambda (L)
@@ -214,7 +223,9 @@ Scheme has no `while`.  Iteration is recursion, almost always over a list, and a
 
 (largest (list 1 2 4 3))     ; 4
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-6) <!-- code-viz link -->
 
+<!-- run: id=cs374-liascript-scheme-7 viz=env -->
 ```scheme
 (define largest2
   (lambda (L)
@@ -227,9 +238,11 @@ Scheme has no `while`.  Iteration is recursion, almost always over a list, and a
 
 (largest2 (list 1 2 4 3))    ; 4
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-7) <!-- code-viz link -->
 
 Both versions of `largest` return the same answer.  They do not cost the same.  The cell below counts the recursive calls each one makes, so you can see the difference rather than take my word for it.
 
+<!-- run: id=cs374-liascript-scheme-8 viz=env -->
 ```python
 # The two versions of largest, transliterated into Python so we can count calls.
 # car(L) is L[0]; cdr(L) is L[1:]; (null? (cdr L)) is len(L) == 1.
@@ -264,6 +277,7 @@ print("  against one call per level.  The only difference in the source is that"
 print("  largest2 names the subresult with let instead of recomputing it.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-8) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -292,6 +306,7 @@ You have already seen `(define add +)`.  Once functions are ordinary values, thr
 
 ## Model 3: The Linear Equation, Projectile Motion, and Walking a List
 
+<!-- run: id=cs374-liascript-scheme-9 viz=env -->
 ```scheme
 (define y
   (lambda (m x b)
@@ -299,9 +314,11 @@ You have already seen `(define add +)`.  Once functions are ordinary values, thr
 
 (y 5 6 7)                    ; 37
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-9) <!-- code-viz link -->
 
 The same equation with the multiplication pulled out into a function of its own:
 
+<!-- run: id=cs374-liascript-scheme-10 viz=env -->
 ```scheme
 (define mul
   (lambda (m x)
@@ -313,7 +330,9 @@ The same equation with the multiplication pulled out into a function of its own:
 
 (y 5 6 7)                    ; 37
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-10) <!-- code-viz link -->
 
+<!-- run: id=cs374-liascript-scheme-11 viz=env -->
 ```scheme
 (define v0 3)
 (define t 5)
@@ -327,9 +346,11 @@ The same equation with the multiplication pulled out into a function of its own:
 
 (+ (* v0 t) (* 0.5 (* a (square t))))
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-11) <!-- code-viz link -->
 
 Here is a function that walks a list until it finds what it wants.  It has the same skeleton as `sumlist`, minus the work on the way back up: nothing happens after the recursive call returns.
 
+<!-- run: id=cs374-liascript-scheme-12 viz=env -->
 ```scheme
 (define contains?
   (lambda (x l)
@@ -342,6 +363,7 @@ Here is a function that walks a list until it finds what it wants.  It has the s
 (contains? 3 '(1 2 3 4))     ; #t
 (contains? 9 '(1 2 3 4))     ; #f
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-12) <!-- code-viz link -->
 
 ### Building Up a List Function: the Last Element
 
@@ -382,6 +404,7 @@ One thing to watch for when you write it: `append` joins two *lists*.  So the it
 
 `reverse` is built in, and you can use the built-in to check your work.  Here is what it lets you write in one line: everything *but* the last item of a list.
 
+<!-- run: id=cs374-liascript-scheme-13 viz=env -->
 ```scheme
 (define cxr
   (lambda (l)
@@ -389,6 +412,7 @@ One thing to watch for when you write it: `append` joins two *lists*.  So the it
 
 (cxr '(1 2 3 4 5))           ; (1 2 3 4)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-13) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -410,6 +434,7 @@ One thing to watch for when you write it: `append` joins two *lists*.  So the it
 
 ## Model 4: `plusminus` and Anonymous Lambdas
 
+<!-- run: id=cs374-liascript-scheme-14 viz=env -->
 ```scheme
 (define plusminus
   (lambda (a b)
@@ -418,9 +443,11 @@ One thing to watch for when you write it: `append` joins two *lists*.  So the it
 
 (plusminus 6 2)              ; (8 4)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-14) <!-- code-viz link -->
 
 Here is the same shape doing real work.  The quadratic formula needs the discriminant twice, once for each root, so the inner lambda is applied to it once and both roots read the name:
 
+<!-- run: id=cs374-liascript-scheme-15 viz=env -->
 ```scheme
 (define roots
   (lambda (a b c)
@@ -431,6 +458,7 @@ Here is the same shape doing real work.  The quadratic formula needs the discrim
 
 (roots 1 2 -1)               ; (0.41421356... -2.41421356...)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-15) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -447,6 +475,7 @@ There are two functions here.  The outer one is named `plusminus` and takes `a` 
 
 ## Model 5: `map`, `apply`, and Folding an Operator
 
+<!-- run: id=cs374-liascript-scheme-16 viz=env -->
 ```scheme
 (define L1 '(1 2 3))
 (define L2 '(4 5 6))
@@ -456,7 +485,9 @@ There are two functions here.  The outer one is named `plusminus` and takes `a` 
 ((lambda (x) (* x x)) 5)     ; 25
 (map (lambda (x) (* x x)) '(1 2 3 4 5))   ; (1 4 9 16 25)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-16) <!-- code-viz link -->
 
+<!-- run: id=cs374-liascript-scheme-17 viz=env -->
 ```scheme
 (define oplist
   (lambda (op L)
@@ -468,6 +499,7 @@ There are two functions here.  The outer one is named `plusminus` and takes `a` 
 (newline)
 (display (apply * (list 2 4 6)))    ; 48
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-17) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -492,26 +524,32 @@ You have already seen `let` twice without stopping on it: `largest2` in Model 2 
 
 **The shape of `let`.**  `(let ((name expression)) body)` computes `expression` once, binds it to `name`, and then evaluates `body` with that binding visible.
 
+<!-- run: id=cs374-liascript-scheme-18 viz=env -->
 ```scheme
 (let ((x (+ 2 3)))
   (* x x))                   ; 25
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-18) <!-- code-viz link -->
 
 Build that from the inside out if the nesting looks unfamiliar: `(x (+ 2 3))` is one binding pair; `((x (+ 2 3)))` is a *list* of binding pairs, even though there is only one; and the whole form wraps a body around that list. You can bind more than one name in the same `let` by adding more pairs, and each binding is computed from the environment *outside* the `let`, not from the other bindings beside it:
 
+<!-- run: id=cs374-liascript-scheme-19 viz=env -->
 ```scheme
 (let ((a 3)
       (b 4))
   (+ (* a a) (* b b)))       ; 25
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-19) <!-- code-viz link -->
 
 > **Watch out!**  A common typo is `(let (x (+ 2 3)) ...)`, missing one pair of parentheses. `let` always wants a *list* of bindings, so even a single binding needs its own extra parentheses around the pair. If Scheme complains that something is not a procedure, or that a binding list looks malformed, this is almost always why.
 
 **Association lists.**  An association list, or *alist*, is Scheme's simplest lookup table: a list where every element is a `cons` pair, `(key . value)`.
 
+<!-- run: id=cs374-liascript-scheme-20 viz=env -->
 ```scheme
 (define ops (list (cons '+ +) (cons '- -) (cons '* *) (cons '/ /)))
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-20) <!-- code-viz link -->
 
 `(cons '+ +)` pairs the symbol `'+` with the actual addition procedure; `car` of that pair gets the symbol back, `cdr` gets the procedure back. `ops` is a list of four such pairs, built from exactly the `list`, `cons`, `car`, and `cdr` you already know from Model 1; nothing new is happening in the data structure, only in how it is arranged.
 
@@ -605,6 +643,7 @@ The recursive route uses the built-in `reverse` and `cxr` from Model 3: take the
 
 The combinator route builds it out of `map` and `apply` instead.  A dot product is exactly "multiply elementwise, then sum," which is one `map` and one `apply`:
 
+<!-- run: id=cs374-liascript-scheme-26 viz=env -->
 ```scheme
 (define dot
   (lambda (x y)
@@ -617,6 +656,7 @@ The combinator route builds it out of `map` and `apply` instead.  A dot product 
 (dot '(1 2 2 3 3) '(5 4 3 2 1))           ; 28
 (convolution2 '(1 2 2 3 3) '(1 2 3 4 5))  ; 28
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-26) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -636,6 +676,7 @@ The combinator route builds it out of `map` and `apply` instead.  A dot product 
 
 ## Model 6: `make-counter` and Closures
 
+<!-- run: id=cs374-liascript-scheme-27 viz=env -->
 ```scheme
 (define (make-counter)
   (let ((count 0))           ; the environment the closure captures
@@ -651,6 +692,7 @@ The combinator route builds it out of `map` and `apply` instead.  A dot product 
 (counter2)                   ; 1
 (counter1)                   ; 3
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-27) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -670,6 +712,7 @@ The combinator route builds it out of `map` and `apply` instead.  A dot product 
 
 Question 21 asked what a closure's return value even *is* once there is more than one operation.  Here is one answer, and it is the answer Scheme programmers reached for long before anyone wrote the word `class` in a language specification.
 
+<!-- run: id=cs374-liascript-scheme-28 viz=env -->
 ```scheme
 (define (make-account balance)
   (define (withdraw amount)
@@ -691,6 +734,7 @@ Question 21 asked what a closure's return value even *is* once there is more tha
 ((acc 'withdraw) 30)         ; 120
 (acc 'balance)               ; 120
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-28) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -772,6 +816,7 @@ Look hard at the body: it calls `fib-fast`, **not itself**.  That is the one sub
 
 Question 28 asks you to name a function memoization drags from exponential down to linear.  Fibonacci is that function, and this cell counts the calls rather than asserting the improvement.  Predict both numbers before you run it.
 
+<!-- run: id=cs374-liascript-scheme-31 viz=env -->
 ```python
 # Both Fibonaccis, instrumented, so the improvement is a count and not a claim.
 calls = {}
@@ -808,6 +853,7 @@ print("fib(25) memoized :", fast(25), "in", calls["fast"], "calls")
 # fib(25) naive    : 75025 in 242785 calls
 # fib(25) memoized : 75025 in 26 calls
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-31) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -822,6 +868,7 @@ print("fib(25) memoized :", fast(25), "in", calls["fast"], "calls")
 
 Scheme fences in this deck are static, and the last two models both make claims about sharing and about cost.  Here are the same two closures in Python, counted, so the claims are numbers rather than assertions.
 
+<!-- run: id=cs374-liascript-scheme-32 viz=env -->
 ```python
 # Model 7 and Model 8, transliterated so we can count.
 # Scheme's inner (define ...) inside a closure is Python's def inside a def.
@@ -907,6 +954,7 @@ print("fib(25) memoized :", fast(25), "in", calls["fast"], "calls")
 # fib(25) memoized : 75025 in 26 calls
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-scheme-32) <!-- code-viz link -->
 
 ### Reading the Code
 

@@ -1,0 +1,8 @@
+INT [0-9]+
+3 ('WS', ' +')
+36
+None
+0
+True
+ada 36
+grace 85

@@ -1,0 +1,14 @@
+=== (1 + 2) * 3 ===
+  BFS order:       * + 3 1 2
+  DFS pre-order:   * + 1 2 3
+  DFS post-order:  1 2 + 3 *
+
+Why post-order works for evaluation:
+  Post-order visits '1' then '2' then '+', so when we
+  process '+' both operand values are already known.
+
+Why BFS does NOT work for evaluation:
+  BFS visits '*' before '+' (at level 0 before level 1),
+  but to evaluate '*' we need the VALUE of '+' first.
+
+Evaluated result: 9.0  (expected 9.0)

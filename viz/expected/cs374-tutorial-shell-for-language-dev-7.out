@@ -1,0 +1,13 @@
+  date  = '2026-09-18'         span (0, 10)
+  time  = '08:10:22'           span (11, 19)
+  level = 'WARN'               span (20, 24)
+  msg   = 'disk usage 91%'     span (25, 39)
+
+Triage report:
+  WARN  x2
+  INFO  x2
+  ERROR x2
+
+All ERROR messages:
+  08:12:03  backup failed: disk full
+  08:15:59  backup failed: disk full

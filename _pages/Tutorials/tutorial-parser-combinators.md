@@ -45,6 +45,7 @@ Parser[A] = str × int -> (A × int) | None
 
 Given the full input string and a current position, it returns either `(value, next_position)` or `None` (failure).  The entire combinator library is built on this representation.
 
+<!-- run: id=cs374-tutorial-parser-combinators-1 viz=env -->
 ```python
 try:
     # The simplest possible parser: match one exact character
@@ -65,6 +66,7 @@ except Exception as e:
     print(f"[pc:char] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-parser-combinators-1) <!-- code-viz link -->
 
 Every parser in this tutorial is a function built by calling combinators.  There are no classes yet, just functions returning functions.
 
@@ -74,6 +76,7 @@ Every parser in this tutorial is a function built by calling combinators.  There
 
 The primitives parse individual characters or character classes.
 
+<!-- run: id=cs374-tutorial-parser-combinators-2 viz=env -->
 ```python
 try:
     import re
@@ -132,6 +135,7 @@ except Exception as e:
     print(f"[pc:atomic] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-parser-combinators-2) <!-- code-viz link -->
 
 ---
 
@@ -139,6 +143,7 @@ except Exception as e:
 
 Four combinators build everything else: `seq` (sequence), `alt` (choice), `many` (repetition), and `map` (transform result).
 
+<!-- run: id=cs374-tutorial-parser-combinators-3 viz=env -->
 ```python
 try:
     import re
@@ -261,6 +266,7 @@ except Exception as e:
     print(f"[pc:combinators] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-parser-combinators-3) <!-- code-viz link -->
 
 ---
 
@@ -268,6 +274,7 @@ except Exception as e:
 
 Parsers for grammars with recursion (like expressions) need forward references: `expr` calls `term` which calls `factor` which calls `expr` for parenthesized sub-expressions.  A `forward` cell solves this cleanly.
 
+<!-- run: id=cs374-tutorial-parser-combinators-4 viz=env -->
 ```python
 try:
     import re
@@ -398,6 +405,7 @@ except Exception as e:
     print(f"[pc:recursive] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-parser-combinators-4) <!-- code-viz link -->
 
 ---
 
@@ -415,6 +423,7 @@ More precisely: `Parser` is a monad where:
 
 This is exactly the *Parser monad* from the Monads activity Exercise 2!
 
+<!-- run: id=cs374-tutorial-parser-combinators-5 viz=env -->
 ```python
 try:
     # The Parser monad, explicitly
@@ -489,6 +498,7 @@ except Exception as e:
     print(f"[pc:monad] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-parser-combinators-5) <!-- code-viz link -->
 
 The connection is complete: **the Parser monad is the Monads activity's Exercise 2**, and `do`-notation (Haskell's shorthand for a chain of bind calls) lets you write parsers that look like grammars.
 
@@ -498,6 +508,7 @@ The connection is complete: **the Parser monad is the Monads activity's Exercise
 
 Putting it all together: parse Mini arithmetic expressions into AST nodes.
 
+<!-- run: id=cs374-tutorial-parser-combinators-6 viz=env -->
 ```python
 try:
     import re
@@ -673,6 +684,7 @@ except Exception as e:
     print(f"[pc:mini] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-parser-combinators-6) <!-- code-viz link -->
 
 ---
 
@@ -725,6 +737,7 @@ A production parser combinator library needs **committed choice** (also called *
 
 Parsec achieves this with `try`: `try p <|> q` backtracks on failure of `p`; plain `p <|> q` commits once `p` consumes input.
 
+<!-- run: id=cs374-tutorial-parser-combinators-7 viz=env -->
 ```python
 try:
     # Simulating committed choice: once a keyword prefix matches, error if
@@ -755,6 +768,7 @@ except Exception as e:
     print(f"[pc:error] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-parser-combinators-7) <!-- code-viz link -->
 
 ---
 
@@ -794,6 +808,7 @@ Before writing parser code, it helps to see that "precedence" is just a number: 
 
 Different precedence assignments for the same token stream produce different trees and values.  The model below encodes two precedence tables and a simple "what would this mean?" validator that folds a flat token list according to each table, showing both resulting trees.
 
+<!-- run: id=cs374-tutorial-parser-combinators-8 viz=env -->
 ```python
 # Model 2: Two precedence tables, one token stream - two different meanings.
 # We use a minimal Pratt-style fold (no full parser) just to show the shape.
@@ -869,6 +884,7 @@ print(f"Token stream: {' '.join(tokens2)}")
 print()
 show("Standard precedence (left assoc)", PREC_STANDARD, tokens2)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-parser-combinators-8) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -885,6 +901,7 @@ This model brings everything together into a working parser you can run.  The mu
 
 A self-contained recursive descent parser for `+`, `-`, `*`, `/` and parentheses.  The mutual recursion `expr -> addsub -> muldiv -> unary -> primary -> ... -> expr` gives precedence without any table.
 
+<!-- run: id=cs374-tutorial-parser-combinators-9 viz=env -->
 ```python
 # Model 3: Complete recursive-descent expression parser (stand-alone)
 # Tokens are produced by a tiny hand-written tokeniser.
@@ -980,6 +997,7 @@ def parse(src):
 for expr in ["2+3*4", "2*3+4", "(2+3)*4", "7-2-1", "-3*2", "1+2+3+4"]:
     print(f"  {expr!r:18} -> {parse(expr)}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-parser-combinators-9) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -997,6 +1015,7 @@ Pratt parsing (a close relative of precedence climbing) is a compact alternative
 
 A Pratt parser associates a *binding power* with each operator and decides whether to consume the next operator based on numeric comparison: no mutual recursion, no separate function per tier.  Both parsers should produce the same AST for `2 + 3 * 4 - 1`.
 
+<!-- run: id=cs374-tutorial-parser-combinators-10 viz=env -->
 ```python
 # Model 4: Pratt parser and comparison with recursive descent
 
@@ -1133,6 +1152,7 @@ for t in tests:
     match = "==" if pr == rd else "!="
     print(f"{t!r:<18} {str(pr):<35} {match} {rd}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-parser-combinators-10) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 

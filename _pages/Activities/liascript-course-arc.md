@@ -55,6 +55,7 @@ Before anyone builds a real structure, someone has to prove the ground will supp
 
 Lambda calculus is the theory of computation from 1936.  It has **three rules**: a variable is an expression; `lambda x. E` is a function; and `E1 E2` is applying `E1` to `E2`.  That is the entire language.  No numbers.  No booleans.  No loops.  No `if`.  Yet it is computationally universal: anything a modern computer can compute, lambda calculus can compute.  The code below shows this: we build booleans, natural numbers, arithmetic, and even recursion entirely from `lambda`.
 
+<!-- run: id=cs374-liascript-course-arc-1 viz=env -->
 ```python
 # Lambda calculus: the theory of computation from 1936.
 # THREE rules: variables, functions, application.
@@ -96,6 +97,7 @@ print(f"\nY combinator factorial(5) = {factorial(5)}")
 print("\n>>> This is the deep foundation the whole course builds toward.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-course-arc-1) <!-- code-viz link -->
 
 **Critical Thinking Questions (CTQs)**
 
@@ -146,6 +148,7 @@ A blueprint is useless if nobody can read it; it has to follow a standard notati
 
 A grammar defines what strings are **legal programs**.  It is a set of recursive rules, a formal description of syntax.  The grammar below defines arithmetic expressions, and the parser is a direct translation of the grammar into code: each grammar rule becomes a function.  This connection between grammars and parsers is the core insight of the front-end unit, from *Syntax and BNF/EBNF* through *Recursive Descent Parsing*.
 
+<!-- run: id=cs374-liascript-course-arc-2 viz=env -->
 ```python
 import re
 
@@ -220,6 +223,7 @@ print(f"\nAST for '3 + 4 * 2': {ast}")
 print("Notice: ('+', 3.0, ('*', 4.0, 2.0)) -- multiplication binds tighter!")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-course-arc-2) <!-- code-viz link -->
 
 **Critical Thinking Questions (CTQs)**
 
@@ -249,6 +253,7 @@ A building inspector reviews the blueprints before a single beam is cut; they ar
 
 A type system prevents entire classes of errors by reasoning about programs **before they run**.  The code below is a tiny type checker for a small expression language.  It walks the AST and either confirms the program is well-typed or reports a type error, without executing a single expression.  This previews the *Type Systems* activity.
 
+<!-- run: id=cs374-liascript-course-arc-3 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -321,6 +326,7 @@ for expr, desc in [
         print(f"  {desc}: {e}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-course-arc-3) <!-- code-viz link -->
 
 **Critical Thinking Questions (CTQs)**
 
@@ -344,6 +350,7 @@ Once the blueprints are drawn, the materials are certified, and the inspector ha
 
 An interpreter evaluates an AST directly.  The one below handles variables, arithmetic, conditionals, lambda functions, function application, and let-bindings, the core of a real functional language.  The key insight is **closures**: when a function is created, it captures the environment at the point of creation, not the environment at the point of call.  This is the destination of the interpretation unit (*From Calculator to Scheme* through *Scope Chains and Closures*) and of the Interpreter assignment.
 
+<!-- run: id=cs374-liascript-course-arc-4 viz=env -->
 ```python
 from dataclasses import dataclass, field
 from typing import Any, Optional
@@ -427,6 +434,7 @@ print("\n>>> By the end of the interpretation unit, you will have built this int
 print(">>> By Demo Day, you will have added YOUR OWN features.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-course-arc-4) <!-- code-viz link -->
 
 **Critical Thinking Questions (CTQs)**
 
@@ -454,6 +462,7 @@ The blueprints, the materials, the inspector, and the construction crew all have
 
 Every programming language implementation is a **pipeline**: source text enters one end, and meaning comes out the other.  The stages are scanning (breaking text into tokens), parsing (building an AST from tokens), type-checking (verifying the AST is well-typed), and interpreting or compiling (producing a result).  The code below shows all four stages working together.
 
+<!-- run: id=cs374-liascript-course-arc-5 viz=env -->
 ```python
 import re
 from dataclasses import dataclass, field
@@ -567,6 +576,7 @@ print("           Demo Day")
 print("="*50)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-course-arc-5) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -579,6 +589,7 @@ print("="*50)
 
 This one is homework, not class work: it wants more time than the period leaves.  Put the pipeline under your own hands: change the input at one stage and watch what the next stage does with it.
 
+<!-- run: id=cs374-liascript-course-arc-6 viz=env -->
 ```python
 import re
 from dataclasses import dataclass
@@ -628,6 +639,7 @@ for src in ["let x = 3 + 4",
 #         parser -- need before it could do anything with your new token?
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-course-arc-6) <!-- code-viz link -->
 
 Expected output: `12foo` scans as `NUMBER(12) NAME(foo)`, and `3 @ 4` comes back as just two `NUMBER` tokens with the `@` silently gone.  That silent drop is the kind of bug the *Tokens and Scanning* session teaches you to catch.
 

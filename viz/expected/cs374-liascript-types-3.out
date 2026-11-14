@@ -1,0 +1,11 @@
+=== Checking, without running anything ===
+  let x = 2 in if x < 5 then x+1 else 0
+      : Int
+  let x = 2 in if x     then x+1 else 0
+      REJECTED: if: condition is Int, expected Bool
+
+=== More rejections, each naming its failing premise ===
+  1 + true                   REJECTED: +: right operand is Bool, expected Int
+  1 < true                   REJECTED: <: cannot compare Int with Bool
+  if true then 1 else false  REJECTED: if: branches disagree, then is Int but else is Bool
+  y + 1  (y unbound)         REJECTED: unbound variable 'y'

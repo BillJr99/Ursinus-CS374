@@ -131,6 +131,7 @@ Your CS374 interpreter sits in the strong/dynamic box on purpose.  `SEMANTICS.md
 
 **Predict first.**  Before you run this, write down what each of the five probes below will print.  Then run it.
 
+<!-- run: id=cs374-liascript-types-1 viz=env -->
 ```python
 # Python: dynamic (checks at runtime) + strong (refuses coercion).
 # Each probe below tests ONE of those two properties.
@@ -182,6 +183,7 @@ print(f"  add('x', 'y') = {add('x', 'y')!r}")
 print("  CPython ignored the annotations entirely. They are documentation.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-types-1) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -202,6 +204,7 @@ print("  CPython ignored the annotations entirely. They are documentation.")
 
 Add a sixth probe that shows the *strong* axis failing in the other direction.  Find a pair of Python types where `+` succeeds but you would argue it *should not*, and print evidence.
 
+<!-- run: id=cs374-liascript-types-2 viz=env -->
 ```python
 # Probe 6: find a "+" that Python licenses but that you think it should refuse.
 # Start here and replace the TODO.
@@ -221,6 +224,7 @@ for left, right in candidates:
 print("\nWhich of these would a STRONGER language refuse, and what would it cost?")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-types-2) <!-- code-viz link -->
 
 Expected output: at minimum, `True + 1 = 2  (types: bool + int)`.  Python's `bool` is a subclass of `int`, so this is allowed.  Decide for yourself whether it should be.
 
@@ -289,6 +293,7 @@ At which step does the derivation get stuck, and which premise fails?  Nothing w
 
 This is the machinery from the Examples above, transcribed into Python.  Compare each `if isinstance(...)` branch against the corresponding judgment.
 
+<!-- run: id=cs374-liascript-types-3 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -392,6 +397,7 @@ for label, prog in cases:
         print(f"  {label:26} REJECTED: {err}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-types-3) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -418,6 +424,7 @@ Add a `Not` node to the checker.  Its judgment is:
 
 $$\frac{\Gamma \vdash e : \text{Bool}}{\Gamma \vdash \texttt{not } e : \text{Bool}}$$
 
+<!-- run: id=cs374-liascript-types-4 viz=env -->
 ```python
 # Paste Model 2's checker above this line, or work from the skeleton below.
 from dataclasses import dataclass
@@ -451,6 +458,7 @@ for label, prog in [("not true", Not(Bool(True))),
         print(f"  {label:10} REJECTED: {err}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-types-4) <!-- code-viz link -->
 
 Expected output once your case is in place:
 
@@ -463,6 +471,7 @@ Expected output once your case is in place:
 
 Nothing in Model 2 required the programmer to *write* a type.  The checker deduced every one of them from the literals and the operators.  That is **type inference**: the checker works out each variable's type from how the variable is defined and used, so you never write the type down.  This model makes the deduction visible by printing the type environment as it grows.
 
+<!-- run: id=cs374-liascript-types-5 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -532,6 +541,7 @@ print("\nNo annotation appears anywhere in this program.")
 print("Every type above was deduced from literals and operators alone.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-types-5) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -547,6 +557,7 @@ print("Every type above was deduced from literals and operators alone.")
 
 Extend the inference demo with a string type.  Add a `Str` node that infers as `"Str"`.  Then decide: should `+` on two `Str` values be allowed as concatenation?
 
+<!-- run: id=cs374-liascript-types-6 viz=env -->
 ```python
 # Start from Model 3's infer(), then:
 #   1. add a Str dataclass and its inference case
@@ -562,6 +573,7 @@ print('Decide and defend: does your language license "+" on two strings?')
 print('If yes, you have overloaded "+". Write the second judgment for it.')
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-types-6) <!-- code-viz link -->
 
 Expected output: whatever your design says, plus a rejection for Probe B.  Write the second typing judgment for overloaded `+` in your notes.  You will need it for `SEMANTICS.md`.
 
@@ -608,6 +620,7 @@ Both checkers catch the first mistake, and both are silent on the second, with o
 
 CPython ignores annotations.  This model reads them back with `typing.get_type_hints` and enforces them, and it shows exactly where `Any` turns the enforcement off.
 
+<!-- run: id=cs374-liascript-types-7 viz=env -->
 ```python
 from typing import Any, get_type_hints
 import functools
@@ -673,6 +686,7 @@ print("\nUnsoundness, stated plainly: sloppy() passes the checker and still")
 print("blows up at runtime. That is gradual typing working as designed.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-types-7) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -691,6 +705,7 @@ print("blows up at runtime. That is gradual typing working as designed.")
 
 Give `checked` a strict mode that refuses to let `Any` through, and see which of the three functions above stops working.
 
+<!-- run: id=cs374-liascript-types-8 viz=env -->
 ```python
 # Modify checked() so it takes a flag:  checked(strict=True)
 # In strict mode, an Any annotation (or a missing annotation) is itself an
@@ -702,6 +717,7 @@ Give `checked` a strict mode that refuses to let `Any` through, and see which of
 print("Which functions survive strict mode? Which do you actually want to ship?")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-types-8) <!-- code-viz link -->
 
 Expected output: `add` survives; `sloppy` and `half_typed` are rejected at decoration time.  That is the difference between gradual and sound, made executable.
 
@@ -805,6 +821,7 @@ const d: Drawable = blob;     // fine: blob has the right shape
 
 Python's `Protocol` makes structural typing explicit and checkable:
 
+<!-- run: id=cs374-liascript-types-9 viz=env -->
 ```python
 from typing import Protocol, runtime_checkable
 
@@ -828,6 +845,7 @@ for obj in (Circle(), Blob(), Rock()):
     print(f"{name:8} is Drawable? {isinstance(obj, Drawable)}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-types-9) <!-- code-viz link -->
 
 Which discipline should *your* language use?  Nominal typing gives you intent (`implements Drawable` is a promise the author made deliberately) and better error messages.  Structural typing gives you flexibility and works with types you did not write.  Say which you chose in `TYPES.md`, and why.
 
@@ -839,6 +857,7 @@ A third question, independent of the first two: do types survive to runtime at a
 - **C++ monomorphizes.**  `vector<int>` and `vector<string>` become different generated code, so nothing is erased.  The binary is larger and the types are real.
 - **Python keeps annotations as data but never acts on them.**  `get_type_hints` can read them back, as Model 4 did, but the interpreter never consults them.
 
+<!-- run: id=cs374-liascript-types-10 viz=env -->
 ```python
 from typing import get_type_hints
 
@@ -857,6 +876,7 @@ except TypeError as e:
     print("  The annotation was visible the whole time and stopped nothing.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-types-10) <!-- code-viz link -->
 
 Erasure is why a clean `tsc` run cannot protect you at runtime.  That is CTQ 13's answer from a different angle.
 
@@ -926,6 +946,7 @@ A name.  A size.  A binding.  A section.  There is no type field.  This linker i
 
 Predict the printed integer before you run this.  You will not get it right, and that is the lesson: nothing about `9.81` suggests it.
 
+<!-- run: id=cs374-liascript-types-12 viz=env -->
 ```python
 import struct
 
@@ -968,6 +989,7 @@ print("   a size-comparing linker could at least warn here -- 8 != 4.")
 print("   float vs int gives it nothing to notice: 4 == 4.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-types-12) <!-- code-viz link -->
 
 Expected output: the int is `1092416963`, which is exactly what the real C program prints.
 

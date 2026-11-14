@@ -1,0 +1,2 @@
+[TypeError] line 7 in condition of 'if' expected Int, got Bool
+[TypeError] line 12 in argument 1 of call to 'concat' expected Int, got Str

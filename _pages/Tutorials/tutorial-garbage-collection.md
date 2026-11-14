@@ -54,6 +54,7 @@ Three main strategies exist:
 
 All three algorithms share a common simulated heap: a dictionary from address (integer) to object, plus a free list (the addresses not currently holding an object).
 
+<!-- run: id=cs374-tutorial-garbage-collection-1 viz=env -->
 ```python
 try:
     class Heap:
@@ -100,6 +101,7 @@ except Exception as e:
     print(f"[gc:heap] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-garbage-collection-1) <!-- code-viz link -->
 
 ---
 
@@ -107,6 +109,7 @@ except Exception as e:
 
 **Reference counting** tracks how many references point to each object.  When the count drops to zero, the object is immediately freed.
 
+<!-- run: id=cs374-tutorial-garbage-collection-2 viz=env -->
 ```python
 try:
     class RCHeap:
@@ -179,9 +182,11 @@ except Exception as e:
     print(f"[gc:rc] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-garbage-collection-2) <!-- code-viz link -->
 
 **The cycle problem.**  Reference counting cannot collect cycles:
 
+<!-- run: id=cs374-tutorial-garbage-collection-3 viz=env -->
 ```python
 try:
     rc2 = RCHeap(16)
@@ -203,6 +208,7 @@ except Exception as e:
     print(f"[gc:rc-cycle] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-garbage-collection-3) <!-- code-viz link -->
 
 ---
 
@@ -212,6 +218,7 @@ Mark-and-sweep runs in two phases:
 1.  **Mark:** start from all **root** references (stack variables, the global environment); recursively mark every reachable object.
 2.  **Sweep:** free every object that was NOT marked.
 
+<!-- run: id=cs374-tutorial-garbage-collection-4 viz=env -->
 ```python
 try:
     class MSHeap:
@@ -307,6 +314,7 @@ except Exception as e:
     print(f"[gc:ms] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-garbage-collection-4) <!-- code-viz link -->
 
 The `worklist` in `_mark` is the classic **tri-color** scheme in compact form.  Objects the mark phase has not reached yet are *white*.  Addresses waiting on the worklist are *gray*: reached, but their children not yet scanned.  An object whose `marked` flag is set has had its children pushed, so it is *black*.  When the worklist empties, there are no gray objects left, and anything still white is garbage.
 
@@ -316,6 +324,7 @@ The `worklist` in `_mark` is the classic **tri-color** scheme in compact form.  
 
 **Cheney's algorithm** divides the heap into two equal **semi-spaces**: `from-space` and `to-space`.  Live objects are *copied* from `from-space` to `to-space`, which compacts the heap as a side effect.
 
+<!-- run: id=cs374-tutorial-garbage-collection-5 viz=env -->
 ```python
 try:
     class CheneyHeap:
@@ -406,6 +415,7 @@ except Exception as e:
     print(f"[gc:cheney] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-garbage-collection-5) <!-- code-viz link -->
 
 ---
 
@@ -423,6 +433,7 @@ To add GC to your Mini interpreter:
 
 5.  **Measure live/dead object counts.**  Add logging to compare `live_count()` before and after each collection cycle.
 
+<!-- run: id=cs374-tutorial-garbage-collection-6 viz=env -->
 ```python
 try:
     # Skeleton: a GC-aware evaluator for a tiny language
@@ -472,6 +483,7 @@ except Exception as e:
     print(f"[gc:eval] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-garbage-collection-6) <!-- code-viz link -->
 
 ---
 

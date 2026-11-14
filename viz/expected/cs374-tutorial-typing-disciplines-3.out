@@ -1,0 +1,2 @@
+{'items': typing.List[int], 'return': <class 'int'>}
+[1, 2, 3, 'oops']

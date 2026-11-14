@@ -1,0 +1,21 @@
+=== The reduction sequence IS the derivation, backwards ===
+  num + num * num
+      1. num -> F
+      2. F -> T
+      3. T -> E
+      4. num -> F
+      5. F -> T
+      6. num -> F
+      7. T * F -> T
+      8. E + T -> E
+
+  num * num + num
+      1. num -> F
+      2. F -> T
+      3. num -> F
+      4. T * F -> T
+      5. T -> E
+      6. num -> F
+      7. F -> T
+      8. E + T -> E
+

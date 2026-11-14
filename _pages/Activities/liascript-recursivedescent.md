@@ -236,6 +236,7 @@ letstmt   -> "let" IDENT "=" expr ";"
 
 > **Intuition:** The code cell below is a near-mechanical translation of the grammar from Model 1.  Before reading it, predict what you will see: three functions (`parse_stmt`, `parse_printstmt`, `parse_letstmt`), each consuming tokens in the order the grammar says.  The `parse_expr` at the bottom is a stub: it handles only numbers and identifiers.  The full expression ladder comes in a later module.  The tuple return values (`("print", value)`, `("let", name, value)`) are the roots of small AST subtrees.
 
+<!-- run: id=cs374-liascript-recursivedescent-1 viz=env -->
 ```python
 # A recursive descent parser for the statement grammar, atop the class lexer.
 # Each function is one production; read them side by side with the grammar.
@@ -329,6 +330,7 @@ for source in ["print 42;", "let x = 7;", "let x 7;"]:
         print(f"ERROR: {source!r:20} -> SyntaxError: {e}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-recursivedescent-1) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -406,6 +408,7 @@ The two grammars accept the same strings.  The loop version builds the same left
 
 Reading that left recursion loops forever is not the same as watching it happen.  Below are two parsers for the *same language*.  One is transcribed straight from `E -> E + T | T`, and one from `E -> T { + T }`.  Both are three lines of real logic.  Only one terminates.
 
+<!-- run: id=cs374-liascript-recursivedescent-2 viz=env -->
 ```python
 def tokenize(text):
     return text.replace("+", " + ").split()
@@ -468,6 +471,7 @@ for text in ["1 + 2", "1 + 2 + 3", "1 + 2 + 3 + 4"]:
     print(f"  {text:16} -> {show(t)}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-recursivedescent-2) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -482,6 +486,7 @@ for text in ["1 + 2", "1 + 2 + 3", "1 + 2 + 3 + 4"]:
 
 Repair two more left-recursive rules, and confirm the tree shape survives.
 
+<!-- run: id=cs374-liascript-recursivedescent-3 viz=env -->
 ```python
 def tokenize(text):
     for sym in [",", "-"]:
@@ -527,6 +532,7 @@ else:
 #         hide that mistake while subtraction exposes it?
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-recursivedescent-3) <!-- code-viz link -->
 
 Expected output once both are implemented: `((a , b) , c)` and `((8 - 4) - 2) = 2.0`.  If subtraction gives `6.0`, reread the fold in Model 2b.
 
@@ -940,6 +946,7 @@ pprint.pprint(ast)
 >
 > Read this code as a template.  Swap in your own token types, your own grammar rules, and your own evaluator actions, and you have your project's core.
 
+<!-- run: id=cs374-liascript-recursivedescent-4 viz=env -->
 ```python
 # Mini calculator: a complete language implementation in ~80 lines.
 #
@@ -1134,6 +1141,7 @@ print("Notice: * node is nested DEEPER than + node,")
 print("meaning * is evaluated first -- this is how precedence is encoded in the tree.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-recursivedescent-4) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 

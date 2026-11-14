@@ -1,0 +1,35 @@
+λx.x:
+  Free vars : ∅
+  Bound vars: {'x'}
+  WHNF?     : True
+  Normal form? : True
+
+λx.(x y):
+  Free vars : {'y'}
+  Bound vars: {'x'}
+  WHNF?     : True
+  Normal form? : True
+
+(λx.x) z:
+  Free vars : {'z'}
+  Bound vars: {'x'}
+  WHNF?     : False
+  Normal form? : False
+
+f ((λx.x) z):
+  Free vars : {'f', 'z'}
+  Bound vars: {'x'}
+  WHNF?     : True
+  Normal form? : False
+
+λy.((λx.x) z):
+  Free vars : {'z'}
+  Bound vars: {'y', 'x'}
+  WHNF?     : True
+  Normal form? : False
+
+Key distinction:
+  Normal Form  - no redexes ANYWHERE in the expression.
+  WHNF         - outermost position is not a redex (body may still have them).
+  Lazy evaluation (Haskell) only reduces to WHNF: avoids evaluating
+  unreachable subexpressions, enabling infinite data structures.

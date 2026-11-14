@@ -1,0 +1,14 @@
+let x=5 in x*x+2 = 27
+if 0 then 1 else 42 = 42
+2 + (3 * 4) = 14
+
+--- Demonstrating exhaustiveness gap ---
+Caught: Unknown node type: Call
+A match with no wildcard arm would be a silent no-op in Python.
+ML compilers warn at compile time - Python warns only at runtime.
+
+--- Guard patterns (match + if) ---
+  categorize(-3) = -3 is negative
+  categorize(0) = zero
+  categorize(4) = 4 is positive even
+  categorize(7) = 7 is positive odd

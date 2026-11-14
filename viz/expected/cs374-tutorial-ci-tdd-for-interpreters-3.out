@@ -1,0 +1,33 @@
+============================================================
+  PEER REVIEW TRIAGE REPORT
+============================================================
+
+  OK STRENGTHS (keep and amplify)
+    [Team Amber] Error message names the exact line and column for undefined variable
+    [Team Cobalt] Niche feature (dice rolls) parses cleanly in three contexts
+    [Team Jade] Sample programs are polished and diverse (five different patterns)
+
+  FIX BEFORE DEMO DAY (4 items)
+    [Team Amber] Function with no return statement: silently returns None or crashes?
+           -> Assign to: ___  Due: ___  Done when: ___
+    [Team Cobalt] REPL does not recover from a parse error - requires restart
+           -> Assign to: ___  Due: ___  Done when: ___
+    [Team Jade] Nested function calls crash on more than two levels of nesting
+           -> Assign to: ___  Due: ___  Done when: ___
+    [Instructor] SEMANTICS.md says null returns default-value, but the code raises
+           -> Assign to: ___  Due: ___  Done when: ___
+
+  DISCLOSE AT DEMO DAY (3 items)
+    [Team Amber] What does the loop variable contain after the while exits?
+           -> Disclosure wording: ___
+    [Team Jade] String equality: == or a separate 'equals' operator?
+           -> Disclosure wording: ___
+    [Instructor] Does your scoping rule apply inside while loop bodies?
+           -> Disclosure wording: ___
+
+  FUTURE WORK (1 items)
+    [Team Cobalt] Can you pass a function as an argument to another function?
+
+  Totals: 4 fix / 3 disclose / 1 future
+
+  Scribe: fill in the blanks above and commit BACKLOG.md before end of day.

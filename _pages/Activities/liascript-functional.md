@@ -82,6 +82,7 @@ A pure function's output depends only on its inputs, and it changes nothing outs
 
 Immutability is purity's partner.  Functional style does not modify a list; it produces a new one.  Run the cell below and watch what happens to `original`.
 
+<!-- run: id=cs374-liascript-functional-1 viz=env -->
 ```python
 # Spot the impure function, run this and observe the difference
 def pure_double(xs):
@@ -107,6 +108,7 @@ impure_double(data)
 print(f"data after two calls to impure_double: {data}")   # [4, 8, 12], not [4, 4, 4]!
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-1) <!-- code-viz link -->
 
 **Critical Thinking Questions (CTQs)**
 
@@ -122,6 +124,7 @@ A pure function behaves like a calculator: press `2 + 3` and you get `5` every t
 
 ## Model 1: The Purity Audit
 
+<!-- run: id=cs374-liascript-functional-2 viz=env -->
 ```python
 import random
 
@@ -145,6 +148,7 @@ print(f"f5(7) = {f5(7)}")
 print(f"f6() twice: {f6():.4f}, {f6():.4f}")   # random
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-2) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -156,6 +160,7 @@ print(f"f6() twice: {f6():.4f}, {f6():.4f}")   # random
 
 Write the test that catches the impurity, then make the function pure.
 
+<!-- run: id=cs374-liascript-functional-3 viz=env -->
 ```python
 LOG_LINES = []
 
@@ -188,6 +193,7 @@ print("\n=== After your refactor, this should hold no matter what ===")
 print("  same input -> same output, every time, forever")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-3) <!-- code-viz link -->
 
 Expected output: `f_reads_global(10)` returns 10 and then 11, from identical arguments.  That one changed digit is the whole case for purity, made in one line.
 
@@ -213,6 +219,7 @@ $$\text{reduce}(\oplus, [x_1, \dots, x_n], z) = ((z \oplus x_1) \oplus x_2) \opl
 
 Each formula replaces a loop pattern you have written a hundred times.  `map` *transforms* every element, `filter` *selects* elements, and `reduce` *collapses* a list to one value.  In the `reduce` formula, $z$ is the starting value (the seed) and $\oplus$ is the two-argument function that combines the running result with the next element.
 
+<!-- run: id=cs374-liascript-functional-4 viz=env -->
 ```python
 from functools import reduce
 
@@ -244,6 +251,7 @@ max_score = reduce(lambda a, b: a if a > b else b, scores)
 print(f"max score: {max_score}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-4) <!-- code-viz link -->
 
 > **CTQ 2.1** Rewrite the `map` call as an explicit `for` loop.  What bookkeeping did `map` absorb?  Do the same for `filter`.
 
@@ -261,6 +269,7 @@ Python gives you two roads to the same result: the `map`/`filter` combinators yo
 
 Python offers *list comprehensions* as a second syntax for map plus filter:
 
+<!-- run: id=cs374-liascript-functional-5 viz=env -->
 ```python
 scores = [88, 92, 54, 71, 67, 95, 49, 83]
 
@@ -280,6 +289,7 @@ gen = (min(s + 5, 100) for s in scores if min(s + 5, 100) >= 70)
 print(f"generator sum: {sum(gen)}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-5) <!-- code-viz link -->
 
 > **CTQ 2.4** The comprehension evaluates `min(s + 5, 100)` *twice* for each element.  How would you fix this using a nested comprehension or a helper function?
 
@@ -330,6 +340,7 @@ Here is the same computation element by element.  Notice that `map` *transforms*
 
 Run the cell to see the machine agree with your paper trace, one fold step at a time:
 
+<!-- run: id=cs374-liascript-functional-6 viz=env -->
 ```python
 from functools import reduce
 
@@ -350,6 +361,7 @@ total = reduce(traced_add, passing, 0)
 print(f"total = {total}, mean = {total / len(passing):.1f}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-6) <!-- code-viz link -->
 
 In the pipeline trace, the score 54 becomes 59 after the map stage and then vanishes.  Which statement is accurate?
 
@@ -368,6 +380,7 @@ In the pipeline trace, the score 54 becomes 59 after the map stage and then vani
 
 Rebuild the big three from scratch, so you can see there is nothing hidden in them.
 
+<!-- run: id=cs374-liascript-functional-7 viz=env -->
 ```python
 from functools import reduce
 
@@ -406,6 +419,7 @@ print(f"  reduce    {reduce(lambda a, b: a + b, scores, 0)}")
 #         well-designed library should do.
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-7) <!-- code-viz link -->
 
 Expected output: each pair of lines identical.  TODO 2 is the interesting one: `reduce` is the general fold, and the other two are special cases of it.
 
@@ -427,6 +441,7 @@ You have already passed functions as arguments: every call to `map(lambda x: x*2
 
 A higher-order function takes functions as arguments *or* returns functions.  Today you also *return* them, which creates parameterized behavior without classes.
 
+<!-- run: id=cs374-liascript-functional-8 viz=env -->
 ```python
 # make_adder returns a function; each call creates a new closure
 def make_adder(n):
@@ -457,6 +472,7 @@ add5_twice = twice(add5)
 print(f"add5 twice applied to 0: {add5_twice(0)}")   # 10
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-8) <!-- code-viz link -->
 
 `compose = lambda f, g: lambda x: f(g(x))` is a higher-order function because it:
 
@@ -489,6 +505,7 @@ compose:   compose(f, g)(x) = f(g(x))    (g runs FIRST, then f)
 
 The cell below wraps each stage so it narrates itself.  It then swaps the first and last stages to show that composition order is part of the meaning:
 
+<!-- run: id=cs374-liascript-functional-9 viz=env -->
 ```python
 from functools import reduce
 
@@ -522,6 +539,7 @@ print("\nsame three functions, different order:")
 print(f"result: {messy('  Hello World  ')!r}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-9) <!-- code-viz link -->
 
 Notice that `traced` is itself a higher-order function.  It consumes a function and returns a new one with the same behavior plus narration, the same shape as `twice` and `compose`.
 
@@ -550,6 +568,7 @@ Partial application fixes some arguments of a function to produce a simpler one.
 
 Currying transforms a function `f(a, b)` into `f(a)(b)`: a chain of single-argument functions.
 
+<!-- run: id=cs374-liascript-functional-10 viz=env -->
 ```python
 from functools import partial
 
@@ -589,6 +608,7 @@ process = lambda lst: reduce(lambda a, b: a + b,
 print(f"process({data}) = {process(data)}")   # sum of elements > 0 after subtracting 2
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-10) <!-- code-viz link -->
 
 > **CTQ 4.4** `map_with(lambda x: x * 2)` returns a function.  How is this different from `map(lambda x: x * 2, data)`?  When is the list transformer version more useful?
 
@@ -606,6 +626,7 @@ In Python you have used `for` loops to walk through lists.  A `for` loop needs m
 
 In pure functional style there are no loops, only recursion.  Every loop corresponds to a recursive function:
 
+<!-- run: id=cs374-liascript-functional-11 viz=env -->
 ```python
 import sys
 sys.setrecursionlimit(10000)
@@ -646,6 +667,7 @@ def rsum(lst):
 print(f"rsum({nums}) = {rsum(nums)}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-11) <!-- code-viz link -->
 
 > **CTQ 5.1** Each recursive function has a base case and a recursive case.  Identify them for `my_map`.  What guarantees the recursion terminates?
 
@@ -703,6 +725,7 @@ The result is identical to the loop.  The difference: the functional version has
 
 ## 6.  Mutual Recursion and Structural Recursion
 
+<!-- run: id=cs374-liascript-functional-12 viz=env -->
 ```python
 import sys
 sys.setrecursionlimit(10000)
@@ -755,6 +778,7 @@ def mergesort(lst):
 print(f"mergesort([5,2,8,1,9,3]) = {mergesort([5,2,8,1,9,3])}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-12) <!-- code-viz link -->
 
 > **CTQ 6.1** `tree_sum` recurses on the *structure* of the data, not a loop counter.  What property of the tree guarantees this terminates?
 
@@ -766,6 +790,7 @@ print(f"mergesort([5,2,8,1,9,3]) = {mergesort([5,2,8,1,9,3])}")
 
 Everything above was Python written in a functional *style*.  Here is the same recursion with nowhere left to hide: no `def`, no statement, and no name except the one the lambda needs to call itself.
 
+<!-- run: id=cs374-liascript-functional-13 viz=env -->
 ```python
 # Define sumlist using a lambda and recursion.  This is the Scheme
 # definition from the Scheme session, transliterated one symbol at a time:
@@ -792,6 +817,7 @@ print(f"  oplist(mul, [2, 4, 6])    = {oplist(operator.mul, [2, 4, 6])}")
 print(f"  oplist(max, [2, 9, 6])    = {oplist(max, [2, 9, 6])}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-13) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -810,6 +836,7 @@ print(f"  oplist(max, [2, 9, 6])    = {oplist(max, [2, 9, 6])}")
 
 Part I claimed that pure functions parallelize safely because there is no shared state to protect.  Here is that claim as code you can time.  Nothing below takes a lock, and nothing needs one.
 
+<!-- run: id=cs374-liascript-functional-14 viz=env -->
 ```python
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import reduce
@@ -851,6 +878,7 @@ print("  reason this is safe is that factorial is pure.  Make it write to a")
 print("  global and every one of those guarantees evaporates.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-14) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -904,6 +932,7 @@ In Python, a parser has to work hard to turn the flat text `2 + 3 * 4` into a tr
 
 The claim above is easy to nod at and hard to feel.  Here it is as code you can run.  A Scheme program is a list, so we represent it as a Python list and evaluate it.  Then we write a macro: an ordinary function that takes a program as data, returns a different program as data, and hands it back to the evaluator.
 
+<!-- run: id=cs374-liascript-functional-16 viz=env -->
 ```python
 # A Scheme program IS a list. In Python, we write it as a Python list.
 #   (+ 1 2)            ->  ["+", 1, 2]
@@ -980,6 +1009,7 @@ print("  program was ALREADY the data structure, so no parsing step stands")
 print("  between you and it. That is homoiconicity, and macros are the payoff.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-16) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -994,6 +1024,7 @@ print("  between you and it. That is homoiconicity, and macros are the payoff.")
 
 Add a form to the language without touching the evaluator.
 
+<!-- run: id=cs374-liascript-functional-17 viz=env -->
 ```python
 import operator
 
@@ -1046,6 +1077,7 @@ for name, macro, src in [("when",   when_macro,   ["when", [">", "x", 0], ["*", 
         print(f"(not expanded yet: {type(e).__name__})")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-17) <!-- code-viz link -->
 
 Expected output as written: both lines report that the macro has not been written yet.  The unexpanded form still has `when` or `double` at its head, and the evaluator has never heard of either.  Once your macros return real forms, you should see `70` and `20`.
 
@@ -1142,6 +1174,7 @@ Compute the average word length of a paragraph using **exactly one expression**:
 
 The bracket you use decides the container; everything inside is unchanged.  Predict all four outputs, then run.
 
+<!-- run: id=cs374-liascript-functional-18 viz=env -->
 ```python
 import sys
 
@@ -1195,6 +1228,7 @@ print("any(n * n > 1000 for n in range(10**9)):",
 print("   that answered without building a billion squares: it stopped at the first True")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-18) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -1287,6 +1321,7 @@ A **tail call** is a recursive call that is the *last* operation in a function: 
 
 The cell below shows both a naive (non-tail) factorial and a tail-recursive accumulator version in Python.  It counts stack frames to make the difference concrete.
 
+<!-- run: id=cs374-liascript-functional-19 viz=env -->
 ```python
 import sys
 
@@ -1345,6 +1380,7 @@ print("Key insight: Scheme tail calls are as cheap as loops.")
 print("Python tail calls still grow the stack unless you add a trampoline manually.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-19) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -1367,6 +1403,7 @@ Scheme's local binding forms give names to intermediate values.  They differ in 
 
 The Python simulation below models each form's scoping rule explicitly so you can observe the difference.
 
+<!-- run: id=cs374-liascript-functional-20 viz=env -->
 ```python
 # Simulate Scheme's let / let* / letrec scoping rules in Python
 
@@ -1444,6 +1481,7 @@ new_b_star = new_a_star  # new_b sees new_a (7), not original a (3)
 print(f"let* swap: a={new_a_star}, b={new_b_star}  (WRONG - new_a leaked into new_b)")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-20) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -1460,6 +1498,7 @@ Model 11 brings the pieces together.  You now know how Scheme evaluates expressi
 
 Quasiquoting (the backtick, `\``) is a templating mechanism.  The entire form is treated as data (like `'`), *except* that subexpressions preceded by `,` (unquote) or `,@` (unquote-splicing) are evaluated.  It is the foundation of Scheme macros and a useful tool for building lists.
 
+<!-- run: id=cs374-liascript-functional-21 viz=env -->
 ```python
 # We cannot run Racket here, so we simulate quasiquoting semantics in Python
 # to make the evaluation rules concrete.
@@ -1557,6 +1596,7 @@ print("Sum of squares of even numbers:", sum_of_even_squares)
 print("Expected: 4 + 16 = 20")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-functional-21) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 

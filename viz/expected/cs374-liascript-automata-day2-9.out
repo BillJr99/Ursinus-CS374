@@ -1,0 +1,5 @@
+=== n-th symbol from the end is 'a' ===
+    n   NFA states   DFA states
+    1            2            2
+    2            3            4
+    3            4            8

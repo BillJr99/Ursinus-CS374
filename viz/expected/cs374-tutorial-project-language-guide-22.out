@@ -1,0 +1,16 @@
+=== Awaiting one after the other ===
+    A starts
+    A done after 0.3s
+    B starts
+    B done after 0.3s
+  elapsed 0.60s  ['A-result', 'B-result']
+
+=== Awaiting both together ===
+    A starts
+    B starts
+    A done after 0.3s
+    B done after 0.3s
+  elapsed 0.30s  ['A-result', 'B-result']
+
+One thread, two tasks. The second run is not faster because
+it used two CPUs; it is faster because A's WAIT overlapped B's.

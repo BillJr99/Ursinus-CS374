@@ -53,6 +53,7 @@ Each level of the grammar is one function.  This parser computes as it reads: wh
 
 ## Model 1: The Calculator from the Board
 
+<!-- run: id=cs374-liascript-calculator-variables-1 viz=env -->
 ```python
 # The calculator from the board: one function per grammar level.
 #   E -> T ( ( + | - ) T )*
@@ -109,6 +110,7 @@ for text in ["2 + 3 * 4", "(2 + 3) * 4", "7 - 2 - 1"]:
     print(text, "=", Parser(text).E())
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-variables-1) <!-- code-viz link -->
 
 > **CTQ 1.1** Which function decides that `*` binds tighter than `+`?  Point at the call that does it.
 
@@ -136,6 +138,7 @@ F    -> "(" E ")"  |  NUMBER  |  NAME
 
 The grammar stays LL(1), because the first token of a statement decides which rule applies.  Names have several characters, so this version splits the text into tokens first, where a character at a time was enough for numbers.
 
+<!-- run: id=cs374-liascript-calculator-variables-2 viz=env -->
 ```python
 import re
 
@@ -208,6 +211,7 @@ Parser("x = 3; x = x + 4; print x * 2;").parse()      # 14
 Parser("x = 1; y = 2; x = 10; print x + y; print x + y;").parse()     # 12, 12
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-variables-2) <!-- code-viz link -->
 
 ### Reading the Code
 

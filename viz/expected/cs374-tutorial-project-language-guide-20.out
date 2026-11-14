@@ -1,0 +1,4 @@
+  2 + 3    if-chain=5        match=5                                        same
+  2 * x    if-chain=6.0      match=6.0                                      same
+  10 - 4   if-chain=6        match="ERROR: unhandled: BinOp(op='-', left=Num(value=10), right=Num(value=4))" DIFFERENT
+  -x       if-chain=-3.0     match="ERROR: unhandled: Neg(expr=Var(name='x'))" DIFFERENT

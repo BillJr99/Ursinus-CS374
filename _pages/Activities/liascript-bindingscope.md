@@ -80,6 +80,7 @@ This model puts the vocabulary above to work.  As you fill in the table, ask two
 
 Run this cell to watch Python bind types at run time:
 
+<!-- run: id=cs374-liascript-bindingscope-1 viz=env -->
 ```python
 # Python binds types at runtime, not compile time
 x = 42
@@ -103,6 +104,7 @@ a = 200   # rebind a to a new object; b still points to 100
 print(f"After a = 200: a={a}, b={b}  (b unchanged)")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-bindingscope-1) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -114,6 +116,7 @@ print(f"After a = 200: a={a}, b={b}  (b unchanged)")
 
 Find the binding time of each fact below by experiment, not by assertion.
 
+<!-- run: id=cs374-liascript-bindingscope-2 viz=env -->
 ```python
 # For each probe: predict FIRST, in writing, then run.
 
@@ -146,6 +149,7 @@ show_limit()
 #       demonstrate, and how would a compiled language differ?
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-bindingscope-2) <!-- code-viz link -->
 
 Expected output: probe 2 prints `[1]` and then `[1, 2]`, not `[1]` twice.  That surprise is a binding-time fact.  Naming it correctly is the exercise.
 
@@ -209,6 +213,7 @@ This model runs the same program under both rules so you can watch them disagree
 
 Python is statically scoped.  Verify it:
 
+<!-- run: id=cs374-liascript-bindingscope-3 viz=env -->
 ```python
 # Static scope in action: Python resolves print(x) inside show() textually.
 
@@ -235,6 +240,7 @@ def outer():
 print(outer())                      # ('inner', 'outer')
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-bindingscope-3) <!-- code-viz link -->
 
 > **Watch out!**  Students often confuse shadowing with assignment.  When `demo()` writes `x = 99`, it does not change the global `x`.  It creates a new local binding that happens to share the same name.  The global `x` still equals `10` after `demo()` returns.  Shadowing creates a second binding in an inner region.  Assignment updates a binding that already exists.  These are different operations with different effects on the enclosing scope.
 
@@ -248,6 +254,7 @@ Here is the step-by-step trace of name lookup under static scope for the `demo()
 
 Now simulate dynamic scope in Python:
 
+<!-- run: id=cs374-liascript-bindingscope-4 viz=env -->
 ```python
 # Dynamic scope simulation using a stack
 scope_stack = [{"x": 10}]   # global frame
@@ -271,6 +278,7 @@ demo_dynamic()          # dynamic: show sees 99 (most recent x on stack)
 show_dynamic()          # static simulation: show sees 10 (global)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-bindingscope-4) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -285,6 +293,7 @@ Below is an interpreter for a tiny language.  Its scoping rule is hidden inside 
 
 Write a program in the mini-language whose output differs depending on the rule.  Run it, and use the answer to identify `RULE`.  Then predict what your own interpreter's `Environment` will do with the same program.
 
+<!-- run: id=cs374-liascript-bindingscope-5 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -367,6 +376,7 @@ run(probe1, "let x=10; f=fun _ -> x; let x=99; f(0)")
 print(f"\n  ...and the answer, once you have committed: RULE = {RULE!r}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-bindingscope-5) <!-- code-viz link -->
 
 Expected output: one number for probe 1, and then the rule revealed on the last line.  The exercise is worthless if you read the last line first.  Cover it, predict, and only then run.
 
@@ -408,6 +418,7 @@ Scope tells you where in the code a name is visible.  Lifetime tells you how lon
 
 Closures keep bindings alive after their scope ends:
 
+<!-- run: id=cs374-liascript-bindingscope-6 viz=env -->
 ```python
 def make_adder(n):
     # n's SCOPE: the body of make_adder
@@ -428,11 +439,13 @@ print(add5.__closure__[0].cell_contents)   # 5
 print(add10.__closure__[0].cell_contents)  # 10
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-bindingscope-6) <!-- code-viz link -->
 
 > **Watch out!**  The loop variable trap catches nearly every Python programmer eventually.  When a `lambda` (or any closure) captures a name from an enclosing scope, it captures the name, not the value the name held when the closure was created.  By the time the loop finishes, `i` equals `4`, and every closure refers to that same `i`.  This is not a bug in Python.  It is the correct behavior of late binding.  It is also different from what most people intend.  The fix is to force value capture at creation time, either with a default argument (`i=i`) or with a factory function that creates a fresh scope.
 
 The loop variable trap, scope versus lifetime:
 
+<!-- run: id=cs374-liascript-bindingscope-7 viz=env -->
 ```python
 # Classic bug: all closures share the SAME variable
 adders_broken = []
@@ -456,6 +469,7 @@ adders_fixed2 = [make_adder(i) for i in range(5)]
 print("Fixed2:", [f(0) for f in adders_fixed2])   # [0,1,2,3,4]
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-bindingscope-7) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -468,6 +482,7 @@ print("Fixed2:", [f(0) for f in adders_fixed2])   # [0,1,2,3,4]
 
 Settle the scope-versus-lifetime question for the language you are building.
 
+<!-- run: id=cs374-liascript-bindingscope-8 viz=env -->
 ```python
 def make_counter():
     count = 0
@@ -499,6 +514,7 @@ print("\n=== The decision for YOUR language ===")
 #         SEMANTICS.md, and name a language that made each choice.
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-bindingscope-8) <!-- code-viz link -->
 
 Expected output: `1, 2, 3` then `1`, and `[2, 2, 2]` against `[0, 1, 2]`.  The two counters do not interfere with each other.  That is the same mechanism as the two fixes to the loop bug, seen from the other side.
 
@@ -595,6 +611,7 @@ Python does more than distinguish "local" from "global."  It has four scope laye
 
 Python resolves names in this order: **L**ocal -> **E**nclosing -> **G**lobal -> **B**uilt-in.
 
+<!-- run: id=cs374-liascript-bindingscope-9 viz=env -->
 ```python
 # LEGB Rule in action
 x = "global"              # G: global scope
@@ -626,11 +643,13 @@ import builtins
 print(f"All built-ins: {len(dir(builtins))} names")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-bindingscope-9) <!-- code-viz link -->
 
 > **Watch out!**  Python scopes are function-level, not block-level.  In Java or C, a variable declared inside an `if` block or `for` loop is local to that block.  In Python, `if` blocks and `for` loops do not create a new scope.  A variable introduced inside them belongs to the enclosing function (or module).  So a variable first assigned inside an `if` body is accessible throughout the rest of the function.  This surprises programmers coming from Java or C.  It also means Python's `global` keyword is nothing like C's storage classes.  Python's `global` is a declaration inside a function that says "when I write this name, find it in the module scope, not here."
 
 The `nonlocal` keyword fixes the counter bug:
 
+<!-- run: id=cs374-liascript-bindingscope-10 viz=env -->
 ```python
 # Classic bug: cannot assign to enclosing scope without 'nonlocal'
 def make_counter_broken():
@@ -658,6 +677,7 @@ c = make_counter_fixed()
 print(c(), c(), c())        # 1 2 3
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-bindingscope-10) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 

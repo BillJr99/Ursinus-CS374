@@ -1,0 +1,10 @@
+['l', 'x', 'r', 'r', 'l', 's']
+None
+# note
+'/* plain */'        class=True  lookahead=True
+'/* a * b */'        class=False lookahead=True
+'/* x / y */'        class=False lookahead=True
+'/* one */ two */'   class=False lookahead=False
+'x = 1'                True
+'# TODO: fix'          False
+'y = 2  # todo later'  True

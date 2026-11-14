@@ -1,0 +1,7 @@
+Before CSE:
+  ((x+1)*(x+1))
+
+After CSE:
+  let _cse1=(x+1) in
+  let _cse2=(_cse1*_cse1) in
+  _cse2

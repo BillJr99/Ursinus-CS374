@@ -1,0 +1,22 @@
+Identity: (λx.x) 5
+  ((λx.x) 5)
+  ->β 5
+  = 5 (normal form)
+
+Constant: ((λx.λy.x) a) b
+  (((λx.(λy.x)) a) b)
+  ->β (λy.a)
+  ->β a
+  = a (normal form)
+
+Self-apply identity to identity: (λx.x x)(λy.y)
+  ((λx.(x x)) (λy.y))
+  ->β ((λy.y) (λy.y))
+  ->β (λy.y)
+  = (λy.y) (normal form)
+
+Apply-twice: (λf.λx.f(f x)) g a
+  (((λf.(λx.(f (f x)))) g) a)
+  ->β (λx.(g (g x)))
+  ->β (g (g a))
+  = (g (g a)) (normal form)

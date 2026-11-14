@@ -119,6 +119,7 @@ To remember: the parse tree records how the grammar matched the input, and the A
 
 This model represents an AST in Python.  Each node type is a dataclass, so its fields have names instead of positions.  Then `pretty`, a pretty printer, walks the tree and prints each node on its own indented line, so you can read the tree's shape at a glance.  A tree walk visits every node in order, and it is the one pattern you will use for everything: printing, evaluating, type checking, compiling.  Once you understand `pretty`, the evaluator in the *From Calculator to Scheme* activity is a small step.
 
+<!-- run: id=cs374-liascript-ast-1 viz=env -->
 ```python
 from dataclasses import dataclass, field
 from typing import Any, List, Optional
@@ -224,6 +225,7 @@ print("AST for 2+3*4:")
 pretty(tree2)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-ast-1) <!-- code-viz link -->
 
 > **CTQ 1.4** The two trees have the same nodes but different shapes.  Which one evaluates to 20 and which to 14?  Verify by hand.
 
@@ -246,6 +248,7 @@ pretty(tree2)
 
 Answer CTQ 1.5 and CTQ 1.6 before you run this.  The cell below is `pretty` with two or three lines changed, cut down to the two node types the trees need.
 
+<!-- run: id=cs374-liascript-ast-2 viz=env -->
 ```python
 import traceback
 from dataclasses import dataclass
@@ -279,6 +282,7 @@ except Exception as e:
     traceback.print_exc()
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-ast-2) <!-- code-viz link -->
 
 You should see:
 
@@ -297,6 +301,7 @@ You should see:
 
 Add a node type and watch the silent-fallthrough bug happen to you, on purpose.
 
+<!-- run: id=cs374-liascript-ast-3 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any, List
@@ -338,6 +343,7 @@ print()
 print("Now add the arm and rerun. Every node should appear.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-ast-3) <!-- code-viz link -->
 
 Expected output before your edit: one `Unknown:` line swallowing five nodes (the `Call` and the four nodes under it).  After your edit: the full tree, all seven nodes.  Remember this the next time an evaluator "works" but quietly ignores a construct.
 
@@ -372,6 +378,7 @@ To remember: a dataclass per node type gives every field a name, and a tree walk
 
 A tree walk does not have to print anything.  It can also compute facts about a program.  This model shows three read-only analyses: counting nodes (useful for complexity budgets), measuring depth (which tells you how deep the evaluator's call stack can get), and collecting all variable names (a first form of scope analysis).  Each one accumulates something different on the way back up the recursion: a count, a maximum, or a set.  These same three patterns recur constantly in real compilers.
 
+<!-- run: id=cs374-liascript-ast-4 viz=env -->
 ```python
 from dataclasses import dataclass, field
 from typing import Any, List, Optional
@@ -470,6 +477,7 @@ print(f"\nDeep expr node count: {count_nodes(deep)}")
 print(f"Deep expr depth:      {depth(deep)}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-ast-4) <!-- code-viz link -->
 
 > **CTQ 2.1** Which feature (deeply nested arithmetic, while loops, or if/else chains) drives `depth` highest?  What does this suggest about the recursion depth needed by your evaluator?
 
@@ -487,6 +495,7 @@ Switching a parser from tuples to node classes takes one line per grammar rule. 
 
 The recursive-descent parser you build in the *Recursive Descent Parsing* activity constructs exactly these nodes.  Every place the parser would build a tuple, it builds a node instead: `('+', left, right)` becomes `BinOp('+', left, right)`.  The fold-left associativity logic, the tier structure, and the lookahead stay untouched.
 
+<!-- run: id=cs374-liascript-ast-5 viz=env -->
 ```python
 from dataclasses import dataclass, field
 from typing import Any
@@ -575,6 +584,7 @@ print("AST for 3 + -(2 * 4):")
 pretty(tree)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-ast-5) <!-- code-viz link -->
 
 > **CTQ 3.1** The test `('NUM', 3)` vs `Num(3)`: why does the change from tuple to dataclass make debugging easier?  Hint: try `repr(('*', Num(2), Num(3)))` vs `repr(BinOp('*', Num(2), Num(3)))`.
 
@@ -602,6 +612,7 @@ Take `2 * 3 + x * (4 + 1)` and fold it on paper, innermost first.  Fill in the n
 
 Settle two questions before you look at the code.  Does folding ever need a second pass over the tree?  And is `x * 0` foldable to `0`?  Argue both, then check.
 
+<!-- run: id=cs374-liascript-ast-6 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -666,6 +677,7 @@ print("  Because fold() recurses into the children BEFORE testing the parent,")
 print("  one bottom-up pass already reaches a fixed point here.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-ast-6) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -688,6 +700,7 @@ print("  one bottom-up pass already reaches a fixed point here.")
 
 Extend the optimizer with one more rewrite and check that you have not broken anything.
 
+<!-- run: id=cs374-liascript-ast-7 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -734,6 +747,7 @@ for tree in cases:
     print(f"  {show(tree):22} -> {show(fold(tree))}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-ast-7) <!-- code-viz link -->
 
 Expected output once TODOs 1 and 2 are done: the first two collapse to `x` and `y`, and the fourth collapses all the way to `a`.  What you do with the third is a design decision you should be able to defend.
 
@@ -747,6 +761,7 @@ To remember: an optimizer is a tree walk that returns a new tree, and it folds c
 
 Unparsing turns an AST back into valid source text.  The parser goes from text to tree; `unparse` (also called pretty-printing) goes the other way.  This matters for testing: if you parse a string, unparse the tree, and parse the result again, you should get an identical tree.  This round-trip property is one of the strongest automated checks you can write for a language implementation.  It also raises a challenge: the AST discards parentheses, so `unparse` must put them back only where operator precedence requires them, no more and no less.
 
+<!-- run: id=cs374-liascript-ast-8 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -801,6 +816,7 @@ print(f"(5-3)-1 unparse: {unparse(t3)}")
 print(f"5-(3-1) unparse: {unparse(t4)}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-ast-8) <!-- code-viz link -->
 
 > **CTQ 5.1** The `unparse` function adds parentheses "only when needed."  How does `parent_prec` enforce this?  Trace through `unparse(t1)` step by step.
 
@@ -897,6 +913,7 @@ This connection makes the AST concrete.  The tree is a compiler data structure, 
 
 > *Adapted from [`polish.py`](https://github.com/chuckallison/foundations-of-computing/blob/main/code/polish.py) in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
+<!-- run: id=cs374-liascript-ast-9 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Optional
@@ -974,6 +991,7 @@ for label, tree, expected_val in [
     print()
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-ast-9) <!-- code-viz link -->
 
 **CTQ M6.1** The two trees above represent the same tokens in a different order: `(1+2)*3` vs `1+2*3`.  What physical property of the tree (depth, root label, or shape) encodes operator precedence?  Trace `eval_tree(tree2)` step by step to confirm that multiplication is evaluated before addition.
 

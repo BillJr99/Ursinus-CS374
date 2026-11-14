@@ -1,0 +1,16 @@
+=== Fully annotated: checked ===
+  add(2, 3)       = 5
+  add('a', 3)     -> TypeError: add(x=...): expected int, got str
+
+=== Fully dynamic: Any silences everything ===
+  sloppy('a', 'b') = 'ab'   (no complaint)
+  sloppy('a', 3)  -> TypeError from PYTHON, not from the checker:
+                     can only concatenate str (not "int") to str
+
+=== Half typed: the boundary ===
+  half_typed(1, 2) = 3
+  half_typed('a','b') -> TypeError: half_typed(x=...): expected int, got str
+  x was checked and rejected; y would have been let through.
+
+Unsoundness, stated plainly: sloppy() passes the checker and still
+blows up at runtime. That is gradual typing working as designed.

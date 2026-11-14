@@ -1,0 +1,13 @@
+Template: ['define', ',name', ',x']
+Result:   ['define', 'Alice', 42]
+
+Template: [',fname', [',@', 'args']]
+Result:   ['my-func', 1, 2, 3]
+
+Original list: [1, 2, 3, 4, 5]
+Squares      : [1, 4, 9, 16, 25]
+Evens        : [2, 4]
+Sum          : 15
+
+Sum of squares of even numbers: 20
+Expected: 4 + 16 = 20

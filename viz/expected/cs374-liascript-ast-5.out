@@ -1,0 +1,7 @@
+AST for 3 + -(2 * 4):
+BinOp('+')
+  Num(3)
+  UnaryOp('-')
+    BinOp('*')
+      Num(2)
+      Num(4)

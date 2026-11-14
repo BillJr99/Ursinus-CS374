@@ -106,6 +106,7 @@ The fourth row catches people.  Alternation binds *loosest*, so `ab|cd` means "e
 
 Commit to your predictions above.  Then run this and mark every row where the machine disagreed with you.
 
+<!-- run: id=cs374-liascript-regex-1 viz=env -->
 ```python
 import re
 
@@ -124,11 +125,13 @@ for pattern, tests in patterns:
         print(f"  {s!r:12} -> {'MATCH' if m else 'no match'}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-regex-1) <!-- code-viz link -->
 
 ### Reading the Code
 
 - `re.fullmatch` requires the pattern to consume the entire string.  That is the right choice for a *theory* demonstration.  A regular expression denotes a set of strings, and `fullmatch` asks exactly "is this string in that set?"  `re.search`, which Day 2 uses, asks a different question: "does the set have a member somewhere inside this string?"
 
+<!-- run: id=cs374-liascript-regex-2 viz=env -->
 ```python
 import re
 line = "x = 3.14;"
@@ -136,6 +139,7 @@ print("fullmatch:", re.fullmatch(r"[0-9]+\.[0-9]+", line))
 print("search:   ", re.search(r"[0-9]+\.[0-9]+", line).group())
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-regex-2) <!-- code-viz link -->
 
 `fullmatch` asks whether the whole line is a float, and `search` asks whether a float appears somewhere inside it.
 
@@ -153,6 +157,7 @@ print("search:   ", re.search(r"[0-9]+\.[0-9]+", line).group())
 
 Write patterns for three specified sets.  Then check them against inputs designed to catch the usual mistakes.
 
+<!-- run: id=cs374-liascript-regex-3 viz=env -->
 ```python
 import re
 
@@ -182,6 +187,7 @@ for pattern, desc, yes, no in tasks:
         print(f"    {s!r:8} should NOT match -> {'ok' if not ok else 'FAILED'}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-regex-3) <!-- code-viz link -->
 
 Expected output once all three are written: every line reads `ok`.  The third task is the interesting one.  Think about what "a pair of characters" looks like as a single starred group.
 
@@ -208,6 +214,7 @@ This matters for two reasons.  First, the class of languages you can describe ne
 
 There is one exception, and you should know it now so it does not surprise you later.  A backreference means "the same text again."  The pattern `(a+)b\1` matches some a's, a b, then the same a's again, which is the language $a^n b a^n$, and no regular expression built from the three primitives can describe it.  That leaves the regular languages behind.  Most modern "regex" engines are therefore not, strictly, regular expression engines.  Day 2 returns to this when it looks at what the engine actually does.
 
+<!-- run: id=cs374-liascript-regex-4 viz=env -->
 ```python
 import re
 back = r"(a+)b\1"                       # some a's, a b, then the SAME a's again
@@ -215,6 +222,7 @@ for s in ["aba", "aabaa", "aaabaaa", "aabaaa", "abaa"]:
     print(f"  {s!r:10} {bool(re.fullmatch(back, s))}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-regex-4) <!-- code-viz link -->
 
 ## Examples: Building an Identifier Pattern by Hand
 
@@ -239,6 +247,7 @@ Write each one twice: once in the three primitives only, and once with sugar.  Y
 
 This model writes each token pattern both ways and tests them against the same inputs.  If the sugar is really sugar, the two columns must agree on every row.
 
+<!-- run: id=cs374-liascript-regex-5 viz=env -->
 ```python
 import re
 
@@ -287,6 +296,7 @@ print("the lines readable. On every input shown, the two patterns describe the")
 print("same language. Sugar adds readability, never power.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-regex-5) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -297,12 +307,14 @@ print("same language. Sugar adds readability, never power.")
 
 > **Watch out.**  `[0-9]+` and `\d+` are *almost* the same thing.  In Python, `\d` matches Unicode decimal digits, which include characters like the Devanagari digit `४`.  For a lexer, that is usually not what you want, and `[0-9]` says exactly what you mean.  Be deliberate.
 
+<!-- run: id=cs374-liascript-regex-6 viz=env -->
 ```python
 import re
 for s in ["42", "\u096a\u0968"]:          # the second string is Devanagari four, two
     print(repr(s), "\\d+:", bool(re.fullmatch(r"\d+", s)), " [0-9]+:", bool(re.fullmatch(r"[0-9]+", s)))
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-regex-6) <!-- code-viz link -->
 
 ### Practical Examples: Is This URL Local?
 
@@ -348,6 +360,7 @@ The last piece is the one that keeps the check honest.  Without it, `http://loca
 
 Write the token patterns for a small language, and make the test suite pass.
 
+<!-- run: id=cs374-liascript-regex-7 viz=env -->
 ```python
 import re
 
@@ -381,11 +394,13 @@ for name, pattern in SPEC.items():
               f"{'ok' if not re.fullmatch(pattern, s) else 'FAILED'}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-regex-7) <!-- code-viz link -->
 
 Expected output once all four are written: every line reads `ok`.  `INT` is the hard one, because "no leading zeros unless the number is 0" is an alternation, not a repetition.
 
 One overlap in any token spec like this one is worth seeing now: a keyword is also a perfectly good identifier.
 
+<!-- run: id=cs374-liascript-regex-8 viz=env -->
 ```python
 import re
 ident, kw = r"[A-Za-z_][A-Za-z0-9_]*", r"if|else|while"
@@ -393,6 +408,7 @@ for s in ["if", "iffy", "while", "x"]:
     print(f"  {s!r:8} ident={bool(re.fullmatch(ident, s))!s:5} keyword={bool(re.fullmatch(kw, s))}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-regex-8) <!-- code-viz link -->
 
 `if` and `while` belong to both sets, and deciding which token they become is the question the *Tokens and Scanning* activity answers.
 
@@ -421,6 +437,7 @@ A negated class is still exactly one character, and it matches a newline unless 
 
 At each position, the lookahead asks "does `*/` start here?"  Only when the answer is no does the `.` take one character.  Predict each line of output before you run this:
 
+<!-- run: id=cs374-liascript-regex-9 viz=env -->
 ```python
 import re
 
@@ -440,6 +457,7 @@ for line in ["x = 1", "# TODO: fix", "y = 2  # todo later"]:
     print(f"{line!r:22} {bool(re.fullmatch(r'(?!.*TODO).*', line))}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-regex-9) <!-- code-viz link -->
 
 The class version rejects `/* a * b */` and `/* x / y */`, which are perfectly good comments, because each one contains a lone `*` or `/`.  The lookahead version accepts both.  Both reject `/* one */ two */`, because its body contains `*/`.  A `.` does not match a newline, so a comment that spans lines needs the `re.DOTALL` flag.
 
@@ -483,6 +501,7 @@ For the line `Hopper, Grace  09:45  ADD R1 R2`, fill in the last column with you
 
 ## Model 3: Reading Groups Back Out
 
+<!-- run: id=cs374-liascript-regex-10 viz=env -->
 ```python
 import re
 
@@ -505,6 +524,7 @@ print("findall, 1 group: ", re.findall(r"R(\d)", line))
 print("findall, 2 groups:", re.findall(r"(R)(\d)", line))
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-regex-10) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -517,6 +537,7 @@ print("findall, 2 groups:", re.findall(r"(R)(\d)", line))
 
 A capture group pulls one piece out of a match.  This function reads a course level from names like `CS173-NAME`, `CS-173-NAME`, and `MATH210-NAME`:
 
+<!-- run: id=cs374-liascript-regex-11 viz=env -->
 ```python
 import re
 from typing import Optional
@@ -532,6 +553,7 @@ for s in ["CS173-NAME", "CS-173-NAME", "MATH210-NAME", "CS374", "Intro", "", Non
     print(f"{s!r:16} {parse_course_level(s)}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-regex-11) <!-- code-viz link -->
 
 - `^\s*` skips any leading whitespace.
 - `[A-Za-z]+` matches the department letters (`CS`, `MATH`), and `-?` allows an optional hyphen after them.
@@ -545,6 +567,7 @@ for s in ["CS173-NAME", "CS-173-NAME", "MATH210-NAME", "CS374", "Intro", "", Non
 
 Before you run it, predict line `c.` and both lines of `d.`.
 
+<!-- run: id=cs374-liascript-regex-12 viz=env -->
 ```python
 import re
 
@@ -579,6 +602,7 @@ print("f.", re.sub(r"(\d{2}):(\d{2})", to_12h, "standup 09:45, lunch 12:30, demo
 print("  ", re.sub(r"\b(let|var)\s+(\w+)", lambda m: f"{m.group(1)} {m.group(2).upper()}", "let x = 1; var total = x"))
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-regex-12) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -599,6 +623,7 @@ print("  ", re.sub(r"\b(let|var)\s+(\w+)", lambda m: f"{m.group(1)} {m.group(2).
 
 Write a `(pattern, replacement)` pair for each rewrite.  Each one keeps part of the match and changes or rearranges the rest.
 
+<!-- run: id=cs374-liascript-regex-13 viz=env -->
 ```python
 import re
 
@@ -627,6 +652,7 @@ for desc, rule, given, want in TASKS:
     print(f"  want: {want!r}  -> {'ok' if got == want else 'FAILED'}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-regex-13) <!-- code-viz link -->
 
 Expected output once all three are written: every line reads `ok`.  The card number is the instructive one, because only the last four digits need a group; the first twelve are matched and thrown away.
 
@@ -651,6 +677,7 @@ Predict with your team before you run it:
 | (d) | Which of the three string literals match? | ? |
 | (f) | What does `lastgroup` say for `=`? | ? |
 
+<!-- run: id=cs374-liascript-regex-14 viz=env -->
 ```python
 import re
 
@@ -690,6 +717,7 @@ for m in TOKEN.finditer("total = x1 + 42"):
         print("f.", f"{m.lastgroup:3}", repr(m.group()))
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-regex-14) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -710,6 +738,7 @@ for m in TOKEN.finditer("total = x1 + 42"):
 
 Write one pattern with named groups for each task.  The harness reads your groups by name, so the names must match the ones listed.
 
+<!-- run: id=cs374-liascript-regex-15 viz=env -->
 ```python
 import re
 
@@ -737,6 +766,7 @@ for desc, pattern, given, want in TASKS:
     print(f"  want: {want}  -> {'ok' if got == want else 'FAILED'}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-regex-15) <!-- code-viz link -->
 
 Expected output once all three are written: every line reads `ok`.  The version number needs an optional group, so `patch` must come back as `None` when it is absent.  The tag pair needs `(?P=tag)` in the closing tag.  A pattern that matches `<b>bold</i>` has not used it.
 

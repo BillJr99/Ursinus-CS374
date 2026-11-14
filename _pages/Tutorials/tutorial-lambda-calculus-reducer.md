@@ -41,6 +41,7 @@ This tutorial builds a complete, correct lambda calculus reducer in Python, the 
 
 The lambda calculus has exactly three syntactic forms.  Each gets one class:
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-1 viz=env -->
 ```python
 # lc_ast.py - Lambda Calculus AST
 
@@ -87,6 +88,7 @@ print("Identity:", identity)
 print("True:    ", true_)
 print("False:   ", false_)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-1) <!-- code-viz link -->
 
 ---
 
@@ -258,6 +260,7 @@ print(beta_step(id_app))   # z
 
 **Normal-order** always reduces the **leftmost, outermost** redex.  This is the strategy that finds a normal form (a term with no redex left to reduce) whenever one exists.
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-5 viz=env -->
 ```python
 def normal_order_step(term):
     """
@@ -299,6 +302,7 @@ def reduce_normal(term, max_steps=1000, trace=False):
     print(f"[reducer:normal] Step limit ({max_steps}) exceeded - may diverge")
     return term, max_steps
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-5) <!-- code-viz link -->
 
 ---
 
@@ -306,6 +310,7 @@ def reduce_normal(term, max_steps=1000, trace=False):
 
 **Applicative-order** reduces arguments first.  This is what Python, Java, C, and most languages do.
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-6 viz=env -->
 ```python
 def applicative_order_step(term):
     """
@@ -343,6 +348,7 @@ def reduce_applicative(term, max_steps=1000, trace=False):
     print(f"[reducer:applicative] Step limit ({max_steps}) exceeded")
     return term, max_steps
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-6) <!-- code-viz link -->
 
 ---
 
@@ -542,6 +548,7 @@ print("REPL defined. Call repl_lc() to start.")
 
 Before submitting the lambda calculus assignment, verify your reducer passes all of these:
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-8 viz=env -->
 ```python
 # verification.py - tests every component
 
@@ -576,6 +583,7 @@ for desc, term_str, expected in tests:
     except Exception as e:
         print(f"  FAIL {desc}: {e}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-8) <!-- code-viz link -->
 
 ---
 
@@ -849,6 +857,7 @@ By the end of this section, you will be able to:
 
 ## Warm-Up: The Named Baseline
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-9 viz=env -->
 ```python
 # Warm-up: confirm the recursive baseline
 def factorial_named(n):
@@ -857,6 +866,7 @@ def factorial_named(n):
 print([factorial_named(n) for n in range(8)])
 # [1, 1, 2, 6, 24, 120, 720, 5040]
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-9) <!-- code-viz link -->
 
 **Goal:** Rewrite `factorial` with no `def`, no name, no assignment, using only `lambda`.
 
@@ -868,6 +878,7 @@ The big idea in this step is embarrassingly simple once you see it: if you canno
 
 If a function cannot refer to itself by name, the next best thing is to **receive itself as an argument**:
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-10 viz=env -->
 ```python
 # Step 1: a factorial that receives "itself" as its first argument
 # If we call it "self", the recursive call becomes self(self)(n-1)
@@ -879,6 +890,7 @@ factorial_v1 = step1(step1)
 print(factorial_v1(5))   # 120
 print(factorial_v1(7))   # 5040
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-10) <!-- code-viz link -->
 
 This works!  But `step1(step1)` is repetitive, and the body has `self(self)(n-1)` instead of the clean `self(n-1)` we would prefer.  The next steps clean this up.
 
@@ -900,6 +912,7 @@ The self-application ugliness (`self(self)(n-1)`) is a leaky abstraction: the *c
 
 The `self(self)(n-1)` pattern is ugly.  Let's hide it inside a helper `rec`:
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-11 viz=env -->
 ```python
 # Step 2: wrap the self-application so the body is clean
 step2 = lambda self: (
@@ -913,6 +926,7 @@ print(factorial_v2(6))   # 720
 # So rec(n-1) = self(self)(n-1)
 # Which is the same as step1's self(self)(n-1), but hidden in rec.
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-11) <!-- code-viz link -->
 
 Now the body `lambda n: 1 if n == 0 else n * rec(n - 1)` looks like a normal recursive function that calls `rec`.  The self-application machinery is hidden in `rec`'s definition.
 
@@ -924,6 +938,7 @@ This is the key abstraction step.  Once the self-application plumbing is hidden 
 
 Notice that `lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1)` is just the factorial *logic*: a function that takes its recursive call-stub and returns the actual implementation.  Let's name this "the step" or "the generator":
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-12 viz=env -->
 ```python
 # Separate the factorial logic from the fixed-point machinery
 factorial_generator = lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1)
@@ -940,6 +955,7 @@ fib_generator  = lambda rec: lambda n: n if n <= 1 else rec(n-1) + rec(n-2)
 fib_v3         = Y_machinery(fib_generator)
 print([fib_v3(n) for n in range(10)])   # [0,1,1,2,3,5,8,13,21,34]
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-12) <!-- code-viz link -->
 
 **This is the Z combinator** (the applicative-order version of Y): `Y_machinery` takes any recursive-function-generator and returns the recursive function.
 
@@ -978,6 +994,7 @@ This is the **unfolding equation**: $$Y\ g = g\ (Y\ g)$$, so $$g$$ receives the 
 >
 > In the pure Y combinator, the body contains `x(x)` as a sub-expression.  Python (like most languages) evaluates *both* arguments before making a function call.  So when it processes `(lambda x: f(x(x)))(lambda x: f(x(x)))`, it tries to evaluate the argument `lambda x: f(x(x))` applied to itself *immediately* (before any base case can fire), resulting in infinite recursion.  The fix is eta-expansion: wrap `x(x)` in `lambda v: x(x)(v)`, which delays evaluation until `v` is actually provided.  This single change converts the call-by-name Y into the call-by-value Z.
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-13 viz=env -->
 ```python
 # Y = lambda f: (lambda x: f(x(x)))(lambda x: f(x(x)))
 # In Python (applicative order), evaluating x(x) in the argument position
@@ -990,6 +1007,7 @@ Z = lambda f: (lambda x: f(lambda v: x(x)(v)))(lambda x: f(lambda v: x(x)(v)))
 factorial_via_Z = Z(lambda rec: lambda n: 1 if n == 0 else n * rec(n - 1))
 print([factorial_via_Z(n) for n in range(8)])
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-13) <!-- code-viz link -->
 
 The Z combinator differs from Y only in the `lambda v:` wrapper: instead of `x(x)` (evaluated immediately), it is `lambda v: x(x)(v)` (a function, evaluated only when called).  This one-token change converts Y from a normal-order term to an applicative-order term.  (You can watch the difference with the reducer you built in Part 4: normal order finds the base case; applicative order hits the step limit.)
 
@@ -1058,6 +1076,7 @@ $$
 
 The value $$Y\ g$$ is a program that *unfolds itself one step whenever called*, which is exactly what a recursive function does.  Recursion is **the fixed point of an unrolled computation**.
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-14 viz=env -->
 ```python
 # Fixed point illustration (not Y, but the idea):
 import math
@@ -1089,6 +1108,7 @@ for n in range(8):
     assert via_Y == via_gen, f"Fixed point violated at n={n}"
 print("Fixed point verified: Z(fact_gen)(n) == fact_gen(Z(fact_gen))(n) for all tested n")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-14) <!-- code-viz link -->
 
 ---
 
@@ -1098,6 +1118,7 @@ Real-world code rarely spells out `Z = lambda f: (lambda x: ...)`.  Instead, pro
 
 Several practical patterns implement the same idea without writing Y explicitly:
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-15 viz=env -->
 ```python
 # Pattern 1: default argument hack (exploits Python's eager default binding)
 factorial_default = lambda n, rec=None: (
@@ -1124,6 +1145,7 @@ namespace['even'] = lambda n: True  if n == 0 else namespace['odd'](n - 1)
 namespace['odd']  = lambda n: False if n == 0 else namespace['even'](n - 1)
 print(namespace['even'](10), namespace['odd'](11))   # True True
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-15) <!-- code-viz link -->
 
 ---
 
@@ -1190,11 +1212,13 @@ In this tutorial we built computation from three syntactic forms: variables, abs
 
 ## Setting Up
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-16 viz=env -->
 ```python
 # Every bird is a Python callable. We verify by running the cells below.
 # No libraries required.
 print("Ready to meet the flock.")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-16) <!-- code-viz link -->
 
 ---
 
@@ -1265,6 +1289,7 @@ $$
 
 The Idiot bird passes its argument through unchanged.  In lambda calculus it is $$\lambda a.\ a$$. In Haskell it is `id`.  In mathematics it is the identity function on every set.  Note that $$\mathbf{I}$$ is not primitive given S and K: $$\mathbf{S}\ \mathbf{K}\ \mathbf{K}\ a \Rightarrow \mathbf{K}\ a\ (\mathbf{K}\ a) \Rightarrow a$$, so $$\mathbf{I} = \mathbf{S}\ \mathbf{K}\ \mathbf{K}$$.
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-17 viz=env -->
 ```python
 I = lambda a: a
 
@@ -1272,6 +1297,7 @@ print(I(42))          # 42
 print(I("hello"))     # hello
 print(I(I)(42))       # 42  -- identity of identity is still identity
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-17) <!-- code-viz link -->
 
 ---
 
@@ -1285,6 +1311,7 @@ $$
 
 The Kestrel takes two arguments and returns the first, discarding the second.  In lambda calculus it is $$\lambda a.\ \lambda b.\ a$$, the encoding of **true** in Church booleans!  In Haskell it is `const`.  In Python:
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-18 viz=env -->
 ```python
 I = lambda a: a
 K = lambda a: lambda b: a
@@ -1298,6 +1325,7 @@ false = lambda a: lambda b: b   # we'll derive this from KI below
 KI    = K(I)                    # KI a b = K I a b = I b = b -- this IS Church false!
 print(KI("ignored")("returned"))  # returned -- K(I) behaves as false / second-selector
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-18) <!-- code-viz link -->
 
 ---
 
@@ -1311,6 +1339,7 @@ $$
 
 The Bluebird composes two functions: apply $$g$$ first, then $$f$$. In lambda calculus it is $$\lambda f.\ \lambda g.\ \lambda x.\ f\ (g\ x)$$. In Haskell it is `(.)`.  It is one of the most-used birds in practice because function composition is the primary way to build programs in functional style.
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-19 viz=env -->
 ```python
 K = lambda a: lambda b: a
 B = lambda f: lambda g: lambda x: f(g(x))
@@ -1329,6 +1358,7 @@ S = lambda a: lambda b: lambda c: a(c)(b(c))
 B_from_SK = S(K(S))(K)
 print(B_from_SK(add_one)(double)(5))  # 11 -- same as B(add_one)(double)(5)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-19) <!-- code-viz link -->
 
 ---
 
@@ -1342,6 +1372,7 @@ $$
 
 The Cardinal flips the argument order of a two-argument function.  In lambda calculus it is $$\lambda f.\ \lambda a.\ \lambda b.\ f\ b\ a$$. In Haskell it is `flip`.
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-20 viz=env -->
 ```python
 K = lambda a: lambda b: a
 S = lambda f: lambda g: lambda x: f(x)(g(x))
@@ -1356,6 +1387,7 @@ print(subtract_10(3))                   # 3 - 10 = -7 (without flip: 10 - 3 = 7)
 C_from_SK = S(B(B)(S))(K(K))
 print(C_from_SK(subtract)(10)(3))   # -7
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-20) <!-- code-viz link -->
 
 ---
 
@@ -1369,6 +1401,7 @@ $$
 
 The Starling is the heart of the calculus.  It passes $$x$$ to both $$f$$ and $$g$$, then applies the result of $$f(x)$$ to the result of $$g(x)$$. This is the combinator version of *sharing an argument*: both branches see $$x$$, so duplication is built in.  **S and K together are Turing complete**: any computable function can be expressed using only these two birds.
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-21 viz=env -->
 ```python
 K = lambda a: lambda b: a
 S = lambda f: lambda g: lambda x: f(x)(g(x))
@@ -1384,6 +1417,7 @@ succ = S(add)(K(1))   # succ x = add x (K 1 x) = add x 1 = x + 1
 print(succ(5))   # 6
 print(succ(10))  # 11
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-21) <!-- code-viz link -->
 
 ---
 
@@ -1397,6 +1431,7 @@ $$
 
 The Mockingbird applies its argument to itself.  In lambda calculus it is $$\lambda a.\ a\ a$$. It is the self-application operator, and $$\mathbf{M}\ \mathbf{M}$$ is the combinatory equivalent of $$\Omega$$; it reduces forever.  But applied carefully, the Mockingbird is the basis for fixed-point combinators and recursion in the combinator calculus.
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-22 viz=env -->
 ```python
 # We can't actually call M(M) -- infinite loop! 
 # But M applied to other combinators is safe:
@@ -1414,6 +1449,7 @@ double = lambda x: x * 2
 # This shows M is "dangerous" -- it only makes sense with combinators that expect functions
 print("M is the self-application bird")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-22) <!-- code-viz link -->
 
 > **Watch out!  Do not evaluate M(M)**
 >
@@ -1431,6 +1467,7 @@ $$
 
 The Warbler duplicates its second argument, passing it twice to $$f$$. This is different from $$\mathbf{M}$$: $$\mathbf{W}$$ feeds $$x$$ to a two-argument function $$f$$, not to $$x$$ itself.
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-23 viz=env -->
 ```python
 W = lambda f: lambda x: f(x)(x)
 
@@ -1446,6 +1483,7 @@ is_zero = W(lambda x: lambda y: x == 0 and y == 0)
 print(W(eq)(5))    # eq 5 5 = True
 print(W(eq)(5))    # True -- a number always equals itself
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-23) <!-- code-viz link -->
 
 ---
 
@@ -1469,6 +1507,7 @@ $$
 \mathbf{S}\ (\mathbf{K}\ \mathbf{S})\ \mathbf{K}\ f\ g\ x \Rightarrow \mathbf{K}\ \mathbf{S}\ f\ (\mathbf{K}\ f)\ g\ x \Rightarrow \mathbf{S}\ (\mathbf{K}\ f)\ g\ x \Rightarrow \mathbf{K}\ f\ x\ (g\ x) \Rightarrow f\ (g\ x)
 $$
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-24 viz=env -->
 ```python
 # Verify B = S(KS)K
 S = lambda f: lambda g: lambda x: f(x)(g(x))
@@ -1483,6 +1522,7 @@ double  = lambda x: x * 2
 print(B_from_SK(add_one)(double)(5))   # 11: same as add_one(double(5))
 print(B_from_SK(str)(double)(5))       # "10": str(double(5))
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-24) <!-- code-viz link -->
 
 > **Watch out!  SKI expressions grow quickly**
 >
@@ -1517,6 +1557,7 @@ $$
 
 This derivation of Y from S and K (without any variables, without any lambda, without any notion of binding) is the combinatory logic proof that recursion is not a primitive: it is computable from application alone.
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-25 viz=env -->
 ```python
 # Z combinator (applicative-order Y) in combinatory style
 # We build it from our birds to show the connection
@@ -1532,6 +1573,7 @@ fib_step = lambda self: lambda n: n if n <= 1 else self(n-1) + self(n-2)
 fib = Z(fib_step)
 print([fib(n) for n in range(10)])   # [0,1,1,2,3,5,8,13,21,34]
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-25) <!-- code-viz link -->
 
 ---
 
@@ -1541,6 +1583,7 @@ print([fib(n) for n in range(10)])   # [0,1,1,2,3,5,8,13,21,34]
 
 The birds stop being an abstract curiosity the moment you recognize them in code you already write.  Every time you pass `lambda x: x` as a "no change" transform, as in `sorted(lst, key=lambda x: x)`, you are using I. Every time you write `key=lambda _: 0` you are using K. Every time you write `lambda a, b: f(b, a)` to swap a function's arguments you are using C. Gabriel Lebec's 2016 talk "*A Flock of Functions*" makes this explicit for JavaScript: every standard higher-order function there is a bird in disguise.  **The birds are the names for patterns you already reach for every day**; you just call them `const`, `id`, `flip`, `compose`, and `curry`.  Here is the full correspondence, in Python:
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-26 viz=env -->
 ```python
 # === The Flock - Python Edition ===
 # Inspired by Gabriel Lebec's "A Flock of Functions" (2016)
@@ -1581,6 +1624,7 @@ print(to_int(once))   # 1
 print(to_int(twice))  # 2
 print(to_int(succ(twice)))  # 3
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-26) <!-- code-viz link -->
 
 ---
 
@@ -1590,6 +1634,7 @@ Point-free programming is what happens when you take the combinator philosophy a
 
 **Point-free** (or "tacit") programming uses only combinators and function composition: no named variables, no lambdas.  It is where combinatory logic ends up when you write it as ordinary code, and it is the standard style in Haskell.  Here is the connection:
 
+<!-- run: id=cs374-tutorial-lambda-calculus-reducer-27 viz=env -->
 ```python
 from functools import reduce
 B = lambda f: lambda g: lambda x: f(g(x))
@@ -1613,6 +1658,7 @@ pipeline = lambda *fns: reduce(lambda a, b: B(a)(b), fns) if len(fns) > 1 else f
 process = pipeline(lambda s: s.replace(" ", "_"), str.lower, str.strip)
 print(process("  Hello World  "))   # hello_world
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lambda-calculus-reducer-27) <!-- code-viz link -->
 
 ---
 

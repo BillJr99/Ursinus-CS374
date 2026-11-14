@@ -1,0 +1,27 @@
+Source: 'let add = lambda x lambda y x + y in add 3 4'
+
+Stage 1 - Tokens (14 total):
+  [('KEYWORD', 'let'), ('NAME', 'add'), ('EQ', '='), ('KEYWORD', 'lambda'), ('NAME', 'x'), ('KEYWORD', 'lambda'), ('NAME', 'y'), ('NAME', 'x'), ('PLUS', '+'), ('NAME', 'y'), ('KEYWORD', 'in'), ('NAME', 'add'), ('NUMBER', '3'), ('NUMBER', '4')]
+
+Stage 2 - AST:
+  Let(add, Lambda(x, Lambda(y, x+y)), App(App(add,3),4))
+
+Stage 3 - Result: 7
+
+The pipeline: 'let add = lambda x lambda y x + y in add 3 4'
+           -> 7
+
+==================================================
+COURSE ROADMAP:
+  First:   what languages are + how to judge them
+           (paradigms, evaluation)
+  Then:    the front end -- grammars, regex, automata,
+           lexing, ASTs, parsing          (Models 2, 4)
+  Then:    giving programs meaning -- interpretation,
+           scope, environments, types,
+           control flow                   (Models 3, 5)
+  Then:    the functional lens -- functional programming,
+           Scheme, lambda calculus        (Model 1)
+  Finally: YOUR language -- design workshop, sprints,
+           Demo Day
+==================================================

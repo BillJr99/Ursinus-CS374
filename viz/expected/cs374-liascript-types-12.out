@@ -1,0 +1,21 @@
+physics.c:  float gravity = 9.81f;
+   bytes in memory:  c3 f5 1c 41
+
+report.c:   extern int gravity;   printf("%d", gravity);
+   same bytes, read as int:  1092416963
+
+Neither file is wrong on its own, and neither tool objected.
+
+What the linker compares:
+   physics.o defines:  name=gravity  size=4  bind=GLOBAL  kind=OBJECT
+   report.o  uses:     name=gravity  size=4  bind=GLOBAL  kind=OBJECT
+   names match, sizes match  ->  linked, no diagnostic
+
+There is no field in that entry for 'float' or 'int'. There is nowhere
+to put one. The compiler knew, and threw it away.
+
+Contrast, if physics.c had used a double instead:
+   double is 8 bytes, int is 4 bytes
+   low 4 bytes read as int:  1374389535
+   a size-comparing linker could at least warn here -- 8 != 4.
+   float vs int gives it nothing to notice: 4 == 4.

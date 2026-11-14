@@ -1,0 +1,18 @@
+=== Ends-with-b DFA ===
+  PASS  'b'      -> True
+  PASS  'ab'     -> True
+  PASS  'ba'     -> False
+  PASS  'abb'    -> True
+  PASS  'bba'    -> False
+  PASS  ''       -> False
+  PASS  'aaab'   -> True
+  PASS  'abba'   -> False
+
+All 8 tests passed: True
+
+=== Trace of 'aab' ===
+  start: 0
+  'a' -> 0
+  'a' -> 0
+  'b' -> 1
+  final: 1 -> ACCEPT

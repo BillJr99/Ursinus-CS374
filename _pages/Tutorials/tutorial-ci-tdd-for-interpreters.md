@@ -1055,6 +1055,7 @@ Two tools for your team's sprints: measuring what "done" means across sprints, a
 
 A sprint velocity is a *measurement*, and not a feeling.  The Evaluator tracks two counts, **stories completed** (AST nodes with passing tests) and **tests passing**, and the dashboard below turns each into a ratio: velocity is nodes completed divided by nodes planned, printed as a percentage.  A flat trend three sprints before Demo Day is a crisis nobody has named yet, and the number is how you name it.  The cell below simulates a three-sprint project and prints the velocity trend, so you can read a healthy trajectory against a warning one before your own numbers are in the dashboard.
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-1 viz=env -->
 ```python
 # Sprint health dashboard: velocity, test coverage, and projection.
 # Edit the DATA dict to reflect your team's actual numbers each sprint.
@@ -1133,6 +1134,7 @@ print()
 print("  Rule: a sprint with more than 2 known failures is not done.")
 print("  Rule: test_pct < 80% triggers a test-debt sprint before new features.")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-ci-tdd-for-interpreters-1) <!-- code-viz link -->
 
 > **Watch out!**  The projection formula assumes your last sprint's velocity holds constant.  Real project velocity rarely stays constant; it often drops in the final sprint because of integration work and debugging.  If you are already at 80% velocity, the projection is optimistic.  Treat the projected number of sprints as a floor rather than a ceiling.
 
@@ -1148,6 +1150,7 @@ print("  Rule: test_pct < 80% triggers a test-debt sprint before new features.")
 
 The Evaluator's job is to write **failing tests** before the Builder writes the code they test.  A failing test is a specification: it states precisely what the code must do before the code exists, which makes the set of failing tests your literal sprint backlog.  The cell below runs a test suite against a deliberately incomplete interpreter, showing which tests fail (red), which pass (green), and what the gap between them is.
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-2 viz=env -->
 ```python
 # Demonstrate red-green testing: tests written first, implementation following.
 # Edit the 'implemented' set to simulate different sprint states.
@@ -1228,6 +1231,7 @@ else:
 print()
 print("  Key: failing tests ARE the sprint backlog. Each FAIL is the next task.")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-ci-tdd-for-interpreters-2) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -1250,6 +1254,7 @@ Raw peer review feedback is like unprocessed ore: valuable, but unusable until r
 
 The Scribe collects all peer review cards and triages them live.  The cell below simulates that triage: it takes each card, classifies it into a bucket, and produces a backlog sorted by priority that you can assign on the spot.
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-3 viz=env -->
 ```python
 # Peer review feedback triage simulator.
 # FEEDBACK: list of (team, type, text) where type is "strength"|"question"|"risk"
@@ -1326,6 +1331,7 @@ print()
 print("  Scribe: fill in the blanks above and commit BACKLOG.md before end of day.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-ci-tdd-for-interpreters-3) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -1337,6 +1343,7 @@ print("  Scribe: fill in the blanks above and commit BACKLOG.md before end of da
 
 Run the triage on the cards your team actually received today.
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-4 viz=env -->
 ```python
 # TODO 1: replace this with the REAL cards from your peer review.
 #         (reviewer, type, text) where type is strength | question | risk
@@ -1386,6 +1393,7 @@ if buckets["UNCLASSIFIED"]:
 #         Print them as assignable lines and paste into your issue tracker.
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-ci-tdd-for-interpreters-4) <!-- code-viz link -->
 
 Expected output: three FIX items, one DISCLOSE, one FUTURE, and an empty UNCLASSIFIED bucket.  If your own run leaves anything unclassified, that is the session's real work.
 
@@ -1405,6 +1413,7 @@ Before Demo Day, the Evaluator verifies and signs each line:
 
 The script below turns that checklist into code.  Each check must return True to pass.
 
+<!-- run: id=cs374-tutorial-ci-tdd-for-interpreters-5 viz=env -->
 ```python
 # Release checklist automator: enforces the 7-item checklist as code.
 # Run this before Demo Day. Each check must return True to pass.
@@ -1483,3 +1492,4 @@ else:
     print(f"  -> {total - passed} items remaining. Triage them now.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-ci-tdd-for-interpreters-5) <!-- code-viz link -->

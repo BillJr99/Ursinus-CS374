@@ -1,0 +1,3 @@
+Left-recursive arithmetic: LEFT-RECURSIVE nonterminals = ['E', 'T']
+Right-recursive (LL) arithmetic: no direct left recursion found
+Balanced parentheses: no direct left recursion found

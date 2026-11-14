@@ -1,0 +1,24 @@
+-- Leftmost derivation of  num + num * num --
+     E
+  => E + T
+  => T + T
+  => F + T
+  => num + T
+  => num + T * F
+  => num + F * F
+  => num + num * F
+  => num + num * num
+  8 steps, final string: num + num * num
+
+-- Rightmost derivation of  num + num * num --
+     E
+  => E + T
+  => E + T * F
+  => E + T * num
+  => E + F * num
+  => E + num * num
+  => T + num * num
+  => F + num * num
+  => num + num * num
+  8 steps, final string: num + num * num
+

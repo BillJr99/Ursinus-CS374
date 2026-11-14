@@ -1,0 +1,7 @@
+=== Type Checking Results ===
+  3.0 + 4.0 = 7.0
+  'ab' + 'cd' = 'abcd'
+  3.0 + 'cd' -> TypeError: operator '+' not defined for number and string
+  True * 2.0 -> TypeError: arithmetic on bool is not defined: bool * number
+  3.0 < 'cd' -> TypeError: cannot compare number with string
+  3.0 / 0.0 -> ZeroDivisionError: division by zero

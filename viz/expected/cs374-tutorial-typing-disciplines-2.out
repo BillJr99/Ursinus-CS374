@@ -1,0 +1,15 @@
+=== Structural typing via Protocol ===
+  Circle(r=3.0)                        area=28.2743
+  Square(s=4.0)                        area=16.0000
+  Triangle(base=5.0, height=6.0)       area=15.0000
+
+=== isinstance checks against Protocol ===
+  Circle          is Drawable: True
+  Square          is Drawable: True
+  NotDrawable     is Drawable: False
+  str             is Drawable: False
+  int             is Drawable: False
+
+=== MRO: no Drawable in the chain ===
+Circle MRO: ['Circle', 'object']
+Square MRO: ['Square', 'object']

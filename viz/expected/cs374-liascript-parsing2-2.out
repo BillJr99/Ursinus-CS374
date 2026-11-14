@@ -1,0 +1,52 @@
+=== 2 + 3, the parse worked by hand above ===
+  step  stack                input          action
+     1  -                    num + num $    shift -> s4
+     2  num                  + num $        reduce r5: F -> num
+     3  F                    + num $        reduce r4: T -> F
+     4  T                    + num $        reduce r2: E -> T
+     5  E                    + num $        shift -> s6
+     6  E +                  num $          shift -> s4
+     7  E + num              $              reduce r5: F -> num
+     8  E + F                $              reduce r4: T -> F
+     9  E + T                $              reduce r1: E -> E + T
+    10  E                    $              accept
+
+=== 2 * 3 + 4, CTQ 3.1's parse ===
+  step  stack                input          action
+     1  -                    num * num + num $ shift -> s4
+     2  num                  * num + num $  reduce r5: F -> num
+     3  F                    * num + num $  reduce r4: T -> F
+     4  T                    * num + num $  shift -> s7
+     5  T *                  num + num $    shift -> s4
+     6  T * num              + num $        reduce r5: F -> num
+     7  T * F                + num $        reduce r3: T -> T * F
+     8  T                    + num $        reduce r2: E -> T
+     9  E                    + num $        shift -> s6
+    10  E +                  num $          shift -> s4
+    11  E + num              $              reduce r5: F -> num
+    12  E + F                $              reduce r4: T -> F
+    13  E + T                $              reduce r1: E -> E + T
+    14  E                    $              accept
+
+=== 2 + 3 * 4: watch state 8 refuse to reduce on '*' ===
+  step  stack                input          action
+     1  -                    num + num * num $ shift -> s4
+     2  num                  + num * num $  reduce r5: F -> num
+     3  F                    + num * num $  reduce r4: T -> F
+     4  T                    + num * num $  reduce r2: E -> T
+     5  E                    + num * num $  shift -> s6
+     6  E +                  num * num $    shift -> s4
+     7  E + num              * num $        reduce r5: F -> num
+     8  E + F                * num $        reduce r4: T -> F
+     9  E + T                * num $        shift -> s7
+    10  E + T *              num $          shift -> s4
+    11  E + T * num          $              reduce r5: F -> num
+    12  E + T * F            $              reduce r3: T -> T * F
+    13  E + T                $              reduce r1: E -> E + T
+    14  E                    $              accept
+
+=== And an input the table rejects ===
+  step  stack                input          action
+     1  -                    num + + $      shift -> s4
+     2  num                  + + $          reduce r5: F -> num
+     3  F                    + + $          reduce r4: T -> F

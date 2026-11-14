@@ -58,6 +58,7 @@ The NFA "ends in ab" has 3 states: start/loop (q0), saw-a (q1), saw-ab (q2).  Th
 
 Simulating an NFA does not require any magic or backtracking.  Instead of one current state, the simulator tracks the *set* of all states the NFA could be in right now.  That set holds every live path at once.  Each input symbol advances every state in the set, and the simulator unions the results.  This is the subset construction run lazily, one character at a time.  It costs at most $O(k)$ work per symbol for a $k$-state NFA.
 
+<!-- run: id=cs374-liascript-automata-day2-1 viz=env -->
 ```python
 # NFA simulation by tracking the SET of possible states: the subset
 # construction performed lazily, one input symbol at a time.
@@ -97,6 +98,7 @@ print("\n=== Trace of 'aab' ===")
 run_nfa(ENDS_IN_AB_NFA, "aab", trace=True)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-day2-1) <!-- code-viz link -->
 
 > **Watch out!**  An NFA does not "guess" which path to take; that phrasing makes it sound like luck is involved.  The machine *explores all paths at once*, and it accepts if *any* of them reaches an accepting state.  The simulation above makes this concrete: `current` is always a set, never a single lucky choice.
 
@@ -111,6 +113,7 @@ run_nfa(ENDS_IN_AB_NFA, "aab", trace=True)
 
 Strip `run_nfa` down to its inner loop and one step is all that is left: for every state in the current set, collect its arrows on the symbol, and union the results.
 
+<!-- run: id=cs374-liascript-automata-day2-2 viz=env -->
 ```python
 import traceback
 
@@ -130,6 +133,7 @@ except Exception as e:
     traceback.print_exc()
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-day2-2) <!-- code-viz link -->
 
 You should see:
 
@@ -149,6 +153,7 @@ accept
 
 Build an NFA of your own and watch the state set grow and shrink.
 
+<!-- run: id=cs374-liascript-automata-day2-3 viz=env -->
 ```python
 def run_nfa(machine, s, trace=False):
     current = set(machine["start"])
@@ -198,6 +203,7 @@ run_nfa(CONTAINS_ABA, "bbaba", trace=True)
 #         same language and count ITS states. Which was easier to design?
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-day2-3) <!-- code-viz link -->
 
 Expected output: `aba` and `bbabab` accepted; `abba`, `aab` and the empty string rejected.  In the trace, `{q0, q1}` is the machine believing two things at once: "this `a` begins an `aba`" and "it does not".
 
@@ -228,6 +234,7 @@ Read it as "from state `q0`, reading `a`, the machine can go to `q0` or to `q1`.
 
 The list is the nondeterminism: one state and one symbol, with two arrows.  A pair with no arrow has no key at all, so there is no `"q1,a"`, and reading with `delta.get(key, [])` turns a missing key into "no arrows" rather than a `KeyError`.  An ε-arrow uses the same kind of key, with `eps` as the symbol, as in `"q1,eps"`.
 
+<!-- run: id=cs374-liascript-automata-day2-4 viz=env -->
 ```python
 delta = {"q0,a": ["q0", "q1"], "q0,b": ["q0"], "q1,b": ["q2"]}
 
@@ -246,6 +253,7 @@ symbol = "b"
 print(delta.get(f"{state},{symbol}", []))
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-day2-4) <!-- code-viz link -->
 
 No line of the output mentions `q2`, because no arrow leaves it.
 
@@ -257,6 +265,7 @@ Start an empty set with `set()`, because `{}` makes an empty dictionary.  `updat
 
 A `frozenset` is a set that cannot change.  It works with `in`, `for`, and `sorted`, and it equals a regular set with the same items, but it has no `add` or `update`.  Python will not put a regular set inside another set, because a set could change after Python filed it away.  A frozenset can go inside, which is what the subset construction needs in order to ask "have I seen this set of states before?"
 
+<!-- run: id=cs374-liascript-automata-day2-5 viz=env -->
 ```python
 active = {"q0", "q1"}
 print("q0" in active, len({"q2", "q2"}), {"q1", "q0"} == {"q0", "q1"})
@@ -280,6 +289,7 @@ seen.add(frozenset({"q0", "q1"}))
 print(frozenset({"q1", "q0"}) in seen)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-day2-5) <!-- code-viz link -->
 
 ### One Step of an NFA, Worked: Move, Then Close
 
@@ -663,6 +673,7 @@ Only state 10 accepts, because no other state's closure reaches 10.  In particul
 
 The cell computes every row, then checks that the new NFA agrees with the original on every string over `{a, b}` up to length 6.
 
+<!-- run: id=cs374-liascript-automata-day2-6 viz=env -->
 ```python
 import traceback
 
@@ -723,6 +734,7 @@ except Exception as e:
     traceback.print_exc()
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-day2-6) <!-- code-viz link -->
 
 You should see one row per state and the agreement check:
 
@@ -760,6 +772,7 @@ A state accepts in the new NFA only if it can reach the original accepting state
 
 The code below automates Steps 0 through 5 for an NFA without ε-moves, which is why it never calls a closure; the NFA that ε-removal produces is exactly that kind of input.  For an ε-NFA, the change is exactly the two places the walkthrough used: close the start set, and close every `move` result before looking it up.
 
+<!-- run: id=cs374-liascript-automata-day2-7 viz=env -->
 ```python
 # Full subset construction: convert an NFA to an equivalent DFA.
 # DFA states = frozensets of NFA states.
@@ -833,6 +846,7 @@ for s in ["ba", "bba", "baba", "ab", "b", "a", ""]:
     print(f"  {s!r:7}: DFA={dfa_result}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-day2-7) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -845,6 +859,7 @@ for s in ["ba", "bba", "baba", "ab", "b", "a", ""]:
 
 The same construction on the worked example's ε-NFA for `(a|b)*abb`.  The two `closure(...)` calls are the two places the walkthrough closed: the start set, and every move result.  Leave either one out and the table above does not come back.
 
+<!-- run: id=cs374-liascript-automata-day2-8 viz=env -->
 ```python
 import traceback
 
@@ -890,6 +905,7 @@ except Exception as e:
     traceback.print_exc()
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-day2-8) <!-- code-viz link -->
 
 You should see the table from the worked example, row for row:
 
@@ -907,6 +923,7 @@ Read row B's `b` column: `move` gives `[5, 9]`, and only the closure turns it in
 
 Find a language where the exponential blow-up actually happens.
 
+<!-- run: id=cs374-liascript-automata-day2-9 viz=env -->
 ```python
 def subset_construct(nfa, alphabet):
     start = frozenset(nfa["start"])
@@ -950,6 +967,7 @@ for n in range(1, 8):
 #         the patterns real token definitions use?
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-day2-9) <!-- code-viz link -->
 
 Expected output: the DFA column doubles on each row while the NFA column grows by one.  The exponential bound is met exactly here, for a language you can state in one English sentence.
 
@@ -1177,6 +1195,7 @@ With a fresh $s$ that nothing points back into, the original start state is elim
 
 The cell runs state elimination on all three examples, prints each new arrow as it is created, and then checks the final regex against the DFA on every string over `{a, b}` up to length 8 with Python's `re.fullmatch`.
 
+<!-- run: id=cs374-liascript-automata-day2-10 viz=env -->
 ```python
 import re
 import traceback
@@ -1280,6 +1299,7 @@ except Exception as e:
     traceback.print_exc()
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-day2-10) <!-- code-viz link -->
 
 You should see each elimination step, matching the hand derivations above:
 
@@ -1470,6 +1490,7 @@ The "ends-with-b" DFA has exactly two states: *not-ending-in-b* (start) and *jus
 
 > *Adapted from [`end_with_b.py`](https://github.com/chuckallison/foundations-of-computing/blob/main/code/end_with_b.py) in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
+<!-- run: id=cs374-liascript-automata-day2-11 viz=env -->
 ```python
 # DFA: strings over {a, b} that end with 'b'.
 # State 0: start / "last char was not b"
@@ -1513,6 +1534,7 @@ print("\n=== Trace of 'aab' ===")
 run_dfa(ENDS_WITH_B, "aab", trace=True)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-day2-11) <!-- code-viz link -->
 
 **CTQ M5.1** If you changed `"accept": {1}` to `"accept": {0, 1}`, which new strings would now be accepted?  Explain by tracing through `run_dfa` on the empty string `""`.
 
@@ -1526,6 +1548,7 @@ One basic question about any finite automaton is whether it accepts anything at 
 
 > *Adapted from [`empty.py`](https://github.com/chuckallison/foundations-of-computing/blob/main/code/empty.py) in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
+<!-- run: id=cs374-liascript-automata-day2-12 viz=env -->
 ```python
 # Is the language of an NFA empty?
 # Empty iff no accepting state is reachable from the start state.
@@ -1578,6 +1601,7 @@ print(f"dead-accept empty?     {language_is_empty(DEAD_ACCEPT)}")
 print(f"accepts-epsilon empty? {language_is_empty(ACCEPTS_EPSILON)}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-day2-12) <!-- code-viz link -->
 
 **CTQ M6.1** The DFS ignores *which symbol* labels each transition; it treats the NFA as a plain directed graph.  Why is this correct for the emptiness question?  What would need to change if we also wanted to find a *witness string* (the shortest string accepted)?
 
@@ -1593,6 +1617,7 @@ A finite automaton can compute, not only accept or reject, if it produces output
 
 > *Adapted from [`binadd.py`](https://github.com/chuckallison/foundations-of-computing/blob/main/code/binadd.py) in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
+<!-- run: id=cs374-liascript-automata-day2-13 viz=env -->
 ```python
 # Binary addition via a 2-state carry automaton (Mealy machine).
 # State  = carry-in bit (0 or 1).
@@ -1644,6 +1669,7 @@ for i,(ba,bb) in enumerate(zip(a_bits, b_bits)):
     print(f"  col {i}: ({ba}+{bb}+carry_in={carry_in}) -> sum_bit={out}, carry_out={carry}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-day2-13) <!-- code-viz link -->
 
 **CTQ M7.1** The `carry` variable is the machine's only state and takes exactly two values.  Draw the Mealy machine: two nodes (labeled 0 and 1) with arrows labeled `(bit_a, bit_b) / sum_bit`.  How many arrows does the complete diagram have?
 

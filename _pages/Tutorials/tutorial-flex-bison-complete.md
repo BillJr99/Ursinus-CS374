@@ -1137,6 +1137,7 @@ function LR-PARSE(tokens):
 
 Before reading the bison output, run the algorithm yourself on a tiny grammar.  The code below simulates a shift-reduce parser for simple arithmetic expressions (`n + n * n`) with an explicit stack and action trace, the same algorithm bison generates for the calculator, just with a hand-written action table instead of a generated one.
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-5 viz=env -->
 ```python
 # Shift-reduce parser trace for: E -> E+T | T,  T -> T*F | F,  F -> (E) | n
 # ACTION table and GOTO table are encoded as dicts (state, symbol) -> action.
@@ -1218,6 +1219,7 @@ print()
 print("=== n * n + n (left operand tighter) ===")
 lr_parse(["n", "*", "n", "+", "n"])
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-flex-bison-complete-5) <!-- code-viz link -->
 
 ### Questions to Consider
 
@@ -1265,6 +1267,7 @@ The **goto** function: $$\mathrm{goto}(I, X)$$ = closure of all items in $$I$$ w
 
 > **Watch out!**  The closure operation adds items for every production of each nonterminal that appears after a dot, including transitively.  A single starting item can generate a large closure.  Students often compute closure for only the directly referenced nonterminal and miss the transitive additions.
 
+<!-- run: id=cs374-tutorial-flex-bison-complete-6 viz=env -->
 ```python
 # LR(0) item construction for a simpler grammar: S' -> S, S -> ( S ) | x
 simple_grammar = {
@@ -1325,5 +1328,6 @@ for sid, items in enumerate(states):
         after  = " ".join(prod[dot:])
         print(f"  {nt} -> {before} . {after}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-flex-bison-complete-6) <!-- code-viz link -->
 
 The ACTION and GOTO tables Bison emits are read straight off this automaton: transitions on terminals become shift entries, transitions on nonterminals become goto entries, and any state containing a dot-at-the-end item becomes a reduce, with the LALR(1) lookahead sets deciding *which* lookahead tokens trigger each reduction.  When two of those rules claim the same table cell, you get exactly the shift/reduce and reduce/reduce conflicts described in Part 7.1 and manufactured in the experiment above.
