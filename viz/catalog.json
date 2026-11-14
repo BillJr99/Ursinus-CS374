@@ -501,79 +501,119 @@
    "line": 499
   },
   {
+   "id": "cs374-liascript-lambdacalculus1-6",
+   "page": "_pages/Activities/liascript-lambdacalculus1.md",
+   "line": 154
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus1-7",
+   "page": "_pages/Activities/liascript-lambdacalculus1.md",
+   "line": 174
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus1-8",
+   "page": "_pages/Activities/liascript-lambdacalculus1.md",
+   "line": 204
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus1-9",
+   "page": "_pages/Activities/liascript-lambdacalculus1.md",
+   "line": 251
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus1-10",
+   "page": "_pages/Activities/liascript-lambdacalculus1.md",
+   "line": 262
+  },
+  {
    "id": "cs374-liascript-lambdacalculus1-1",
    "page": "_pages/Activities/liascript-lambdacalculus1.md",
-   "line": 278
+   "line": 288
   },
   {
    "id": "cs374-liascript-lambdacalculus1-2",
    "page": "_pages/Activities/liascript-lambdacalculus1.md",
-   "line": 416
+   "line": 426
   },
   {
    "id": "cs374-liascript-lambdacalculus1-3",
    "page": "_pages/Activities/liascript-lambdacalculus1.md",
-   "line": 504
+   "line": 514
   },
   {
    "id": "cs374-liascript-lambdacalculus1-4",
    "page": "_pages/Activities/liascript-lambdacalculus1.md",
-   "line": 593
+   "line": 603
   },
   {
    "id": "cs374-liascript-lambdacalculus1-5",
    "page": "_pages/Activities/liascript-lambdacalculus1.md",
-   "line": 700
+   "line": 710
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus2-11",
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 139
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus2-12",
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 151
   },
   {
    "id": "cs374-liascript-lambdacalculus2-1",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
-   "line": 161
+   "line": 165
   },
   {
    "id": "cs374-liascript-lambdacalculus2-2",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
-   "line": 179
+   "line": 183
   },
   {
    "id": "cs374-liascript-lambdacalculus2-3",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
-   "line": 261
+   "line": 265
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus2-13",
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 332
   },
   {
    "id": "cs374-liascript-lambdacalculus2-4",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
-   "line": 373
+   "line": 379
   },
   {
    "id": "cs374-liascript-lambdacalculus2-5",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
-   "line": 396
+   "line": 402
   },
   {
    "id": "cs374-liascript-lambdacalculus2-6",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
-   "line": 460
+   "line": 466
   },
   {
    "id": "cs374-liascript-lambdacalculus2-7",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
-   "line": 649
+   "line": 655
   },
   {
    "id": "cs374-liascript-lambdacalculus2-8",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
-   "line": 841
+   "line": 847
   },
   {
    "id": "cs374-liascript-lambdacalculus2-9",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
-   "line": 1005
+   "line": 1011
   },
   {
    "id": "cs374-liascript-lambdacalculus2-10",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
-   "line": 1050
+   "line": 1056
   },
   {
    "id": "cs374-liascript-languageevaluation-1",
@@ -2307,62 +2347,14 @@
    "lang": "lambda"
   },
   {
-   "page": "_pages/Activities/liascript-lambdacalculus1.md",
-   "line": 153,
-   "viz": "lambda",
-   "lang": "lambda"
-  },
-  {
-   "page": "_pages/Activities/liascript-lambdacalculus1.md",
-   "line": 171,
-   "viz": "lambda",
-   "lang": "lambda"
-  },
-  {
-   "page": "_pages/Activities/liascript-lambdacalculus1.md",
-   "line": 199,
-   "viz": "lambda",
-   "lang": "lambda"
-  },
-  {
-   "page": "_pages/Activities/liascript-lambdacalculus1.md",
-   "line": 244,
-   "viz": "lambda",
-   "lang": "lambda"
-  },
-  {
-   "page": "_pages/Activities/liascript-lambdacalculus1.md",
-   "line": 253,
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 586,
    "viz": "lambda",
    "lang": "lambda"
   },
   {
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
-   "line": 138,
-   "viz": "lambda",
-   "lang": "lambda"
-  },
-  {
-   "page": "_pages/Activities/liascript-lambdacalculus2.md",
-   "line": 148,
-   "viz": "lambda",
-   "lang": "lambda"
-  },
-  {
-   "page": "_pages/Activities/liascript-lambdacalculus2.md",
-   "line": 327,
-   "viz": "lambda",
-   "lang": "lambda"
-  },
-  {
-   "page": "_pages/Activities/liascript-lambdacalculus2.md",
-   "line": 580,
-   "viz": "lambda",
-   "lang": "lambda"
-  },
-  {
-   "page": "_pages/Activities/liascript-lambdacalculus2.md",
-   "line": 947,
+   "line": 953,
    "viz": "lambda",
    "lang": "lambda"
   },
