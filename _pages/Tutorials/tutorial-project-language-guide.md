@@ -49,6 +49,7 @@ This phase is about **language design by example**.  Every decision you make abo
 
 **Example 1: Hello World and arithmetic**
 
+<!-- run: id=cs374-tutorial-project-language-guide-1 viz=plain interp=page -->
 ```mini
 let x = 10;
 let y = 3;
@@ -59,6 +60,7 @@ print "Hello, Mini!";
 
 **Example 2: Fibonacci (recursive)**
 
+<!-- run: id=cs374-tutorial-project-language-guide-2 viz=plain interp=page -->
 ```mini
 fun fib(n) {
   if n <= 1 {
@@ -71,6 +73,7 @@ print fib(10);
 
 **Example 3: Factorial (iterative with while)**
 
+<!-- run: id=cs374-tutorial-project-language-guide-3 viz=plain interp=page -->
 ```mini
 fun factorial(n) {
   let result = 1;
@@ -98,6 +101,7 @@ if true and not false {
 
 **Example 5: Closures (functions returning functions)**
 
+<!-- run: id=cs374-tutorial-project-language-guide-5 viz=plain interp=page -->
 ```mini
 fun make_adder(n) {
   return fun(x) -> x + n;
@@ -109,6 +113,7 @@ print add5(20);
 
 **Example 6: Higher-order functions**
 
+<!-- run: id=cs374-tutorial-project-language-guide-6 viz=plain interp=page -->
 ```mini
 fun apply(f, x) {
   return f(x);
@@ -783,6 +788,8 @@ class Parser:
 ### 5.2 Statement Parsers
 
 ```python
+# parser_mini.py (continued)
+
     # --- Statements ---
 
     def parse_program(self) -> Program:
@@ -870,6 +877,8 @@ class Parser:
 ### 5.3 Expression Parsers
 
 ```python
+# parser_mini.py (continued)
+
     # --- Expressions (precedence climbing via grammar hierarchy) ---
 
     def parse_expr(self) -> Expr:
@@ -1012,6 +1021,7 @@ class Parser:
 ### 5.4 Module-Level parse() Helper
 
 ```python
+# parser_mini.py (continued)
 def parse(source: str) -> Program:
     tokens = Lexer(source).tokenize()
     return Parser(tokens).parse_program()
@@ -1670,6 +1680,7 @@ def make_global_env() -> Environment:
 
 ### 9.2 Using map and filter in Mini
 
+<!-- run: id=cs374-tutorial-project-language-guide-8 viz=plain interp=page -->
 ```mini
 # squares_and_evens.mini
 
