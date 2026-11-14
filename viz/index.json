@@ -1,7 +1,7 @@
 {
  "course": "cs374",
  "site": "https://billjr99.github.io/Ursinus-CS374-Fall2026",
- "built": "2026-11-14 07:34",
+ "built": "2026-11-14 13:00",
  "examples": [
   {
    "id": "cs374-liascript-ast-1",
@@ -2871,7 +2871,7 @@
    "line": 73,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-coroutines-generators",
    "error": null,
-   "steps": 192
+   "steps": 190
   },
   {
    "id": "cs374-tutorial-coroutines-generators-2",
@@ -2961,7 +2961,7 @@
    "line": 855,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-coroutines-generators",
    "error": null,
-   "steps": 589
+   "steps": 553
   },
   {
    "id": "cs374-tutorial-cpp-advanced-1",
@@ -3921,7 +3921,7 @@
    "line": 3058,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
-   "steps": 294
+   "steps": 292
   },
   {
    "id": "cs374-tutorial-prolog-swish-1",

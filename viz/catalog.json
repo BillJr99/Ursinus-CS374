@@ -2567,25 +2567,29 @@
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 122,
    "viz": "env",
-   "lang": "python"
+   "lang": "python",
+   "setup": "cs374-tutorial-build-an-interpreter-1"
   },
   {
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 299,
    "viz": "env",
-   "lang": "python"
+   "lang": "python",
+   "setup": "cs374-tutorial-build-an-interpreter-1,line122,cs374-tutorial-build-an-interpreter-3"
   },
   {
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 514,
    "viz": "env",
-   "lang": "python"
+   "lang": "python",
+   "setup": "cs374-tutorial-build-an-interpreter-5"
   },
   {
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 596,
    "viz": "env",
-   "lang": "python"
+   "lang": "python",
+   "setup": "cs374-tutorial-build-an-interpreter-1,line122,cs374-tutorial-build-an-interpreter-3,line299,cs374-tutorial-build-an-interpreter-5,line514"
   },
   {
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
@@ -2663,25 +2667,29 @@
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 101,
    "viz": "env",
-   "lang": "python"
+   "lang": "python",
+   "setup": "cs374-tutorial-lambda-calculus-reducer-1"
   },
   {
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 134,
    "viz": "env",
-   "lang": "python"
+   "lang": "python",
+   "setup": "cs374-tutorial-lambda-calculus-reducer-1,line101"
   },
   {
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 230,
    "viz": "env",
-   "lang": "python"
+   "lang": "python",
+   "setup": "cs374-tutorial-lambda-calculus-reducer-1,line101,line134"
   },
   {
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 359,
    "viz": "env",
-   "lang": "python"
+   "lang": "python",
+   "setup": "cs374-tutorial-lambda-calculus-reducer-1,line101,line134,line230,cs374-tutorial-lambda-calculus-reducer-5"
   },
   {
    "page": "_pages/Tutorials/tutorial-lr-construction.md",
@@ -2735,19 +2743,8 @@
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 396,
    "viz": "env",
-   "lang": "python"
-  },
-  {
-   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 649,
-   "viz": "env",
-   "lang": "python"
-  },
-  {
-   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 1196,
-   "viz": "env",
-   "lang": "python"
+   "lang": "python",
+   "setup": "line191,line263"
   },
   {
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
