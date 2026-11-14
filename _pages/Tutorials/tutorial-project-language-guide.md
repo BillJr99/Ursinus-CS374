@@ -57,6 +57,7 @@ let z = x * y + 1;
 print z;
 print "Hello, Mini!";
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-1) <!-- code-viz link -->
 
 **Example 2: Fibonacci (recursive)**
 
@@ -70,6 +71,7 @@ fun fib(n) {
 }
 print fib(10);
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-2) <!-- code-viz link -->
 
 **Example 3: Factorial (iterative with while)**
 
@@ -86,6 +88,7 @@ fun factorial(n) {
 }
 print factorial(6);
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-3) <!-- code-viz link -->
 
 **Example 4: Conditionals and booleans**
 
@@ -99,6 +102,7 @@ if true and not false {
   print "logic works!";
 }
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-4) <!-- code-viz link -->
 
 **Example 5: Closures (functions returning functions)**
 
@@ -111,6 +115,7 @@ let add5 = make_adder(5);
 print add5(10);
 print add5(20);
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-5) <!-- code-viz link -->
 
 **Example 6: Higher-order functions**
 
@@ -129,6 +134,7 @@ print apply(square, 7);
 let double = fun(n) -> n * 2;
 print apply(double, 8);
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-6) <!-- code-viz link -->
 
 > **CTQ 1.1:** (CTQ stands for Critical Thinking Question.)  Look at Example 5.  The inner `fun(x) -> x + n` refers to `n`, which is defined in `make_adder`'s scope.  After `make_adder` returns, does `n` still exist?  What language feature makes this work?
 
@@ -1696,6 +1702,7 @@ let total = reduce(fun(acc, x) -> acc + x, 0, range(1, 6));
 print total;
 # Output: 15  (= 1 + 2 + 3 + 4 + 5)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-8) <!-- code-viz link -->
 
 ### 9.3 Calling Built-ins from the REPL
 
