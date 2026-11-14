@@ -1,7 +1,7 @@
 {
  "course": "cs374",
  "site": "https://billjr99.github.io/Ursinus-CS374-Fall2026",
- "built": "2026-11-14 10:06",
+ "built": "2026-11-14 10:16",
  "examples": [
   {
    "id": "cs374-liascript-ast-1",
@@ -3839,6 +3839,16 @@
    "lang": "mini",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 77,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "error": null,
+   "steps": 0
+  },
+  {
+   "id": "cs374-tutorial-project-language-guide-4",
+   "viz": "plain",
+   "lang": "mini",
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 93,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 0

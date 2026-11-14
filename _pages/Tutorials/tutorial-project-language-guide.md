@@ -89,9 +89,10 @@ print factorial(6);
 
 **Example 4: Conditionals and booleans**
 
+<!-- run: id=cs374-tutorial-project-language-guide-4 viz=plain interp=page -->
 ```mini
 let age = 20;
-let status = if age >= 18 { "adult" } else { "minor" };
+let status = if age >= 18 { "adult"; } else { "minor"; };
 print status;
 
 if true and not false {
@@ -493,7 +494,7 @@ args         = ( expr ( "," expr )* )?
 > - `cmp_expr` allows only *one* comparison (no chaining `a < b < c`).
 > - `^` is right-associative, handled carefully in the parser.
 > - `fun(params) -> expr` is a **lambda** (expression body); `fun(params) { ... }` is a named function definition at statement level or an anonymous closure in expression position.
-> - `if` appears as both a statement and an expression (when used inside `primary`).
+> - `if` appears as both a statement and an expression (when used inside `primary`).  Both forms share `block`, so a branch holds statements, each with its `;`.  An `if` expression's value is the value of the last statement in the branch taken (an expression statement gives its expression's value), so `if age >= 18 { "adult"; } else { "minor"; }` is `"adult"` or `"minor"`; with no `else` and a false condition it is `nil`.
 
 ### 3.2 Parse Tree Diagram
 
