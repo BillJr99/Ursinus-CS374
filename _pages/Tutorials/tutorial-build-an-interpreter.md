@@ -64,6 +64,7 @@ expr ::= NUMBER | BOOL
 
 A **token** is the smallest meaningful unit in our language.  Every token has a **type** and a **value**, plus source position for error reporting.
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-1 viz=env -->
 ```python
 # tokens.py
 from dataclasses import dataclass
@@ -112,6 +113,7 @@ KEYWORDS = {"let": TK_LET, "letrec": TK_LETREC, "in": TK_IN,
 
 print("Token types defined.")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-build-an-interpreter-1) <!-- code-viz link -->
 
 ---
 
@@ -223,6 +225,7 @@ for tok in lexer.tokenize():
 
 ## 2.1 AST Node Classes
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-3 viz=env -->
 ```python
 # ast_nodes.py
 from dataclasses import dataclass, field
@@ -285,6 +288,7 @@ class App:
 
 print("AST node classes defined.")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-build-an-interpreter-3) <!-- code-viz link -->
 
 ---
 
@@ -456,6 +460,7 @@ print(ast)
 
 ## 4.1 Values and Environments
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-5 viz=env -->
 ```python
 # evaluator.py
 from dataclasses import dataclass
@@ -500,6 +505,7 @@ class Environment:
 
 print("Value types and Environment defined.")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-build-an-interpreter-5) <!-- code-viz link -->
 
 ---
 
@@ -671,6 +677,7 @@ print("REPL defined. Call repl() to start it.")
 
 ## 5.2 File Runner
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-8 viz=env -->
 ```python
 import sys
 
@@ -693,6 +700,7 @@ def run_file(filename: str):
 # Usage: run_file("program.mini")
 print("File runner defined.")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-build-an-interpreter-8) <!-- code-viz link -->
 
 ---
 
@@ -835,6 +843,7 @@ Atoms map to: Python `int`/`float`, `bool`, `str` (for Scheme strings), or Pytho
 
 The parser has two stages: a **tokenizer** that splits the input string into a flat list of token strings, then a **recursive descent** step that folds those tokens into nested Python lists.
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-9 viz=env -->
 ```python
 import re
 
@@ -902,6 +911,7 @@ examples = [
 for src in examples:
     print(f"{src!s:40s} => {parse_sexp(src)}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-build-an-interpreter-9) <!-- code-viz link -->
 
 ---
 
@@ -923,6 +933,7 @@ Scoping rules determine which variable binding wins when the same name exists in
 
 An **environment** in our interpreter is a dictionary that may have a pointer to an **outer** (enclosing) environment.  Variable lookup walks the chain until the name is found or the outermost frame is exhausted.
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-10 viz=env -->
 ```python
 class SchemeError(Exception):
     pass
@@ -963,6 +974,7 @@ call_env = Env(params=['x'], args=[3], outer=global_env)
 print("x in call_env:", call_env.find('x')['x'])   # 3
 print("y via outer:  ", call_env.find('y')['y'])   # 10
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-build-an-interpreter-10) <!-- code-viz link -->
 
 The chain for `(define f (lambda (x) (+ x y)))` where `y = 10` in the global environment looks like this:
 
@@ -985,11 +997,13 @@ When the body `(+ x y)` is evaluated in the call frame, `x` resolves immediately
 
 **Question 6.**  Trace the full environment chain for the following interaction:
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-11 viz=env -->
 ```scheme
 (define y 10)
 (define f (lambda (x) (+ x y)))
 (f 5)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-build-an-interpreter-11) <!-- code-viz link -->
 
 Draw the frames that exist when `(+ x y)` is being evaluated.  Label every `outer` pointer.  Then answer: if `y` were rebound to `20` *after* `f` was defined, would `(f 5)` return 15 or 25?  Why?
 
@@ -1005,6 +1019,7 @@ The entire evaluator fits in one function because every Scheme expression falls 
 
 The evaluator is a single function that **dispatches** on the type and shape of the expression.  Atoms evaluate to themselves or to their binding.  Lists beginning with a keyword are **special forms** handled directly.  Any other list is a **procedure call**.
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-12 viz=env -->
 ```python
 # Env and SchemeError are the same as in Model 2,
 # repeated here so this cell runs standalone.
@@ -1231,6 +1246,7 @@ for src in tests:
     if result is not None:
         print(f"{src!s:50s} => {result}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-build-an-interpreter-12) <!-- code-viz link -->
 
 ---
 
@@ -1242,6 +1258,7 @@ for src in tests:
 
 **Question 9.**  Consider:
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-13 viz=env -->
 ```scheme
 (define fact
   (lambda (n)
@@ -1250,6 +1267,7 @@ for src in tests:
         (* n (fact (- n 1))))))
 (fact 5)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-build-an-interpreter-13) <!-- code-viz link -->
 
 Does this work in our evaluator?  Trace through why `fact` is visible inside its own body even though it is being defined *right now*.  (Hint: look at how `define` stores the procedure into `env` *before* the body is ever called.)
 
@@ -1263,6 +1281,7 @@ Every language has a layer of operations that the interpreter cannot define in t
 
 The global environment pre-loads all the primitive operations.  In real Scheme these are implemented in a low-level language for speed; in our interpreter they are just Python lambdas.
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-14 viz=env -->
 ```python
 import operator, math
 
@@ -1454,6 +1473,7 @@ for src, _ in tests:
 lst = scheme_eval(parse_sexp("(list 1 2 3 4)"), genv)
 print("(list 1 2 3 4) as Python:", scheme_list_to_python(lst))
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-build-an-interpreter-14) <!-- code-viz link -->
 
 ---
 
@@ -1475,6 +1495,7 @@ Python has a default recursion limit of about 1000 frames.  A naive Scheme-in-Py
 
 Consider:
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-15 viz=env -->
 ```scheme
 (define count-down
   (lambda (n)
@@ -1483,9 +1504,11 @@ Consider:
         (count-down (- n 1)))))
 (count-down 10000)   ; Should work in Scheme; crashes in naive Python evaluator
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-build-an-interpreter-15) <!-- code-viz link -->
 
 The fix is a **trampoline**: instead of calling the recursive eval directly, return a *thunk* (a zero-argument lambda that will do the work) from tail positions.  The trampoline loop bounces on thunks until a real value emerges.  The `Thunk` and `trampoline` definitions below show that classic form.  `scheme_eval_tco` then inlines it: rather than building a `Thunk`, each tail position rewrites `x` and `env` and loops.  Because it never actually returns a `Thunk`, each `trampoline(...)` wrapper around its non-tail calls simply passes the value through.
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-16 viz=env -->
 ```python
 # Trampoline-based TCO evaluator
 
@@ -1657,6 +1680,7 @@ prog2 = """
 """
 print("sum 0..1000 =>", run(prog2 + "(sum-iter 1000 0)"))
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-build-an-interpreter-16) <!-- code-viz link -->
 
 ---
 
@@ -1790,6 +1814,7 @@ Each binding is `(var init step)`.  On each iteration: evaluate all `step` expre
 
 The built-in `map` uses Python recursion.  Write a **pure Scheme** `map` that is tail-recursive using an accumulator, then reverses the result.
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-19 viz=env -->
 ```scheme
 ; An accumulator builds its result backwards, because cons adds to the front.
 ; Use your own reverse with an accumulator, or the built-in reverse if your
@@ -1804,6 +1829,7 @@ The built-in `map` uses Python recursion.  Write a **pure Scheme** `map` that is
 (my-map (lambda (x) (* x x)) (list 1 2 3 4 5))
 ; Expected: (1 4 9 16 25) as a Scheme list
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-build-an-interpreter-19) <!-- code-viz link -->
 
 Verify that your implementation produces the correct result by running it in the TCO evaluator.  Then explain: is your `my-map` call to `my-map` in the recursive case actually in tail position?  Draw the call to convince yourself.
 
@@ -1813,6 +1839,7 @@ Verify that your implementation produces the correct result by running it in the
 
 Without `define`, a lambda cannot refer to itself by name.  The **Y combinator** makes anonymous recursion possible.  In our evaluator (which uses applicative-order evaluation, meaning arguments are evaluated before the procedure is applied), the Z combinator (the strict variant) works:
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-20 viz=env -->
 ```scheme
 (define Z
   (lambda (f)
@@ -1829,6 +1856,7 @@ Without `define`, a lambda cannot refer to itself by name.  The **Y combinator**
 (fact 6)
 ; Expected: 720
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-build-an-interpreter-20) <!-- code-viz link -->
 
 **Task:**
 1.  Run the Z combinator in your evaluator.  Verify `(fact 6) = 720`.
@@ -1876,6 +1904,7 @@ Adding closures to Mini requires:
 2.  A `Closure` value created at **definition time**, capturing the *current* environment
 3.  A call rule that builds the new environment parented on the **closure's captured environment**
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-21 viz=env -->
 ```python
 # Closure-based interpreter for Mini (simplified)
 
@@ -1981,6 +2010,7 @@ ma = global_env.lookup("make_adder")
 print(f"make_adder is a Closure: {isinstance(ma, Closure)}")
 print(f"make_adder captured env has 'make_adder': {'make_adder' in ma.env._vars}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-build-an-interpreter-21) <!-- code-viz link -->
 
 **CTQs**
 
@@ -1996,6 +2026,7 @@ print(f"make_adder captured env has 'make_adder': {'make_adder' in ma.env._vars}
 
 For a function to call itself recursively, it must be able to look up its own name at the moment it runs.  This is not automatic; it requires the function's name to be bound in the environment *before* the function body executes.  Think of it like a business that must be registered with the government before it can issue contracts referencing itself.  This model shows the precise ordering: bind the name first, then use the closure, so that recursive lookup through the captured environment succeeds.
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-22 viz=env -->
 ```python
 # Recursion requires the function to see itself in its own closure.
 # execute_fundef binds the name BEFORE returning, so:
@@ -2035,6 +2066,7 @@ print(f"fact(0) = {global_env.lookup('fact')(0)}")
 print(f"fact(5) = {global_env.lookup('fact')(5)}")
 print(f"fact(10) = {global_env.lookup('fact')(10)}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-build-an-interpreter-22) <!-- code-viz link -->
 
 > **CTQ 4.1** `execute_fundef` defines the name in the *current* environment before any calls.  When `fact_body` runs and looks up `'fact'`, it finds the closure in `global_env`.  Trace the environment chain: call frame -> captured `global_env` -> finds `fact`.  What would break if we didn't define the name until after creating the closure?
 
@@ -2101,6 +2133,7 @@ And the same history as a table:
 | `c1()` | 2 | 0 | 2 |
 | `c2()` | 2 | 1 | 1 |
 
+<!-- run: id=cs374-tutorial-build-an-interpreter-23 viz=env -->
 ```python
 def make_counter():
     count = 0
@@ -2121,6 +2154,7 @@ print("c1's captured count:", c1.__closure__[0].cell_contents)   # 2
 print("c2's captured count:", c2.__closure__[0].cell_contents)   # 1
 print("same box?", c1.__closure__[0] is c2.__closure__[0])       # False - E1 is not E2
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-build-an-interpreter-23) <!-- code-viz link -->
 
 After `c1 = make_counter()`, `c2 = make_counter()`, then `c1(); c1(); c2()`, the returned values are 1, 2, 1 because:
 

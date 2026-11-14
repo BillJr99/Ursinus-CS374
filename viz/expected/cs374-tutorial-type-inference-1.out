@@ -1,0 +1,3 @@
+identity type: (α -> α)
+Int -> Bool: (Int -> Bool)
+[Int]: [Int]

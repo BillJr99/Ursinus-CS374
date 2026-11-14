@@ -1,0 +1,25 @@
+=== (λx.x) z  [identity applied to z] ===
+  Start: (λx.x) z
+  Step 1: z
+  Normal form reached in 1 step(s).
+
+=== (λx.λy.x) A B  [K combinator: select first] ===
+  Start: (λx.λy.x) A B
+  Step 1: (λy.A) B
+  Step 2: A
+  Normal form reached in 2 step(s).
+
+=== (λf.λx. f(f x)) g a  [apply g twice] ===
+  Start: (λf.λx.f f x) g a
+  Step 1: (λx.g g x) a
+  Step 2: g g a
+  Normal form reached in 2 step(s).
+
+=== Capture example: (λx.λy.x) y  [needs alpha-rename] ===
+  Start: (λx.λy.x) y
+  [α-rename] y -> y1 to avoid capture
+  Step 1: λy1.y
+  Normal form reached in 1 step(s).
+
+Free vars in (λx. x y): {'y'}
+Free vars in (λx.λy. x): set()

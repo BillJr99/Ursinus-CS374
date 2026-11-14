@@ -1,0 +1,20 @@
+=== Style 1: advance until EOF ===
+Token(type='KEYWORD', lexeme='let', line=1, col=1)
+Token(type='IDENT', lexeme='x', line=1, col=5)
+Token(type='EQ', lexeme='=', line=1, col=7)
+Token(type='INT', lexeme='42', line=1, col=9)
+Token(type='PLUS', lexeme='+', line=1, col=12)
+Token(type='IDENT', lexeme='y', line=1, col=14)
+Token(type='SEMICOLON', lexeme=';', line=1, col=15)
+
+=== Style 2: peek then advance (decision before consuming) ===
+peeked KEYWORD   -> consumed 'let'
+peeked IDENT     -> consumed 'x'
+peeked EQ        -> consumed '='
+peeked INT       -> consumed '42'
+peeked PLUS      -> consumed '+'
+peeked IDENT     -> consumed 'y'
+peeked SEMICOLON -> consumed ';'
+
+=== Style 3: expect a specific sequence ===
+let-binding: let x = 42

@@ -1,0 +1,11 @@
+=== Church Booleans ===
+church_to_bool(TRUE)  = True
+church_to_bool(FALSE) = False
+NOT TRUE        = FALSE
+NOT FALSE       = TRUE
+AND TRUE FALSE  = FALSE
+OR  TRUE FALSE  = TRUE
+
+=== Church if-then-else ===
+if TRUE  then 'yes' else 'no' = yes
+if FALSE then 'yes' else 'no' = no

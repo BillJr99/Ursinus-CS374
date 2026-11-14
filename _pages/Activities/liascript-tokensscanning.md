@@ -84,6 +84,7 @@ This code is the seed of your Lexer assignment and of your project.
 
 A plain group `(...)` captures text you can read back by number.  A named group, `(?P<name>...)`, captures the same text and lets you read it back by name.  Every name used below has a job: `group("key")` reads one capture, `groupdict()` returns every capture as a dictionary, and `lastgroup` names the last group that matched.
 
+<!-- run: id=cs374-liascript-tokensscanning-1 viz=env -->
 ```python
 import re
 import traceback
@@ -100,6 +101,7 @@ except Exception as e:
     traceback.print_exc()
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-tokensscanning-1) <!-- code-viz link -->
 
 You should see:
 
@@ -118,6 +120,7 @@ The lexer below turns the hand rules from Model 1 into Python.  It joins every t
 
 > **Watch out!**  Whitespace is listed in `TOKEN_SPEC` as `SKIP` and is consumed without producing a token.  If you leave out the whitespace pattern, the `MISMATCH` catch-all fires on every space and buries your real error messages in noise.  Check that spaces and tabs are handled before you test with real programs.
 
+<!-- run: id=cs374-liascript-tokensscanning-2 viz=env -->
 ```python
 import re
 from collections import namedtuple
@@ -175,6 +178,7 @@ for tok in tokenize(code):
     print(tok)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-tokensscanning-2) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -212,6 +216,7 @@ for tok in tokenize(code):
 
 `tokenize` has no `return` for its tokens.  It uses `yield`, which pauses the function instead of ending it.  This cell uses the same `finditer` loop as the lexer above, with prints added so that you can watch it pause.  **Before you run it, predict:** does `started` print before or after `gen exists`?
 
+<!-- run: id=cs374-liascript-tokensscanning-3 viz=env -->
 ```python
 import re
 import traceback
@@ -238,6 +243,7 @@ except Exception as e:
     traceback.print_exc()
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-tokensscanning-3) <!-- code-viz link -->
 
 You should see:
 
@@ -270,6 +276,7 @@ This `TOKEN_SPEC` is missing a token type your language needs.  Run the tests an
 watch what a missing pattern does to a perfectly reasonable line of source.  Then add
 the pattern in the right place.
 
+<!-- run: id=cs374-liascript-tokensscanning-4 viz=env -->
 ```python
 import re
 from collections import namedtuple
@@ -321,6 +328,7 @@ for src, note in CASES:
         print(f"    line {t.line} col {t.col:2}  {t.type:9} {t.lexeme!r}{flag}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-tokensscanning-4) <!-- code-viz link -->
 
 Expected output before your edit: the second case shatters.  It emits `ERROR '"'`,
 then `IDENT 'hi'`, `IDENT 'there'`, then another `ERROR`.  After you add `STRING` in
@@ -347,6 +355,7 @@ The lexer runs.  Now read it as a system and connect each design decision back t
 
 Answer CTQ 6 and CTQ 7 before you run this.  The cell below runs both experiments: the same input through two specs that differ only in order, and the same input through two keyword patterns that differ only in the `\b` anchors.
 
+<!-- run: id=cs374-liascript-tokensscanning-5 viz=env -->
 ```python
 import re
 import traceback
@@ -366,6 +375,7 @@ except Exception as e:
     traceback.print_exc()
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-tokensscanning-5) <!-- code-viz link -->
 
 You should see:
 
@@ -388,6 +398,7 @@ with \b [('IDENT', 'iffy')]
 
 The raw `tokenize()` generator is fine for printing, but a parser needs more control.  It must look at the next token before it decides whether to consume it.  A parser therefore never calls `tokenize()` directly.  It uses three operations: **peek** returns the next token without consuming it, **advance** consumes the next token and returns it, and **expect** consumes the next token and raises an error if its type is not the one the parser asked for.  The `Lexer` class below wraps the generator and buffers exactly one token to provide these three methods.  The parser will use only this interface, and the generator becomes an implementation detail.
 
+<!-- run: id=cs374-liascript-tokensscanning-6 viz=env -->
 ```python
 import re
 from collections import namedtuple
@@ -492,6 +503,7 @@ val  = lx.expect("INT")
 print(f"let-binding: {kw.lexeme} {name.lexeme} {eq.lexeme} {val.lexeme}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-tokensscanning-6) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -505,6 +517,7 @@ print(f"let-binding: {kw.lexeme} {name.lexeme} {eq.lexeme} {val.lexeme}")
 
 The lexer so far handles numbers, keywords, and operators.  Real programs also contain **string literals** such as `"hello world"`, and strings bring a new problem: the text inside the quotes can contain almost anything, including characters that normally end a token.  An escape sequence is a backslash followed by one character that stands for something else, such as `\"` for a quote, `\\` for a backslash, or `\n` for a newline.  A naive pattern like `"[^"]*"` stops at the first quote it sees, so it breaks on `"say \"hi\""`.  The correct pattern uses a negative lookbehind or a two-alternative trick: inside the delimiters, match either an escaped character or any character that is neither a quote nor a backslash.  This model adds that STRING pattern and then looks at what happens when a string is never closed.
 
+<!-- run: id=cs374-liascript-tokensscanning-7 viz=env -->
 ```python
 import re
 from collections import namedtuple
@@ -593,6 +606,7 @@ except SyntaxError as e:
     print("the error names a stray character, not an unterminated string.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-tokensscanning-7) <!-- code-viz link -->
 
 You should see:
 
@@ -2551,6 +2565,7 @@ line, col = advance_position(text, line, col)
 
 **Blank 5 (Build Step 8).**  These are the other ten keywords, in the same shape as `IF`.
 
+<!-- run: id=cs374-liascript-tokensscanning-9 viz=env -->
 ```python
 ("WHILE",      r"while(?!\w)"),
 ("PRINT",      r"print(?!\w)"),
@@ -2563,6 +2578,7 @@ line, col = advance_position(text, line, col)
 ("BREAK",      r"break(?!\w)"),
 ("CONTINUE",   r"continue(?!\w)"),
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-tokensscanning-9) <!-- code-viz link -->
 
 **Blank 6 (Build Step 9).**  Neither `!` nor `-` means anything special at this position in a regex.
 

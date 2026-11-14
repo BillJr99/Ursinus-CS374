@@ -156,6 +156,7 @@ A grammar is a finite set of rewriting rules.  That makes it a data structure, a
 
 Real parsers do not work this way (that topic is several weeks away), and this search is hopelessly slow on anything but toy inputs.  What it buys you is a check: the machine can now verify every derivation you did by hand above.
 
+<!-- run: id=cs374-liascript-grammars-1 viz=env -->
 ```python
 from collections import deque
 
@@ -221,6 +222,7 @@ for s in ["a", "aaa", "aab"]:
     report(s, L1, "L1")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-grammars-1) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -243,6 +245,7 @@ for s in ["a", "aaa", "aab"]:
 
 Encode your CTQ 1.1 answer as data and test it.  Then try to encode $L_3$ and watch it fail.
 
+<!-- run: id=cs374-liascript-grammars-2 viz=env -->
 ```python
 from collections import deque
 NONTERMINALS = set("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -285,6 +288,7 @@ print("\nA correct L3 grammar accepts the first three and rejects the last two."
 print("If yours accepts aabbc or abbc, that is the leak. Where does it come from?")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-grammars-2) <!-- code-viz link -->
 
 Expected output for a correct `MY_L1`: `a`, `aa`, and `aaaa` derivable; `ab` not.  For `MY_L3`: no context-free grammar gets all five right.  Finding out *which* string leaks is the point of the exercise.
 
@@ -398,6 +402,7 @@ A depth bound of five gives six situations (depth 0 through 5), so six right-lin
 
 This model shows a fixed-state recognizer failing on exactly the input where counting matters, and a stack machine succeeding on the same input.
 
+<!-- run: id=cs374-liascript-grammars-3 viz=env -->
 ```python
 # Two recognizers for { a^n b^n | n >= 1 }.
 # One has a fixed, finite memory. One has a stack.
@@ -465,6 +470,7 @@ print("out of states. Raise MAX_STATES to 4 and it works... until n = 5.")
 print("No FIXED number of states works for ALL n. That is the Type 3 ceiling.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-grammars-3) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -489,6 +495,7 @@ print("No FIXED number of states works for ALL n. That is the Type 3 ceiling.")
 
 Extend the stack machine to $a^n b^n c^n$ and find out exactly where a single stack runs out.
 
+<!-- run: id=cs374-liascript-grammars-4 viz=env -->
 ```python
 def stack_recognizer_abc(s):
     """Try to recognize { a^n b^n c^n } with ONE stack.
@@ -520,6 +527,7 @@ print("If it accepts any of them, say exactly which information was already")
 print("gone by the time the first 'c' arrived.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-grammars-4) <!-- code-viz link -->
 
 Expected output: the first three strings should accept and the last three should reject, and you will not manage that with one stack.  Write down the sentence that explains why.  That sentence is the answer to CTQ 1.3.
 

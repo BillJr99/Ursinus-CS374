@@ -525,6 +525,7 @@ State 3 on `x` moves to `i7` again, which closes to the same three items, so it 
 
 The program below builds the NFA from the grammar and runs the subset construction on it.
 
+<!-- run: id=cs374-tutorial-lr-construction-1 viz=env -->
 ```python
 # items_nfa.py: the grammar's item NFA, and the subset construction that turns it into the LR(0) DFA.
 PRODS = [("S'", ["S"]), ("S", ["X", "y", "x"]), ("X", ["x", "X"]), ("X", ["y"])]
@@ -589,6 +590,7 @@ print("\nDFA arrows:")
 for (src, sym), dst in sorted(dfa.items()):
     print("  state %d on %s -> state %d" % (src, sym, dst))
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lr-construction-1) <!-- code-viz link -->
 
 It prints:
 
@@ -800,6 +802,7 @@ Here is every reduce in this grammar, and where it can go:
 
 The driver below prints the same trace, and after every reduce it prints the production, the exposed state, and the GOTO lookup.
 
+<!-- run: id=cs374-tutorial-lr-construction-2 viz=env -->
 ```python
 # reduce_trace.py: the LR(1) table, and a driver that says out loud what each reduce does.
 PROD = {1: ("S", ["X", "y", "x"]), 2: ("X", ["x", "X"]), 3: ("X", ["y"])}
@@ -839,6 +842,7 @@ def parse(text):
 
 print(parse("xxyyx"))
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-lr-construction-2) <!-- code-viz link -->
 
 It prints:
 

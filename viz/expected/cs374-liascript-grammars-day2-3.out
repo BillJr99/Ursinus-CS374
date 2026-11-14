@@ -1,0 +1,2 @@
+No direct left recursion. Recursive descent can handle this.
+Now check for INDIRECT left recursion by hand; the detector cannot.

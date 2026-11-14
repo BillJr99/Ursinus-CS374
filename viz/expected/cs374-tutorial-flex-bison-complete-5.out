@@ -1,0 +1,35 @@
+=== n + n * n (right operand tighter) ===
+Stack                               Remaining          Action
+---------------------------------------------------------------------------
+⊥                                   n + n * n $        SHIFT  n -> state 5
+n                                   + n * n $          REDUCE F->n
+F                                   + n * n $          REDUCE T->F
+T                                   + n * n $          REDUCE E->T
+E                                   + n * n $          SHIFT  + -> state 6
+E +                                 n * n $            SHIFT  n -> state 5
+E + n                               * n $              REDUCE F->n
+E + F                               * n $              REDUCE T->F
+E + T                               * n $              SHIFT  * -> state 7
+E + T *                             n $                SHIFT  n -> state 5
+E + T * n                           $                  REDUCE F->n
+E + T * F                           $                  REDUCE T->T*F
+E + T                               $                  REDUCE E->E+T
+E                                   $                  ACCEPT OK
+
+=== n * n + n (left operand tighter) ===
+Stack                               Remaining          Action
+---------------------------------------------------------------------------
+⊥                                   n * n + n $        SHIFT  n -> state 5
+n                                   * n + n $          REDUCE F->n
+F                                   * n + n $          REDUCE T->F
+T                                   * n + n $          SHIFT  * -> state 7
+T *                                 n + n $            SHIFT  n -> state 5
+T * n                               + n $              REDUCE F->n
+T * F                               + n $              REDUCE T->T*F
+T                                   + n $              REDUCE E->T
+E                                   + n $              SHIFT  + -> state 6
+E +                                 n $                SHIFT  n -> state 5
+E + n                               $                  REDUCE F->n
+E + F                               $                  REDUCE T->F
+E + T                               $                  REDUCE E->E+T
+E                                   $                  ACCEPT OK

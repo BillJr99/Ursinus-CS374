@@ -1,0 +1,4 @@
+  'let x = 3 + 4'        -> KEYWORD(let) NAME(x) EQ(=) NUMBER(3) PLUS(+) NUMBER(4)
+  'lambda y in y * 2'    -> KEYWORD(lambda) NAME(y) KEYWORD(in) NAME(y) STAR(*) NUMBER(2)
+  '12foo'                -> NUMBER(12) NAME(foo)
+  '3 @ 4'                -> NUMBER(3) NUMBER(4)

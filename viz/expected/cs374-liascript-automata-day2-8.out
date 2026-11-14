@@ -1,0 +1,5 @@
+A  [0, 1, 2, 4, 7]  a: move=[3, 8] -> B   b: move=[5] -> C   accept=no
+B  [1, 2, 3, 4, 6, 7, 8]  a: move=[3, 8] -> B   b: move=[5, 9] -> D   accept=no
+C  [1, 2, 4, 5, 6, 7]  a: move=[3, 8] -> B   b: move=[5] -> C   accept=no
+D  [1, 2, 4, 5, 6, 7, 9]  a: move=[3, 8] -> B   b: move=[5, 10] -> E   accept=no
+E  [1, 2, 4, 5, 6, 7, 10]  a: move=[3, 8] -> B   b: move=[5] -> C   accept=yes

@@ -167,6 +167,7 @@ Your interpreter already evaluates binary expressions like `3.0 + 4.0`.  This mo
 
 > **Do this.**  Create `model1_strong.py` in your lab folder, paste the script below into it, and run `python3 model1_strong.py`.
 
+<!-- run: id=cs374-tutorial-environments-extensions-1 viz=env -->
 ```python
 # Adding strong dynamic typing to the BinOp evaluator: check, then compute.
 
@@ -206,6 +207,7 @@ for l, op, r in [(3.0, "+", 4.0), ("ab", "+", "cd"), (3.0, "+", "cd"),
     except (TypeError, ZeroDivisionError) as e:
         print(f"  {l!r} {op} {r!r} -> {type(e).__name__}: {e}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-environments-extensions-1) <!-- code-viz link -->
 
 > **You should see.**  Three passes and three refusals, each refusal naming both operand types.
 
@@ -258,6 +260,7 @@ Step 1 completed *before* the error, so its work cannot be undone, and the `<` a
 
 > **Do this.**  Create `model2_trace.py` in your lab folder, paste the script below into it, and run `python3 model2_trace.py`.
 
+<!-- run: id=cs374-tutorial-environments-extensions-2 viz=env -->
 ```python
 def type_name(v):
     return {bool: "bool", float: "number", str: "string"}.get(type(v), type(v).__name__)
@@ -311,6 +314,7 @@ try:
 except TypeError as e:
     print(f"stopped by TypeError: {e}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-environments-extensions-2) <!-- code-viz link -->
 
 > **You should see.**  Both traces, one step per line.  The first prints three `check OK` lines (`7.0`, `12.0`, `True`) and then `final value: True`.  The second prints `step 1: 3.0 + 4.0  [number + number]  check OK -> 7.0`, then `step 2: 'total: ' + 12.0  [string + number]  check FAILS`, then `stopped by TypeError: operator '+' not defined for string and number`.  Step 1 prints its result before step 2 fails.
 
@@ -349,6 +353,7 @@ The script below is a miniature of bottom-up type inference: it works out each `
 
 > **Do this.**  Create `model3_infer.py` in your lab folder, paste the script below into it, and run `python3 model3_infer.py`.
 
+<!-- run: id=cs374-tutorial-environments-extensions-3 viz=env -->
 ```python
 # Mini type inference: propagate types through a simple expression AST
 
@@ -406,6 +411,7 @@ for title, prog in [("Type Inference Trace", program), ("Type Error Program", ba
     except TypeError as e:
         print(f"Type error: {e}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-environments-extensions-3) <!-- code-viz link -->
 
 > **You should see.**  Under `=== Type Inference Trace ===`, the lines `let a: int`, `let b: int`, `let c: bool`, and `Result type: bool`.  Under `=== Type Error Program ===`, one line `let a: int` and then `Type error: cannot add int and str`.  No value is ever computed; only types move.
 
@@ -449,6 +455,7 @@ Note the direction flip: at step 2 the `+` coerced the *number toward the string
 
 > **Do this.**  Create `model4_postmortem.py` in your lab folder, paste the script below into it, and run `python3 model4_postmortem.py`.
 
+<!-- run: id=cs374-tutorial-environments-extensions-4 viz=env -->
 ```python
 # Simulate both typing disciplines on the same buggy program.
 
@@ -488,6 +495,7 @@ try:
 except TypeError as e:
     print(f"  step 2: TypeError: {e}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-environments-extensions-4) <!-- code-viz link -->
 
 > **You should see.**  The weak run prints `step 2: '19.99' + 5.0 -> '19.995'`, `step 3: '19.995' * 1.06 -> 21.1947`, and `charged: $21.19   (intended: $26.49)`, with no error anywhere.  The strong run prints one line, `step 2: TypeError: cannot add str and float`, and stops.
 

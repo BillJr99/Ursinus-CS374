@@ -81,6 +81,7 @@ gcc hello.o -o hello           # link to executable
 
 The C preprocessor (`cpp`) handles `#include`, `#define`, `#ifdef`, and `#pragma`; it's a text substitution engine that runs *before* the compiler sees any code.
 
+<!-- run: id=cs374-tutorial-compiling-linking-1 viz=c -->
 ```c
 /* hello.c */
 #include <stdio.h>      /* textually paste stdio.h here */
@@ -91,6 +92,7 @@ int main() {
     return 0;
 }
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-compiling-linking-1) <!-- code-viz link -->
 
 After preprocessing (`gcc -E hello.c`), `#include <stdio.h>` is replaced by thousands of lines of declarations from `/usr/include/stdio.h`, and `GREETING` is replaced by `"Hello, World!"`.
 
@@ -484,6 +486,7 @@ CPython bytecode output for `fib` (from Python 3.10; Python 3.11 and later add a
 
 **Why Python's `int` is 28 bytes:**
 
+<!-- run: id=cs374-tutorial-compiling-linking-3 viz=env -->
 ```python  
 import sys
 print(sys.getsizeof(42))     # 28 bytes - not 4!
@@ -491,6 +494,7 @@ print(sys.getsizeof(True))   # 28 bytes
 print(sys.getsizeof("hi"))   # 51 bytes
 # Python ints are Python objects with: refcount + type pointer + value
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-compiling-linking-3) <!-- code-viz link -->
 
 **JavaScript's JIT compilation:**
 
@@ -517,6 +521,7 @@ This is called **Just-In-Time (JIT) compilation**: start interpreted, profile wh
 
 Here is a minimal C program that illustrates the full pipeline:
 
+<!-- run: id=cs374-tutorial-compiling-linking-4 viz=c -->
 ```c
 /* mini_calc.c - compile with: gcc -O2 -o mini_calc mini_calc.c */
 #include <stdio.h>
@@ -542,6 +547,7 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-compiling-linking-4) <!-- code-viz link -->
 
 ```bash
 # Compile and inspect each stage:

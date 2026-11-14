@@ -1,0 +1,5 @@
+get_x() = 10
+After x=99, get_x() = 99
+get_x_snapshot() = 99
+1 2 3
+1

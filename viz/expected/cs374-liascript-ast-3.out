@@ -1,0 +1,10 @@
+Before you add the Call arm:
+BinOp(+)
+  Num(1)
+  Unknown: Call(fn='max', args=[Num(value=2), BinOp(op='*', left=Num(value=3), right=Var(name='x'))])
+
+Notice what went wrong: the whole Call SUBTREE vanished into one
+'Unknown' line. The multiplication and the variable inside it were
+never visited. A missing case does not raise; it silently truncates.
+
+Now add the arm and rerun. Every node should appear.

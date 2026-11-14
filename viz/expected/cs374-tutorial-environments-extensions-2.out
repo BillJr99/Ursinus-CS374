@@ -1,0 +1,10 @@
+=== (3.0 + 4.0) < (2.0 * 6.0) ===
+  step 1: 3.0 + 4.0  [number + number]  check OK -> 7.0
+  step 2: 2.0 * 6.0  [number * number]  check OK -> 12.0
+  step 3: 7.0 < 12.0  [number < number]  check OK -> True
+final value: True
+
+=== (3.0 + 4.0) < ('total: ' + 12.0) ===
+  step 1: 3.0 + 4.0  [number + number]  check OK -> 7.0
+  step 2: 'total: ' + 12.0  [string + number]  check FAILS
+stopped by TypeError: operator '+' not defined for string and number

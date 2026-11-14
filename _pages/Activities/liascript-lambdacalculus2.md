@@ -135,6 +135,7 @@ $$
 
 **Step-by-step reduction: NOT TRUE**
 
+<!-- run: id=cs374-liascript-lambdacalculus2-11 viz=lambda lang=lambda -->
 ```
 NOT TRUE
 = (λb. b FALSE TRUE) (λx.λy. x)
@@ -142,9 +143,11 @@ NOT TRUE
 ->β (λy. FALSE) TRUE
 ->β FALSE  OK
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus2-11) <!-- code-viz link -->
 
 **Step-by-step reduction: AND TRUE FALSE**
 
+<!-- run: id=cs374-liascript-lambdacalculus2-12 viz=lambda lang=lambda -->
 ```
 AND TRUE FALSE
 = (λp.λq. p q p) TRUE FALSE
@@ -154,9 +157,11 @@ AND TRUE FALSE
 ->β (λy. FALSE) TRUE
 ->β FALSE  OK
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus2-12) <!-- code-viz link -->
 
 **Decode helper, "peek inside" a Church boolean:**
 
+<!-- run: id=cs374-liascript-lambdacalculus2-1 viz=env -->
 ```python
 TRUE  = lambda x: lambda y: x
 FALSE = lambda x: lambda y: y
@@ -168,11 +173,13 @@ print("church_to_bool(TRUE)  =", church_to_bool(TRUE))
 print("church_to_bool(FALSE) =", church_to_bool(FALSE))
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus2-1) <!-- code-viz link -->
 
 The helper hands a Church boolean Python's built-in `True` and `False` as its two arguments.  TRUE selects its first argument, so it returns `True`; FALSE returns `False`.  This is your window into the encoding.
 
 ### Church Booleans: Runnable
 
+<!-- run: id=cs374-liascript-lambdacalculus2-2 viz=env -->
 ```python
 # Church booleans: TRUE selects first, FALSE selects second.
 TRUE  = lambda x: lambda y: x          # K  (Kestrel)
@@ -201,6 +208,7 @@ print("if TRUE  then 'yes' else 'no' =", TRUE("yes")("no"))
 print("if FALSE then 'yes' else 'no' =", FALSE("yes")("no"))
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus2-2) <!-- code-viz link -->
 
 ---
 
@@ -253,6 +261,7 @@ Selection gives a third that is shorter than both: if `p` is true, the answer is
 EQUALS = λp.λq. p q (NOT q)
 ```
 
+<!-- run: id=cs374-liascript-lambdacalculus2-3 viz=env -->
 ```python
 TRUE  = lambda a: lambda b: a
 FALSE = lambda a: lambda b: b
@@ -270,6 +279,7 @@ for p in (FALSE, TRUE):
         print(show(p), show(q), "", show(EQ1(p)(q)), " ", show(EQ2(p)(q)))
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus2-3) <!-- code-viz link -->
 
 These definitions follow Kate Morley's [Boolean logic in the lambda calculus](https://code.iamkate.com/lambda-calculus/boolean-logic/).
 
@@ -318,6 +328,7 @@ Read PLUS aloud: "apply $f$ $n$ times to $x$, then $m$ more times."  Read MULT: 
 
 **Step-by-step reduction: SUCC TWO reduces to THREE**
 
+<!-- run: id=cs374-liascript-lambdacalculus2-13 viz=lambda lang=lambda -->
 ```
 SUCC TWO
 = (λn.λf.λx. f (n f x)) (λf.λx. f (f x))
@@ -326,6 +337,7 @@ SUCC TWO
 ->β λf.λx. f (f (f x))
 = THREE  OK
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus2-13) <!-- code-viz link -->
 
 Some references spell the same term with other letters.  [Cornell's CS 312 notes](http://www.cs.cornell.edu/courses/cs312/2008sp/recitations/rec26.html) write the successor as `λw.λy.λx. y (w y x)`, which is this `SUCC` with `n`, `f`, and `x` renamed, so the reduction is the same.
 
@@ -363,6 +375,7 @@ Try `MULT THREE TWO = THREE (PLUS TWO) ZERO` on your own with the same method, a
 
 **Decode helper, "peek inside" a Church numeral:**
 
+<!-- run: id=cs374-liascript-lambdacalculus2-4 viz=env -->
 ```python
 ZERO = lambda f: lambda x: x
 SUCC = lambda n: lambda f: lambda x: f(n(f)(x))
@@ -377,6 +390,7 @@ print("church_to_int(ONE)  =", church_to_int(ONE))
 print("church_to_int(TWO)  =", church_to_int(TWO))
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus2-4) <!-- code-viz link -->
 
 The helper hands the numeral the successor function on Python ints and the seed 0.  If the numeral applies its function twice (as TWO does), you get `0 + 1 + 1 = 2`.  The number of applications is exactly the Church numeral's value.
 
@@ -384,6 +398,7 @@ The helper hands the numeral the successor function on Python ints and the seed 
 
 ## Church Encodings: Runnable
 
+<!-- run: id=cs374-liascript-lambdacalculus2-5 viz=env -->
 ```python
 # Church encodings, executable. Python lambdas ARE lambda calculus terms.
 
@@ -432,6 +447,7 @@ for n, val in [(ZERO, "ZERO"), (ONE, "ONE"), (TWO, "TWO")]:
     print(f"ISZERO({val}) = {show_bool(ISZERO(n))}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus2-5) <!-- code-viz link -->
 
 ---
 
@@ -446,6 +462,7 @@ for n, val in [(ZERO, "ZERO"), (ONE, "ONE"), (TWO, "TWO")]:
 
 Build operators the deck has not given you, using nothing but functions.
 
+<!-- run: id=cs374-liascript-lambdacalculus2-6 viz=env -->
 ```python
 TRUE  = lambda x: lambda y: x
 FALSE = lambda x: lambda y: y
@@ -491,6 +508,7 @@ print("\n  to_int(POW(TWO)(THREE)) = " + str(to_int(POW(TWO)(THREE))) + "   (wan
 #         What does that tell you about what a numeral actually is?
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus2-6) <!-- code-viz link -->
 
 Expected output: the first three lines are 3, 5 and 6.  Your three booleans all print `True` because the stubs return `p`, and `POW` reports 2 instead of 8.  Fix the stubs and the wanted values appear.
 
@@ -633,6 +651,7 @@ That is the Y combinator, the classic fixed-point combinator.  Notice how it arr
 
 Every step above is executable.  Run the cell and watch the machinery separate itself from the factorial one line at a time.  Each `print` corresponds to one numbered step.
 
+<!-- run: id=cs374-liascript-lambdacalculus2-7 viz=env -->
 ```python
 # The derivation, each step runnable, so you can watch the machinery
 # separate itself from the factorial one line at a time.
@@ -687,6 +706,7 @@ print("Z(sum_gen)([1, 2, 3, 4]) =", Z(sum_gen)([1, 2, 3, 4]))
 # Z(sum_gen)([1, 2, 3, 4]) = 10
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus2-7) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -823,6 +843,7 @@ The core lesson above stands on its own.  Two self-paced tutorials extend today'
 
 **Church pairs: building linked data from functions:**
 
+<!-- run: id=cs374-liascript-lambdacalculus2-8 viz=env -->
 ```python
 # Church pairs: PAIR a b f = f a b
 # FST p = p K  (select first)
@@ -870,6 +891,7 @@ print(f"\n4 - 2 = {church_to_int(MINUS(FOUR)(TWO))}")   # 2
 print(f"3 - 4 = {church_to_int(MINUS(THREE)(FOUR))}")   # 0 (floored)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus2-8) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -985,6 +1007,7 @@ So the two combinators sit exactly one eta step apart, and your evaluation order
 
 ## Model 9: Y, Z, and the Order of Evaluation
 
+<!-- run: id=cs374-liascript-lambdacalculus2-9 viz=env -->
 ```python
 # Y and Z in Python.  Python is call-by-value, exactly like Scheme, so this
 # cell is a fair test of the claim section 12 makes about Y.
@@ -1025,9 +1048,11 @@ sys.setrecursionlimit(1000)
 # Y: RecursionError before f ran even once
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus2-9) <!-- code-viz link -->
 
 Here are the same three definitions in Scheme.  They sit closer to the lambda terms because Scheme's `lambda` is the calculus's abstraction:
 
+<!-- run: id=cs374-liascript-lambdacalculus2-10 viz=env -->
 ```scheme
 ; The Z combinator, transcribed from the term in section 12.
 (define Z
@@ -1049,6 +1074,7 @@ Here are the same three definitions in Scheme.  They sit closer to the lambda te
 (factorial 5)                ; 120
 (factorial 0)                ; 1
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus2-10) <!-- code-viz link -->
 
 **Step-by-step: (factorial 3)**
 

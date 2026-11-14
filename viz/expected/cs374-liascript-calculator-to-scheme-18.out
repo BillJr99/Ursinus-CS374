@@ -1,0 +1,13 @@
+=== Python: and/or return an OPERAND ===
+  True and "hello"       -> 'hello'      (type str)
+  False and "hello"      -> False        (type bool)
+  "" or "fallback"       -> 'fallback'   (type str)
+  0 or "fallback"        -> 'fallback'   (type str)
+  "a" or "b"             -> 'a'          (type str)
+
+=== A boolean-only language would give ===
+  True and "hello"       -> True
+  False and "hello"      -> False
+  "" or "fallback"       -> True
+  0 or "fallback"        -> True
+  "a" or "b"             -> True

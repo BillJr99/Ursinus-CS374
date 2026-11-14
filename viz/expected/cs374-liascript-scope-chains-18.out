@@ -1,0 +1,9 @@
+broken results: [2, 2, 2]
+one shared box? True
+
+fixed results: [0, 1, 2]
+distinct boxes? True
+each box's contents: [0, 1, 2]
+
+fix1 results: [0, 1, 2]
+fix1 closures: [None, None, None]

@@ -1,0 +1,20 @@
+LexError: unexpected character '@'
+    let x = @value
+         ^
+  Hint: Valid identifiers start with a letter or underscore
+
+ParseError: expected ')' but found 'end of input'
+    (let x (+ x 1)
+                      ^
+  Hint: Check for unmatched parentheses
+
+RuntimeError: variable 'y' is not defined
+    let z = x + y
+              ^
+  Hint: Did you mean 'x'? Or define 'y' before using it
+
+TypeError: operator '+' requires numeric operands
+    print(1 + "hello")
+            ^
+  Hint: Use str() to convert numbers to strings, or int() for the reverse
+

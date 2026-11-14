@@ -1,0 +1,11 @@
+Bytecode for: x = 5; if x > 0 { print(x); }
+
+    0  PUSH_INT(5)
+    1  STORE_NAME('x')
+    2  LOAD_NAME('x')
+    3  PUSH_INT(0)
+    4  GT
+    5  JUMP_IF_FALSE(9)
+    6  LOAD_NAME('x')
+    7  PRINT
+    8  JUMP(9)

@@ -1,0 +1,6 @@
+x = 42, type = int
+x = 'now a string', type = str
+x = [1, 2, 3], type = list
+
+a is b? True  (same object: True)
+After a = 200: a=200, b=100  (b unchanged)

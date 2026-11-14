@@ -1,0 +1,9 @@
+=== 1. if as a FUNCTION: both arguments are evaluated first ===
+  my_if(True, 42, boom()) -> ZeroDivisionError: this branch should never have run
+  The else branch ran even though the condition was True.
+
+=== 2. Python's own if: non-strict ===
+  42 if True else boom() = 42
+
+=== 3. The fix real languages use: pass THUNKS ===
+  my_if_lazy(True, lambda: 42, lambda: boom()) = 42

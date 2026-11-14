@@ -96,6 +96,7 @@ Now design two machines of your own.  Draw them; do not write code yet.
 
 Before any data structure, here is the most literal way to write a DFA.  Every `if`/`elif` line below is one arrow on the state diagram, and the only memory that survives from one character to the next is the variable `state`.  The final `else` is the implicit dead state: when no arrow matches, the machine gives up and rejects.
 
+<!-- run: id=cs374-liascript-automata-1 viz=env -->
 ```python
 """dfa_if.py: a DFA written as a loop with if statements.
 The machine's only memory is the variable `state`; each if/elif line is one row of delta."""
@@ -169,6 +170,7 @@ if __name__ == "__main__":
         traceback.print_exc()
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-1) <!-- code-viz link -->
 
 This works, and it is a faithful DFA, but it does not scale.  A machine with 50 states and 30 symbols would need 1,500 `if` lines, one per arrow, and every one of them is a place to make a typo.  That is why the next model puts $\delta$ in a table and writes the loop once.
 
@@ -180,6 +182,7 @@ This works, and it is a faithful DFA, but it does not scale.  A machine with 50 
 
 The five-tuple maps almost directly onto Python data.  States become string keys.  The transition function becomes a `dict` of `dict`s.  The simulation is one loop that does one dictionary lookup per character.
 
+<!-- run: id=cs374-liascript-automata-2 viz=env -->
 ```python
 # DFA as data: states are strings, delta is a dict of dicts.
 # This representation is exactly what your Automata assignment generalizes.
@@ -230,6 +233,7 @@ for s in ["aaa", "baaab", "aaaa", "aabaa", "ababab", "aa", ""]:
     print(f"  {s!r:9} -> {run_dfa(THREE_AS_DFA, s)}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-2) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -252,6 +256,7 @@ Here is the part of the machine the code gives you; the dashed arrows are yours 
 
 ![Partial DFA for strings over a and b that contain aa. Three states: q0, q_a, and q_seen. The start state is q0, and the only accepting state is q_seen. Given transitions: q0 on a goes to q_a, q0 on b stays in q0. The transitions from q_a on a and on b, and from q_seen on a and on b, are drawn as dashed arrows to a question mark because you fill them in.](../../files/dotty/contains_aa_partial.svg)
 
+<!-- run: id=cs374-liascript-automata-3 viz=env -->
 ```python
 def run_dfa(machine, s):
     state = machine["start"]
@@ -294,6 +299,7 @@ print("\nWhich inputs do the two machines disagree on? That disagreement IS the"
 print("difference between 'contains' and 'ends in'. Name it in one sentence.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-3) <!-- code-viz link -->
 
 For contrast, here is the finished ends-in-`aa` machine from the code:
 
@@ -332,6 +338,7 @@ When `json.load` reads this file, each JSON object becomes a Python dictionary a
 
 Two more operations cover the rest.  `delta["happy"]` raises a `KeyError`, because there is no state named `happy`, while `delta.get("happy", {})` returns the default you supply.  And `state in machine["accept"]` asks whether a state accepts, as `symbol in machine["alphabet"]` asks whether a symbol is legal.
 
+<!-- run: id=cs374-liascript-automata-4 viz=env -->
 ```python
 import json
 
@@ -357,6 +364,7 @@ print(delta.get("happy", {}).get("1"))          # missing row, then missing arro
 print("even" in machine["accept"], "2" in machine["alphabet"])
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-4) <!-- code-viz link -->
 
 **Predict** before you run it: what would `delta["odd"]["1"]` print, and which arrow in the diagram is it?
 
@@ -416,6 +424,7 @@ The input ends in `q3`, so the machine accepts.  A machine that only counted `a`
 
 This model builds "ends in `p`" machines automatically for patterns of increasing length, so you can watch the state count follow the pattern length.  It then tries the same trick on $a^n b^n$ and fails on purpose.
 
+<!-- run: id=cs374-liascript-automata-5 viz=env -->
 ```python
 def build_ends_with(pattern, alphabet):
     """Build a DFA accepting strings that END WITH `pattern`.
@@ -497,6 +506,7 @@ print("  that finishes the job. That is the regular-language ceiling, and it")
 print("  is why a^n b^n needs the stack you met in the Grammars activity.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-5) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -518,6 +528,7 @@ print("  is why a^n b^n needs the stack you met in the Grammars activity.")
 
 Use `build_ends_with` to answer CTQ 8 by experiment, then break it.
 
+<!-- run: id=cs374-liascript-automata-6 viz=env -->
 ```python
 def build_ends_with(pattern, alphabet):
     n = len(pattern)
@@ -554,6 +565,7 @@ for pattern in ["abc", "aaa", "abab"]:
         print(f"    state {state}{mark}: {row}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-automata-6) <!-- code-viz link -->
 
 Expected output: `"abc"` has 4 states, `"aaa"` has 4, and `"abab"` has 5.  State 4 of the `"abab"` machine goes to state 3 on `a`, not to 0.  Say why in one sentence.
 

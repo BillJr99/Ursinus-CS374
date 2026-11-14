@@ -1,0 +1,26 @@
+=== L2 grammar:  S -> aSb | ab ===
+  L2: 'ab'         derivable in 1 step(s)
+           S
+        => ab
+  L2: 'aabb'       derivable in 2 step(s)
+           S
+        => aSb
+        => aabb
+  L2: 'aaabbb'     derivable in 3 step(s)
+           S
+        => aSb
+        => aaSbb
+        => aaabbb
+
+=== The same grammar, on strings that are NOT in L2 ===
+  L2: 'aab'        NOT derivable
+  L2: 'abb'        NOT derivable
+  L2: 'ba'         NOT derivable
+  L2: 'aaabbbb'    NOT derivable
+
+=== L1 grammar:  S -> aS | a  (regular) ===
+  L1: 'a'          derivable in 1 step(s)
+           S
+        => a
+  L1: 'aaa'        derivable in 3 step(s)
+           S

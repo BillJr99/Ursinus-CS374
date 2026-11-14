@@ -183,6 +183,7 @@ In the layered grammar, multiplication binds tighter than addition because:
 
 ## Code Cell
 
+<!-- run: id=cs374-liascript-derivationsambiguity-1 viz=env -->
 ```python
 # Feel the trees: hand-built trees, evaluated bottom-up.
 # Tuples encode nodes: (op, left, right), or a bare number for a leaf.
@@ -230,6 +231,7 @@ for label, t in [("2 ^ 3 ^ 2 grouped right", ("^", 2, ("^", 3, 2))),
 print("  Exponentiation conventionally associates RIGHT, so 512 is correct.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-derivationsambiguity-1) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -242,6 +244,7 @@ print("  Exponentiation conventionally associates RIGHT, so 512 is correct.")
 
 Do CTQ 7 (Critical Thinking Question 7) with trees instead of prose, and find the case that separates precedence from associativity.
 
+<!-- run: id=cs374-liascript-derivationsambiguity-2 viz=env -->
 ```python
 OPS = {"+": lambda a, b: a + b, "-": lambda a, b: a - b,
        "*": lambda a, b: a * b, "^": lambda a, b: a ** b}
@@ -278,6 +281,7 @@ if not trees_for_2_3_2:
     print("  (nothing built yet: uncomment the trees above and add your own)")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-derivationsambiguity-2) <!-- code-viz link -->
 
 Expected output for TODO 1: `18` and `36`.  Your grammar should force `18`.  Bring TODO 3 to the discussion.  It is the case where precedence has nothing to say and only associativity decides.
 
@@ -287,6 +291,7 @@ Expected output for TODO 1: `18` and `36`.  Your grammar should force `18`.  Bri
 
 You have written leftmost derivations by hand for two sessions.  This program traces them mechanically, so you can check yours.  More importantly, you can watch a rightmost derivation (one that expands the rightmost nonterminal first at every step) take a different path to the *same* tree.
 
+<!-- run: id=cs374-liascript-derivationsambiguity-3 viz=env -->
 ```python
 # Derivations of a SPECIFIC string, driven by its parse tree.
 #   E -> E + T | T      T -> T * F | F      F -> ( E ) | num
@@ -347,6 +352,7 @@ for label in ("Leftmost", "Rightmost"):
     print(f"  {len(steps) - 1} steps, final string: {' '.join(steps[-1])}\n")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-derivationsambiguity-3) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -367,6 +373,7 @@ for label in ("Leftmost", "Rightmost"):
 
 To prove a grammar is ambiguous you need exactly one witness: a single string with two distinct parse trees.  This program enumerates every tree up to a depth bound and reports any string that has more than one.  **Run it on your own project grammar before you build a parser on it.**
 
+<!-- run: id=cs374-liascript-derivationsambiguity-4 viz=env -->
 ```python
 from itertools import product
 
@@ -428,6 +435,7 @@ print("  Swap in '-': (8 - 4) - 2 = 2, but 8 - (4 - 2) = 6.")
 print("  An ambiguous grammar means your parser picks one silently.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-derivationsambiguity-4) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -445,6 +453,7 @@ print("  An ambiguous grammar means your parser picks one silently.")
 
 Run the detector on the grammar your team is going to build a parser for.
 
+<!-- run: id=cs374-liascript-derivationsambiguity-5 viz=env -->
 ```python
 from itertools import product
 
@@ -490,6 +499,7 @@ print("nonterminal per precedence level and recurse on the correct side.")
 print("Then rerun and watch the count drop to 1.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-derivationsambiguity-5) <!-- code-viz link -->
 
 Expected output with the grammar as given: several trees for both targets, because the grammar is ambiguous on purpose.  With a properly layered replacement, both lines read `1`.
 

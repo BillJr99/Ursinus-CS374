@@ -32,6 +32,7 @@ A `struct` is a record with named fields, like a Python class with only data.  C
 
 A phone book is a good first list.  Each entry points to the next one, and the last entry's `next` is `NULL`.  Save this as `phone.c`:
 
+<!-- run: id=cs374-tutorial-c-for-flex-bison-1 viz=c -->
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,6 +76,7 @@ int main(void) {
     return 0;
 }
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-c-for-flex-bison-1) <!-- code-viz link -->
 
 ```bash
 gcc -Wall -o phone phone.c
@@ -102,6 +104,7 @@ Three lines in it are worth reading slowly.
 
 Interpreters keep one kind of record that can hold several kinds of value.  An `enum` names the kinds, a field records which kind this one is, and a `switch` does the right thing for each.  A *function pointer* is a variable that holds a function, so a table can list functions by name, which is how you add a new operation without touching the code that uses the table.  Save this as `shape.c`:
 
+<!-- run: id=cs374-tutorial-c-for-flex-bison-2 viz=c -->
 ```c
 #include <stdio.h>
 #include <string.h>
@@ -143,6 +146,7 @@ int main(void) {
     return 0;
 }
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-c-for-flex-bison-2) <!-- code-viz link -->
 
 ```bash
 gcc -Wall -o shape shape.c

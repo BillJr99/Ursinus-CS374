@@ -1,0 +1,15 @@
+0                        next x  s3
+0 x 3                    next x  s3
+0 x 3 x 3                next y  s4
+0 x 3 x 3 y 4            next y  r3
+                           production 3 is X -> y: pop 2, exposed state 3, GOTO[3, X] = 6
+0 x 3 x 3 X 6            next y  r2
+                           production 2 is X -> x X: pop 4, exposed state 3, GOTO[3, X] = 6
+0 x 3 X 6                next y  r2
+                           production 2 is X -> x X: pop 4, exposed state 0, GOTO[0, X] = 2
+0 X 2                    next y  s5
+0 X 2 y 5                next x  s7
+0 X 2 y 5 x 7            next $  r1
+                           production 1 is S -> X y x: pop 6, exposed state 0, GOTO[0, S] = 1
+0 S 1                    next $  acc
+True

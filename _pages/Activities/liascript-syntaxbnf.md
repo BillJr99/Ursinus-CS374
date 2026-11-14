@@ -320,6 +320,7 @@ block  -> "{" { stmt } "}"
 
 ## Code Cell
 
+<!-- run: id=cs374-liascript-syntaxbnf-1 viz=env -->
 ```python
 # A grammar is data. Here is the signed-integer EBNF as a Python structure,
 # and a hand-rolled recognizer that follows it: [sign] digit {digit}.
@@ -345,6 +346,7 @@ for test in ["42", "-42", "+7", "4-2", "-", "", "007"]:
     print(f"{test!r:8} -> {recognize_signed(test)}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-syntaxbnf-1) <!-- code-viz link -->
 
 ---
 
@@ -358,6 +360,7 @@ for test in ["42", "-42", "+7", "4-2", "-", "", "007"]:
 
 Apply the EBNF-to-code recipe to a rule you write yourself.
 
+<!-- run: id=cs374-liascript-syntaxbnf-2 viz=env -->
 ```python
 DIGITS = "0123456789"
 
@@ -400,6 +403,7 @@ for t in ["x", "count1", "_hidden", "2fast", "a_b_c", ""]:
 #         Note how much more complicated the RULE got, not the code.
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-syntaxbnf-2) <!-- code-viz link -->
 
 Expected output: the integer rule accepts `42`, `-7`, `+0` and `007`, and rejects the rest.  Your identifier rule should accept everything except `2fast` and the empty string.
 
@@ -421,6 +425,7 @@ Once a grammar is a Python dictionary rather than a comment, you can ask questio
 
 A nonterminal $A$ is *directly left-recursive* if it has a production $A \rightarrow A\,\alpha$.  Written as recursive descent, `parse_A` would call `parse_A` as its very first action.  It would have consumed no input, so it would recurse forever.  The standard textbook grammar for arithmetic is left-recursive, and that is exactly the trap.
 
+<!-- run: id=cs374-liascript-syntaxbnf-3 viz=env -->
 ```python
 # A grammar is a dict: nonterminal -> list of productions.
 # Each production is a list of symbols. [] is epsilon.
@@ -482,6 +487,7 @@ except RecursionError as e:
     print("  No input was consumed, so the base case is never reachable.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-syntaxbnf-3) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -494,6 +500,7 @@ except RecursionError as e:
 
 Run the detector on the grammar you will build a parser from.
 
+<!-- run: id=cs374-liascript-syntaxbnf-4 viz=env -->
 ```python
 def find_left_recursive(grammar):
     return {head
@@ -525,6 +532,7 @@ else:
 #         What would you have to compute to catch that case?
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-syntaxbnf-4) <!-- code-viz link -->
 
 Expected output as written: `expr` and `term` reported as left-recursive.  Keep rewriting until the detector reports clean.  A clean report is the precondition for the *Recursive Descent Parsing* session.
 
@@ -553,6 +561,7 @@ list -> item { "," item }
 item -> NUMBER
 ```
 
+<!-- run: id=cs374-liascript-syntaxbnf-5 viz=env -->
 ```python
 # Both recognizers operate on a flat list of token strings.
 # Tokens are "NUM" for any number, "," for comma.
@@ -612,6 +621,7 @@ for tokens, expected, label in test_cases:
     print(f"{label:<20} {tok_str:<30} {str(b):>4} {str(e):>5} {agree:>6}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-syntaxbnf-5) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -628,6 +638,7 @@ So far you have chosen which rule to apply by hand.  A real parser has to make t
 
 The *FIRST set* of a grammar symbol is the set of terminals that can begin a string derivable from that symbol.  Parsers use FIRST sets to decide which rule to apply without backtracking: if the next token is in `FIRST(A)`, try rule A.  Computing FIRST sets is a fixed-point algorithm.  Start with the obvious cases (a terminal's FIRST is itself, and an epsilon production contributes epsilon), then iterate until nothing changes.
 
+<!-- run: id=cs374-liascript-syntaxbnf-6 viz=env -->
 ```python
 # Grammar for arithmetic expressions (token-level, no whitespace).
 # We represent each production as a list of symbols.
@@ -712,6 +723,7 @@ for nt in ["expr", "expr_rest", "term", "term_rest", "factor"]:
         print(f"  {nt} -> {alt_str:<30} fires on: {triggers}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-syntaxbnf-6) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 

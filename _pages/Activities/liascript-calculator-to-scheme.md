@@ -84,6 +84,7 @@ The grammar has one choice to make, and one token decides it, so this is the sma
 datum -> NUMBER | SYMBOL | ( datum* )
 ```
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-1 viz=env -->
 ```python
 # Step 1: read the text into nested Python lists, and compute nothing yet.
 def tokenize(text):
@@ -108,6 +109,7 @@ print(read(tokenize("(+ 1 (* 2 3))")))
 print(read(tokenize("7")))
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-1) <!-- code-viz link -->
 
 > **CTQ 1.1** Where is the recursion, and which grammar rule does it match?
 
@@ -119,6 +121,7 @@ print(read(tokenize("7")))
 
 Evaluation is recursion over that list: evaluate the parts, and combine them.
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-2 viz=env -->
 ```python
 def tokenize(text):
     return text.replace("(", " ( ").replace(")", " ) ").split()
@@ -163,6 +166,7 @@ print(run("(+ 1 (* 2 3))"))
 print(run("(- 10 (+ 1 2))"))
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-2) <!-- code-viz link -->
 
 ```text
 evaluate(['+', 1, ['*', 2, 3]])
@@ -186,6 +190,7 @@ The children finish before the parent can combine them.  That order is called po
 
 The symbol table comes back here.  A symbol evaluates by lookup, and `define` writes to the table.  The operators moved into the same table, so `+` is a name whose value is a function.
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-3 viz=env -->
 ```python
 def tokenize(text):
     return text.replace("(", " ( ").replace(")", " ) ").split()
@@ -244,6 +249,7 @@ y
 """)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-3) <!-- code-viz link -->
 
 > **CTQ 3.1** Why does `define` need its own check, ahead of the general call at the end of `evaluate`?  What would go wrong if `define` were treated as a call?
 
@@ -253,6 +259,7 @@ y
 
 Predict before you run: what should `(if (= x 0) (/ 1 0) x)` do when `x` is 3?  This Scheme has no `/`, so evaluating that branch would be an error you can see.
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-4 viz=env -->
 ```python
 def tokenize(text):
     return text.replace("(", " ( ").replace(")", " ) ").split()
@@ -313,6 +320,7 @@ run("""
 """)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-4) <!-- code-viz link -->
 
 The general call at the end of `evaluate` evaluates every part first.  `if` cannot go through there, or both branches would run.  A form that decides for itself what to evaluate is called a **special form**, and `define` was one too.
 
@@ -326,6 +334,7 @@ The general call at the end of `evaluate` evaluates every part first.  `if` cann
 
 `(1 2 3)` looks like a call to a function named `1`.  To talk about a list instead of running it, you need a form that hands back its operand unevaluated.
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-5 viz=env -->
 ```python
 def tokenize(text):
     return text.replace("(", " ( ").replace(")", " ) ").split()
@@ -395,6 +404,7 @@ run("""
 """)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-5) <!-- code-viz link -->
 
 Look at the last line of output: `(+ 1 2)` is a program, and with `quote` it is also three pieces of data.
 
@@ -459,6 +469,7 @@ Read $\mathcal{E}$ as "the value of."  The first rule says the value of a number
 
 This is the complete evaluator.  Every line matters.  Read it, trace it, then run it:
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-6 viz=env -->
 ```python
 from dataclasses import dataclass, field
 from typing import Any, Optional
@@ -524,6 +535,7 @@ tree3 = UnaryOp("-", BinOp("+", Var("price"), Num(1)))
 print(f"-(price+1) = {evaluate(tree3, env)}")   # -6.0
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-6) <!-- code-viz link -->
 
 **Step-by-step worked example, tracing `(+ 1 (* 2 3))`**
 
@@ -557,6 +569,7 @@ Three things to notice.  First, multiplication finishes entirely before addition
 
 Add a node type to the evaluator without touching any branch that already works.  This is the "new consumer of the AST" recipe from Critical Thinking Question (CTQ) 4, run in the other direction: a new *producer*.
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-7 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -597,6 +610,7 @@ for label, tree in tests:
 #         to change to do it. That number is the architecture lesson.
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-7) <!-- code-viz link -->
 
 Expected output once `Min` is in place: `3`, `6`, and `11`.  Before you write it, predict how many *existing* lines you will have to modify.
 
@@ -615,6 +629,7 @@ Expected output once `Min` is in place: `3`, `6`, and `11`.  Before you write it
 
 This instrumented evaluator prints the call tree as it runs:
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-8 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -668,6 +683,7 @@ result = evaluate_traced(tree, env)
 print(f"\nFinal result: {result}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-8) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -680,6 +696,7 @@ print(f"\nFinal result: {result}")
 
 Make the tracer answer CTQ 6 for you: print the depth alongside the indentation.  Then guard it against the failure the "Watch out!" note below describes.
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-9 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -733,6 +750,7 @@ for attempt in (1, 2):
         print(f"  ZeroDivisionError: {e}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-9) <!-- code-viz link -->
 
 Expected output as written: the second trace is indented *wrongly*, because `_depth` was never decremented when the exception unwound the stack.  Fix TODO 1 and the two traces become identical.
 
@@ -777,6 +795,7 @@ Look at the middle row.  A helpful interpreter can notice that `prise` is one ch
 
 This evaluator carries a line and column number on every node, and it raises its own error type when the user's program is at fault:
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-10 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -846,6 +865,7 @@ print("That is a bug report about the interpreter. The messages above are")
 print("bug reports about the user's program, which is the whole difference.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-10) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -867,6 +887,7 @@ print("bug reports about the user's program, which is the whole difference.")
 
 Give your language a policy for one more failure, and make the message earn its keep.
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-11 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -919,6 +940,7 @@ for label, tree in [("7 % 2", BinOp("%", Num(7,1,1), Num(2,1,5), 1, 3)),
         print(f"  {label:8} -> raw Python {type(e).__name__}: {e}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-11) <!-- code-viz link -->
 
 Expected output as written: the first two report that `%` is unsupported, and the third divides by zero.  Once your TODOs are in, write the three resulting behaviors into `SEMANTICS.md` as one sentence each.  The Interpreter assignment's `SEMANTICS.md` asks for rules like these.
 
@@ -933,6 +955,7 @@ When you evaluate an AST, you always use *depth-first, post-order* traversal: le
 
 > *Adapted from [`bfs.py`](https://github.com/chuckallison/foundations-of-computing/blob/main/code/bfs.py) in *Foundations of Computing* by Chuck Allison (Fresh Sources, Inc.), used under the [MIT License](https://github.com/chuckallison/foundations-of-computing/blob/main/LICENSE).*
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-12 viz=env -->
 ```python
 from dataclasses import dataclass, field
 from typing import Optional, Any
@@ -1022,6 +1045,7 @@ def eval_postorder(root: TreeNode) -> float:
 print(f"\nEvaluated result: {eval_postorder(expr_tree)}  (expected 9.0)")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-12) <!-- code-viz link -->
 
 **CTQ M4.1** The BFS order for `(1 + 2) * 3` is `* + 3 1 2`.  Explain exactly why you *cannot* evaluate the tree by processing nodes in this order.  Which node in the BFS order is visited before its children's values are available?
 
@@ -1108,6 +1132,7 @@ The condition values: `0`, `1`, `-3`, `""`, `"false"`, an empty list, the boolea
 
 Run the Python truthiness table:
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-13 viz=env -->
 ```python
 test_values = [0, 1, -3, "", "false", [], False, True, None, 0.0, 0.1]
 
@@ -1125,6 +1150,7 @@ for v in test_values:
     print(f"{str(v):<12} {str(python_result):<16} {str(c_style):<16} {str(java_style)}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-13) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -1140,6 +1166,7 @@ Saying "the untaken branch is not evaluated" is one thing.  Proving it is anothe
 
 Prove that `if` does not evaluate the untaken branch:
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-14 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -1188,6 +1215,7 @@ result3 = evaluate(Cond(Num(0), Num(1), Num(2)), {})
 print(f"0 -> else: {result3}")  # 2 (0 is falsy)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-14) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -1206,6 +1234,7 @@ print(f"0 -> else: {result3}")  # 2 (0 is falsy)
 
 Write `if` as an ordinary function, watch it fail, then fix it the way real languages do.  The fix uses a thunk: a function that takes no arguments and wraps an expression so the expression is not evaluated until someone calls the function.
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-15 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -1245,6 +1274,7 @@ print(f"  my_if_lazy(True, lambda: 42, lambda: boom()) = "
 #         and then exactly one branch.
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-15) <!-- code-viz link -->
 
 Expected output: the first call raises, the second prints `42`, the third prints `42`.  That progression is why `if` is built into the grammar rather than shipped as a library function.
 
@@ -1272,6 +1302,7 @@ $$
 
 `and` and `or` cannot simply be added to your existing `BinOp` evaluator, because `BinOp` always evaluates both children before doing anything with them.  Logical operators need their own node type with their own evaluation rule, one that reaches for the right child only after deciding whether it is needed.  The Bomb test makes this difference visible.  If the right side were always evaluated, the bomb would explode.
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-16 viz=env -->
 ```python
 # Short-circuit logic as its own node type: the right child is evaluated
 # conditionally, unlike every BinOp. Demonstrated with a guard idiom.
@@ -1318,6 +1349,7 @@ result = i < len(items) and items[i] > 0
 print(f"Safe guard result: {result}")   # False (never indexes out of bounds)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-16) <!-- code-viz link -->
 
 The guarantee that `i < n and items[i] > 0` never indexes out of bounds depends on:
 
@@ -1345,6 +1377,7 @@ In Python, `x or "default"` returns `"default"` when `x` is falsy.  This behavio
 
 You now know that `and`/`or` short-circuit.  A second, independent question remains: what do they return?  Python returns the operand that decided the outcome, not a normalized boolean.  That choice allows short idioms like `name or "Anonymous"`.  Java always returns `true` or `false`.  Both choices are internally consistent.  This model shows their practical consequences side by side before you commit to one in your own language.
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-17 viz=env -->
 ```python
 # Python's short-circuit with value-preserving semantics
 print("Python 'and' returns operand:")
@@ -1372,6 +1405,7 @@ print("\nNote: Java 'and'/'or' always return boolean:")
 # Python allows: x = True and "hello"  // returns "hello"
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-17) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -1390,6 +1424,7 @@ print("\nNote: Java 'and'/'or' always return boolean:")
 
 Decide both questions for your language, and find the case where the two choices disagree.
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-18 viz=env -->
 ```python
 print("=== Python: and/or return an OPERAND ===")
 cases = [
@@ -1420,6 +1455,7 @@ for label, value in cases:
 #         input. Which behaviour do you want in your language?
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-18) <!-- code-viz link -->
 
 Expected output: `0 or "fallback"` gives `"fallback"` in the first column and `True` in the second.  If your language ever means "use the default only when the value is missing", that row is the bug waiting to happen.
 
@@ -1441,6 +1477,7 @@ The break/continue trick: use exception classes.  A `break` statement raises a `
 
 > **Watch out!** `break` and `continue` behave differently across languages.  In Python, `break` inside a `for`/`while` exits only the innermost loop; a `break` nested three loops deep does not escape all three.  Some languages (Java, Kotlin) offer labeled breaks to exit an outer loop directly.  When you implement these statements in your interpreter, decide up front how deeply nested `break` can reach, and document it.  The choice affects which programs are expressible and how much state the interpreter must track.
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-19 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any, List
@@ -1526,6 +1563,7 @@ print("First multiple of 7:")
 execute(program, env)
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-19) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -1567,6 +1605,7 @@ In a tree-walking interpreter, executing the program's `while` loop one million 
 
 ## Model 5: Complete Statement Executor
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-20 viz=env -->
 ```python
 from dataclasses import dataclass, field
 from typing import Any, List, Optional
@@ -1651,6 +1690,7 @@ execute(program, env)
 print(f"env after: {env}")     # n=0, total=15
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-20) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -1671,6 +1711,7 @@ print(f"env after: {env}")     # n=0, total=15
 
 Add the two statements the executor is missing, using the trick real interpreters use.
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-21 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any, List
@@ -1743,6 +1784,7 @@ except (BreakSignal, ContinueSignal) as sig:
 #         mechanism here, when break is not an error?
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-21) <!-- code-viz link -->
 
 Expected output as written: the numbers 1 through 10.  Add a `Break` and, until TODO 1 is done, the signal escapes the loop entirely and the outer handler catches it.  That is the bug the `except` inside `While` prevents.
 
@@ -1752,6 +1794,7 @@ The REPL (Read-Eval-Print Loop) lets someone type your language one line at a ti
 
 > **Watch out!**  Because the REPL's `env` dictionary persists across lines, a variable assigned on line 1 is still live on line 100.  So the order in which the user types lines matters, and re-running the REPL from scratch starts with an empty environment.  Students sometimes expect the REPL to behave like a script (isolated, top-to-bottom) rather than a stateful session.  They are different execution models.  State in your language documentation which one your REPL provides.
 
+<!-- run: id=cs374-liascript-calculator-to-scheme-22 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -1840,6 +1883,7 @@ for line in repl_input:
 print(f"\nFinal environment: {env}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-calculator-to-scheme-22) <!-- code-viz link -->
 
 ### Reading the Code
 

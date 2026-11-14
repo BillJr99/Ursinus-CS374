@@ -1,0 +1,11 @@
+  1 worker(s):   14.38 ms
+  2 worker(s):   16.34 ms
+  4 worker(s):   21.71 ms
+  8 worker(s):   18.37 ms
+
+  factorials:        {5: 120, 7: 5040, 10: 3628800, 12: 479001600, 15: 1307674368000}
+  sum of factorials: 1308157003560
+
+  No locks, no ordering constraints, no shared mutable state.  The only
+  reason this is safe is that factorial is pure.  Make it write to a
+  global and every one of those guarantees evaporates.

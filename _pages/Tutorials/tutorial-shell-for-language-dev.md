@@ -651,6 +651,7 @@ The engine walks left to right, and each group records the *span* of text it con
 
 Two details deserve attention.  First, `[A-Z]+` is greedy, yet it stops cleanly after `WARN`: the next character is a space, which is not in the class `[A-Z]`, so the quantifier has nothing more it is *allowed* to take.  The class boundary does the work, and no backtracking is needed.  Second, `.*` in `msg` is also greedy and *does* swallow spaces, running to the end of the line (`.` matches every character except newline).
 
+<!-- run: id=cs374-tutorial-shell-for-language-dev-7 viz=env -->
 ```python
 import re
 from collections import Counter
@@ -686,6 +687,7 @@ for r in records:
     if r["level"] == "ERROR":
         print(f"  {r['time']}  {r['msg']}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-shell-for-language-dev-7) <!-- code-viz link -->
 
 **Check yourself.**  In `(?P<level>[A-Z]+) (?P<msg>.*)`, why does the `level` group stop at the end of `WARN`?
 
@@ -708,6 +710,7 @@ The next character is a space, which is not in `[A-Z]`, so the greedy `+` has no
 
 **Named groups make a mini-lexer readable:**
 
+<!-- run: id=cs374-tutorial-shell-for-language-dev-8 viz=env -->
 ```python
 import re
 
@@ -756,6 +759,7 @@ print count;"""
 for tok in lex(src):
     print(tok)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-shell-for-language-dev-8) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 

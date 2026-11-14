@@ -1,0 +1,12 @@
+  Adder(3, 4) = 7
+  Multiplier(3, 4) = 12
+  function(3, 4) = 81
+
+Type-erased container (like std::vector<std::function<...>>):
+  TypeErased<Adder>(5, 3) = 8
+  TypeErased<Multiplier>(5, 3) = 15
+  TypeErased<function>(5, 3) = 125
+
+  callable(Adder()) = True
+  callable(42)      = False
+  (Python checks for __call__ at runtime; C++ checks at compile time)

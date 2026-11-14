@@ -1,0 +1,13 @@
+1.  Two files each define 'int counter;'
+   ld: duplicate symbol 'counter': defined in a.o and again in b.o
+
+2.  The same files, but libc is missing from the link
+   ld: undefined reference to 'printf' from a.o
+   ld: undefined reference to 'printf' from b.o
+
+3.  Both files say 'static int counter;'
+   link succeeded; global symbol table:
+      main  <- a.o
+      printf  <- libc
+      show  <- b.o
+

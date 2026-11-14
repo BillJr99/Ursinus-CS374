@@ -1,0 +1,4 @@
+GE first [('IDENT', 'x'), ('GE', '>='), ('INT', '5')]
+GT first [('IDENT', 'x'), ('GT', '>'), ('EQ', '='), ('INT', '5')]
+no \b [('KEYWORD', 'if'), ('IDENT', 'fy')]
+with \b [('IDENT', 'iffy')]

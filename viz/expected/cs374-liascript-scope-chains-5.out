@@ -1,0 +1,4 @@
+=== Fresh frame per iteration ===
+  remembered values: [0, 1, 2]
+=== One shared frame ===
+  remembered values: [2, 2, 2]

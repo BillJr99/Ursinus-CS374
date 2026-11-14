@@ -1,0 +1,6 @@
+=== Simple generator-based event loop ===
+  [638721.574] task_A starting
+  [638721.607] task_A done after 0.03s
+  [638721.607] task_B starting
+  [638721.630] task_B done after 0.02s
+  all tasks done

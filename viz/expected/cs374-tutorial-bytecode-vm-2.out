@@ -1,0 +1,8 @@
+Opcodes defined: 37 instructions
+  PUSH_INT             = 1
+  PUSH_FLOAT           = 2
+  PUSH_STR             = 3
+  PUSH_BOOL            = 4
+  PUSH_NIL             = 5
+  POP                  = 6
+  ...

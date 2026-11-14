@@ -56,9 +56,11 @@ ancestor(X, Y)    :- parent(X, Z), ancestor(Z, Y).
 
 Then, in the query pane (bottom right), ask:
 
+<!-- run: id=cs374-tutorial-prolog-swish-1 viz=plain -->
 ```prolog
 ?- grandparent(tom, Who).
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-prolog-swish-1) <!-- code-viz link -->
 
 SWISH answers `Who = ann`.  Press `;` (or "Next") and it backtracks to `Who = pat`.  Press `;` again and it reports no more solutions.
 
@@ -108,6 +110,7 @@ A note on P31 and negation: `\+ Goal` succeeds when `Goal` cannot be proven ("ne
 
 This is the single most important idea in logic programming. `append/3` is built in, but consider what it *is*: a relation between two lists and their concatenation.  That means it runs in every direction:
 
+<!-- run: id=cs374-tutorial-prolog-swish-2 viz=plain -->
 ```prolog
 ?- append([1,2], [3], Xs).       % concatenate:  Xs = [1,2,3]
 ?- append(Xs, Ys, [1,2,3]).      % split every way:
@@ -116,6 +119,7 @@ This is the single most important idea in logic programming. `append/3` is built
                                  %   Xs = [1,2],   Ys = [3]     ;
                                  %   Xs = [1,2,3], Ys = []
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-prolog-swish-2) <!-- code-viz link -->
 
 A Python function `append(a, b)` can only run one way; you cannot ask it "what two lists concatenate to `[1,2,3]`?"  Prolog can, because `append/3` binds **logic variables** by unification rather than evaluating expressions.  Write one relation of your own and use it in at least two modes; a team taking the Logic Programming extension demonstrates exactly this in its own language.
 
@@ -154,6 +158,7 @@ The `reify` function applies the final substitution to a query variable to get i
 
 ### The full mini-Prolog interpreter
 
+<!-- run: id=cs374-tutorial-prolog-swish-3 viz=env -->
 ```python
 # Complete mini-Prolog interpreter
 from dataclasses import dataclass
@@ -342,6 +347,7 @@ Mx = v("Mx")
 for r in query(db, Compound("member", (Mx, lst(a("p"),a("q"),a("r")))), Mx):
     print("  X =", r["Mx"])
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-prolog-swish-3) <!-- code-viz link -->
 
 **Critical Thinking Questions (CTQs)**
 

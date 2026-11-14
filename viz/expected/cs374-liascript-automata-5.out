@@ -1,0 +1,5 @@
+=== 'Ends with P': one state per amount-of-pattern-completed ===
+  pattern 'a'      -> 2 states, accepts ['ccca']
+  pattern 'ab'     -> 3 states, accepts ['abcab', 'cab']
+  pattern 'abc'    -> 4 states, accepts ['abc', 'abcabc']
+  pattern 'abca'   -> 5 states, accepts none of the probes

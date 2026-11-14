@@ -1,0 +1,3 @@
+church_to_int(ZERO) = 0
+church_to_int(ONE)  = 1
+church_to_int(TWO)  = 2

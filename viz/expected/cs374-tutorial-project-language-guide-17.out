@@ -1,0 +1,22 @@
+=== Risk Pre-Mortem Matrix ===
+
+  Score  P   I   Risk                                          First Experiment
+  ------ --- --- --------------------------------------------- ------------------------------
+  20     4   5   Merge conflict: two members' parsers clash    designate one parser 'canon'
+  12     3   4   Niche feature too hard to parse               prototype niche parser rule 
+  12     4   3   Evaluator semantics underdocumented           complete SEMANTICS.md before
+  10     2   5   Demo Day: sample programs not ready           1 sample program per sprint,
+  9      3   3   Tests written after code (no red-green cycl   write 3 failing tests before
+
+  Highest-priority risk: Merge conflict: two members' parsers clash
+  Mitigation this week:  designate one parser 'canon' on Day 1
+
+  Rule: the team must retire the top risk before writing any Sprint 1 code.
+  A 'retirement experiment' is the smallest proof that the risk does not materialize.
+
+=== Sprint 1 Commitment ===
+  1. All members' lexers tokenize the same 10-line test program identically
+  2. Designated parser handles: let, if/else, while, +/-/*//, comparisons
+  3. Evaluator runs the 3 provided sample programs without crashing
+  4. SEMANTICS.md covers: scoping, truthiness, division, string behavior
+  5. Node inventory has zero TODOs for core nodes

@@ -1,0 +1,5 @@
+deposit 50  : 150
+withdraw 30 : 120
+acc balance : 120
+acc2 balance: 100 (untouched, its own frame)
+

@@ -187,9 +187,11 @@ git commit -m "Add course dev container configuration"
 
 So the image carries a datestamp, and you can read it from the container prompt:
 
+<!-- run: id=cs374-tutorial-dev-environment-1 viz=cast -->
 ```bash
 echo $CS374_IMAGE_VERSION
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-dev-environment-1) <!-- code-viz link -->
 
 ```
 2026.09.02
@@ -233,9 +235,11 @@ student@a1b2c3d4e5f6:/workspace$
 
 That hostname-looking string is the container ID. You are the non-root user `student`, in `/workspace`, which *is* your `cs374-work` repository.  Prove it:
 
+<!-- run: id=cs374-tutorial-dev-environment-2 viz=cast -->
 ```bash
 ls -la
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-dev-environment-2) <!-- code-viz link -->
 
 ```
 .devcontainer
@@ -295,9 +299,11 @@ uv --version
 uv 0.x.x
 ```
 
+<!-- run: id=cs374-tutorial-dev-environment-4 viz=cast -->
 ```bash
 echo $CS374_IMAGE_VERSION
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-dev-environment-4) <!-- code-viz link -->
 
 ```
 2026.09.02

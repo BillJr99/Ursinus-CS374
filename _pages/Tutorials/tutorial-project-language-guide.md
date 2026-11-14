@@ -2019,6 +2019,7 @@ The feature-checklist and EBNF-skeleton builder below is  It is a tool you run w
 
 The cell below walks through a feature checklist and emits a starter grammar in EBNF. Your team modifies it; the point is to make sure no feature is forgotten.
 
+<!-- run: id=cs374-tutorial-project-language-guide-12 viz=env -->
 ```python
 # Grammar v0 feature checklist + EBNF skeleton generator.
 # Edit the feature flags to match your team's decisions, then run.
@@ -2138,6 +2139,7 @@ print()
 print("  To add a feature: set the flag to True and add its grammar rule.")
 print("  Each True flag = at minimum one new grammar rule + one new AST node.")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-12) <!-- code-viz link -->
 
 > **Watch out!**  Setting a feature flag to `True` in the skeleton does not implement the feature; it only declares intent.  The real cost shows up in two places: (1) every new grammar rule becomes a new parsing function your Builder must write and test, and (2) every new grammar rule introduces at least one new AST node that your Evaluator must handle.  Teams commonly underestimate Sprint 1 scope by counting features rather than counting grammar rules plus AST nodes.
 
@@ -2176,6 +2178,7 @@ Every language has a feel: the texture a programmer meets after typing thirty li
 
 Before you run it, fix the vocabulary.  The design scorecard you build today rates a language on four criteria.  Readability asks whether a reader who did not write the code can follow it quickly.  Writability asks whether an author can produce correct code quickly.  Reliability asks how well the language keeps a program from doing the wrong thing without anyone noticing.  Cost, for this project, means the cost of implementation, which is your scarcest resource.  Learnability, a fifth word you will see below, asks how fast a newcomer picks up the syntax.
 
+<!-- run: id=cs374-tutorial-project-language-guide-13 viz=env -->
 ```python
 # Two syntax variants of the same tiny language.
 # Variant A: Python-style (keyword blocks, colon, indentation)
@@ -2269,6 +2272,7 @@ print()
 print("  The right answer depends on the niche. Name your niche first.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-13) <!-- code-viz link -->
 
 > **Watch out!**  "Readability" and "writability" sound like opposites, but they measure *different audiences*.  Readability asks whether a reader (possibly not the author) can follow the code quickly.  Writability asks whether an author can produce correct code quickly.  A language can be highly writable and hard to read; terse, symbol-heavy syntax like APL is the classic example.  Before you answer the questions below, commit your team to the audience your niche puts first.
 
@@ -2282,6 +2286,7 @@ print("  The right answer depends on the niche. Name your niche first.")
 
 Write the same program three ways and let the count start the argument.
 
+<!-- run: id=cs374-tutorial-project-language-guide-14 viz=env -->
 ```python
 VARIANTS = {
     "Python-style": """
@@ -2331,6 +2336,7 @@ for name, src in VARIANTS.items():
 #         your language should serve.
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-14) <!-- code-viz link -->
 
 Expected output: one row per variant, with the C-style version carrying noticeably more punctuation for the same program.  That number is where your design argument starts, not where it ends.
 
@@ -2351,6 +2357,7 @@ A city planner does not only dream about roads.  They produce a blueprint that a
 
 The node inventory is the living specification of your interpreter.  Every AST node class appears here with its fields, the grammar rule that emits it, and the evaluator method that handles it.  Use the cell below as a template, and complete the empty cells as a team.
 
+<!-- run: id=cs374-tutorial-project-language-guide-15 viz=env -->
 ```python
 # Node inventory generator: produces a Markdown table from a node spec.
 # Fill in your team's nodes, then commit this script as 'node_inventory.py'.
@@ -2413,6 +2420,7 @@ print("  Sprint 1 goal: zero TODOs for core nodes (Lit, BinOp, VarRef, Assign, I
 print("  Sprint 2 goal: zero TODOs for functions and your niche feature")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-15) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -2424,6 +2432,7 @@ print("  Sprint 2 goal: zero TODOs for functions and your niche feature")
 
 Fill the inventory with your own language, and read the gaps straight off it.
 
+<!-- run: id=cs374-tutorial-project-language-guide-16 viz=env -->
 ```python
 # (NodeClass, fields, grammar_rule, evaluator_method)
 # TODO: replace every row with YOUR team's nodes. Leave evaluator_method
@@ -2465,6 +2474,7 @@ if todo:
 #         ever build it. Delete the node or write the rule.
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-16) <!-- code-viz link -->
 
 Expected output: a Markdown table and a count of nodes wired end to end.  Paste the table into your design document.  It is a deliverable, not a warm-up.
 
@@ -2484,6 +2494,7 @@ Part III shifts from "what will our language be" to "how will we build it withou
 
 The most useful planning tool is working backwards from failure.  Suppose it is Demo Day and your language did not work.  What went wrong?  The cell below simulates a risk pre-mortem session: the team lists its top threats, ranks them by probability × impact, and assigns a mitigation experiment to each.
 
+<!-- run: id=cs374-tutorial-project-language-guide-17 viz=env -->
 ```python
 # Risk pre-mortem template.
 # Fill in your team's top five risks; run to see the priority matrix.
@@ -2529,6 +2540,7 @@ for i, goal in enumerate(sprint1_goals, 1):
     print(f"  {i}. {goal}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-17) <!-- code-viz link -->
 
 > **Watch out!**  A risk score of probability × impact tells you *priority order*, not whether to act at all.  A low-probability, high-impact risk (score 5) can be more dangerous than a moderate-probability, moderate-impact risk (score 9) if you have no mitigation for it, because when it hits, it is catastrophic.  Always read the impact column beside the score, especially for anything with impact 5 (Demo Day failure).
 
@@ -2555,6 +2567,7 @@ The Coordinator is allocating Sprint 1 tasks.  The niche feature (dice rolls) is
 
 *The problem.*  Code that takes apart structured data decays into nested ifs and field accesses.  *The mechanism.*  A `match` tests a value against *patterns* that check shape and bind variables at the same time.  Python (3.10) joined Rust, Scala, and the ML family:
 
+<!-- run: id=cs374-tutorial-project-language-guide-18 viz=env -->
 ```python
 def describe(node):
     try:
@@ -2575,6 +2588,7 @@ def describe(node):
 print(describe(("+", ("num", 2), ("neg", ("num", 3)))))
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-18) <!-- code-viz link -->
 
 *The cost and the criterion.*  A new syntactic form spends readability up front and repays it in every dissection.  Exhaustiveness is the other half: ML-family compilers *prove* you handled every case, a reliability win your `evaluate`'s if-chain never gets.  Notice the example: pattern matching is practically purpose-built for tree walks like yours.
 
@@ -2611,6 +2625,7 @@ print(describe(("+", ("num", 2), ("neg", ("num", 3)))))
 
 Python's `match` statement (PEP 634, a Python Enhancement Proposal) is more than a switch.  It matches on *structure*, destructures values into bindings, supports guards, and handles class patterns.  The cell below walks through each capability with your CS374 AST as the running example.
 
+<!-- run: id=cs374-tutorial-project-language-guide-19 viz=env -->
 ```python
 import sys
 
@@ -2694,6 +2709,7 @@ for val in [-3, 0, 4, 7]:
     print(f"  categorize({val}) = {categorize(val)}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-19) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -2705,6 +2721,7 @@ for val in [-3, 0, 4, 7]:
 
 Rewrite one dispatch from your own interpreter as a `match`, and find the case you forgot.
 
+<!-- run: id=cs374-tutorial-project-language-guide-20 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -2765,6 +2782,7 @@ for label, tree in tests:
 #         argument for match, and it is about the checker, not the syntax.
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-20) <!-- code-viz link -->
 
 Expected output as written: the first two rows agree, and the last two report `DIFFERENT` because `match` has no case for them yet.  Those two rows are what an exhaustiveness checker would have told you before running.
 
@@ -2791,6 +2809,7 @@ Python cannot show two of the four features directly.  Python has a garbage coll
 
 ### A Borrow Checker in Thirty Lines
 
+<!-- run: id=cs374-tutorial-project-language-guide-21 viz=env -->
 ```python
 class Owned:
     """A value with exactly one owner. Moving invalidates the source."""
@@ -2864,6 +2883,7 @@ print("these programs would ever run. Here they raise at run time, which")
 print("is precisely the binding-time difference the theory section names.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-21) <!-- code-viz link -->
 
 #### Reading the Code
 
@@ -2874,6 +2894,7 @@ print("is precisely the binding-time difference the theory section names.")
 
 ### Async as Interleaving, Not Parallelism
 
+<!-- run: id=cs374-tutorial-project-language-guide-22 viz=env -->
 ```python
 import asyncio, time
 
@@ -2909,6 +2930,7 @@ async def main():
 asyncio.run(main())
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-22) <!-- code-viz link -->
 
 #### Reading the Code
 
@@ -2924,6 +2946,7 @@ asyncio.run(main())
 
 Python's `@dataclass` decorator (PEP 557) generates `__init__`, `__repr__`, and `__eq__` from field annotations.  The `__post_init__` hook runs *after* the generated `__init__`, which allows validation and derived fields.  It is a lightweight version of the invariant-checking constructors common in strongly typed languages.
 
+<!-- run: id=cs374-tutorial-project-language-guide-23 viz=env -->
 ```python
 from dataclasses import dataclass, field
 from typing import List, Optional
@@ -3012,6 +3035,7 @@ print("Key insight: __post_init__ moves invariant checks to object construction,
 print("ensuring no Token or ASTNode can exist in an invalid state.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-23) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -3030,6 +3054,7 @@ print("ensuring no Token or ASTNode can exist in an invalid state.")
 
 Python's type annotations, generators, and context managers are three independent features.  Each addresses a distinct design concern: static documentation, lazy computation, and resource safety.  The cell explores all three in the context of a token stream, a structure your compiler pipeline uses.
 
+<!-- run: id=cs374-tutorial-project-language-guide-24 viz=env -->
 ```python
 from typing import Iterator, Generator, List, Optional, TypeVar
 from contextlib import contextmanager
@@ -3155,6 +3180,7 @@ with parse_session("bad $ input") as s:
     raise ValueError("unexpected token at position 4")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-project-language-guide-24) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 

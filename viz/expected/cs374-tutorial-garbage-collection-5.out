@@ -1,0 +1,5 @@
+Before GC: 4 objects allocated
+  [Cheney] collecting (4 allocated)
+  [Cheney] 2 live objects after GC
+After GC: root y is at addr 8
+y = {'type': 'pair', 'car': 9, 'cdr': None, 'forwarded': None}

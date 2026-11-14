@@ -1,0 +1,13 @@
+Live objects: 3
+
+Dropping root reference to a:
+  [RC] freed object at 2 (type='pair')
+Live after drop a: 2
+
+Dropping root reference to b:
+  [RC] freed object at 1 (type='pair')
+Live after drop b: 1
+
+Dropping root reference to c:
+  [RC] freed object at 0 (type='num')
+Live after drop c: 0

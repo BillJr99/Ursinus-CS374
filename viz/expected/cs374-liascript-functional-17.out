@@ -1,0 +1,2 @@
+  when     (when (> x 0) (* x 10))      -> (when (> x 0) (* x 10))       (not expanded yet: KeyError)
+  double   (double (+ x y))             -> (double (+ x y))              (not expanded yet: KeyError)

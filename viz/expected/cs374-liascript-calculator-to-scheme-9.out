@@ -1,0 +1,14 @@
+--- attempt 1 ---
+BinOp('+') - evaluating children...
+  Num(1) -> 1
+  BinOp('/') - evaluating children...
+    Num(3) -> 3
+    Num(0) -> 0
+  ZeroDivisionError: division by zero
+--- attempt 2 ---
+    BinOp('+') - evaluating children...
+      Num(1) -> 1
+      BinOp('/') - evaluating children...
+        Num(3) -> 3
+        Num(0) -> 0
+  ZeroDivisionError: division by zero

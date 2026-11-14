@@ -1,0 +1,34 @@
+=======================================================
+  TEST RESULTS, Sprint 9/15 features
+=======================================================
+
+  OK PASSING
+    OK  Integer literal
+    OK  String literal
+    OK  Boolean literal
+    OK  Addition 2+3
+    OK  Subtraction 10-4
+    OK  Multiplication 3*4
+    OK  Division 10/4
+    OK  Comparison 3 < 5
+    OK  Equality 5 == 5
+    OK  Let x = 5; print x
+    OK  Variable reference
+    OK  If true print yes
+    OK  If false print no
+    OK  Print statement
+
+  FAIL FAILING (specification written, not yet implemented)
+    FAIL  While count down                    [WhileStmt]
+    FAIL  Function declaration                [FunDecl]
+    FAIL  Function call                       [Call]
+    FAIL  Return statement                    [ReturnStmt]
+    FAIL  Short-circuit: and                  [LogicOp]
+    FAIL  Short-circuit: or                   [LogicOp]
+    FAIL  String concat 'a'+'b'               [StringConcat]
+
+  Summary: 14/21 tests passing (67%)
+
+  7 tests still failing. Evaluate sprint scope with Coordinator.
+
+  Key: failing tests ARE the sprint backlog. Each FAIL is the next task.

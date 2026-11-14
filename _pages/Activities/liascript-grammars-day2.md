@@ -87,6 +87,7 @@ Remember two things from this model.  A derivation shows one rewriting step per 
 
 This cell runs the grammars you wrote in Model 2.  You encode a grammar as a Python dictionary.  You give the checker one list of strings you expect it to accept and one list you expect it to reject.  The checker then tells you where your grammar disagrees with your intent.
 
+<!-- run: id=cs374-liascript-grammars-day2-1 viz=env -->
 ```python
 from collections import deque
 
@@ -138,6 +139,7 @@ check("Statement list (separator style)", STMTS,
 #       and call check() on each. Predict the verdicts before you run.
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-grammars-day2-1) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -227,6 +229,7 @@ The last row is the interesting one.  Neither rule starts with itself, and yet t
 
 ## Model 4: A Left-Recursion Detector
 
+<!-- run: id=cs374-liascript-grammars-day2-2 viz=env -->
 ```python
 def find_left_recursive(grammar):
     """Return the nonterminals that are DIRECTLY left-recursive: A -> A alpha."""
@@ -293,6 +296,7 @@ for name, g, start in [("grammar_lr", grammar_lr, "E"),
     print(f"  {name:12} starting at {start}: {parse_with_guard(g, start)}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-grammars-day2-2) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -321,6 +325,7 @@ Remember two things from this model.  The detector catches a rule whose right-ha
 
 Run the detector on the grammar your team drafted in Exercise 4 before you write a line of parser.
 
+<!-- run: id=cs374-liascript-grammars-day2-3 viz=env -->
 ```python
 def find_left_recursive(grammar):
     return {head for head, prods in grammar.items()
@@ -348,6 +353,7 @@ else:
     print("Now check for INDIRECT left recursion by hand; the detector cannot.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-grammars-day2-3) <!-- code-viz link -->
 
 Expected output: with the left-recursive `expression` filled in, the detector names it.  With the right-recursive version, it reports clean.  Keep whichever you choose.  It is the seed of a grammar for your own language.
 

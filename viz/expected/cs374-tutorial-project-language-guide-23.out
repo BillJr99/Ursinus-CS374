@@ -1,0 +1,17 @@
+Token repr: Token(kind='NUM', value='42', line=3, col=7)
+Tokens equal? False
+Value after strip: '42'
+
+AST node: BinOpNode(op='+', left=NumNode(value=2.0), right=NumNode(value=3.0))
+Left operand: NumNode(value=2.0)
+
+Symbol('x') == Symbol('x'): True
+Same hash (frozen=True enables this): True
+Can use as dict key: the variable x
+
+--- Invariant violation ---
+Caught ValueError: Invalid token kind 'UNKNOWN'; expected one of {'LPAREN', 'NUM', 'OP', 'RPAREN', 'ID', 'EOF'}
+Caught ValueError: 'not-valid!' is not a valid identifier
+
+Key insight: __post_init__ moves invariant checks to object construction,
+ensuring no Token or ASTNode can exist in an invalid state.

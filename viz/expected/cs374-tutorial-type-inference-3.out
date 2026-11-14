@@ -1,0 +1,5 @@
+unify(α0, Int): {'α0': TCon(name='Int')}
+unify(α0->α1, Int->Bool): {'α0': TCon(name='Int'), 'α1': TCon(name='Bool')}
+occurs check: occurs check failed: α0 appears in [α0]
+mismatch: cannot unify Int with Bool
+unify α0 α1 with {α0->Int}: {'α0': TCon(name='Int'), 'α1': TCon(name='Int')} -> α1 = Int

@@ -75,6 +75,7 @@ Every major dynamic language uses a bytecode VM:
 
 Python exposes its compiler through the `dis` module.  Try this in any Python 3.10+ environment:
 
+<!-- run: id=cs374-tutorial-bytecode-vm-1 viz=env -->
 ```python
 try:
     import dis
@@ -94,6 +95,7 @@ try:
 except Exception as e:
     print(f"Error: {e}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-bytecode-vm-1) <!-- code-viz link -->
 
 You will see instructions like `LOAD_FAST`, `BINARY_OP`, `RETURN_VALUE`.  These map almost directly to what we will build.  The key observation: **each instruction is just a small integer (the opcode) plus an optional integer operand**.  No tree traversal needed at runtime.
 
@@ -125,6 +127,7 @@ The compiler runs once.  The VM runs the same bytecode repeatedly, or, in the ca
 
 An **opcode** (operation code) is an integer that names one VM operation.  We use Python's `enum.IntEnum` so opcodes can be stored compactly and printed by name.
 
+<!-- run: id=cs374-tutorial-bytecode-vm-2 viz=env -->
 ```python
 try:
     from enum import IntEnum, auto
@@ -190,11 +193,13 @@ try:
 except Exception as e:
     print(f"Error: {e}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-bytecode-vm-2) <!-- code-viz link -->
 
 ### Instructions and Chunks
 
 An `Instruction` pairs an opcode with an optional operand.  A `Chunk` is the compiled output for one function (or the top-level program): a list of instructions, a constant pool, and a name table.
 
+<!-- run: id=cs374-tutorial-bytecode-vm-3 viz=env -->
 ```python
 try:
     from dataclasses import dataclass, field
@@ -242,6 +247,7 @@ try:
 except Exception as e:
     print(f"Error: {e}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-bytecode-vm-3) <!-- code-viz link -->
 
 ### Hand-Compiled Example: `1 + 2 * 3`
 
@@ -274,6 +280,7 @@ The compiler walks the AST exactly once and emits instructions in **post-order**
 
 We define a minimal AST for the Mini language.  If you already have your parser's AST classes, you would use those instead.
 
+<!-- run: id=cs374-tutorial-bytecode-vm-4 viz=env -->
 ```python
 try:
     from dataclasses import dataclass
@@ -361,9 +368,11 @@ try:
 except Exception as e:
     print(f"Error: {e}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-bytecode-vm-4) <!-- code-viz link -->
 
 ### The Compiler Class
 
+<!-- run: id=cs374-tutorial-bytecode-vm-5 viz=env -->
 ```python
 try:
     from dataclasses import dataclass, field
@@ -587,6 +596,7 @@ try:
 except Exception as e:
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-bytecode-vm-5) <!-- code-viz link -->
 
 ### The Patch-Back Technique for Forward Jumps
 
@@ -607,6 +617,7 @@ This is the same technique used in production compilers.  In the code above, `co
 
 Each function call gets its own **call frame**: a record of the currently-executing chunk, the instruction pointer within that chunk, and the local variables for that call.
 
+<!-- run: id=cs374-tutorial-bytecode-vm-6 viz=env -->
 ```python
 try:
     from dataclasses import dataclass, field
@@ -673,11 +684,13 @@ try:
 except Exception as e:
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-bytecode-vm-6) <!-- code-viz link -->
 
 ### The VM Dispatch Loop
 
 The VM's heart is a `while True` loop that fetches one instruction, dispatches on its opcode, and updates the stack.  This is the same structure as CPython's `ceval.c` (though that one is in C and has a few thousand lines of optimizations).
 
+<!-- run: id=cs374-tutorial-bytecode-vm-7 viz=env -->
 ```python
 try:
     from dataclasses import dataclass, field
@@ -901,11 +914,13 @@ try:
 except Exception as e:
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-bytecode-vm-7) <!-- code-viz link -->
 
 ### Running the Compiler Output Through the VM
 
 Now we can connect the compiler from Phase 2 to the VM:
 
+<!-- run: id=cs374-tutorial-bytecode-vm-8 viz=env -->
 ```python
 try:
     from dataclasses import dataclass, field
@@ -1137,6 +1152,7 @@ try:
 except Exception as e:
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-bytecode-vm-8) <!-- code-viz link -->
 
 ---
 
@@ -1155,6 +1171,7 @@ An **upvalue** is an indirect reference to a captured variable.  It has two stat
 1.  **Open**: the captured variable is still on the stack (the enclosing function is running).  The upvalue holds a reference into the live stack frame.
 2.  **Closed**: the enclosing function has returned.  The upvalue now holds the final value itself (it was "closed over").
 
+<!-- run: id=cs374-tutorial-bytecode-vm-9 viz=env -->
 ```python
 try:
     from dataclasses import dataclass, field
@@ -1232,11 +1249,13 @@ try:
 except Exception as e:
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-bytecode-vm-9) <!-- code-viz link -->
 
 ### Closure Factory: Counter Example
 
 The classic test for closures is a **counter factory**: a function that returns another function, where the inner function mutates a variable from the enclosing scope.
 
+<!-- run: id=cs374-tutorial-bytecode-vm-10 viz=env -->
 ```python
 try:
     from dataclasses import dataclass, field
@@ -1323,6 +1342,7 @@ try:
 except Exception as e:
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-bytecode-vm-10) <!-- code-viz link -->
 
 ### What `MAKE_CLOSURE` Does Differently from `MAKE_FUNCTION`
 
@@ -1343,6 +1363,7 @@ In Lua's VM, `CLOSURE` is a single instruction that creates a closure object and
 
 A disassembler pretty-prints the bytecode of a `Chunk` with line numbers and formatted operands.  It is the first thing you reach for when the compiler emits something you did not expect.
 
+<!-- run: id=cs374-tutorial-bytecode-vm-11 viz=env -->
 ```python
 try:
     from dataclasses import dataclass, field
@@ -1450,9 +1471,11 @@ try:
 except Exception as e:
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-bytecode-vm-11) <!-- code-viz link -->
 
 ### `compile_and_run`: The Full Pipeline
 
+<!-- run: id=cs374-tutorial-bytecode-vm-12 viz=env -->
 ```python
 try:
     from dataclasses import dataclass, field
@@ -1683,11 +1706,13 @@ try:
 except Exception as e:
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-bytecode-vm-12) <!-- code-viz link -->
 
 ### Performance Comparison: Tree-Walker vs Bytecode VM
 
 Speed is the reason to build a bytecode VM at all.  Let us measure the difference on Fibonacci, which exercises recursive calls heavily.
 
+<!-- run: id=cs374-tutorial-bytecode-vm-13 viz=env -->
 ```python
 try:
     import time
@@ -1925,6 +1950,7 @@ try:
 except Exception as e:
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-bytecode-vm-13) <!-- code-viz link -->
 
 ### Test Checklist
 
@@ -2006,6 +2032,7 @@ By the end of this section, you will be able to:
 
 An optimization is **valid** if it *preserves program semantics*: the optimized program produces the same observable results as the original for all valid inputs.
 
+<!-- run: id=cs374-tutorial-bytecode-vm-14 viz=env -->
 ```python
 # Some "optimizations" are INVALID - they change observable behavior
 
@@ -2036,6 +2063,7 @@ if False:
 
 print("x =", x, "  y =", y)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-bytecode-vm-14) <!-- code-viz link -->
 
 **Critical Thinking Questions (CTQs)**
 
@@ -2056,6 +2084,7 @@ print("x =", x, "  y =", y)
 **Constant folding**: evaluate constant sub-expressions at compile time.
 **Constant propagation**: substitute known constant values for variables.
 
+<!-- run: id=cs374-tutorial-bytecode-vm-15 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any, Optional
@@ -2163,6 +2192,7 @@ for t in tests:
     result = fold_and_propagate(t, {})
     print(f"{pretty(t):50} -> {pretty(result)}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-bytecode-vm-15) <!-- code-viz link -->
 
 > **CTQ 2.1** The first test case propagates `x=3` into the body, evaluates `y=5`, then folds `3*5=15`.  What is the final result?  Is there any variable left in the output?
 
@@ -2178,6 +2208,7 @@ for t in tests:
 
 If the same expression appears twice and has no side effects in between, compute it once and reuse the result.
 
+<!-- run: id=cs374-tutorial-bytecode-vm-16 viz=env -->
 ```python
 from dataclasses import dataclass, field
 from typing import Any
@@ -2275,6 +2306,7 @@ print(f"  {pretty(expr)}")
 print("\nAfter CSE:")
 print(f"  {pretty(optimized)}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-bytecode-vm-16) <!-- code-viz link -->
 
 > **CTQ 3.1** After CSE, `(x+1)*(x+1)` should become `let _cse1 = (x+1) in _cse1 * _cse1`.  Only ONE addition is computed instead of two.  How many operations were eliminated?
 
@@ -2292,6 +2324,7 @@ print(f"  {pretty(optimized)}")
 
 **Inlining** replaces a function call with the function body, substituting arguments for parameters.  This eliminates call overhead and enables further optimizations.
 
+<!-- run: id=cs374-tutorial-bytecode-vm-17 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -2391,6 +2424,7 @@ print(f"\nBefore: {pretty(expr2)}")
 print(f"Inlined: {pretty(inlined2)}")
 # (After constant folding, this would become 10)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-bytecode-vm-17) <!-- code-viz link -->
 
 > **CTQ 4.1** Inlining `double(5)` produces `5 + 5`.  Can we further fold this?  What optimization would you chain after inlining?
 
@@ -2406,6 +2440,7 @@ print(f"Inlined: {pretty(inlined2)}")
 
 A **tail call** is a function call that is the *last* action of a function.  Instead of creating a new stack frame, we can *reuse* the current frame.
 
+<!-- run: id=cs374-tutorial-bytecode-vm-18 viz=env -->
 ```python
 import sys
 
@@ -2483,6 +2518,7 @@ fact_body = If(None,
 )
 print(f"\nfact body has tail call to 'fact': {is_tail_call(fact_body, 'fact')}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-bytecode-vm-18) <!-- code-viz link -->
 
 > **CTQ 5.1** `factorial_no_tco` has `return n * factorial_no_tco(n-1)`.  Why is this NOT a tail call?  What computation happens after the recursive call returns?
 

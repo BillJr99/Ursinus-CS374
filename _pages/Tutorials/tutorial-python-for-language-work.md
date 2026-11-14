@@ -27,6 +27,7 @@ Most of a language tool comes down to a few data structures and a loop, and Pyth
 
 A **list** is an ordered sequence you can change, and a **tuple** is one you cannot.  We use a tuple for a fixed pair and a list for a sequence that grows.  A **dictionary** maps keys to values.
 
+<!-- run: id=cs374-tutorial-python-for-language-work-1 viz=env -->
 ```python
 rules = [("INT", "[0-9]+"), ("IDENT", "[a-z]+")]   # a list of pairs
 name, pattern = rules[0]                            # unpack a pair
@@ -43,6 +44,7 @@ print("grace" in ages)
 for key, value in ages.items():
     print(key, value)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-python-for-language-work-1) <!-- code-viz link -->
 
 > **You should see.**
 >
@@ -61,6 +63,7 @@ for key, value in ages.items():
 
 A dictionary's values can be dictionaries too, which is how a table with rows and columns lives in Python.  Each `[...]` goes one level deeper:
 
+<!-- run: id=cs374-tutorial-python-for-language-work-2 viz=env -->
 ```python
 table = {"red": {"go": "green", "stop": "red"}, "green": {"go": "green", "stop": "red"}}
 print(table["red"])
@@ -69,6 +72,7 @@ row = table["red"]
 print(row["stop"])
 print(table.get("blue", {}).get("go"))   # a missing row, and then a missing column
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-python-for-language-work-2) <!-- code-viz link -->
 
 > **You should see.**
 >
@@ -83,6 +87,7 @@ print(table.get("blue", {}).get("go"))   # a missing row, and then a missing col
 
 A **set** holds each item once, in no particular order.  Use one when you only care whether something is present.
 
+<!-- run: id=cs374-tutorial-python-for-language-work-3 viz=env -->
 ```python
 seen = set()                 # {} would make an empty dictionary
 seen.add("a")
@@ -94,6 +99,7 @@ print(sorted({"a", "b"} & {"b", "c"}))   # intersection
 frozen = frozenset(seen)     # the same items, and it cannot change
 print({frozen: "a set as a dictionary key"}[frozenset({"b", "a"})])
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-python-for-language-work-3) <!-- code-viz link -->
 
 > **You should see.**
 >
@@ -111,6 +117,7 @@ A set can print its items in any order, so wrap it in `sorted` when you want the
 
 An f-string puts a value inside a string.  Inside the braces, `!r` shows the value the way you would type it in code, with quotes around a string, which makes a stray space visible.
 
+<!-- run: id=cs374-tutorial-python-for-language-work-4 viz=env -->
 ```python
 state, symbol = "q0", "a"
 print(f"{state},{symbol}")
@@ -123,6 +130,7 @@ for ch in "ab":
     print(ch)
 print(len("abc"), "abc"[0], "abc"[1:])
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-python-for-language-work-4) <!-- code-viz link -->
 
 > **You should see.**
 >
@@ -141,6 +149,7 @@ print(len("abc"), "abc"[0], "abc"[1:])
 
 `with open(...)` opens a file and closes it for you.  `json.load` turns a JSON file into Python objects: each JSON object becomes a dictionary, and each JSON list becomes a list.  `sys.argv` holds the words you typed on the command line, and `sys.argv[0]` is the program's own name.  Save this as `read_config.py`:
 
+<!-- run: id=cs374-tutorial-python-for-language-work-5 viz=env -->
 ```python
 import json
 import sys
@@ -160,6 +169,7 @@ try:
 except FileNotFoundError:
     print("no such file")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-python-for-language-work-5) <!-- code-viz link -->
 
 Run `python3 read_config.py a b`.
 
@@ -177,6 +187,7 @@ Paths are measured from the folder you run the program in, so a `FileNotFoundErr
 
 Importing a file runs it, so a module that prints or does work when imported gets in the way of everything that imports it.  This guard runs its code only when you run the file directly:
 
+<!-- run: id=cs374-tutorial-python-for-language-work-6 viz=env -->
 ```python
 def double(n):
     return n * 2
@@ -189,6 +200,7 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-python-for-language-work-6) <!-- code-viz link -->
 
 Save this as `tools.py`.  `python3 tools.py` prints `42`.  In another file, `import tools` prints nothing, and `tools.double(4)` gives `8`.
 
@@ -196,6 +208,7 @@ Save this as `tools.py`.  `python3 tools.py` prints `42`.  In another file, `imp
 
 A class bundles data with the functions that use it.  `__init__` runs when you make an object, and `self` is that object.
 
+<!-- run: id=cs374-tutorial-python-for-language-work-7 viz=env -->
 ```python
 class Counter:
     def __init__(self, start=0):
@@ -209,9 +222,11 @@ class Counter:
 c = Counter(5)
 print(c.bump(), c.bump(), c.count)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-python-for-language-work-7) <!-- code-viz link -->
 
 A **dataclass** writes `__init__`, `__repr__`, and `__eq__` for you, so that a class that only holds fields takes a few lines:
 
+<!-- run: id=cs374-tutorial-python-for-language-work-8 viz=env -->
 ```python
 from dataclasses import dataclass
 
@@ -225,9 +240,11 @@ class Point:
 p = Point(3)
 print(p, p.x, p == Point(3, 0))
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-python-for-language-work-8) <!-- code-viz link -->
 
 An **exception** is a class too.  Subclass `Exception` to make your own, and add fields when the error should carry details.  `raise` signals it, and `try` and `except` catch it:
 
+<!-- run: id=cs374-tutorial-python-for-language-work-9 viz=env -->
 ```python
 class ConfigError(Exception):
     def __init__(self, message, line):
@@ -240,6 +257,7 @@ try:
 except ConfigError as e:
     print(e, "|", e.line)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-python-for-language-work-9) <!-- code-viz link -->
 
 > **You should see,** across the three blocks.
 >
@@ -295,6 +313,7 @@ Two details are easy to miss.
 
 Save the lines below as `explore_lexer.py`, a scratch file you do not submit, and run `python3 explore_lexer.py`:
 
+<!-- run: id=cs374-tutorial-python-for-language-work-10 viz=env -->
 ```python
 import re
 from dataclasses import dataclass
@@ -334,6 +353,7 @@ a = Token("INT", "42", 1, 5)
 print(a)
 print(a == Token("INT", "42", 1, 5), a.type, a.col)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-python-for-language-work-10) <!-- code-viz link -->
 
 > **You should see.**
 >
@@ -357,6 +377,7 @@ The third line shows how a lexer moves forward.  `m.end()` is 6, which is where 
 
 Your lexer's `tokenize` is a generator, and the word `yield` is what makes it one.  Let's watch one run, using a function small enough to follow.  Save the lines below as `explore_yield.py`, a scratch file you do not submit, and run `python3 explore_yield.py`:
 
+<!-- run: id=cs374-tutorial-python-for-language-work-11 viz=env -->
 ```python
 def three_letters():
     print("  started")
@@ -374,6 +395,7 @@ try:
 except StopIteration:
     print("StopIteration: the generator is used up")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-python-for-language-work-11) <!-- code-viz link -->
 
 > **You should see.**
 >
@@ -399,6 +421,7 @@ A generator object is an *iterator*: an object you can call `next` on until it r
 
 Now let's scan something.  The scratch function below is not your lexer, since it only knows words and spaces, but it has the same shape as `tokenize`: a position, a loop, and a `yield` for each piece it finds.  Add these lines to `explore_yield.py` and run it again:
 
+<!-- run: id=cs374-tutorial-python-for-language-work-12 viz=env -->
 ```python
 def words(text):
     """Yield (word, start) for each run of letters, skipping spaces."""
@@ -426,6 +449,7 @@ except ValueError as e:
 for word, start in words("let x"):
     print(word, start)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-python-for-language-work-12) <!-- code-viz link -->
 
 > **You should see,** after the earlier output:
 >
@@ -463,6 +487,7 @@ To take a date apart and put the pieces back together in a different order, you 
 > 1. Create `groups_demo.py` and paste the code below into it.
 > 2. Run `python3 groups_demo.py`.  This file is practice.
 
+<!-- run: id=cs374-tutorial-python-for-language-work-13 viz=env -->
 ```python
 import re
 
@@ -508,6 +533,7 @@ print("   \\g<1> then digits:", re.sub(ISO, r"\g<1>0101", "2026-09-18"), "| \\1 
 MONTHS = {"09": "Sep", "10": "Oct", "11": "Nov"}
 print("   function:", re.sub(ISO_NAMED, lambda m: f"{m.group('year')}-{MONTHS[m.group('month')]}-{m.group('day')}", text))
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-python-for-language-work-13) <!-- code-viz link -->
 
 > **You should see.** Twenty lines, numbered by section.  Section 4 and section 5 print the same sentence, section 6 shows the boundaries protecting the two longer numbers, and section 7 changes one piece of each match while leaving the rest exactly as it was.
 

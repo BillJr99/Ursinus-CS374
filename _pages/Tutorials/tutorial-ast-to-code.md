@@ -65,6 +65,7 @@ In many functional languages (Haskell, Scheme, ML), `if` is an **expression**; i
 
 The code below demonstrates these distinctions in Python and shows how we can simulate a strict if-expression.
 
+<!-- run: id=cs374-tutorial-ast-to-code-1 viz=env -->
 ```python
 # Python: if-expression (ternary)
 x = 10
@@ -89,6 +90,7 @@ def iif(cond, then_val, else_val):
 result = iif(5 > 3, "yes", "no")
 print(f"iif result: {result}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-ast-to-code-1) <!-- code-viz link -->
 
 #### Critical Thinking Questions
 
@@ -120,6 +122,7 @@ In Python, local binding is accomplished through assignment statements, which ar
 
 An important distinction: `let` (non-recursive) evaluates all binding values in the *outer* environment, while `letrec` (recursive let) allows the bindings to refer to each other, which is necessary for mutually recursive definitions.
 
+<!-- run: id=cs374-tutorial-ast-to-code-2 viz=env -->
 ```python
 # In Scheme: (let ((x 5) (y 3)) (+ x y))
 # Python doesn't have let as an expression, but we can simulate it:
@@ -150,6 +153,7 @@ data = [1, 5, 3, 8, 2, 9, 4]
 result3 = [y for x in data if (y := x * 2) > 8]
 print(f"doubled values > 8: {result3}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-ast-to-code-2) <!-- code-viz link -->
 
 #### Critical Thinking Questions
 
@@ -180,6 +184,7 @@ The `begin` form in Scheme sequences expressions and returns the value of the *l
 
 Python's sequence of statements is the natural analog, but it is not an expression; you can't embed a sequence of statements inside a larger expression.  The Python `begin` simulation below models Scheme's behavior explicitly.
 
+<!-- run: id=cs374-tutorial-ast-to-code-3 viz=env -->
 ```python
 # Simulate Scheme's (begin e1 e2 ... en); returns last value
 def begin(*exprs):
@@ -210,6 +215,7 @@ print(f"Final value: {value}")
 squares = [x**2 for x in range(1, 6)]
 print(f"Squares: {squares}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-ast-to-code-3) <!-- code-viz link -->
 
 #### Critical Thinking Questions
 
@@ -235,6 +241,7 @@ This interpreter models the *substitution model*: when we encounter a `LetExpr`,
 
 Notice that `If` only evaluates **one** branch, the correct branch based on the condition.  This is called *lazy* or *call-by-need* conditional evaluation.
 
+<!-- run: id=cs374-tutorial-ast-to-code-4 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -319,6 +326,7 @@ program2 = LetExpr(
 )
 print(f"let y=x*2 in if y>10 then y else 0 where x=7: {eval_expr(program2, env)}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-ast-to-code-4) <!-- code-viz link -->
 
 #### Critical Thinking Questions
 
@@ -343,6 +351,7 @@ We saw in Model 4 that the `If` node only evaluates one branch.  Python's `and` 
 
 This is crucial for correctness (avoiding errors) and performance (avoiding expensive computations).  The code below demonstrates short-circuit evaluation and contrasts it with strict evaluation, then shows how to build a lazy conditional using thunks (zero-argument functions that delay evaluation).
 
+<!-- run: id=cs374-tutorial-ast-to-code-5 viz=env -->
 ```python
 # Short-circuit evaluation
 def safe_divide(a, b):
@@ -390,6 +399,7 @@ answer = lazy_if(
 )
 print(f"Result: {answer}")  # Only prints "evaluating THEN"
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-ast-to-code-5) <!-- code-viz link -->
 
 #### Critical Thinking Questions
 
@@ -547,6 +557,7 @@ In this part we build the transpiler half of the bridge: starting from the inter
 
 #### 0.  Setup
 
+<!-- run: id=cs374-tutorial-ast-to-code-6 viz=env -->
 ```python
 # We assume the mini-language interpreter from the course pipeline.
 # This module builds on top of the AST defined there.
@@ -569,6 +580,7 @@ class Call:
 
 print("AST nodes loaded.")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-ast-to-code-6) <!-- code-viz link -->
 
 ---
 
@@ -586,6 +598,7 @@ Your tree-walking interpreter is a set of `if isinstance(node, ...)` branches in
 
 The Visitor pattern separates the **what to do** (the visitor) from the **what to visit** (the AST).  Adding a new operation (e.g., a type checker, an optimizer, a pretty-printer) requires adding a new visitor class, not modifying the AST.
 
+<!-- run: id=cs374-tutorial-ast-to-code-7 viz=env -->
 ```python
 class Num:
     def __init__(self, value): self.value = value
@@ -652,6 +665,7 @@ interp = Interpreter()
 ast = Let("x", Num(3), BinOp("+", BinOp("*", Var("x"), Num(2)), Num(1)))
 print("Interpreter result:", interp.visit(ast))   # 7
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-ast-to-code-7) <!-- code-viz link -->
 
 > **Watch out!** `getattr(self, method_name, self.generic_visit)` dispatches to a method named `visit_ClassName`.  This means the method name is determined by the Python class name of the AST node, not by any tag you set.  If you rename `BinOp` to `BinaryOperation`, the dispatch will break silently, `generic_visit` will be called instead, likely raising a confusing error.  Always keep AST class names stable once you build visitors over them.
 
@@ -663,6 +677,7 @@ print("Interpreter result:", interp.visit(ast))   # 7
 
 A transpiler is a visitor that **returns strings** instead of values.  Every `visit_*` method returns a fragment of source code, here a Python expression string, and the fragments compose exactly the way the original AST composes.  The result of visiting the root is a complete Python expression (or program).  This is why a well-structured AST produces readable transpiled output: the structure of the tree maps directly onto the structure of the emitted code.
 
+<!-- run: id=cs374-tutorial-ast-to-code-8 viz=env -->
 ```python
 class Num:
     def __init__(self, value): self.value = value
@@ -734,6 +749,7 @@ print("Python code:", py_code)
 result   = eval(py_code)
 print("Evaluated: ", result)   # should be 7
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-ast-to-code-8) <!-- code-viz link -->
 
 ---
 
@@ -745,6 +761,7 @@ The JavaScript transpiler demonstrates the key insight: the AST structure is lan
 
 The same AST, same visitor structure, different target language:
 
+<!-- run: id=cs374-tutorial-ast-to-code-9 viz=env -->
 ```python
 class Num:
     def __init__(self, value): self.value = value
@@ -815,6 +832,7 @@ print("JavaScript code:", js_code)
 # Output: ((x) => ((x * 2) + 1))(3)
 # Paste into browser console to verify: returns 7
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-ast-to-code-9) <!-- code-viz link -->
 
 ---
 
@@ -822,6 +840,7 @@ print("JavaScript code:", js_code)
 
 Haskell uses `let ... in ...` naturally for our `Let` node, and lambda syntax for `FuncDef`.  The transpiler produces valid Haskell expressions:
 
+<!-- run: id=cs374-tutorial-ast-to-code-10 viz=env -->
 ```python
 class Num:
     def __init__(self, value): self.value = value
@@ -890,6 +909,7 @@ print("Haskell expression:", hs_code)
 # Output: (let x = 3 in ((x * 2) + 1))
 # Load in GHCi to verify: returns 7
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-ast-to-code-10) <!-- code-viz link -->
 
 ---
 
@@ -921,6 +941,7 @@ A transpiler emits code in a target language rather than executing the program; 
 
 A **source map** connects positions in the generated code back to positions in the source.  This is why browser developer tools can show you a TypeScript error on the TypeScript line, even though the browser runs JavaScript.  For our bytecode, a source map is a list of `(instruction_index, source_line)` pairs.
 
+<!-- run: id=cs374-tutorial-ast-to-code-11 viz=env -->
 ```python
 class Num:
     def __init__(self, value): self.value = value
@@ -1006,6 +1027,7 @@ print("\nSource map excerpt (instruction index -> operation):")
 for idx, op in tc.source_map[:8]:
     print(f"  {idx}: {op}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-ast-to-code-11) <!-- code-viz link -->
 
 ---
 
@@ -1043,6 +1065,7 @@ Constant folding is the first optimizer most people write, and it is a tree tran
 
 Trees can be *transformed* as well as traversed.  The simplest transformation is **constant folding**: evaluating constant sub-expressions at compile time.
 
+<!-- run: id=cs374-tutorial-ast-to-code-12 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -1118,6 +1141,7 @@ for t in tests:
     folded = constant_fold(t)
     print(f"{pretty(t):30} -> {pretty(folded)}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-ast-to-code-12) <!-- code-viz link -->
 
 > **Watch out!**  Constant folding is only safe for *pure* sub-expressions; ones with no side effects.  It is tempting to fold `f() + 0` to `f()` because "adding zero does nothing," but that reasoning only applies when `f()` has no side effects.  If `f()` prints to the screen or modifies a global, folding away the `+ 0` is correct *for the arithmetic* but changes the program's observable behavior in other ways.  When in doubt, only fold sub-trees made entirely of `Num`, `Bool`, and `Str` nodes with no `Call` or `Var` nodes anywhere inside.
 

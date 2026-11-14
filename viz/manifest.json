@@ -1,0 +1,230 @@
+[
+ {
+  "id": "cs374-starters-interpreter",
+  "viz": "bison",
+  "file": "files/starters/interpreter",
+  "input": "2 * 3 + 4"
+ },
+ {
+  "id": "cs374-starters-parser-flexbison",
+  "viz": "bison",
+  "file": "files/starters/parser/flexbison",
+  "input": "1 + 2 + 3"
+ },
+ {
+  "id": "cs374-thompson-x-y",
+  "viz": "automaton",
+  "file": "files/dotty/thompson_x_y.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-thompson-rule-symbol",
+  "viz": "automaton",
+  "file": "files/dotty/thompson_rule_symbol.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-subset-dfa-ends-in-ba",
+  "viz": "automaton",
+  "file": "files/dotty/subset_dfa_ends_in_ba.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-lab-identifier-nfa",
+  "viz": "automaton",
+  "file": "files/dotty/lab_identifier_nfa.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-thompson-x-or-y-star",
+  "viz": "automaton",
+  "file": "files/dotty/thompson_x_or_y_star.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-thompson-xy-z",
+  "viz": "automaton",
+  "file": "files/dotty/thompson_xy_z.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-example-nfa-ab-optional",
+  "viz": "automaton",
+  "file": "files/dotty/example_nfa_ab_optional.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-even-ones",
+  "viz": "automaton",
+  "file": "files/dotty/even_ones.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-example-nfa-ends-in-ba",
+  "viz": "automaton",
+  "file": "files/dotty/example_nfa_ends_in_ba.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-subset-dfa-ends-in-ab",
+  "viz": "automaton",
+  "file": "files/dotty/subset_dfa_ends_in_ab.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-thompson-ab-star",
+  "viz": "automaton",
+  "file": "files/dotty/thompson_ab_star.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-dragon-dfa-abb",
+  "viz": "automaton",
+  "file": "files/dotty/dragon_dfa_abb.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-thompson-x-or-y-star-z",
+  "viz": "automaton",
+  "file": "files/dotty/thompson_x_or_y_star_z.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-thompson-x-or-y",
+  "viz": "automaton",
+  "file": "files/dotty/thompson_x_or_y.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-thompson-rule-union",
+  "viz": "automaton",
+  "file": "files/dotty/thompson_rule_union.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-dragon-nfa-abb",
+  "viz": "automaton",
+  "file": "files/dotty/dragon_nfa_abb.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-lab-second-to-last-nfa",
+  "viz": "automaton",
+  "file": "files/dotty/lab_second_to_last_nfa.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-thompson-star",
+  "viz": "automaton",
+  "file": "files/dotty/thompson_star.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-nfa-ends-in-ab",
+  "viz": "automaton",
+  "file": "files/dotty/nfa_ends_in_ab.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-ends-in-ab",
+  "viz": "automaton",
+  "file": "files/dotty/ends_in_ab.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-three-as",
+  "viz": "automaton",
+  "file": "files/dotty/three_as.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-example-dfa-ends-in-ba",
+  "viz": "automaton",
+  "file": "files/dotty/example_dfa_ends_in_ba.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-thompson-concat",
+  "viz": "automaton",
+  "file": "files/dotty/thompson_concat.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-thompson-rule-star",
+  "viz": "automaton",
+  "file": "files/dotty/thompson_rule_star.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-example-nfa-ends-in-ab",
+  "viz": "automaton",
+  "file": "files/dotty/example_nfa_ends_in_ab.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-thompson-alternation",
+  "viz": "automaton",
+  "file": "files/dotty/thompson_alternation.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-example-dfa-ends-in-ab",
+  "viz": "automaton",
+  "file": "files/dotty/example_dfa_ends_in_ab.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-gnfa-even-as",
+  "viz": "automaton",
+  "file": "files/dotty/gnfa_even_as.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-ends-in-aa",
+  "viz": "automaton",
+  "file": "files/dotty/ends_in_aa.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-gnfa-a-star-b",
+  "viz": "automaton",
+  "file": "files/dotty/gnfa_a_star_b.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-nfa-ends-in-ba",
+  "viz": "automaton",
+  "file": "files/dotty/nfa_ends_in_ba.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-thompson-literals",
+  "viz": "automaton",
+  "file": "files/dotty/thompson_literals.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-contains-aa-partial",
+  "viz": "automaton",
+  "file": "files/dotty/contains_aa_partial.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-thompson-xyz-literals",
+  "viz": "automaton",
+  "file": "files/dotty/thompson_xyz_literals.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-example-epsnfa-ab-optional",
+  "viz": "automaton",
+  "file": "files/dotty/example_epsnfa_ab_optional.dot",
+  "input": "abab"
+ },
+ {
+  "id": "cs374-examples-mininote",
+  "viz": "bison",
+  "file": "files/examples/mininote",
+  "input": "bd sn"
+ }
+]

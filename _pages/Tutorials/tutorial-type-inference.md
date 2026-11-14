@@ -48,6 +48,7 @@ The algorithm has four components, built in order:
 
 ## Phase 1: Type Terms
 
+<!-- run: id=cs374-tutorial-type-inference-1 viz=env -->
 ```python
 try:
     from dataclasses import dataclass
@@ -97,6 +98,7 @@ except Exception as e:
     print(f"[hm:types] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-type-inference-1) <!-- code-viz link -->
 
 ---
 
@@ -104,6 +106,7 @@ except Exception as e:
 
 A substitution is a `dict` mapping variable names to types. `apply(subst, typ)` replaces all free type variables in `typ` with their mapped values. `compose(s2, s1)` creates a new substitution that first applies `s1` then `s2`.
 
+<!-- run: id=cs374-tutorial-type-inference-2 viz=env -->
 ```python
 try:
     from dataclasses import dataclass
@@ -180,6 +183,7 @@ except Exception as e:
     print(f"[hm:subst] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-type-inference-2) <!-- code-viz link -->
 
 **Common mistake:** forgetting to chase chains in `apply`.  Always apply recursively when following a variable.
 
@@ -189,6 +193,7 @@ except Exception as e:
 
 Unification finds the most general substitution (MGU) that makes two types equal.  The occurs check, which refuses to bind a type variable to a type that contains that same variable, prevents creating infinite types like `α = List α`.
 
+<!-- run: id=cs374-tutorial-type-inference-3 viz=env -->
 ```python
 try:
     from dataclasses import dataclass
@@ -298,6 +303,7 @@ except Exception as e:
     print(f"[hm:unify] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-type-inference-3) <!-- code-viz link -->
 
 **Key insight:** always `apply(subst, ...)` BEFORE checking for variables or constants.  This "chases" existing substitution chains before deciding what to do.
 
@@ -307,6 +313,7 @@ except Exception as e:
 
 Algorithm W walks the AST and infers types.  For each node, it either returns a known type or generates fresh type variables and unifies to solve constraints.
 
+<!-- run: id=cs374-tutorial-type-inference-4 viz=env -->
 ```python
 try:
     from dataclasses import dataclass, field
@@ -512,6 +519,7 @@ except Exception as e:
     print(f"[hm:alg-w] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-type-inference-4) <!-- code-viz link -->
 
 ---
 
@@ -519,6 +527,7 @@ except Exception as e:
 
 Without polymorphism, `let id = λx. x in id(1); id(true)` fails: the first call forces `x: Int`, and the second call on the same `id` then fails with type `Bool`.  **Let-polymorphism** (Milner's key insight) generalizes the type of `id` before adding it to the environment: `id: ∀α. α -> α`.  Each use of `id` gets a fresh copy of `α`.
 
+<!-- run: id=cs374-tutorial-type-inference-5 viz=env -->
 ```python
 try:
     from dataclasses import dataclass
@@ -693,6 +702,7 @@ except Exception as e:
     print(f"[hm:poly] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-type-inference-5) <!-- code-viz link -->
 
 ---
 
@@ -700,6 +710,7 @@ except Exception as e:
 
 Good error messages include the source line, the conflicting types, and context.  Wrap every `TypeError` in a richer class:
 
+<!-- run: id=cs374-tutorial-type-inference-6 viz=env -->
 ```python
 try:
     class TypeErrorMsg(Exception):
@@ -748,6 +759,7 @@ except Exception as e:
     print(f"[hm:errors] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-type-inference-6) <!-- code-viz link -->
 
 ---
 

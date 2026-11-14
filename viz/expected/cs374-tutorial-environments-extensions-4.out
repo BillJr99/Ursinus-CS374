@@ -1,0 +1,7 @@
+=== Weak mode: no errors, wrong money ===
+  step 2: '19.99' + 5.0 -> '19.995'
+  step 3: '19.995' * 1.06 -> 21.1947
+  charged: $21.19   (intended: $26.49)
+
+=== Strong mode: stops at the mistake ===
+  step 2: TypeError: cannot add str and float

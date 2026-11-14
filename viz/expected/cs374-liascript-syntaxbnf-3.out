@@ -1,0 +1,14 @@
+=== Which of these can a recursive-descent parser handle? ===
+  Left-recursive arithmetic          LEFT-RECURSIVE: ['E', 'T']
+  Right-recursive arithmetic         no direct left recursion
+  Balanced parentheses               no direct left recursion
+
+=== The two arithmetic grammars generate the SAME strings ===
+  left-recursive  E -> E + T | T      generates T, T+T, T+T+T, ...
+  right-recursive E -> T E'           generates T, T+T, T+T+T, ...
+  with E' -> + T E' | epsilon
+  Same language. Different tree shape, and different parser fate.
+
+=== Watch the trap, without actually hanging ===
+  parse_E called itself 12 times, consuming nothing
+  No input was consumed, so the base case is never reachable.

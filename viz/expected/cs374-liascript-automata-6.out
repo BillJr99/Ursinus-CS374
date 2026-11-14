@@ -1,0 +1,19 @@
+
+pattern 'abc': 4 states
+    state 0: {'a': 1, 'b': 0, 'c': 0}
+    state 1: {'a': 1, 'b': 2, 'c': 0}
+    state 2: {'a': 1, 'b': 0, 'c': 3}
+    state 3 (accepting): {'a': 1, 'b': 0, 'c': 0}
+
+pattern 'aaa': 4 states
+    state 0: {'a': 1, 'b': 0}
+    state 1: {'a': 2, 'b': 0}
+    state 2: {'a': 3, 'b': 0}
+    state 3 (accepting): {'a': 3, 'b': 0}
+
+pattern 'abab': 5 states
+    state 0: {'a': 1, 'b': 0}
+    state 1: {'a': 1, 'b': 2}
+    state 2: {'a': 3, 'b': 0}
+    state 3: {'a': 1, 'b': 4}
+    state 4 (accepting): {'a': 3, 'b': 0}

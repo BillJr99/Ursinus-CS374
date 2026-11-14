@@ -1,0 +1,16 @@
+=== NFA: ends-in-ab ===
+  'ab'    -> True
+  'aab'   -> True
+  'abab'  -> True
+  'ba'    -> False
+  'a'     -> False
+  'b'     -> False
+  'aabb'  -> False
+  ''      -> False
+
+=== Trace of 'aab' ===
+  start: {q0}
+  'a' -> {q0, q1}
+  'a' -> {q0, q1}
+  'b' -> {q0, q2}
+  -> ACCEPT

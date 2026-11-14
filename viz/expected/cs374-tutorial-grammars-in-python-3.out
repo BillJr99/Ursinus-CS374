@@ -1,0 +1,18 @@
+=== Correct parse tree for 2 + 3 * 4 ===
++
+  2
+  *
+    3
+    4
+Value: 14.0
+
+=== Naive grammar's alternate tree (WRONG) ===
+*
+  +
+    2
+    3
+  4
+Value: 20.0
+
+Left-assoc  (7-2)-1 = 4.0
+Right-assoc 7-(2-1) = 6.0

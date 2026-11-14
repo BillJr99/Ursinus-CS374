@@ -1,0 +1,9 @@
+fact_naive(10)  = 3628800
+fact_tail(10)   = 3628800
+
+Python default recursion limit: 5000
+
+Frames used by naive  fact(20): 20
+Frames used by tail   fact(20): 20
+
+Trampoline fact(10): 3628800

@@ -1,0 +1,26 @@
+| Node Class           | Fields                                   | Grammar Rule                        | Evaluator Method       |
+| -------------------- | ---------------------------------------- | ----------------------------------- | ---------------------- |
+| NumLit               | value: float                             | primary -> NUMBER                   | eval_numlit OK         |
+| StrLit               | value: str                               | primary -> STRING                   | eval_strlit OK         |
+| BoolLit              | value: bool                              | primary -> 'true'|'false'           | eval_boollit OK        |
+| BinOp                | op: str, left: Node, right: Node         | add_expr / mul_expr / compare       | eval_binop OK          |
+| UnaryOp              | op: str, operand: Node                   | unary                               | eval_unaryop OK        |
+| LogicOp              | op: str, left: Node, right: Node         | or_expr / and_expr                  | eval_logicop OK        |
+| NotOp                | operand: Node                            | not_expr                            | eval_notop OK          |
+| VarRef               | name: str                                | primary -> IDENT                    | eval_varref OK         |
+| Assign               | name: str, value: Node                   | let_stmt / assign_stmt              | eval_assign OK         |
+| Call                 | callee: str, args: list[Node]            | primary -> IDENT '(' ... ')'        | eval_call OK           |
+| LetStmt              | name: str, init: Node                    | let_stmt                            | eval_letstmt OK        |
+| IfStmt               | cond: Node, then_: Block, else_: Block   | if_stmt                             | eval_ifstmt OK         |
+| WhileStmt            | cond: Node, body: Block                  | while_stmt                          | eval_whilestmt OK      |
+| Block                | stmts: list[Node]                        | block                               | eval_block OK          |
+| PrintStmt            | value: Node                              | print_stmt                          | eval_printstmt OK      |
+| ReturnStmt           | value: Node|None                         | return_stmt                         | eval_returnstmt OK     |
+| FunDecl              | name: str, params: list[str], body: Bl   | fun_decl                            | eval_fundecl OK        |
+| NicheNode            | (your fields here)                       | (your grammar rule)                 | TODO TODO              |
+
+  Implemented: 17/18 nodes
+  TODO:        1/18 nodes  <- these are your sprint backlog
+
+  Sprint 1 goal: zero TODOs for core nodes (Lit, BinOp, VarRef, Assign, If, While)
+  Sprint 2 goal: zero TODOs for functions and your niche feature

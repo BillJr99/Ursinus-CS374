@@ -1,0 +1,14 @@
+=== Programs that work ===
+  price * qty      = 12.0
+  price + 1        = 4.0
+
+=== Programs that fail, each blaming the right line ===
+  1 / 0            -> division by zero (line 3, column 3)
+  prise + 1        -> undefined variable 'prise'; did you mean 'price'? (line 4, column 1)
+  qtyy * 2         -> undefined variable 'qtyy'; did you mean 'qty'? (line 5, column 1)
+  7 % 2            -> operator '%' is not supported (line 6, column 3)
+
+Compare with what an unguarded evaluator would have printed:
+  KeyError: 'prise'
+That is a bug report about the interpreter. The messages above are
+bug reports about the user's program, which is the whole difference.

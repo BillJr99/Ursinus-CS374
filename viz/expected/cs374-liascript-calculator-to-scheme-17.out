@@ -1,0 +1,17 @@
+Python 'and' returns operand:
+  True and 'hello'  -> 'hello'
+  False and 'hello' -> False
+  0 and 'hello'     -> 0
+
+Python 'or' returns operand:
+  '' or 'default'   -> 'default'
+  0 or 42           -> 42
+  'x' or 'default'  -> 'x'
+
+Common Python idiom: default values
+  display = 'Anonymous'
+
+Common Python idiom: conditional assignment
+  timeout = 30
+
+Note: Java 'and'/'or' always return boolean:

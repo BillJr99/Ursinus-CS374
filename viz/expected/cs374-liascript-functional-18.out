@@ -1,0 +1,11 @@
+list : [77, 96, 69, 93, 75]
+set  : [69, 75, 77, 93, 96]   (duplicates collapsed, order gone)
+dict : {72: 77, 91: 96, 64: 69, 88: 93, 70: 75}
+
+naive comprehension called curve() 11 times for 7 scores
+walrus comprehension called curve() 7 times
+same answer: True
+
+[(a, b) for a in 'ab' for b in [1, 2]] -> [('a', 1), ('a', 2), ('b', 1), ('b', 2)]
+   the FIRST for is the OUTER loop, exactly as if you had indented them
+

@@ -1,0 +1,9 @@
+[ambiguity:gen_trees] 
+Trees for 'a + b + c' under E -> E + E | id:
+  Tree 1: ('+', ('+', 'id', 'id'), 'id')
+  Tree 2: ('+', 'id', ('+', 'id', 'id'))
+
+Grammar IS ambiguous: found 2 distinct parse trees.
+Tree 1 evaluates left-first  (like (a+b)+c)
+Tree 2 evaluates right-first (like a+(b+c))
+For addition they give the same number, but for subtraction they would not.

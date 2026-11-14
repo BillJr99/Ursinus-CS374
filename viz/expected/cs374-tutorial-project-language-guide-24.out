@@ -1,0 +1,20 @@
+Tokenize result: [('NUM', '2'), ('OP', '+'), ('ID', 'foo'), ('OP', '*'), ('NUM', '3'), ('EOF', '')]
+
+Lazy tokenizer (consuming one at a time):
+  next token: ('ID', 'x')
+  next token: ('OP', '+')
+  next token: ('NUM', '42')
+  next token: ('EOF', '')
+
+First 5 integers from 10: [10, 11, 12, 13, 14]
+
+[session] Opening parse session for: '2 + 3'
+Inside session, tokens: [('NUM', '2'), ('OP', '+'), ('NUM', '3'), ('EOF', '')]
+[session] Closing session. Errors: none
+[session] Tokens consumed: 4/4
+
+[session] Opening parse session for: 'bad $ input'
+Inside session with bad input
+[session] Error during parse: unexpected token at position 4
+[session] Closing session. Errors: ['unexpected token at position 4']
+[session] Tokens consumed: 0/4

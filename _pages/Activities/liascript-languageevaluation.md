@@ -68,6 +68,7 @@ Most languages you will use are mixtures.  That is the interesting part: Python 
 
 One task, stated four ways: given a list of numbers, add up the squares of the even ones.
 
+<!-- run: id=cs374-liascript-languageevaluation-1 viz=env -->
 ```python
 data = [1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -110,6 +111,7 @@ print("  each version asks YOU to keep track of: an accumulator, an object,")
 print("  a pipeline of functions, or nothing at all.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-languageevaluation-1) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -198,6 +200,7 @@ Imagine a language where every operator works on every type in a consistent, pre
 
 The cell below catalogs several "does it combine?" experiments so your team can observe orthogonality failures directly.
 
+<!-- run: id=cs374-liascript-languageevaluation-2 viz=env -->
 ```python
 print("=== Python Orthogonality Probe ===")
 print()
@@ -254,6 +257,7 @@ except TypeError as e:
     print(f"  dict + dict -> TypeError: {e}  FAIL")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-languageevaluation-2) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -266,6 +270,7 @@ except TypeError as e:
 
 Audit a corner of Python for orthogonality and score what you find against the four criteria.
 
+<!-- run: id=cs374-liascript-languageevaluation-3 viz=env -->
 ```python
 def probe(label, thunk):
     try:
@@ -299,6 +304,7 @@ for label, value in [("len('abc')", "abc"), ("len([1,2])", [1, 2]),
 #         the same one in your language.
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-languageevaluation-3) <!-- code-viz link -->
 
 Expected output: `'at' in 'cat'` is `True` while nothing analogous works for a list, and `1 in {'a': 1}` is `False` because `in` checks keys, not values.  Both are defensible; neither is orthogonal.
 
@@ -380,6 +386,7 @@ One of the most studied reliability failures in language design history is the n
 
 Tony Hoare called the null reference his "billion-dollar mistake" in a 2009 keynote.  His argument: the null reference can be assigned to any pointer-typed variable and dereferenced into a crash, yet no type system of the era flagged the dereference as potentially unsafe.  The result: null dereferences became one of the most common runtime errors in Java, C, and C++. Languages have responded differently.
 
+<!-- run: id=cs374-liascript-languageevaluation-4 viz=env -->
 ```python
 # Simulating three language designs for the "absence" problem in Python.
 # The point is to observe what each design forces the programmer to do.
@@ -470,6 +477,7 @@ print("  Design 2 (Optional type): moderate ceremony, compiler-assisted")
 print("  Design 3 (no null):       max ceremony, compiler-guaranteed safety")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-languageevaluation-4) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -504,6 +512,7 @@ There is no precedence table, because prefix notation does not need one: the nes
 
 Get a REPL in front of you before you read the code.  [try.scheme.org](https://try.scheme.org) needs no install and works in a browser tab; the course's own [Scheme warmup exercise](https://www.billmongan.com/Ursinus-CS374-Fall2026/Modules/Scheme/Warmup/Exercise) runs Scheme in the page and checks your answer.  If you would rather install it locally, the *Functional Programming in Scheme* activity opens with four routes, and the Scheme assignment walks all of them.
 
+<!-- run: id=cs374-liascript-languageevaluation-5 viz=env -->
 ```scheme
 (define L (list 'a 'b 'c))
 (car L)                      ; a
@@ -515,6 +524,7 @@ Get a REPL in front of you before you read the code.  [try.scheme.org](https://t
 (define add +)
 (add 3 2)                    ; 5
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-languageevaluation-5) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -540,6 +550,7 @@ Before the next session: get a REPL open, type the three blocks above, and then 
 
 ## Runnable: Four Feature Choices, Measured on Both Axes (At Home)
 
+<!-- run: id=cs374-liascript-languageevaluation-6 viz=env -->
 ```python
 # Concrete illustration of the writability-reliability tradeoff.
 # Four "feature choices" measured on both axes.
@@ -627,6 +638,7 @@ for obj in [Duck(), Dog(), Rock()]:
         print(f"  {type(obj).__name__}.sound() -> AttributeError: {e}")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-languageevaluation-6) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 

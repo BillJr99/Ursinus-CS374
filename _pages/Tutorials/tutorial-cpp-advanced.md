@@ -42,6 +42,7 @@ By the end of this tutorial, you will have:
 
 C++ gives the programmer explicit control over where memory lives.  Stack memory is managed automatically (last-in, first-out cleanup when scope exits).  Heap memory is managed manually via `new` and `delete`.
 
+<!-- run: id=cs374-tutorial-cpp-advanced-1 viz=c -->
 ```cpp
 #include <iostream>
 #include <cstring>
@@ -67,6 +68,7 @@ void stack_vs_heap() {
 
 int main() { stack_vs_heap(); }
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-cpp-advanced-1) <!-- code-viz link -->
 
 Stack frames are automatically popped when a function returns; no `delete` needed.  Heap allocations persist until you explicitly `delete` them.  Forgetting, double-deleting, or accessing freed memory are the three canonical bugs.
 
@@ -250,6 +252,7 @@ void write_log(const std::string& msg) {
 
 `unique_ptr` models *exclusive* ownership.  It cannot be copied; only moved.  When it goes out of scope, it calls `delete` automatically.
 
+<!-- run: id=cs374-tutorial-cpp-advanced-2 viz=c -->
 ```cpp
 #include <iostream>
 #include <memory>
@@ -289,6 +292,7 @@ void unique_ptr_demo() {
 
 int main() { unique_ptr_demo(); }
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-cpp-advanced-2) <!-- code-viz link -->
 
 Expected output:
 
@@ -375,6 +379,7 @@ void weak_ptr_demo() {
 
 The following Python program simulates a reference-counting system similar to what `shared_ptr` does internally.  Run it to see how refcounts change as references are added and removed.
 
+<!-- run: id=cs374-tutorial-cpp-advanced-3 viz=env -->
 ```python
 try:
     import sys
@@ -427,6 +432,7 @@ except Exception as e:
     print(f"[rc-demo] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-cpp-advanced-3) <!-- code-viz link -->
 
 ---
 
@@ -522,6 +528,7 @@ void lvalue_rvalue_demo() {
 
 ### Model 3.2: Copy vs Move Constructor
 
+<!-- run: id=cs374-tutorial-cpp-advanced-4 viz=c -->
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -589,6 +596,7 @@ int main() {
     Buffer d = make_buffer(8); // move (or NRVO elision)
 }
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-cpp-advanced-4) <!-- code-viz link -->
 
 **The Rule of Five:** if you define *any* of the destructor / copy constructor / copy assignment operator / move constructor / move assignment operator, you should define *all five*.  The compiler-generated defaults become incorrect once you manage a raw resource.
 
@@ -596,6 +604,7 @@ int main() {
 
 ### Model 3.3: `std::vector` Growth and Moves
 
+<!-- run: id=cs374-tutorial-cpp-advanced-5 viz=c -->
 ```cpp
 #include <iostream>
 #include <vector>
@@ -627,6 +636,7 @@ int main() {
     // That's why noexcept on move constructors matters for performance!
 }
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-cpp-advanced-5) <!-- code-viz link -->
 
 ---
 
@@ -651,6 +661,7 @@ int main() {
 
 Templates let you write one algorithm that works for any type satisfying the required interface, without runtime overhead.  The compiler **instantiates** a new concrete function for each unique set of template arguments.
 
+<!-- run: id=cs374-tutorial-cpp-advanced-6 viz=c -->
 ```cpp
 #include <iostream>
 #include <string>
@@ -680,11 +691,13 @@ int main() {
     std::cout << "evens: " << evens << "\n";  // 3
 }
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-cpp-advanced-6) <!-- code-viz link -->
 
 ---
 
 ### Model 4.2: Class Templates: Generic `Stack<T>`
 
+<!-- run: id=cs374-tutorial-cpp-advanced-7 viz=c -->
 ```cpp
 #include <iostream>
 #include <vector>
@@ -719,6 +732,7 @@ int main() {
     std::cout << ss.top() << "\n";  // world
 }
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-cpp-advanced-7) <!-- code-viz link -->
 
 ---
 
@@ -1156,6 +1170,7 @@ void variant_demo() {
 
 In Python, type erasure is the *default*: any callable is accepted anywhere a callable is expected.  This contrast helps clarify *why* C++ needs explicit type erasure machinery.
 
+<!-- run: id=cs374-tutorial-cpp-advanced-9 viz=env -->
 ```python
 try:
     # --- Duck typing: no explicit interface needed ---
@@ -1211,6 +1226,7 @@ except Exception as e:
     print(f"[type-erasure] {e}")
     import traceback; traceback.print_exc()
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-cpp-advanced-9) <!-- code-viz link -->
 
 ---
 
@@ -1579,6 +1595,7 @@ The challenge: the high-level language's runtime and the C runtime make differen
 
 An **ABI (Application Binary Interface)** defines how functions are called at the machine level: which registers hold arguments, who cleans up the stack, how structures are laid out in memory, what calling conventions are used.  C's ABI is the de facto standard because it is stable, documented, and supported by every compiler on every platform.
 
+<!-- run: id=cs374-tutorial-cpp-advanced-10 viz=env -->
 ```python
 import ctypes
 import sys
@@ -1630,6 +1647,7 @@ for name, ctype, example in type_map:
     print(f"  ctypes.{name:<12} value={obj.value!r:<15} "
           f"sizeof={ctypes.sizeof(ctype)} bytes")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-cpp-advanced-10) <!-- code-viz link -->
 
 **Key insight:** `ctypes` marshals Python values into C-compatible binary representations automatically for simple types.  For complex types (structs, arrays, function pointers), you must describe the layout explicitly.
 
@@ -1651,6 +1669,7 @@ for name, ctype, example in type_map:
 
 C structs have a specific memory layout (with padding).  When calling C functions that take or return structs, the FFI must reproduce the exact layout.
 
+<!-- run: id=cs374-tutorial-cpp-advanced-11 viz=env -->
 ```python
 import ctypes
 
@@ -1713,6 +1732,7 @@ arr = IntArray5(10, 20, 30, 40, 50)
 print(f"  C array of 5 ints: {list(arr)}")
 print(f"  sizeof = {ctypes.sizeof(arr)} bytes ({ctypes.sizeof(ctypes.c_int)} × 5)")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-cpp-advanced-11) <!-- code-viz link -->
 
 > **Critical Thinking Questions 4-6**
 
@@ -1821,6 +1841,7 @@ print(f"  Direct test of callback: my_handler(10, 3) = {cb.c_ptr(10, 3)}")
 
 C uses simple symbol names (`strlen`, `printf`).  C++ mangles names to encode type signatures.  Understanding this is essential for building FFI tools.
 
+<!-- run: id=cs374-tutorial-cpp-advanced-13 viz=env -->
 ```python
 import ctypes
 import ctypes.util
@@ -1891,6 +1912,7 @@ for cls, fn, params in examples:
     mangled = mangle_simple(cls, fn, params)
     print(f"    {cls}::{fn}({', '.join(params)}) -> {mangled}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-cpp-advanced-13) <!-- code-viz link -->
 
 > **Critical Thinking Questions 10-12**
 
@@ -1908,6 +1930,7 @@ for cls, fn, params in examples:
 
 A language interpreter can support FFI by letting programs call Python built-ins or C functions by name.  Here is a minimal implementation.
 
+<!-- run: id=cs374-tutorial-cpp-advanced-14 viz=env -->
 ```python
 from dataclasses import dataclass, field
 from typing import Any, Dict, Callable, List, Optional
@@ -2040,6 +2063,7 @@ print("  ffi load 'libc.so.6' as libc;")
 print("  let n = ffi call libc.strlen(str: 'hello');")
 print("  print n;   # 5")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-cpp-advanced-14) <!-- code-viz link -->
 
 > **Critical Thinking Questions 13-15**
 
@@ -2111,6 +2135,7 @@ Python's garbage collector will free the callback if no Python reference remains
 
 **Exercise 1.**  Use `ctypes` to call C's `qsort` with a Python comparator that sorts strings by length (shortest first), falling back to lexicographic order for equal-length strings:
 
+<!-- run: id=cs374-tutorial-cpp-advanced-15 viz=env -->
 ```python
 import ctypes
 import sys
@@ -2148,9 +2173,11 @@ else:
     sorted_words = [words[c_indices[i]] for i in range(len(c_indices))]
     print(f"Sorted by length: {sorted_words}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-cpp-advanced-15) <!-- code-viz link -->
 
 **Exercise 2.**  Extend the `FFIRegistry` from Model 5 to support type coercion and better error messages.  Add a `validate_and_coerce` method that checks types and converts Python values:
 
+<!-- run: id=cs374-tutorial-cpp-advanced-16 viz=env -->
 ```python
 import ctypes
 import sys
@@ -2221,9 +2248,11 @@ for fn, types, args in bad_calls:
     except (TypeError, ValueError) as e:
         print(f"  python.{fn}({args}) -> {type(e).__name__}: {e}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-cpp-advanced-16) <!-- code-viz link -->
 
 **Exercise 3.**  Implement a minimal "safe FFI" for your mini language that allows calling Python's `math` module functions.  Add lexer/parser support for the syntax `ffi("math", "sqrt", 9.0)`:
 
+<!-- run: id=cs374-tutorial-cpp-advanced-17 viz=env -->
 ```python
 import math
 import re
@@ -2279,6 +2308,7 @@ try:
 except ImportError as e:
     print(f"\n  Security block: {e}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-cpp-advanced-17) <!-- code-viz link -->
 
 ---
 

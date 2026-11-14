@@ -1,0 +1,6 @@
+SEQ
+  ATOM bd
+  ATOM sn
+events in cycle [0,1):
+  bd   [0.000, 0.500)
+  sn   [0.500, 1.000)

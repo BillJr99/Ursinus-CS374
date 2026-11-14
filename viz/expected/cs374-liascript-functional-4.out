@@ -1,0 +1,5 @@
+curved:   [93, 97, 59, 76, 72, 100, 54, 88]
+passing:  [93, 97, 76, 72, 100, 88]
+mean of passing: 87.7
+pipeline result: 526
+max score: 95

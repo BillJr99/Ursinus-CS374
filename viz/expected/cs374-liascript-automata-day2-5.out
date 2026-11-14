@@ -1,0 +1,6 @@
+True 1 True
+['q0', 'q1'] dict
+['q0', 'q2']
+True True
+TypeError: unhashable type: 'set'
+True

@@ -1,0 +1,18 @@
+Expression 1                   Expression 2                   α-equiv?   Correct?
+-------------------------------------------------------------------------------------
+λx.x                           λy.y                           True       YES
+  (λx.x  vs  λy.y  (identity, different names))
+λx.λy.x                        λa.λb.a                        True       YES
+  (λx.λy.x  vs  λa.λb.a  (K combinator, renamed))
+λx.λy.x                        λx.λy.y                        False      YES
+  (λx.λy.x  vs  λx.λy.y  (K vs K', pick first vs second))
+λx.x y                         λz.z y                         True       YES
+  (λx.x y  vs  λz.z y  (free y preserved))
+λx.x y                         λx.x w                         False      YES
+  (λx.x y  vs  λx.x w  (different free variables))
+
+De Bruijn indices for λx.λy.x:
+  ('lam_db', ('lam_db', ('idx', 1)))
+De Bruijn indices for λa.λb.a:
+  ('lam_db', ('lam_db', ('idx', 1)))
+They match -> alpha-equivalent.

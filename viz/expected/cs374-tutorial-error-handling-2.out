@@ -1,0 +1,21 @@
+=== Unchecked exceptions (Python style) ===
+1. Happy path:
+   result = 84
+2. File not found:
+   caught FileNotFoundError: [Errno 2] No such file or directory: '/nonexistent/file.txt'
+3. Bad integer:
+   caught ValueError: invalid literal for int() with base 10: 'not a number'
+4. Catching too broadly (dangerous):
+   caught ANYTHING: FileNotFoundError: [Errno 2] No such file or directory: '/nonexistent.txt'
+
+=== Exception hierarchy ===
+  ValueError: ValueError > Exception > BaseException > object
+  TypeError: TypeError > Exception > BaseException > object
+  FileNotFoundError: FileNotFoundError > OSError > Exception > BaseException
+  KeyboardInterrupt: KeyboardInterrupt > BaseException > object
+  MemoryError: MemoryError > Exception > BaseException > object
+
+=== finally: the cleanup guarantee ===
+  opened db_connection
+  closed db_connection
+  caught: something went wrong

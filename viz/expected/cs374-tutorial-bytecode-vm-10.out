@@ -1,0 +1,7 @@
+counter(): 1
+counter(): 2
+counter(): 3
+
+c1: 1 2
+c2: 1
+c1: 3

@@ -1,0 +1,20 @@
+1. group(0): 2026-09-18 | group(1): 2026 | group(2): 09 | group(3): 18
+   groups(): ('2026', '09', '18') | span(2): (5, 7)
+2. ungrouped: 12-25
+   grouped:   2026-12-25
+   fullmatch 2026-09-18: True
+   fullmatch 2026-13-01: False
+   fullmatch 2026-02-31: True
+   fullmatch 2026-00-15: False
+3. with (?:...) on the year, group(1) is now the month: 09 | groups(): ('09', '18')
+4. 18.09.2026 was the deadline; it moved to 02.10.2026, then to 30.11.2026
+   not raw:  '\x03.\x02.\x01'
+   \g<n> form: 18.09.2026
+5. 18.09.2026 was the deadline; it moved to 02.10.2026, then to 30.11.2026
+   m.group('month'): 09 | m.groupdict(): {'year': '2026', 'month': '09', 'day': '18'}
+6. no \b:   ids 118.09.2026 and 18.09.20260, real date 18.09.2026
+   with \b: ids 12026-09-18 and 2026-09-180, real date 18.09.2026
+7. user=alice token=[REDACTED] retries=3 token=[REDACTED]
+   year only: 2027-09-18 was the deadline; it moved to 2027-10-02, then to 2027-11-30
+   \g<1> then digits: 20260101 | \1 then digits: 'A01'
+   function: 2026-Sep-18 was the deadline; it moved to 2026-Oct-02, then to 2026-Nov-30

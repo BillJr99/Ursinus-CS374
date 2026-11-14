@@ -69,6 +69,7 @@ All four problems share a structure: a computation needs to **pause at an arbitr
 
 A Python **generator function** uses `yield` instead of (or in addition to) `return`.  Calling it returns a **generator object**, an object that remembers where the function paused.
 
+<!-- run: id=cs374-tutorial-coroutines-generators-1 viz=env -->
 ```python
 import sys
 
@@ -135,6 +136,7 @@ try:
 except StopIteration:
     print("  StopIteration raised on exhausted generator")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-coroutines-generators-1) <!-- code-viz link -->
 
 **Key insight:** A generator function's stack frame is **frozen** at every `yield`.  The local variables, loop counter, and instruction pointer are all preserved. `next()` thaws the frame and continues from the yield point.
 
@@ -156,6 +158,7 @@ except StopIteration:
 
 Generators are not just output pipelines; they can **receive** values via `.send()`.  This makes them true **coroutines** (two-way communication channels).
 
+<!-- run: id=cs374-tutorial-coroutines-generators-2 viz=env -->
 ```python
 def running_average():
     """Coroutine: receives numbers via send(), yields running average."""
@@ -218,6 +221,7 @@ print("  yield from chain:")
 for v in gen_b():
     print(f"  {v}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-coroutines-generators-2) <!-- code-viz link -->
 
 > **Check Your Understanding.**  Think each question through (and jot an answer) before reading on.
 
@@ -235,6 +239,7 @@ for v in gen_b():
 
 `yield` is a **delimited continuation**: it captures the rest of the computation up to the nearest coroutine boundary.  This connects generators to the **continuation-passing style (CPS)** transformation shown below.
 
+<!-- run: id=cs374-tutorial-coroutines-generators-3 viz=env -->
 ```python
 # Manual CPS transformation of a generator
 # Original generator:
@@ -309,6 +314,7 @@ def make_generator_cps():
 
 print("  Generator-as-CPS result:", make_generator_cps())
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-coroutines-generators-3) <!-- code-viz link -->
 
 > **Check Your Understanding.**  Think each question through (and jot an answer) before reading on.
 
@@ -326,6 +332,7 @@ print("  Generator-as-CPS result:", make_generator_cps())
 
 Python's `async def` / `await` syntax is syntactic sugar built on generators.  An `async` function is a **coroutine** that yields control when waiting for I/O, and an event loop resumes it when the awaited operation completes.
 
+<!-- run: id=cs374-tutorial-coroutines-generators-4 viz=env -->
 ```python
 import asyncio
 import time
@@ -385,6 +392,7 @@ def old_event_loop(coro):
 
 old_event_loop(old_style_coroutine)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-coroutines-generators-4) <!-- code-viz link -->
 
 > **Check Your Understanding.**  Think each question through (and jot an answer) before reading on.
 
@@ -404,6 +412,7 @@ old_event_loop(old_style_coroutine)
 
 Adding generator support to an interpreter requires preserving the function's execution state across multiple calls.  The cleanest approach uses Python's own generators as the implementation mechanism.
 
+<!-- run: id=cs374-tutorial-coroutines-generators-5 viz=env -->
 ```python
 from dataclasses import dataclass, field
 from typing import Any, Optional, Iterator
@@ -523,6 +532,7 @@ print("=== Key insight: Python's generator IS our interpreter's continuation ===
 print("  Each 'yield eval_expr(...)' in _run captures the frame's state.")
 print("  next() on the GeneratorObj resumes exactly where _run paused.")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-coroutines-generators-5) <!-- code-viz link -->
 
 > **Check Your Understanding.**  Think each question through (and jot an answer) before reading on.
 
@@ -594,6 +604,7 @@ Freezing the stack frame (locals, instruction pointer) as a heap-allocated objec
 
 **Exercise 1.**  Implement a `pipeline` that chains generators: `map_gen`, `filter_gen`, and `take_gen`.  Use them to compute the first 5 even squares:
 
+<!-- run: id=cs374-tutorial-coroutines-generators-6 viz=env -->
 ```python
 def integers_from(n):
     while True:
@@ -627,9 +638,11 @@ print(f"Eager (computed 10000, kept 5): {eager}")
 print(f"Lazy (computed exactly 5): {result}")
 print("Both produce the same answer; lazy is O(1) memory.")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-coroutines-generators-6) <!-- code-viz link -->
 
 **Exercise 2.**  Implement a cooperative multitasking scheduler using generators.  Each "task" is a generator that yields to give up control.  The scheduler runs tasks in round-robin:
 
+<!-- run: id=cs374-tutorial-coroutines-generators-7 viz=env -->
 ```python
 def task_a():
     for i in range(3):
@@ -657,9 +670,11 @@ def scheduler(*tasks):
 print("=== Cooperative multitasking with generators ===")
 scheduler(task_a, task_b)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-coroutines-generators-7) <!-- code-viz link -->
 
 **Exercise 3.**  Implement a `memoize_gen` that caches yielded values so that the generator can be replayed from the beginning without recomputing:
 
+<!-- run: id=cs374-tutorial-coroutines-generators-8 viz=env -->
 ```python
 class ReplayableGen:
     def __init__(self, gen_fn, *args, **kwargs):
@@ -703,6 +718,7 @@ print("Second pass (reads from cache, no recomputation):")
 for v in rg:
     print(f"  got {v}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-coroutines-generators-8) <!-- code-viz link -->
 
 **Exercise 4.**  Extend the mini interpreter from Model 5 to support a `while` loop inside generator bodies.  Add a `While` AST node and a `Assign` node so you can write:
 
@@ -713,6 +729,7 @@ gen count_up(start):
         start = start + 1
 ```
 
+<!-- run: id=cs374-tutorial-coroutines-generators-9 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any
@@ -830,9 +847,11 @@ print("count_up(1):")
 for val in run_generator(count_up, 1, global_env):
     print(f"  {val}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-coroutines-generators-9) <!-- code-viz link -->
 
 **Exercise 5.**  Implement a simple async event loop using generators.  Create a `Task` class, an `EventLoop` that runs tasks cooperatively, and simulate I/O with time-delayed wake-ups:
 
+<!-- run: id=cs374-tutorial-coroutines-generators-10 viz=env -->
 ```python
 import time
 from dataclasses import dataclass, field
@@ -905,6 +924,7 @@ print("=== Simple generator-based event loop ===")
 loop = SimpleEventLoop()
 loop.run(main_coro)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-coroutines-generators-10) <!-- code-viz link -->
 
 ---
 

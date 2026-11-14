@@ -1,0 +1,24 @@
+=== Bidirectional coroutine with send() ===
+  initial yield: None
+  sent 10, received avg = 10.00
+  sent 20, received avg = 15.00
+  sent 30, received avg = 20.00
+  sent 40, received avg = 25.00
+  sent 50, received avg = 30.00
+
+=== throw(): injecting exceptions ===
+  next() -> 0
+  next() -> 1
+  next() -> 2
+  next() -> 3
+  resetting because: manual reset!
+  next() -> 1
+  next() -> 2
+  next() -> 3
+
+=== yield from: delegating to a sub-generator ===
+  yield from chain:
+  b1
+  a1
+  a2
+  b2

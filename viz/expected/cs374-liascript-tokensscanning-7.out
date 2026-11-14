@@ -1,0 +1,36 @@
+=== All tokens ===
+Token(type='KEYWORD', lexeme='let', line=2, col=1)
+Token(type='IDENT', lexeme='greeting', line=2, col=5)
+Token(type='EQ', lexeme='=', line=2, col=14)
+Token(type='STRING', lexeme='"hello, world"', line=2, col=16)
+Token(type='SEMICOLON', lexeme=';', line=2, col=30)
+Token(type='KEYWORD', lexeme='let', line=3, col=1)
+Token(type='IDENT', lexeme='escaped', line=3, col=5)
+Token(type='EQ', lexeme='=', line=3, col=14)
+Token(type='STRING', lexeme='"say \\"hi\\" now"', line=3, col=16)
+Token(type='SEMICOLON', lexeme=';', line=3, col=32)
+Token(type='KEYWORD', lexeme='let', line=4, col=1)
+Token(type='IDENT', lexeme='newlines', line=4, col=5)
+Token(type='EQ', lexeme='=', line=4, col=14)
+Token(type='STRING', lexeme='"line1\\nline2"', line=4, col=16)
+Token(type='SEMICOLON', lexeme=';', line=4, col=30)
+Token(type='KEYWORD', lexeme='print', line=5, col=1)
+Token(type='IDENT', lexeme='greeting', line=5, col=7)
+Token(type='SEMICOLON', lexeme=';', line=5, col=15)
+
+=== String values after unescaping ===
+  raw:       "hello, world"
+  unescaped: 'hello, world'
+  raw:       "say \"hi\" now"
+  unescaped: 'say "hi" now'
+  raw:       "line1\nline2"
+  unescaped: 'line1\nline2'
+
+=== One pass versus chained replace on c:\\new ===
+one pass:        'c:\\new'
+chained replace: 'c:\new'
+
+=== What happens with an unterminated string? ===
+SyntaxError: line 1, col 9: unexpected '"'
+No STRING pattern matched, so the quote fell through to MISMATCH:
+the error names a stray character, not an unterminated string.

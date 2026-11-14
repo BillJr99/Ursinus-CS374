@@ -1,0 +1,8 @@
+=== C-style return code usage ===
+read succeeded: 'file contents'
+
+=== What happens if caller forgets to check? ===
+data2 = None
+
+=== The errno global pattern (real C) ===
+Python wraps errno: e.errno=2, e.strerror='No such file or directory'

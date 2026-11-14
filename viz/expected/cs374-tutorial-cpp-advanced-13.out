@@ -1,0 +1,16 @@
+=== Finding shared library paths ===
+  libm path: libm.so.6
+  libc path: libc.so.6
+
+=== Dynamic symbol lookup ===
+  printf found in libc
+
+=== Python's own C API via ctypes ===
+  PyList_New(0) via C API: []  type=list
+  Py_GetVersion(): 3.12.16 (main, Nov  5 2026, 07:58:20) [GCC 14.2.0]...
+
+=== What C++ name mangling looks like ===
+  C++ name mangling (simplified):
+    MyClass::foo(int, double) -> _ZN7MyClass3fooEid
+    Vector::push(int) -> _ZN6Vector4pushEi
+    Matrix::mult(double, double) -> _ZN6Matrix4multEdd

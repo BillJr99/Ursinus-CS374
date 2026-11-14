@@ -1,0 +1,15 @@
+=== Church Numerals ===
+church_to_int(ZERO)  = 0
+church_to_int(ONE)   = 1
+church_to_int(TWO)   = 2
+ONE, TWO, 1+2, 2*3  = 1 2 3 6
+2^3 = 8
+
+=== Church if-then-else ===
+if TRUE: 'yes'  = yes
+if FALSE: 'yes' = no
+
+=== ISZERO ===
+ISZERO(ZERO) = TRUE
+ISZERO(ONE) = FALSE
+ISZERO(TWO) = FALSE

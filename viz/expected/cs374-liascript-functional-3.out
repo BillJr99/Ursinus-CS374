@@ -1,0 +1,6 @@
+=== The bug purity prevents ===
+  f_reads_global(10) = 10
+  f_reads_global(10) = 11   <- same input, new answer
+
+=== After your refactor, this should hold no matter what ===
+  same input -> same output, every time, forever

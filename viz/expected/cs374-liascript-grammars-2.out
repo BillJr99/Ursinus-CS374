@@ -1,0 +1,15 @@
+=== My L1 grammar ===
+  'a'      -> False
+  'aa'     -> False
+  'aaaa'   -> False
+  'ab'     -> False
+
+=== My L3 attempt ===
+  'abc'        -> False
+  'aabbcc'     -> False
+  'aaabbbccc'  -> False
+  'aabbc'      -> False
+  'abbc'       -> False
+
+A correct L3 grammar accepts the first three and rejects the last two.
+If yours accepts aabbc or abbc, that is the leak. Where does it come from?

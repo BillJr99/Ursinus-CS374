@@ -56,12 +56,14 @@ This tutorial is the reference companion to the *Functional Programming in Schem
 
 Every compound form in Scheme is a parenthesized list with the operator first.  Arithmetic is not special, and neither is anything else:
 
+<!-- run: id=cs374-tutorial-scheme-essentials-1 viz=env -->
 ```scheme
 (+ 2 3)                      ; 5
 (* (+ 2 3) 4)                ; 20
 (define pi 3.14159)
 (if (> 5 0) "positive" "not positive")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-scheme-essentials-1) <!-- code-viz link -->
 
 Notice what is missing.  There is no precedence table, because prefix notation does not need one: the nesting *is* the structure.  There is no associativity rule.  There is no statement-versus-expression divide, because everything is an expression with a value.
 
@@ -92,6 +94,7 @@ That `'(+ 1 2)` is an ordinary list is not a curiosity.  It is the property call
 
 ## 1.3 Lists, and the Three Operations That Build Them
 
+<!-- run: id=cs374-tutorial-scheme-essentials-3 viz=env -->
 ```scheme
 (define L (list 'a 'b 'c))
 (car L)                      ; a          -- the first element
@@ -100,6 +103,7 @@ That `'(+ 1 2)` is an ordinary list is not a curiosity.  It is the property call
 (null? '())                  ; #t         -- true for the empty list
 (pair? L)                    ; #t         -- true for a nonempty list
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-scheme-essentials-3) <!-- code-viz link -->
 
 `car` and `cdr` are Scheme's names for what most languages call `head` and `tail`.  They are historical accidents from 1950s IBM register names and they are not going to start making sense, so read them as "the first one" and "the rest."  Calling either on the empty list is a runtime error, which is why every list recursion checks its base case first.
 
@@ -109,6 +113,7 @@ That `'(+ 1 2)` is an ordinary list is not a curiosity.  It is the property call
 
 ## 2.1 define and lambda
 
+<!-- run: id=cs374-tutorial-scheme-essentials-4 viz=env -->
 ```scheme
 (define square
   (lambda (n)
@@ -118,6 +123,7 @@ That `'(+ 1 2)` is an ordinary list is not a curiosity.  It is the property call
 
 (square 7)                   ; 49
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-scheme-essentials-4) <!-- code-viz link -->
 
 Reading the long form first makes `lambda` feel ordinary rather than exotic: `define` binds a name to a value, and a `lambda` expression is just one kind of value.
 
@@ -125,6 +131,7 @@ Reading the long form first makes `lambda` feel ordinary rather than exotic: `de
 
 ## 2.2 Conditionals
 
+<!-- run: id=cs374-tutorial-scheme-essentials-5 viz=env -->
 ```scheme
 (define (sign n)
   (if (< n 0) 'negative 'non-negative))
@@ -136,15 +143,18 @@ Reading the long form first makes `lambda` feel ordinary rather than exotic: `de
 
 (map classify '(-3 0 7))     ; (negative zero positive)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-scheme-essentials-5) <!-- code-viz link -->
 
 `if` takes exactly two branches; `cond` takes as many as you like and is the one you will reach for.
 
 ## 2.3 Functions Are Values
 
+<!-- run: id=cs374-tutorial-scheme-essentials-6 viz=env -->
 ```scheme
 (define add +)               ; not a typo
 (add 3 2)                    ; 5
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-scheme-essentials-6) <!-- code-viz link -->
 
 `+` is a value, the addition function, and `define` binds names to values of any kind.  Nothing in Scheme distinguishes a name holding a number from a name holding a function, and the rest of this tutorial is built on that one fact.
 
@@ -156,6 +166,7 @@ Scheme has no `while`.  Iteration is recursion over a list: peel one element off
 
 ## 3.1 sumlist
 
+<!-- run: id=cs374-tutorial-scheme-essentials-7 viz=env -->
 ```scheme
 (define sumlist
   (lambda (L)
@@ -165,11 +176,13 @@ Scheme has no `while`.  Iteration is recursion over a list: peel one element off
 
 (sumlist (list 1 2 3))       ; 6
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-scheme-essentials-7) <!-- code-viz link -->
 
 Note where this one stops: at the *last element*, not at the empty list.  That means `(sumlist '())` is an error rather than 0.  Whether that is a bug or a deliberate statement about what summing nothing means is a real design question, and the assignment asks you to take a side.
 
 ## 3.2 largest, and Why the Obvious Version Is Expensive
 
+<!-- run: id=cs374-tutorial-scheme-essentials-8 viz=env -->
 ```scheme
 (define largest
   (lambda (L)
@@ -179,9 +192,11 @@ Note where this one stops: at the *last element*, not at the empty list.  That m
             (car L)
             (largest (cdr L))))))
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-scheme-essentials-8) <!-- code-viz link -->
 
 This is correct and wasteful: `(largest (cdr L))` is evaluated in the test *and* again in the else branch, so the work doubles at every level.  Name the subresult once with `let`:
 
+<!-- run: id=cs374-tutorial-scheme-essentials-9 viz=env -->
 ```scheme
 (define largest2
   (lambda (L)
@@ -192,11 +207,13 @@ This is correct and wasteful: `(largest (cdr L))` is evaluated in the test *and*
               (car L)
               largestval)))))
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-scheme-essentials-9) <!-- code-viz link -->
 
 On a list of sixteen elements whose largest is last, the first version makes 65,535 calls and the second makes 16.  Same answer, same shape, and the only difference in the source is a `let`.
 
 ## 3.3 Walking a List, and Tail Position
 
+<!-- run: id=cs374-tutorial-scheme-essentials-10 viz=env -->
 ```scheme
 (define contains?
   (lambda (x l)
@@ -208,6 +225,7 @@ On a list of sixteen elements whose largest is last, the first version makes 65,
 
 (contains? 3 '(1 2 3 4))     ; #t
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-scheme-essentials-10) <!-- code-viz link -->
 
 `contains?` is ours, not a standard Scheme procedure.  It walks a list until it finds what it wants.  Notice what makes it different from `sumlist`: nothing happens after the recursive call returns.  A call in that position is a **tail call**, and a Scheme implementation is required to run it without growing the stack.
 
@@ -219,6 +237,7 @@ The assignment's `czr` has this shape too.  To plan it, ask the two questions ev
 
 ## 4.1 map and apply
 
+<!-- run: id=cs374-tutorial-scheme-essentials-11 viz=env -->
 ```scheme
 (define L1 '(1 2 3))
 (define L2 '(4 5 6))
@@ -227,11 +246,13 @@ The assignment's `czr` has this shape too.  To plan it, ask the two questions ev
 (map (lambda (x) (* x x)) '(1 2 3 4 5))     ; (1 4 9 16 25)
 ((lambda (x) (* x x)) 5)     ; 25           -- a lambda applied on the spot
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-scheme-essentials-11) <!-- code-viz link -->
 
 `map` takes a *function* as its first argument.  `apply` does the opposite: it takes one function and one list, and spreads the list out as that function's arguments, so `(apply + '(1 2 3))` is `(+ 1 2 3)`.
 
 ## 4.2 An Anonymous Function, Applied Immediately
 
+<!-- run: id=cs374-tutorial-scheme-essentials-12 viz=env -->
 ```scheme
 (define plusminus
   (lambda (a b)
@@ -240,11 +261,13 @@ The assignment's `czr` has this shape too.  To plan it, ask the two questions ev
 
 (plusminus 6 2)              ; (8 4)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-scheme-essentials-12) <!-- code-viz link -->
 
 There are two functions here.  The outer one is named; the inner one is created, applied to `a` and `b`, and thrown away.  Written out, the call is `((lambda (x y) ...) a b)`, which is the One Syntax Rule again with a function *expression* in the operator position instead of a function *name*.
 
 ## 4.3 Lifting the Operator Out
 
+<!-- run: id=cs374-tutorial-scheme-essentials-13 viz=env -->
 ```scheme
 (define oplist
   (lambda (op L)
@@ -256,6 +279,7 @@ There are two functions here.  The outer one is named; the inner one is created,
 (oplist + (list 2 4 6))      ; 12
 (apply * (list 2 4 6))       ; 48
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-scheme-essentials-13) <!-- code-viz link -->
 
 `oplist` is `sumlist` with the operator promoted to a parameter.  That one change turns a function that sums into a function that does whatever you hand it, and once you see it, `reduce` and `fold` stop being library functions to memorize and become a shape you recognize.
 
@@ -271,20 +295,24 @@ Every expression you have written so far names things only two ways: as a functi
 
 The shape is `(let ((name expression)) body)`. It evaluates `expression` once, binds it to `name`, and then evaluates `body` with that binding visible.
 
+<!-- run: id=cs374-tutorial-scheme-essentials-14 viz=env -->
 ```scheme
 (let ((x (+ 2 3)))
   (* x x))                   ; 25
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-scheme-essentials-14) <!-- code-viz link -->
 
 Read that as: compute `(+ 2 3)`, call the result `x`, then compute `(* x x)` using that `x`. The parentheses nest more deeply than you are used to, so build them from the inside out. `(x (+ 2 3))` is one binding pair. `((x (+ 2 3)))` is a list holding that one pair. The `let` then wraps that list around a body.
 
 You can bind more than one name in the same `let` by adding more pairs:
 
+<!-- run: id=cs374-tutorial-scheme-essentials-15 viz=env -->
 ```scheme
 (let ((a 3)
       (b 4))
   (+ (* a a) (* b b)))       ; 25
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-scheme-essentials-15) <!-- code-viz link -->
 
 Scheme computes both `a` and `b` from the *outside* environment, not from each other. A binding that depends on another binding needs `let*`, which you will not need here. Keep every binding in a single `let` independent of the others.
 
@@ -296,9 +324,11 @@ Scheme computes both `a` and `b` from the *outside* environment, not from each o
 
 An **association list**, usually just called an *alist*, is Scheme's simplest lookup table: a list where each element is a pair, `(key . value)`, built with `cons`.
 
+<!-- run: id=cs374-tutorial-scheme-essentials-16 viz=env -->
 ```scheme
 (define ops (list (cons '+ +) (cons '- -)))
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-scheme-essentials-16) <!-- code-viz link -->
 
 `(cons '+ +)` builds the pair `(+ . #<procedure:+>)`, a symbol on the left and the actual addition procedure on the right; `car` of that pair gets you the symbol back, `cdr` gets you the procedure back. `ops` is then a list of two such pairs. Nothing here is a new data type: it is exactly the `list`, `cons`, `car`, and `cdr` from Part 1, just arranged so that each element is itself a two-part `key . value` record.
 
@@ -360,10 +390,12 @@ You have seen `map` in section 4.1.  The one habit worth locking in: `map`'s fir
 
 `apply` takes a function and a list, and calls the function with the list's elements spread out as separate arguments, rather than as one list argument.
 
+<!-- run: id=cs374-tutorial-scheme-essentials-22 viz=env -->
 ```scheme
 (apply + '(1 2 3))           ; same as (+ 1 2 3), which is 6
 (+ '(1 2 3))                 ; error: + does not want a list as an argument
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-scheme-essentials-22) <!-- code-viz link -->
 
 That second line is worth trying on purpose: `+` wants numbers, not a list of numbers, so calling it directly on a list fails, and `apply` is exactly the tool that unpacks the list into individual arguments first. This matters for an evaluator because after `map` evaluates every operand down to a plain number, you are left holding a procedure and a list of numbers, precisely the two things `apply` wants.
 
@@ -395,6 +427,7 @@ Walk that last line from the inside out. `map` squares each element of `'(2 3 4)
 
 # Part 5: Closures
 
+<!-- run: id=cs374-tutorial-scheme-essentials-24 viz=env -->
 ```scheme
 (define (make-counter)
   (let ((count 0))           ; the environment the closure captures
@@ -410,6 +443,7 @@ Walk that last line from the inside out. `map` squares each element of `'(2 3 4)
 (counter2)                   ; 1
 (counter1)                   ; 3
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-scheme-essentials-24) <!-- code-viz link -->
 
 `make-counter` returns a function that still has access to `count`, long after `make-counter` has returned and even though `count` is visible nowhere else in the program.  The returned function plus the environment it captured is a **closure**.
 

@@ -113,6 +113,7 @@ Every `{ ... }` in the EBNF becomes a `while` loop.  Every `[ ... ]` becomes an 
 
 The demonstration below implements the `expr` and `term` tiers with tuples `(op, left, right)` as lightweight AST nodes.  Run it and compare each printed tree with the grammar.
 
+<!-- run: id=cs374-liascript-parsingexpressions-1 viz=env -->
 ```python
 # Demonstration: the while-loop pattern produces left-associative trees.
 # We use tuples (op, left, right) as lightweight AST nodes.
@@ -185,6 +186,7 @@ for src in expressions:
     print()
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-parsingexpressions-1) <!-- code-viz link -->
 
 ### Critical Thinking Questions
 
@@ -214,6 +216,7 @@ Consider `addsub` parsing the token stream for `7 - 2 - 1`.
 
 ## Code Cell
 
+<!-- run: id=cs374-liascript-parsingexpressions-2 viz=env -->
 ```python
 # The expression parser, one tier at a time, designed to drop into the
 # Parser class from the Recursive Descent Parsing activity. Tuples for now;
@@ -271,6 +274,7 @@ def parse_primary(self):
                       f"{tok.lexeme!r} at line {tok.line}" if tok else "end of input")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-parsingexpressions-2) <!-- code-viz link -->
 
 ---
 
@@ -330,6 +334,7 @@ Now do `2 * 3 + 4` yourself and find the step where the comparison fails and for
 
 ## Model 2: The Whole Ladder, as a Table
 
+<!-- run: id=cs374-liascript-parsingexpressions-3 viz=env -->
 ```python
 def tokenize(text):
     out, i = [], 0
@@ -403,6 +408,7 @@ print("  2 ^ 3 ^ 2 came out RIGHT-leaning because '^' passes bp")
 print("  That single '+ 1' is the entire associativity mechanism.")
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-parsingexpressions-3) <!-- code-viz link -->
 
 ### Reading the Code
 
@@ -428,6 +434,7 @@ print("  That single '+ 1' is the entire associativity mechanism.")
 
 Add operators to the table without writing a single new function.
 
+<!-- run: id=cs374-liascript-parsingexpressions-4 viz=env -->
 ```python
 def tokenize(text):
     out, i = [], 0
@@ -499,6 +506,7 @@ for src in ["1 + 2 * 3", "1 + 2 < 3 * 4", "1 < 2 && 3 < 4 || 5 < 6"]:
 #         your table produce right now? Write the decision into SEMANTICS.md.
 ```
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-parsingexpressions-4) <!-- code-viz link -->
 
 Expected output as written: the first line parses fully, and the other two stop early because the operators they need are not in the table yet.  Add the rows and all three consume everything.  You never wrote a parsing function to do it.  TODO 3 asks about a chained comparison, which is two comparison operators in a row with no parentheses, such as `a < b < c`.  Python reads it as `a < b and b < c`; C reads it as `(a < b) < c`.  Your language has to pick one, or reject the form.
 
@@ -1040,6 +1048,7 @@ Program
 
 The ladder is complete, so the last two broken programs can finally give the right errors.  Stage 2 could not reach them, because they fail inside an expression.
 
+<!-- run: id=cs374-liascript-parsingexpressions-13 viz=env -->
 ```python
 # Step 32, test_parser.py: add above the main block
 def test_bad_operator():
@@ -1051,6 +1060,7 @@ def test_bad_operator():
 def test_mismatched_paren():
     assert "expected RPAREN, found SEMICOLON" in parse_error("print (1 + 2;").message
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-parsingexpressions-13) <!-- code-viz link -->
 
 **You write:** one test of your own.  Pick an expression that mixes at least three tiers, draw its tree on paper, and assert that shape.
 

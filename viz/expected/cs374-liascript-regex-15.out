@@ -1,0 +1,9 @@
+
+an assignment 'name = number': groups 'name' and 'value'
+  (not written yet)
+
+a version 'MAJOR.MINOR' with optional '.PATCH': groups 'major', 'minor', 'patch'
+  (not written yet)
+
+an HTML-style tag pair that must close with the same name: group 'tag' and 'body'
+  (not written yet)

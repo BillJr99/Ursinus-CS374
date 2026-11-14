@@ -1,0 +1,5 @@
+Int
+Bool
+Int
+Int
+Type error: Add requires Int, got Str + Int

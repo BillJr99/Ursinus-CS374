@@ -1,0 +1,2872 @@
+{
+ "labeled": [
+  {
+   "id": "cs374-liascript-ast-1",
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 123
+  },
+  {
+   "id": "cs374-liascript-ast-2",
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 252
+  },
+  {
+   "id": "cs374-liascript-ast-3",
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 305
+  },
+  {
+   "id": "cs374-liascript-ast-4",
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 382
+  },
+  {
+   "id": "cs374-liascript-ast-5",
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 499
+  },
+  {
+   "id": "cs374-liascript-ast-6",
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 616
+  },
+  {
+   "id": "cs374-liascript-ast-7",
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 704
+  },
+  {
+   "id": "cs374-liascript-ast-8",
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 765
+  },
+  {
+   "id": "cs374-liascript-ast-9",
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 917
+  },
+  {
+   "id": "cs374-liascript-automata-day2-1",
+   "page": "_pages/Activities/liascript-automata-day2.md",
+   "line": 62
+  },
+  {
+   "id": "cs374-liascript-automata-day2-2",
+   "page": "_pages/Activities/liascript-automata-day2.md",
+   "line": 117
+  },
+  {
+   "id": "cs374-liascript-automata-day2-3",
+   "page": "_pages/Activities/liascript-automata-day2.md",
+   "line": 157
+  },
+  {
+   "id": "cs374-liascript-automata-day2-4",
+   "page": "_pages/Activities/liascript-automata-day2.md",
+   "line": 238
+  },
+  {
+   "id": "cs374-liascript-automata-day2-5",
+   "page": "_pages/Activities/liascript-automata-day2.md",
+   "line": 269
+  },
+  {
+   "id": "cs374-liascript-automata-day2-6",
+   "page": "_pages/Activities/liascript-automata-day2.md",
+   "line": 677
+  },
+  {
+   "id": "cs374-liascript-automata-day2-7",
+   "page": "_pages/Activities/liascript-automata-day2.md",
+   "line": 776
+  },
+  {
+   "id": "cs374-liascript-automata-day2-8",
+   "page": "_pages/Activities/liascript-automata-day2.md",
+   "line": 863
+  },
+  {
+   "id": "cs374-liascript-automata-day2-9",
+   "page": "_pages/Activities/liascript-automata-day2.md",
+   "line": 927
+  },
+  {
+   "id": "cs374-liascript-automata-day2-10",
+   "page": "_pages/Activities/liascript-automata-day2.md",
+   "line": 1199
+  },
+  {
+   "id": "cs374-liascript-automata-day2-11",
+   "page": "_pages/Activities/liascript-automata-day2.md",
+   "line": 1494
+  },
+  {
+   "id": "cs374-liascript-automata-day2-12",
+   "page": "_pages/Activities/liascript-automata-day2.md",
+   "line": 1552
+  },
+  {
+   "id": "cs374-liascript-automata-day2-13",
+   "page": "_pages/Activities/liascript-automata-day2.md",
+   "line": 1621
+  },
+  {
+   "id": "cs374-liascript-automata-1",
+   "page": "_pages/Activities/liascript-automata.md",
+   "line": 100
+  },
+  {
+   "id": "cs374-liascript-automata-2",
+   "page": "_pages/Activities/liascript-automata.md",
+   "line": 186
+  },
+  {
+   "id": "cs374-liascript-automata-3",
+   "page": "_pages/Activities/liascript-automata.md",
+   "line": 260
+  },
+  {
+   "id": "cs374-liascript-automata-4",
+   "page": "_pages/Activities/liascript-automata.md",
+   "line": 342
+  },
+  {
+   "id": "cs374-liascript-automata-5",
+   "page": "_pages/Activities/liascript-automata.md",
+   "line": 428
+  },
+  {
+   "id": "cs374-liascript-automata-6",
+   "page": "_pages/Activities/liascript-automata.md",
+   "line": 532
+  },
+  {
+   "id": "cs374-liascript-bindingscope-1",
+   "page": "_pages/Activities/liascript-bindingscope.md",
+   "line": 84
+  },
+  {
+   "id": "cs374-liascript-bindingscope-2",
+   "page": "_pages/Activities/liascript-bindingscope.md",
+   "line": 120
+  },
+  {
+   "id": "cs374-liascript-bindingscope-3",
+   "page": "_pages/Activities/liascript-bindingscope.md",
+   "line": 217
+  },
+  {
+   "id": "cs374-liascript-bindingscope-4",
+   "page": "_pages/Activities/liascript-bindingscope.md",
+   "line": 258
+  },
+  {
+   "id": "cs374-liascript-bindingscope-5",
+   "page": "_pages/Activities/liascript-bindingscope.md",
+   "line": 297
+  },
+  {
+   "id": "cs374-liascript-bindingscope-6",
+   "page": "_pages/Activities/liascript-bindingscope.md",
+   "line": 422
+  },
+  {
+   "id": "cs374-liascript-bindingscope-7",
+   "page": "_pages/Activities/liascript-bindingscope.md",
+   "line": 449
+  },
+  {
+   "id": "cs374-liascript-bindingscope-8",
+   "page": "_pages/Activities/liascript-bindingscope.md",
+   "line": 486
+  },
+  {
+   "id": "cs374-liascript-bindingscope-9",
+   "page": "_pages/Activities/liascript-bindingscope.md",
+   "line": 615
+  },
+  {
+   "id": "cs374-liascript-bindingscope-10",
+   "page": "_pages/Activities/liascript-bindingscope.md",
+   "line": 653
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-1",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 88
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-2",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 125
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-3",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 194
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-4",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 263
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-5",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 338
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-6",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 473
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-7",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 573
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-8",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 633
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-9",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 700
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-10",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 799
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-11",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 891
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-12",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 959
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-13",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 1136
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-14",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 1170
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-15",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 1238
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-16",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 1306
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-17",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 1381
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-18",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 1428
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-19",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 1481
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-20",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 1609
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-21",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 1715
+  },
+  {
+   "id": "cs374-liascript-calculator-to-scheme-22",
+   "page": "_pages/Activities/liascript-calculator-to-scheme.md",
+   "line": 1798
+  },
+  {
+   "id": "cs374-liascript-calculator-variables-1",
+   "page": "_pages/Activities/liascript-calculator-variables.md",
+   "line": 57
+  },
+  {
+   "id": "cs374-liascript-calculator-variables-2",
+   "page": "_pages/Activities/liascript-calculator-variables.md",
+   "line": 142
+  },
+  {
+   "id": "cs374-liascript-course-arc-1",
+   "page": "_pages/Activities/liascript-course-arc.md",
+   "line": 59
+  },
+  {
+   "id": "cs374-liascript-course-arc-2",
+   "page": "_pages/Activities/liascript-course-arc.md",
+   "line": 152
+  },
+  {
+   "id": "cs374-liascript-course-arc-3",
+   "page": "_pages/Activities/liascript-course-arc.md",
+   "line": 257
+  },
+  {
+   "id": "cs374-liascript-course-arc-4",
+   "page": "_pages/Activities/liascript-course-arc.md",
+   "line": 354
+  },
+  {
+   "id": "cs374-liascript-course-arc-5",
+   "page": "_pages/Activities/liascript-course-arc.md",
+   "line": 466
+  },
+  {
+   "id": "cs374-liascript-course-arc-6",
+   "page": "_pages/Activities/liascript-course-arc.md",
+   "line": 593
+  },
+  {
+   "id": "cs374-liascript-derivationsambiguity-1",
+   "page": "_pages/Activities/liascript-derivationsambiguity.md",
+   "line": 187
+  },
+  {
+   "id": "cs374-liascript-derivationsambiguity-2",
+   "page": "_pages/Activities/liascript-derivationsambiguity.md",
+   "line": 248
+  },
+  {
+   "id": "cs374-liascript-derivationsambiguity-3",
+   "page": "_pages/Activities/liascript-derivationsambiguity.md",
+   "line": 295
+  },
+  {
+   "id": "cs374-liascript-derivationsambiguity-4",
+   "page": "_pages/Activities/liascript-derivationsambiguity.md",
+   "line": 377
+  },
+  {
+   "id": "cs374-liascript-derivationsambiguity-5",
+   "page": "_pages/Activities/liascript-derivationsambiguity.md",
+   "line": 457
+  },
+  {
+   "id": "cs374-liascript-functional-1",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 86
+  },
+  {
+   "id": "cs374-liascript-functional-2",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 128
+  },
+  {
+   "id": "cs374-liascript-functional-3",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 164
+  },
+  {
+   "id": "cs374-liascript-functional-4",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 223
+  },
+  {
+   "id": "cs374-liascript-functional-5",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 273
+  },
+  {
+   "id": "cs374-liascript-functional-6",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 344
+  },
+  {
+   "id": "cs374-liascript-functional-7",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 384
+  },
+  {
+   "id": "cs374-liascript-functional-8",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 445
+  },
+  {
+   "id": "cs374-liascript-functional-9",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 509
+  },
+  {
+   "id": "cs374-liascript-functional-10",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 572
+  },
+  {
+   "id": "cs374-liascript-functional-11",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 630
+  },
+  {
+   "id": "cs374-liascript-functional-12",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 729
+  },
+  {
+   "id": "cs374-liascript-functional-13",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 794
+  },
+  {
+   "id": "cs374-liascript-functional-14",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 840
+  },
+  {
+   "id": "cs374-liascript-functional-16",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 936
+  },
+  {
+   "id": "cs374-liascript-functional-17",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 1028
+  },
+  {
+   "id": "cs374-liascript-functional-18",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 1178
+  },
+  {
+   "id": "cs374-liascript-functional-19",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 1325
+  },
+  {
+   "id": "cs374-liascript-functional-20",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 1407
+  },
+  {
+   "id": "cs374-liascript-functional-21",
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 1502
+  },
+  {
+   "id": "cs374-liascript-grammars-day2-1",
+   "page": "_pages/Activities/liascript-grammars-day2.md",
+   "line": 91
+  },
+  {
+   "id": "cs374-liascript-grammars-day2-2",
+   "page": "_pages/Activities/liascript-grammars-day2.md",
+   "line": 233
+  },
+  {
+   "id": "cs374-liascript-grammars-day2-3",
+   "page": "_pages/Activities/liascript-grammars-day2.md",
+   "line": 329
+  },
+  {
+   "id": "cs374-liascript-grammars-1",
+   "page": "_pages/Activities/liascript-grammars.md",
+   "line": 160
+  },
+  {
+   "id": "cs374-liascript-grammars-2",
+   "page": "_pages/Activities/liascript-grammars.md",
+   "line": 249
+  },
+  {
+   "id": "cs374-liascript-grammars-3",
+   "page": "_pages/Activities/liascript-grammars.md",
+   "line": 406
+  },
+  {
+   "id": "cs374-liascript-grammars-4",
+   "page": "_pages/Activities/liascript-grammars.md",
+   "line": 499
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus1-1",
+   "page": "_pages/Activities/liascript-lambdacalculus1.md",
+   "line": 278
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus1-2",
+   "page": "_pages/Activities/liascript-lambdacalculus1.md",
+   "line": 416
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus1-3",
+   "page": "_pages/Activities/liascript-lambdacalculus1.md",
+   "line": 504
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus1-4",
+   "page": "_pages/Activities/liascript-lambdacalculus1.md",
+   "line": 593
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus1-5",
+   "page": "_pages/Activities/liascript-lambdacalculus1.md",
+   "line": 700
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus2-1",
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 161
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus2-2",
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 179
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus2-3",
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 261
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus2-4",
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 373
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus2-5",
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 396
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus2-6",
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 460
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus2-7",
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 649
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus2-8",
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 841
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus2-9",
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 1005
+  },
+  {
+   "id": "cs374-liascript-lambdacalculus2-10",
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 1050
+  },
+  {
+   "id": "cs374-liascript-languageevaluation-1",
+   "page": "_pages/Activities/liascript-languageevaluation.md",
+   "line": 72
+  },
+  {
+   "id": "cs374-liascript-languageevaluation-2",
+   "page": "_pages/Activities/liascript-languageevaluation.md",
+   "line": 204
+  },
+  {
+   "id": "cs374-liascript-languageevaluation-3",
+   "page": "_pages/Activities/liascript-languageevaluation.md",
+   "line": 274
+  },
+  {
+   "id": "cs374-liascript-languageevaluation-4",
+   "page": "_pages/Activities/liascript-languageevaluation.md",
+   "line": 390
+  },
+  {
+   "id": "cs374-liascript-languageevaluation-5",
+   "page": "_pages/Activities/liascript-languageevaluation.md",
+   "line": 516
+  },
+  {
+   "id": "cs374-liascript-languageevaluation-6",
+   "page": "_pages/Activities/liascript-languageevaluation.md",
+   "line": 554
+  },
+  {
+   "id": "cs374-liascript-parsing2-1",
+   "page": "_pages/Activities/liascript-parsing2.md",
+   "line": 202
+  },
+  {
+   "id": "cs374-liascript-parsing2-2",
+   "page": "_pages/Activities/liascript-parsing2.md",
+   "line": 276
+  },
+  {
+   "id": "cs374-liascript-parsing2-3",
+   "page": "_pages/Activities/liascript-parsing2.md",
+   "line": 374
+  },
+  {
+   "id": "cs374-liascript-parsing2-4",
+   "page": "_pages/Activities/liascript-parsing2.md",
+   "line": 738
+  },
+  {
+   "id": "cs374-liascript-parsing2-5",
+   "page": "_pages/Activities/liascript-parsing2.md",
+   "line": 889
+  },
+  {
+   "id": "cs374-liascript-parsing2-6",
+   "page": "_pages/Activities/liascript-parsing2.md",
+   "line": 1093
+  },
+  {
+   "id": "cs374-liascript-parsing2-7",
+   "page": "_pages/Activities/liascript-parsing2.md",
+   "line": 1280
+  },
+  {
+   "id": "cs374-liascript-parsing2-8",
+   "page": "_pages/Activities/liascript-parsing2.md",
+   "line": 1383
+  },
+  {
+   "id": "cs374-liascript-parsingexpressions-1",
+   "page": "_pages/Activities/liascript-parsingexpressions.md",
+   "line": 117
+  },
+  {
+   "id": "cs374-liascript-parsingexpressions-2",
+   "page": "_pages/Activities/liascript-parsingexpressions.md",
+   "line": 220
+  },
+  {
+   "id": "cs374-liascript-parsingexpressions-3",
+   "page": "_pages/Activities/liascript-parsingexpressions.md",
+   "line": 338
+  },
+  {
+   "id": "cs374-liascript-parsingexpressions-4",
+   "page": "_pages/Activities/liascript-parsingexpressions.md",
+   "line": 438
+  },
+  {
+   "id": "cs374-liascript-parsingexpressions-13",
+   "page": "_pages/Activities/liascript-parsingexpressions.md",
+   "line": 1052
+  },
+  {
+   "id": "cs374-liascript-recursivedescent-1",
+   "page": "_pages/Activities/liascript-recursivedescent.md",
+   "line": 240
+  },
+  {
+   "id": "cs374-liascript-recursivedescent-2",
+   "page": "_pages/Activities/liascript-recursivedescent.md",
+   "line": 412
+  },
+  {
+   "id": "cs374-liascript-recursivedescent-3",
+   "page": "_pages/Activities/liascript-recursivedescent.md",
+   "line": 490
+  },
+  {
+   "id": "cs374-liascript-recursivedescent-4",
+   "page": "_pages/Activities/liascript-recursivedescent.md",
+   "line": 950
+  },
+  {
+   "id": "cs374-liascript-regex-1",
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 110
+  },
+  {
+   "id": "cs374-liascript-regex-2",
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 135
+  },
+  {
+   "id": "cs374-liascript-regex-3",
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 161
+  },
+  {
+   "id": "cs374-liascript-regex-4",
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 218
+  },
+  {
+   "id": "cs374-liascript-regex-5",
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 251
+  },
+  {
+   "id": "cs374-liascript-regex-6",
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 311
+  },
+  {
+   "id": "cs374-liascript-regex-7",
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 364
+  },
+  {
+   "id": "cs374-liascript-regex-8",
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 404
+  },
+  {
+   "id": "cs374-liascript-regex-9",
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 441
+  },
+  {
+   "id": "cs374-liascript-regex-10",
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 505
+  },
+  {
+   "id": "cs374-liascript-regex-11",
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 541
+  },
+  {
+   "id": "cs374-liascript-regex-12",
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 571
+  },
+  {
+   "id": "cs374-liascript-regex-13",
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 627
+  },
+  {
+   "id": "cs374-liascript-regex-14",
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 681
+  },
+  {
+   "id": "cs374-liascript-regex-15",
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 742
+  },
+  {
+   "id": "cs374-liascript-scheme-2",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 130
+  },
+  {
+   "id": "cs374-liascript-scheme-3",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 144
+  },
+  {
+   "id": "cs374-liascript-scheme-4",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 162
+  },
+  {
+   "id": "cs374-liascript-scheme-5",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 203
+  },
+  {
+   "id": "cs374-liascript-scheme-6",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 215
+  },
+  {
+   "id": "cs374-liascript-scheme-7",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 229
+  },
+  {
+   "id": "cs374-liascript-scheme-8",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 246
+  },
+  {
+   "id": "cs374-liascript-scheme-9",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 310
+  },
+  {
+   "id": "cs374-liascript-scheme-10",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 322
+  },
+  {
+   "id": "cs374-liascript-scheme-11",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 336
+  },
+  {
+   "id": "cs374-liascript-scheme-12",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 354
+  },
+  {
+   "id": "cs374-liascript-scheme-13",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 408
+  },
+  {
+   "id": "cs374-liascript-scheme-14",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 438
+  },
+  {
+   "id": "cs374-liascript-scheme-15",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 451
+  },
+  {
+   "id": "cs374-liascript-scheme-16",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 479
+  },
+  {
+   "id": "cs374-liascript-scheme-17",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 491
+  },
+  {
+   "id": "cs374-liascript-scheme-18",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 528
+  },
+  {
+   "id": "cs374-liascript-scheme-19",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 537
+  },
+  {
+   "id": "cs374-liascript-scheme-20",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 549
+  },
+  {
+   "id": "cs374-liascript-scheme-26",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 647
+  },
+  {
+   "id": "cs374-liascript-scheme-27",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 680
+  },
+  {
+   "id": "cs374-liascript-scheme-28",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 716
+  },
+  {
+   "id": "cs374-liascript-scheme-31",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 820
+  },
+  {
+   "id": "cs374-liascript-scheme-32",
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 872
+  },
+  {
+   "id": "cs374-liascript-scope-chains-1",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 104
+  },
+  {
+   "id": "cs374-liascript-scope-chains-2",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 181
+  },
+  {
+   "id": "cs374-liascript-scope-chains-3",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 274
+  },
+  {
+   "id": "cs374-liascript-scope-chains-4",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 371
+  },
+  {
+   "id": "cs374-liascript-scope-chains-5",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 457
+  },
+  {
+   "id": "cs374-liascript-scope-chains-6",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 542
+  },
+  {
+   "id": "cs374-liascript-scope-chains-7",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 717
+  },
+  {
+   "id": "cs374-liascript-scope-chains-8",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 762
+  },
+  {
+   "id": "cs374-liascript-scope-chains-9",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 817
+  },
+  {
+   "id": "cs374-liascript-scope-chains-10",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 865
+  },
+  {
+   "id": "cs374-liascript-scope-chains-11",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 1103
+  },
+  {
+   "id": "cs374-liascript-scope-chains-12",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 1187
+  },
+  {
+   "id": "cs374-liascript-scope-chains-13",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 1309
+  },
+  {
+   "id": "cs374-liascript-scope-chains-14",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 1451
+  },
+  {
+   "id": "cs374-liascript-scope-chains-15",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 1571
+  },
+  {
+   "id": "cs374-liascript-scope-chains-16",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 1672
+  },
+  {
+   "id": "cs374-liascript-scope-chains-17",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 1725
+  },
+  {
+   "id": "cs374-liascript-scope-chains-18",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 1795
+  },
+  {
+   "id": "cs374-liascript-scope-chains-19",
+   "page": "_pages/Activities/liascript-scope-chains.md",
+   "line": 1860
+  },
+  {
+   "id": "cs374-liascript-syntaxbnf-1",
+   "page": "_pages/Activities/liascript-syntaxbnf.md",
+   "line": 324
+  },
+  {
+   "id": "cs374-liascript-syntaxbnf-2",
+   "page": "_pages/Activities/liascript-syntaxbnf.md",
+   "line": 364
+  },
+  {
+   "id": "cs374-liascript-syntaxbnf-3",
+   "page": "_pages/Activities/liascript-syntaxbnf.md",
+   "line": 429
+  },
+  {
+   "id": "cs374-liascript-syntaxbnf-4",
+   "page": "_pages/Activities/liascript-syntaxbnf.md",
+   "line": 504
+  },
+  {
+   "id": "cs374-liascript-syntaxbnf-5",
+   "page": "_pages/Activities/liascript-syntaxbnf.md",
+   "line": 565
+  },
+  {
+   "id": "cs374-liascript-syntaxbnf-6",
+   "page": "_pages/Activities/liascript-syntaxbnf.md",
+   "line": 642
+  },
+  {
+   "id": "cs374-liascript-tokensscanning-1",
+   "page": "_pages/Activities/liascript-tokensscanning.md",
+   "line": 88
+  },
+  {
+   "id": "cs374-liascript-tokensscanning-2",
+   "page": "_pages/Activities/liascript-tokensscanning.md",
+   "line": 124
+  },
+  {
+   "id": "cs374-liascript-tokensscanning-3",
+   "page": "_pages/Activities/liascript-tokensscanning.md",
+   "line": 220
+  },
+  {
+   "id": "cs374-liascript-tokensscanning-4",
+   "page": "_pages/Activities/liascript-tokensscanning.md",
+   "line": 280
+  },
+  {
+   "id": "cs374-liascript-tokensscanning-5",
+   "page": "_pages/Activities/liascript-tokensscanning.md",
+   "line": 359
+  },
+  {
+   "id": "cs374-liascript-tokensscanning-6",
+   "page": "_pages/Activities/liascript-tokensscanning.md",
+   "line": 402
+  },
+  {
+   "id": "cs374-liascript-tokensscanning-7",
+   "page": "_pages/Activities/liascript-tokensscanning.md",
+   "line": 521
+  },
+  {
+   "id": "cs374-liascript-tokensscanning-9",
+   "page": "_pages/Activities/liascript-tokensscanning.md",
+   "line": 2569
+  },
+  {
+   "id": "cs374-liascript-types-1",
+   "page": "_pages/Activities/liascript-types.md",
+   "line": 135
+  },
+  {
+   "id": "cs374-liascript-types-2",
+   "page": "_pages/Activities/liascript-types.md",
+   "line": 208
+  },
+  {
+   "id": "cs374-liascript-types-3",
+   "page": "_pages/Activities/liascript-types.md",
+   "line": 297
+  },
+  {
+   "id": "cs374-liascript-types-4",
+   "page": "_pages/Activities/liascript-types.md",
+   "line": 428
+  },
+  {
+   "id": "cs374-liascript-types-5",
+   "page": "_pages/Activities/liascript-types.md",
+   "line": 475
+  },
+  {
+   "id": "cs374-liascript-types-6",
+   "page": "_pages/Activities/liascript-types.md",
+   "line": 561
+  },
+  {
+   "id": "cs374-liascript-types-7",
+   "page": "_pages/Activities/liascript-types.md",
+   "line": 624
+  },
+  {
+   "id": "cs374-liascript-types-8",
+   "page": "_pages/Activities/liascript-types.md",
+   "line": 709
+  },
+  {
+   "id": "cs374-liascript-types-9",
+   "page": "_pages/Activities/liascript-types.md",
+   "line": 825
+  },
+  {
+   "id": "cs374-liascript-types-10",
+   "page": "_pages/Activities/liascript-types.md",
+   "line": 861
+  },
+  {
+   "id": "cs374-liascript-types-12",
+   "page": "_pages/Activities/liascript-types.md",
+   "line": 950
+  },
+  {
+   "id": "cs374-tutorial-ast-to-code-1",
+   "page": "_pages/Tutorials/tutorial-ast-to-code.md",
+   "line": 69
+  },
+  {
+   "id": "cs374-tutorial-ast-to-code-2",
+   "page": "_pages/Tutorials/tutorial-ast-to-code.md",
+   "line": 126
+  },
+  {
+   "id": "cs374-tutorial-ast-to-code-3",
+   "page": "_pages/Tutorials/tutorial-ast-to-code.md",
+   "line": 188
+  },
+  {
+   "id": "cs374-tutorial-ast-to-code-4",
+   "page": "_pages/Tutorials/tutorial-ast-to-code.md",
+   "line": 245
+  },
+  {
+   "id": "cs374-tutorial-ast-to-code-5",
+   "page": "_pages/Tutorials/tutorial-ast-to-code.md",
+   "line": 355
+  },
+  {
+   "id": "cs374-tutorial-ast-to-code-6",
+   "page": "_pages/Tutorials/tutorial-ast-to-code.md",
+   "line": 561
+  },
+  {
+   "id": "cs374-tutorial-ast-to-code-7",
+   "page": "_pages/Tutorials/tutorial-ast-to-code.md",
+   "line": 602
+  },
+  {
+   "id": "cs374-tutorial-ast-to-code-8",
+   "page": "_pages/Tutorials/tutorial-ast-to-code.md",
+   "line": 681
+  },
+  {
+   "id": "cs374-tutorial-ast-to-code-9",
+   "page": "_pages/Tutorials/tutorial-ast-to-code.md",
+   "line": 765
+  },
+  {
+   "id": "cs374-tutorial-ast-to-code-10",
+   "page": "_pages/Tutorials/tutorial-ast-to-code.md",
+   "line": 844
+  },
+  {
+   "id": "cs374-tutorial-ast-to-code-11",
+   "page": "_pages/Tutorials/tutorial-ast-to-code.md",
+   "line": 945
+  },
+  {
+   "id": "cs374-tutorial-ast-to-code-12",
+   "page": "_pages/Tutorials/tutorial-ast-to-code.md",
+   "line": 1069
+  },
+  {
+   "id": "cs374-tutorial-build-an-interpreter-1",
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 68
+  },
+  {
+   "id": "cs374-tutorial-build-an-interpreter-3",
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 229
+  },
+  {
+   "id": "cs374-tutorial-build-an-interpreter-5",
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 464
+  },
+  {
+   "id": "cs374-tutorial-build-an-interpreter-8",
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 681
+  },
+  {
+   "id": "cs374-tutorial-build-an-interpreter-9",
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 847
+  },
+  {
+   "id": "cs374-tutorial-build-an-interpreter-10",
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 937
+  },
+  {
+   "id": "cs374-tutorial-build-an-interpreter-11",
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 1001
+  },
+  {
+   "id": "cs374-tutorial-build-an-interpreter-12",
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 1023
+  },
+  {
+   "id": "cs374-tutorial-build-an-interpreter-13",
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 1262
+  },
+  {
+   "id": "cs374-tutorial-build-an-interpreter-14",
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 1285
+  },
+  {
+   "id": "cs374-tutorial-build-an-interpreter-15",
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 1499
+  },
+  {
+   "id": "cs374-tutorial-build-an-interpreter-16",
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 1512
+  },
+  {
+   "id": "cs374-tutorial-build-an-interpreter-19",
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 1818
+  },
+  {
+   "id": "cs374-tutorial-build-an-interpreter-20",
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 1843
+  },
+  {
+   "id": "cs374-tutorial-build-an-interpreter-21",
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 1908
+  },
+  {
+   "id": "cs374-tutorial-build-an-interpreter-22",
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 2030
+  },
+  {
+   "id": "cs374-tutorial-build-an-interpreter-23",
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 2137
+  },
+  {
+   "id": "cs374-tutorial-bytecode-vm-1",
+   "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
+   "line": 79
+  },
+  {
+   "id": "cs374-tutorial-bytecode-vm-2",
+   "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
+   "line": 131
+  },
+  {
+   "id": "cs374-tutorial-bytecode-vm-3",
+   "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
+   "line": 203
+  },
+  {
+   "id": "cs374-tutorial-bytecode-vm-4",
+   "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
+   "line": 284
+  },
+  {
+   "id": "cs374-tutorial-bytecode-vm-5",
+   "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
+   "line": 376
+  },
+  {
+   "id": "cs374-tutorial-bytecode-vm-6",
+   "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
+   "line": 621
+  },
+  {
+   "id": "cs374-tutorial-bytecode-vm-7",
+   "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
+   "line": 694
+  },
+  {
+   "id": "cs374-tutorial-bytecode-vm-8",
+   "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
+   "line": 924
+  },
+  {
+   "id": "cs374-tutorial-bytecode-vm-9",
+   "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
+   "line": 1175
+  },
+  {
+   "id": "cs374-tutorial-bytecode-vm-10",
+   "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
+   "line": 1259
+  },
+  {
+   "id": "cs374-tutorial-bytecode-vm-11",
+   "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
+   "line": 1367
+  },
+  {
+   "id": "cs374-tutorial-bytecode-vm-12",
+   "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
+   "line": 1479
+  },
+  {
+   "id": "cs374-tutorial-bytecode-vm-13",
+   "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
+   "line": 1716
+  },
+  {
+   "id": "cs374-tutorial-bytecode-vm-14",
+   "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
+   "line": 2036
+  },
+  {
+   "id": "cs374-tutorial-bytecode-vm-15",
+   "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
+   "line": 2088
+  },
+  {
+   "id": "cs374-tutorial-bytecode-vm-16",
+   "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
+   "line": 2212
+  },
+  {
+   "id": "cs374-tutorial-bytecode-vm-17",
+   "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
+   "line": 2328
+  },
+  {
+   "id": "cs374-tutorial-bytecode-vm-18",
+   "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
+   "line": 2444
+  },
+  {
+   "id": "cs374-tutorial-c-for-flex-bison-1",
+   "page": "_pages/Tutorials/tutorial-c-for-flex-bison.md",
+   "line": 36
+  },
+  {
+   "id": "cs374-tutorial-c-for-flex-bison-2",
+   "page": "_pages/Tutorials/tutorial-c-for-flex-bison.md",
+   "line": 108
+  },
+  {
+   "id": "cs374-tutorial-ci-tdd-for-interpreters-1",
+   "page": "_pages/Tutorials/tutorial-ci-tdd-for-interpreters.md",
+   "line": 1059
+  },
+  {
+   "id": "cs374-tutorial-ci-tdd-for-interpreters-2",
+   "page": "_pages/Tutorials/tutorial-ci-tdd-for-interpreters.md",
+   "line": 1154
+  },
+  {
+   "id": "cs374-tutorial-ci-tdd-for-interpreters-3",
+   "page": "_pages/Tutorials/tutorial-ci-tdd-for-interpreters.md",
+   "line": 1258
+  },
+  {
+   "id": "cs374-tutorial-ci-tdd-for-interpreters-4",
+   "page": "_pages/Tutorials/tutorial-ci-tdd-for-interpreters.md",
+   "line": 1347
+  },
+  {
+   "id": "cs374-tutorial-ci-tdd-for-interpreters-5",
+   "page": "_pages/Tutorials/tutorial-ci-tdd-for-interpreters.md",
+   "line": 1417
+  },
+  {
+   "id": "cs374-tutorial-compiling-linking-1",
+   "page": "_pages/Tutorials/tutorial-compiling-linking.md",
+   "line": 85
+  },
+  {
+   "id": "cs374-tutorial-compiling-linking-3",
+   "page": "_pages/Tutorials/tutorial-compiling-linking.md",
+   "line": 490
+  },
+  {
+   "id": "cs374-tutorial-compiling-linking-4",
+   "page": "_pages/Tutorials/tutorial-compiling-linking.md",
+   "line": 525
+  },
+  {
+   "id": "cs374-tutorial-coroutines-generators-1",
+   "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
+   "line": 73
+  },
+  {
+   "id": "cs374-tutorial-coroutines-generators-2",
+   "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
+   "line": 162
+  },
+  {
+   "id": "cs374-tutorial-coroutines-generators-3",
+   "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
+   "line": 243
+  },
+  {
+   "id": "cs374-tutorial-coroutines-generators-4",
+   "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
+   "line": 336
+  },
+  {
+   "id": "cs374-tutorial-coroutines-generators-5",
+   "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
+   "line": 416
+  },
+  {
+   "id": "cs374-tutorial-coroutines-generators-6",
+   "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
+   "line": 608
+  },
+  {
+   "id": "cs374-tutorial-coroutines-generators-7",
+   "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
+   "line": 646
+  },
+  {
+   "id": "cs374-tutorial-coroutines-generators-8",
+   "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
+   "line": 678
+  },
+  {
+   "id": "cs374-tutorial-coroutines-generators-9",
+   "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
+   "line": 733
+  },
+  {
+   "id": "cs374-tutorial-coroutines-generators-10",
+   "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
+   "line": 855
+  },
+  {
+   "id": "cs374-tutorial-cpp-advanced-1",
+   "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
+   "line": 46
+  },
+  {
+   "id": "cs374-tutorial-cpp-advanced-2",
+   "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
+   "line": 256
+  },
+  {
+   "id": "cs374-tutorial-cpp-advanced-3",
+   "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
+   "line": 383
+  },
+  {
+   "id": "cs374-tutorial-cpp-advanced-4",
+   "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
+   "line": 532
+  },
+  {
+   "id": "cs374-tutorial-cpp-advanced-5",
+   "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
+   "line": 608
+  },
+  {
+   "id": "cs374-tutorial-cpp-advanced-6",
+   "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
+   "line": 665
+  },
+  {
+   "id": "cs374-tutorial-cpp-advanced-7",
+   "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
+   "line": 701
+  },
+  {
+   "id": "cs374-tutorial-cpp-advanced-9",
+   "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
+   "line": 1174
+  },
+  {
+   "id": "cs374-tutorial-cpp-advanced-10",
+   "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
+   "line": 1599
+  },
+  {
+   "id": "cs374-tutorial-cpp-advanced-11",
+   "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
+   "line": 1673
+  },
+  {
+   "id": "cs374-tutorial-cpp-advanced-13",
+   "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
+   "line": 1845
+  },
+  {
+   "id": "cs374-tutorial-cpp-advanced-14",
+   "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
+   "line": 1934
+  },
+  {
+   "id": "cs374-tutorial-cpp-advanced-15",
+   "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
+   "line": 2139
+  },
+  {
+   "id": "cs374-tutorial-cpp-advanced-16",
+   "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
+   "line": 2181
+  },
+  {
+   "id": "cs374-tutorial-cpp-advanced-17",
+   "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
+   "line": 2256
+  },
+  {
+   "id": "cs374-tutorial-dev-environment-1",
+   "page": "_pages/Tutorials/tutorial-dev-environment.md",
+   "line": 191
+  },
+  {
+   "id": "cs374-tutorial-dev-environment-2",
+   "page": "_pages/Tutorials/tutorial-dev-environment.md",
+   "line": 239
+  },
+  {
+   "id": "cs374-tutorial-dev-environment-4",
+   "page": "_pages/Tutorials/tutorial-dev-environment.md",
+   "line": 303
+  },
+  {
+   "id": "cs374-tutorial-environments-extensions-1",
+   "page": "_pages/Tutorials/tutorial-environments-extensions.md",
+   "line": 171
+  },
+  {
+   "id": "cs374-tutorial-environments-extensions-2",
+   "page": "_pages/Tutorials/tutorial-environments-extensions.md",
+   "line": 264
+  },
+  {
+   "id": "cs374-tutorial-environments-extensions-3",
+   "page": "_pages/Tutorials/tutorial-environments-extensions.md",
+   "line": 357
+  },
+  {
+   "id": "cs374-tutorial-environments-extensions-4",
+   "page": "_pages/Tutorials/tutorial-environments-extensions.md",
+   "line": 459
+  },
+  {
+   "id": "cs374-tutorial-error-handling-1",
+   "page": "_pages/Tutorials/tutorial-error-handling.md",
+   "line": 68
+  },
+  {
+   "id": "cs374-tutorial-error-handling-2",
+   "page": "_pages/Tutorials/tutorial-error-handling.md",
+   "line": 147
+  },
+  {
+   "id": "cs374-tutorial-error-handling-3",
+   "page": "_pages/Tutorials/tutorial-error-handling.md",
+   "line": 254
+  },
+  {
+   "id": "cs374-tutorial-error-handling-4",
+   "page": "_pages/Tutorials/tutorial-error-handling.md",
+   "line": 353
+  },
+  {
+   "id": "cs374-tutorial-error-handling-5",
+   "page": "_pages/Tutorials/tutorial-error-handling.md",
+   "line": 475
+  },
+  {
+   "id": "cs374-tutorial-error-handling-6",
+   "page": "_pages/Tutorials/tutorial-error-handling.md",
+   "line": 596
+  },
+  {
+   "id": "cs374-tutorial-error-handling-7",
+   "page": "_pages/Tutorials/tutorial-error-handling.md",
+   "line": 743
+  },
+  {
+   "id": "cs374-tutorial-error-handling-8",
+   "page": "_pages/Tutorials/tutorial-error-handling.md",
+   "line": 784
+  },
+  {
+   "id": "cs374-tutorial-error-handling-9",
+   "page": "_pages/Tutorials/tutorial-error-handling.md",
+   "line": 846
+  },
+  {
+   "id": "cs374-tutorial-error-handling-10",
+   "page": "_pages/Tutorials/tutorial-error-handling.md",
+   "line": 887
+  },
+  {
+   "id": "cs374-tutorial-error-handling-11",
+   "page": "_pages/Tutorials/tutorial-error-handling.md",
+   "line": 949
+  },
+  {
+   "id": "cs374-tutorial-flex-bison-complete-5",
+   "page": "_pages/Tutorials/tutorial-flex-bison-complete.md",
+   "line": 1141
+  },
+  {
+   "id": "cs374-tutorial-flex-bison-complete-6",
+   "page": "_pages/Tutorials/tutorial-flex-bison-complete.md",
+   "line": 1271
+  },
+  {
+   "id": "cs374-tutorial-garbage-collection-1",
+   "page": "_pages/Tutorials/tutorial-garbage-collection.md",
+   "line": 58
+  },
+  {
+   "id": "cs374-tutorial-garbage-collection-2",
+   "page": "_pages/Tutorials/tutorial-garbage-collection.md",
+   "line": 113
+  },
+  {
+   "id": "cs374-tutorial-garbage-collection-3",
+   "page": "_pages/Tutorials/tutorial-garbage-collection.md",
+   "line": 190
+  },
+  {
+   "id": "cs374-tutorial-garbage-collection-4",
+   "page": "_pages/Tutorials/tutorial-garbage-collection.md",
+   "line": 222
+  },
+  {
+   "id": "cs374-tutorial-garbage-collection-5",
+   "page": "_pages/Tutorials/tutorial-garbage-collection.md",
+   "line": 328
+  },
+  {
+   "id": "cs374-tutorial-garbage-collection-6",
+   "page": "_pages/Tutorials/tutorial-garbage-collection.md",
+   "line": 437
+  },
+  {
+   "id": "cs374-tutorial-grammars-in-python-1",
+   "page": "_pages/Tutorials/tutorial-grammars-in-python.md",
+   "line": 55
+  },
+  {
+   "id": "cs374-tutorial-grammars-in-python-2",
+   "page": "_pages/Tutorials/tutorial-grammars-in-python.md",
+   "line": 155
+  },
+  {
+   "id": "cs374-tutorial-grammars-in-python-3",
+   "page": "_pages/Tutorials/tutorial-grammars-in-python.md",
+   "line": 265
+  },
+  {
+   "id": "cs374-tutorial-grammars-in-python-4",
+   "page": "_pages/Tutorials/tutorial-grammars-in-python.md",
+   "line": 371
+  },
+  {
+   "id": "cs374-tutorial-grammars-in-python-5",
+   "page": "_pages/Tutorials/tutorial-grammars-in-python.md",
+   "line": 448
+  },
+  {
+   "id": "cs374-tutorial-grammars-in-python-6",
+   "page": "_pages/Tutorials/tutorial-grammars-in-python.md",
+   "line": 538
+  },
+  {
+   "id": "cs374-tutorial-grammars-in-python-7",
+   "page": "_pages/Tutorials/tutorial-grammars-in-python.md",
+   "line": 631
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-1",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 45
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-5",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 264
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-6",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 314
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-8",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 552
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-9",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 861
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-10",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 882
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-11",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 916
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-12",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 942
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-13",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 998
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-14",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 1080
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-15",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 1122
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-16",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 1216
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-17",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 1293
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-18",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 1315
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-19",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 1343
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-20",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 1376
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-21",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 1405
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-22",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 1435
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-23",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 1471
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-24",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 1511
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-25",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 1561
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-26",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 1587
+  },
+  {
+   "id": "cs374-tutorial-lambda-calculus-reducer-27",
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 1638
+  },
+  {
+   "id": "cs374-tutorial-lr-construction-1",
+   "page": "_pages/Tutorials/tutorial-lr-construction.md",
+   "line": 529
+  },
+  {
+   "id": "cs374-tutorial-lr-construction-2",
+   "page": "_pages/Tutorials/tutorial-lr-construction.md",
+   "line": 806
+  },
+  {
+   "id": "cs374-tutorial-parser-combinators-1",
+   "page": "_pages/Tutorials/tutorial-parser-combinators.md",
+   "line": 49
+  },
+  {
+   "id": "cs374-tutorial-parser-combinators-2",
+   "page": "_pages/Tutorials/tutorial-parser-combinators.md",
+   "line": 80
+  },
+  {
+   "id": "cs374-tutorial-parser-combinators-3",
+   "page": "_pages/Tutorials/tutorial-parser-combinators.md",
+   "line": 147
+  },
+  {
+   "id": "cs374-tutorial-parser-combinators-4",
+   "page": "_pages/Tutorials/tutorial-parser-combinators.md",
+   "line": 278
+  },
+  {
+   "id": "cs374-tutorial-parser-combinators-5",
+   "page": "_pages/Tutorials/tutorial-parser-combinators.md",
+   "line": 427
+  },
+  {
+   "id": "cs374-tutorial-parser-combinators-6",
+   "page": "_pages/Tutorials/tutorial-parser-combinators.md",
+   "line": 512
+  },
+  {
+   "id": "cs374-tutorial-parser-combinators-7",
+   "page": "_pages/Tutorials/tutorial-parser-combinators.md",
+   "line": 741
+  },
+  {
+   "id": "cs374-tutorial-parser-combinators-8",
+   "page": "_pages/Tutorials/tutorial-parser-combinators.md",
+   "line": 812
+  },
+  {
+   "id": "cs374-tutorial-parser-combinators-9",
+   "page": "_pages/Tutorials/tutorial-parser-combinators.md",
+   "line": 905
+  },
+  {
+   "id": "cs374-tutorial-parser-combinators-10",
+   "page": "_pages/Tutorials/tutorial-parser-combinators.md",
+   "line": 1019
+  },
+  {
+   "id": "cs374-tutorial-project-language-guide-12",
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 2023
+  },
+  {
+   "id": "cs374-tutorial-project-language-guide-13",
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 2182
+  },
+  {
+   "id": "cs374-tutorial-project-language-guide-14",
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 2290
+  },
+  {
+   "id": "cs374-tutorial-project-language-guide-15",
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 2361
+  },
+  {
+   "id": "cs374-tutorial-project-language-guide-16",
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 2436
+  },
+  {
+   "id": "cs374-tutorial-project-language-guide-17",
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 2498
+  },
+  {
+   "id": "cs374-tutorial-project-language-guide-18",
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 2571
+  },
+  {
+   "id": "cs374-tutorial-project-language-guide-19",
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 2629
+  },
+  {
+   "id": "cs374-tutorial-project-language-guide-20",
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 2725
+  },
+  {
+   "id": "cs374-tutorial-project-language-guide-21",
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 2813
+  },
+  {
+   "id": "cs374-tutorial-project-language-guide-22",
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 2898
+  },
+  {
+   "id": "cs374-tutorial-project-language-guide-23",
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 2950
+  },
+  {
+   "id": "cs374-tutorial-project-language-guide-24",
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 3058
+  },
+  {
+   "id": "cs374-tutorial-prolog-swish-1",
+   "page": "_pages/Tutorials/tutorial-prolog-swish.md",
+   "line": 60
+  },
+  {
+   "id": "cs374-tutorial-prolog-swish-2",
+   "page": "_pages/Tutorials/tutorial-prolog-swish.md",
+   "line": 114
+  },
+  {
+   "id": "cs374-tutorial-prolog-swish-3",
+   "page": "_pages/Tutorials/tutorial-prolog-swish.md",
+   "line": 162
+  },
+  {
+   "id": "cs374-tutorial-python-for-language-work-1",
+   "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
+   "line": 31
+  },
+  {
+   "id": "cs374-tutorial-python-for-language-work-2",
+   "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
+   "line": 67
+  },
+  {
+   "id": "cs374-tutorial-python-for-language-work-3",
+   "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
+   "line": 91
+  },
+  {
+   "id": "cs374-tutorial-python-for-language-work-4",
+   "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
+   "line": 121
+  },
+  {
+   "id": "cs374-tutorial-python-for-language-work-5",
+   "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
+   "line": 153
+  },
+  {
+   "id": "cs374-tutorial-python-for-language-work-6",
+   "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
+   "line": 191
+  },
+  {
+   "id": "cs374-tutorial-python-for-language-work-7",
+   "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
+   "line": 212
+  },
+  {
+   "id": "cs374-tutorial-python-for-language-work-8",
+   "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
+   "line": 230
+  },
+  {
+   "id": "cs374-tutorial-python-for-language-work-9",
+   "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
+   "line": 248
+  },
+  {
+   "id": "cs374-tutorial-python-for-language-work-10",
+   "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
+   "line": 317
+  },
+  {
+   "id": "cs374-tutorial-python-for-language-work-11",
+   "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
+   "line": 381
+  },
+  {
+   "id": "cs374-tutorial-python-for-language-work-12",
+   "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
+   "line": 425
+  },
+  {
+   "id": "cs374-tutorial-python-for-language-work-13",
+   "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
+   "line": 491
+  },
+  {
+   "id": "cs374-tutorial-scheme-essentials-1",
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 60
+  },
+  {
+   "id": "cs374-tutorial-scheme-essentials-3",
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 98
+  },
+  {
+   "id": "cs374-tutorial-scheme-essentials-4",
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 117
+  },
+  {
+   "id": "cs374-tutorial-scheme-essentials-5",
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 135
+  },
+  {
+   "id": "cs374-tutorial-scheme-essentials-6",
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 153
+  },
+  {
+   "id": "cs374-tutorial-scheme-essentials-7",
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 170
+  },
+  {
+   "id": "cs374-tutorial-scheme-essentials-8",
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 186
+  },
+  {
+   "id": "cs374-tutorial-scheme-essentials-9",
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 200
+  },
+  {
+   "id": "cs374-tutorial-scheme-essentials-10",
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 217
+  },
+  {
+   "id": "cs374-tutorial-scheme-essentials-11",
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 241
+  },
+  {
+   "id": "cs374-tutorial-scheme-essentials-12",
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 256
+  },
+  {
+   "id": "cs374-tutorial-scheme-essentials-13",
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 271
+  },
+  {
+   "id": "cs374-tutorial-scheme-essentials-14",
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 299
+  },
+  {
+   "id": "cs374-tutorial-scheme-essentials-15",
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 310
+  },
+  {
+   "id": "cs374-tutorial-scheme-essentials-16",
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 328
+  },
+  {
+   "id": "cs374-tutorial-scheme-essentials-22",
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 394
+  },
+  {
+   "id": "cs374-tutorial-scheme-essentials-24",
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 431
+  },
+  {
+   "id": "cs374-tutorial-shell-for-language-dev-7",
+   "page": "_pages/Tutorials/tutorial-shell-for-language-dev.md",
+   "line": 655
+  },
+  {
+   "id": "cs374-tutorial-shell-for-language-dev-8",
+   "page": "_pages/Tutorials/tutorial-shell-for-language-dev.md",
+   "line": 714
+  },
+  {
+   "id": "cs374-tutorial-type-inference-1",
+   "page": "_pages/Tutorials/tutorial-type-inference.md",
+   "line": 52
+  },
+  {
+   "id": "cs374-tutorial-type-inference-2",
+   "page": "_pages/Tutorials/tutorial-type-inference.md",
+   "line": 110
+  },
+  {
+   "id": "cs374-tutorial-type-inference-3",
+   "page": "_pages/Tutorials/tutorial-type-inference.md",
+   "line": 197
+  },
+  {
+   "id": "cs374-tutorial-type-inference-4",
+   "page": "_pages/Tutorials/tutorial-type-inference.md",
+   "line": 317
+  },
+  {
+   "id": "cs374-tutorial-type-inference-5",
+   "page": "_pages/Tutorials/tutorial-type-inference.md",
+   "line": 531
+  },
+  {
+   "id": "cs374-tutorial-type-inference-6",
+   "page": "_pages/Tutorials/tutorial-type-inference.md",
+   "line": 714
+  },
+  {
+   "id": "cs374-tutorial-typing-disciplines-2",
+   "page": "_pages/Tutorials/tutorial-typing-disciplines.md",
+   "line": 178
+  },
+  {
+   "id": "cs374-tutorial-typing-disciplines-3",
+   "page": "_pages/Tutorials/tutorial-typing-disciplines.md",
+   "line": 302
+  },
+  {
+   "id": "cs374-tutorial-typing-disciplines-4",
+   "page": "_pages/Tutorials/tutorial-typing-disciplines.md",
+   "line": 337
+  },
+  {
+   "id": "cs374-tutorial-typing-disciplines-5",
+   "page": "_pages/Tutorials/tutorial-typing-disciplines.md",
+   "line": 368
+  },
+  {
+   "id": "cs374-tutorial-typing-disciplines-6",
+   "page": "_pages/Tutorials/tutorial-typing-disciplines.md",
+   "line": 406
+  },
+  {
+   "id": "cs374-tutorial-typing-disciplines-7",
+   "page": "_pages/Tutorials/tutorial-typing-disciplines.md",
+   "line": 499
+  },
+  {
+   "id": "cs374-tutorial-typing-disciplines-8",
+   "page": "_pages/Tutorials/tutorial-typing-disciplines.md",
+   "line": 599
+  }
+ ],
+ "suggested": [
+  {
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 1096,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 1137,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 1180,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 1224,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 1271,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 1312,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 1347,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 1387,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 1433,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 1497,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 1543,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 1589,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 1622,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 1657,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 1698,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 1749,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-ast.md",
+   "line": 2023,
+   "viz": "env",
+   "lang": "python"
+  },
+  {
+   "page": "_pages/Activities/liascript-derivationsambiguity.md",
+   "line": 664,
+   "viz": "lambda",
+   "lang": "lambda"
+  },
+  {
+   "page": "_pages/Activities/liascript-derivationsambiguity.md",
+   "line": 692,
+   "viz": "lambda",
+   "lang": "lambda"
+  },
+  {
+   "page": "_pages/Activities/liascript-derivationsambiguity.md",
+   "line": 713,
+   "viz": "lambda",
+   "lang": "lambda"
+  },
+  {
+   "page": "_pages/Activities/liascript-functional.md",
+   "line": 901,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Activities/liascript-grammars-day2.md",
+   "line": 31,
+   "viz": "lambda",
+   "lang": "lambda"
+  },
+  {
+   "page": "_pages/Activities/liascript-grammars-day2.md",
+   "line": 44,
+   "viz": "lambda",
+   "lang": "lambda"
+  },
+  {
+   "page": "_pages/Activities/liascript-grammars.md",
+   "line": 105,
+   "viz": "lambda",
+   "lang": "lambda"
+  },
+  {
+   "page": "_pages/Activities/liascript-lambdacalculus1.md",
+   "line": 153,
+   "viz": "lambda",
+   "lang": "lambda"
+  },
+  {
+   "page": "_pages/Activities/liascript-lambdacalculus1.md",
+   "line": 171,
+   "viz": "lambda",
+   "lang": "lambda"
+  },
+  {
+   "page": "_pages/Activities/liascript-lambdacalculus1.md",
+   "line": 199,
+   "viz": "lambda",
+   "lang": "lambda"
+  },
+  {
+   "page": "_pages/Activities/liascript-lambdacalculus1.md",
+   "line": 244,
+   "viz": "lambda",
+   "lang": "lambda"
+  },
+  {
+   "page": "_pages/Activities/liascript-lambdacalculus1.md",
+   "line": 253,
+   "viz": "lambda",
+   "lang": "lambda"
+  },
+  {
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 138,
+   "viz": "lambda",
+   "lang": "lambda"
+  },
+  {
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 148,
+   "viz": "lambda",
+   "lang": "lambda"
+  },
+  {
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 327,
+   "viz": "lambda",
+   "lang": "lambda"
+  },
+  {
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 580,
+   "viz": "lambda",
+   "lang": "lambda"
+  },
+  {
+   "page": "_pages/Activities/liascript-lambdacalculus2.md",
+   "line": 947,
+   "viz": "lambda",
+   "lang": "lambda"
+  },
+  {
+   "page": "_pages/Activities/liascript-parsing2.md",
+   "line": 1470,
+   "viz": "c",
+   "lang": "c"
+  },
+  {
+   "page": "_pages/Activities/liascript-parsingexpressions.md",
+   "line": 699,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-parsingexpressions.md",
+   "line": 740,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-parsingexpressions.md",
+   "line": 775,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-parsingexpressions.md",
+   "line": 835,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-parsingexpressions.md",
+   "line": 876,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-parsingexpressions.md",
+   "line": 933,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-parsingexpressions.md",
+   "line": 977,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-parsingexpressions.md",
+   "line": 1020,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-recursivedescent.md",
+   "line": 1251,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-recursivedescent.md",
+   "line": 1282,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-recursivedescent.md",
+   "line": 1321,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-recursivedescent.md",
+   "line": 1355,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-recursivedescent.md",
+   "line": 1388,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-recursivedescent.md",
+   "line": 1423,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-recursivedescent.md",
+   "line": 1460,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-recursivedescent.md",
+   "line": 1572,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-recursivedescent.md",
+   "line": 1612,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-recursivedescent.md",
+   "line": 1677,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-recursivedescent.md",
+   "line": 1735,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 323,
+   "viz": "agent",
+   "lang": "python",
+   "record": true
+  },
+  {
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 797,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 809,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-regex.md",
+   "line": 831,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 114,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 558,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 566,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 577,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 597,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 633,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 761,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Activities/liascript-scheme.md",
+   "line": 785,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Activities/liascript-tokensscanning.md",
+   "line": 1556,
+   "viz": "env",
+   "lang": "python"
+  },
+  {
+   "page": "_pages/Activities/liascript-types.md",
+   "line": 898,
+   "viz": "c",
+   "lang": "c"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 122,
+   "viz": "env",
+   "lang": "python"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 299,
+   "viz": "env",
+   "lang": "python"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 514,
+   "viz": "env",
+   "lang": "python"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 596,
+   "viz": "env",
+   "lang": "python"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 1763,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
+   "line": 1797,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-compiling-linking.md",
+   "line": 371,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-compiling-linking.md",
+   "line": 579,
+   "viz": "c",
+   "lang": "c"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
+   "line": 776,
+   "viz": "c",
+   "lang": "cpp"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
+   "line": 1755,
+   "viz": "env",
+   "lang": "python"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-dev-environment.md",
+   "line": 276,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-flex-bison-complete.md",
+   "line": 158,
+   "viz": "c",
+   "lang": "c"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-flex-bison-complete.md",
+   "line": 298,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-flex-bison-complete.md",
+   "line": 513,
+   "viz": "c",
+   "lang": "c"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-flex-bison-complete.md",
+   "line": 660,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-grammars-in-python.md",
+   "line": 40,
+   "viz": "lambda",
+   "lang": "lambda"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 101,
+   "viz": "env",
+   "lang": "python"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 134,
+   "viz": "env",
+   "lang": "python"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 230,
+   "viz": "env",
+   "lang": "python"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
+   "line": 359,
+   "viz": "env",
+   "lang": "python"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-lr-construction.md",
+   "line": 767,
+   "viz": "lambda",
+   "lang": "lambda"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-lr-construction.md",
+   "line": 1127,
+   "viz": "c",
+   "lang": "c"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 52,
+   "viz": "plain",
+   "lang": "mini"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 62,
+   "viz": "plain",
+   "lang": "mini"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 74,
+   "viz": "plain",
+   "lang": "mini"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 89,
+   "viz": "plain",
+   "lang": "mini"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 101,
+   "viz": "plain",
+   "lang": "mini"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 112,
+   "viz": "plain",
+   "lang": "mini"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 396,
+   "viz": "env",
+   "lang": "python"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 649,
+   "viz": "env",
+   "lang": "python"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 1196,
+   "viz": "env",
+   "lang": "python"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 1427,
+   "viz": "plain",
+   "lang": "mini"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-project-language-guide.md",
+   "line": 1673,
+   "viz": "plain",
+   "lang": "mini"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-publishing-your-language.md",
+   "line": 435,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 84,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 341,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 349,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 355,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 366,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 381,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
+   "line": 408,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-shell-for-language-dev.md",
+   "line": 105,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-shell-for-language-dev.md",
+   "line": 404,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-shell-for-language-dev.md",
+   "line": 412,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-shell-for-language-dev.md",
+   "line": 420,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-shell-for-language-dev.md",
+   "line": 463,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-shell-for-language-dev.md",
+   "line": 604,
+   "viz": "cast",
+   "lang": "shell"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-syntax-highlighter.md",
+   "line": 99,
+   "viz": "env",
+   "lang": "scheme"
+  },
+  {
+   "page": "_pages/Tutorials/tutorial-typing-disciplines.md",
+   "line": 156,
+   "viz": "env",
+   "lang": "python"
+  }
+ ],
+ "invalid_config": [
+  "_pages/Activities/liascript-automata-day2.md:222 json: Extra data: line 1 column 7 (char 6)"
+ ]
+}

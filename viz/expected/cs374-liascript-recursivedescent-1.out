@@ -1,0 +1,3 @@
+OK:    'print 42;'          -> ('print', ('num', 42.0))
+OK:    'let x = 7;'         -> ('let', 'x', ('num', 7.0))
+ERROR: 'let x 7;'           -> SyntaxError: expected EQ, found INT '7' at line 1

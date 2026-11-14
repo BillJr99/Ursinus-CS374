@@ -174,6 +174,7 @@ render(42)         # AttributeError at runtime - "int has no attribute 'draw'"
 
 Python 3.8 added `Protocol` (PEP 544) so that structural compatibility can be checked *statically* by tools like mypy, and, with `@runtime_checkable`, tested with `isinstance` at runtime.  In the example below, none of the shape classes inherits from `Drawable` or from any shared base class; they satisfy the protocol purely by having the right methods.
 
+<!-- run: id=cs374-tutorial-typing-disciplines-2 viz=env -->
 ```python
 from typing import Protocol, runtime_checkable
 import math
@@ -244,6 +245,7 @@ print("\n=== MRO: no Drawable in the chain ===")
 print(f"Circle MRO: {[c.__name__ for c in Circle.__mro__]}")
 print(f"Square MRO: {[c.__name__ for c in Square.__mro__]}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-typing-disciplines-2) <!-- code-viz link -->
 
 > **Watch out!**  Python's `Protocol` and duck typing look similar but operate at different times.  Duck typing is a *runtime* check: Python tries to call the method and raises `AttributeError` if it's missing.  A `Protocol` with `@runtime_checkable` allows `isinstance` checks at runtime, but its main purpose is to let *static* tools like `mypy` verify structural compatibility before you run the program at all.
 
@@ -296,6 +298,7 @@ Nothing is erased here: the generic template itself does not appear in the compi
 
 ### Python: no runtime generics at all
 
+<!-- run: id=cs374-tutorial-typing-disciplines-3 viz=env -->
 ```python
 from typing import get_type_hints, List
 
@@ -311,6 +314,7 @@ xs: List[int] = [1, 2, 3]
 xs.append("oops")   # no runtime error - list doesn't check element types
 print(xs)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-typing-disciplines-3) <!-- code-viz link -->
 
 ### C++ `std::function` as type erasure
 
@@ -329,6 +333,7 @@ These exercises span this section and Section 6; run them in any Python 3.10+ en
 
 **Exercise 1.**  In Python, write a function that deliberately breaks the type hint contract and confirm that Python does NOT raise a runtime error:
 
+<!-- run: id=cs374-tutorial-typing-disciplines-4 viz=env -->
 ```python
 def multiply(x: int, y: int) -> int:
     return x * y
@@ -338,6 +343,7 @@ result = multiply("ha", 3)
 print(result)
 print(type(result))
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-typing-disciplines-4) <!-- code-viz link -->
 
 **Exercise 2.**  Demonstrate Python's strong typing by showing three operations that *do* raise `TypeError`, and three that succeed after explicit conversion:
 
@@ -358,6 +364,7 @@ from typing import Protocol, runtime_checkable
 
 **Exercise 4.**  Use `get_type_hints` to inspect the annotations of a function with several parameters, then add a value of the wrong type to a typed list and confirm no runtime error:
 
+<!-- run: id=cs374-tutorial-typing-disciplines-5 viz=env -->
 ```python
 from typing import get_type_hints, List
 
@@ -369,6 +376,7 @@ items: List[str] = ["a", "b"]
 items.append(99)   # wrong type - does Python complain?
 print(items)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-typing-disciplines-5) <!-- code-viz link -->
 
 **Exercise 5.**  Write a `TypedStack` class that enforces element type at runtime (unlike Python's built-in `list`).  Use `__init__(self, element_type)` and raise `TypeError` on a bad `push`:
 
@@ -394,6 +402,7 @@ Many real-world values naturally come in distinct shapes: a payment is either a 
 
 Python's `dataclass` gives product types; `Union` gives sum types.  The combination is powerful enough to model most domain entities precisely.
 
+<!-- run: id=cs374-tutorial-typing-disciplines-6 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Union
@@ -452,6 +461,7 @@ for s in shapes:
     name = type(s).__name__
     print(f"{name:<25} {area(s):>10.4f} {perimeter(s):>12.4f}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-typing-disciplines-6) <!-- code-viz link -->
 
 Questions to consider:
 
@@ -485,6 +495,7 @@ This relation is **not transitive**: `Int ~ Any` and `Any ~ Str` are both true, 
 
 The code below implements a bi-directional type checker for a small expression language using `consistent` as its compatibility predicate.
 
+<!-- run: id=cs374-tutorial-typing-disciplines-7 viz=env -->
 ```python
 from dataclasses import dataclass
 from typing import Any, Dict
@@ -563,6 +574,7 @@ try:
 except TypeError as e:
     print(f"Type error: {e}")
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-typing-disciplines-7) <!-- code-viz link -->
 
 > **Watch out!**  Consistency is **not** the same as subtyping. `Any` is consistent with `Int`, but `Any` is not a subtype of `Int`.  Subtyping is a containment relationship; consistency is a compatibility relationship.  Conflating them leads to incorrect reasoning about what the type checker actually accepts.
 
@@ -583,6 +595,7 @@ The key insight: when typed code calls untyped code, or untyped code calls typed
 
 Note that TypeScript and mypy **erase** types at runtime (Section 7): TypeScript compiles to plain JavaScript, and mypy-annotated Python runs without any runtime checks.  This means that in practice those systems do not enforce blame semantics at runtime.  The blame calculus is more of a theoretical model for understanding responsibility than a feature you get for free in everyday toolchains.
 
+<!-- run: id=cs374-tutorial-typing-disciplines-8 viz=env -->
 ```python
 class Proxy:
     """A proxy wraps a dynamic value and tracks where it came from."""
@@ -631,6 +644,7 @@ try:
 except RuntimeError as e:
     print(e)
 ```
+[Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-tutorial-typing-disciplines-8) <!-- code-viz link -->
 
 Questions to consider:
 

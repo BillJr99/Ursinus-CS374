@@ -1,0 +1,7 @@
+nothing has run yet
+  started
+a
+  resumed after a
+b
+  resumed after b
+StopIteration: the generator is used up
