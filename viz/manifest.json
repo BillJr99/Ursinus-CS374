@@ -226,5 +226,17 @@
   "viz": "bison",
   "file": "files/examples/mininote",
   "input": "bd sn"
+ },
+ {
+  "id": "cs374-examples-tiny",
+  "viz": "bison",
+  "file": "files/examples/tiny",
+  "input": "2 + 3 * 4"
+ },
+ {
+  "id": "cs374-examples-vars",
+  "viz": "bison",
+  "file": "files/examples/vars",
+  "input": "print 2 * 3 + 1"
  }
 ]

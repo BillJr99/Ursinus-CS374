@@ -1,7 +1,7 @@
 {
  "course": "cs374",
  "site": "https://billjr99.github.io/Ursinus-CS374-Fall2026",
- "built": "2026-11-13 21:49",
+ "built": "2026-11-14 07:34",
  "examples": [
   {
    "id": "cs374-liascript-ast-1",
@@ -4762,6 +4762,26 @@
    "page_url": "",
    "error": null,
    "steps": 10
+  },
+  {
+   "id": "cs374-examples-tiny",
+   "viz": "bison",
+   "lang": "flexbison",
+   "page": "files/examples/tiny",
+   "line": 1,
+   "page_url": "",
+   "error": null,
+   "steps": 14
+  },
+  {
+   "id": "cs374-examples-vars",
+   "viz": "bison",
+   "lang": "flexbison",
+   "page": "files/examples/vars",
+   "line": 1,
+   "page_url": "",
+   "error": null,
+   "steps": 16
   },
   {
    "id": "cs374-starters-interpreter",
