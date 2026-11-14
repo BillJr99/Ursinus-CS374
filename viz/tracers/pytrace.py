@@ -8,6 +8,30 @@ container and in the browser (Pyodide) for live editing.
 
 Usage:  python3 pytrace.py PROGRAM.py [--max-steps N] > trace.json
 In Pyodide: trace_source(code_string, max_steps) returns the trace as a dict.
+
+PIPELINE
+  Called by driver.py in the python runner (viz=env, lang=python), and by the viewer in the
+  browser through Pyodide when someone presses Edit and Run (teacher or student mode).
+
+TRACE FIELDS WRITTEN
+  kind "env", language "python", source, stdout, error, truncated, and steps:
+  {line, event (line|return|exception), stack: [{id, func, line, vars: {name: value}}],
+   heap: {ref: object}, out (stdout so far), ret?, zombies? (frames kept alive by a closure)}.
+  A value is {"p": primitive} or {"r": ref}; objects are {t: list|tuple|set|dict, items},
+  {t: function, name, params, closure, parent} or {t: instance, class, attrs}. code-viz compacts
+  heap per step on the site (heap_ids plus changed objects); the viewer expands it on load.
+
+OPTIONS  --max-steps N (default 800).   ENVIRONMENT  none.
+
+EXAMPLES
+  python3 pytrace.py closures.py > closures.json
+  python3 pytrace.py loop.py --max-steps 2000 > loop.json
+  # in the browser (what the viewer does):  json.dumps(pytrace.trace_source(code, 800))
+
+LIMITS AND KNOWN PROBLEMS
+  - Only the program's own lines are traced; library internals are not.
+  - Large data structures make large traces; the step cap (800) cuts long runs (truncated=true).
+  - input() reads the job's input text; with none it raises EOFError, which shows as an error.
 """
 import io
 import json
@@ -136,8 +160,11 @@ def trace_source(src, max_steps=800, filename="<program>"):
     t = Tracer(filename, max_steps)
     code = compile(src, filename, "exec")
     g = {"__name__": "__main__", "__builtins__": __builtins__}
-    old = sys.stdout
+    old, old_argv = sys.stdout, sys.argv
     sys.stdout = t.out
+    import os
+    import shlex
+    sys.argv = [filename] + shlex.split(os.environ.get("CVIZ_ARGS", ""))  # the label's args=, else none
     error = None
     try:
         sys.settrace(t.trace)
@@ -150,7 +177,7 @@ def trace_source(src, max_steps=800, filename="<program>"):
         error = f"{type(e).__name__}: {e}"
     finally:
         sys.settrace(None)
-        sys.stdout = old
+        sys.stdout, sys.argv = old, old_argv
     return {"version": 1, "kind": "env", "language": "python", "source": src, "steps": t.steps,
             "stdout": t.out.getvalue(), "error": error, "truncated": t.truncated}
 
