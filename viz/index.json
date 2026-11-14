@@ -1,7 +1,7 @@
 {
  "course": "cs374",
  "site": "https://billjr99.github.io/Ursinus-CS374-Fall2026",
- "built": "2026-11-14 10:16",
+ "built": "2026-11-14 17:32",
  "examples": [
   {
    "id": "cs374-liascript-ast-1",
@@ -1298,7 +1298,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
-   "line": 202,
+   "line": 203,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
    "error": null,
    "steps": 191
@@ -1308,7 +1308,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
-   "line": 276,
+   "line": 277,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
    "error": null,
    "steps": 800
@@ -1318,7 +1318,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
-   "line": 374,
+   "line": 375,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
    "error": null,
    "steps": 306
@@ -1334,16 +1334,6 @@
    "steps": 161
   },
   {
-   "id": "cs374-liascript-parsing2-4",
-   "viz": "env",
-   "lang": "python",
-   "page": "_pages/Activities/liascript-parsing2.md",
-   "line": 738,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
-   "error": null,
-   "steps": 800
-  },
-  {
    "id": "cs374-liascript-parsing2-lalr-merge",
    "viz": "env",
    "lang": "python",
@@ -1354,11 +1344,21 @@
    "steps": 71
   },
   {
+   "id": "cs374-liascript-parsing2-4",
+   "viz": "env",
+   "lang": "python",
+   "page": "_pages/Activities/liascript-parsing2.md",
+   "line": 1063,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "error": null,
+   "steps": 800
+  },
+  {
    "id": "cs374-liascript-parsing2-5",
    "viz": "env",
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
-   "line": 889,
+   "line": 1214,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
    "error": null,
    "steps": 800
@@ -1368,7 +1368,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
-   "line": 1093,
+   "line": 1418,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
    "error": null,
    "steps": 116
@@ -1378,7 +1378,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
-   "line": 1280,
+   "line": 1605,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
    "error": null,
    "steps": 208
@@ -1388,7 +1388,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
-   "line": 1383,
+   "line": 1708,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
    "error": null,
    "steps": 194
@@ -2981,7 +2981,7 @@
    "line": 855,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-coroutines-generators",
    "error": null,
-   "steps": 553
+   "steps": 697
   },
   {
    "id": "cs374-tutorial-cpp-advanced-1",
@@ -3828,7 +3828,7 @@
    "viz": "plain",
    "lang": "mini",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 64,
+   "line": 65,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 0
@@ -3838,7 +3838,7 @@
    "viz": "plain",
    "lang": "mini",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 77,
+   "line": 79,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 0
@@ -3848,7 +3848,7 @@
    "viz": "plain",
    "lang": "mini",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 93,
+   "line": 96,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 0
@@ -3858,7 +3858,7 @@
    "viz": "plain",
    "lang": "mini",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 105,
+   "line": 110,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 0
@@ -3868,7 +3868,7 @@
    "viz": "plain",
    "lang": "mini",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 117,
+   "line": 123,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 0
@@ -3878,7 +3878,7 @@
    "viz": "plain",
    "lang": "mini",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 1684,
+   "line": 1691,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 0
@@ -3888,7 +3888,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 2034,
+   "line": 2042,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 163
@@ -3898,7 +3898,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 2182,
+   "line": 2201,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 800
@@ -3908,7 +3908,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 2290,
+   "line": 2309,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 219
@@ -3918,7 +3918,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 2361,
+   "line": 2380,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 380
@@ -3928,7 +3928,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 2436,
+   "line": 2455,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 227
@@ -3938,7 +3938,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 2498,
+   "line": 2517,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 59
@@ -3948,7 +3948,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 2571,
+   "line": 2590,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 26
@@ -3958,7 +3958,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 2629,
+   "line": 2648,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 183
@@ -3968,7 +3968,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 2725,
+   "line": 2744,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 175
@@ -3978,7 +3978,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 2813,
+   "line": 2832,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 184
@@ -3988,7 +3988,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 2898,
+   "line": 2917,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 64
@@ -3998,7 +3998,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 2950,
+   "line": 2969,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 111
@@ -4008,7 +4008,7 @@
    "viz": "env",
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
-   "line": 3058,
+   "line": 3077,
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 292
