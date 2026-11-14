@@ -1793,7 +1793,7 @@ Remember two things from this part.  Closures made in one scope share one bindin
 
 > **CTQ 10.5** Which single line of the cell's output is direct evidence for the "three arrows, one box" picture?  Which line is evidence for "three boxes"?
 
-> **CTQ 10.6** In the fixed diagram, what act creates each new box: the `lambda` *definition*, or the *call* to `make_fn`?  Justify your answer with the environment-creation rule from Part VI (a call builds a new environment).
+> **CTQ 10.6** In the fixed diagram, what act creates each new box: the `lambda` *definition*, or the *call* to `make_fn`?  Justify your answer with the environment-creation rule from Part III (a call builds a new environment).
 
 > **CTQ 10.7** Fix 1's lambdas report `__closure__ = None`; they are not closures at all.  Where does each one's `i` live instead, and why does that location make capture unnecessary?
 

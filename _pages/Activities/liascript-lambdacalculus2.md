@@ -83,7 +83,7 @@ $$
 \textbf{C} = \lambda f. \lambda a. \lambda b.\, f\, b\, a \quad \text{(Cardinal: flips arguments)}
 $$
 
-You already reduced **K** $A\, B \rightarrow A$ and **KI** $A\, B \rightarrow B$ in *The Lambda Calculus, Part 1*, before they had names.  In Part II, these two selectors become TRUE and FALSE.
+You already reduced **K** $A\, B \rightarrow A$ and **KI** $A\, B \rightarrow B$ in *Lambda Calculus I*, before they had names.  In Part II, these two selectors become TRUE and FALSE.
 
 ---
 
@@ -296,7 +296,7 @@ $$
 \textbf{3} = \lambda f. \lambda x.\, f\, (f\, (f\, x))
 $$
 
-You met $\textbf{2}$ in *The Lambda Calculus, Part 1* as `twice`.  Arithmetic becomes composition of repetitions:
+You met $\textbf{2}$ in *Lambda Calculus I* as `twice`.  Arithmetic becomes composition of repetitions:
 
 $$
 \textbf{SUCC} = \lambda n. \lambda f. \lambda x.\, f\, (n\, f\, x) \qquad

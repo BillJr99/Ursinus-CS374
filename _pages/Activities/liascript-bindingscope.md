@@ -514,12 +514,6 @@ Expected output: `1, 2, 3` then `1`, and `[2, 2, 2]` against `[0, 1, 2]`.  The t
 
 ---
 
----
-
-**In-class work stops here.**  Everything below is homework and going-deeper material.
-
----
-
 # Check Your Understanding
 
 A name is bound to a type at compile time in Java and at run time in Python.  This difference is best described as:
