@@ -1,7 +1,7 @@
 {
  "course": "cs374",
  "site": "https://billjr99.github.io/Ursinus-CS374-Fall2026",
- "built": "2026-11-14 13:00",
+ "built": "2026-11-14 09:07",
  "examples": [
   {
    "id": "cs374-liascript-ast-1",
@@ -1324,6 +1324,16 @@
    "steps": 306
   },
   {
+   "id": "cs374-liascript-parsing2-lr1-states",
+   "viz": "env",
+   "lang": "python",
+   "page": "_pages/Activities/liascript-parsing2.md",
+   "line": 668,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "error": null,
+   "steps": 161
+  },
+  {
    "id": "cs374-liascript-parsing2-4",
    "viz": "env",
    "lang": "python",
@@ -1332,6 +1342,16 @@
    "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
    "error": null,
    "steps": 800
+  },
+  {
+   "id": "cs374-liascript-parsing2-lalr-merge",
+   "viz": "env",
+   "lang": "python",
+   "page": "_pages/Activities/liascript-parsing2.md",
+   "line": 862,
+   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "error": null,
+   "steps": 71
   },
   {
    "id": "cs374-liascript-parsing2-5",
