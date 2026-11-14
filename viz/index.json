@@ -1,7 +1,7 @@
 {
  "course": "cs374",
- "site": "https://billjr99.github.io/Ursinus-CS374-Fall2026",
- "built": "2026-11-14 17:32",
+ "site": "https://billjr99.github.io/Ursinus-CS374",
+ "built": "2026-11-14 18:21",
  "examples": [
   {
    "id": "cs374-liascript-ast-1",
@@ -9,7 +9,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-ast.md",
    "line": 123,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-ast",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-ast",
    "error": null,
    "steps": 163
   },
@@ -19,7 +19,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-ast.md",
    "line": 252,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-ast",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-ast",
    "error": null,
    "steps": 79
   },
@@ -29,7 +29,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-ast.md",
    "line": 305,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-ast",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-ast",
    "error": null,
    "steps": 63
   },
@@ -39,7 +39,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-ast.md",
    "line": 382,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-ast",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-ast",
    "error": null,
    "steps": 325
   },
@@ -49,7 +49,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-ast.md",
    "line": 499,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-ast",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-ast",
    "error": null,
    "steps": 198
   },
@@ -59,7 +59,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-ast.md",
    "line": 616,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-ast",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-ast",
    "error": null,
    "steps": 574
   },
@@ -69,7 +69,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-ast.md",
    "line": 704,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-ast",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-ast",
    "error": null,
    "steps": 230
   },
@@ -79,7 +79,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-ast.md",
    "line": 765,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-ast",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-ast",
    "error": null,
    "steps": 243
   },
@@ -89,7 +89,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-ast.md",
    "line": 917,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-ast",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-ast",
    "error": null,
    "steps": 265
   },
@@ -99,7 +99,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata-day2.md",
    "line": 62,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata-day2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata-day2",
    "error": null,
    "steps": 274
   },
@@ -109,7 +109,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata-day2.md",
    "line": 117,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata-day2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata-day2",
    "error": null,
    "steps": 32
   },
@@ -119,7 +119,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata-day2.md",
    "line": 157,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata-day2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata-day2",
    "error": null,
    "steps": 259
   },
@@ -129,7 +129,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata-day2.md",
    "line": 238,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata-day2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata-day2",
    "error": null,
    "steps": 17
   },
@@ -139,7 +139,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata-day2.md",
    "line": 269,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata-day2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata-day2",
    "error": null,
    "steps": 19
   },
@@ -149,7 +149,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata-day2.md",
    "line": 677,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata-day2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata-day2",
    "error": null,
    "steps": 800
   },
@@ -159,7 +159,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata-day2.md",
    "line": 776,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata-day2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata-day2",
    "error": null,
    "steps": 342
   },
@@ -169,7 +169,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata-day2.md",
    "line": 863,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata-day2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata-day2",
    "error": null,
    "steps": 723
   },
@@ -179,7 +179,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata-day2.md",
    "line": 927,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata-day2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata-day2",
    "error": null,
    "steps": 800
   },
@@ -189,7 +189,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata-day2.md",
    "line": 1199,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata-day2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata-day2",
    "error": null,
    "steps": 800
   },
@@ -199,7 +199,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata-day2.md",
    "line": 1494,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata-day2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata-day2",
    "error": null,
    "steps": 228
   },
@@ -209,7 +209,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata-day2.md",
    "line": 1552,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata-day2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata-day2",
    "error": null,
    "steps": 89
   },
@@ -219,7 +219,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata-day2.md",
    "line": 1621,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata-day2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata-day2",
    "error": null,
    "steps": 526
   },
@@ -229,7 +229,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata.md",
    "line": 100,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata",
    "error": null,
    "steps": 297
   },
@@ -239,7 +239,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata.md",
    "line": 186,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata",
    "error": null,
    "steps": 336
   },
@@ -249,7 +249,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata.md",
    "line": 260,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata",
    "error": null,
    "steps": 181
   },
@@ -259,7 +259,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata.md",
    "line": 342,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata",
    "error": null,
    "steps": 10
   },
@@ -269,7 +269,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata.md",
    "line": 428,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata",
    "error": null,
    "steps": 800
   },
@@ -279,7 +279,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-automata.md",
    "line": 532,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-automata",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-automata",
    "error": null,
    "steps": 339
   },
@@ -289,7 +289,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-bindingscope.md",
    "line": 84,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-bindingscope",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-bindingscope",
    "error": null,
    "steps": 12
   },
@@ -299,7 +299,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-bindingscope.md",
    "line": 120,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-bindingscope",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-bindingscope",
    "error": null,
    "steps": 25
   },
@@ -309,7 +309,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-bindingscope.md",
    "line": 217,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-bindingscope",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-bindingscope",
    "error": null,
    "steps": 20
   },
@@ -319,7 +319,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-bindingscope.md",
    "line": 258,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-bindingscope",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-bindingscope",
    "error": null,
    "steps": 23
   },
@@ -329,7 +329,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-bindingscope.md",
    "line": 297,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-bindingscope",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-bindingscope",
    "error": null,
    "steps": 148
   },
@@ -339,7 +339,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-bindingscope.md",
    "line": 422,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-bindingscope",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-bindingscope",
    "error": null,
    "steps": 18
   },
@@ -349,7 +349,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-bindingscope.md",
    "line": 449,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-bindingscope",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-bindingscope",
    "error": null,
    "steps": 90
   },
@@ -359,7 +359,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-bindingscope.md",
    "line": 486,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-bindingscope",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-bindingscope",
    "error": null,
    "steps": 56
   },
@@ -369,7 +369,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-bindingscope.md",
    "line": 615,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-bindingscope",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-bindingscope",
    "error": null,
    "steps": 23
   },
@@ -379,7 +379,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-bindingscope.md",
    "line": 653,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-bindingscope",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-bindingscope",
    "error": null,
    "steps": 31
   },
@@ -389,7 +389,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 88,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 74
   },
@@ -399,7 +399,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 125,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 188
   },
@@ -409,7 +409,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 194,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 289
   },
@@ -419,7 +419,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 263,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 307
   },
@@ -429,7 +429,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 338,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 415
   },
@@ -439,7 +439,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 473,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 125
   },
@@ -449,7 +449,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 573,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 68
   },
@@ -459,7 +459,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 633,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 109
   },
@@ -469,7 +469,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 700,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 169
   },
@@ -479,7 +479,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 799,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 191
   },
@@ -489,7 +489,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 891,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 105
   },
@@ -499,7 +499,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 959,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 177
   },
@@ -509,7 +509,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 1136,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 71
   },
@@ -519,7 +519,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 1170,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 81
   },
@@ -529,7 +529,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 1238,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 26
   },
@@ -539,7 +539,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 1306,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 72
   },
@@ -549,7 +549,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 1381,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 18
   },
@@ -559,7 +559,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 1428,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 31
   },
@@ -569,7 +569,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 1481,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 196
   },
@@ -579,7 +579,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 1609,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 659
   },
@@ -589,7 +589,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 1715,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 650
   },
@@ -599,7 +599,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-to-scheme.md",
    "line": 1798,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-to-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-to-scheme",
    "error": null,
    "steps": 330
   },
@@ -609,7 +609,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-variables.md",
    "line": 57,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-variables",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-variables",
    "error": null,
    "steps": 561
   },
@@ -619,7 +619,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-calculator-variables.md",
    "line": 142,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-calculator-variables",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-calculator-variables",
    "error": null,
    "steps": 766
   },
@@ -629,7 +629,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-course-arc.md",
    "line": 59,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-course-arc",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-course-arc",
    "error": null,
    "steps": 181
   },
@@ -639,7 +639,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-course-arc.md",
    "line": 152,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-course-arc",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-course-arc",
    "error": null,
    "steps": 501
   },
@@ -649,7 +649,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-course-arc.md",
    "line": 257,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-course-arc",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-course-arc",
    "error": null,
    "steps": 195
   },
@@ -659,7 +659,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-course-arc.md",
    "line": 354,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-course-arc",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-course-arc",
    "error": null,
    "steps": 282
   },
@@ -669,7 +669,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-course-arc.md",
    "line": 466,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-course-arc",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-course-arc",
    "error": null,
    "steps": 372
   },
@@ -679,7 +679,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-course-arc.md",
    "line": 593,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-course-arc",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-course-arc",
    "error": null,
    "steps": 285
   },
@@ -689,7 +689,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-derivationsambiguity.md",
    "line": 187,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-derivationsambiguity",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-derivationsambiguity",
    "error": null,
    "steps": 266
   },
@@ -699,7 +699,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-derivationsambiguity.md",
    "line": 248,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-derivationsambiguity",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-derivationsambiguity",
    "error": null,
    "steps": 10
   },
@@ -709,7 +709,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-derivationsambiguity.md",
    "line": 295,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-derivationsambiguity",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-derivationsambiguity",
    "error": null,
    "steps": 389
   },
@@ -719,7 +719,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-derivationsambiguity.md",
    "line": 377,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-derivationsambiguity",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-derivationsambiguity",
    "error": null,
    "steps": 800
   },
@@ -729,7 +729,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-derivationsambiguity.md",
    "line": 457,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-derivationsambiguity",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-derivationsambiguity",
    "error": null,
    "steps": 800
   },
@@ -739,7 +739,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 86,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 50
   },
@@ -749,7 +749,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 128,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 33
   },
@@ -759,7 +759,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 164,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 21
   },
@@ -769,7 +769,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 223,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 122
   },
@@ -779,7 +779,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 273,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 65
   },
@@ -789,7 +789,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 344,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 61
   },
@@ -799,7 +799,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 384,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 117
   },
@@ -809,7 +809,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 445,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 47
   },
@@ -819,7 +819,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 509,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 84
   },
@@ -829,7 +829,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 572,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 88
   },
@@ -839,7 +839,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 630,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 128
   },
@@ -849,7 +849,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 729,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 282
   },
@@ -859,7 +859,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 794,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 239
   },
@@ -869,7 +869,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 840,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 211
   },
@@ -879,7 +879,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 936,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 400
   },
@@ -889,7 +889,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 1028,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 229
   },
@@ -899,7 +899,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 1178,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 800
   },
@@ -909,7 +909,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 1325,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 800
   },
@@ -919,7 +919,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 1407,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 76
   },
@@ -929,7 +929,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-functional.md",
    "line": 1502,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-functional",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-functional",
    "error": null,
    "steps": 403
   },
@@ -939,7 +939,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-grammars-day2.md",
    "line": 91,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-grammars-day2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-grammars-day2",
    "error": null,
    "steps": 800
   },
@@ -949,7 +949,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-grammars-day2.md",
    "line": 233,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-grammars-day2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-grammars-day2",
    "error": null,
    "steps": 317
   },
@@ -959,7 +959,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-grammars-day2.md",
    "line": 329,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-grammars-day2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-grammars-day2",
    "error": null,
    "steps": 27
   },
@@ -969,7 +969,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-grammars.md",
    "line": 160,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-grammars",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-grammars",
    "error": null,
    "steps": 800
   },
@@ -979,7 +979,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-grammars.md",
    "line": 249,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-grammars",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-grammars",
    "error": null,
    "steps": 166
   },
@@ -989,7 +989,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-grammars.md",
    "line": 406,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-grammars",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-grammars",
    "error": null,
    "steps": 450
   },
@@ -999,7 +999,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-grammars.md",
    "line": 499,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-grammars",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-grammars",
    "error": null,
    "steps": 230
   },
@@ -1009,7 +1009,7 @@
    "lang": "lambda",
    "page": "_pages/Activities/liascript-lambdacalculus1.md",
    "line": 154,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus1",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus1",
    "error": null,
    "steps": 2
   },
@@ -1019,7 +1019,7 @@
    "lang": "lambda",
    "page": "_pages/Activities/liascript-lambdacalculus1.md",
    "line": 174,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus1",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus1",
    "error": null,
    "steps": 3
   },
@@ -1029,7 +1029,7 @@
    "lang": "lambda",
    "page": "_pages/Activities/liascript-lambdacalculus1.md",
    "line": 204,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus1",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus1",
    "error": null,
    "steps": 3
   },
@@ -1039,7 +1039,7 @@
    "lang": "lambda",
    "page": "_pages/Activities/liascript-lambdacalculus1.md",
    "line": 251,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus1",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus1",
    "error": null,
    "steps": 2
   },
@@ -1049,7 +1049,7 @@
    "lang": "lambda",
    "page": "_pages/Activities/liascript-lambdacalculus1.md",
    "line": 262,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus1",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus1",
    "error": null,
    "steps": 2
   },
@@ -1059,7 +1059,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-lambdacalculus1.md",
    "line": 288,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus1",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus1",
    "error": null,
    "steps": 711
   },
@@ -1069,7 +1069,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-lambdacalculus1.md",
    "line": 426,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus1",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus1",
    "error": null,
    "steps": 183
   },
@@ -1079,7 +1079,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-lambdacalculus1.md",
    "line": 514,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus1",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus1",
    "error": null,
    "steps": 366
   },
@@ -1089,7 +1089,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-lambdacalculus1.md",
    "line": 603,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus1",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus1",
    "error": null,
    "steps": 599
   },
@@ -1099,7 +1099,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-lambdacalculus1.md",
    "line": 710,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus1",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus1",
    "error": null,
    "steps": 358
   },
@@ -1109,7 +1109,7 @@
    "lang": "lambda",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
    "line": 139,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus2",
    "error": null,
    "steps": 4
   },
@@ -1119,7 +1119,7 @@
    "lang": "lambda",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
    "line": 151,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus2",
    "error": null,
    "steps": 5
   },
@@ -1129,7 +1129,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
    "line": 165,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus2",
    "error": null,
    "steps": 18
   },
@@ -1139,7 +1139,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
    "line": 183,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus2",
    "error": null,
    "steps": 90
   },
@@ -1149,7 +1149,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
    "line": 265,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus2",
    "error": null,
    "steps": 335
   },
@@ -1159,7 +1159,7 @@
    "lang": "lambda",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
    "line": 332,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus2",
    "error": null,
    "steps": 4
   },
@@ -1169,7 +1169,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
    "line": 379,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus2",
    "error": null,
    "steps": 49
   },
@@ -1179,7 +1179,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
    "line": 402,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus2",
    "error": null,
    "steps": 424
   },
@@ -1189,7 +1189,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
    "line": 466,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus2",
    "error": null,
    "steps": 243
   },
@@ -1199,7 +1199,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
    "line": 655,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus2",
    "error": null,
    "steps": 800
   },
@@ -1209,7 +1209,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
    "line": 847,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus2",
    "error": null,
    "steps": 800
   },
@@ -1219,7 +1219,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
    "line": 1011,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus2",
    "error": null,
    "steps": 800
   },
@@ -1229,7 +1229,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-lambdacalculus2.md",
    "line": 1056,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-lambdacalculus2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-lambdacalculus2",
    "error": null,
    "steps": 40
   },
@@ -1239,7 +1239,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-languageevaluation.md",
    "line": 72,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-languageevaluation",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-languageevaluation",
    "error": null,
    "steps": 134
   },
@@ -1249,7 +1249,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-languageevaluation.md",
    "line": 204,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-languageevaluation",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-languageevaluation",
    "error": null,
    "steps": 88
   },
@@ -1259,7 +1259,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-languageevaluation.md",
    "line": 274,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-languageevaluation",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-languageevaluation",
    "error": null,
    "steps": 65
   },
@@ -1269,7 +1269,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-languageevaluation.md",
    "line": 390,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-languageevaluation",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-languageevaluation",
    "error": null,
    "steps": 103
   },
@@ -1279,7 +1279,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-languageevaluation.md",
    "line": 516,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-languageevaluation",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-languageevaluation",
    "error": null,
    "steps": 10
   },
@@ -1289,7 +1289,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-languageevaluation.md",
    "line": 554,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-languageevaluation",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-languageevaluation",
    "error": null,
    "steps": 179
   },
@@ -1299,7 +1299,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
    "line": 203,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 191
   },
@@ -1309,7 +1309,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
    "line": 277,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 800
   },
@@ -1319,7 +1319,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
    "line": 375,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 306
   },
@@ -1329,7 +1329,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
    "line": 668,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 161
   },
@@ -1339,7 +1339,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
    "line": 862,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 71
   },
@@ -1349,7 +1349,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
    "line": 1063,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 800
   },
@@ -1359,7 +1359,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
    "line": 1214,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 800
   },
@@ -1369,7 +1369,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
    "line": 1418,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 116
   },
@@ -1379,7 +1379,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
    "line": 1605,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 208
   },
@@ -1389,7 +1389,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-parsing2.md",
    "line": 1708,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsing2",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsing2",
    "error": null,
    "steps": 194
   },
@@ -1399,7 +1399,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-parsingexpressions.md",
    "line": 117,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsingexpressions",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsingexpressions",
    "error": null,
    "steps": 609
   },
@@ -1409,7 +1409,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-parsingexpressions.md",
    "line": 220,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsingexpressions",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsingexpressions",
    "error": null,
    "steps": 6
   },
@@ -1419,7 +1419,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-parsingexpressions.md",
    "line": 338,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsingexpressions",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsingexpressions",
    "error": null,
    "steps": 800
   },
@@ -1429,7 +1429,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-parsingexpressions.md",
    "line": 438,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsingexpressions",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsingexpressions",
    "error": null,
    "steps": 691
   },
@@ -1439,7 +1439,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-parsingexpressions.md",
    "line": 1052,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-parsingexpressions",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-parsingexpressions",
    "error": null,
    "steps": 3
   },
@@ -1449,7 +1449,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-recursivedescent.md",
    "line": 240,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-recursivedescent",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-recursivedescent",
    "error": null,
    "steps": 311
   },
@@ -1459,7 +1459,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-recursivedescent.md",
    "line": 412,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-recursivedescent",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-recursivedescent",
    "error": null,
    "steps": 281
   },
@@ -1469,7 +1469,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-recursivedescent.md",
    "line": 490,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-recursivedescent",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-recursivedescent",
    "error": null,
    "steps": 30
   },
@@ -1479,7 +1479,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-recursivedescent.md",
    "line": 950,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-recursivedescent",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-recursivedescent",
    "error": null,
    "steps": 800
   },
@@ -1489,7 +1489,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-regex.md",
    "line": 110,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-regex",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-regex",
    "error": null,
    "steps": 105
   },
@@ -1499,7 +1499,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-regex.md",
    "line": 135,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-regex",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-regex",
    "error": null,
    "steps": 5
   },
@@ -1509,7 +1509,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-regex.md",
    "line": 161,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-regex",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-regex",
    "error": null,
    "steps": 28
   },
@@ -1519,7 +1519,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-regex.md",
    "line": 218,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-regex",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-regex",
    "error": null,
    "steps": 14
   },
@@ -1529,7 +1529,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-regex.md",
    "line": 251,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-regex",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-regex",
    "error": null,
    "steps": 190
   },
@@ -1539,7 +1539,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-regex.md",
    "line": 311,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-regex",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-regex",
    "error": null,
    "steps": 7
   },
@@ -1549,7 +1549,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-regex.md",
    "line": 364,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-regex",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-regex",
    "error": null,
    "steps": 37
   },
@@ -1559,7 +1559,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-regex.md",
    "line": 404,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-regex",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-regex",
    "error": null,
    "steps": 12
   },
@@ -1569,7 +1569,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-regex.md",
    "line": 441,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-regex",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-regex",
    "error": null,
    "steps": 23
   },
@@ -1579,7 +1579,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-regex.md",
    "line": 505,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-regex",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-regex",
    "error": null,
    "steps": 15
   },
@@ -1589,7 +1589,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-regex.md",
    "line": 541,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-regex",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-regex",
    "error": null,
    "steps": 45
   },
@@ -1599,7 +1599,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-regex.md",
    "line": 571,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-regex",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-regex",
    "error": null,
    "steps": 32
   },
@@ -1609,7 +1609,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-regex.md",
    "line": 627,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-regex",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-regex",
    "error": null,
    "steps": 19
   },
@@ -1619,7 +1619,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-regex.md",
    "line": 681,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-regex",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-regex",
    "error": null,
    "steps": 60
   },
@@ -1629,7 +1629,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-regex.md",
    "line": 742,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-regex",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-regex",
    "error": null,
    "steps": 31
   },
@@ -1639,7 +1639,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 130,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 10
   },
@@ -1649,7 +1649,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 144,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 14
   },
@@ -1659,7 +1659,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 162,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 15
   },
@@ -1669,7 +1669,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 203,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 9
   },
@@ -1679,7 +1679,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 215,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 32
   },
@@ -1689,7 +1689,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 229,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 17
   },
@@ -1699,7 +1699,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 246,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 800
   },
@@ -1709,7 +1709,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 310,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 4
   },
@@ -1719,7 +1719,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 322,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 7
   },
@@ -1729,7 +1729,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 336,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 11
   },
@@ -1739,7 +1739,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 354,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 27
   },
@@ -1749,7 +1749,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 408,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 4
   },
@@ -1759,7 +1759,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 438,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 5
   },
@@ -1769,7 +1769,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 451,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 5
   },
@@ -1779,7 +1779,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 479,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 15
   },
@@ -1789,7 +1789,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 491,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 11
   },
@@ -1799,7 +1799,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 528,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 2
   },
@@ -1809,7 +1809,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 537,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 2
   },
@@ -1819,7 +1819,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 549,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 2
   },
@@ -1829,7 +1829,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 647,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 9
   },
@@ -1839,7 +1839,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 680,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 22
   },
@@ -1849,7 +1849,7 @@
    "lang": "scheme",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 716,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 18
   },
@@ -1859,7 +1859,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 820,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 800
   },
@@ -1869,7 +1869,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scheme.md",
    "line": 872,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scheme",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scheme",
    "error": null,
    "steps": 800
   },
@@ -1879,7 +1879,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 104,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 83
   },
@@ -1889,7 +1889,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 181,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 49
   },
@@ -1899,7 +1899,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 274,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 99
   },
@@ -1909,7 +1909,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 371,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 303
   },
@@ -1919,7 +1919,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 457,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 112
   },
@@ -1929,7 +1929,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 542,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 671
   },
@@ -1939,7 +1939,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 717,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 18
   },
@@ -1949,7 +1949,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 762,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 39
   },
@@ -1959,7 +1959,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 817,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 24
   },
@@ -1969,7 +1969,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 865,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 800
   },
@@ -1979,7 +1979,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 1103,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 127
   },
@@ -1989,7 +1989,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 1187,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 134
   },
@@ -1999,7 +1999,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 1309,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 136
   },
@@ -2009,7 +2009,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 1451,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 615
   },
@@ -2019,7 +2019,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 1571,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 191
   },
@@ -2029,7 +2029,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 1672,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 56
   },
@@ -2039,7 +2039,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 1725,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 107
   },
@@ -2049,7 +2049,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 1795,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 64
   },
@@ -2059,7 +2059,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-scope-chains.md",
    "line": 1860,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-scope-chains",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-scope-chains",
    "error": null,
    "steps": 37
   },
@@ -2069,7 +2069,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-syntaxbnf.md",
    "line": 324,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-syntaxbnf",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-syntaxbnf",
    "error": null,
    "steps": 80
   },
@@ -2079,7 +2079,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-syntaxbnf.md",
    "line": 364,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-syntaxbnf",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-syntaxbnf",
    "error": null,
    "steps": 173
   },
@@ -2089,7 +2089,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-syntaxbnf.md",
    "line": 429,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-syntaxbnf",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-syntaxbnf",
    "error": null,
    "steps": 193
   },
@@ -2099,7 +2099,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-syntaxbnf.md",
    "line": 504,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-syntaxbnf",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-syntaxbnf",
    "error": null,
    "steps": 43
   },
@@ -2109,7 +2109,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-syntaxbnf.md",
    "line": 565,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-syntaxbnf",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-syntaxbnf",
    "error": null,
    "steps": 204
   },
@@ -2119,7 +2119,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-syntaxbnf.md",
    "line": 642,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-syntaxbnf",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-syntaxbnf",
    "error": null,
    "steps": 800
   },
@@ -2129,7 +2129,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-tokensscanning.md",
    "line": 88,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-tokensscanning",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-tokensscanning",
    "error": null,
    "steps": 8
   },
@@ -2139,7 +2139,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-tokensscanning.md",
    "line": 124,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-tokensscanning",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-tokensscanning",
    "error": null,
    "steps": 398
   },
@@ -2149,7 +2149,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-tokensscanning.md",
    "line": 220,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-tokensscanning",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-tokensscanning",
    "error": null,
    "steps": 28
   },
@@ -2159,7 +2159,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-tokensscanning.md",
    "line": 280,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-tokensscanning",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-tokensscanning",
    "error": null,
    "steps": 444
   },
@@ -2169,7 +2169,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-tokensscanning.md",
    "line": 359,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-tokensscanning",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-tokensscanning",
    "error": null,
    "steps": 32
   },
@@ -2179,7 +2179,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-tokensscanning.md",
    "line": 402,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-tokensscanning",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-tokensscanning",
    "error": null,
    "steps": 584
   },
@@ -2189,7 +2189,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-tokensscanning.md",
    "line": 521,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-tokensscanning",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-tokensscanning",
    "error": null,
    "steps": 697
   },
@@ -2199,7 +2199,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-tokensscanning.md",
    "line": 2569,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-tokensscanning",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-tokensscanning",
    "error": null,
    "steps": 11
   },
@@ -2209,7 +2209,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-types.md",
    "line": 135,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-types",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-types",
    "error": null,
    "steps": 80
   },
@@ -2219,7 +2219,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-types.md",
    "line": 208,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-types",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-types",
    "error": null,
    "steps": 10
   },
@@ -2229,7 +2229,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-types.md",
    "line": 297,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-types",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-types",
    "error": null,
    "steps": 303
   },
@@ -2239,7 +2239,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-types.md",
    "line": 428,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-types",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-types",
    "error": null,
    "steps": 53
   },
@@ -2249,7 +2249,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-types.md",
    "line": 475,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-types",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-types",
    "error": null,
    "steps": 201
   },
@@ -2259,7 +2259,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-types.md",
    "line": 561,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-types",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-types",
    "error": null,
    "steps": 3
   },
@@ -2269,7 +2269,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-types.md",
    "line": 624,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-types",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-types",
    "error": null,
    "steps": 153
   },
@@ -2279,7 +2279,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-types.md",
    "line": 709,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-types",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-types",
    "error": null,
    "steps": 2
   },
@@ -2289,7 +2289,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-types.md",
    "line": 825,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-types",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-types",
    "error": null,
    "steps": 31
   },
@@ -2299,7 +2299,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-types.md",
    "line": 861,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-types",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-types",
    "error": null,
    "steps": 16
   },
@@ -2309,7 +2309,7 @@
    "lang": "python",
    "page": "_pages/Activities/liascript-types.md",
    "line": 950,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Activities/liascript-types",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Activities/liascript-types",
    "error": null,
    "steps": 53
   },
@@ -2319,7 +2319,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-ast-to-code.md",
    "line": 69,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ast-to-code",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-ast-to-code",
    "error": null,
    "steps": 13
   },
@@ -2329,7 +2329,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-ast-to-code.md",
    "line": 126,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ast-to-code",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-ast-to-code",
    "error": null,
    "steps": 37
   },
@@ -2339,7 +2339,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-ast-to-code.md",
    "line": 188,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ast-to-code",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-ast-to-code",
    "error": null,
    "steps": 51
   },
@@ -2349,7 +2349,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-ast-to-code.md",
    "line": 245,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ast-to-code",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-ast-to-code",
    "error": null,
    "steps": 188
   },
@@ -2359,7 +2359,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-ast-to-code.md",
    "line": 355,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ast-to-code",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-ast-to-code",
    "error": null,
    "steps": 27
   },
@@ -2369,7 +2369,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-ast-to-code.md",
    "line": 561,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ast-to-code",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-ast-to-code",
    "error": null,
    "steps": 30
   },
@@ -2379,7 +2379,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-ast-to-code.md",
    "line": 602,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ast-to-code",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-ast-to-code",
    "error": null,
    "steps": 128
   },
@@ -2389,7 +2389,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-ast-to-code.md",
    "line": 681,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ast-to-code",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-ast-to-code",
    "error": null,
    "steps": 116
   },
@@ -2399,7 +2399,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-ast-to-code.md",
    "line": 765,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ast-to-code",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-ast-to-code",
    "error": null,
    "steps": 113
   },
@@ -2409,7 +2409,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-ast-to-code.md",
    "line": 844,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ast-to-code",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-ast-to-code",
    "error": null,
    "steps": 113
   },
@@ -2419,7 +2419,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-ast-to-code.md",
    "line": 945,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ast-to-code",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-ast-to-code",
    "error": null,
    "steps": 204
   },
@@ -2429,7 +2429,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-ast-to-code.md",
    "line": 1069,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ast-to-code",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-ast-to-code",
    "error": null,
    "steps": 311
   },
@@ -2439,7 +2439,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 68,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 44
   },
@@ -2449,7 +2449,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 229,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 86
   },
@@ -2459,7 +2459,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 464,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 26
   },
@@ -2469,7 +2469,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 681,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 4
   },
@@ -2479,7 +2479,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 847,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 567
   },
@@ -2489,7 +2489,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 937,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 36
   },
@@ -2499,7 +2499,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 1001,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 6
   },
@@ -2509,7 +2509,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 1023,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 800
   },
@@ -2519,7 +2519,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 1262,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 13
   },
@@ -2529,7 +2529,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 1285,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 800
   },
@@ -2539,7 +2539,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 1499,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 800
   },
@@ -2549,7 +2549,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 1512,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 800
   },
@@ -2559,7 +2559,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 1818,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 4
   },
@@ -2569,7 +2569,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 1843,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 35
   },
@@ -2579,7 +2579,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 1908,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 41
   },
@@ -2589,7 +2589,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 2030,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 410
   },
@@ -2599,7 +2599,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-build-an-interpreter.md",
    "line": 2137,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-build-an-interpreter",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-build-an-interpreter",
    "error": null,
    "steps": 26
   },
@@ -2609,7 +2609,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
    "line": 79,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 8
   },
@@ -2619,7 +2619,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
    "line": 131,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 58
   },
@@ -2629,7 +2629,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
    "line": 203,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 60
   },
@@ -2639,7 +2639,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
    "line": 284,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 120
   },
@@ -2649,7 +2649,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
    "line": 376,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 356
   },
@@ -2659,7 +2659,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
    "line": 621,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 60
   },
@@ -2669,7 +2669,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
    "line": 694,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 228
   },
@@ -2679,7 +2679,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
    "line": 924,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 800
   },
@@ -2689,7 +2689,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
    "line": 1175,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 72
   },
@@ -2699,7 +2699,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
    "line": 1259,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 105
   },
@@ -2709,7 +2709,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
    "line": 1367,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 282
   },
@@ -2719,7 +2719,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
    "line": 1479,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 800
   },
@@ -2729,7 +2729,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
    "line": 1716,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 295
   },
@@ -2739,7 +2739,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
    "line": 2036,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 11
   },
@@ -2749,7 +2749,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
    "line": 2088,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 367
   },
@@ -2759,7 +2759,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
    "line": 2212,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 269
   },
@@ -2769,7 +2769,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
    "line": 2328,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 293
   },
@@ -2779,7 +2779,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-bytecode-vm.md",
    "line": 2444,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-bytecode-vm",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-bytecode-vm",
    "error": null,
    "steps": 800
   },
@@ -2789,7 +2789,7 @@
    "lang": "c",
    "page": "_pages/Tutorials/tutorial-c-for-flex-bison.md",
    "line": 36,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-c-for-flex-bison",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-c-for-flex-bison",
    "error": null,
    "steps": 0
   },
@@ -2799,7 +2799,7 @@
    "lang": "c",
    "page": "_pages/Tutorials/tutorial-c-for-flex-bison.md",
    "line": 108,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-c-for-flex-bison",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-c-for-flex-bison",
    "error": null,
    "steps": 14
   },
@@ -2809,7 +2809,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-ci-tdd-for-interpreters.md",
    "line": 1059,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ci-tdd-for-interpreters",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-ci-tdd-for-interpreters",
    "error": null,
    "steps": 91
   },
@@ -2819,7 +2819,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-ci-tdd-for-interpreters.md",
    "line": 1154,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ci-tdd-for-interpreters",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-ci-tdd-for-interpreters",
    "error": null,
    "steps": 128
   },
@@ -2829,7 +2829,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-ci-tdd-for-interpreters.md",
    "line": 1258,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ci-tdd-for-interpreters",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-ci-tdd-for-interpreters",
    "error": null,
    "steps": 250
   },
@@ -2839,7 +2839,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-ci-tdd-for-interpreters.md",
    "line": 1347,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ci-tdd-for-interpreters",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-ci-tdd-for-interpreters",
    "error": null,
    "steps": 63
   },
@@ -2849,7 +2849,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-ci-tdd-for-interpreters.md",
    "line": 1417,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-ci-tdd-for-interpreters",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-ci-tdd-for-interpreters",
    "error": null,
    "steps": 94
   },
@@ -2859,7 +2859,7 @@
    "lang": "c",
    "page": "_pages/Tutorials/tutorial-compiling-linking.md",
    "line": 85,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-compiling-linking",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-compiling-linking",
    "error": null,
    "steps": 3
   },
@@ -2869,7 +2869,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-compiling-linking.md",
    "line": 490,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-compiling-linking",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-compiling-linking",
    "error": null,
    "steps": 5
   },
@@ -2879,7 +2879,7 @@
    "lang": "c",
    "page": "_pages/Tutorials/tutorial-compiling-linking.md",
    "line": 525,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-compiling-linking",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-compiling-linking",
    "error": null,
    "steps": 7
   },
@@ -2889,7 +2889,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
    "line": 73,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-coroutines-generators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-coroutines-generators",
    "error": null,
    "steps": 190
   },
@@ -2899,7 +2899,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
    "line": 162,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-coroutines-generators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-coroutines-generators",
    "error": null,
    "steps": 162
   },
@@ -2909,7 +2909,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
    "line": 243,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-coroutines-generators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-coroutines-generators",
    "error": null,
    "steps": 116
   },
@@ -2919,7 +2919,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
    "line": 336,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-coroutines-generators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-coroutines-generators",
    "error": null,
    "steps": 78
   },
@@ -2929,7 +2929,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
    "line": 416,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-coroutines-generators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-coroutines-generators",
    "error": null,
    "steps": 298
   },
@@ -2939,7 +2939,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
    "line": 608,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-coroutines-generators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-coroutines-generators",
    "error": null,
    "steps": 800
   },
@@ -2949,7 +2949,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
    "line": 646,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-coroutines-generators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-coroutines-generators",
    "error": null,
    "steps": 103
   },
@@ -2959,7 +2959,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
    "line": 678,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-coroutines-generators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-coroutines-generators",
    "error": null,
    "steps": 127
   },
@@ -2969,7 +2969,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
    "line": 733,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-coroutines-generators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-coroutines-generators",
    "error": null,
    "steps": 452
   },
@@ -2979,9 +2979,9 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-coroutines-generators.md",
    "line": 855,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-coroutines-generators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-coroutines-generators",
    "error": null,
-   "steps": 697
+   "steps": 800
   },
   {
    "id": "cs374-tutorial-cpp-advanced-1",
@@ -2989,7 +2989,7 @@
    "lang": "cpp",
    "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
    "line": 46,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-cpp-advanced",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-cpp-advanced",
    "error": null,
    "steps": 13
   },
@@ -2999,7 +2999,7 @@
    "lang": "cpp",
    "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
    "line": 256,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-cpp-advanced",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-cpp-advanced",
    "error": null,
    "steps": 17
   },
@@ -3009,7 +3009,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
    "line": 383,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-cpp-advanced",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-cpp-advanced",
    "error": null,
    "steps": 57
   },
@@ -3019,7 +3019,7 @@
    "lang": "cpp",
    "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
    "line": 532,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-cpp-advanced",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-cpp-advanced",
    "error": null,
    "steps": 28
   },
@@ -3029,7 +3029,7 @@
    "lang": "cpp",
    "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
    "line": 608,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-cpp-advanced",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-cpp-advanced",
    "error": null,
    "steps": 8
   },
@@ -3039,7 +3039,7 @@
    "lang": "cpp",
    "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
    "line": 665,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-cpp-advanced",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-cpp-advanced",
    "error": null,
    "steps": 53
   },
@@ -3049,7 +3049,7 @@
    "lang": "cpp",
    "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
    "line": 701,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-cpp-advanced",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-cpp-advanced",
    "error": null,
    "steps": 60
   },
@@ -3059,7 +3059,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
    "line": 1174,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-cpp-advanced",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-cpp-advanced",
    "error": null,
    "steps": 84
   },
@@ -3069,7 +3069,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
    "line": 1599,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-cpp-advanced",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-cpp-advanced",
    "error": null,
    "steps": 68
   },
@@ -3079,7 +3079,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
    "line": 1673,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-cpp-advanced",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-cpp-advanced",
    "error": null,
    "steps": 55
   },
@@ -3089,7 +3089,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
    "line": 1845,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-cpp-advanced",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-cpp-advanced",
    "error": null,
    "steps": 87
   },
@@ -3099,7 +3099,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
    "line": 1934,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-cpp-advanced",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-cpp-advanced",
    "error": null,
    "steps": 189
   },
@@ -3109,7 +3109,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
    "line": 2139,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-cpp-advanced",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-cpp-advanced",
    "error": null,
    "steps": 85
   },
@@ -3119,7 +3119,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
    "line": 2181,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-cpp-advanced",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-cpp-advanced",
    "error": null,
    "steps": 129
   },
@@ -3129,7 +3129,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-cpp-advanced.md",
    "line": 2256,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-cpp-advanced",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-cpp-advanced",
    "error": null,
    "steps": 91
   },
@@ -3139,7 +3139,7 @@
    "lang": "shell",
    "page": "_pages/Tutorials/tutorial-dev-environment.md",
    "line": 191,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-dev-environment",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-dev-environment",
    "error": null,
    "steps": 2
   },
@@ -3149,7 +3149,7 @@
    "lang": "shell",
    "page": "_pages/Tutorials/tutorial-dev-environment.md",
    "line": 239,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-dev-environment",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-dev-environment",
    "error": null,
    "steps": 1
   },
@@ -3159,7 +3159,7 @@
    "lang": "shell",
    "page": "_pages/Tutorials/tutorial-dev-environment.md",
    "line": 303,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-dev-environment",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-dev-environment",
    "error": null,
    "steps": 2
   },
@@ -3169,7 +3169,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-environments-extensions.md",
    "line": 171,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-environments-extensions",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-environments-extensions",
    "error": null,
    "steps": 93
   },
@@ -3179,7 +3179,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-environments-extensions.md",
    "line": 264,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-environments-extensions",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-environments-extensions",
    "error": null,
    "steps": 178
   },
@@ -3189,7 +3189,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-environments-extensions.md",
    "line": 357,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-environments-extensions",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-environments-extensions",
    "error": null,
    "steps": 191
   },
@@ -3199,7 +3199,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-environments-extensions.md",
    "line": 459,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-environments-extensions",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-environments-extensions",
    "error": null,
    "steps": 34
   },
@@ -3209,7 +3209,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-error-handling.md",
    "line": 68,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-error-handling",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-error-handling",
    "error": null,
    "steps": 42
   },
@@ -3219,7 +3219,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-error-handling.md",
    "line": 147,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-error-handling",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-error-handling",
    "error": null,
    "steps": 132
   },
@@ -3229,7 +3229,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-error-handling.md",
    "line": 254,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-error-handling",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-error-handling",
    "error": null,
    "steps": 163
   },
@@ -3239,7 +3239,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-error-handling.md",
    "line": 353,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-error-handling",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-error-handling",
    "error": null,
    "steps": 188
   },
@@ -3249,7 +3249,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-error-handling.md",
    "line": 475,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-error-handling",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-error-handling",
    "error": null,
    "steps": 163
   },
@@ -3259,7 +3259,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-error-handling.md",
    "line": 596,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-error-handling",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-error-handling",
    "error": null,
    "steps": 128
   },
@@ -3269,7 +3269,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-error-handling.md",
    "line": 743,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-error-handling",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-error-handling",
    "error": null,
    "steps": 85
   },
@@ -3279,7 +3279,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-error-handling.md",
    "line": 784,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-error-handling",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-error-handling",
    "error": null,
    "steps": 71
   },
@@ -3289,7 +3289,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-error-handling.md",
    "line": 846,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-error-handling",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-error-handling",
    "error": null,
    "steps": 50
   },
@@ -3299,7 +3299,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-error-handling.md",
    "line": 887,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-error-handling",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-error-handling",
    "error": null,
    "steps": 252
   },
@@ -3309,7 +3309,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-error-handling.md",
    "line": 949,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-error-handling",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-error-handling",
    "error": null,
    "steps": 150
   },
@@ -3319,7 +3319,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-flex-bison-complete.md",
    "line": 1141,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-flex-bison-complete",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-flex-bison-complete",
    "error": null,
    "steps": 706
   },
@@ -3329,7 +3329,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-flex-bison-complete.md",
    "line": 1271,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-flex-bison-complete",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-flex-bison-complete",
    "error": null,
    "steps": 631
   },
@@ -3339,7 +3339,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-garbage-collection.md",
    "line": 58,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-garbage-collection",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-garbage-collection",
    "error": null,
    "steps": 53
   },
@@ -3349,7 +3349,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-garbage-collection.md",
    "line": 113,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-garbage-collection",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-garbage-collection",
    "error": null,
    "steps": 148
   },
@@ -3359,7 +3359,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-garbage-collection.md",
    "line": 190,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-garbage-collection",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-garbage-collection",
    "error": null,
    "steps": 7
   },
@@ -3369,7 +3369,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-garbage-collection.md",
    "line": 222,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-garbage-collection",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-garbage-collection",
    "error": null,
    "steps": 324
   },
@@ -3379,7 +3379,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-garbage-collection.md",
    "line": 328,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-garbage-collection",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-garbage-collection",
    "error": null,
    "steps": 136
   },
@@ -3389,7 +3389,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-garbage-collection.md",
    "line": 437,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-garbage-collection",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-garbage-collection",
    "error": null,
    "steps": 16
   },
@@ -3399,7 +3399,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-grammars-in-python.md",
    "line": 55,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-grammars-in-python",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-grammars-in-python",
    "error": null,
    "steps": 800
   },
@@ -3409,7 +3409,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-grammars-in-python.md",
    "line": 155,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-grammars-in-python",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-grammars-in-python",
    "error": null,
    "steps": 93
   },
@@ -3419,7 +3419,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-grammars-in-python.md",
    "line": 265,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-grammars-in-python",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-grammars-in-python",
    "error": null,
    "steps": 253
   },
@@ -3429,7 +3429,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-grammars-in-python.md",
    "line": 371,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-grammars-in-python",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-grammars-in-python",
    "error": null,
    "steps": 387
   },
@@ -3439,7 +3439,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-grammars-in-python.md",
    "line": 448,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-grammars-in-python",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-grammars-in-python",
    "error": null,
    "steps": 800
   },
@@ -3449,7 +3449,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-grammars-in-python.md",
    "line": 538,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-grammars-in-python",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-grammars-in-python",
    "error": null,
    "steps": 281
   },
@@ -3459,7 +3459,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-grammars-in-python.md",
    "line": 631,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-grammars-in-python",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-grammars-in-python",
    "error": null,
    "steps": 800
   },
@@ -3469,7 +3469,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 45,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 73
   },
@@ -3479,7 +3479,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 264,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 3
   },
@@ -3489,7 +3489,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 314,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 3
   },
@@ -3499,7 +3499,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 552,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 52
   },
@@ -3509,7 +3509,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 861,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 83
   },
@@ -3519,7 +3519,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 882,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 59
   },
@@ -3529,7 +3529,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 916,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 72
   },
@@ -3539,7 +3539,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 942,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 800
   },
@@ -3549,7 +3549,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 998,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 258
   },
@@ -3559,7 +3559,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 1080,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 737
   },
@@ -3569,7 +3569,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 1122,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 89
   },
@@ -3579,7 +3579,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 1216,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 2
   },
@@ -3589,7 +3589,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 1293,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 13
   },
@@ -3599,7 +3599,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 1315,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 23
   },
@@ -3609,7 +3609,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 1343,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 56
   },
@@ -3619,7 +3619,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 1376,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 56
   },
@@ -3629,7 +3629,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 1405,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 43
   },
@@ -3639,7 +3639,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 1435,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 20
   },
@@ -3649,7 +3649,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 1471,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 42
   },
@@ -3659,7 +3659,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 1511,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 53
   },
@@ -3669,7 +3669,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 1561,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 800
   },
@@ -3679,7 +3679,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 1587,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 91
   },
@@ -3689,7 +3689,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lambda-calculus-reducer.md",
    "line": 1638,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lambda-calculus-reducer",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lambda-calculus-reducer",
    "error": null,
    "steps": 59
   },
@@ -3699,7 +3699,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lr-construction.md",
    "line": 529,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lr-construction",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lr-construction",
    "error": null,
    "steps": 800
   },
@@ -3709,7 +3709,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-lr-construction.md",
    "line": 806,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-lr-construction",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-lr-construction",
    "error": null,
    "steps": 128
   },
@@ -3719,7 +3719,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-parser-combinators.md",
    "line": 49,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-parser-combinators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-parser-combinators",
    "error": null,
    "steps": 19
   },
@@ -3729,7 +3729,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-parser-combinators.md",
    "line": 80,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-parser-combinators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-parser-combinators",
    "error": null,
    "steps": 42
   },
@@ -3739,7 +3739,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-parser-combinators.md",
    "line": 147,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-parser-combinators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-parser-combinators",
    "error": null,
    "steps": 245
   },
@@ -3749,7 +3749,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-parser-combinators.md",
    "line": 278,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-parser-combinators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-parser-combinators",
    "error": null,
    "steps": 800
   },
@@ -3759,7 +3759,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-parser-combinators.md",
    "line": 427,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-parser-combinators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-parser-combinators",
    "error": null,
    "steps": 395
   },
@@ -3769,7 +3769,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-parser-combinators.md",
    "line": 512,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-parser-combinators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-parser-combinators",
    "error": null,
    "steps": 800
   },
@@ -3779,7 +3779,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-parser-combinators.md",
    "line": 741,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-parser-combinators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-parser-combinators",
    "error": null,
    "steps": 9
   },
@@ -3789,7 +3789,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-parser-combinators.md",
    "line": 812,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-parser-combinators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-parser-combinators",
    "error": null,
    "steps": 244
   },
@@ -3799,7 +3799,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-parser-combinators.md",
    "line": 905,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-parser-combinators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-parser-combinators",
    "error": null,
    "steps": 790
   },
@@ -3809,7 +3809,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-parser-combinators.md",
    "line": 1019,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-parser-combinators",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-parser-combinators",
    "error": null,
    "steps": 800
   },
@@ -3819,7 +3819,7 @@
    "lang": "mini",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 53,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 0
   },
@@ -3829,7 +3829,7 @@
    "lang": "mini",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 65,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 0
   },
@@ -3839,7 +3839,7 @@
    "lang": "mini",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 79,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 0
   },
@@ -3849,7 +3849,7 @@
    "lang": "mini",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 96,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 0
   },
@@ -3859,7 +3859,7 @@
    "lang": "mini",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 110,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 0
   },
@@ -3869,7 +3869,7 @@
    "lang": "mini",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 123,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 0
   },
@@ -3879,7 +3879,7 @@
    "lang": "mini",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 1691,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 0
   },
@@ -3889,7 +3889,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 2042,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 163
   },
@@ -3899,7 +3899,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 2201,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 800
   },
@@ -3909,7 +3909,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 2309,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 219
   },
@@ -3919,7 +3919,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 2380,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 380
   },
@@ -3929,7 +3929,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 2455,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 227
   },
@@ -3939,7 +3939,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 2517,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 59
   },
@@ -3949,7 +3949,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 2590,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 26
   },
@@ -3959,7 +3959,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 2648,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 183
   },
@@ -3969,7 +3969,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 2744,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 175
   },
@@ -3979,7 +3979,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 2832,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 184
   },
@@ -3989,7 +3989,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 2917,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 64
   },
@@ -3999,7 +3999,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 2969,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 111
   },
@@ -4009,7 +4009,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-project-language-guide.md",
    "line": 3077,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-project-language-guide",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-project-language-guide",
    "error": null,
    "steps": 292
   },
@@ -4019,7 +4019,7 @@
    "lang": "prolog",
    "page": "_pages/Tutorials/tutorial-prolog-swish.md",
    "line": 60,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-prolog-swish",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-prolog-swish",
    "error": null,
    "steps": 0
   },
@@ -4029,7 +4029,7 @@
    "lang": "prolog",
    "page": "_pages/Tutorials/tutorial-prolog-swish.md",
    "line": 114,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-prolog-swish",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-prolog-swish",
    "error": null,
    "steps": 0
   },
@@ -4039,7 +4039,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-prolog-swish.md",
    "line": 162,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-prolog-swish",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-prolog-swish",
    "error": null,
    "steps": 800
   },
@@ -4049,7 +4049,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
    "line": 31,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-python-for-language-work",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-python-for-language-work",
    "error": null,
    "steps": 16
   },
@@ -4059,7 +4059,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
    "line": 67,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-python-for-language-work",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-python-for-language-work",
    "error": null,
    "steps": 7
   },
@@ -4069,7 +4069,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
    "line": 91,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-python-for-language-work",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-python-for-language-work",
    "error": null,
    "steps": 10
   },
@@ -4079,7 +4079,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
    "line": 121,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-python-for-language-work",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-python-for-language-work",
    "error": null,
    "steps": 14
   },
@@ -4089,7 +4089,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
    "line": 153,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-python-for-language-work",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-python-for-language-work",
    "error": null,
    "steps": 17
   },
@@ -4099,7 +4099,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
    "line": 191,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-python-for-language-work",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-python-for-language-work",
    "error": null,
    "steps": 9
   },
@@ -4109,7 +4109,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
    "line": 212,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-python-for-language-work",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-python-for-language-work",
    "error": null,
    "steps": 16
   },
@@ -4119,7 +4119,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
    "line": 230,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-python-for-language-work",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-python-for-language-work",
    "error": null,
    "steps": 12
   },
@@ -4129,7 +4129,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
    "line": 248,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-python-for-language-work",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-python-for-language-work",
    "error": null,
    "steps": 13
   },
@@ -4139,7 +4139,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
    "line": 317,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-python-for-language-work",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-python-for-language-work",
    "error": null,
    "steps": 52
   },
@@ -4149,7 +4149,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
    "line": 381,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-python-for-language-work",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-python-for-language-work",
    "error": null,
    "steps": 19
   },
@@ -4159,7 +4159,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
    "line": 425,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-python-for-language-work",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-python-for-language-work",
    "error": null,
    "steps": 79
   },
@@ -4169,7 +4169,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-python-for-language-work.md",
    "line": 491,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-python-for-language-work",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-python-for-language-work",
    "error": null,
    "steps": 42
   },
@@ -4179,7 +4179,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
    "line": 60,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 6
   },
@@ -4189,7 +4189,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
    "line": 98,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 7
   },
@@ -4199,7 +4199,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
    "line": 117,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 6
   },
@@ -4209,7 +4209,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
    "line": 135,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 8
   },
@@ -4219,7 +4219,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
    "line": 153,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 3
   },
@@ -4229,7 +4229,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
    "line": 170,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 9
   },
@@ -4239,7 +4239,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
    "line": 186,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 2
   },
@@ -4249,7 +4249,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
    "line": 200,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 2
   },
@@ -4259,7 +4259,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
    "line": 217,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 12
   },
@@ -4269,7 +4269,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
    "line": 241,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 14
   },
@@ -4279,7 +4279,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
    "line": 256,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 5
   },
@@ -4289,7 +4289,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
    "line": 271,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 17
   },
@@ -4299,7 +4299,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
    "line": 299,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 2
   },
@@ -4309,7 +4309,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
    "line": 310,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 2
   },
@@ -4319,7 +4319,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
    "line": 328,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 2
   },
@@ -4329,7 +4329,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
    "line": 394,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 2
   },
@@ -4339,7 +4339,7 @@
    "lang": "scheme",
    "page": "_pages/Tutorials/tutorial-scheme-essentials.md",
    "line": 431,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-scheme-essentials",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-scheme-essentials",
    "error": null,
    "steps": 22
   },
@@ -4349,7 +4349,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-shell-for-language-dev.md",
    "line": 655,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-shell-for-language-dev",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-shell-for-language-dev",
    "error": null,
    "steps": 75
   },
@@ -4359,7 +4359,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-shell-for-language-dev.md",
    "line": 714,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-shell-for-language-dev",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-shell-for-language-dev",
    "error": null,
    "steps": 430
   },
@@ -4369,7 +4369,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-type-inference.md",
    "line": 52,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-type-inference",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-type-inference",
    "error": null,
    "steps": 65
   },
@@ -4379,7 +4379,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-type-inference.md",
    "line": 110,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-type-inference",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-type-inference",
    "error": null,
    "steps": 124
   },
@@ -4389,7 +4389,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-type-inference.md",
    "line": 197,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-type-inference",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-type-inference",
    "error": null,
    "steps": 282
   },
@@ -4399,7 +4399,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-type-inference.md",
    "line": 317,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-type-inference",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-type-inference",
    "error": null,
    "steps": 623
   },
@@ -4409,7 +4409,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-type-inference.md",
    "line": 531,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-type-inference",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-type-inference",
    "error": null,
    "steps": 706
   },
@@ -4419,7 +4419,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-type-inference.md",
    "line": 714,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-type-inference",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-type-inference",
    "error": null,
    "steps": 80
   },
@@ -4429,7 +4429,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-typing-disciplines.md",
    "line": 178,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-typing-disciplines",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-typing-disciplines",
    "error": null,
    "steps": 92
   },
@@ -4439,7 +4439,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-typing-disciplines.md",
    "line": 302,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-typing-disciplines",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-typing-disciplines",
    "error": null,
    "steps": 7
   },
@@ -4449,7 +4449,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-typing-disciplines.md",
    "line": 337,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-typing-disciplines",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-typing-disciplines",
    "error": null,
    "steps": 7
   },
@@ -4459,7 +4459,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-typing-disciplines.md",
    "line": 368,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-typing-disciplines",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-typing-disciplines",
    "error": null,
    "steps": 7
   },
@@ -4469,7 +4469,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-typing-disciplines.md",
    "line": 406,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-typing-disciplines",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-typing-disciplines",
    "error": null,
    "steps": 71
   },
@@ -4479,7 +4479,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-typing-disciplines.md",
    "line": 499,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-typing-disciplines",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-typing-disciplines",
    "error": null,
    "steps": 149
   },
@@ -4489,7 +4489,7 @@
    "lang": "python",
    "page": "_pages/Tutorials/tutorial-typing-disciplines.md",
    "line": 599,
-   "page_url": "https://billjr99.github.io/Ursinus-CS374-Fall2026/Tutorials/tutorial-typing-disciplines",
+   "page_url": "https://billjr99.github.io/Ursinus-CS374/Tutorials/tutorial-typing-disciplines",
    "error": null,
    "steps": 70
   },
