@@ -88,7 +88,7 @@ This is a plain-English glossary.  Come back to it whenever one of these terms s
 int x = "hi";
 ```
 
-at compile time, without running anything.  **Dynamic** typing checks the labels during execution, at the moment each operation runs.  Python raises `TypeError` only when `"hi" * {}` is actually attempted.  Static checking catches errors earlier and on *all* paths, including the ones your tests never reach.  Dynamic checking permits more flexible code and faster iteration.  This is the binding-time framework from *Names, Binding, and Scope* again, applied to the type.
+at compile time, without running anything.  **Dynamic** typing checks the labels during execution, at the moment each operation runs.  Python raises `TypeError` only when `"hi" * {}` is actually attempted.  Static checking catches errors earlier and on *all* paths, including the ones your tests never reach.  Dynamic checking permits more flexible code and faster iteration.  This is the binding-time framework from *Binding and Scope* again, applied to the type.
 
 **How strictly is checking enforced?**  **Strong** typing refuses a mixture the language does not define, or demands an explicit conversion.  **Weak** typing silently **coerces** operands, meaning it converts them without being asked, so the operation can proceed.  JavaScript computes
 

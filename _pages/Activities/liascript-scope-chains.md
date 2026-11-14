@@ -675,7 +675,7 @@ print x + y;      the inner x is gone:                  21
 
 # Part III: Closures, the Problem and the Mechanism
 
-A language has **first-class functions** when a function is an ordinary value: you can store it in a variable, pass it as an argument, and return it from another function.  A language has static scope when a name refers to the variable declared where the function was written.  Put those two rules together and a function can escape the scope where it was born.  To keep working, it must carry that scope with it.  What it carries is the environment chain you built in *Binding, Scope, and Environments*.  The bundle of code plus captured environment is a closure.  It is the mechanism behind `make_adder`, behind every Church encoding you ran in Python today, and behind the function values your interpreter supports.
+A language has **first-class functions** when a function is an ordinary value: you can store it in a variable, pass it as an argument, and return it from another function.  A language has static scope when a name refers to the variable declared where the function was written.  Put those two rules together and a function can escape the scope where it was born.  To keep working, it must carry that scope with it.  What it carries is the environment chain you built in Part I.  The bundle of code plus captured environment is a closure.  It is the mechanism behind `make_adder`, behind every Church encoding you ran in Python today, and behind the function values your interpreter supports.
 
 ### Key Concepts
 
@@ -1056,7 +1056,7 @@ In Model 6, changing `base = fn.env` to `base = env` in the `Call` branch turns 
     4.  Demonstrate: a plain function, `factorial(5)`, and `make_adder` working in your language
 8.  *Counter objects (15 min).*  Build `make_counter()` using closures (not a class) that returns an increment function.  Then build `make_account(balance)` with `deposit(amount)` and `withdraw(amount)` methods.  Demonstrate shared state between the two returned functions.
 9.  *Trap tour (15 min).*  Reproduce the loop-variable trap in your language (or Python), apply both fixes, and explain each fix's mechanism with environment diagrams.
-10.  *Scope flip experiment (20 min).*  Apply the one-line change from Model 6 (`base = fn.env` becomes `base = env`) to make your interpreter dynamically scoped.  Rerun the `show`/`demo` program from Model 2 of the *Binding, Scope, and Environments* activity in your language.  Report the output difference and explain with a diagram which environment chain the dynamically scoped version follows.
+10.  *Scope flip experiment (20 min).*  Apply the one-line change from Model 6 (`base = fn.env` becomes `base = env`) to make your interpreter dynamically scoped.  Rerun the `show`/`demo` program from Model 2 of the *Binding and Scope* activity in your language.  Report the output difference and explain with a diagram which environment chain the dynamically scoped version follows.
 
 ---
 
@@ -1683,7 +1683,7 @@ The code above showed the trap and two fixes.  The notes below explain the code,
 
 - `[lambda: i for i in range(3)]` builds three functions that all close over the *same* `i`.  That is capture-by-reference, the behavior Model 5 demonstrated, rather than a bug in Python.
 - The two fixes attack different halves.  The default argument stops closing over `i` at all, so there is nothing to share.  The factory function makes a new binding per iteration, so there are three `i`s to close over instead of one.
-- JavaScript's `var` had this exact shape, and `let` changed it by giving loop bodies per-iteration bindings.  You made the same decision in the Model 6 Try It Yourself of *Binding, Scope, and Environments*; JavaScript made it at ecosystem scale.
+- JavaScript's `var` had this exact shape, and `let` changed it by giving loop bodies per-iteration bindings.  You made the same decision in the Model 6 Try It Yourself in Part II; JavaScript made it at ecosystem scale.
 
 ### Try It Yourself
 

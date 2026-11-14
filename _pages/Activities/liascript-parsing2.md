@@ -1445,7 +1445,7 @@ Run `nm` on the object file and you can see the difference directly: a global `c
 
 This is the single most useful thing `static` does in C, and it is the language's answer to a question your project language will also have to answer: **how does a module keep something private?**  C has no `private`, no module system, and no namespaces.  It has `static`, which says "this name stops at the edge of this file."
 
-> **Watch out!**  `static` in C does two unrelated jobs depending on where you write it.  Inside a function it changes **lifetime**: the variable survives between calls, while its scope stays the same tiny block.  At file scope it changes **linkage**: the lifetime was already the whole program, and what changes is *visibility* to the linker.  Same keyword, two different questions.  *Binding, Scope, and Environments* takes apart exactly why lifetime and visibility are separate axes.
+> **Watch out!**  `static` in C does two unrelated jobs depending on where you write it.  Inside a function it changes **lifetime**: the variable survives between calls, while its scope stays the same tiny block.  At file scope it changes **linkage**: the lifetime was already the whole program, and what changes is *visibility* to the linker.  Same keyword, two different questions.  *Binding and Scope* takes apart exactly why lifetime and visibility are separate axes.
 
 ## Tentative Definitions: Why `int counter;` in Two Files Used to Compile
 
