@@ -281,7 +281,7 @@ for p in (FALSE, TRUE):
 @LIA.eval(`["main.py"]`, `none`, `python3 main.py`)
 [Visualize this example](https://billjr99.github.io/Ursinus-CS374-Fall2026/viz/#cs374-liascript-lambdacalculus2-3) <!-- code-viz link -->
 
-These definitions follow Kate Morley's [Boolean logic in the lambda calculus](https://code.iamkate.com/lambda-calculus/boolean-logic/).
+These definitions follow Kate Morley's [Boolean logic in the lambda calculus](https://web.archive.org/web/20210302223731/https://code.iamkate.com/lambda-calculus/boolean-logic/).
 
 ## Model 2: Prove the Logic
 
@@ -818,7 +818,7 @@ In your notebook: numbers, booleans, pairs, and conditionals all dissolved into 
 - **Lambda-Py / pycombinator**: combinators and Church encodings in Python.  Run every Church encoding from today interactively in your browser: https://finsberg.github.io/pycombinator/docs/lambda-talk.html
 - Raymond Smullyan.  *To Mock a Mockingbird* (1985): the combinator birds.
 - Raul Rojas.  "A Tutorial Introduction to the Lambda Calculus" (online), sections on encodings.
-- Kate Morley.  [Boolean logic in the lambda calculus](https://code.iamkate.com/lambda-calculus/boolean-logic/).
+- Kate Morley.  [Boolean logic in the lambda calculus](https://web.archive.org/web/20210302223731/https://code.iamkate.com/lambda-calculus/boolean-logic/).
 - [Church numerals and the successor, CS 312 recitation notes, Cornell University](http://www.cs.cornell.edu/courses/cs312/2008sp/recitations/rec26.html).
 - [Build a Lambda Calculus Reducer](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LambdaCalculusReducer): builds the derivation from Part IV one step at a time in Python, from a factorial that takes a copy of itself through to the machinery separated out, and then implements the reducer that checks your hand reductions mechanically.  The Team Language Project's optional [lambda-calculus core extension](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LanguageExtensions) builds on the Church encodings from this activity.
 - `call/cc`: capturing the rest of the computation as a value, and deriving break, return, exceptions, cooperative schedulers, generators, and backtracking from it.  The Team Language Project's optional [continuations extension](https://www.billmongan.com/Ursinus-CS374-Fall2026/Tutorials/LanguageExtensions) builds on this.
