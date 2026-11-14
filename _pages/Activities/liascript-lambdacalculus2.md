@@ -18,7 +18,7 @@ link:   https://cdn.jsdelivr.net/gh/BillJr99/Ursinus-Boilerplate-Assets@main/css
 
 By the end of this activity, you will be able to:
 
-- Define and reduce the named combinators I, K, KI, and C as pure lambda terms, and check their behavior by hand reduction and by running Python
+- Define and reduce the named combinators I, K, KI, C, and S as pure lambda terms, and check their behavior by hand reduction and by running Python
 - Encode booleans as lambda terms (Church booleans) and write `AND`, `OR`, `NOT`, and `IF-THEN-ELSE` using only function application
 - Encode natural numbers as Church numerals and write successor, addition, and multiplication as lambda functions
 - Show that every combinator with no free variables can be given a permanent name, and connect this to referential transparency
@@ -59,8 +59,9 @@ The reductions happen on the whiteboard, and the Python checks stay quick.  Part
 | Parts I and II: Combinators and Church Booleans | Answer CTQ 1.1, run the boolean cell, and reduce CTQs 2.1-2.3 at the board |
 | Part III: Numbers as Repetition | Reduce `SUCC TWO` and `PLUS TWO THREE` together, run the encodings, and answer CTQs 3.1-3.3 |
 | Part IV: Recursion Without Names | Walk Steps 0 through 5, run Model 4, and answer CTQ 4.1 |
+| Parser check-in | Bring one question about Parts 2 and 3 of the Parser: Bison conflicts, `%left`, and variables |
 
-If the period runs short, the Try It Yourself blocks and CTQs 1.2, 2.4, 3.4, and 4.2-4.3 move to homework.  Everything after **In-class work stops here** is self-paced: the exercises and two extensions covering Church pairs and the predecessor, and the backwards derivation of $\textbf{Y}$ and why strictness matters.  The pairs extension supplies the `PRED` that Part IV's factorial uses.
+If the period runs short, the Try It Yourself blocks and CTQs 1.2, 1.4, 2.4, 3.4, and 4.2-4.3 move to homework.  Everything after **In-class work stops here** is self-paced: the exercises and two extensions covering Church pairs and the predecessor, and the backwards derivation of $\textbf{Y}$ and why strictness matters.  The pairs extension supplies the `PRED` that Part IV's factorial uses.
 
 ---
 
@@ -82,8 +83,13 @@ $$
 $$
 \textbf{C} = \lambda f. \lambda a. \lambda b.\, f\, b\, a \quad \text{(Cardinal: flips arguments)}
 $$
+$$
+\textbf{S} = \lambda f. \lambda g. \lambda x.\, f\, x\, (g\, x) \quad \text{(Starling: hands one argument to two functions)}
+$$
 
 You already reduced **K** $A\, B \rightarrow A$ and **KI** $A\, B \rightarrow B$ in *Lambda Calculus I*, before they had names.  In Part II, these two selectors become TRUE and FALSE.
+
+**S** is the one that does real work.  It gives the same argument $x$ to both $f$ and $g$, then applies the first result to the second.  **S** and **K** together are *complete*: every closed lambda term can be rewritten using only those two, with no variables at all.  The other birds are conveniences.  Even **I** can be built from the pair, which CTQ 1.4 asks you to check.  The Cardinal is the one you use today, because flipping arguments is exactly how TRUE becomes FALSE.
 
 ---
 
@@ -97,7 +103,9 @@ You already reduced **K** $A\, B \rightarrow A$ and **KI** $A\, B \rightarrow B$
 
 > **CTQ 1.3** Why must a combinator have no free variables before it deserves a permanent name?  Connect your answer to purity from the functional module: a closed term can be replaced by its name anywhere without changing the meaning of the program, which is what referential transparency means.
 
-Recap: a combinator is a closed lambda term, and closed terms can be named because they mean the same thing everywhere.  K selects its first argument and KI selects its second, and that pair of selectors is all we need for Part II.
+> **CTQ 1.4** Reduce $\textbf{S}\, \textbf{K}\, \textbf{K}\, A$ step by step, and show that it behaves exactly like $\textbf{I}\, A$.  Then add `S` to your CTQ 1.2 lambdas and check it in Python.  What does this say about whether a language needs **I** as a built-in?
+
+Recap: a combinator is a closed lambda term, and closed terms can be named because they mean the same thing everywhere.  K selects its first argument and KI selects its second, and that pair of selectors is all we need for Part II.  C flips arguments, and S shares one argument between two functions; S and K alone can express every combinator.
 
 ---
 
