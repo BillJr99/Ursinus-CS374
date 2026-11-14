@@ -49,6 +49,7 @@ This phase is about **language design by example**.  Every decision you make abo
 
 **Example 1: Hello World and arithmetic**
 
+<!-- run: id=cs374-tutorial-project-language-guide-1 viz=plain interp=page -->
 ```mini
 let x = 10;
 let y = 3;
@@ -59,6 +60,7 @@ print "Hello, Mini!";
 
 **Example 2: Fibonacci (recursive)**
 
+<!-- run: id=cs374-tutorial-project-language-guide-2 viz=plain interp=page -->
 ```mini
 fun fib(n) {
   if n <= 1 {
@@ -71,6 +73,7 @@ print fib(10);
 
 **Example 3: Factorial (iterative with while)**
 
+<!-- run: id=cs374-tutorial-project-language-guide-3 viz=plain interp=page -->
 ```mini
 fun factorial(n) {
   let result = 1;
@@ -86,9 +89,10 @@ print factorial(6);
 
 **Example 4: Conditionals and booleans**
 
+<!-- run: id=cs374-tutorial-project-language-guide-4 viz=plain interp=page -->
 ```mini
 let age = 20;
-let status = if age >= 18 { "adult" } else { "minor" };
+let status = if age >= 18 { "adult"; } else { "minor"; };
 print status;
 
 if true and not false {
@@ -98,6 +102,7 @@ if true and not false {
 
 **Example 5: Closures (functions returning functions)**
 
+<!-- run: id=cs374-tutorial-project-language-guide-5 viz=plain interp=page -->
 ```mini
 fun make_adder(n) {
   return fun(x) -> x + n;
@@ -109,6 +114,7 @@ print add5(20);
 
 **Example 6: Higher-order functions**
 
+<!-- run: id=cs374-tutorial-project-language-guide-6 viz=plain interp=page -->
 ```mini
 fun apply(f, x) {
   return f(x);
@@ -488,7 +494,7 @@ args         = ( expr ( "," expr )* )?
 > - `cmp_expr` allows only *one* comparison (no chaining `a < b < c`).
 > - `^` is right-associative, handled carefully in the parser.
 > - `fun(params) -> expr` is a **lambda** (expression body); `fun(params) { ... }` is a named function definition at statement level or an anonymous closure in expression position.
-> - `if` appears as both a statement and an expression (when used inside `primary`).
+> - `if` appears as both a statement and an expression (when used inside `primary`).  Both forms share `block`, so a branch holds statements, each with its `;`.  An `if` expression's value is the value of the last statement in the branch taken (an expression statement gives its expression's value), so `if age >= 18 { "adult"; } else { "minor"; }` is `"adult"` or `"minor"`; with no `else` and a false condition it is `nil`.
 
 ### 3.2 Parse Tree Diagram
 
@@ -783,6 +789,8 @@ class Parser:
 ### 5.2 Statement Parsers
 
 ```python
+# parser_mini.py (continued)
+
     # --- Statements ---
 
     def parse_program(self) -> Program:
@@ -870,6 +878,8 @@ class Parser:
 ### 5.3 Expression Parsers
 
 ```python
+# parser_mini.py (continued)
+
     # --- Expressions (precedence climbing via grammar hierarchy) ---
 
     def parse_expr(self) -> Expr:
@@ -1012,6 +1022,7 @@ class Parser:
 ### 5.4 Module-Level parse() Helper
 
 ```python
+# parser_mini.py (continued)
 def parse(source: str) -> Program:
     tokens = Lexer(source).tokenize()
     return Parser(tokens).parse_program()
@@ -1670,6 +1681,7 @@ def make_global_env() -> Environment:
 
 ### 9.2 Using map and filter in Mini
 
+<!-- run: id=cs374-tutorial-project-language-guide-8 viz=plain interp=page -->
 ```mini
 # squares_and_evens.mini
 
